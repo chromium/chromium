@@ -288,6 +288,7 @@ suite('history-clusters', () => {
   test('sets scroll target', async () => {
     const clustersElement = await setupClustersElement();
     clustersElement.scrollTarget = document.body;
+    await microtasksFinished();
 
     assertEquals(document.body, clustersElement.$.clusters.scrollTarget);
   });
@@ -295,6 +296,7 @@ suite('history-clusters', () => {
   test('sets scroll offset', async () => {
     const clustersElement = await setupClustersElement();
     clustersElement.scrollOffset = 123;
+    await microtasksFinished();
     assertEquals(123, clustersElement.$.clusters.scrollOffset);
   });
 

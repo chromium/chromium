@@ -9,8 +9,6 @@
 
 :host {
   display: block;
-  overflow-x: hidden;
-  overflow-y: auto;
   position: relative;
 }
 

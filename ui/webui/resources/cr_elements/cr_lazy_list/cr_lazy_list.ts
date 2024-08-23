@@ -75,6 +75,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
       itemSize: {type: Number},
       listItemHost: {type: Object},
       minViewportHeight: {type: Number},
+      scrollOffset: {type: Number},
       scrollTarget: {type: Object},
       restoreFocusElement: {type: Object},
       template: {type: Object},
@@ -89,6 +90,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
   itemSize: number = 100;
   listItemHost?: Node;
   minViewportHeight?: number;
+  scrollOffset: number = 0;
   scrollTarget: HTMLElement = document.documentElement;
   restoreFocusElement: Element|null = null;
   template: (item: T, index: number) => TemplateResult = () => html``;
@@ -118,7 +120,8 @@ export class CrLazyListElement<T = object> extends CrLitElement {
 
     let itemsChanged = false;
     if (changedProperties.has('items') ||
-        changedProperties.has('minViewportHeight')) {
+        changedProperties.has('minViewportHeight') ||
+        changedProperties.has('scrollOffset')) {
       const previous = changedProperties.get('items');
       if (previous !== undefined || this.items.length !== 0) {
         this.onItemsChanged_();
@@ -175,7 +178,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
       this.resizeObserver_ = new ResizeObserver(() => {
         requestAnimationFrame(() => {
           const newHeight = this.getViewHeight_();
-          if (newHeight !== 0 && newHeight !== this.lastRenderedHeight_) {
+          if (newHeight > 0 && newHeight !== this.lastRenderedHeight_) {
             this.fillCurrentViewport();
           }
         });
@@ -214,7 +217,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
   }
 
   private getViewHeight_() {
-    return this.scrollTarget.scrollTop +
+    return this.scrollTarget.scrollTop - this.scrollOffset +
         Math.max(this.minViewportHeight || 0, this.scrollTarget.offsetHeight);
   }
 
@@ -224,7 +227,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     }
 
     const height = this.getViewHeight_();
-    if (height === 0) {
+    if (height <= 0) {
       return;
     }
 

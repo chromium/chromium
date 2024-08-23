@@ -734,10 +734,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     // page or tab has changed.
     setTimeout(() => {
       this.$.history.notifyResize();
-      const clusters = this.shadowRoot!.querySelector('history-clusters');
-      if (clusters) {
-        clusters.notifyResize();
-      }
     }, 0);
   }
 

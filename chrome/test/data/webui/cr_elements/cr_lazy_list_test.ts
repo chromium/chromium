@@ -55,15 +55,19 @@ class TestApp extends CrLitElement {
     return {
       listItems: {type: Array},
       restoreFocusElement_: {type: Object},
+      scrollOffset: {type: Number},
     };
   }
 
   listItems: Array<{name: string}> = [];
+  scrollOffset: number = 0;
   private restoreFocusElement_: HTMLElement|null = null;
 
   override render() {
     return html`
+    <div style="height: ${this.scrollOffset}px"></div>
     <cr-lazy-list .items="${this.listItems}" .scrollTarget="${this}"
+        .scrollOffset="${this.scrollOffset}"
         .restoreFocusElement="${this.restoreFocusElement_}"
         .template=${(item: {name: string}, idx: number) => html`
             <test-item name="${item.name}"
@@ -85,7 +89,8 @@ suite('CrLazyListTest', () => {
   let lazyList: CrLazyListElement;
   let testApp: TestApp;
 
-  async function setupTest(sampleData: Array<{name: string}>) {
+  async function setupTest(
+      sampleData: Array<{name: string}>, scrollOffset: number = 0) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testApp = document.createElement('test-app') as TestApp;
     testApp.style.height = `${SAMPLE_AVAIL_HEIGHT}px`;
@@ -95,6 +100,7 @@ suite('CrLazyListTest', () => {
     testApp.style.overflowX = 'hidden';
     document.body.appendChild(testApp);
     testApp.listItems = sampleData;
+    testApp.scrollOffset = scrollOffset;
 
     lazyList = testApp.shadowRoot!.querySelector('cr-lazy-list')!;
     assertTrue(!!lazyList);
@@ -224,5 +230,32 @@ suite('CrLazyListTest', () => {
     await eventToPromise('viewport-filled', lazyList);
     // Items are added for the taller viewport.
     assertEquals(2 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, queryItems().length);
+  });
+
+  test('Scroll with offset', async () => {
+    const numItems = 2 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT;
+    // Set up with a scroll offset equal to 2 items of height.
+    await setupTest(getTestItems(numItems), SAMPLE_ITEM_HEIGHT * 2);
+
+    // 2 fewer items are rendered since the scrollOffset fills the first 2
+    // items of space.
+    assertEquals(SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT - 2, queryItems().length);
+
+    // Scrolling 50% of the viewport renders half a viewport more items.
+    testApp.scrollTop = SAMPLE_AVAIL_HEIGHT / 2;
+    await eventToPromise('viewport-filled', testApp);
+    assertEquals(
+        3 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT / 2 - 2, queryItems().length);
+
+    // Scrolling to the end renders remaining items. Note the end is 2 items
+    // of height past SAMPLE_AVAIL_HEIGHT in this case due to the offset.
+    testApp.scrollTop = SAMPLE_AVAIL_HEIGHT + 2 * SAMPLE_ITEM_HEIGHT;
+    await eventToPromise('viewport-filled', testApp);
+    assertEquals(numItems, queryItems().length);
+
+    // Scrolling back to the top --> all items are still rendered.
+    testApp.scrollTop = 0;
+    await new Promise(resolve => setTimeout(resolve, 1));
+    assertEquals(numItems, queryItems().length);
   });
 });

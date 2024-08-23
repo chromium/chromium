@@ -206,15 +206,15 @@ suite('TabSearchAppFocusTest', () => {
     // Expand the `Recently Closed` section.
     recentlyClosedTitleExpandButton.click();
 
-    await microtasksFinished();
-    const tabsList = tabSearchPage.$.tabsList.querySelector('cr-lazy-list');
-    assertTrue(!!tabsList);
+    await eventToPromise('viewport-filled', tabSearchPage.$.tabsList);
     // Assert that the tabs are in a overflowing state.
-    assertGT(tabsList.scrollHeight, tabsList.clientHeight);
+    assertGT(
+        tabSearchPage.$.tabsList.scrollHeight,
+        tabSearchPage.$.tabsList.clientHeight);
 
     // Assert the first recently closed item is in view bounds.
     const tabItems =
         tabSearchPage.$.tabsList.querySelectorAll('tab-search-item');
-    assertTabItemInViewBounds(tabsList, tabItems[4]!);
+    assertTabItemInViewBounds(tabSearchPage.$.tabsList, tabItems[4]!);
   });
 });

@@ -24,7 +24,6 @@ build_webui("build") {
 
   web_component_files = [
     "cluster.ts",
-    "clusters.ts",
     "cluster_menu.ts",
     "horizontal_carousel.ts",
     "page_favicon.ts",
@@ -34,6 +33,8 @@ build_webui("build") {
 
   non_web_component_files = [
     "browser_proxy.ts",
+    "clusters.ts",
+    "clusters.html.ts",
     "infinite_list.ts",
     "metrics_proxy.ts",
     "utils.ts",
@@ -41,6 +42,7 @@ build_webui("build") {
 
   css_files = [
     "cluster.css",
+    "clusters.css",
     "cluster_menu.css",
     "history_clusters_shared_style.css",
     "history_clusters_shared_style_lit.css",

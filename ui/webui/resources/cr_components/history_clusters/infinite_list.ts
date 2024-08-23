@@ -28,6 +28,7 @@ export class InfiniteListElement<T = object> extends CrLitElement {
     // Render items into light DOM using the client provided template
     render(
         html`<cr-lazy-list id="list" .scrollTarget="${this.scrollTarget}"
+          .scrollOffset="${this.scrollOffset}"
           .listItemHost="${(this.getRootNode() as ShadowRoot).host}"
           .items="${this.items}"
           .template="${
@@ -46,6 +47,7 @@ export class InfiniteListElement<T = object> extends CrLitElement {
 
   static override get properties() {
     return {
+      scrollOffset: {type: Number},
       scrollTarget: {type: Object},
       items: {type: Array},
       focusedIndex: {type: Number},
@@ -54,6 +56,7 @@ export class InfiniteListElement<T = object> extends CrLitElement {
     };
   }
 
+  scrollOffset: number = 0;
   scrollTarget: HTMLElement = document.documentElement;
   items: T[] = [];
   // Unlike cr-lazy-list, infinite-list provides a tabindex parameter for
