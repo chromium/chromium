@@ -303,7 +303,7 @@ END_METADATA
 struct MenuBoundsOptions {
   gfx::Rect anchor_bounds = gfx::Rect(500, 500, 10, 10);
   gfx::Rect monitor_bounds = gfx::Rect(0, 0, 1000, 1000);
-  gfx::Size menu_size = gfx::Size(100, 150);
+  gfx::Size menu_size = gfx::Size(100, 100);
   MenuAnchorPosition menu_anchor = MenuAnchorPosition::kTopLeft;
   MenuItemView::MenuPosition menu_position =
       MenuItemView::MenuPosition::kBestFit;
