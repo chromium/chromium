@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AddDialogPage, FaceGazeAddActionDialogElement, FaceGazeUtils} from 'chrome://os-settings/lazy_load.js';
+import {AddDialogPage, FaceGazeAddActionDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, CrSettingsPrefs, CrSliderElement, FaceGazeSubpageBrowserProxyImpl, IronListElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
@@ -426,11 +426,25 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         // Default confidence threshold is 60, so only one gesture should
         // register as detected.
-        assertEquals(
-            `${
-                FaceGazeUtils.getGestureDisplayText(
-                    FacialGesture.BROW_INNER_UP)} detected (1)`,
-            gestureCountDiv.innerText);
+        assertEquals(`Detected 1 time`, gestureCountDiv.innerText);
+      });
+
+  test(
+      'gesture detection count updates when gesture info received with multiple selected gestures over threshold',
+      async () => {
+        await initPage();
+        navigateToThresholdPage();
+
+        webUIListenerCallback('settings.sendGestureInfoToSettings', [
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 70},
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 80},
+        ]);
+
+        const gestureCountDiv = getGestureCountDiv();
+
+        // Default confidence threshold is 60, so two gestures should register
+        // as detected.
+        assertEquals(`Detected 2 times`, gestureCountDiv.innerText);
       });
 
   test(
@@ -445,11 +459,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         ]);
 
         const gestureCountDiv = getGestureCountDiv();
-        assertEquals(
-            `${
-                FaceGazeUtils.getGestureDisplayText(
-                    FacialGesture.BROW_INNER_UP)} detected (0)`,
-            gestureCountDiv.innerText);
+        assertEquals(`Not detected`, gestureCountDiv.innerText);
       });
   test(
       'gesture threshold dynamic bar updates when gesture info received with selected gesture info at any confidence',

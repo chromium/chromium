@@ -1335,7 +1335,16 @@
     Gesture setting: <ph name="SELECTED_GESTURE">$1<ex>Eyes blink</ex></ph>
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_SUBTITLE" desc="Subtitle for dialog page to set the confidence threshold for a gesture.">
-    Adjust the detection threshold so that you can comfortably trigger the gesture
+    If you decrease the threshold, you can use a subtle movement. If you increase the threshold, you may need a more exaggerated movement.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_NOT_DETECTED_LABEL" desc="Label for dialog page when no gesture has been detected.">
+    Not detected
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_DETECTED_COUNT_ONE_LABEL" desc="Label for dialog page to display when a gesture has been detected once.">
+    Detected 1 time
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_DETECTED_COUNT_LABEL" desc="Label for dialog page to display how many times a gesture has been detected.">
+    Detected <ph name="COUNT">$1<ex>2</ex></ph> times
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_KNOB_LABEL" desc="Label for knob on slider indicating the confidence threshold for detecting a gesture.">
     Detection threshold

@@ -138,6 +138,11 @@ export class FaceGazeAddActionDialogElement extends
         computed: 'getLocalizedGestureThresholdTitle_(selectedGesture_)',
       },
 
+      localizedGestureCountLabel_: {
+        type: String,
+        computed: 'getLocalizedGestureCountLabel_(detectedGestureCount_)',
+      },
+
       gestureThresholdValue_: {
         type: Number,
         observer: 'onGestureThresholdChanged_',
@@ -215,6 +220,18 @@ export class FaceGazeAddActionDialogElement extends
         this.selectedGesture_ ?
             FaceGazeUtils.getGestureDisplayText(this.selectedGesture_) :
             '');
+  }
+
+  private getLocalizedGestureCountLabel_(): string {
+    if (this.detectedGestureCount_ === 0) {
+      return this.i18n('faceGazeActionsDialogGestureNotDetectedLabel');
+    } else if (this.detectedGestureCount_ === 1) {
+      return this.i18n('faceGazeActionsDialogGestureDetectedCountOneLabel');
+    } else {
+      return this.i18n(
+          'faceGazeActionsDialogGestureDetectedCountLabel',
+          this.detectedGestureCount_);
+    }
   }
 
   private getActionDisplayText_(action: MacroName): string {
