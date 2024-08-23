@@ -216,7 +216,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
                                  gfx::Insets::TLBR(0, 0, 0, 16));
   views::InstallCircleHighlightPathGenerator(thumbs_up_button_);
   thumbs_up_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_THUMBS_UP_SUGGESTION));
   auto* const thumbs_up_focus_ring = views::FocusRing::Get(thumbs_up_button_);
   thumbs_up_focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const OmniboxResultView* results, const View* view) {
@@ -237,7 +237,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
                                    gfx::Insets::TLBR(0, 0, 0, 16));
   views::InstallCircleHighlightPathGenerator(thumbs_down_button_);
   thumbs_down_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_THUMBS_DOWN_SUGGESTION));
   auto* const thumbs_down_focus_ring =
       views::FocusRing::Get(thumbs_down_button_);
   thumbs_down_focus_ring->SetHasFocusPredicate(base::BindRepeating(
@@ -258,8 +258,6 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   remove_suggestion_button_->SetProperty(views::kMarginsKey,
                                          gfx::Insets::TLBR(0, 0, 0, 16));
   views::InstallCircleHighlightPathGenerator(remove_suggestion_button_);
-  remove_suggestion_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
   auto* const remove_focus_ring =
       views::FocusRing::Get(remove_suggestion_button_);
   remove_focus_ring->SetHasFocusPredicate(base::BindRepeating(
@@ -322,6 +320,17 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   suggestion_view_->OnMatchUpdate(this, match_);
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
+  if (match_.IsIPHSuggestion()) {
+    remove_suggestion_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_OMNIBOX_CLOSE_IPH_SUGGESTION));
+    remove_suggestion_button_->GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_ACC_DISMISS_CHROME_TIP_BUTTON));
+  } else {
+    remove_suggestion_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
+    remove_suggestion_button_->GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_BUTTON));
+  }
 
   suggestion_view_->content()->SetTextWithStyling(match_.contents,
                                                   match_.contents_class);
