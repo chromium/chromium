@@ -5056,36 +5056,6 @@
             ]
         }
     ],
-    "Chromnient": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Responsive_Omnibox_Entry_Point",
-                    "params": {
-                        "endpoint-url": "https://lensfrontend-pa.googleapis.com/v1/crupload",
-                        "omnibox-entry-point": "true",
-                        "omnibox-entry-point-always-visible": "false",
-                        "select-text-over-region-trigger-threshold": "0.1",
-                        "text-vertical-margin": "12",
-                        "use-oauth-for-requests": "true"
-                    },
-                    "enable_features": [
-                        "LensOverlay"
-                    ],
-                    "disable_features": [
-                        "ContextMenuSearchForVideoFrame"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClankFeedSyntheticCapabilities": [
         {
             "platforms": [
