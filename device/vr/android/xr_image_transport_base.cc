@@ -38,6 +38,13 @@ bool XrImageTransportBase::UseSharedBuffer() {
   return support_shared_buffer && !XrImageTransportBase::disable_shared_buffer_;
 }
 
+GLenum XrImageTransportBase::SharedBufferTextureTarget() {
+  return base::FeatureList::IsEnabled(
+             features::kUseTargetTexture2DForSharedBuffers)
+             ? GL_TEXTURE_2D
+             : GL_TEXTURE_EXTERNAL_OES;
+}
+
 XrImageTransportBase::XrImageTransportBase(
     std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge)
     : mailbox_bridge_(std::move(mailbox_bridge)),
@@ -76,7 +83,8 @@ void XrImageTransportBase::Initialize(WebXrPresentationState* webxr,
   CHECK(IsOnGlThread());
   DVLOG(2) << __func__;
 
-  DoRuntimeInitialization(GL_TEXTURE_EXTERNAL_OES);
+  DoRuntimeInitialization(UseSharedBuffer() ? SharedBufferTextureTarget()
+                                            : GL_TEXTURE_EXTERNAL_OES);
 
   if (UseSharedBuffer()) {
     DVLOG(2) << __func__ << ": UseSharedBuffer()=true";
@@ -107,7 +115,13 @@ void XrImageTransportBase::OnMailboxBridgeReady(XrInitStatusCallback callback) {
   DCHECK(mailbox_bridge_->IsConnected());
 
   bool success = true;
-  if (UseSharedBuffer()) {
+
+  // DISABLE_RENDERING_TO_RGB_EXTERNAL_TEXTURE is needed because some drivers
+  // don't allow rendering to TEXTURE_EXTERNAL, it's not applicable if we use
+  // TEXTURE_2D.
+  if (!base::FeatureList::IsEnabled(
+          features::kUseTargetTexture2DForSharedBuffers) &&
+      UseSharedBuffer()) {
     bool shared_buffer_not_usable = mailbox_bridge_->IsGpuWorkaroundEnabled(
         gpu::DISABLE_RENDERING_TO_RGB_EXTERNAL_TEXTURE);
     DVLOG(1) << __func__
@@ -261,7 +275,7 @@ std::unique_ptr<WebXrSharedBuffer> XrImageTransportBase::CreateBuffer() {
       std::make_unique<WebXrSharedBuffer>();
   // Local resources
   glGenTextures(1, &buffer->local_texture.id);
-  buffer->local_texture.target = GL_TEXTURE_EXTERNAL_OES;
+  buffer->local_texture.target = SharedBufferTextureTarget();
   return buffer;
 }
 

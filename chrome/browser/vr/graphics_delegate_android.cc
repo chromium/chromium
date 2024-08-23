@@ -6,6 +6,7 @@
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
+#include "device/vr/android/xr_image_transport_base.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/ipc/common/android/android_hardware_buffer_utils.h"
@@ -146,7 +147,8 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
 
   if (!shared_buffer_) {
     shared_buffer_ = std::make_unique<device::WebXrSharedBuffer>();
-    shared_buffer_->local_texture.target = GL_TEXTURE_EXTERNAL_OES;
+    shared_buffer_->local_texture.target =
+        device::XrImageTransportBase::SharedBufferTextureTarget();
     glGenTextures(1, &shared_buffer_->local_texture.id);
   }
 
