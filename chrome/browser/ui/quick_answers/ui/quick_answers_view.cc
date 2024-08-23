@@ -33,6 +33,7 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -173,9 +174,9 @@ ui::ImageModel GetIcon(Design design, Intent intent) {
       return ui::ImageModel::FromVectorIcon(
           GetVectorIcon(intent), ui::kColorSysOnSurface, kIconSizeDip);
     case Design::kMagicBoost:
-      // TODO(b/335701090): update this with Magic Boost spec icon.
-      return ui::ImageModel::FromVectorIcon(
-          vector_icons::kGoogleColorIcon, gfx::kPlaceholderColor, kIconSizeDip);
+      return ui::ImageModel::FromVectorIcon(chromeos::kInfoSparkIcon,
+                                            ui::ColorIds::kColorSysOnSurface,
+                                            kIconSizeDip);
   }
 
   CHECK(false) << "Invalid design enum value specified";

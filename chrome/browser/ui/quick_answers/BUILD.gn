@@ -50,6 +50,7 @@ source_set("quick_answers") {
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/constants:constants",
     "//chromeos/strings:strings_grit",
+    "//chromeos/ui/vector_icons",
     "//components/account_id",
     "//components/omnibox/browser:vector_icons",
     "//components/prefs",
