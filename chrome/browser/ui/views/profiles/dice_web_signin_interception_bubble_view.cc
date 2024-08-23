@@ -264,7 +264,7 @@ bool DiceWebSigninInterceptionBubbleView::GetAccepted() const {
   return accepted_;
 }
 
-void DiceWebSigninInterceptionBubbleView::AddNewContents(
+content::WebContents* DiceWebSigninInterceptionBubbleView::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -277,6 +277,7 @@ void DiceWebSigninInterceptionBubbleView::AddNewContents(
     chrome::AddWebContents(browser_.get(), source, std::move(new_contents),
                            target_url, disposition, window_features);
   }
+  return nullptr;
 }
 
 DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(

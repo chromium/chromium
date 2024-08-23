@@ -279,7 +279,7 @@ bool SigninViewControllerDelegateViews::HandleKeyboardEvent(
       event, GetFocusManager());
 }
 
-void SigninViewControllerDelegateViews::AddNewContents(
+content::WebContents* SigninViewControllerDelegateViews::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -290,6 +290,7 @@ void SigninViewControllerDelegateViews::AddNewContents(
   // Allows the Gaia reauth page to open links in a new tab.
   chrome::AddWebContents(browser_, source, std::move(new_contents), target_url,
                          disposition, window_features);
+  return nullptr;
 }
 
 web_modal::WebContentsModalDialogHost*

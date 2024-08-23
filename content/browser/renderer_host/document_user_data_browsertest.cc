@@ -81,15 +81,17 @@ class PopupCreatedObserver : public WebContentsDelegate {
   explicit PopupCreatedObserver(WebContentsCreatedCallback callback)
       : callback_(std::move(callback)) {}
 
-  void AddNewContents(WebContents* source_contents,
-                      std::unique_ptr<WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override {
+  WebContents* AddNewContents(
+      WebContents* source_contents,
+      std::unique_ptr<WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override {
     callback_.Run(new_contents.get());
     web_contents_.push_back(std::move(new_contents));
+    return nullptr;
   }
 
  private:

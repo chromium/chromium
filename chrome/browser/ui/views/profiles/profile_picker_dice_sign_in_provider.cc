@@ -148,7 +148,7 @@ bool ProfilePickerDiceSignInProvider::HandleContextMenu(
   return true;
 }
 
-void ProfilePickerDiceSignInProvider::AddNewContents(
+content::WebContents* ProfilePickerDiceSignInProvider::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -166,7 +166,7 @@ void ProfilePickerDiceSignInProvider::AddNewContents(
   // removed or if the links on the page are removed.
   if (signin_util::IsForceSigninEnabled() &&
       base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
-    return;
+    return nullptr;
   }
 
   NavigateParams params(profile_, target_url, ui::PAGE_TRANSITION_LINK);
@@ -175,6 +175,7 @@ void ProfilePickerDiceSignInProvider::AddNewContents(
   params.contents_to_insert = std::move(new_contents);
   params.window_features = window_features;
   Navigate(&params);
+  return nullptr;
 }
 
 bool ProfilePickerDiceSignInProvider::HandleKeyboardEvent(

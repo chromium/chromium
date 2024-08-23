@@ -4814,71 +4814,84 @@ FrameTree* WebContentsImpl::CreateNewWindow(
                              false,  // started_from_context_menu
                              true);  // renderer_initiated
 
-  if (params.opener_suppressed) {
-    // When the opener is suppressed, the original renderer cannot access the
-    // new window.  As a result, we need to show and navigate the window here.
-    bool was_blocked = false;
+  if (!params.opener_suppressed) {
+    return &new_contents_impl->GetPrimaryFrameTree();
+  }
 
-    if (delegate_) {
-      base::WeakPtr<WebContentsImpl> weak_new_contents =
-          new_contents_impl->weak_factory_.GetWeakPtr();
+  // When the opener is suppressed, the original renderer cannot access the
+  // new window.  As a result, we need to show and navigate the window here.
+  bool was_blocked = false;
+  base::WeakPtr<WebContentsImpl> weak_new_contents =
+      new_contents_impl->weak_factory_.GetWeakPtr();
+  WebContentsImpl* contents_to_load = new_contents_impl;
+  if (delegate_) {
+    WebContents* web_contents_navigated = delegate_->AddNewContents(
+        this, std::move(new_contents), params.target_url, params.disposition,
+        *params.features, has_user_gesture, &was_blocked);
 
-      delegate_->AddNewContents(
-          this, std::move(new_contents), params.target_url, params.disposition,
-          *params.features, has_user_gesture, &was_blocked);
-      // The delegate may delete |new_contents_impl| during AddNewContents().
-      if (!weak_new_contents) {
-        return nullptr;
-      }
+    // The delegate may delete |new_contents_impl| during AddNewContents().
+    // If that occurs and there isn't a replacement contents returned, exit.
+    // Otherwise, use the replacement web contents that was navigated in.
+    if (web_contents_navigated != nullptr && weak_new_contents) {
+      CHECK(web_contents_navigated == weak_new_contents.get());
     }
 
-    if (!was_blocked) {
-      std::unique_ptr<NavigationController::LoadURLParams> load_params =
-          std::make_unique<NavigationController::LoadURLParams>(
-              params.target_url);
-      load_params->initiator_origin = opener->GetLastCommittedOrigin();
-      load_params->initiator_process_id = opener->GetProcess()->GetID();
-      load_params->initiator_frame_token = opener->GetFrameToken();
-      // Avoiding setting |load_params->source_site_instance| when
-      // |opener_suppressed| is true, because in that case we do not want to use
-      // the old SiteInstance and/or BrowsingInstance.  See also the test here:
-      // NewPopupCOOP_SameOriginPolicyAndCrossOriginIframeSetsNoopener.
-      load_params->referrer = params.referrer.To<Referrer>();
-      load_params->transition_type = ui::PAGE_TRANSITION_LINK;
-      load_params->is_renderer_initiated = true;
-      load_params->was_opener_suppressed = true;
-      load_params->has_user_gesture = has_user_gesture;
-      load_params->is_form_submission = params.is_form_submission;
-      if (params.form_submission_post_data) {
-        load_params->load_type = NavigationController::LOAD_TYPE_HTTP_POST;
-        load_params->post_data = params.form_submission_post_data;
-        load_params->post_content_type =
-            params.form_submission_post_content_type;
+    if (!weak_new_contents) {
+      if (web_contents_navigated == nullptr) {
+        return nullptr;
       }
-      load_params->impression = params.impression;
-      load_params->override_user_agent =
-          new_contents_impl->should_override_user_agent_in_new_tabs_
-              ? NavigationController::UA_OVERRIDE_TRUE
-              : NavigationController::UA_OVERRIDE_FALSE;
-      load_params->download_policy = params.download_policy;
-      load_params->initiator_activation_and_ad_status =
-          params.initiator_activation_and_ad_status;
+      contents_to_load = static_cast<WebContentsImpl*>(web_contents_navigated);
+    }
+  }
 
-      if (delegate_ && !is_guest &&
-          !delegate_->ShouldResumeRequestsForCreatedWindow()) {
-        // We are in asynchronous add new contents path, delay navigation.
-        DCHECK(!new_contents_impl->delayed_open_url_params_);
-        new_contents_impl->delayed_load_url_params_ = std::move(load_params);
-      } else {
-        new_contents_impl->GetController().LoadURLWithParams(
-            *load_params.get());
-        if (!is_guest) {
-          new_contents_impl->Focus();
-        }
+  if (!was_blocked) {
+    std::unique_ptr<NavigationController::LoadURLParams> load_params =
+        std::make_unique<NavigationController::LoadURLParams>(
+            params.target_url);
+    load_params->initiator_origin = opener->GetLastCommittedOrigin();
+    load_params->initiator_process_id = opener->GetProcess()->GetID();
+    load_params->initiator_frame_token = opener->GetFrameToken();
+    // Avoiding setting |load_params->source_site_instance| when
+    // |opener_suppressed| is true, because in that case we do not want to use
+    // the old SiteInstance and/or BrowsingInstance.  See also the test here:
+    // NewPopupCOOP_SameOriginPolicyAndCrossOriginIframeSetsNoopener.
+    load_params->referrer = params.referrer.To<Referrer>();
+    load_params->transition_type = ui::PAGE_TRANSITION_LINK;
+    load_params->is_renderer_initiated = true;
+    load_params->was_opener_suppressed = true;
+    load_params->has_user_gesture = has_user_gesture;
+    load_params->is_form_submission = params.is_form_submission;
+    if (params.form_submission_post_data) {
+      load_params->load_type = NavigationController::LOAD_TYPE_HTTP_POST;
+      load_params->post_data = params.form_submission_post_data;
+      load_params->post_content_type = params.form_submission_post_content_type;
+    }
+    load_params->impression = params.impression;
+    load_params->override_user_agent =
+        contents_to_load->should_override_user_agent_in_new_tabs_
+            ? NavigationController::UA_OVERRIDE_TRUE
+            : NavigationController::UA_OVERRIDE_FALSE;
+    load_params->download_policy = params.download_policy;
+    load_params->initiator_activation_and_ad_status =
+        params.initiator_activation_and_ad_status;
+
+    if (delegate_ && !is_guest &&
+        !delegate_->ShouldResumeRequestsForCreatedWindow()) {
+      // We are in asynchronous add new contents path, delay navigation.
+      DCHECK(!contents_to_load->delayed_open_url_params_);
+      contents_to_load->delayed_load_url_params_ = std::move(load_params);
+    } else {
+      contents_to_load->GetController().LoadURLWithParams(*load_params.get());
+      if (!is_guest) {
+        contents_to_load->Focus();
       }
     }
   }
-  return &new_contents_impl->GetPrimaryFrameTree();
+
+  if (weak_new_contents) {
+    return &new_contents_impl->GetPrimaryFrameTree();
+  }
+  return nullptr;
 }
 
 RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(

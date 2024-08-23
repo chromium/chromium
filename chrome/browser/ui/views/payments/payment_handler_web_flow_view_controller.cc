@@ -381,7 +381,7 @@ void PaymentHandlerWebFlowViewController::VisibleSecurityStateChanged(
   }
 }
 
-void PaymentHandlerWebFlowViewController::AddNewContents(
+content::WebContents* PaymentHandlerWebFlowViewController::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -398,6 +398,7 @@ void PaymentHandlerWebFlowViewController::AddNewContents(
     chrome::AddWebContents(browser, source, std::move(new_contents), target_url,
                            disposition, window_features);
   }
+  return nullptr;
 }
 
 bool PaymentHandlerWebFlowViewController::HandleKeyboardEvent(

@@ -595,7 +595,7 @@ bool FrameImpl::IsWebContentsCreationOverridden(
   return false;
 }
 
-void FrameImpl::AddNewContents(
+content::WebContents* FrameImpl::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -615,7 +615,7 @@ void FrameImpl::AddNewContents(
       if (url_request_rewrite_rules_manager_.GetCachedRules()) {
         // There is no support for URL request rules rewriting with popups.
         *was_blocked = true;
-        return;
+        return nullptr;
       }
 
       auto* popup_creation_info =
@@ -645,7 +645,7 @@ void FrameImpl::AddNewContents(
       pending_popups_.emplace_back(popup_frame, std::move(frame_handle),
                                    std::move(popup_frame_creation_info));
       MaybeSendPopup();
-      return;
+      return nullptr;
     }
 
     // These kinds of windows don't produce Frames.
@@ -658,7 +658,7 @@ void FrameImpl::AddNewContents(
     case WindowOpenDisposition::UNKNOWN:
       NOTIMPLEMENTED() << "Dropped new web contents (disposition: "
                        << static_cast<int>(disposition) << ")";
-      return;
+      return nullptr;
   }
 }
 

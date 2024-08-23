@@ -146,7 +146,7 @@ void ExtensionOptionsGuest::OnPreferredSizeChanged(const gfx::Size& pref_size) {
       options.ToValue()));
 }
 
-void ExtensionOptionsGuest::AddNewContents(
+WebContents* ExtensionOptionsGuest::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -160,11 +160,12 @@ void ExtensionOptionsGuest::AddNewContents(
   // WebContents.
   DCHECK(!ExtensionOptionsGuest::FromWebContents(new_contents.get()));
   if (!attached() || !embedder_web_contents()->GetDelegate())
-    return;
+    return nullptr;
 
   embedder_web_contents()->GetDelegate()->AddNewContents(
       source, std::move(new_contents), target_url, disposition, window_features,
       user_gesture, was_blocked);
+  return nullptr;
 }
 
 WebContents* ExtensionOptionsGuest::OpenURLFromTab(

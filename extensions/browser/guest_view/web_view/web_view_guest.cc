@@ -1418,7 +1418,7 @@ bool WebViewGuest::ShouldResumeRequestsForCreatedWindow() {
   return false;
 }
 
-void WebViewGuest::AddNewContents(
+content::WebContents* WebViewGuest::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -1444,6 +1444,7 @@ void WebViewGuest::AddNewContents(
 
   RequestNewWindowPermission(disposition, window_features.bounds,
                              std::move(owned_web_view_guest));
+  return nullptr;
 }
 
 WebContents* WebViewGuest::OpenURLFromTab(

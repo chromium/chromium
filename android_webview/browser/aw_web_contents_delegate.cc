@@ -149,7 +149,7 @@ void AwWebContentsDelegate::RunFileChooser(
       params.use_media_capture);
 }
 
-void AwWebContentsDelegate::AddNewContents(
+WebContents* AwWebContentsDelegate::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -195,6 +195,7 @@ void AwWebContentsDelegate::AddNewContents(
   if (was_blocked) {
     *was_blocked = !create_popup;
   }
+  return nullptr;
 }
 
 void AwWebContentsDelegate::NavigationStateChanged(

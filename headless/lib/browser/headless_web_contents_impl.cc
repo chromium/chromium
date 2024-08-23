@@ -118,13 +118,14 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     headless_contents->Close();
   }
 
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override {
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override {
     DCHECK(new_contents->GetBrowserContext() ==
            headless_web_contents_->browser_context());
 
@@ -141,6 +142,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
                                ? default_rect
                                : window_features.bounds;
     raw_child_contents->SetBounds(rect);
+    return nullptr;
   }
 
   content::WebContents* OpenURLFromTab(
