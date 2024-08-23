@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
+#include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -898,8 +899,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::ResetGranularityIndex)
       .SetMethod("getCurrentTextStartIndex",
                  &ReadAnythingAppController::GetCurrentTextStartIndex)
-      .SetMethod("getHighlightStartIndex",
-                 &ReadAnythingAppController::GetHighlightStartIndex)
       .SetMethod("getCurrentTextEndIndex",
                  &ReadAnythingAppController::GetCurrentTextEndIndex)
       .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
@@ -925,10 +924,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
                  &ReadAnythingAppController::SendInstallVoicePackRequest)
-      .SetMethod("getNodeIdForCurrentSegmentIndex",
-                 &ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex)
-      .SetMethod("getNextWordHighlightLength",
-                 &ReadAnythingAppController::GetNextWordHighlightLength)
+      .SetMethod("getHighlightForCurrentSegmentIndex",
+                 &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex)
       .SetMethod("getValidatedFontName",
                  &ReadAnythingAppController::GetValidatedFontName)
       .SetMethod("onScrolledToBottom",
@@ -1653,11 +1650,6 @@ int ReadAnythingAppController::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
   return read_aloud_model_.GetCurrentTextStartIndex(node_id);
 }
 
-int ReadAnythingAppController::GetHighlightStartIndex(ui::AXNodeID node_id,
-                                                      int boundary_index) {
-  return read_aloud_model_.GetHighlightStartIndex(node_id, boundary_index);
-}
-
 int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
   return read_aloud_model_.GetCurrentTextEndIndex(node_id);
 }
@@ -1769,13 +1761,30 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
   return word_ends;
 }
 
-ui::AXNodeID ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex(
-    int index) {
-  return read_aloud_model_.GetNodeIdForCurrentSegmentIndex(index);
-}
+v8::Local<v8::Value>
+ReadAnythingAppController::GetHighlightForCurrentSegmentIndex(int index) {
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  auto context = isolate->GetCurrentContext();
 
-int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
-  return read_aloud_model_.GetNextWordHighlightLength(index);
+  std::vector<ReadAloudTextSegment> nodes =
+      read_aloud_model_.GetHighlightForCurrentSegmentIndex(index);
+
+  v8::Local<v8::Array> highlight_array = v8::Array::New(isolate, nodes.size());
+  for (int i = 0; i < (int)nodes.size(); i++) {
+    v8::Local<v8::Object> obj = v8::Object::New(isolate);
+    auto checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "nodeId").ToLocalChecked(),
+        v8::Number::New(isolate, nodes[i].id));
+    checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "start").ToLocalChecked(),
+        v8::Number::New(isolate, nodes[i].text_start));
+    checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "length").ToLocalChecked(),
+        v8::Number::New(isolate, (nodes[i].text_end - nodes[i].text_start)));
+    checked = highlight_array->Set(isolate->GetCurrentContext(), i, obj);
+  }
+  return highlight_array;
 }
 
 void ReadAnythingAppController::IncrementMetricCount(

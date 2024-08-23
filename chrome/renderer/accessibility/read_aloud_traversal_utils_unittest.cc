@@ -13,6 +13,9 @@ class ReadAnythingReadAloudTraversalUtilsTest : public testing::Test {
   ReadAnythingReadAloudTraversalUtilsTest() = default;
 };
 
+using testing::ElementsAre;
+using testing::IsEmpty;
+
 TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
        GetNextSentence_ReturnsCorrectIndex) {
   const std::u16string first_sentence = u"This is a normal sentence. ";
@@ -107,4 +110,111 @@ TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
 
   EXPECT_FALSE(IsOpeningPunctuation(close_parentheses));
   EXPECT_FALSE(IsOpeningPunctuation(close_bracket));
+}
+
+testing::Matcher<ReadAloudTextSegment> TextSegmentMatcher(ui::AXNodeID id,
+                                                          int text_start,
+                                                          int text_end) {
+  return testing::AllOf(
+      ::testing::Field(&ReadAloudTextSegment::id, ::testing::Eq(id)),
+      ::testing::Field(&ReadAloudTextSegment::text_start,
+                       ::testing::Eq(text_start)),
+      ::testing::Field(&ReadAloudTextSegment::text_end,
+                       ::testing::Eq(text_end)));
+}
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
+       GetSegmentsForRange_OnlyOneNode_ReturnsCorrectSegments) {
+  a11y::ReadAloudCurrentGranularity current_granularity;
+  // Text indices:                           012345678901234567890123
+  current_granularity.AddText(101, 12, 36, u"Ice-cream candy and cake");
+  std::vector<ReadAloudTextSegment> out =
+      current_granularity.GetSegmentsForRange(2, 5);
+  EXPECT_THAT(out, ElementsAre(TextSegmentMatcher(101, 14, 17)));
+}
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
+       GetSegmentsForRange_TwoNodes_ReturnsCorrectSegments) {
+  a11y::ReadAloudCurrentGranularity current_granularity;
+  // Text indices:                           01234567890123456
+  current_granularity.AddText(101, 12, 22, u"Ice-cream ");
+  current_granularity.AddText(102, 40, 55, u"candy and cakes");
+
+  std::vector<ReadAloudTextSegment> out;
+  // Within node 1
+  out = current_granularity.GetSegmentsForRange(0, 0);
+  EXPECT_THAT(out, IsEmpty());  // Empty return for empty range.
+
+  // Just "I" of "Ice-cream"
+  out = current_granularity.GetSegmentsForRange(0, 1);
+  // Should return the first segment, and offsets 12 to 13, since the first
+  // segment has a text_start of 12.
+  EXPECT_THAT(out, ElementsAre(TextSegmentMatcher(101, 12, 13)));
+
+  // "Ice" of "Ice-cream"
+  out = current_granularity.GetSegmentsForRange(0, 3);
+  EXPECT_THAT(out, ElementsAre(TextSegmentMatcher(101, 12, 15)));
+
+  // Edge (final " " in "Ice-cream "), should return just that last offset (21
+  // to 22), since 22 is the end of the first segment.
+  out = current_granularity.GetSegmentsForRange(9, 10);
+  EXPECT_THAT(out, ElementsAre(TextSegmentMatcher(101, 21, 22)));
+
+  out = current_granularity.GetSegmentsForRange(10, 10);
+  EXPECT_THAT(out, IsEmpty());  // Empty return for empty range.
+
+  // Spanning both nodes. 4-9 is in the first node, and 10-15 is in the second.
+  // Since the first node starts with offset 12 and the second node with offset
+  // 40, the return value should consist of two elements:
+  // Node 1 with text range 12+4 to 12+8+1, and
+  // Node 2 with the range 40+0 to 40+5.
+  out = current_granularity.GetSegmentsForRange(4, 15);
+  EXPECT_THAT(out, ElementsAre(TextSegmentMatcher(101, 16, 22),
+                               TextSegmentMatcher(102, 40, 45)));
+
+  // Within node 2.
+  out = current_granularity.GetSegmentsForRange(10, 11);
+  EXPECT_THAT(out, ElementsAre(TextSegmentMatcher(102, 40, 41)));
+
+  out = current_granularity.GetSegmentsForRange(12, 14);
+  EXPECT_THAT(out, ElementsAre(TextSegmentMatcher(102, 42, 44)));
+
+  // Edge (final "s" in "cakes").
+  out = current_granularity.GetSegmentsForRange(24, 25);
+  EXPECT_THAT(out, ElementsAre(TextSegmentMatcher(102, 54, 55)));
+
+  // Beyond the end, should return empty.
+  out = current_granularity.GetSegmentsForRange(25, 26);
+  EXPECT_THAT(out, IsEmpty());
+}
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
+       GetSegmentsForRange_ManyNodes_ReturnsCorrectSegments) {
+  a11y::ReadAloudCurrentGranularity current_granularity;
+  // Sentence and indices:
+  // Ice-cream candy and cakes and yummy treats for all of us, except you!
+  // 0123456789012345678901234567890123456789012345678901234567890123456789
+  current_granularity.AddText(101, 12, 22, u"Ice-cream ");
+  current_granularity.AddText(102, 40, 56, u"candy and cakes ");
+  current_granularity.AddText(103, 7, 28, u"and yummy treats for ");
+  current_granularity.AddText(104, 16, 26, u"all of us,");
+  current_granularity.AddText(105, 20, 31, u"except you!");
+  std::vector<ReadAloudTextSegment> out =
+      current_granularity.GetSegmentsForRange(4, 50);
+  EXPECT_THAT(out, ElementsAre(TextSegmentMatcher(101, 16, 22),
+                               TextSegmentMatcher(102, 40, 56),
+                               TextSegmentMatcher(103, 7, 28),
+                               TextSegmentMatcher(104, 16, 19)));
+}
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
+       GetSegmentsForRange_OutsideRange_ReturnsCorrectSegments) {
+  a11y::ReadAloudCurrentGranularity current_granularity;
+  // Sentence and indices:
+  // Ice-cream candy and cake
+  // 012345678901234567890123
+  current_granularity.AddText(101, 12, 36, u"Ice-cream candy and cake");
+  std::vector<ReadAloudTextSegment> out =
+      current_granularity.GetSegmentsForRange(38, 45);
+  EXPECT_THAT(out, IsEmpty());
 }

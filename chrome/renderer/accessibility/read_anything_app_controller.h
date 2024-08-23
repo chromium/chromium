@@ -299,16 +299,6 @@ class ReadAnythingAppController
   // segment.
   int GetCurrentTextStartIndex(ui::AXNodeID node_id);
 
-  // Given a node id and the boundary position of the highlight start, return
-  // convert to the starting index that should be used for highlighting the
-  // next granularity.
-  // Note that this is only needed for custom granularity highlighting.
-  // Sentence highlighting is able to be handled directly in WebUI because the
-  // entire speech segment is highlighted at once.
-  // This allows us to correctly position the highlight within the current
-  // text segment.
-  int GetHighlightStartIndex(ui::AXNodeID node_id, int index);
-
   // Returns the Read Aloud ending text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular
   // moment, this will return the length of the node's text. Returns -1 if the
@@ -319,9 +309,18 @@ class ReadAnythingAppController
   // when the active tree changes.
   void RecordNumSelections();
 
-  ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index);
-
-  int GetNextWordHighlightLength(int index);
+  // Given a boundary position within the current granularity, identifies the
+  // nodes that needs to be highlighted (e.g. until the word boundary), and
+  // returns a list containing nodes and the ranges within those nodes. The
+  // ranges are represented as a start offset and a length. Multiple nodes are
+  // returned if the highlight spans over more than one node. This allows us to
+  // correctly position the highlight within the current text segment. The
+  // return value is thus a list containing node id, start, and length.
+  //
+  // Note that this is only needed for custom granularity highlighting. Sentence
+  // highlighting is able to be handled directly in WebUI because the entire
+  // speech segment is highlighted at once.
+  v8::Local<v8::Value> GetHighlightForCurrentSegmentIndex(int index);
 
   // SetContentForTesting and SetLanguageForTesting are used by
   // ReadAnythingAppTest and thus need to be kept in ReadAnythingAppController

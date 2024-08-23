@@ -1913,25 +1913,29 @@ export class AppElement extends AppElementBase {
     this.removeCurrentHighlight();
     const index = this.wordBoundaryState.speechUtteranceStartIndex +
         this.wordBoundaryState.previouslySpokenIndex;
-    const highlightNode: number =
-        chrome.readingMode.getNodeIdForCurrentSegmentIndex(index);
-    const highlightLength: number =
-        chrome.readingMode.getNextWordHighlightLength(index);
-    const element = this.domNodeToAxNodeIdMap_.keyFrom(highlightNode);
-    const highlightStartIndex =
-        chrome.readingMode.getHighlightStartIndex(highlightNode, index);
-    const endIndex = highlightStartIndex + highlightLength;
-    if (!element ||
-        isInvalidHighlightForWordHighlighting(
-            element.textContent?.substring(highlightStartIndex, endIndex)
-                .trim())) {
-      return;
+    const highlightNodes =
+        chrome.readingMode.getHighlightForCurrentSegmentIndex(index);
+    let anyHighlighted: boolean = false;
+    for (let i = 0; i < highlightNodes.length; i++) {
+      const highlightNode = highlightNodes[i].nodeId;
+      const highlightLength: number = highlightNodes[i].length;
+      const highlightStartIndex = highlightNodes[i].start;
+      const endIndex = highlightStartIndex + highlightLength;
+      const element = this.domNodeToAxNodeIdMap_.keyFrom(highlightNode);
+      if (!element ||
+          isInvalidHighlightForWordHighlighting(
+              element.textContent?.substring(highlightStartIndex, endIndex)
+                  .trim())) {
+        continue;
+      }
+      anyHighlighted = true;
+      this.highlightCurrentText_(
+          highlightStartIndex, endIndex, element as HTMLElement);
     }
-
-    this.highlightCurrentText_(
-        highlightStartIndex, endIndex, element as HTMLElement);
-
-    this.scrollHighlightIntoView();
+    if (anyHighlighted) {
+      // Only scroll if at least one node was highlighted.
+      this.scrollHighlightIntoView();
+    }
   }
 
   highlightCurrentSentence(

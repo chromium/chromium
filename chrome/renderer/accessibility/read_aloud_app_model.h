@@ -108,8 +108,6 @@ class ReadAloudAppModel {
   // segment.
   int GetCurrentTextStartIndex(const ui::AXNodeID& node_id);
 
-  int GetHighlightStartIndex(const ui::AXNodeID& node_id, int index);
-
   // Returns the Read Aloud ending text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular
   // moment, this will return the length of the node's text. Returns -1 if the
@@ -118,26 +116,22 @@ class ReadAloudAppModel {
 
   void ResetReadAloudState();
 
-  // Given a text index for the current granularity, return the AXNodeID for
-  // that part of the text.
+  // Given a text index for the current granularity, return the nodes and the
+  // corresponding text ranges for that part of the text. The text ranges
+  // consist of start and end offsets within each node.
+  //
   // For example, if a current granularity segment has text:
   // "Hello darkness, my old friend."
   // Composed of nodes:
-  // Node: {id: 113, text: "Hello darkness, "}
-  // Node: {id: 207, text: "my old friend."}
-  // Then GetNodeIdForCurrentSegmentIndex for index=0-16 will return "113"
-  // and for index=17-29 will return "207"
-  ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index) const;
-
-  // Starting at the given index, return the length of the next word in the
-  // current granularity.
-  // e.g. if the current granularity is "I've come to talk with you again."...
-  // A start index of "0" will return "3" to correspond to "I've"
-  // And a start index of "10" will return "2" to correspond to "to."
-  // This method is only forward-looking, so if an index is in the middle of a
-  // current word, the remaining length for that word will be returned.
-  // e.g. "1" will return "2" to "'ve"
-  int GetNextWordHighlightLength(int start_index);
+  // Node: {id: 113, text: "Hello dark"}
+  // Node: {id: 207, text: "ness, my old friend."}
+  // Then GetHighlightForCurrentSegmentIndex for index=6 will return the
+  // following nodes, which correspond to the word "darkness, ":
+  //    [{"113", 6, 10}, {"207", 0, 6}]
+  // For index=17, which corresponds to the word "my ", will return:
+  //    [{"207", 6, 9}].
+  std::vector<ReadAloudTextSegment> GetHighlightForCurrentSegmentIndex(
+      int index) const;
 
   // Updates the session count for the given metric name using
   // SingleSampleMetric. These are then logged once on destruction.
