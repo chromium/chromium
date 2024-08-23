@@ -4851,10 +4851,6 @@
       base_feature: "none",
     },
     {
-      name: "WebSocketHTTPURL",
-      status: "stable",
-    },
-    {
       name: "WebSocketStream",
       status: "stable",
     },

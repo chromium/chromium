@@ -42,8 +42,7 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
   // and not match document encoding.
   url_ = KURL(execution_context->BaseURL(), url);
 
-  if (RuntimeEnabledFeatures::WebSocketHTTPURLEnabled(execution_context) &&
-      url_.IsValid()) {
+  if (url_.IsValid()) {
     if (url_.ProtocolIs("http")) {
       url_.SetProtocol("ws");
     } else if (url_.ProtocolIs("https")) {
