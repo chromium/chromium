@@ -448,6 +448,7 @@ QuickAnswersView::QuickAnswersView(
   set_suppress_default_focus_handling();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  UpdateAccessibleName();
 }
 
 QuickAnswersView::~QuickAnswersView() = default;
@@ -482,15 +483,16 @@ views::FocusTraversable* QuickAnswersView::GetPaneFocusTraversable() {
   return focus_search_.get();
 }
 
-void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void QuickAnswersView::UpdateAccessibleName() {
   // The view itself is not focused for retry-mode, so should not be announced
   // by the screen reader.
   if (retry_view_->GetVisible()) {
-    node_data->SetNameExplicitlyEmpty();
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     return;
   }
 
-  node_data->SetName(
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
@@ -524,6 +526,7 @@ void QuickAnswersView::SwitchTo(views::View* view) {
 
   loading_view_->SetVisible(view == loading_view_);
   retry_view_->SetVisible(view == retry_view_);
+  UpdateAccessibleName();
   result_view_->SetVisible(view == result_view_);
 }
 

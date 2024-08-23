@@ -276,7 +276,7 @@ TEST_F(EditorMenuViewTest, AccessibleProperties) {
 
   editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
-  EXPECT_EQ(editor_menu_view->GetViewAccessibility().GetCachedName(),
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Rewrite");
 
   // Write Editor Mode
@@ -290,7 +290,7 @@ TEST_F(EditorMenuViewTest, AccessibleProperties) {
 
   editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
-  EXPECT_EQ(editor_menu_view->GetViewAccessibility().GetCachedName(),
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Help me write");
 }
 
@@ -311,7 +311,7 @@ TEST_F(EditorMenuViewI18nEnabledTest, AccessibleProperties) {
 
   editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
-  EXPECT_EQ(editor_menu_view->GetViewAccessibility().GetCachedName(),
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_EDITOR_MENU_REWRITE_CARD_TITLE));
 
   // Write Editor Mode
@@ -325,7 +325,7 @@ TEST_F(EditorMenuViewI18nEnabledTest, AccessibleProperties) {
 
   editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
-  EXPECT_EQ(editor_menu_view->GetViewAccessibility().GetCachedName(),
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_EDITOR_MENU_WRITE_CARD_TITLE));
 }
 

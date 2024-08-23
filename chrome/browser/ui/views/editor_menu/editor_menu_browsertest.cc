@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nDisabledTest,
   ASSERT_TRUE(promo_card);
   promo_card->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
-  EXPECT_EQ(promo_card->GetViewAccessibility().GetCachedName(),
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Write faster and with more confidence");
 }
 
@@ -490,6 +490,6 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nEnabledTest,
   ASSERT_TRUE(promo_card);
   promo_card->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
-  EXPECT_EQ(promo_card->GetViewAccessibility().GetCachedName(),
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE));
 }

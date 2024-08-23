@@ -77,7 +77,6 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   bool HasFocus() const override;
   void OnFocus() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size GetMaximumSize() const override;
   void UpdateBoundsForQuickAnswers() override;
 
@@ -117,6 +116,8 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   // Invoked when user clicks the phonetics audio button.
   void OnPhoneticsAudioButtonPressed(
       const quick_answers::PhoneticsInfo& phonetics_info);
+
+  void UpdateAccessibleName();
 
   base::WeakPtr<QuickAnswersUiController> controller_;
   std::string title_;

@@ -17,12 +17,15 @@
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/view_utils.h"
 
@@ -539,6 +542,36 @@ TEST_F(QuickAnswersViewsTest, UnitConversion) {
   ASSERT_TRUE(result_view->GetVisible());
   EXPECT_EQ(result_view->GetFirstLineText(), kSourceTextU16);
   EXPECT_EQ(result_view->GetSecondLineText(), kResultTextU16);
+}
+
+TEST_F(QuickAnswersViewsTest, AccessibleProperties) {
+  FakeOnRetryPressed();
+  CreateQuickAnswersView(GetAnchorBounds(), /*is_internal=*/false);
+
+  TriggerNetworkError();
+
+  // When RetryView is visible, accessible name for QuickAnswersView should be
+  // set to empty.
+  RetryView* retry_view = GetQuickAnswersView()->GetRetryViewForTesting();
+  EXPECT_TRUE(retry_view->GetVisible());
+  ui::AXNodeData data;
+  GetQuickAnswersView()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            std::u16string());
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom),
+            static_cast<int>(ax::mojom::NameFrom::kAttributeExplicitlyEmpty));
+
+  // When RetryView is not visible, accessible name for QuickAnswersView should
+  // be set to non-empty pre-determined value.
+  retry_view = GetQuickAnswersView()->GetRetryViewForTesting();
+  GetEventGenerator()->MoveMouseTo(
+      retry_view->retry_label_button()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(retry_view->GetVisible());
+  data = ui::AXNodeData();
+  GetQuickAnswersView()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
 }  // namespace quick_answers
