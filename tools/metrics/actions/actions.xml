@@ -42989,6 +42989,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.WhatsNew.BrowserCommandExecuted">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    A Browser Command was executed from a What's New Module.
+  </description>
+</action>
+
 <action name="UserEducation.WhatsNew.EditionShown">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>

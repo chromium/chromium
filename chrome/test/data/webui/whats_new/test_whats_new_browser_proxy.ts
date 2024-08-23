@@ -28,6 +28,7 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
       'recordScrollDepth',
       'recordTimeOnPage',
       'recordModuleLinkClicked',
+      'recordBrowserCommandExecuted',
     ]);
 
     this.url_ = {url};
@@ -68,6 +69,10 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
 
   recordModuleLinkClicked(moduleName: string, position: ModulePosition) {
     this.methodCalled('recordModuleLinkClicked', moduleName, position);
+  }
+
+  recordBrowserCommandExecuted() {
+    this.methodCalled('recordBrowserCommandExecuted');
   }
 }
 

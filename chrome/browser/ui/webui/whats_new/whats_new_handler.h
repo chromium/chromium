@@ -53,6 +53,7 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
   void RecordTimeOnPage(base::TimeDelta time) override;
   void RecordModuleLinkClicked(const std::string& module_name,
                                whats_new::mojom::ModulePosition) override;
+  void RecordBrowserCommandExecuted() override;
 
   // Makes a request to show a HaTS survey.
   void TryShowHatsSurveyWithTimeout();

@@ -76,6 +76,9 @@ interface PageHandler {
 
   // Record metric for a click event within a module.
   RecordModuleLinkClicked(string module_name, ModulePosition position);
+
+  // Record metric when browser commands are executed.
+  RecordBrowserCommandExecuted();
 };
 
 // WebUI-side handler for requests from the browser.
