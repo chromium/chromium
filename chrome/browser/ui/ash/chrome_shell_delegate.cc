@@ -45,7 +45,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/ui/ash/back_gesture_contextual_nudge_delegate.h"
+#include "chrome/browser/ui/ash/back_gesture/back_gesture_contextual_nudge_delegate.h"
 #include "chrome/browser/ui/ash/boca/chrome_tab_strip_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/chrome_accelerator_prefs_delegate.h"

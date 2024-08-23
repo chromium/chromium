@@ -1,0 +1,11 @@
+include_rules = [
+  "-chrome",
+
+  "+chrome/browser/ui/ash/back_gesture",
+
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/tabs",
+  "+chrome/browser/ui/views/frame",
+  "+chrome/test/base",
+]
