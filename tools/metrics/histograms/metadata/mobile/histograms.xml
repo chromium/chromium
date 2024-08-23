@@ -627,6 +627,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.DuplicatePreUnsubscribeRealDelay"
+    units="ms" expires_after="2025-01-26">
+  <owner>engedy@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Recorded for each `PRE_UNSUBSCRIBE` intent that is identified as a
+    duplicate; and measures the time elapsed starting when the most recent
+    non-duplicate `PRE_UNSUBSCRIBE` intent was dispatched and stopping when this
+    duplicate intent is dispatched.
+
+    Measure time as `elapsedRealtime`, which includes time spent in power-saving
+    modes and/or display being dark, to approximate delays as perceived by the
+    user.
+  </summary>
+</histogram>
+
+<histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.IsDuplicatePreUnsubscribe"
     enum="Boolean" expires_after="2025-01-26">
   <owner>engedy@chromium.org</owner>

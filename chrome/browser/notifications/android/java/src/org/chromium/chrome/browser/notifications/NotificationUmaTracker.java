@@ -612,6 +612,18 @@ public class NotificationUmaTracker {
     }
 
     /**
+     * Records the time, as perceived by the user, that has elapsed between the most recent
+     * non-duplicate `PRE_UNSUBSCRIBE` intent and the current, duplicate `PRE_UNSUBSCRIBE` intent,
+     * including time spent in power-saving modes and/or display being dark.
+     */
+    public void recordDuplicatePreUnsubscribeRealDelay(long delayMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "DuplicatePreUnsubscribeRealDelay",
+                delayMillis);
+    }
+
+    /**
      * Records whether the Java global state was preserved between `PRE_UNSUBSCRIBE` and the
      * `UNDO_UNSUBSCRIBE`/`COMMIT_UNSUBSCRIBE_*` events.
      */

@@ -132,6 +132,11 @@ public class NotificationPlatformBridge {
             sOriginsWithProvisionallyRevokedPermissions =
                     new HashMap<String, Map<String, Notification>>();
 
+    // The `realtimeMillis` timestamp corresponding to the last time the pre-native processing for
+    // the `PRE_UNSUBSCRIBE` intent was started. Used to measure the time, as perceived by the user,
+    // that elapses until we see a duplicate intent being dispatched.
+    private static long sLastPreUnsubscribePreNativeTaskStartRealMillis = -1;
+
     private TrustedWebActivityClient mTwaClient;
 
     /** Encapsulates attributes that identify a notification and where it originates from. */
@@ -1323,12 +1328,18 @@ public class NotificationPlatformBridge {
         NotificationUmaTracker.getInstance()
                 .recordIsDuplicatePreUnsubscribe(duplicatePreUnsubscribe);
         if (duplicatePreUnsubscribe) {
+            assert sLastPreUnsubscribePreNativeTaskStartRealMillis >= 0;
+            NotificationUmaTracker.getInstance()
+                    .recordDuplicatePreUnsubscribeRealDelay(
+                            taskStartRealtimeMillis
+                                    - sLastPreUnsubscribePreNativeTaskStartRealMillis);
             return;
         }
 
         var otherNotificationsBackups = new HashMap<String, Notification>();
         sOriginsWithProvisionallyRevokedPermissions.put(
                 identifyingAttributes.origin, otherNotificationsBackups);
+        sLastPreUnsubscribePreNativeTaskStartRealMillis = taskStartRealtimeMillis;
 
         Predicate<NotificationWrapper> isTappedNotification =
                 (nw -> {
