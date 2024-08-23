@@ -24,6 +24,8 @@ namespace content {
 class DigitalIdentityProvider;
 class RenderFrameHost;
 
+enum class Protocol { kUnknown, kOpenid4vp, kPreview };
+
 // DigitalIdentityRequestImpl handles mojo connections from the renderer to
 // fulfill digital identity requests.
 //
@@ -43,6 +45,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   static std::optional<DigitalIdentityInterstitialType> ComputeInterstitialType(
       const url::Origin& rp_origin,
       const DigitalIdentityProvider* provider,
+      Protocol protocol,
       const data_decoder::DataDecoder::ValueOrError& request);
 
   DigitalIdentityRequestImpl(const DigitalIdentityRequestImpl&) = delete;
@@ -89,6 +92,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
 
   // Called when the request JSON has been parsed.
   void OnRequestJsonParsed(
+      Protocol protocol,
       std::string request_to_send,
       data_decoder::DataDecoder::ValueOrError parsed_result);
 
