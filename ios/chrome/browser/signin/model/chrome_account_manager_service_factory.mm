@@ -47,11 +47,12 @@ ChromeAccountManagerServiceFactory::BuildServiceInstanceFor(
     // managed identities.
     // TODO(crbug.com/331783685): Need a better implementation to avoid using
     // the profile name and a better mapping account<->profile mapping.
-    ChromeBrowserStateManager* manager =
-        GetApplicationContext()->GetChromeBrowserStateManager();
-    BrowserStateInfoCache* info_cache = manager->GetBrowserStateInfoCache();
-    std::string profile_name = chrome_browser_state->GetBrowserStateName();
-    profile_index = info_cache->GetIndexOfBrowserStateWithName(profile_name);
+    const std::string& profile_name =
+        chrome_browser_state->GetBrowserStateName();
+    profile_index = GetApplicationContext()
+                        ->GetProfileManager()
+                        ->GetProfileAttributesStorage()
+                        ->GetIndexOfBrowserStateWithName(profile_name);
   }
   return std::make_unique<ChromeAccountManagerService>(
       GetApplicationContext()->GetLocalState(), profile_index);

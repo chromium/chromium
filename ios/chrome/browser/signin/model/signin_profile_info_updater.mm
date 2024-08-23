@@ -9,6 +9,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
@@ -38,36 +39,58 @@ void SigninBrowserStateInfoUpdater::Shutdown() {
 }
 
 void SigninBrowserStateInfoUpdater::UpdateBrowserStateInfo() {
-  ChromeBrowserStateManager* browser_state_manager =
-      GetApplicationContext()->GetChromeBrowserStateManager();
-  BrowserStateInfoCache* cache =
-      browser_state_manager->GetBrowserStateInfoCache();
-  size_t index = cache->GetIndexOfBrowserStateWithName(browser_state_name_);
+  ProfileAttributesStorageIOS* storage = GetApplicationContext()
+                                             ->GetProfileManager()
+                                             ->GetProfileAttributesStorage();
 
-  if (index == std::string::npos)
+  // TODO(crbug.com/361551908): SigninBrowserStateInfoUpdater is created as
+  // part of the initialisation of the ProfileIOS. ProfileManagerIOS does not
+  // register the Profile with the ProfileAttributesStorageIOS before the end
+  // of the initialisation and UpdateBrowserStateInfo() is called during the
+  // constructor. All this together mean that the ProfileAttributesStorageIOS
+  // may not know the ProfileIOS in certain case. This should be fixed, but
+  // until this happen, return early if the Profile is not found. This is okay
+  // because ProfileManagerIOS duplicate this code (this duplicate logic must
+  // also be remove).
+  const size_t index =
+      storage->GetIndexOfBrowserStateWithName(browser_state_name_);
+  if (index == std::string::npos) {
     return;
-
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    CoreAccountInfo account_info =
-        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    cache->SetAuthInfoOfBrowserStateAtIndex(index, account_info.gaia,
-                                            account_info.email);
-  } else {
-    cache->SetAuthInfoOfBrowserStateAtIndex(index, /*gaia_id=*/std::string(),
-                                            /*user_name=*/std::string());
   }
+
+  storage->UpdateAttributesForProfileAtIndex(
+      index, base::BindOnce(
+                 [](CoreAccountInfo info, ProfileAttributesIOS attr) {
+                   attr.SetAuthenticationInfo(info.gaia, info.email);
+                   return attr;
+                 },
+                 identity_manager_->GetPrimaryAccountInfo(
+                     signin::ConsentLevel::kSignin)));
 }
 
 void SigninBrowserStateInfoUpdater::OnErrorChanged() {
-  BrowserStateInfoCache* cache = GetApplicationContext()
-                                     ->GetChromeBrowserStateManager()
-                                     ->GetBrowserStateInfoCache();
-  size_t index = cache->GetIndexOfBrowserStateWithName(browser_state_name_);
-  if (index == std::string::npos)
-    return;
+  ProfileAttributesStorageIOS* storage = GetApplicationContext()
+                                             ->GetProfileManager()
+                                             ->GetProfileAttributesStorage();
 
-  cache->SetBrowserStateIsAuthErrorAtIndex(
-      index, signin_error_controller_->HasError());
+  // TODO(crbug.com/361551908): workaround similar to UpdateBrowserStateInfo().
+  // Probably unnecessary as OnErrorChanged() is not called by the constructor.
+  const size_t index =
+      storage->GetIndexOfBrowserStateWithName(browser_state_name_);
+  if (index == std::string::npos) {
+    return;
+  }
+
+  GetApplicationContext()
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
+      ->UpdateAttributesForProfileAtIndex(
+          index, base::BindOnce(
+                     [](bool has_error, ProfileAttributesIOS attr) {
+                       attr.SetHasAuthenticationError(has_error);
+                       return attr;
+                     },
+                     signin_error_controller_->HasError()));
 }
 
 void SigninBrowserStateInfoUpdater::OnPrimaryAccountChanged(
