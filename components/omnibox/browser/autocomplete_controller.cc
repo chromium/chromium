@@ -2345,7 +2345,17 @@ void AutocompleteController::
         ApplyPiecewiseScoringTransform(p_value, *break_points_for_transform) +
         relevance_bias;
 
-    match.shortcut_boosted = match.relevance > grouping_threshold;
+    // Shortcut boosting should only be applied to shortcut suggestions that
+    // have been used (visited) more than once. This logic will also overwrite
+    // whatever value was originally set by ShortcutsProvider for the
+    // `shortcut_boosted` property.
+    const bool is_shortcut = match.provider && match.provider->type() ==
+                                                   ProviderType::TYPE_SHORTCUTS;
+    const bool has_enough_visits = match.scoring_signals.has_value() &&
+                                   match.scoring_signals->has_visit_count() &&
+                                   match.scoring_signals->visit_count() >= 2;
+    match.shortcut_boosted = is_shortcut && has_enough_visits &&
+                             match.relevance > grouping_threshold;
   }
 
   // Record the percentage of matches that were assigned non-null scores by
