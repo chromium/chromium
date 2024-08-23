@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"

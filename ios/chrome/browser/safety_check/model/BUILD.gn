@@ -100,6 +100,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
