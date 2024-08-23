@@ -1227,13 +1227,13 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(bool* result) {
     gr_context_thread_safe_ = gr_context->threadSafeProxy();
   }
   graphite_recorder_ = shared_context_state->viz_compositor_graphite_recorder();
-  // On Dawn/Metal and Dawn/D3D, it is possible to use non-volatile promise
-  // images as Dawn textures are cached between BeginAccess() calls on a
-  // per-usage basis. Other platforms/backends cannot use non-volatile promise
-  // images as Dawn textures live only for the duration of a scoped access.
+  // On Dawn/Metal, it is possible to use non-volatile promise images as Dawn
+  // textures are cached between BeginAccess() calls on a per-usage basis. Other
+  // platforms/backends cannot use non-volatile promise images as Dawn textures
+  // live only for the duration of a scoped access.
+  // TODO(360145717): re-enable non-volatile promise images for Dawn/D3D.
   const bool can_use_non_volatile_images =
-      shared_context_state->IsGraphiteDawnMetal() ||
-      shared_context_state->IsGraphiteDawnD3D();
+      shared_context_state->IsGraphiteDawnMetal();
   graphite_use_volatile_promise_images_ = can_use_non_volatile_images
                                               ? skgpu::graphite::Volatile::kNo
                                               : skgpu::graphite::Volatile::kYes;
