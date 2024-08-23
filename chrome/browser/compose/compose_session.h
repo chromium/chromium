@@ -226,6 +226,8 @@ class ComposeSession
 
   void SetSkipFeedbackUiForTesting(bool allowed);
 
+  bool HasExpired();
+
  private:
   void ProcessError(compose::EvalLocation eval_location,
                     compose::mojom::ComposeStatus status,

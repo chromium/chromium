@@ -77,7 +77,8 @@ enum class ComposeFreOrMsbbSessionCloseReason {
   kAckedOrAcceptedWithoutInsert = 2,
   kAckedOrAcceptedWithInsert = 3,
   kReplacedWithNewSession = 4,
-  kMaxValue = kReplacedWithNewSession,
+  kExceededMaxDuration = 5,
+  kMaxValue = kExceededMaxDuration,
 };
 
 // Keep in sync with ComposeSessionCloseReasonType in
@@ -88,7 +89,8 @@ enum class ComposeSessionCloseReason {
   kAbandoned = 2,
   kReplacedWithNewSession = 3,
   kCanceledBeforeResponseReceived = 4,
-  kMaxValue = kCanceledBeforeResponseReceived,
+  kExceededMaxDuration = 5,
+  kMaxValue = kExceededMaxDuration,
 };
 
 // Keep in sync with ComposeSessionEventCounts in

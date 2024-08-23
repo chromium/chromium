@@ -159,6 +159,11 @@ Config::Config() {
   if (!enabled_countries_from_finch.empty()) {
     enabled_countries = enabled_countries_from_finch;
   }
+
+  session_max_allowed_lifetime =
+      base::Minutes(base::GetFieldTrialParamByFeatureAsInt(
+          features::kEnableCompose, "session_max_allowed_lifetime_minutes",
+          session_max_allowed_lifetime.InMinutes()));
 }
 
 Config::Config(const Config& other) = default;

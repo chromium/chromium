@@ -253,11 +253,11 @@ void ChromeComposeClient::ShowComposeDialog(
   std::string selected_text =
       base::UTF16ToUTF8(RemoveLastCharIfInvalid(trigger_field.selected_text()));
 
-  // We only want to resume if there is an existing session and the popup was
-  // clicked or the selection is empty. If the context menu is clicked with a
-  // selection we start a new session using the selection.
+  // We only want to resume if there is an existing, unexpired session and the
+  // popup was clicked or the selection is empty. If the context menu is clicked
+  // with a selection we start a new session using the selection.
   bool popup_clicked = ui_entry_point == EntryPoint::kAutofillPopup;
-  bool resume_current_session = HasSession(active_compose_ids_.value().first) &&
+  bool resume_current_session = ActiveFieldHasUnexpiredSession() &&
                                 (popup_clicked || selected_text.empty());
 
   if (resume_current_session) {
@@ -429,29 +429,39 @@ void ChromeComposeClient::CreateNewSession(
     std::string_view selected_text,
     bool popup_clicked) {
   ComposeSession* current_session;
-  bool has_session = HasSession(active_compose_ids_.value().first);
-  if (has_session) {
+  autofill::FieldGlobalId trigger_field_id = active_compose_ids_.value().first;
+  if (HasSession(trigger_field_id)) {
+    current_session = sessions_.at(trigger_field_id).get();
+
     // Set the final state for the existing session which will be closed to
     // start a new one.
-    base::RecordAction(base::UserMetricsAction(
-        "Compose.EndedSession.NewSessionWithSelectedText"));
-    SetSessionCloseReason(
-        compose::ComposeSessionCloseReason::kReplacedWithNewSession);
-    // Set the equivalent close reason if the existing session was in a
-    // consent state.
-    auto it = sessions_.find(active_compose_ids_.value().first);
-    current_session = it->second.get();
+    compose::ComposeFreOrMsbbSessionCloseReason fre_or_msbb_close_reason;
+    if (current_session->HasExpired()) {
+      base::RecordAction(
+          base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
+      SetSessionCloseReason(
+          compose::ComposeSessionCloseReason::kExceededMaxDuration);
+      fre_or_msbb_close_reason =
+          compose::ComposeFreOrMsbbSessionCloseReason::kExceededMaxDuration;
+    } else {
+      base::RecordAction(base::UserMetricsAction(
+          "Compose.EndedSession.NewSessionWithSelectedText"));
+      SetSessionCloseReason(
+          compose::ComposeSessionCloseReason::kReplacedWithNewSession);
+      fre_or_msbb_close_reason =
+          compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession;
+    }
+    // If the existing session has not accepted consent then set the equivalent
+    // close reason here. If consent was accepted in this session the close
+    // reason will remain as |kAckedOrAcceptedWithoutInsert|.
     if (!current_session->get_fre_complete()) {
-      SetFirstRunSessionCloseReason(
-          compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession);
+      SetFirstRunSessionCloseReason(fre_or_msbb_close_reason);
     }
     if (!current_session->get_current_msbb_state()) {
-      SetMSBBSessionCloseReason(
-          compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession);
+      SetMSBBSessionCloseReason(fre_or_msbb_close_reason);
     }
   }
 
-  // Now create and set up a new session.
   auto new_session = std::make_unique<ComposeSession>(
       &GetWebContents(), GetModelExecutor(), GetSessionId(),
       GetInnerTextProvider(), trigger_field.global_id(),
@@ -623,6 +633,13 @@ compose::PageUkmTracker* ChromeComposeClient::GetPageUkmTracker() {
   return page_ukm_tracker_.get();
 }
 
+bool ChromeComposeClient::ActiveFieldHasUnexpiredSession() {
+  if (ComposeSession* current_session = GetSessionForActiveComposeField()) {
+    return !current_session->HasExpired();
+  }
+  return false;
+}
+
 bool ChromeComposeClient::ShouldTriggerPopup(
     const autofill::FormData& form_data,
     const autofill::FormFieldData& form_field_data,
@@ -633,9 +650,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   active_compose_ids_ = std::make_optional<FieldIdentifier>(
       form_field_data.global_id(), form_field_data.renderer_form_id());
 
-  bool ongoing_session = HasSession(form_field_data.global_id());
-
-  if (ongoing_session) {
+  if (ActiveFieldHasUnexpiredSession()) {
     if (compose_enabling_->ShouldTriggerSavedStatePopup(trigger_source)) {
       last_popup_trigger_source_ = trigger_source;
       return true;

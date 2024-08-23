@@ -139,6 +139,11 @@ struct Config {
       "pk", "sg", "tz", "ug", "us", "zm", "zw",
   };
 
+  // The threshold for the lifetime of a Compose session. A session whose
+  // lifetime has exceeded this threshold will be replaced with a new session
+  // the next time there is an attempt to resume it.
+  base::TimeDelta session_max_allowed_lifetime = base::Minutes(30);
+
   Config();
   Config(const Config& other);
   ~Config();

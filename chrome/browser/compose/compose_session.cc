@@ -1208,6 +1208,7 @@ void ComposeSession::SetCloseReason(
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
     case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
     case compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
+    case compose::ComposeSessionCloseReason::kExceededMaxDuration:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
       session_events_.close_clicked = true;
       break;
@@ -1223,6 +1224,11 @@ void ComposeSession::SetCloseReason(
       }
       break;
   }
+}
+
+bool ComposeSession::HasExpired() {
+  return session_duration_->Elapsed() >
+         compose::GetComposeConfig().session_max_allowed_lifetime;
 }
 
 void ComposeSession::SetQualityLogEntryUponError(

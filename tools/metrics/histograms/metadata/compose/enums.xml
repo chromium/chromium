@@ -64,6 +64,11 @@ chromium-metrics-reviews@google.com.
     A new session was created for the same text field before the previous one
     was inserted. The FRE/MSBB wasn't acknowledged/accepted.
   </int>
+  <int value="5" label="Session expired">
+    The existing session was destroyed for exceeding the maximum allowed session
+    lifetime, and was replaced by a new session. The FRE/MSBB wasn't
+    acknowledged/accepted.
+  </int>
 </enum>
 
 <enum name="ComposeInnerTextNodeOffset">
@@ -146,6 +151,10 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="4" label="Closed while waiting response">
     Session was closed while waiting for a model response.
+  </int>
+  <int value="5" label="Session expired">
+    The existing session was destroyed for exceeding the maximum allowed session
+    lifetime, and was replaced by a new session.
   </int>
 </enum>
 

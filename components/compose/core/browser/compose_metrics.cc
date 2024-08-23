@@ -82,6 +82,7 @@ bool HasAckedFreOrAcceptedMsbb(ComposeFreOrMsbbSessionCloseReason reason) {
     case ComposeFreOrMsbbSessionCloseReason::kCloseButtonPressed:
     case ComposeFreOrMsbbSessionCloseReason::kAbandoned:
     case ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession:
+    case ComposeFreOrMsbbSessionCloseReason::kExceededMaxDuration:
       return false;
   }
 }
@@ -325,6 +326,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
     case ComposeSessionCloseReason::kAbandoned:
     case ComposeSessionCloseReason::kReplacedWithNewSession:
     case ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
+    case compose::ComposeSessionCloseReason::kExceededMaxDuration:
       status = ".Ignored";
   }
 

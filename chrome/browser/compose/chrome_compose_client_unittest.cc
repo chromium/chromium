@@ -3094,6 +3094,126 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
   histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 0);
 }
 
+// Tests that the dialog close button logs to the correct corresponding
+// histograms.
+TEST_F(ChromeComposeClientTest, ExpiredSessionHistogramTest) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  // ElapsedTimer in test will return an elapsed time of 1337ms by default.
+  // Set the session lifetime threshold to be shorter than this to simulate
+  // expiry.
+  config.session_max_allowed_lifetime = base::Seconds(1);
+
+  ShowDialogAndBindMojo();
+  // Show the dialog a second time - this ends the previous session if it is now
+  // expired.
+  ShowDialogAndBindMojo();
+
+  histograms().ExpectUniqueSample(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kExceededMaxDuration, 1);
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.EndedImplicitly"));
+  // Expect that the dialog was shown once.
+  histograms().ExpectUniqueSample(
+      compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 1, 1);
+
+  // Check expected session duration metrics
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".FRE"), 0);
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".MSBB"), 0);
+  histograms().ExpectUniqueTimeSample(
+      compose::kComposeSessionDuration + std::string(".Ignored"),
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms().ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
+
+  // No FRE related close reasons should have been recorded.
+  histograms().ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
+  // No MSBB related close reasons should have been recorded.
+  histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 0);
+
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+}
+
+TEST_F(ChromeComposeClientTest, ExpiredSessionMSBBHistogramTest) {
+  SetPrefsForComposeMSBBState(false);
+
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  // ElapsedTimer in test will return an elapsed time of 1337ms by default.
+  // Set the session lifetime threshold to be shorter than this to simulate
+  // expiry.
+  config.session_max_allowed_lifetime = base::Seconds(1);
+
+  ShowDialogAndBindMojo();
+  // Show the dialog a second time - this ends the previous session if it is now
+  // expired.
+  ShowDialogAndBindMojo();
+
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.EndedImplicitly"));
+  histograms().ExpectUniqueSample(
+      compose::kComposeMSBBSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kExceededMaxDuration, 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeMSBBSessionDialogShownCount + std::string(".Ignored"),
+      1,  // Expect that one total MSBB dialog was shown.
+      1);
+}
+
+TEST_F(ChromeComposeClientTest, ExpiredSessionFirstRunHistogramTest) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
+
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  // ElapsedTimer in test will return an elapsed time of 1337ms by default.
+  // Set the session lifetime threshold to be shorter than this to simulate
+  // expiry.
+  config.session_max_allowed_lifetime = base::Seconds(1);
+
+  ShowDialogAndBindMojo();
+  // Show the dialog a second time - this ends the previous session if it is now
+  // expired.
+  ShowDialogAndBindMojo();
+
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.EndedImplicitly"));
+  histograms().ExpectUniqueSample(
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kExceededMaxDuration, 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeFirstRunSessionDialogShownCount +
+          std::string(".Ignored"),
+      1,  // Expect that one total FRE dialog was shown.
+      1);
+}
+
+TEST_F(ChromeComposeClientTest, ExpiredSessionBlocksSavedStateNudgeTest) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+
+  autofill::FormData form_data;
+  form_data.set_url(GetPageUrl());
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
+
+  const autofill::FormFieldData selected_field_data = form_data.fields()[0];
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
+
+  // Start a Compose session on selected field.
+  ShowDialogAndBindMojoWithFieldData(selected_field_data);
+  EXPECT_TRUE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                          trigger_source));
+
+  // ElapsedTimer in test will return an elapsed time of 1337ms by default.
+  // Set the session lifetime threshold to be shorter than this to simulate
+  // expiry.
+  config.session_max_allowed_lifetime = base::Seconds(1);
+  ShowDialogAndBindMojoWithFieldData(selected_field_data);
+  // By default the saved state nudge is shown.
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
+}
+
 TEST_F(ChromeComposeClientTest, CloseButtonMSBBHistogramTest) {
   SetPrefsForComposeMSBBState(false);
   ShowDialogAndBindMojo();
