@@ -490,15 +490,17 @@ void AutofillDriverIOS::OnAutofillManagerStateChanged(
   }
 }
 
-void AutofillDriverIOS::OnAfterFormsSeen(AutofillManager& manager,
-                                         base::span<const FormGlobalId> forms) {
+void AutofillDriverIOS::OnAfterFormsSeen(
+    AutofillManager& manager,
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
   DCHECK_EQ(&manager, manager_.get());
-  if (forms.empty()) {
+  if (updated_forms.empty()) {
     return;
   }
   std::vector<raw_ptr<FormStructure, VectorExperimental>> form_structures;
-  form_structures.reserve(forms.size());
-  for (const FormGlobalId& form : forms) {
+  form_structures.reserve(updated_forms.size());
+  for (const FormGlobalId& form : updated_forms) {
     if (FormStructure* form_structure = manager.FindCachedFormById(form)) {
       form_structures.push_back(form_structure);
     }

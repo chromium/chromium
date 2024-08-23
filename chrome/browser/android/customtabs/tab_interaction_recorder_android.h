@@ -47,6 +47,7 @@ class AutofillObserverImpl : public autofill::AutofillManager::Observer {
                                  autofill::FormGlobalId,
                                  autofill::FieldGlobalId) override;
   void OnAfterFormsSeen(autofill::AutofillManager&,
+                        base::span<const autofill::FormGlobalId>,
                         base::span<const autofill::FormGlobalId>) override;
 
  private:

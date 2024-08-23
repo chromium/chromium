@@ -312,30 +312,38 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
 void AutofillManager::OnFormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {
-  // Erase forms that have been removed from the DOM. This prevents
-  // |form_structures_| from growing up its upper bound
-  // kAutofillManagerMaxFormCacheSize.
-  for (FormGlobalId removed_form : removed_forms)
-    form_structures_.erase(removed_form);
+  auto erase_removed_forms = [&]() {
+    // Erase forms that have been removed from the DOM. This prevents
+    // |form_structures_| from growing up its upper bound
+    // kAutofillManagerMaxFormCacheSize.
+    for (FormGlobalId removed_form : removed_forms) {
+      form_structures_.erase(removed_form);
+    }
+  };
 
-  if (!IsValidFormDataVector(updated_forms)) {
+  if (!IsValidFormDataVector(updated_forms) || !ShouldParseForms()) {
+    NotifyObservers(&Observer::OnBeforeFormsSeen, std::vector<FormGlobalId>{},
+                    removed_forms);
+    erase_removed_forms();
+    NotifyObservers(&Observer::OnAfterFormsSeen, std::vector<FormGlobalId>{},
+                    removed_forms);
     return;
   }
 
-  if (!ShouldParseForms()) {
-    return;
-  }
+  NotifyObservers(&Observer::OnBeforeFormsSeen, GetFormGlobalIds(updated_forms),
+                  removed_forms);
+  erase_removed_forms();
 
-  NotifyObservers(&Observer::OnBeforeFormsSeen,
-                  GetFormGlobalIds(updated_forms));
-  auto ProcessParsedForms = [](AutofillManager& self,
+  auto ProcessParsedForms = [](std::vector<FormGlobalId> removed_forms,
+                               AutofillManager& self,
                                const std::vector<FormData>& parsed_forms) {
     if (!parsed_forms.empty())
       self.OnFormsParsed(parsed_forms);
     self.NotifyObservers(&Observer::OnAfterFormsSeen,
-                         GetFormGlobalIds(parsed_forms));
+                         GetFormGlobalIds(parsed_forms), removed_forms);
   };
-  ParseFormsAsync(updated_forms, base::BindOnce(ProcessParsedForms));
+  ParseFormsAsync(updated_forms,
+                  base::BindOnce(ProcessParsedForms, std::move(removed_forms)));
 }
 
 void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {

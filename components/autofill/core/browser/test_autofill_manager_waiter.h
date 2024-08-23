@@ -164,9 +164,11 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   void OnAfterLanguageDetermined(AutofillManager& manager) override;
 
   void OnBeforeFormsSeen(AutofillManager& manager,
-                         base::span<const FormGlobalId> forms) override;
+                         base::span<const FormGlobalId> updated_forms,
+                         base::span<const FormGlobalId> removed_forms) override;
   void OnAfterFormsSeen(AutofillManager& manager,
-                        base::span<const FormGlobalId> forms) override;
+                        base::span<const FormGlobalId> updated_forms,
+                        base::span<const FormGlobalId> removed_forms) override;
 
   void OnBeforeTextFieldDidChange(AutofillManager& manager,
                                   FormGlobalId form,
@@ -290,13 +292,18 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
   void OnAfterLanguageDetermined(AutofillManager& manager) override {
     MaybeQuit(&Observer::OnAfterLanguageDetermined, manager);
   }
-  void OnBeforeFormsSeen(AutofillManager& manager,
-                         base::span<const FormGlobalId> forms) override {
-    MaybeQuit(&Observer::OnBeforeFormsSeen, manager, forms);
+  void OnBeforeFormsSeen(
+      AutofillManager& manager,
+      base::span<const FormGlobalId> updated_forms,
+      base::span<const FormGlobalId> removed_forms) override {
+    MaybeQuit(&Observer::OnBeforeFormsSeen, manager, updated_forms,
+              removed_forms);
   }
   void OnAfterFormsSeen(AutofillManager& manager,
-                        base::span<const FormGlobalId> forms) override {
-    MaybeQuit(&Observer::OnAfterFormsSeen, manager, forms);
+                        base::span<const FormGlobalId> updated_forms,
+                        base::span<const FormGlobalId> removed_forms) override {
+    MaybeQuit(&Observer::OnAfterFormsSeen, manager, updated_forms,
+              removed_forms);
   }
   void OnBeforeTextFieldDidChange(AutofillManager& manager,
                                   FormGlobalId form,

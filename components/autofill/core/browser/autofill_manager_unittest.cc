@@ -321,9 +321,34 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // does not fire an event.
   test_api(*driver_).SetLifecycleStateAndNotifyObservers(kActive);
 
-  EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g)));
-  manager().OnFormsSeen(forms, /*removed_forms=*/{test::MakeFormGlobalId()});
-  EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g)));
+  std::vector<FormData> invalid_form_array(kMaxListSize + 10, FormData());
+  FormGlobalId id_to_remove = test::MakeFormGlobalId();
+
+  testing::MockFunction<void(int)> check;
+  {
+    testing::InSequence s;
+    EXPECT_CALL(observer, OnBeforeFormsSeen(m, testing::IsEmpty(),
+                                            ElementsAre(id_to_remove)));
+    EXPECT_CALL(observer, OnAfterFormsSeen(m, testing::IsEmpty(),
+                                           ElementsAre(id_to_remove)));
+    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g),
+                                            ElementsAre(id_to_remove)));
+    EXPECT_CALL(check, Call(2));
+    EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g),
+                                           ElementsAre(id_to_remove)));
+  }
+
+  // Invalid `updated_forms` will trigger a call to the observer with empty
+  // `updated_forms`.
+  manager().OnFormsSeen(invalid_form_array, {id_to_remove});
+  check.Call(1);
+  // Since the manager doesn't currently have any form structures cached, no
+  // forms will actually be removed, but calls to
+  // `AutofillManager::Observer::OnBeforeFormsSeen()` and
+  // `AutofillManager::Observer::OnAfterFormsSeen()` should use `id_to_remove`.
+  manager().OnFormsSeen(forms, {id_to_remove});
+  check.Call(2);
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
   task_environment_.RunUntilIdle();

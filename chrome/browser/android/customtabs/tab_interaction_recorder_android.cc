@@ -86,7 +86,8 @@ void AutofillObserverImpl::OnAfterTextFieldDidScroll(autofill::AutofillManager&,
 
 void AutofillObserverImpl::OnAfterFormsSeen(
     AutofillManager& manager,
-    base::span<const autofill::FormGlobalId> forms) {
+    base::span<const autofill::FormGlobalId> updated_forms,
+    base::span<const autofill::FormGlobalId> removed_forms) {
   RenderFrameHost* rfh = RenderFrameHost::FromID(global_id_);
   // Only mark has form associated data for the RFH observed. This is to
   // metigate the fact that AutofillManager will dispatch |OnAfterFormsSeen| to
@@ -97,7 +98,7 @@ void AutofillObserverImpl::OnAfterFormsSeen(
 
   // Check whether the form seen lives in the observed RFH.
   bool forms_in_rfh = false;
-  for (auto form_id : forms) {
+  for (auto form_id : updated_forms) {
     if (form_id.frame_token ==
         autofill::LocalFrameToken(rfh->GetFrameToken().value())) {
       forms_in_rfh = true;

@@ -91,10 +91,14 @@ class AutofillManager
     virtual void OnBeforeLanguageDetermined(AutofillManager& manager) {}
     virtual void OnAfterLanguageDetermined(AutofillManager& manager) {}
 
-    virtual void OnBeforeFormsSeen(AutofillManager& manager,
-                                   base::span<const FormGlobalId> forms) {}
-    virtual void OnAfterFormsSeen(AutofillManager& manager,
-                                  base::span<const FormGlobalId> forms) {}
+    virtual void OnBeforeFormsSeen(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> updated_forms,
+        base::span<const FormGlobalId> removed_forms) {}
+    virtual void OnAfterFormsSeen(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> updated_forms,
+        base::span<const FormGlobalId> removed_forms) {}
 
     virtual void OnBeforeCaretMovedInFormField(AutofillManager& manager,
                                                const FormGlobalId& form,

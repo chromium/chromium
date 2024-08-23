@@ -232,7 +232,8 @@ class AutofillDriverIOS final : public AutofillDriver,
       AutofillManager::LifecycleState old_state,
       AutofillManager::LifecycleState new_state) override;
   void OnAfterFormsSeen(AutofillManager& manager,
-                        base::span<const FormGlobalId> forms) override;
+                        base::span<const FormGlobalId> updated_forms,
+                        base::span<const FormGlobalId> removed_forms) override;
 
   // Logs metrics related to form removal events.
   void RecordFormRemoval(bool submission_detected,

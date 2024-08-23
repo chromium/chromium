@@ -112,13 +112,15 @@ void TestAutofillManagerWaiter::OnAfterLanguageDetermined(
 
 void TestAutofillManagerWaiter::OnBeforeFormsSeen(
     AutofillManager& manager,
-    base::span<const FormGlobalId> forms) {
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
   OnBefore(Event::kFormsSeen);
 }
 
 void TestAutofillManagerWaiter::OnAfterFormsSeen(
     AutofillManager& manager,
-    base::span<const FormGlobalId> forms) {
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
   OnAfter(Event::kFormsSeen);
 }
 
@@ -350,8 +352,10 @@ const FormStructure* WaitForMatchingForm(
       }
     }
 
-    void OnAfterFormsSeen(AutofillManager& manager,
-                          base::span<const FormGlobalId> forms) override {
+    void OnAfterFormsSeen(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> updated_forms,
+        base::span<const FormGlobalId> removed_forms) override {
       DCHECK_EQ(&manager, manager_.get());
       if (const auto* form = FindForm()) {
         matching_form_ = form;
