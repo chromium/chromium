@@ -16,6 +16,8 @@
 // - src/log.c
 // - src/configs/hardware-config.c
 // - src/params.c
+// - src/memory.c
+// - src/mutex.c
 // - src/tables/exp2-k-over-64.c
 // - src/tables/exp2-k-over-2048.c
 // - src/tables/exp2minus-k-over-4.c
@@ -52,10 +54,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   49,  66, 243, 162,  49, 207,  79, 231,
-  183,  58,  71, 242,  32, 201, 176,   9,
-    6,  66, 215,  24,  23,  66, 238,  93,
-  148, 221,   3,  96,  17, 237, 234,  71
+   13, 147, 244, 144,   1,  49, 217, 184,
+  141, 211, 194,  68,  60, 139, 106,  24,
+  247,   4, 162,   8, 107, 114,   3, 206,
+   82,   5, 194,  30, 143, 203,  79, 181
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
