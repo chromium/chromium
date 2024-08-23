@@ -113,6 +113,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // `attached_item` if it's not null.
   void RemoveChip(BirchItem* removed_item, BirchItem* attached_item = nullptr);
 
+  // Re-initializes the chip corresponding to the given `item`.
+  void UpdateChip(BirchItem* item);
+
   // Gets the maximum height of the bar with full chips.
   int GetMaximumHeight() const;
 

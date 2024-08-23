@@ -97,6 +97,11 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   void InitBarWithItems(BirchBarView* bar_view,
                         const std::vector<std::unique_ptr<BirchItem>>& items);
 
+  // Remove the chips corresponding to the given `item` from the bars and fill
+  // in the chips if there are extra items to show. Note that the `item` is not
+  // removed from `items_` list in this method.
+  void RemoveItemChips(BirchItem* item);
+
   // Called when the context menu is closed.
   void OnChipContextMenuClosed();
 
@@ -108,6 +113,15 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
   // Called when the customize suggestion prefs change.
   void OnCustomizeSuggestionsPrefChanged();
+
+  // Called when recevice a lost media item.
+  void OnLostMediaItemReceived();
+
+  // Called when the lost media is removed.
+  void OnLostMediaItemRemoved();
+
+  // Called when the lost media item is updated with the `updated_item`.
+  void OnLostMediaItemUpdated(std::unique_ptr<BirchItem> updated_item);
 
   // Birch items fetched from model.
   std::vector<std::unique_ptr<BirchItem>> items_;

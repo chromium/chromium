@@ -123,6 +123,9 @@ class TestBirchDataProvider : public BirchDataProvider {
 
   void ClearItems() { items_.clear(); }
 
+  // Trigger data provider changed callback.
+  void RunDataProviderChangedCallback() { NotifyDataProviderChanged(); }
+
   // BirchDataProvider:
   void RequestBirchDataFetch() override {
     data_fetched_callback_.Run(
@@ -442,12 +445,13 @@ class BirchBarTest : public AshTestBase {
   }
 
   // Adds `num` lost media items to data source.
-  void SetLostMediaItems(size_t num) {
+  void SetLostMediaItems(size_t num,
+                         const std::u16string& media_title = u"media title") {
     std::vector<BirchLostMediaItem> item_list;
     for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(
           /*source_url=*/GURL("https://www.source.com/"),
-          /*media_title=*/u"media title",
+          /*media_title=*/media_title,
           /*backup_icon=*/std::nullopt,
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing());
@@ -630,6 +634,43 @@ TEST_F(BirchBarTest, NoCrashOnSettingIconAfterShutdown) {
 
   // Trigger setting icon.
   std::move(set_icon).Run();
+}
+
+// Tests that the lost media chip will get updated once the lost media data
+// provider changed.
+TEST_F(BirchBarTest, UpdateLostMediaChip) {
+  // Clear all items and only add one lost media item.
+  birch_client_->Reset();
+  SetLostMediaItems(/*num=*/1, /*media_title=*/u"media 1");
+  EnterOverview();
+
+  // The bar have the only most media chip.
+  const auto& chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  ASSERT_EQ(1u, chips.size());
+
+  auto* lost_media_chip = views::AsViewClass<BirchChipButton>(chips[0]);
+  ASSERT_EQ(BirchItemType::kLostMedia, lost_media_chip->GetItem()->GetType());
+
+  // The chip has expected title string.
+  EXPECT_EQ(u"media 1", lost_media_chip->title_->GetText());
+
+  // Update media item with a new title and notify the data change.
+  SetLostMediaItems(/*num=*/1, /*media_title=*/u"media 2");
+  auto* lost_media_provider =
+      static_cast<TestBirchDataProvider<BirchLostMediaItem>*>(
+          birch_client_->GetLostMediaProvider());
+  lost_media_provider->RunDataProviderChangedCallback();
+
+  // The chip title string should get updated.
+  EXPECT_EQ(u"media 2", lost_media_chip->title_->GetText());
+
+  // Clear the media item and notify data change.
+  SetLostMediaItems(/*num=*/0);
+  lost_media_provider->RunDataProviderChangedCallback();
+
+  // The lost media chip should also be removed.
+  EXPECT_EQ(0u, chips.size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

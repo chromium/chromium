@@ -1796,4 +1796,28 @@ TEST_F(BirchModelTest, MostVisitedItemShownByTime) {
   EXPECT_TRUE(all_items.empty());
 }
 
+// Tests that the lost media items get refetched when received data provider
+// change.
+TEST_F(BirchModelTest, UpdateLostMediaItem) {
+  // Set a lost media data changed callback to birch model.
+  auto* birch_model = Shell::Get()->birch_model();
+  birch_model->SetLostMediaDataChangedCallback(
+      base::DoNothingAs<void(std::unique_ptr<BirchItem>)>());
+
+  // Notify lost media data provider changed.
+  auto& client = stub_birch_client_;
+  static_cast<StubBirchClient::StubDataProvider*>(client.GetLostMediaProvider())
+      ->RunDataProviderChangedCallback();
+
+  // Only lost media items will be requested.
+  EXPECT_TRUE(client.DidRequestLostMediaDataFetch());
+  EXPECT_FALSE(client.DidRequestCalendarDataFetch());
+  EXPECT_FALSE(client.DidRequestFileSuggestDataFetch());
+  EXPECT_FALSE(client.DidRequestRecentTabsDataFetch());
+  EXPECT_FALSE(client.DidRequestLastActiveDataFetch());
+  EXPECT_FALSE(client.DidRequestMostVisitedDataFetch());
+  EXPECT_FALSE(client.DidRequestSelfShareDataFetch());
+  EXPECT_FALSE(client.DidRequestReleaseNotesDataFetch());
+}
+
 }  // namespace ash

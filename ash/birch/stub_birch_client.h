@@ -26,6 +26,8 @@ class StubBirchClient : public BirchClient {
       return did_request_birch_data_fetch_;
     }
 
+    void RunDataProviderChangedCallback();
+
     // BirchDataProvider:
     void RequestBirchDataFetch() override;
 

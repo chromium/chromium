@@ -16,6 +16,7 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/branding_buildflags.h"
@@ -82,10 +83,17 @@ void BirchLostMediaProvider::MediaSessionMetadataChanged(
     media_title_ = pending_metadata->title;
     source_url_ = pending_metadata->source_title;
   }
+
+  NotifyDataProviderChanged();
 }
 
 void BirchLostMediaProvider::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
+  // Notify data changed on closure.
+  base::ScopedClosureRunner scoped_closure(
+      base::BindOnce(&BirchLostMediaProvider::NotifyDataProviderChanged,
+                     base::Unretained(this)));
+
   media_session::mojom::MediaSessionInfoPtr media_session_info =
       std::move(session_info);
 

@@ -113,6 +113,9 @@ BirchBarController::~BirchBarController() {
   for (auto& bar_view : bar_views_) {
     bar_view->ShutdownChips();
   }
+
+  // Chips are shutdown, stop observing lost media change if we did.
+  OnLostMediaItemRemoved();
 }
 
 // static.
@@ -173,17 +176,13 @@ void BirchBarController::OnItemHiddenByUser(BirchItem* item) {
     return;
   }
 
-  // Remove the item from birch bars. If there is an extra item not showing in
-  // the bars, push it in the bars.
-  BirchItem* extra_item = items_.size() > BirchBarView::kMaxChipsNum
-                              ? items_[BirchBarView::kMaxChipsNum].get()
-                              : nullptr;
-  for (auto& bar_view : bar_views_) {
-    bar_view->RemoveChip(item, extra_item);
-  }
+  RemoveItemChips(item);
 
   // Erase the item from model and controller.
   Shell::Get()->birch_model()->RemoveItem(item);
+  if (item->GetType() == BirchItemType::kLostMedia) {
+    OnLostMediaItemRemoved();
+  }
   std::erase_if(items_, base::MatchesUniquePtr(item));
 }
 
@@ -298,7 +297,16 @@ void BirchBarController::OnItemsFetchedFromModel() {
     InitBarWithItems(bar_view, items);
   }
 
+  // Clear the old lost media item if it exists.
+  OnLostMediaItemRemoved();
+
   items_ = std::move(items);
+
+  for (const auto& item : items_) {
+    if (item->GetType() == BirchItemType::kLostMedia) {
+      OnLostMediaItemReceived();
+    }
+  }
 }
 
 void BirchBarController::InitBarWithItems(
@@ -315,6 +323,17 @@ void BirchBarController::InitBarWithItems(
   }
 
   bar_view->SetupChips(items_to_show);
+}
+
+void BirchBarController::RemoveItemChips(BirchItem* item) {
+  // Remove the item from birch bars. If there is an extra item not showing in
+  // the bars, push it in the bars.
+  BirchItem* extra_item = items_.size() > BirchBarView::kMaxChipsNum
+                              ? items_[BirchBarView::kMaxChipsNum].get()
+                              : nullptr;
+  for (auto& bar_view : bar_views_) {
+    bar_view->RemoveChip(item, extra_item);
+  }
 }
 
 void BirchBarController::OnChipContextMenuClosed() {
@@ -354,6 +373,42 @@ void BirchBarController::OnCustomizeSuggestionsPrefChanged() {
   }
 
   MaybeFetchDataFromModel();
+}
+
+void BirchBarController::OnLostMediaItemReceived() {
+  Shell::Get()->birch_model()->SetLostMediaDataChangedCallback(
+      base::BindRepeating(&BirchBarController::OnLostMediaItemUpdated,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BirchBarController::OnLostMediaItemRemoved() {
+  if (auto* birch_model = Shell::Get()->birch_model()) {
+    birch_model->ResetLostMediaDataChangedCallback();
+  }
+}
+
+void BirchBarController::OnLostMediaItemUpdated(
+    std::unique_ptr<BirchItem> updated_item) {
+  auto lost_media_item =
+      std::find_if(items_.begin(), items_.end(), [](const auto& item) {
+        return item->GetType() == BirchItemType::kLostMedia;
+      });
+  if (lost_media_item == items_.end()) {
+    return;
+  }
+
+  // If the lost media item is null, remove the lost media chip from bars.
+  // Otherwise, update the chip with new item contents.
+  if (!updated_item) {
+    RemoveItemChips(lost_media_item->get());
+    items_.erase(lost_media_item);
+    OnLostMediaItemRemoved();
+  } else {
+    *(lost_media_item->get()) = *(updated_item.get());
+    for (auto bar_view : bar_views_) {
+      bar_view->UpdateChip(lost_media_item->get());
+    }
+  }
 }
 
 }  // namespace ash

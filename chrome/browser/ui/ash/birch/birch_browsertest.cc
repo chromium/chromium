@@ -719,6 +719,9 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LostMediaChip) {
   // Clicking the button should activate the item. In this test the activation
   // callback is bound to the provider.
   EXPECT_TRUE(lost_media_provider.did_activate_);
+
+  // Reset lost media provider.
+  birch_keyed_service->set_lost_media_provider_for_test(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, ReleaseNotesChip) {
