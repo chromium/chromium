@@ -75,6 +75,14 @@ source_set("drive_service") {
   public_deps = [ "//base" ]
 }
 
+source_set("drive_file_downloader") {
+  sources = [
+    "drive_file_downloader.h",
+    "drive_file_downloader.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("drive_file_uploader") {
   sources = [
     "drive_file_uploader.h",
