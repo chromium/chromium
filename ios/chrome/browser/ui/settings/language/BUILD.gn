@@ -86,6 +86,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/ui/settings/language",
     "//ios/chrome/browser/ui/settings/language/cells",
