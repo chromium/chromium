@@ -12,6 +12,11 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/events/protocol_event.h"
@@ -236,18 +241,25 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
 
 void SyncInternalsMessageHandler::HandleRequestStart(
     const base::Value::List& args) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK_EQ(0U, args.size());
 
-  if (!sync_service_) {
+  if (!identity_manager_ || !sync_service_) {
     return;
   }
 
-  sync_service_->SetSyncFeatureRequested();
+  const bool can_use_api =
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  if (!can_use_api) {
+    return;
+  }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // If the service was previously stopped via StopAndClear(), then the
-  // "first-setup-complete" bit was also cleared, and now the service wouldn't
-  // fully start up. So set that too.
+  identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      signin::ConsentLevel::kSync,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  sync_service_->SetSyncFeatureRequested();
   sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

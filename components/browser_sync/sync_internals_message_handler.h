@@ -164,7 +164,6 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   const raw_ptr<Delegate> delegate_;
   // An abstraction of who creates the about sync info value map.
   const GetAboutSyncDataCb get_about_sync_data_cb_;
-  // TODO(crbug.com/361286061): Use it to add a button that gives sync consent.
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;

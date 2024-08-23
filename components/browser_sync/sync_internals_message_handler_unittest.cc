@@ -16,6 +16,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/sync_internals_util.h"
@@ -30,9 +31,11 @@ using syncer::sync_ui_util::kGetAllNodes;
 using syncer::sync_ui_util::kOnAboutInfoUpdated;
 using syncer::sync_ui_util::kOnEntityCountsUpdated;
 using syncer::sync_ui_util::kRequestDataAndRegisterForUpdates;
+using syncer::sync_ui_util::kRequestStart;
 using syncer::sync_ui_util::kWriteUserEvent;
 using testing::_;
 using testing::ElementsAre;
+using testing::Return;
 
 namespace browser_sync {
 namespace {
@@ -77,8 +80,8 @@ class SyncInternalsMessageHandlerTest : public testing::Test {
 
   MockDelegate* mock_delegate() { return &mock_delegate_; }
 
-  signin::IdentityManager* identity_manager() {
-    return identity_test_environment_.identity_manager();
+  signin::IdentityTestEnvironment* identity_test_environment() {
+    return &identity_test_environment_;
   }
 
   syncer::MockSyncService* mock_sync_service() { return &mock_sync_service_; }
@@ -173,7 +176,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
       base::BindLambdaForTesting([&](syncer::SyncService*, const std::string&) {
         return kAboutInformation.Clone();
       }),
-      identity_manager(),
+      identity_test_environment()->identity_manager(),
       /*sync_service=*/nullptr, mock_sync_invalidations_service(),
       fake_user_event_service(), kChannel);
   handler->GetMessageHandlerMap()
@@ -288,6 +291,23 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventZero) {
   EXPECT_TRUE(event.has_navigation_id());
   EXPECT_EQ(0, event.navigation_id());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(SyncInternalsMessageHandlerTest, RequestStart) {
+  identity_test_environment()->MakePrimaryAccountAvailable(
+      "foo@gmail.com", signin::ConsentLevel::kSignin);
+  EXPECT_CALL(*mock_sync_service()->GetMockUserSettings(),
+              SetInitialSyncFeatureSetupComplete);
+
+  handler()->GetMessageHandlerMap().at(kRequestStart).Run(base::Value::List());
+
+  CoreAccountInfo account_info =
+      identity_test_environment()->identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync);
+  EXPECT_FALSE(account_info.IsEmpty());
+  EXPECT_EQ(account_info.email, "foo@gmail.com");
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace browser_sync
