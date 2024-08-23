@@ -13,7 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios_bridge.h"
 #import "ios/net/cookies/system_cookie_util.h"
 #import "ios/web/common/features.h"
