@@ -744,17 +744,29 @@ class IdlCompiler(object):
                     group.extended_attributes.append(
                         ExtendedAttribute(key='Affects', values=affects_value))
 
-                # [NoAllocDirectCall] must be consistent among overloaded
-                # operations.
-                nadc_values = set()
+                # Check that overloads with the same number of parameters have
+                # set the [NoAllocDirectCall] attribute consistently.
+                nadc_set = set()
+                no_nadc_set = set()
                 for overload in group:
-                    nadc_values.add(
-                        'NoAllocDirectCall' in overload.extended_attributes)
-                assert len(nadc_values) == 1, (
-                    "Overloaded operations have inconsistent extended "
-                    "attributes of [NoAllocDirectCall]. {}.{}".format(
+
+                    set_to_update = nadc_set
+                    if "NoAllocDirectCall" not in overload.extended_attributes:
+                        set_to_update = no_nadc_set
+
+                    for argument in reversed(overload.arguments):
+                        set_to_update.add(argument.index + 1)
+                        if not argument.idl_type.is_optional:
+                            break
+                    else:
+                        set_to_update.add(0)
+                assert nadc_set.isdisjoint(no_nadc_set), (
+                    "Overloaded operations with same parameter count "
+                    "have inconsistent extended attributes of "
+                    "[NoAllocDirectCall]. {}.{}".format(
                         new_ir.identifier, group.identifier))
-                if True in nadc_values:
+
+                if len(nadc_set) > 0:
                     group.extended_attributes.append(
                         ExtendedAttribute(key='NoAllocDirectCall'))
 
