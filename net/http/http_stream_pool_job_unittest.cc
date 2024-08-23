@@ -362,12 +362,21 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     FLAGS_quic_enable_http3_grease_randomness = false;
     feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+    InitializeSession();
+  }
+
+ protected:
+  void InitializeSession() {
+    http_network_session_.reset();
     session_deps_.alternate_host_resolver =
         std::make_unique<FakeServiceEndpointResolver>();
 
     auto quic_context = std::make_unique<MockQuicContext>();
     quic_context->AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
+    quic_context->params()->origins_to_force_quic_on =
+        origins_to_force_quic_on_;
     session_deps_.quic_context = std::move(quic_context);
+    session_deps_.enable_quic = true;
 
     // Load a certificate that is valid for *.example.org
     scoped_refptr<X509Certificate> test_cert(
@@ -387,7 +396,6 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
         SpdySessionDependencies::SpdyCreateSession(&session_deps_);
   }
 
- protected:
   HttpStreamPool& pool() { return *http_network_session_->http_stream_pool(); }
 
   FakeServiceEndpointResolver* resolver() {
@@ -470,12 +478,18 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
     mock_quic_datas_.emplace_back(std::move(quic_data));
   }
 
+  std::set<HostPortPair>& origins_to_force_quic_on() {
+    return origins_to_force_quic_on_;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   // For NetLog recording test coverage.
   RecordingNetLogObserver net_log_observer_;
 
   SpdySessionDependencies session_deps_;
+
+  std::set<HostPortPair> origins_to_force_quic_on_;
 
   ProofVerifyDetailsChromium verify_details_;
   std::vector<std::unique_ptr<QuicTestPacketMaker>> quic_client_makers_;
@@ -3423,6 +3437,82 @@ TEST_F(HttpStreamPoolJobTest,
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(requester1.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolJobTest, OriginsToForceQuicOnOk) {
+  origins_to_force_quic_on().insert(
+      HostPortPair::FromURL(GURL(kDefaultDestination)));
+  InitializeSession();
+
+  AddQuicData();
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination).RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolJobTest, OriginsToForceQuicOnFail) {
+  origins_to_force_quic_on().insert(
+      HostPortPair::FromURL(GURL(kDefaultDestination)));
+  InitializeSession();
+
+  auto quic_data = std::make_unique<MockQuicData>(quic_version());
+  quic_data->AddConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+  quic_data->AddSocketDataToFactory(socket_factory());
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination).RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_CONNECTION_REFUSED)));
+}
+
+TEST_F(HttpStreamPoolJobTest, OriginsToForceQuicOnPreconnectOk) {
+  origins_to_force_quic_on().insert(
+      HostPortPair::FromURL(GURL(kDefaultDestination)));
+  InitializeSession();
+
+  AddQuicData();
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  Preconnector preconnector(kDefaultDestination);
+  preconnector.Preconnect(pool());
+  RunUntilIdle();
+  EXPECT_THAT(preconnector.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolJobTest, OriginsToForceQuicOnPreconnectFail) {
+  origins_to_force_quic_on().insert(
+      HostPortPair::FromURL(GURL(kDefaultDestination)));
+  InitializeSession();
+
+  auto quic_data = std::make_unique<MockQuicData>(quic_version());
+  quic_data->AddConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+  quic_data->AddSocketDataToFactory(socket_factory());
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  Preconnector preconnector(kDefaultDestination);
+  preconnector.Preconnect(pool());
+  RunUntilIdle();
+  EXPECT_THAT(preconnector.result(), Optional(IsError(ERR_CONNECTION_REFUSED)));
 }
 
 }  // namespace net

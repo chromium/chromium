@@ -1381,6 +1381,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
 // The following parameters are attached:
 //   {
 //      "stream_key": <The HttpStreamKey of the group>,
+//      "force_quic": <True when QUIC is forced for the group>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 
@@ -1390,13 +1391,15 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 //     "allowed_bad_certs": <The list of allowed bad certs>,
 //     "enable_ip_based_pooling": <True when the request enables IP based
 //                                 pooling>,
+//     "quic_version": <The QUIC version to attempt>,
 //     "source_dependency": <The source identifier of the request>
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_REQUEST_STREAM)
 
 // Emitted when a group is requested a preconnect. The event parameter is:
 //   {
-//      "num_streams": <The number of streams requested>
+//      "num_streams": <The number of streams requested>,
+//      "quic_version": <The QUIC version to attempt>
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_PRECONNECT)
 

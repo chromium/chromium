@@ -203,6 +203,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
   // synchronously.
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
+    CHECK(!group_->force_quic());
     const StreamSocketHandle::SocketReuseType reuse_type =
         GetReuseTypeFromIdleStreamSocket(*stream_socket);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -474,6 +475,12 @@ void HttpStreamPool::Job::OnQuicTaskComplete(int rv) {
     }
   }
 
+  if (rv != OK && group_->force_quic()) {
+    error_to_notify_ = rv;
+    NotifyFailure();
+    return;
+  }
+
   if (should_block_stream_attempt_) {
     should_block_stream_attempt_ = false;
     stream_attempt_delay_timer_.Stop();
@@ -676,6 +683,10 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
     std::optional<size_t> max_attempts) {
   if (PendingRequestCount() == 0 && preconnects_.empty()) {
     // There are no requests waiting for streams.
+    return;
+  }
+
+  if (group_->force_quic()) {
     return;
   }
 
@@ -1097,6 +1108,7 @@ void HttpStreamPool::Job::NotifyStreamReady(std::unique_ptr<HttpStream> stream,
 }
 
 void HttpStreamPool::Job::HandleSpdySessionReady() {
+  CHECK(!group_->force_quic());
   CHECK(!is_failing_);
   CHECK(spdy_session_);
 

@@ -24,6 +24,9 @@ class NetLogWithSource;
 // This object holds proxy information returned by ResolveProxy.
 class NET_EXPORT ProxyInfo {
  public:
+  // Creates a proxy info that uses a direct connection.
+  static ProxyInfo Direct();
+
   ProxyInfo();
   ProxyInfo(const ProxyInfo& other);
   ~ProxyInfo();

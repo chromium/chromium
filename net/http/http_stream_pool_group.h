@@ -20,6 +20,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_session_key.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
 
@@ -63,6 +64,8 @@ class HttpStreamPool::Group {
   }
 
   const NetLogWithSource& net_log() { return net_log_; }
+
+  bool force_quic() const { return force_quic_; }
 
   // Creates an HttpStreamRequest. Will call delegate's methods. See the
   // comments of HttpStreamRequest::Delegate methods for details.
@@ -176,6 +179,10 @@ class HttpStreamPool::Group {
   static base::expected<void, std::string_view> IsIdleStreamSocketUsable(
       const IdleStreamSocket& idle);
 
+  // If the group is forced to use QUIC and the QUIC version is unknown, try
+  // the preferred QUIC version that is supported by default.
+  void MaybeUpdateQuicVersionWhenForced(quic::ParsedQuicVersion& quic_version);
+
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
 
@@ -188,6 +195,7 @@ class HttpStreamPool::Group {
   const SpdySessionKey spdy_session_key_;
   const QuicSessionKey quic_session_key_;
   const NetLogWithSource net_log_;
+  const bool force_quic_;
 
   size_t handed_out_stream_count_ = 0;
   int64_t generation_ = 0;

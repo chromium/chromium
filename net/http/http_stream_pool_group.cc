@@ -17,6 +17,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
 
@@ -79,10 +80,15 @@ HttpStreamPool::Group::Group(HttpStreamPool* pool,
       quic_session_key_(stream_key_.ToQuicSessionKey()),
       net_log_(
           NetLogWithSource::Make(http_network_session()->net_log(),
-                                 NetLogSourceType::HTTP_STREAM_POOL_GROUP)) {
+                                 NetLogSourceType::HTTP_STREAM_POOL_GROUP)),
+      force_quic_(
+          http_network_session()->ShouldForceQuic(stream_key_.destination(),
+                                                  ProxyInfo::Direct(),
+                                                  /*is_websocket=*/false)) {
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE, [&] {
     base::Value::Dict dict;
     dict.Set("stream_key", stream_key_.ToValue());
+    dict.Set("force_quic", force_quic_);
     return dict;
   });
 }
@@ -101,6 +107,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  MaybeUpdateQuicVersionWhenForced(quic_version);
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_STREAM, [&] {
         base::Value::Dict dict;
@@ -112,6 +119,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
         }
         dict.Set("allowed_bad_certs", std::move(allowed_bad_certs_list));
         dict.Set("enable_ip_based_pooling", enable_ip_based_pooling);
+        dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
         net_log.source().AddToEventParameters(dict);
         return dict;
       });
@@ -127,9 +135,11 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
 int HttpStreamPool::Group::Preconnect(size_t num_streams,
                                       quic::ParsedQuicVersion quic_version,
                                       CompletionOnceCallback callback) {
+  MaybeUpdateQuicVersionWhenForced(quic_version);
   net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_PRECONNECT, [&] {
     base::Value::Dict dict;
     dict.Set("num_streams", static_cast<int>(num_streams));
+    dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
     return dict;
   });
   EnsureInFlightJob();
@@ -315,6 +325,16 @@ void HttpStreamPool::Group::OnJobComplete() {
 
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, "For testing");
+}
+
+void HttpStreamPool::Group::MaybeUpdateQuicVersionWhenForced(
+    quic::ParsedQuicVersion& quic_version) {
+  if (!quic_version.IsKnown() && force_quic_) {
+    quic_version = http_network_session()
+                       ->context()
+                       .quic_context->params()
+                       ->supported_versions[0];
+  }
 }
 
 void HttpStreamPool::Group::CleanupIdleStreamSockets(
