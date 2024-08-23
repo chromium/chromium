@@ -230,7 +230,7 @@ void TabGroupSyncServiceProxy::UpdateLocalTabId(
 void TabGroupSyncServiceProxy::ConnectLocalTabGroup(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id) {
-  service_->ConnectLocalTabGroup(local_id, sync_id);
+  service_->ConnectRestoredGroupToSaveId(sync_id, local_id);
 }
 
 bool TabGroupSyncServiceProxy::IsRemoteDevice(

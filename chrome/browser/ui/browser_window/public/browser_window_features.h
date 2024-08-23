@@ -32,7 +32,7 @@ class LensOverlayEntryPointController;
 }  // namespace lens
 
 namespace tab_groups {
-class BrowserTabGroupSyncObserver;
+class SessionServiceTabGroupSyncObserver;
 }  // namespace tab_groups
 
 // This class owns the core controllers for features that are scoped to a given
@@ -136,8 +136,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
 
-  std::unique_ptr<tab_groups::BrowserTabGroupSyncObserver>
-      browser_tab_group_sync_observer;
+  std::unique_ptr<tab_groups::SessionServiceTabGroupSyncObserver>
+      session_service_tab_group_sync_observer_;
 
   std::unique_ptr<ToastController> toast_controller_;
 };

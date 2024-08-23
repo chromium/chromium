@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -68,6 +69,7 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -80,6 +82,8 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -964,32 +968,41 @@ class SessionRestoreImpl : public BrowserListObserver {
       return;
     }
 
-    TabGroupModel* group_model = browser->tab_strip_model()->group_model();
-    tab_groups::SavedTabGroupKeyedService* const saved_tab_group_keyed_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-            browser->profile());
-
     for (const std::unique_ptr<sessions::SessionTabGroup>& session_tab_group :
          tab_groups) {
-      if (saved_tab_group_keyed_service) {
-        if (session_tab_group->saved_guid.has_value()) {
-          const base::Uuid& saved_guid =
-              base::Uuid::ParseLowercase(session_tab_group->saved_guid.value());
-
-          saved_tab_group_keyed_service->ConnectRestoredGroupToSaveId(
-              saved_guid, new_group_ids.at(session_tab_group->id));
-        } else if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-          // Default save any groups that are not save yet. This happens when
-          // a user goes from V1 of SavedTabGroups to V2 through an update.
-          saved_tab_group_keyed_service->SaveRestoredGroup(
-              new_group_ids.at(session_tab_group->id));
-        }
-      }
-
       TabGroup* model_tab_group =
-          group_model->GetTabGroup(new_group_ids.at(session_tab_group->id));
+          browser->tab_strip_model()->group_model()->GetTabGroup(
+              new_group_ids.at(session_tab_group->id));
       CHECK(model_tab_group);
       model_tab_group->SetVisualData(session_tab_group->visual_data);
+
+      ProcessSavedGroup(browser->profile(),
+                        new_group_ids.at(session_tab_group->id),
+                        session_tab_group->saved_guid);
+    }
+  }
+
+  void ProcessSavedGroup(Profile* profile,
+                         const tab_groups::LocalTabGroupID& local_id,
+                         std::optional<std::string> sync_id) {
+    if (sync_id) {
+      tab_groups::TabGroupSyncService* service =
+          tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+      CHECK(service);
+      const base::Uuid& sync_guid = base::Uuid::ParseLowercase(sync_id.value());
+      service->ConnectLocalTabGroup(sync_guid, local_id);
+    } else if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+      if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+        NOTIMPLEMENTED();
+      } else {
+        tab_groups::SavedTabGroupKeyedService* service =
+            tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile);
+        CHECK(service);
+
+        // Default save any groups that are not saved yet. This happens when
+        // a user goes from V1 of SavedTabGroups to V2 through an update.
+        service->SaveRestoredGroup(local_id);
+      }
     }
   }
 

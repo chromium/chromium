@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/browser_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
@@ -79,8 +79,8 @@ void BrowserWindowFeatures::Init(Browser* browser) {
     if (browser->profile()->IsRegularProfile() &&
         tab_groups::IsTabGroupsSaveV2Enabled() &&
         browser->tab_strip_model()->SupportsTabGroups()) {
-      browser_tab_group_sync_observer =
-          std::make_unique<tab_groups::BrowserTabGroupSyncObserver>(
+      session_service_tab_group_sync_observer_ =
+          std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
               browser->profile(), browser->tab_strip_model(),
               browser->session_id());
     }

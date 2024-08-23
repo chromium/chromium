@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/saved_tab_groups/browser_tab_group_sync_observer.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 
 #include <optional>
 
@@ -21,7 +21,7 @@
 
 namespace tab_groups {
 
-BrowserTabGroupSyncObserver::BrowserTabGroupSyncObserver(
+SessionServiceTabGroupSyncObserver::SessionServiceTabGroupSyncObserver(
     Profile* profile,
     TabStripModel* tab_strip_model,
     SessionID session_id)
@@ -45,7 +45,7 @@ BrowserTabGroupSyncObserver::BrowserTabGroupSyncObserver(
   }
 }
 
-BrowserTabGroupSyncObserver::~BrowserTabGroupSyncObserver() {
+SessionServiceTabGroupSyncObserver::~SessionServiceTabGroupSyncObserver() {
   // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
   // observer in proxy.
   if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
@@ -58,7 +58,7 @@ BrowserTabGroupSyncObserver::~BrowserTabGroupSyncObserver() {
   }
 }
 
-void BrowserTabGroupSyncObserver::SavedTabGroupAddedLocally(
+void SessionServiceTabGroupSyncObserver::SavedTabGroupAddedLocally(
     const base::Uuid& guid) {
   TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
@@ -72,12 +72,12 @@ void BrowserTabGroupSyncObserver::SavedTabGroupAddedLocally(
                                 guid.AsLowercaseString());
 }
 
-void BrowserTabGroupSyncObserver::SavedTabGroupRemovedLocally(
+void SessionServiceTabGroupSyncObserver::SavedTabGroupRemovedLocally(
     const tab_groups::SavedTabGroup& removed_group) {
   UpdateTabGroupSessionMetadata(removed_group.local_group_id(), std::nullopt);
 }
 
-void BrowserTabGroupSyncObserver::OnTabGroupAdded(
+void SessionServiceTabGroupSyncObserver::OnTabGroupAdded(
     const tab_groups::SavedTabGroup& group,
     tab_groups::TriggerSource source) {
   if (tab_groups::TriggerSource::REMOTE == source) {
@@ -89,7 +89,7 @@ void BrowserTabGroupSyncObserver::OnTabGroupAdded(
                                 group.saved_guid().AsLowercaseString());
 }
 
-void BrowserTabGroupSyncObserver::OnTabGroupRemoved(
+void SessionServiceTabGroupSyncObserver::OnTabGroupRemoved(
     const tab_groups::LocalTabGroupID& local_id,
     tab_groups::TriggerSource source) {
   if (tab_groups::TriggerSource::REMOTE == source) {
@@ -100,7 +100,13 @@ void BrowserTabGroupSyncObserver::OnTabGroupRemoved(
   UpdateTabGroupSessionMetadata(local_id, std::nullopt);
 }
 
-void BrowserTabGroupSyncObserver::UpdateTabGroupSessionMetadata(
+void SessionServiceTabGroupSyncObserver::OnTabGroupLocalIdChanged(
+    const base::Uuid& sync_id,
+    const std::optional<LocalTabGroupID>& local_id) {
+  UpdateTabGroupSessionMetadata(local_id, sync_id.AsLowercaseString());
+}
+
+void SessionServiceTabGroupSyncObserver::UpdateTabGroupSessionMetadata(
     const std::optional<LocalTabGroupID> local_id,
     const std::optional<std::string> sync_id) {
   if (!local_id.has_value()) {

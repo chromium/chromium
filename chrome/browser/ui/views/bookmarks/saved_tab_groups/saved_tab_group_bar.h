@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/types.h"
 #include "content/public/browser/page.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
@@ -36,6 +37,7 @@ namespace tab_groups {
 class TabGroupSyncService;
 class SavedTabGroupButton;
 class SavedTabGroupDragData;
+class SavedTabGroupOverflowButton;
 
 // The view for accessing SavedTabGroups from the bookmarks bar. Is responsible
 // for rendering the SavedTabGroupButtons with the bounds that are defined by
@@ -100,6 +102,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
                        TriggerSource source) override;
   void OnTabGroupUpdated(const SavedTabGroup& group,
                          TriggerSource source) override;
+  void OnTabGroupLocalIdChanged(
+      const base::Uuid& sync_id,
+      const std::optional<LocalTabGroupID>& local_id) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          TriggerSource source) override;
 
@@ -161,6 +166,10 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // The callback that the button calls when clicked by a user.
   void OnTabGroupButtonPressed(const base::Uuid& id, const ui::Event& event);
+
+  // Creates the overflow button that houses saved tab groups that are not
+  // visible in the SavedTabGroupBar.
+  std::unique_ptr<SavedTabGroupOverflowButton> CreateOverflowButton();
 
   // When called, display a bubble which shows all the groups that are saved
   // and not visible. Each entry in the bubble, when clicked, should open the

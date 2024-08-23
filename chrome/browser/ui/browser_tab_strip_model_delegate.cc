@@ -207,6 +207,10 @@ void BrowserTabStripModelDelegate::CreateHistoricalGroup(
 
 void BrowserTabStripModelDelegate::GroupAdded(
     const tab_groups::TabGroupId& group) {
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    return;
+  }
+
   if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
     return;
   }
@@ -233,6 +237,10 @@ void BrowserTabStripModelDelegate::WillCloseGroup(
   // First the saved group must be stored in tab restore so that it keeps the
   // SavedTabGroup/TabIDs
   CreateHistoricalGroup(group);
+
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    return;
+  }
 
   // When closing, the group should stay available in revisit UIs so disconnect
   // the group to prevent deletion.

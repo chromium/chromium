@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_BROWSER_TAB_GROUP_SYNC_OBSERVER_H_
-#define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_BROWSER_TAB_GROUP_SYNC_OBSERVER_H_
+#ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SESSION_SERVICE_TAB_GROUP_SYNC_OBSERVER_H_
+#define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SESSION_SERVICE_TAB_GROUP_SYNC_OBSERVER_H_
 
 #include <optional>
 #include <string>
@@ -28,17 +28,19 @@ namespace tab_groups {
 // contains the affected tabs / groups. If not we disregard the changes.
 // Otherwise, we will write the changes to disk using the session service. This
 // is done to preserve the saved state of SavedTabGroups across sessions.
-class BrowserTabGroupSyncObserver : public SavedTabGroupModelObserver,
-                                    public TabGroupSyncService::Observer {
+class SessionServiceTabGroupSyncObserver
+    : public SavedTabGroupModelObserver,
+      public TabGroupSyncService::Observer {
  public:
-  BrowserTabGroupSyncObserver(Profile* profile,
-                              TabStripModel* tab_strip_model,
-                              SessionID session_id);
-  ~BrowserTabGroupSyncObserver() override;
+  SessionServiceTabGroupSyncObserver(Profile* profile,
+                                     TabStripModel* tab_strip_model,
+                                     SessionID session_id);
+  ~SessionServiceTabGroupSyncObserver() override;
 
-  BrowserTabGroupSyncObserver(const BrowserTabGroupSyncObserver&) = delete;
-  BrowserTabGroupSyncObserver& operator=(const BrowserTabGroupSyncObserver&) =
-      delete;
+  SessionServiceTabGroupSyncObserver(
+      const SessionServiceTabGroupSyncObserver&) = delete;
+  SessionServiceTabGroupSyncObserver& operator=(
+      const SessionServiceTabGroupSyncObserver&) = delete;
 
  private:
   // Overridden from tab_groups::SavedTabGroupModelObserver:
@@ -51,6 +53,9 @@ class BrowserTabGroupSyncObserver : public SavedTabGroupModelObserver,
                        tab_groups::TriggerSource source) override;
   void OnTabGroupRemoved(const tab_groups::LocalTabGroupID& local_id,
                          tab_groups::TriggerSource source) override;
+  void OnTabGroupLocalIdChanged(
+      const base::Uuid& sync_id,
+      const std::optional<LocalTabGroupID>& local_id) override;
 
   // Helper function to write any changes to the tab group metadata to the disk
   // using the session service.
@@ -76,4 +81,4 @@ class BrowserTabGroupSyncObserver : public SavedTabGroupModelObserver,
 };
 
 }  // namespace tab_groups
-#endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_BROWSER_TAB_GROUP_SYNC_OBSERVER_H_
+#endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SESSION_SERVICE_TAB_GROUP_SYNC_OBSERVER_H_

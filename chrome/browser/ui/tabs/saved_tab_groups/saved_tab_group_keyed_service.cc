@@ -125,9 +125,6 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
     : profile_(profile),
       model_(std::make_unique<SavedTabGroupModel>()),
       service_proxy_(std::make_unique<TabGroupSyncServiceProxy>(this)),
-      listener_(
-          std::make_unique<SavedTabGroupModelListener>(service_proxy_.get(),
-                                                       profile)),
       sync_bridge_mediator_(std::make_unique<TabGroupSyncBridgeMediator>(
           model(),
           profile->GetPrefs(),
@@ -138,12 +135,17 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
               GetStoreFactory()))),
       metrics_logger_(
           std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker)) {
-  model_->AddObserver(this);
+  if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    listener_ = std::make_unique<SavedTabGroupModelListener>(
+        service_proxy_.get(), profile);
 
-  metrics_timer_.Start(
-      FROM_HERE, kDelayBeforeMetricsLogged,
-      base::BindRepeating(&SavedTabGroupKeyedService::RecordMetrics,
-                          base::Unretained(this)));
+    model_->AddObserver(this);
+
+    metrics_timer_.Start(
+        FROM_HERE, kDelayBeforeMetricsLogged,
+        base::BindRepeating(&SavedTabGroupKeyedService::RecordMetrics,
+                            base::Unretained(this)));
+  }
 }
 
 SavedTabGroupKeyedService::~SavedTabGroupKeyedService() {
@@ -174,11 +176,6 @@ void SavedTabGroupKeyedService::ConnectRestoredGroupToSaveId(
     // If there is no saved group with guid `saved_guid`, the group must
     // have been unsaved since this session closed.
     if (!group) {
-      return;
-    }
-
-    // Avoid linking SavedTabGroups that are already open.
-    if (group->local_group_id().has_value()) {
       return;
     }
 

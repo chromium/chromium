@@ -216,11 +216,7 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
           gfx::Insets::VH(kButtonPadding, 0), kBetweenElementSpacing);
   SetLayoutManager(std::move(layout_manager));
 
-  overflow_button_ = AddChildView(std::make_unique<SavedTabGroupOverflowButton>(
-      base::BindRepeating(IsTabGroupsSaveUIUpdateEnabled()
-                              ? &SavedTabGroupBar::ShowEverythingMenu
-                              : &SavedTabGroupBar::MaybeShowOverflowMenu,
-                          base::Unretained(this))));
+  overflow_button_ = AddChildView(CreateOverflowButton());
 
   // Add the observer.
   // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
@@ -521,9 +517,10 @@ void SavedTabGroupBar::SavedTabGroupUpdatedFromSync(
 }
 
 void SavedTabGroupBar::OnInitialized() {
+  RemoveAllChildViews();
   LoadAllButtonsFromModel();
+  overflow_button_ = AddChildView(CreateOverflowButton());
   InvalidateLayout();
-  ReorderChildView(overflow_button_, children().size());
 }
 
 void SavedTabGroupBar::OnTabGroupAdded(const SavedTabGroup& group,
@@ -534,6 +531,12 @@ void SavedTabGroupBar::OnTabGroupAdded(const SavedTabGroup& group,
 void SavedTabGroupBar::OnTabGroupUpdated(const SavedTabGroup& group,
                                          TriggerSource source) {
   SavedTabGroupUpdated(group.saved_guid());
+}
+
+void SavedTabGroupBar::OnTabGroupLocalIdChanged(
+    const base::Uuid& sync_id,
+    const std::optional<LocalTabGroupID>& local_id) {
+  SavedTabGroupUpdated(sync_id);
 }
 
 void SavedTabGroupBar::OnTabGroupRemoved(const base::Uuid& sync_id,
@@ -797,6 +800,15 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
         std::make_unique<TabGroupActionContextDesktop>(
             browser_, OpeningSource::kOpenedFromRevisitUi));
   }
+}
+
+std::unique_ptr<SavedTabGroupOverflowButton>
+SavedTabGroupBar::CreateOverflowButton() {
+  return std::make_unique<SavedTabGroupOverflowButton>(
+      base::BindRepeating(IsTabGroupsSaveUIUpdateEnabled()
+                              ? &SavedTabGroupBar::ShowEverythingMenu
+                              : &SavedTabGroupBar::MaybeShowOverflowMenu,
+                          base::Unretained(this)));
 }
 
 void SavedTabGroupBar::MaybeShowOverflowMenu() {
