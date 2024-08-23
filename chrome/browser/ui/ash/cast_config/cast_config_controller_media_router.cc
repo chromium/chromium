@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
+#include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 
 #include <string>
 #include <utility>

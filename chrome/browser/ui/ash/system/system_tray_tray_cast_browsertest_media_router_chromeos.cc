@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
+#include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 #include "chromeos/ash/components/login/auth/public/key.h"

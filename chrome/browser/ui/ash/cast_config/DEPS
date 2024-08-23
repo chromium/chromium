@@ -1,0 +1,12 @@
+include_rules = [
+  "-chrome",
+
+  "+chrome/browser/ui/ash/cast_config",
+
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/media/router",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/ui_features.h",
+  "+chrome/common/url_constants.h",
+]

@@ -60,7 +60,7 @@
 #include "chrome/browser/ui/ash/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/ash_web_view_factory_impl.h"
-#include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
+#include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/in_session_auth/in_session_auth_dialog_client.h"

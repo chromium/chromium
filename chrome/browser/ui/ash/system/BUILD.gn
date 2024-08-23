@@ -114,6 +114,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/cast_config",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",

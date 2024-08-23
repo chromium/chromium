@@ -8,7 +8,7 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
+#include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "ui/display/manager/display_manager.h"
 
 namespace ash::input_method {

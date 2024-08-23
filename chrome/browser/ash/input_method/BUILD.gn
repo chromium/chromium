@@ -350,6 +350,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/cast_config",
     "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/keyboard:ash_test_support",
