@@ -49,6 +49,9 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView,
   views::ImageButton* deselect_button_for_testing() { return deselect_button_; }
   FocusModeChipCarousel* chip_carousel_for_testing() { return chip_carousel_; }
   SystemTextfield* GetTaskTextfieldForTesting();
+  views::BoxLayoutView* textfield_container_for_testing() {
+    return textfield_container_;
+  }
 
   void CommitTextfieldContents(const std::u16string& contents);
 
