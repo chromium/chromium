@@ -40,6 +40,11 @@
     _name = name ? name : email;
     _email = name ? email : nil;
 
+    self.isAccessibilityElement = YES;
+    self.accessibilityLabel =
+        _email ? [NSString stringWithFormat:@"%@, %@", _name, _email]
+               : [NSString stringWithFormat:@"%@", _name];
+
     UIImageView* imageView = [[UIImageView alloc] initWithImage:_avatarImage];
     // Creates the image rounded corners.
     imageView.layer.cornerRadius =
@@ -56,6 +61,7 @@
     titleLabel.adjustsFontForContentSizeCategory = YES;
     titleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    titleLabel.accessibilityTraits = UIAccessibilityTraitHeader;
     titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:titleLabel];
