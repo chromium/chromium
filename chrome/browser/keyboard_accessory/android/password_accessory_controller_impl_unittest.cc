@@ -970,8 +970,7 @@ TEST_F(PasswordAccessoryControllerTest, AppendsPlusAddressSuggestions) {
   // Provide 1 plus address, which is not used as a username in any credential.
   // It should appear as a standalone suggestion in the password sheet.
   std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile(
-      /*plus_address=*/"example@gmail", /*is_confirmed=*/true,
-      /*use_full_domain*/ false)};
+      /*plus_address=*/"example@gmail", /*is_confirmed=*/true)};
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
@@ -982,7 +981,7 @@ TEST_F(PasswordAccessoryControllerTest, AppendsPlusAddressSuggestions) {
   EXPECT_EQ(
       controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
-          .AddPlusAddressSection("foo.com", u"example@gmail")
+          .AddPlusAddressSection("https://foo.com", u"example@gmail")
           .Build());
 }
 
@@ -1004,8 +1003,7 @@ TEST_F(PasswordAccessoryControllerTest, PlusAddressUsedAsUsername) {
   // credential. It should not appear as a standalone suggestion in the password
   // sheet.
   std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile(
-      /*plus_address=*/"example@gmail", /*is_confirmed=*/true,
-      /*use_full_domain*/ false)};
+      /*plus_address=*/"example@gmail", /*is_confirmed=*/true)};
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
@@ -1044,8 +1042,7 @@ TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
   // credential. It should not appear as a standalone suggestion in the password
   // sheet.
   std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile(
-      /*plus_address=*/"example@gmail", /*is_confirmed=*/true,
-      /*use_full_domain*/ false)};
+      /*plus_address=*/"example@gmail", /*is_confirmed=*/true)};
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
@@ -1053,16 +1050,15 @@ TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableNonSearchField);
 
-  EXPECT_EQ(
-      controller()->GetSheetData(),
-      PasswordAccessorySheetDataBuilderEmptyTitle()
-          .AddUserInfo(kExampleSite)
-          .AddPlusAddressSection("foo.com", u"example@gmail")
-          .AppendField(u"foo.bar@gmail", u"foo.bar@gmail",
-                       /*is_obfuscated=*/false, /*selectable=*/true)
-          .AppendField(u"S3cur3", password_for_str(u"foo.bar@gmail"), true,
-                       false)
-          .Build());
+  EXPECT_EQ(controller()->GetSheetData(),
+            PasswordAccessorySheetDataBuilderEmptyTitle()
+                .AddUserInfo(kExampleSite)
+                .AddPlusAddressSection("https://foo.com", u"example@gmail")
+                .AppendField(u"foo.bar@gmail", u"foo.bar@gmail",
+                             /*is_obfuscated=*/false, /*selectable=*/true)
+                .AppendField(u"S3cur3", password_for_str(u"foo.bar@gmail"),
+                             true, false)
+                .Build());
 }
 
 // Verify that the action to open plus address creation bottom sheet is appended

@@ -249,7 +249,7 @@ TEST_F(PlusAddressServiceTest, BasicTest) {
 }
 
 TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
-  const PlusProfile profile = test::CreatePlusProfile(/*use_full_domain=*/true);
+  const PlusProfile profile = test::CreatePlusProfile();
   EXPECT_FALSE(service().IsPlusAddress(*profile.plus_address));
   service().SavePlusProfile(profile);
   EXPECT_TRUE(service().IsPlusAddress(*profile.plus_address));
@@ -809,10 +809,8 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
 };
 
 TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
-  const PlusProfile profile1 =
-      test::CreatePlusProfile(/*use_full_domain=*/true);
-  const PlusProfile profile2 =
-      test::CreatePlusProfile2(/*use_full_domain=*/true);
+  const PlusProfile profile1 = test::CreatePlusProfile();
+  const PlusProfile profile2 = test::CreatePlusProfile2();
   // Simulate adding and removing profiles to the database directly, as sync
   // would. This triggers `OnWebDataChangedBySync()`. Prior to the notification,
   // `service()` has no way of knowing about this data.

@@ -17,33 +17,21 @@
 
 namespace plus_addresses::test {
 
-PlusProfile CreatePlusProfile(std::string plus_address,
-                              bool is_confirmed,
-                              bool use_full_domain) {
-  PlusProfile::facet_t facet;
-  if (use_full_domain) {
-    facet = affiliations::FacetURI::FromCanonicalSpec("https://foo.com");
-  } else {
-    facet = "foo.com";
-  }
-
+PlusProfile CreatePlusProfile(std::string plus_address, bool is_confirmed) {
+  PlusProfile::facet_t facet =
+      affiliations::FacetURI::FromCanonicalSpec("https://foo.com");
   return PlusProfile(/*profile_id=*/"123", facet,
                      PlusAddress(std::move(plus_address)),
                      /*is_confirmed=*/is_confirmed);
 }
 
-PlusProfile CreatePlusProfile(bool use_full_domain) {
-  return CreatePlusProfile("plus+foo@plus.plus", /*is_confirmed=*/true,
-                           use_full_domain);
+PlusProfile CreatePlusProfile() {
+  return CreatePlusProfile("plus+foo@plus.plus", /*is_confirmed=*/true);
 }
 
-PlusProfile CreatePlusProfile2(bool use_full_domain) {
-  PlusProfile::facet_t facet;
-  if (use_full_domain) {
-    facet = affiliations::FacetURI::FromCanonicalSpec("https://bar.com");
-  } else {
-    facet = "bar.com";
-  }
+PlusProfile CreatePlusProfile2() {
+  PlusProfile::facet_t facet =
+      affiliations::FacetURI::FromCanonicalSpec("https://bar.com");
   return PlusProfile(/*profile_id=*/"234", facet,
                      PlusAddress("plus+bar@plus.plus"),
                      /*is_confirmed=*/true);
@@ -145,8 +133,7 @@ HandleRequestToPlusAddressWithSuccess(
   http_response->set_content_type("application/json");
   PlusProfile profile = CreatePlusProfile(
       /*plus_address=*/is_refresh ? kFakePlusAddressRefresh : kFakePlusAddress,
-      /*is_confirmed=*/request.GetURL().path() == kConfirmPath,
-      /*use_full_domain=*/true);
+      /*is_confirmed=*/request.GetURL().path() == kConfirmPath);
   http_response->set_content(MakeCreationResponse(profile));
   return http_response;
 }
