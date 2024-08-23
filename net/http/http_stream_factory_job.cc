@@ -126,14 +126,10 @@ HttpStreamFactory::Job::Job(
       job_type_(job_type),
       using_ssl_(origin_url_.SchemeIs(url::kHttpsScheme) ||
                  origin_url_.SchemeIs(url::kWssScheme)),
-      using_quic_(alternative_protocol == kProtoQUIC ||
-                  (ShouldForceQuic(session,
-                                   destination_,
-                                   proxy_info,
-                                   using_ssl_,
-                                   is_websocket_)) ||
-                  job_type == DNS_ALPN_H3 ||
-                  job_type == PRECONNECT_DNS_ALPN_H3),
+      using_quic_(
+          alternative_protocol == kProtoQUIC ||
+          session->ShouldForceQuic(destination_, proxy_info, is_websocket_) ||
+          job_type == DNS_ALPN_H3 || job_type == PRECONNECT_DNS_ALPN_H3),
       quic_version_(quic_version),
       expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
       quic_request_(session_->quic_session_pool()),
@@ -157,8 +153,7 @@ HttpStreamFactory::Job::Job(
   // The Job is forced to use QUIC without a designated version, try the
   // preferred QUIC version that is supported by default.
   if (quic_version_ == quic::ParsedQuicVersion::Unsupported() &&
-      ShouldForceQuic(session, destination_, proxy_info, using_ssl_,
-                      is_websocket_)) {
+      session->ShouldForceQuic(destination_, proxy_info, is_websocket_)) {
     quic_version_ =
         session->context().quic_context->params()->supported_versions[0];
   }
@@ -376,42 +371,6 @@ void HttpStreamFactory::Job::GetSSLInfo(SSLInfo* ssl_info) {
 bool HttpStreamFactory::Job::UsingHttpProxyWithoutTunnel() const {
   return !using_quic_ && !using_ssl_ && !is_websocket_ &&
          proxy_info_.proxy_chain().is_get_to_proxy_allowed();
-}
-
-// static
-bool HttpStreamFactory::Job::OriginToForceQuicOn(
-    const QuicParams& quic_params,
-    const url::SchemeHostPort& destination) {
-  // TODO(crbug.com/40181080): Consider converting `origins_to_force_quic_on` to
-  // use url::SchemeHostPort.
-  return (
-      base::Contains(quic_params.origins_to_force_quic_on, HostPortPair()) ||
-      base::Contains(quic_params.origins_to_force_quic_on,
-                     HostPortPair::FromSchemeHostPort(destination)));
-}
-
-// static
-bool HttpStreamFactory::Job::ShouldForceQuic(
-    HttpNetworkSession* session,
-    const url::SchemeHostPort& destination,
-    const ProxyInfo& proxy_info,
-    bool using_ssl,
-    bool is_websocket) {
-  if (!session->IsQuicEnabled()) {
-    return false;
-  }
-  if (is_websocket) {
-    return false;
-  }
-  // If a proxy is being used, the last proxy in the chain must be QUIC if we
-  // are to use QUIC on top of it.
-  if (!proxy_info.is_direct() && !proxy_info.proxy_chain().Last().is_quic()) {
-    return false;
-  }
-  return OriginToForceQuicOn(*session->context().quic_context->params(),
-                             destination) &&
-         base::EqualsCaseInsensitiveASCII(destination.scheme(),
-                                          url::kHttpsScheme);
 }
 
 bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {

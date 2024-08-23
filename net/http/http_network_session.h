@@ -296,6 +296,11 @@ class NET_EXPORT HttpNetworkSession {
   // Disable QUIC for new streams.
   void DisableQuic();
 
+  // Returns true when QUIC is forcibly used for `destination`.
+  bool ShouldForceQuic(const url::SchemeHostPort& destination,
+                       const ProxyInfo& proxy_info,
+                       bool is_websocket);
+
   // Ignores certificate errors on new connection attempts.
   void IgnoreCertificateErrorsForTesting();
 

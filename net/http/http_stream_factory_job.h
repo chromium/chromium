@@ -60,10 +60,6 @@ class HttpStreamFactory::Job
   // https://crbug.com/718576
   static const int kHTTP2ThrottleMs = 300;
 
-  // Returns true when QUIC is forcibly used for `destination`.
-  static bool OriginToForceQuicOn(const QuicParams& quic_params,
-                                  const url::SchemeHostPort& destination);
-
   // Delegate to report Job's status to HttpStreamRequest and HttpStreamFactory.
   class NET_EXPORT_PRIVATE Delegate {
    public:
@@ -338,13 +334,6 @@ class HttpStreamFactory::Job
   // Returns true if the resulting stream will use an HTTP GET to the final
   // proxy in the chain, instead of a CONNECT to the endpoint.
   bool UsingHttpProxyWithoutTunnel() const;
-
-  // Called in Job constructor: should Job be forced to use QUIC.
-  static bool ShouldForceQuic(HttpNetworkSession* session,
-                              const url::SchemeHostPort& destination,
-                              const ProxyInfo& proxy_info,
-                              bool using_ssl,
-                              bool is_websocket);
 
   // Returns true if the current request can use an existing spdy session.
   bool CanUseExistingSpdySession() const;

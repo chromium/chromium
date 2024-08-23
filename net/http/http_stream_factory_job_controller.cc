@@ -864,8 +864,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
   // - proxied connections perform DNS on the proxy, so they can't get supported
   //   ALPNs from DNS
   const bool dns_alpn_h3_job_enabled =
-      !HttpStreamFactory::Job::OriginToForceQuicOn(
-          *session_->context().quic_context->params(), destination) &&
+      !session_->ShouldForceQuic(destination, proxy_info_, is_websocket_) &&
       enable_alternative_services_ &&
       session_->params().use_dns_https_svcb_alpn &&
       base::EqualsCaseInsensitiveASCII(origin_url_.scheme(),
