@@ -319,6 +319,11 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
   unsigned image_size = image.width() * image.height();
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
 
+  if (!result) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.OCR.Failed.ClientType",
+        GetClientType(client_type));
+  }
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Successful",
                             result.has_value());
   base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",

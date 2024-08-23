@@ -2653,6 +2653,13 @@ even if they fit the naming pattern. -->
   <summary>Records the client type of each OCR request.</summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.OCR.Failed.ClientType"
+    enum="OCRClientType" expires_after="2025-05-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records the client type of each failed OCR request.</summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.OCR.ImageSize.PDF" units="count"
     expires_after="2025-02-10">
   <owner>rhalavati@chromium.org</owner>
