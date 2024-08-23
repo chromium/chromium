@@ -2469,10 +2469,9 @@
     },
     {
       // TODO(crbug.com/40113891): This feature allows scrollers to be
-      // keyboard focusable by default. Enabled in M127, this should stay as a
-      // flag until the Deprecation Trial ends (expect at least 132).
+      // keyboard focusable by default.
       name: "KeyboardFocusableScrollers",
-      status: "stable",
+      status: "experimental",
       public: true,
     },
     {
@@ -2482,9 +2481,9 @@
       // keyboard focusable by default.
       name: "KeyboardFocusableScrollersOptOut",
       origin_trial_feature_name: "KeyboardFocusableScrollersOptOut",
-      // This is not a deprecation feature, but we need this type to set the
-      // origin trial. This feature will allow sites to have time to adjust to
-      // the breaking change by opting out.
+      // This is not a feature that is being deprecated, but the origin trial
+      // *is* being used to allow sites to opt back out of the feature launch.
+      // So we're marking it as a "deprecation" trial.
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
       origin_trial_allows_third_party: true,
