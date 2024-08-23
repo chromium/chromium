@@ -8,17 +8,29 @@
 
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/base64.h"
+#include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace ash {
 
-LobsterPageHandler::LobsterPageHandler(LobsterSession* active_session)
-    : session_(active_session) {}
+base::FilePath GetDownloadDirectoryForProfile(Profile* profile) {
+  return DownloadPrefs::FromBrowserContext(profile)
+      ->GetDefaultDownloadDirectoryForProfile();
+}
+
+LobsterPageHandler::LobsterPageHandler(LobsterSession* active_session,
+                                       Profile* profile)
+    : session_(active_session), profile_(profile) {}
 
 LobsterPageHandler::~LobsterPageHandler() = default;
 
 void LobsterPageHandler::DownloadCandidate(uint32_t candidate_id,
                                            DownloadCandidateCallback callback) {
-  session_->DownloadCandidate(candidate_id, std::move(callback));
+  // TODO: b:359361699 - Implements smarter file naming
+  session_->DownloadCandidate(
+      candidate_id,
+      GetDownloadDirectoryForProfile(profile_).Append("sample.jpeg"),
+      std::move(callback));
 }
 
 void LobsterPageHandler::CommitAsInsert(uint32_t candidate_id,
@@ -28,7 +40,11 @@ void LobsterPageHandler::CommitAsInsert(uint32_t candidate_id,
 
 void LobsterPageHandler::CommitAsDownload(uint32_t candidate_id,
                                           CommitAsDownloadCallback callback) {
-  session_->CommitAsDownload(candidate_id, std::move(callback));
+  // TODO: b:359361699 - Implements smarter file naming
+  session_->CommitAsDownload(
+      candidate_id,
+      GetDownloadDirectoryForProfile(profile_).Append("sample.jpeg"),
+      std::move(callback));
 }
 
 void LobsterPageHandler::RequestCandidates(const std::string& query,

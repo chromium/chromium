@@ -9,6 +9,7 @@
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
+#include "base/files/file_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -136,7 +137,8 @@ TEST_F(LobsterSessionImplTest, CanNotDownloadACandidateBeforeAnyRequest) {
   LobsterSessionImpl session(std::move(lobster_client));
 
   base::test::TestFuture<bool> future;
-  session.DownloadCandidate(/*id=*/1, future.GetCallback());
+  session.DownloadCandidate(/*id=*/1, base::FilePath("dummy_path"),
+                            future.GetCallback());
 
   EXPECT_FALSE(future.Get());
 }
@@ -166,7 +168,8 @@ TEST_F(LobsterSessionImplTest,
 
   base::test::TestFuture<bool> future;
 
-  session.DownloadCandidate(/*id=*/3, future.GetCallback());
+  session.DownloadCandidate(/*id=*/3, base::FilePath("dummy_path"),
+                            future.GetCallback());
 
   EXPECT_FALSE(future.Get());
 }
@@ -207,7 +210,8 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfIdAvailableInPastRequest) {
 
   base::test::TestFuture<bool> future;
 
-  session.DownloadCandidate(/*id=*/1, future.GetCallback());
+  session.DownloadCandidate(/*id=*/1, base::FilePath("dummy_path"),
+                            future.GetCallback());
 
   EXPECT_TRUE(future.Get());
 }

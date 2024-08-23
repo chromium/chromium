@@ -11,6 +11,7 @@
 #include "ash/lobster/lobster_image_actuator.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
@@ -40,11 +41,16 @@ LobsterSessionImpl::~LobsterSessionImpl() {
 }
 
 void LobsterSessionImpl::DownloadCandidate(int candidate_id,
+                                           const base::FilePath& file_path,
                                            StatusCallback status_callback) {
-  // TODO: b:348283703 - Add download logic here.
-  InflateCandidateAndPerformAction(candidate_id,
-                                   base::BindOnce([](const std::string&) {}),
-                                   std::move(status_callback));
+  InflateCandidateAndPerformAction(
+      candidate_id,
+      base::BindOnce(
+          [](const base::FilePath& file_path, const std::string& image_bytes) {
+            WriteImageToPath(file_path, image_bytes);
+          },
+          file_path),
+      std::move(status_callback));
 }
 
 void LobsterSessionImpl::RequestCandidates(const std::string& query,
@@ -60,19 +66,22 @@ void LobsterSessionImpl::CommitAsInsert(int candidate_id,
                                         StatusCallback status_callback) {
   InflateCandidateAndPerformAction(
       candidate_id, base::BindOnce([](const std::string& image_bytes) {
-        LobsterImageActuator image_actuator;
-        image_actuator.InsertImageOrCopyToClipboard(GetFocusedTextInputClient(),
-                                                    image_bytes);
+        InsertImageOrCopyToClipboard(GetFocusedTextInputClient(), image_bytes);
       }),
       std::move(status_callback));
 }
 
 void LobsterSessionImpl::CommitAsDownload(int candidate_id,
+                                          const base::FilePath& file_path,
                                           StatusCallback status_callback) {
-  // TODO: b:348283703 - Add commit as download logic here.
-  InflateCandidateAndPerformAction(candidate_id,
-                                   base::BindOnce([](const std::string&) {}),
-                                   std::move(status_callback));
+  InflateCandidateAndPerformAction(
+      candidate_id,
+      base::BindOnce(
+          [](const base::FilePath& file_path, const std::string& image_bytes) {
+            WriteImageToPath(file_path, image_bytes);
+          },
+          file_path),
+      std::move(status_callback));
 }
 
 void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,

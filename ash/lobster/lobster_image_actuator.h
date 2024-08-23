@@ -8,22 +8,18 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/base/ime/text_input_client.h"
 #include "url/gurl.h"
 
 namespace ash {
 
-class ASH_EXPORT LobsterImageActuator {
- public:
-  LobsterImageActuator();
-  ~LobsterImageActuator();
+void ASH_EXPORT InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
+                                             const std::string& image_bytes);
 
-  void InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
-                                    const std::string& image_bytes);
-
- private:
-};
+void ASH_EXPORT WriteImageToPath(const base::FilePath& path,
+                                 const std::string& image_bytes);
 
 }  // namespace ash
 

@@ -14,6 +14,7 @@
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 
 namespace ash {
@@ -28,9 +29,13 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
   ~LobsterSessionImpl() override;
 
   // LobsterSession overrides
-  void DownloadCandidate(int candidate_id, StatusCallback callback) override;
+  void DownloadCandidate(int candidate_id,
+                         const base::FilePath& file_path,
+                         StatusCallback callback) override;
   void CommitAsInsert(int candidate_id, StatusCallback callback) override;
-  void CommitAsDownload(int candidate_id, StatusCallback callback) override;
+  void CommitAsDownload(int candidate_id,
+                        const base::FilePath& file_path,
+                        StatusCallback callback) override;
   void RequestCandidates(const std::string& query,
                          int num_candidates,
                          RequestCandidatesCallback) override;
