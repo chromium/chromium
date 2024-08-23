@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Network.Ash.Cellular.AllowTextMessages.Policy.SuppressionState"
     enum="PolicyTextMessageSuppressionState" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>chadduffin@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the policy text message suppression state. This is emitted whenever
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Network.Ash.Cellular.AllowTextMessages.TextMessageNotificationSuppressionState"
     enum="NotificationSuppressionState" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>chadduffin@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the received text message notification suppression state. This is
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.AllowTextMessages.User.SuppressionState"
     enum="UserTextMessageSuppressionState" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>chadduffin@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the user text message suppression state. This is emitted whenever
@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.ApnTypes"
     enum="ApnTypes" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the APN types of an APN. This is emitted each time a user creates a
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.AuthenticationType"
     enum="ApnAuthenticationType" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the authentication type of an APN. This is emitted each time a user
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.IpType"
     enum="ApnIpType" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the IP type of an APN. This is emitted each time a user creates a
@@ -139,15 +139,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.Result"
     enum="BooleanSuccess" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Records the result of an attempt to create a custom APN.</summary>
 </histogram>
 
 <histogram
     name="Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.ApnTypes"
-    enum="ApnTypes" expires_after="2024-09-30">
-  <owner>gordonseto@google.com</owner>
+    enum="ApnTypes" expires_after="2025-08-23">
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the APN types of an APN. This is emitted each time a user creates an
@@ -157,8 +157,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.AuthenticationType"
-    enum="ApnAuthenticationType" expires_after="2024-09-30">
-  <owner>gordonseto@google.com</owner>
+    enum="ApnAuthenticationType" expires_after="2025-08-23">
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the authentication type of an APN. This is emitted each time a user
@@ -168,8 +168,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.IpType"
-    enum="ApnIpType" expires_after="2024-09-30">
-  <owner>gordonseto@google.com</owner>
+    enum="ApnIpType" expires_after="2025-08-23">
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the IP type of an APN. This is emitted each time a user creates an
@@ -179,8 +179,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.Result"
-    enum="BooleanSuccess" expires_after="2024-09-30">
-  <owner>gordonseto@google.com</owner>
+    enum="BooleanSuccess" expires_after="2025-08-23">
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the result of an attempt to create an exclusively enabled custom
@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.CustomApns.Count" units="count"
     expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the number of APNs saved for a cellular network every time a
@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.CustomApns.{CustomApnState}.Count"
     units="count" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the number of {CustomApnState} APNs saved for a cellular network
@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.DisableCustomApn.ApnTypes"
     enum="ApnTypes" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the APN types of an APN before modification. This is emitted each
@@ -224,14 +224,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.DisableCustomApn.Result"
     enum="BooleanSuccess" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Records the result of an attempt to disable a custom APN.</summary>
 </histogram>
 
 <histogram name="Network.Ash.Cellular.Apn.EnableCustomApn.ApnTypes"
     enum="ApnTypes" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the APN types of an APN before modification. This is emitted each
@@ -241,7 +241,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.EnableCustomApn.Result"
     enum="BooleanSuccess" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Records the result of an attempt to enable a custom APN.</summary>
 </histogram>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Ash.Cellular.Apn.Managed.MigrationType"
     enum="ManagedApnMigrationType" expires_after="2025-02-20">
   <owner>hsuregan@google.com</owner>
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the type of migration that occurs for each APN that's migrated for
@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.ModifyCustomApn.ApnTypes"
     enum="ApnTypes" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the APN types of an APN before modification. This is emitted each
@@ -277,14 +277,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.ModifyCustomApn.Result"
     enum="BooleanSuccess" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Records the result of an attempt to modify a custom APN.</summary>
 </histogram>
 
 <histogram name="Network.Ash.Cellular.Apn.RemoveCustomApn.ApnTypes"
     enum="ApnTypes" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the APN types of an APN. This is emitted each time a user removes a
@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.Apn.RemoveCustomApn.Result"
     enum="BooleanSuccess" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Records the result of an attempt to remove a custom APN.</summary>
 </histogram>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Ash.Cellular.Apn.Unmanaged.MigrationType"
     enum="UnmanagedApnMigrationType" expires_after="2025-02-20">
   <owner>hsuregan@google.com</owner>
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the type of migration that occurs for each APN that's migrated for
@@ -323,7 +323,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.Cellular.ConnectionResult.{CustomApnsStatus}.All"
     enum="ShillConnectResult" expires_after="2025-02-20">
-  <owner>gordonseto@google.com</owner>
+  <owner>nikhilcn@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Tracks the result of network connection attempts for cellular networks and
