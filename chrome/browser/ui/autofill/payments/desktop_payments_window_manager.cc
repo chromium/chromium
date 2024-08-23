@@ -35,13 +35,10 @@ using Vcn3dsFlowEvent = autofill_metrics::Vcn3dsFlowEvent;
 
 gfx::Rect GetPopupSizeForVcn3ds() {
   // The first two arguments do not matter as position gets overridden by
-  // the tab modal pop-up code. The 600x400 size of the pop-up is derived
-  // from the Mastercard and Visa 3DS developer guides.
-  //
-  // Mastercard:
-  // https://developer.mastercard.com/consent-management/documentation/tutorials/consents-tutorial/handling-3ds-auth/.
-  // Visa: https://developer.visa.com/pages/visa-3d-secure.
-  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/400);
+  // the tab modal pop-up code. The 600x640 size of the pop-up was decided as
+  // the ideal size for user experience. This decision largely factored in how
+  // to minimize scrolling while maintaining a presentable pop-up.
+  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/640);
 }
 
 }  // namespace
