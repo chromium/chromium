@@ -58,13 +58,14 @@ std::optional<WeeklyTimeIntervalChecked> WeeklyTimeIntervalChecked::FromDict(
 
   auto start = WeeklyTimeChecked::FromDict(start_value->GetDict());
   if (!start) {
-    LOG(ERROR) << "Couldn't parse start.";
+    LOG(ERROR) << "Couldn't parse start: "
+               << start_value->GetDict().DebugString();
     return std::nullopt;
   }
 
   auto end = WeeklyTimeChecked::FromDict(end_value->GetDict());
   if (!end) {
-    LOG(ERROR) << "Couldn't parse end.";
+    LOG(ERROR) << "Couldn't parse end: " << end_value->GetDict().DebugString();
     return std::nullopt;
   }
 

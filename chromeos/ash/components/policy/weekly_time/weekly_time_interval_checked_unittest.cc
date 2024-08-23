@@ -28,8 +28,34 @@ constexpr base::TimeDelta kDay = base::Days(1);
 constexpr base::TimeDelta kWeek = base::Days(7);
 
 using Day = WeeklyTimeChecked::Day;
+using weekly_time::BuildWeeklyTimeIntervalCheckedDict;
 
 }  // namespace
+
+TEST(WeeklyTimeIntervalCheckedTest, Equality_True) {
+  auto interval =
+      WeeklyTimeIntervalChecked(WeeklyTimeChecked(Day::kFriday, 111),
+                                WeeklyTimeChecked(Day::kSaturday, 222));
+  EXPECT_EQ(interval, interval);
+}
+
+TEST(WeeklyTimeIntervalCheckedTest, Equality_FalseStart) {
+  auto w_end = WeeklyTimeChecked(Day::kSaturday, 222);
+  auto interval1 =
+      WeeklyTimeIntervalChecked(WeeklyTimeChecked(Day::kTuesday, 111), w_end);
+  auto interval2 =
+      WeeklyTimeIntervalChecked(WeeklyTimeChecked(Day::kFriday, 111), w_end);
+  EXPECT_NE(interval1, interval2);
+}
+
+TEST(WeeklyTimeIntervalCheckedTest, Equality_FalseEnd) {
+  auto w_start = WeeklyTimeChecked(Day::kSaturday, 222);
+  auto interval1 = WeeklyTimeIntervalChecked(
+      w_start, WeeklyTimeChecked(Day::kWednesday, 111));
+  auto interval2 =
+      WeeklyTimeIntervalChecked(w_start, WeeklyTimeChecked(Day::kSunday, 111));
+  EXPECT_NE(interval1, interval2);
+}
 
 TEST(WeeklyTimeIntervalCheckedTest, FromDict) {
   const int kMillis1 = 111, kMillis2 = 222;

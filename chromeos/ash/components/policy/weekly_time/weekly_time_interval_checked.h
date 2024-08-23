@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   WeeklyTimeIntervalChecked(const WeeklyTimeIntervalChecked&);
   WeeklyTimeIntervalChecked& operator=(const WeeklyTimeIntervalChecked&);
 
+  friend bool operator==(const WeeklyTimeIntervalChecked&,
+                         const WeeklyTimeIntervalChecked&) = default;
+
   // Determines if `interval_a` and `interval_b` have any overlap in time.
   // Intervals are considered half-open (i.e., the start time is included, the
   // end time is not).

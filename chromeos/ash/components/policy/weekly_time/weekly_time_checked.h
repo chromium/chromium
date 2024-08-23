@@ -24,7 +24,7 @@ namespace policy {
 // It is different from `WeeklyTime` in that it is checked automatically during
 // policy decoding for validity, and it also doesn't have the timezone info
 // tacked on top.
-struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeChecked {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeChecked {
  public:
   // Test support.
   static const char kDayOfWeek[];
@@ -46,6 +46,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeChecked {
   WeeklyTimeChecked(Day day_of_week, int milliseconds_since_midnight);
   WeeklyTimeChecked(const WeeklyTimeChecked&);
   WeeklyTimeChecked& operator=(const WeeklyTimeChecked&);
+
+  friend bool operator==(const WeeklyTimeChecked&,
+                         const WeeklyTimeChecked&) = default;
 
   // Constructs from a Value::Dict:
   // {

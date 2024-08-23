@@ -24,8 +24,30 @@ constexpr base::TimeDelta kHour = base::Hours(1);
 constexpr base::TimeDelta kDay = base::Days(1);
 
 using Day = WeeklyTimeChecked::Day;
+using weekly_time::BuildWeeklyTimeCheckedDict;
+using weekly_time::TimeFromString;
 
 }  // namespace
+
+TEST(WeeklyTimeCheckedTest, Equality_True) {
+  const int kMilliseconds = 111;
+  auto w1 = WeeklyTimeChecked(Day::kMonday, kMilliseconds);
+  auto w2 = WeeklyTimeChecked(Day::kMonday, kMilliseconds);
+  EXPECT_EQ(w1, w2);
+}
+
+TEST(WeeklyTimeCheckedTest, Equality_FalseDay) {
+  const int kMilliseconds = 111;
+  auto w1 = WeeklyTimeChecked(Day::kMonday, kMilliseconds);
+  auto w2 = WeeklyTimeChecked(Day::kTuesday, kMilliseconds);
+  EXPECT_NE(w1, w2);
+}
+
+TEST(WeeklyTimeCheckedTest, Equality_FalseMillis) {
+  auto w1 = WeeklyTimeChecked(Day::kMonday, 111);
+  auto w2 = WeeklyTimeChecked(Day::kMonday, 222);
+  EXPECT_NE(w1, w2);
+}
 
 TEST(WeeklyTimeCheckedTest, FromDict) {
   const int kMilliseconds = 123456;
@@ -75,8 +97,7 @@ TEST(WeeklyTimeCheckedTest, FromDict_InvalidMillisecondsSinceMidnight) {
 }
 
 TEST(WeeklyTimeCheckedTest, FromExploded) {
-  base::Time time;
-  ASSERT_TRUE(base::Time::FromString(kTimeString, &time));
+  base::Time time = TimeFromString(kTimeString);
   base::Time::Exploded exploded;
   time.LocalExplode(&exploded);
   auto w = WeeklyTimeChecked::FromExploded(exploded);
@@ -85,8 +106,7 @@ TEST(WeeklyTimeCheckedTest, FromExploded) {
 }
 
 TEST(WeeklyTimeCheckedTest, FromTime) {
-  base::Time time;
-  ASSERT_TRUE(base::Time::FromString(kTimeString, &time));
+  base::Time time = TimeFromString(kTimeString);
   auto w = WeeklyTimeChecked::FromTimeAsLocalTime(time);
   EXPECT_EQ(w.day_of_week(), Day::kTuesday);
   EXPECT_EQ(w.milliseconds_since_midnight(), 10 * kMillisecondsInHour);

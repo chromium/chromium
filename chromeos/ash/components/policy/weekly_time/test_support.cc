@@ -4,12 +4,17 @@
 
 #include "chromeos/ash/components/policy/weekly_time/test_support.h"
 
+#include <vector>
+
+#include "base/json/json_reader.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/policy/weekly_time/checked_util.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_checked.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval_checked.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace policy {
+namespace policy::weekly_time {
 
 base::Value::Dict BuildWeeklyTimeCheckedDict(WeeklyTimeChecked::Day day_of_week,
                                              int milliseconds_since_midnight) {
@@ -33,4 +38,35 @@ base::Value::Dict BuildWeeklyTimeIntervalCheckedDict(
   return dict;
 }
 
-}  // namespace policy
+base::Value::List BuildList(std::string_view json_str) {
+  std::optional<base::Value> value = base::JSONReader::Read(json_str);
+  if (!value.has_value()) {
+    ADD_FAILURE() << "JSON parsing failed: " << json_str;
+    return {};
+  }
+  if (!value->is_list()) {
+    ADD_FAILURE() << "JSON value not a list: " << json_str;
+    return {};
+  }
+  return std::move(value.value()).TakeList();
+}
+
+std::vector<WeeklyTimeIntervalChecked> BuildIntervals(
+    std::string_view json_str) {
+  base::Value::List list = BuildList(json_str);
+  auto result = ExtractIntervalsFromList(list);
+  if (!result.has_value()) {
+    ADD_FAILURE() << "Couldn't parse intervals from list: "
+                  << list.DebugString();
+    return {};
+  }
+  return result.value();
+}
+
+base::Time TimeFromString(const char* str) {
+  base::Time time;
+  EXPECT_TRUE(base::Time::FromString(str, &time));
+  return time;
+}
+
+}  // namespace policy::weekly_time

@@ -12,6 +12,7 @@ component("policy") {
 
   public = [
     "restriction_schedule/device_restriction_schedule_controller.h",
+    "weekly_time/checked_util.h",
     "weekly_time/time_utils.h",
     "weekly_time/weekly_time.h",
     "weekly_time/weekly_time_checked.h",
@@ -21,6 +22,7 @@ component("policy") {
 
   sources = [
     "restriction_schedule/device_restriction_schedule_controller.cc",
+    "weekly_time/checked_util.cc",
     "weekly_time/time_utils.cc",
     "weekly_time/weekly_time.cc",
     "weekly_time/weekly_time_checked.cc",
@@ -61,6 +63,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "weekly_time/checked_util_unittest.cc",
     "weekly_time/time_utils_unittest.cc",
     "weekly_time/weekly_time_checked_unittest.cc",
     "weekly_time/weekly_time_interval_checked_unittest.cc",
