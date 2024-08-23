@@ -107,6 +107,10 @@ FingerprintView* FingerprintView::TestApi::GetView() {
   return view_;
 }
 
+FingerprintState FingerprintView::TestApi::GetState() const {
+  return view_->state_;
+}
+
 //----------------------- FingerprintView ------------------------
 
 FingerprintView::FingerprintView() {

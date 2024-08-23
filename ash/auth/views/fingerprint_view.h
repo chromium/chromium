@@ -40,6 +40,8 @@ class ASH_EXPORT FingerprintView : public views::View {
 
     AnimatedRoundedImageView* GetIcon();
 
+    FingerprintState GetState() const;
+
     void ShowFirstFrame();
     void ShowLastFrame();
 
