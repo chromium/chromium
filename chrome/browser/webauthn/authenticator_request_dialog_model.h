@@ -482,9 +482,10 @@ struct AuthenticatorRequestDialogModel
   std::optional<int> gpm_pin_remaining_attempts_;
 
   // Whether the UI is currently in a disabled state, which is required for some
-  // transitions (e.g. `Step::kWaitingForEnclave`). Each step UI that needs it
-  // should handle it accordingly.
-  // TODO(rgod): Double check all steps and disable the needed elements.
+  // transitions (e.g. when waiting for the response from the enclave). When
+  // true, the sheets will by default display an activity indicator at the top
+  // and disable all the usual buttons (e.g. accept or "other mechanisms")
+  // except for the cancel button.
   bool ui_disabled_ = false;
 
 #if BUILDFLAG(IS_MAC)
