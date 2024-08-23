@@ -185,6 +185,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Crypto.TPMOperation.Win.{Operation}{SignatureAlgorithm}.Error"
+    units="win32 error code" expires_after="2025-08-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>kristianm@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows when an operation failed while using a TPM-protected
+    key. Represents the Win32 status returned by the API corresponding with that
+    operation.
+  </summary>
+  <token key="Operation">
+    <variant name="MessageSigning"/>
+    <variant name="NewKeyCreation"/>
+    <variant name="WrappedKeyCreation"/>
+  </token>
+  <token key="SignatureAlgorithm">
+    <variant name="ECDSA"/>
+    <variant name="RSA"/>
+  </token>
+</histogram>
+
 <histogram name="Crypto.TPMOperation.{Operation}{SignatureAlgorithm}"
     enum="BooleanSuccess" expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
