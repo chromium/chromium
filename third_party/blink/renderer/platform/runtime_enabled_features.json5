@@ -2740,7 +2740,7 @@
       // If enabled, meter elements will render with a fallback style when
       // appearance is set to none.
       name: "MeterAppearanceNoneFallbackStyle",
-      status: "experimental",
+      status: "stable",
     },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
