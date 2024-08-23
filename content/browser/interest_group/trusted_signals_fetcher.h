@@ -27,6 +27,8 @@
 
 namespace content {
 
+struct BiddingAndAuctionServerKey;
+
 // Single-use network fetcher for versions 2+ of the key-value server API.
 // It takes a list compression groups and partitions, and asynchronously returns
 // a set of responses, one per compression group. The responses are provided as
@@ -147,6 +149,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   virtual void FetchBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& trusted_bidding_signals_url,
+      const BiddingAndAuctionServerKey& bidding_and_auction_key,
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
 
@@ -155,6 +158,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   virtual void FetchScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& trusted_scoring_signals_url,
+      const BiddingAndAuctionServerKey& bidding_and_auction_key,
       const std::map<int, std::vector<ScoringPartition>>& compression_groups,
       Callback callback);
 

@@ -248,6 +248,7 @@ TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 void TrustedSignalsFetcher::FetchBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& trusted_bidding_signals_url,
+    const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
   StartRequest(url_loader_factory, trusted_bidding_signals_url,
@@ -258,6 +259,7 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
 void TrustedSignalsFetcher::FetchScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& trusted_scoring_signals_url,
+    const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,
     Callback callback) {
   NOTIMPLEMENTED();

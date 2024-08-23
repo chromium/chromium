@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -164,7 +165,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     trusted_signals_fetcher.FetchBiddingSignals(
         url_loader_factory_.get(),
         signals_url ? *signals_url : TrustedBiddingSignalsUrl(),
-        compression_groups,
+        BiddingAndAuctionServerKey(), compression_groups,
         base::BindLambdaForTesting(
             [&](TrustedSignalsFetcher::SignalsFetchResult result) {
               out = std::move(result);

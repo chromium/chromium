@@ -4,6 +4,7 @@
 
 #include "content/browser/interest_group/trusted_signals_cache_impl.h"
 
+#include <list>
 #include <optional>
 #include <string>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/trusted_signals_fetcher.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -61,6 +63,7 @@ struct BiddingParams {
       blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
   url::Origin joining_origin;
   GURL trusted_signals_url;
+  url::Origin coordinator;
   std::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   base::Value::Dict additional_params;
 };
@@ -70,6 +73,7 @@ struct ScoringParams {
   url::Origin main_frame_origin;
   url::Origin seller;
   GURL trusted_signals_url;
+  url::Origin coordinator;
   url::Origin interest_group_owner;
   url::Origin joining_origin;
   GURL render_url;
@@ -81,10 +85,25 @@ struct ScoringParams {
 // calls, and lets tests monitor and respond to those fetches.
 class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
  public:
+  static constexpr std::string_view kKeyFetchFailed = "Key fetch failed";
+
+  // Controls how coordinator key requests are handled.
+  enum class GetCoordinatorKeyMode {
+    kSync,
+    kAsync,
+    kSyncFail,
+    kAsyncFail,
+    // Grabs the callback and lets the consumer wait for it and invoke it
+    // directly via WaitForCoordinatorKeyCallback(). Checks that all received
+    // callbacks have been consumed on destruction.
+    kStashCallback
+  };
+
   class TestTrustedSignalsFetcher : public TrustedSignalsFetcher {
    public:
     struct PendingBiddingSignalsFetch {
       GURL trusted_signals_url;
+      BiddingAndAuctionServerKey bidding_and_auction_key;
       std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
@@ -96,6 +115,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
     struct PendingScoringSignalsFetch {
       GURL trusted_signals_url;
+      BiddingAndAuctionServerKey bidding_and_auction_key;
       std::map<int, std::vector<TrustedSignalsFetcher::ScoringPartition>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
@@ -114,6 +134,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
         const GURL& trusted_signals_url,
+        const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<BiddingPartition>>& compression_groups,
         Callback callback) override {
       // This class is single use. Make sure a Fetcher isn't used more than
@@ -145,13 +166,15 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
-          trusted_signals_url, std::move(compression_groups_copy),
-          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+          trusted_signals_url, bidding_and_auction_key,
+          std::move(compression_groups_copy), std::move(callback),
+          weak_ptr_factory_.GetWeakPtr()));
     }
 
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
         const GURL& trusted_signals_url,
+        const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<ScoringPartition>>& compression_groups,
         Callback callback) override {
       // This class is single use. Make sure a Fetcher isn't used more than
@@ -184,8 +207,9 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
-          trusted_signals_url, std::move(compression_groups_copy),
-          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+          trusted_signals_url, bidding_and_auction_key,
+          std::move(compression_groups_copy), std::move(callback),
+          weak_ptr_factory_.GetWeakPtr()));
     }
 
     const raw_ptr<TestTrustedSignalsCache> cache_;
@@ -194,12 +218,86 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
   };
 
   TestTrustedSignalsCache()
-      : TrustedSignalsCacheImpl(/*url_loader_factory=*/nullptr) {}
+      : TrustedSignalsCacheImpl(
+            /*url_loader_factory=*/nullptr,
+            // The use of base::Unretained here means that all async calls must
+            // be accounted for before a test completes. The base class always
+            // invokes this
+            // method synchronously, however, and never on destruction.
+            base::BindRepeating(&TestTrustedSignalsCache::GetCoordinatorKey,
+                                base::Unretained(this))) {}
 
   ~TestTrustedSignalsCache() override {
     // All pending fetches should have been claimed by calls to
     // WaitForBiddingSignalsFetch[es]().
     EXPECT_TRUE(trusted_bidding_signals_fetches_.empty());
+    EXPECT_TRUE(pending_coordinator_key_callbacks_.empty());
+  }
+
+  void set_get_coordinator_key_mode(
+      GetCoordinatorKeyMode get_coordinator_key_mode) {
+    get_coordinator_key_mode_ = get_coordinator_key_mode;
+  }
+
+  // Callback to handle coordinator key requests by the base
+  // TrustedSignalsCacheImpl class.
+  void GetCoordinatorKey(
+      std::optional<url::Origin> coordinator,
+      base::OnceCallback<void(
+          base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
+    switch (get_coordinator_key_mode_) {
+      case GetCoordinatorKeyMode::kSync:
+        std::move(callback).Run(BiddingAndAuctionServerKey{
+            /*key=*/coordinator->Serialize(), /*id=*/1});
+        break;
+      case GetCoordinatorKeyMode::kAsync:
+        // This should be safe, as the base class guards this callback with a
+        // weak pointer.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           BiddingAndAuctionServerKey{
+                               /*key=*/coordinator->Serialize(), /*id=*/1}));
+        break;
+      case GetCoordinatorKeyMode::kSyncFail:
+        std::move(callback).Run(base::unexpected(std::string(kKeyFetchFailed)));
+        break;
+      case GetCoordinatorKeyMode::kAsyncFail:
+        // This should be safe, as the base class guards this callback with a
+        // weak pointer.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           base::unexpected(std::string(kKeyFetchFailed))));
+        break;
+      case GetCoordinatorKeyMode::kStashCallback:
+        pending_coordinator_key_callbacks_.emplace_back(std::move(callback));
+        if (wait_for_coordinator_key_callback_run_loop_) {
+          wait_for_coordinator_key_callback_run_loop_->Quit();
+        }
+    }
+  }
+
+  // Allows invoking a callback asynchronously to be guarded by
+  // `weak_ptr_factory_`.
+  void InvokeCallback(base::OnceClosure callback) { std::move(callback).Run(); }
+
+  // Waits for the next attempt to retrieve a coordinator key, and returns the
+  // passed in callback. The GetCoordinatorKeyMode must be kStashCallback.
+  base::OnceCallback<
+      void(base::expected<BiddingAndAuctionServerKey, std::string>)>
+  WaitForCoordinatorKeyCallback() {
+    CHECK_EQ(get_coordinator_key_mode_, GetCoordinatorKeyMode::kStashCallback);
+    if (pending_coordinator_key_callbacks_.empty()) {
+      wait_for_coordinator_key_callback_run_loop_ =
+          std::make_unique<base::RunLoop>();
+      wait_for_coordinator_key_callback_run_loop_->Run();
+      wait_for_coordinator_key_callback_run_loop_.reset();
+    }
+
+    auto out = std::move(pending_coordinator_key_callbacks_.front());
+    pending_coordinator_key_callbacks_.pop_front();
+    return out;
   }
 
   // Waits until there have been `num_fetches` fetches whose
@@ -277,10 +375,18 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
+  std::list<base::OnceCallback<void(
+      base::expected<BiddingAndAuctionServerKey, std::string>)>>
+      pending_coordinator_key_callbacks_;
+  std::unique_ptr<base::RunLoop> wait_for_coordinator_key_callback_run_loop_;
+
   std::vector<TestTrustedSignalsFetcher::PendingBiddingSignalsFetch>
       trusted_bidding_signals_fetches_;
   std::vector<TestTrustedSignalsFetcher::PendingScoringSignalsFetch>
       trusted_scoring_signals_fetches_;
+
+  GetCoordinatorKeyMode get_coordinator_key_mode_ =
+      GetCoordinatorKeyMode::kSync;
 };
 
 // Validates that `partition` has a single partition corresponding to the
@@ -348,6 +454,7 @@ void ValidateFetchParams(const FetcherFetchType& fetch,
                          int expected_compression_group_id,
                          int expected_partition_id) {
   EXPECT_EQ(fetch.trusted_signals_url, params.trusted_signals_url);
+  EXPECT_EQ(fetch.bidding_and_auction_key.key, params.coordinator.Serialize());
   ASSERT_EQ(fetch.compression_groups.size(), 1u);
   EXPECT_EQ(fetch.compression_groups.begin()->first,
             expected_compression_group_id);
@@ -608,6 +715,7 @@ class TrustedSignalsCacheTest : public testing::Test {
           blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
       out.joining_origin = kJoiningOrigin;
       out.trusted_signals_url = kTrustedBiddingSignalsUrl;
+      out.coordinator = kCoordinator;
       out.trusted_bidding_signals_keys = {{"key1", "key2"}};
       return out;
     }
@@ -616,6 +724,7 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.main_frame_origin = kMainFrameOrigin;
       out.seller = kSeller;
       out.trusted_signals_url = kTrustedScoringSignalsUrl;
+      out.coordinator = kCoordinator;
       out.interest_group_owner = kBidder;
       out.joining_origin = kJoiningOrigin;
       out.render_url = kRenderUrl;
@@ -787,6 +896,13 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().params2.interest_group_names = {"group2"};
       out.back().params2.joining_origin =
           url::Origin::Create(GURL("https://other.joining.origin.test"));
+
+      // Different coordinators.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Requests have different coordinators.";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.coordinator =
+          url::Origin::Create(GURL("https://other.coordinator.test"));
     }
 
     if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
@@ -862,6 +978,13 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().description = "Requests have different `additional_params`";
       out.back().request_relation = RequestRelation::kDifferentPartitions;
       out.back().params2.additional_params.Set("additional", "param");
+
+      // Different coordinators.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Requests have different coordinators.";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.coordinator =
+          url::Origin::Create(GURL("https://other.coordinator.test"));
     }
 
     return out;
@@ -881,6 +1004,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     EXPECT_EQ(bidding_params1.joining_origin, bidding_params2.joining_origin);
     EXPECT_EQ(bidding_params1.trusted_signals_url,
               bidding_params2.trusted_signals_url);
+    EXPECT_EQ(bidding_params1.coordinator, bidding_params2.coordinator);
     EXPECT_EQ(bidding_params1.additional_params,
               bidding_params2.additional_params);
 
@@ -891,6 +1015,7 @@ class TrustedSignalsCacheTest : public testing::Test {
         bidding_params1.execution_mode,
         bidding_params1.joining_origin,
         bidding_params1.trusted_signals_url,
+        bidding_params1.coordinator,
         bidding_params1.trusted_bidding_signals_keys,
         bidding_params1.additional_params.Clone()};
 
@@ -933,7 +1058,7 @@ class TrustedSignalsCacheTest : public testing::Test {
         bidding_params.main_frame_origin, bidding_params.bidder,
         *bidding_params.interest_group_names.begin(),
         bidding_params.execution_mode, bidding_params.joining_origin,
-        bidding_params.trusted_signals_url,
+        bidding_params.trusted_signals_url, bidding_params.coordinator,
         bidding_params.trusted_bidding_signals_keys,
         bidding_params.additional_params.Clone(), partition_id);
 
@@ -951,9 +1076,9 @@ class TrustedSignalsCacheTest : public testing::Test {
     int partition_id = -1;
     auto handle = trusted_signals_cache_->RequestTrustedScoringSignals(
         scoring_params.main_frame_origin, scoring_params.seller,
-        scoring_params.trusted_signals_url, scoring_params.interest_group_owner,
-        scoring_params.joining_origin, scoring_params.render_url,
-        scoring_params.component_render_urls,
+        scoring_params.trusted_signals_url, scoring_params.coordinator,
+        scoring_params.interest_group_owner, scoring_params.joining_origin,
+        scoring_params.render_url, scoring_params.component_render_urls,
         scoring_params.additional_params.Clone(), partition_id);
 
     // The call should never fail.
@@ -983,6 +1108,9 @@ class TrustedSignalsCacheTest : public testing::Test {
   const GURL kRenderUrl{"https://render.test/foo"};
   const std::vector<GURL> kComponentRenderUrls{
       GURL("https://component1.test/a"), GURL("https://component2.test/b")};
+
+  const url::Origin kCoordinator =
+      url::Origin::Create(GURL("https://coordinator.test"));
 
   std::unique_ptr<TestTrustedSignalsCache> trusted_signals_cache_;
   mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> cache_mojo_pipe_;
@@ -1059,7 +1187,7 @@ TYPED_TEST(TrustedSignalsCacheTest, GetAfterFetchCompletes) {
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
 
-  // Wait for the fetch to be observed and response to it. No need to spin the
+  // Wait for the fetch to be observed and respond to it. No need to spin the
   // message loop, since fetch responses at this layer are passed directly to
   // the cache, and don't go through Mojo, as the TrustedSignalsFetcher is
   // entirely mocked out.
@@ -1079,7 +1207,7 @@ TYPED_TEST(TrustedSignalsCacheTest, GetAfterFetchFails) {
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
 
-  // Wait for the fetch to be observed and response to it. No need to spin the
+  // Wait for the fetch to be observed and respond to it. No need to spin the
   // message loop, since fetch responses at this layer are passed directly to
   // the cache, and don't go through Mojo, as the TrustedSignalsFetcher is
   // entirely mocked out.
@@ -2516,6 +2644,228 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsCancelBothAfterFetchStart) {
         handle1.reset();
         handle2.reset();
         EXPECT_FALSE(fetch.fetcher_alive);
+        break;
+      }
+    }
+  }
+}
+
+// Test the case where the attempt to get the coordinator key completes
+// asynchronously.
+TYPED_TEST(TrustedSignalsCacheTest, CoordinatorKeyReceivedAsync) {
+  this->trusted_signals_cache_->set_get_coordinator_key_mode(
+      TestTrustedSignalsCache::GetCoordinatorKeyMode::kAsync);
+
+  auto params = this->CreateDefaultParams();
+  auto [handle, partition_id] = this->RequestTrustedSignals(params);
+  // Wait for the fetch to be observed and respond to it. No need to spin the
+  // message loop, since fetch responses at this layer are passed directly to
+  // the cache, and don't go through Mojo, as the TrustedSignalsFetcher is
+  // entirely mocked out.
+  auto fetch = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
+  RespondToFetchWithSuccess(fetch);
+
+  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  client.WaitForSuccess();
+}
+
+// Test the case where the attempt to get the coordinator key fails
+// synchronously.
+TYPED_TEST(TrustedSignalsCacheTest, CoordinatorKeyFailsSync) {
+  this->trusted_signals_cache_->set_get_coordinator_key_mode(
+      TestTrustedSignalsCache::GetCoordinatorKeyMode::kSyncFail);
+
+  auto params = this->CreateDefaultParams();
+  auto [handle, partition_id] = this->RequestTrustedSignals(params);
+  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  client.WaitForError(TestTrustedSignalsCache::kKeyFetchFailed);
+  // Teardown will check that the fetcher saw no unaccounted for requests.
+}
+
+// Test the case where the attempt to get the coordinator key fails
+// asynchronously.
+TYPED_TEST(TrustedSignalsCacheTest, CoordinatorKeyFailsAsync) {
+  this->trusted_signals_cache_->set_get_coordinator_key_mode(
+      TestTrustedSignalsCache::GetCoordinatorKeyMode::kAsyncFail);
+
+  auto params = this->CreateDefaultParams();
+  auto [handle, partition_id] = this->RequestTrustedSignals(params);
+  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  client.WaitForError(TestTrustedSignalsCache::kKeyFetchFailed);
+  // Teardown will check that the fetcher saw no unaccounted for requests.
+}
+
+// Test the case where the fetch is cancelled while attempting to get the
+// coordinator key.
+TYPED_TEST(TrustedSignalsCacheTest, CancelledDuringGetCoordinatorKey) {
+  for (bool invoke_callback : {false, true}) {
+    // Use a fresh cache each time.
+    this->CreateCache();
+    this->trusted_signals_cache_->set_get_coordinator_key_mode(
+        TestTrustedSignalsCache::GetCoordinatorKeyMode::kStashCallback);
+
+    auto params = this->CreateDefaultParams();
+
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+
+    auto callback =
+        this->trusted_signals_cache_->WaitForCoordinatorKeyCallback();
+    handle.reset();
+    if (invoke_callback) {
+      std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/1});
+    }
+
+    // Let any pending async callbacks complete.
+    base::RunLoop().RunUntilIdle();
+
+    // Teardown will check that the fetcher saw no unaccounted for requests.
+  }
+}
+
+// Test the case where a second request is made while waiting on the
+// coordinator. The requests should behave just as in the
+// DifferentParamsBeforeFetchStart test - that is, if the requests can
+// theoretically use the same fetch (possibly sharing a partition or compression
+// group), they should still be able to do so if one of the requests is started
+// while the first request is waiting for the coordinator's key.
+TYPED_TEST(TrustedSignalsCacheTest,
+           SecondRequestStartedWhileWaitingOnCoordinatorKey) {
+  for (const auto& test_case : this->CreateTestCases()) {
+    SCOPED_TRACE(test_case.description);
+
+    // Start with a clean slate for each test. Not strictly necessary, but
+    // limits what's under test a bit.
+    this->CreateCache();
+    this->trusted_signals_cache_->set_get_coordinator_key_mode(
+        TestTrustedSignalsCache::GetCoordinatorKeyMode::kStashCallback);
+
+    const auto& params1 = test_case.params1;
+    const auto& params2 = test_case.params2;
+
+    auto [handle1, partition_id1] = this->RequestTrustedSignals(params1);
+    auto callback1 =
+        this->trusted_signals_cache_->WaitForCoordinatorKeyCallback();
+
+    auto [handle2, partition_id2] = this->RequestTrustedSignals(params2);
+
+    switch (test_case.request_relation) {
+      case RequestRelation::kDifferentFetches: {
+        ASSERT_NE(handle1, handle2);
+        ASSERT_NE(handle1->compression_group_token(),
+                  handle2->compression_group_token());
+
+        // There should be separate callbacks in this case.
+        auto callback2 =
+            this->trusted_signals_cache_->WaitForCoordinatorKeyCallback();
+
+        // Invoke both callbacks, with the usual key (the serialized
+        // coordinator).
+        std::move(callback1).Run(BiddingAndAuctionServerKey{
+            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
+        std::move(callback2).Run(BiddingAndAuctionServerKey{
+            /*key=*/params2.coordinator.Serialize(), /*id=*/1});
+
+        auto fetches = this->WaitForSignalsFetches(2);
+
+        // fetches are made in FIFO order.
+        ValidateFetchParams(fetches[0], params1,
+                            /*expected_compression_group_id=*/0, partition_id1);
+        ValidateFetchParams(fetches[1], params2,
+                            /*expected_compression_group_id=*/0, partition_id2);
+
+        // Make both requests succeed with different bodies, and check that they
+        // can be read.
+        RespondToFetchWithSuccess(fetches[0]);
+        RespondToFetchWithSuccess(
+            fetches[1],
+            auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
+            kOtherSuccessBody);
+        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+        client1.WaitForSuccess();
+        client2.WaitForSuccess(
+            auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
+            kOtherSuccessBody);
+        break;
+      }
+
+      case RequestRelation::kDifferentCompressionGroups: {
+        EXPECT_NE(handle1, handle2);
+        EXPECT_NE(handle1->compression_group_token(),
+                  handle2->compression_group_token());
+        std::move(callback1).Run(BiddingAndAuctionServerKey{
+            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
+
+        auto fetch = this->WaitForSignalsFetch();
+
+        EXPECT_EQ(fetch.trusted_signals_url, params1.trusted_signals_url);
+        ASSERT_EQ(fetch.compression_groups.size(), 2u);
+
+        // Compression groups are appended in FIFO order.
+        ASSERT_EQ(1u, fetch.compression_groups.count(0));
+        ValidateFetchParamsForPartitions(fetch.compression_groups.at(0),
+                                         params1, partition_id1);
+        ASSERT_EQ(1u, fetch.compression_groups.count(1));
+        ValidateFetchParamsForPartitions(fetch.compression_groups.at(1),
+                                         params2, partition_id2);
+
+        // Respond with different results for each compression group.
+        RespondToTwoCompressionGroupFetchWithSuccess(fetch);
+        TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+        client1.WaitForSuccess();
+        client2.WaitForSuccess(
+            auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
+            kOtherSuccessBody);
+        break;
+      }
+
+      case RequestRelation::kDifferentPartitions: {
+        EXPECT_EQ(handle1, handle2);
+        EXPECT_NE(partition_id1, partition_id2);
+        std::move(callback1).Run(BiddingAndAuctionServerKey{
+            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
+
+        auto fetch = this->WaitForSignalsFetch();
+
+        EXPECT_EQ(fetch.trusted_signals_url, params1.trusted_signals_url);
+        ASSERT_EQ(fetch.compression_groups.size(), 1u);
+        EXPECT_EQ(fetch.compression_groups.begin()->first, 0);
+
+        const auto& partitions = fetch.compression_groups.begin()->second;
+        ASSERT_EQ(partitions.size(), 2u);
+        ValidateFetchParamsForPartition(partitions[0], params1, partition_id1);
+        ValidateFetchParamsForPartition(partitions[1], params2, partition_id2);
+
+        // Respond with a single response for the partition, and read it - no
+        // need for multiple clients, since the handles are the same.
+        RespondToFetchWithSuccess(fetch);
+        TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+        client.WaitForSuccess();
+        break;
+      }
+
+      case RequestRelation::kSamePartitionModified:
+      case RequestRelation::kSamePartitionUnmodified: {
+        EXPECT_EQ(handle1, handle2);
+        EXPECT_EQ(partition_id1, partition_id2);
+        std::move(callback1).Run(BiddingAndAuctionServerKey{
+            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
+
+        auto fetch = this->WaitForSignalsFetch();
+
+        auto merged_params = this->CreateMergedParams(params1, params2);
+        // The fetch exactly match the merged parameters.
+        ValidateFetchParams(fetch, merged_params,
+                            /*expected_compression_group_id=*/0, partition_id1);
+
+        // Respond with a single response for the partition, and read it - no
+        // need for multiple clients, since the handles are the same.
+        RespondToFetchWithSuccess(fetch);
+        TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+        client.WaitForSuccess();
         break;
       }
     }
