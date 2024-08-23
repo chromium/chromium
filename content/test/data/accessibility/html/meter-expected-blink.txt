@@ -5,3 +5,5 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++genericContainer
 ++++++++++++genericContainer ignored
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored invisible
