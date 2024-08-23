@@ -674,18 +674,18 @@
   },
   {
     "name": "autofill-enable-card-benefits-for-american-express",
-    "owners": [ "alexandertekle@chromium.org"],
-    "expiry_milestone": 130
+    "owners": [ "alexandertekle@google.com"],
+    "expiry_milestone": 135
   },
   {
     "name": "autofill-enable-card-benefits-for-capital-one",
-    "owners": [ "alexandertekle@chromium.org"],
-    "expiry_milestone": 130
+    "owners": [ "alexandertekle@google.com"],
+    "expiry_milestone": 135
   },
   {
     "name": "autofill-enable-card-benefits-sync",
-    "owners": [ "alexandertekle@chromium.org", "yishuil@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "alexandertekle@google.com", "yishuil@google.com" ],
+    "expiry_milestone": 135
   },
   {
     "name": "autofill-enable-card-product-name",
