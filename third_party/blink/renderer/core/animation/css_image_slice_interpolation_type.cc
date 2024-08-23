@@ -155,8 +155,11 @@ InterpolationValue ConvertImageSlice(const ImageSlice& slice, double zoom) {
 
   for (wtf_size_t i = 0; i < kSideIndexCount; i++) {
     const Length& side = *sides[i];
-    list->Set(i, MakeGarbageCollected<InterpolableNumber>(
-                     side.IsFixed() ? side.Pixels() / zoom : side.Percent()));
+    list->Set(i,
+              MakeGarbageCollected<InterpolableNumber>(
+                  side.IsFixed() ? side.Pixels() / zoom : side.Percent(),
+                  side.IsFixed() ? CSSPrimitiveValue::UnitType::kNumber
+                                 : CSSPrimitiveValue::UnitType::kPercentage));
   }
 
   return InterpolationValue(

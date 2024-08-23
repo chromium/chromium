@@ -143,12 +143,13 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
  private:
   InterpolableNumber* RawClone() const final {
     if (IsDoubleValue()) {
-      return MakeGarbageCollected<InterpolableNumber>(value_.Value());
+      return MakeGarbageCollected<InterpolableNumber>(value_.Value(),
+                                                      unit_type_);
     }
     return MakeGarbageCollected<InterpolableNumber>(*expression_);
   }
   InterpolableNumber* RawCloneAndZero() const final {
-    return MakeGarbageCollected<InterpolableNumber>(0);
+    return MakeGarbageCollected<InterpolableNumber>(0, unit_type_);
   }
 
   bool IsDoubleValue() const { return type_ == Type::kDouble; }
@@ -157,6 +158,9 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
   void SetDouble(double value, CSSPrimitiveValue::UnitType unit_type);
   void SetExpression(const CSSMathExpressionNode& expression);
   const CSSMathExpressionNode& AsExpression() const;
+  CSSPrimitiveValue::UnitType ResolvedUnitType() const {
+    return IsDouble() ? unit_type_ : expression_->ResolvedUnitType();
+  }
 
   enum class Type { kDouble, kExpression };
   Type type_;
