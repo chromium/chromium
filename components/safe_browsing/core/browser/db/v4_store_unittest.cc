@@ -18,6 +18,7 @@
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "crypto/sha2.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
 namespace safe_browsing {
@@ -25,6 +26,8 @@ namespace safe_browsing {
 using ::google::protobuf::int32;
 using ::google::protobuf::RepeatedField;
 using ::google::protobuf::RepeatedPtrField;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 class V4StoreTest : public PlatformTest {
  public:
@@ -414,8 +417,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesOnlyElement) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
-  V4Store store(task_runner(), store_path_,
-                std::make_unique<InMemoryHashPrefixMap>());
+  V4Store store(task_runner(), store_path_);
   RepeatedField<int32> raw_removals;
   // old_store: ["2222"]
   raw_removals.Add(0);  // Removes "2222"
@@ -431,11 +433,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesOnlyElement) {
   V4StoreFileFormat file_format;
   EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
-  HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
-  // The size is 2 since we reserve space anyway.
-  EXPECT_EQ(2u, prefix_map.size());
-  EXPECT_TRUE(prefix_map.at(4).empty());
-  EXPECT_EQ("1111133333", prefix_map.at(5));
+  EXPECT_THAT(store.hash_prefix_map_->view(),
+              UnorderedElementsAre(Pair(5, "1111133333")));
 }
 
 TEST_F(V4StoreTest, TestMergeUpdatesRemovesFirstElement) {

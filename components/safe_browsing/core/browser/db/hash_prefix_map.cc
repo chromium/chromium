@@ -444,12 +444,20 @@ std::unique_ptr<HashPrefixMap::WriteSession> MmapHashPrefixMap::WriteToDisk(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   for (auto& [size, file_info] : map_) {
-    auto* hash_file = file_format->add_hash_files();
-    if (!file_info.Finalize(hash_file))
+    HashFile hash_file;
+    if (!file_info.Finalize(&hash_file)) {
       return nullptr;
+    }
 
-    if (!file_info.Initialize(*hash_file))
+    if (hash_file.file_size() == 0) {
+      continue;
+    }
+
+    if (!file_info.Initialize(hash_file)) {
       return nullptr;
+    }
+
+    file_format->add_hash_files()->Swap(&hash_file);
   }
   return std::make_unique<MmapHashPrefixMapWriteSession>();
 }
