@@ -158,6 +158,76 @@ def _CheckForUselessExterns(input_api, output_api):
   return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
 
 
+def _CheckBuildFilesForIndirectAshSources(input_api, output_api):
+  """Warn when indirect paths are added to an ash target's "sources".
+
+  Indirect paths are paths containing a slash, e.g. "foo/bar.h" or "../foo.cc".
+  """
+
+  MSG = ("It appears that sources were added to the above BUILD.gn file but "
+         "their paths contain a slash, indicating that the files are from a "
+         "different directory (e.g. a subdirectory). As a general rule, Ash "
+         "sources should live in the same directory as the BUILD.gn file "
+         "listing them. There may be cases where this is not feasible or "
+         "doesn't make sense, hence this is only a warning. If in doubt, "
+         "please contact ash-chrome-refactor-wg@google.com.")
+
+  os_path = input_api.os_path
+
+  # Any BUILD.gn in or under one of these directories will be checked.
+  monitored_dirs = [
+      os_path.join("chrome", "browser", "ash"),
+      os_path.join("chrome", "browser", "chromeos"),
+      os_path.join("chrome", "browser", "ui", "ash"),
+      os_path.join("chrome", "browser", "ui", "chromeos"),
+      os_path.join("chrome", "browser", "ui", "webui", "ash"),
+  ]
+  def should_check_path(affected_path):
+    if os_path.basename(affected_path) != 'BUILD.gn':
+      return False
+    ad = os_path.dirname(affected_path)
+    for md in monitored_dirs:
+      if os_path.commonpath([ad, md]) == md:
+        return True
+    return False
+
+  # Simplifying assumption: 'sources' keyword always appears at the beginning of
+  # a line (optionally preceded by whitespace).
+  sep = r'(?m:\s*#.*$)*\s*'  # whitespace and/or comments, possibly empty
+  sources_re = re.compile(
+      fr'(?m:^\s*sources{sep}\+?={sep}\[((?:{sep}"[^"]*"{sep},?{sep})*)\])')
+  source_re = re.compile(fr'{sep}"([^"]*)"')
+
+  def find_indirect_sources(contents):
+    result = []
+    for sources_m in sources_re.finditer(contents):
+      for source_m in source_re.finditer(sources_m.group(1)):
+        source = source_m.group(1)
+        if '/' in source:
+          result.append(source)
+    return result
+
+  results = []
+  for f in input_api.AffectedTestableFiles():
+    if not should_check_path(f.LocalPath()):
+      continue
+
+    indirect_sources_new = find_indirect_sources('\n'.join(f.NewContents()))
+    if not indirect_sources_new:
+      continue
+
+    indirect_sources_old = find_indirect_sources('\n'.join(f.OldContents()))
+    added_indirect_sources = (
+        set(indirect_sources_new) - set(indirect_sources_old))
+
+    if added_indirect_sources:
+      results.append(output_api.PresubmitPromptWarning(
+          "Indirect sources detected.",
+          [f.LocalPath()],
+          f"{MSG}\n  " + "\n  ".join(sorted(added_indirect_sources))))
+  return results
+
+
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
@@ -170,6 +240,7 @@ def _CommonChecks(input_api, output_api):
   results.extend(_CheckNoInteractiveUiTestLibInNonInteractiveUiTest(
       input_api, output_api))
   results.extend(_CheckForUselessExterns(input_api, output_api))
+  results.extend(_CheckBuildFilesForIndirectAshSources(input_api, output_api))
   return results
 
 def CheckChangeOnUpload(input_api, output_api):
