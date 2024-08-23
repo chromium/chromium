@@ -3062,8 +3062,8 @@
   },
   {
     "name": "enable-experimental-accessibility-manifest-v3",
-    "owners": [ "anastasi@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
+    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 145
   },
   {
     "name": "enable-experimental-accessibility-switch-access-text",
