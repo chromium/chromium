@@ -94,12 +94,6 @@ assert(!is_nacl || is_nacl_saigo,
 assert(!is_win || is_clang,
        "only clang-cl is supported on Windows, see https://crbug.com/988071")
 
-# Determines whether libevent should be dep.
-dep_libevent = !is_fuchsia && !is_win && !is_mac && !is_nacl
-
-# Determines whether message_pump_libevent should be used.
-use_libevent = dep_libevent && !is_ios
-
 if (is_android || is_robolectric) {
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
@@ -176,12 +170,7 @@ buildflag_header("ios_cronet_buildflags") {
   flags = [ "CRONET_BUILD=$is_cronet_build" ]
 }
 
-enable_message_pump_epoll = is_linux || is_chromeos || is_android
-buildflag_header("message_pump_buildflags") {
-  header = "message_pump_buildflags.h"
-  header_dir = "base/message_loop"
-  flags = [ "ENABLE_MESSAGE_PUMP_EPOLL=$enable_message_pump_epoll" ]
-}
+use_epoll = is_linux || is_chromeos || is_android
 
 # Base and everything it depends on should be a static library rather than
 # a source set. Base is more of a "library" in the classic sense in that many
@@ -1050,7 +1039,6 @@ component("base") {
 
   deps = [
     ":check_version_internal",
-    ":message_pump_buildflags",
     "//base/allocator:buildflags",
     "//base/third_party/double_conversion",
     "//build:blink_buildflags",
@@ -2267,21 +2255,11 @@ component("base") {
     ]
   }
 
-  if (dep_libevent) {
-    deps += [ "//third_party/libevent" ]
-  }
-
-  if (use_libevent) {
-    sources += [
-      "message_loop/message_pump_libevent.cc",
-      "message_loop/message_pump_libevent.h",
-    ]
-  }
-
-  if (enable_message_pump_epoll) {
+  if (use_epoll) {
     sources += [
       "message_loop/message_pump_epoll.cc",
       "message_loop/message_pump_epoll.h",
+      "message_loop/message_pump_libevent.h",
     ]
   }
 
@@ -4001,12 +3979,8 @@ test("base_unittests") {
     sources -= [ "message_loop/message_pump_glib_unittest.cc" ]
   }
 
-  if (use_libevent) {
-    sources += [ "message_loop/message_pump_libevent_unittest.cc" ]
-    deps += [
-      ":message_pump_buildflags",
-      "//third_party/libevent",
-    ]
+  if (use_epoll) {
+    sources += [ "message_loop/message_pump_epoll_unittest.cc" ]
   }
 
   if (is_fuchsia) {

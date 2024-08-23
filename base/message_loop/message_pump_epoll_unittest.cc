@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/message_loop/message_pump_libevent.h"
+#include "base/message_loop/message_pump_epoll.h"
 
 #include <fcntl.h>
 #include <sys/socket.h>
@@ -21,7 +21,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/message_loop/message_pump_buildflags.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
@@ -35,24 +34,18 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libevent/event.h"
-
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-#include "base/message_loop/message_pump_epoll.h"
-#endif
 
 namespace base {
 
-enum PumpType {
-  kLibevent,
-  kEpoll,
-};
-
-class MessagePumpLibeventTest : public testing::Test,
-                                public testing::WithParamInterface<PumpType> {
+class MessagePumpEpollTest : public testing::Test {
  public:
+  MessagePumpEpollTest()
+      : task_environment_(std::make_unique<test::SingleThreadTaskEnvironment>(
+            test::SingleThreadTaskEnvironment::MainThreadType::UI)),
+        io_thread_("MessagePumpEpollTestIOThread") {}
+  ~MessagePumpEpollTest() override = default;
+
   int receiver() const { return receiver_.get(); }
   int sender() const { return sender_.get(); }
 
@@ -72,21 +65,7 @@ class MessagePumpLibeventTest : public testing::Test,
   }
 
  protected:
-  MessagePumpLibeventTest()
-      : task_environment_(std::make_unique<test::SingleThreadTaskEnvironment>(
-            test::SingleThreadTaskEnvironment::MainThreadType::UI)),
-        io_thread_("MessagePumpLibeventTestIOThread") {}
-  ~MessagePumpLibeventTest() override = default;
-
   void SetUp() override {
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-    // Select MessagePumpLibevent or MessagePumpEpoll based on the test
-    // parameter.
-    scoped_feature_list_.InitWithFeatureState(base::kMessagePumpEpoll,
-                                              GetParam() == kEpoll);
-    MessagePumpLibevent::InitializeFeatures();
-#endif  // BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-
     Thread::Options options(MessagePumpType::IO, 0);
     ASSERT_TRUE(io_thread_.StartWithOptions(std::move(options)));
     int fds[2];
@@ -102,28 +81,11 @@ class MessagePumpLibeventTest : public testing::Test,
     // thus be joined to ensure those watches are complete before closing the
     // sockets.
     io_thread_.Stop();
-
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-    // Reset feature state for other tests running in this process.
-    scoped_feature_list_.Reset();
-    MessagePumpLibevent::InitializeFeatures();
-#endif  // BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
   }
 
-  std::unique_ptr<MessagePumpLibevent> CreateMessagePump() {
-    return std::make_unique<MessagePumpLibevent>();
-  }
-
-  void SimulateIOEvent(MessagePumpLibevent* pump,
-                       MessagePumpLibevent::FdWatchController* controller) {
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-    if (GetParam() == kEpoll) {
-      pump->epoll_pump_->HandleEvent(0, /*can_read=*/true, /*can_write=*/true,
-                                     controller);
-      return;
-    }
-#endif
-    pump->OnLibeventNotification(0, EV_WRITE | EV_READ, controller);
+  void SimulateIOEvent(MessagePumpEpoll* pump,
+                       MessagePumpEpoll::FdWatchController* controller) {
+    pump->HandleEvent(0, /*can_read=*/true, /*can_write=*/true, controller);
   }
 
   static constexpr char null_byte_ = 0;
@@ -133,55 +95,45 @@ class MessagePumpLibeventTest : public testing::Test,
   Thread io_thread_;
   base::ScopedFD receiver_;
   base::ScopedFD sender_;
-
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-  // Features to override default feature settings.
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 };
 
 namespace {
 
-// Concrete implementation of MessagePumpLibevent::FdWatcher that does
+// Concrete implementation of MessagePumpEpoll::FdWatcher that does
 // nothing useful.
-class StupidWatcher : public MessagePumpLibevent::FdWatcher {
+class StupidWatcher : public MessagePumpEpoll::FdWatcher {
  public:
   ~StupidWatcher() override = default;
 
-  // base:MessagePumpLibevent::FdWatcher interface
+  // base:MessagePumpEpoll::FdWatcher interface
   void OnFileCanReadWithoutBlocking(int fd) override {}
   void OnFileCanWriteWithoutBlocking(int fd) override {}
 };
 
-TEST_P(MessagePumpLibeventTest, QuitOutsideOfRun) {
-  std::unique_ptr<MessagePumpLibevent> pump = CreateMessagePump();
+TEST_F(MessagePumpEpollTest, QuitOutsideOfRun) {
+  auto pump = std::make_unique<MessagePumpEpoll>();
   ASSERT_DCHECK_DEATH(pump->Quit());
 }
 
-class BaseWatcher : public MessagePumpLibevent::FdWatcher {
+class BaseWatcher : public MessagePumpEpoll::FdWatcher {
  public:
   BaseWatcher() = default;
   ~BaseWatcher() override = default;
 
-  // base:MessagePumpLibevent::FdWatcher interface
-  void OnFileCanReadWithoutBlocking(int /* fd */) override {
-    NOTREACHED_IN_MIGRATION();
-  }
-
-  void OnFileCanWriteWithoutBlocking(int /* fd */) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  // base:MessagePumpEpoll::FdWatcher interface
+  void OnFileCanReadWithoutBlocking(int /* fd */) override { NOTREACHED(); }
+  void OnFileCanWriteWithoutBlocking(int /* fd */) override { NOTREACHED(); }
 };
 
 class DeleteWatcher : public BaseWatcher {
  public:
   explicit DeleteWatcher(
-      std::unique_ptr<MessagePumpLibevent::FdWatchController> controller)
+      std::unique_ptr<MessagePumpEpoll::FdWatchController> controller)
       : controller_(std::move(controller)) {}
 
   ~DeleteWatcher() override { DCHECK(!controller_); }
 
-  MessagePumpLibevent::FdWatchController* controller() {
+  MessagePumpEpoll::FdWatchController* controller() {
     return controller_.get();
   }
 
@@ -191,22 +143,22 @@ class DeleteWatcher : public BaseWatcher {
   }
 
  private:
-  std::unique_ptr<MessagePumpLibevent::FdWatchController> controller_;
+  std::unique_ptr<MessagePumpEpoll::FdWatchController> controller_;
 };
 
-TEST_P(MessagePumpLibeventTest, DeleteWatcher) {
+TEST_F(MessagePumpEpollTest, DeleteWatcher) {
   DeleteWatcher delegate(
-      std::make_unique<MessagePumpLibevent::FdWatchController>(FROM_HERE));
-  std::unique_ptr<MessagePumpLibevent> pump = CreateMessagePump();
+      std::make_unique<MessagePumpEpoll::FdWatchController>(FROM_HERE));
+  auto pump = std::make_unique<MessagePumpEpoll>();
   pump->WatchFileDescriptor(receiver(), false,
-                            MessagePumpLibevent::WATCH_READ_WRITE,
+                            MessagePumpEpoll::WATCH_READ_WRITE,
                             delegate.controller(), &delegate);
   SimulateIOEvent(pump.get(), delegate.controller());
 }
 
 class StopWatcher : public BaseWatcher {
  public:
-  explicit StopWatcher(MessagePumpLibevent::FdWatchController* controller)
+  explicit StopWatcher(MessagePumpEpoll::FdWatchController* controller)
       : controller_(controller) {}
 
   ~StopWatcher() override = default;
@@ -216,15 +168,15 @@ class StopWatcher : public BaseWatcher {
   }
 
  private:
-  raw_ptr<MessagePumpLibevent::FdWatchController> controller_ = nullptr;
+  raw_ptr<MessagePumpEpoll::FdWatchController> controller_ = nullptr;
 };
 
-TEST_P(MessagePumpLibeventTest, StopWatcher) {
-  std::unique_ptr<MessagePumpLibevent> pump = CreateMessagePump();
-  MessagePumpLibevent::FdWatchController controller(FROM_HERE);
+TEST_F(MessagePumpEpollTest, StopWatcher) {
+  auto pump = std::make_unique<MessagePumpEpoll>();
+  MessagePumpEpoll::FdWatchController controller(FROM_HERE);
   StopWatcher delegate(&controller);
   pump->WatchFileDescriptor(receiver(), false,
-                            MessagePumpLibevent::WATCH_READ_WRITE, &controller,
+                            MessagePumpEpoll::WATCH_READ_WRITE, &controller,
                             &delegate);
   SimulateIOEvent(pump.get(), &controller);
 }
@@ -238,7 +190,7 @@ void QuitMessageLoopAndStart(OnceClosure quit_closure) {
   runloop.Run();
 }
 
-class NestedPumpWatcher : public MessagePumpLibevent::FdWatcher {
+class NestedPumpWatcher : public MessagePumpEpoll::FdWatcher {
  public:
   NestedPumpWatcher() = default;
   ~NestedPumpWatcher() override = default;
@@ -253,11 +205,11 @@ class NestedPumpWatcher : public MessagePumpLibevent::FdWatcher {
   void OnFileCanWriteWithoutBlocking(int /* fd */) override {}
 };
 
-TEST_P(MessagePumpLibeventTest, NestedPumpWatcher) {
+TEST_F(MessagePumpEpollTest, NestedPumpWatcher) {
   NestedPumpWatcher delegate;
-  std::unique_ptr<MessagePumpLibevent> pump = CreateMessagePump();
-  MessagePumpLibevent::FdWatchController controller(FROM_HERE);
-  pump->WatchFileDescriptor(receiver(), false, MessagePumpLibevent::WATCH_READ,
+  auto pump = std::make_unique<MessagePumpEpoll>();
+  MessagePumpEpoll::FdWatchController controller(FROM_HERE);
+  pump->WatchFileDescriptor(receiver(), false, MessagePumpEpoll::WATCH_READ,
                             &controller, &delegate);
   SimulateIOEvent(pump.get(), &controller);
 }
@@ -276,8 +228,9 @@ class QuitWatcher : public BaseWatcher {
     SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, BindOnce(&FatalClosure));
 
-    if (quit_closure_)
+    if (quit_closure_) {
       std::move(quit_closure_).Run();
+    }
   }
 
  private:
@@ -291,24 +244,24 @@ void WriteFDWrapper(const int fd,
   ASSERT_TRUE(WriteFileDescriptor(fd, std::string_view(buf, size)));
 }
 
-// Tests that MessagePumpLibevent quits immediately when it is quit from
-// libevent's event_base_loop().
-TEST_P(MessagePumpLibeventTest, QuitWatcher) {
+// Tests that MessagePumpEpoll quits immediately when it is quit from
+// within a wakeup.
+TEST_F(MessagePumpEpollTest, QuitWatcher) {
   // Delete the old TaskEnvironment so that we can manage our own one here.
   task_environment_.reset();
 
-  std::unique_ptr<MessagePumpLibevent> executor_pump = CreateMessagePump();
-  MessagePumpLibevent* pump = executor_pump.get();
+  auto executor_pump = std::make_unique<MessagePumpEpoll>();
+  MessagePumpEpoll* pump = executor_pump.get();
   SingleThreadTaskExecutor executor(std::move(executor_pump));
   RunLoop run_loop;
   QuitWatcher delegate(run_loop.QuitClosure());
-  MessagePumpLibevent::FdWatchController controller(FROM_HERE);
+  MessagePumpEpoll::FdWatchController controller(FROM_HERE);
   WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
                       WaitableEvent::InitialState::NOT_SIGNALED);
   std::unique_ptr<WaitableEventWatcher> watcher(new WaitableEventWatcher);
 
-  // Tell the pump to watch the `receiver_`.
-  pump->WatchFileDescriptor(receiver(), false, MessagePumpLibevent::WATCH_READ,
+  // Tell the pump to watch the pipe.
+  pump->WatchFileDescriptor(receiver(), false, MessagePumpEpoll::WATCH_READ,
                             &controller, &delegate);
 
   // Make the IO thread wait for |event| before writing to sender().
@@ -331,16 +284,16 @@ TEST_P(MessagePumpLibeventTest, QuitWatcher) {
                                             Owned(watcher.release())));
 }
 
-class InnerNestedWatcher : public MessagePumpLibevent::FdWatcher {
+class InnerNestedWatcher : public MessagePumpEpoll::FdWatcher {
  public:
-  InnerNestedWatcher(MessagePumpLibeventTest& test,
-                     MessagePumpLibevent::FdWatchController& outer_controller,
+  InnerNestedWatcher(MessagePumpEpollTest& test,
+                     MessagePumpEpoll::FdWatchController& outer_controller,
                      base::OnceClosure callback)
       : test_(test),
         outer_controller_(outer_controller),
         callback_(std::move(callback)) {
     base::CurrentIOThread::Get().WatchFileDescriptor(
-        test_->receiver(), false, MessagePumpLibevent::WATCH_READ, &controller_,
+        test_->receiver(), false, MessagePumpEpoll::WATCH_READ, &controller_,
         this);
   }
   ~InnerNestedWatcher() override = default;
@@ -355,15 +308,15 @@ class InnerNestedWatcher : public MessagePumpLibevent::FdWatcher {
   void OnFileCanWriteWithoutBlocking(int) override {}
 
  private:
-  const raw_ref<MessagePumpLibeventTest> test_;
-  const raw_ref<MessagePumpLibevent::FdWatchController> outer_controller_;
+  const raw_ref<MessagePumpEpollTest> test_;
+  const raw_ref<MessagePumpEpoll::FdWatchController> outer_controller_;
   base::OnceClosure callback_;
-  MessagePumpLibevent::FdWatchController controller_{FROM_HERE};
+  MessagePumpEpoll::FdWatchController controller_{FROM_HERE};
 };
 
-class OuterNestedWatcher : public MessagePumpLibevent::FdWatcher {
+class OuterNestedWatcher : public MessagePumpEpoll::FdWatcher {
  public:
-  OuterNestedWatcher(MessagePumpLibeventTest& test, base::OnceClosure callback)
+  OuterNestedWatcher(MessagePumpEpollTest& test, base::OnceClosure callback)
       : test_(test), callback_(std::move(callback)) {
     base::RunLoop loop;
     test_->io_runner()->PostTask(
@@ -388,6 +341,7 @@ class OuterNestedWatcher : public MessagePumpLibevent::FdWatcher {
     // Ensure that `InnerNestedWatcher` is destroyed before
     // `OuterNestedWatcher`.
     inner_watcher.reset();
+    controller_.reset();
     std::move(callback_).Run();
   }
 
@@ -396,19 +350,19 @@ class OuterNestedWatcher : public MessagePumpLibevent::FdWatcher {
  private:
   void InitOnIOThread(base::OnceClosure ready_callback) {
     controller_ =
-        std::make_unique<MessagePumpLibevent::FdWatchController>(FROM_HERE);
+        std::make_unique<MessagePumpEpoll::FdWatchController>(FROM_HERE);
     base::CurrentIOThread::Get().WatchFileDescriptor(
-        test_->receiver(), false, MessagePumpLibevent::WATCH_READ,
+        test_->receiver(), false, MessagePumpEpoll::WATCH_READ,
         controller_.get(), this);
     std::move(ready_callback).Run();
   }
 
-  const raw_ref<MessagePumpLibeventTest> test_;
+  const raw_ref<MessagePumpEpollTest> test_;
   base::OnceClosure callback_;
-  std::unique_ptr<MessagePumpLibevent::FdWatchController> controller_;
+  std::unique_ptr<MessagePumpEpoll::FdWatchController> controller_;
 };
 
-TEST_P(MessagePumpLibeventTest, NestedNotification) {
+TEST_F(MessagePumpEpollTest, NestedNotification) {
   // Regression test for https://crbug.com/1469529. Verifies that it's safe for
   // a nested RunLoop to stop watching a file descriptor while the outer RunLoop
   // is handling an event for the same descriptor.
@@ -420,7 +374,7 @@ TEST_P(MessagePumpLibeventTest, NestedNotification) {
 
 class RepeatWatcher : public BaseWatcher {
  public:
-  RepeatWatcher(MessagePumpLibevent* pump,
+  RepeatWatcher(MessagePumpEpoll* pump,
                 int fd,
                 MessagePumpForIO::Mode mode,
                 bool persistent,
@@ -462,23 +416,23 @@ class RepeatWatcher : public BaseWatcher {
   }
 
  private:
-  raw_ptr<MessagePumpLibevent> pump_;
+  raw_ptr<MessagePumpEpoll> pump_;
   int fd_;
   MessagePumpForIO::Mode mode_;
   bool persistent_;
   int repeat_;
-  MessagePumpLibevent::FdWatchController fd_watch_controller_;
+  MessagePumpEpoll::FdWatchController fd_watch_controller_;
 };
 
 void RepeatEventTest(bool persistent,
                      int repeat,
-                     std::unique_ptr<MessagePumpLibevent> executor_pump,
+                     std::unique_ptr<MessagePumpEpoll> executor_pump,
                      int sender,
                      int receiver) {
-  MessagePumpLibevent* pump = executor_pump.get();
+  MessagePumpEpoll* pump = executor_pump.get();
   SingleThreadTaskExecutor executor(std::move(executor_pump));
   RunLoop run_loop;
-  RepeatWatcher delegate(pump, receiver, MessagePumpLibevent::WATCH_READ,
+  RepeatWatcher delegate(pump, receiver, MessagePumpEpoll::WATCH_READ,
                          persistent, repeat);
 
   delegate.StartWatching();
@@ -491,36 +445,25 @@ void RepeatEventTest(bool persistent,
   run_loop.RunUntilIdle();
 }
 
-// Tests that MessagePumpLibevent calls FdWatcher's callback repeatedly when
+// Tests that MessagePumpEpoll calls FdWatcher's callback repeatedly when
 // it's configured as persistent.
-TEST_P(MessagePumpLibeventTest, RepeatPersistentEvent) {
+TEST_F(MessagePumpEpollTest, RepeatPersistentEvent) {
   // Delete the old TaskEnvironment so that we can manage our own one here.
   task_environment_.reset();
 
-  RepeatEventTest(/* persistent= */ true, /* repeat= */ 3, CreateMessagePump(),
-                  sender(), receiver());
+  RepeatEventTest(/* persistent= */ true, /* repeat= */ 3,
+                  std::make_unique<MessagePumpEpoll>(), sender(), receiver());
 }
 
-// Tests that MessagePumpLibevent calls FdWatcher's callback repeatedly when
-// it's not configured as persistent but reconfigured in the callback.
-TEST_P(MessagePumpLibeventTest, RepeatOneShotEvent) {
+// Tests that MessagePumpEpoll calls FdWatcher's callback repeatedly when it's
+// not configured as persistent but reconfigured in the callback.
+TEST_F(MessagePumpEpollTest, RepeatOneShotEvent) {
   // Delete the old TaskEnvironment so that we can manage our own one here.
   task_environment_.reset();
 
-  RepeatEventTest(/* persistent= */ false, /* repeat= */ 3, CreateMessagePump(),
-                  sender(), receiver());
+  RepeatEventTest(/* persistent= */ false, /* repeat= */ 3,
+                  std::make_unique<MessagePumpEpoll>(), sender(), receiver());
 }
-
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-#define TEST_PARAM_VALUES kLibevent, kEpoll
-#else
-#define TEST_PARAM_VALUES kLibevent
-#endif
-
-INSTANTIATE_TEST_SUITE_P(,
-                         MessagePumpLibeventTest,
-                         ::testing::Values(TEST_PARAM_VALUES));
 
 }  // namespace
-
 }  // namespace base

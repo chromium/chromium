@@ -31,10 +31,6 @@
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-#include "base/message_loop/message_pump_libevent.h"
-#endif
-
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtMost;

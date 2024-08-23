@@ -28,6 +28,7 @@
 namespace base {
 
 namespace {
+
 // Under this feature native work is batched.
 BASE_FEATURE(kBatchNativeEventsInMessagePumpEpoll,
              "BatchNativeEventsInMessagePumpEpoll",
@@ -35,7 +36,88 @@ BASE_FEATURE(kBatchNativeEventsInMessagePumpEpoll,
 
 // Caches the state of the "BatchNativeEventsInMessagePumpEpoll".
 std::atomic_bool g_use_batched_version = false;
+
 }  // namespace
+
+// Parameters used to construct and describe an interest.
+struct MessagePumpEpoll::InterestParams {
+  // The file descriptor of interest.
+  int fd;
+
+  // Indicates an interest in being able to read() from `fd`.
+  bool read;
+
+  // Indicates an interest in being able to write() to `fd`.
+  bool write;
+
+  // Indicates whether this interest is a one-shot interest, meaning that it
+  // must be automatically deactivated every time it triggers an epoll event.
+  bool one_shot;
+
+  bool IsEqual(const InterestParams& rhs) const {
+    return std::tie(fd, read, write, one_shot) ==
+           std::tie(rhs.fd, rhs.read, rhs.write, rhs.one_shot);
+  }
+};
+
+// Represents a single controller's interest in a file descriptor via epoll,
+// and tracks whether that interest is currently active. Though an interest
+// persists as long as its controller is alive and hasn't changed interests,
+// it only participates in epoll waits while active.
+class MessagePumpEpoll::Interest : public RefCounted<Interest> {
+ public:
+  Interest(FdWatchController* controller, const InterestParams& params)
+      : controller_(controller), params_(params) {}
+
+  Interest(const Interest&) = delete;
+  Interest& operator=(const Interest&) = delete;
+
+  FdWatchController* controller() { return controller_; }
+  const InterestParams& params() const { return params_; }
+
+  bool active() const { return active_; }
+  void set_active(bool active) { active_ = active; }
+
+  // Only meaningful between WatchForControllerDestruction() and
+  // StopWatchingForControllerDestruction().
+  bool was_controller_destroyed() const { return was_controller_destroyed_; }
+
+  void WatchForControllerDestruction() {
+    DCHECK_GE(nested_controller_destruction_watchers_, 0);
+    if (nested_controller_destruction_watchers_ == 0) {
+      DCHECK(!controller_->was_destroyed_);
+      controller_->was_destroyed_ = &was_controller_destroyed_;
+    } else {
+      // If this is a nested event we should already be watching `controller_`
+      // for destruction from an outer event handler.
+      DCHECK_EQ(controller_->was_destroyed_, &was_controller_destroyed_);
+    }
+    ++nested_controller_destruction_watchers_;
+  }
+
+  void StopWatchingForControllerDestruction() {
+    --nested_controller_destruction_watchers_;
+    DCHECK_GE(nested_controller_destruction_watchers_, 0);
+    if (nested_controller_destruction_watchers_ == 0 &&
+        !was_controller_destroyed_) {
+      DCHECK_EQ(controller_->was_destroyed_, &was_controller_destroyed_);
+      controller_->was_destroyed_ = nullptr;
+    }
+  }
+
+ private:
+  friend class RefCounted<Interest>;
+  ~Interest() = default;
+
+  const raw_ptr<FdWatchController, DanglingUntriaged> controller_;
+  const InterestParams params_;
+  bool active_ = true;
+  bool was_controller_destroyed_ = false;
+
+  // Avoid resetting `controller_->was_destroyed` when nested destruction
+  // watchers are active.
+  int nested_controller_destruction_watchers_ = 0;
+};
 
 MessagePumpEpoll::MessagePumpEpoll() {
   epoll_.reset(epoll_create1(/*flags=*/0));
@@ -79,7 +161,7 @@ bool MessagePumpEpoll::WatchFileDescriptor(int fd,
 
   auto [it, is_new_fd_entry] = entries_.emplace(fd, fd);
   EpollEventEntry& entry = it->second;
-  scoped_refptr<Interest> existing_interest = controller->epoll_interest();
+  scoped_refptr<Interest> existing_interest = controller->interest();
   if (existing_interest && existing_interest->params().IsEqual(params)) {
     // WatchFileDescriptor() has already been called for this controller at
     // least once before, and as in the most common cases, it is now being
@@ -90,7 +172,7 @@ bool MessagePumpEpoll::WatchFileDescriptor(int fd,
     // non-persistent) Interest.
     existing_interest->set_active(true);
   } else {
-    entry.interests.push_back(controller->AssignEpollInterest(params));
+    entry.interests.push_back(controller->AssignInterest(params));
     if (existing_interest) {
       UnregisterInterest(existing_interest);
     }
@@ -102,7 +184,7 @@ bool MessagePumpEpoll::WatchFileDescriptor(int fd,
     UpdateEpollEvent(entry);
   }
 
-  controller->set_epoll_pump(weak_ptr_factory_.GetWeakPtr());
+  controller->set_pump(weak_ptr_factory_.GetWeakPtr());
   controller->set_watcher(watcher);
   return true;
 }
@@ -484,6 +566,57 @@ uint32_t MessagePumpEpoll::EpollEventEntry::ComputeActiveEvents() {
     return events | EPOLLONESHOT;
   }
   return events;
+}
+
+MessagePumpEpoll::FdWatchController::FdWatchController(
+    const Location& from_here)
+    : FdWatchControllerInterface(from_here) {}
+
+MessagePumpEpoll::FdWatchController::~FdWatchController() {
+  CHECK(StopWatchingFileDescriptor());
+  if (was_destroyed_) {
+    DCHECK(!*was_destroyed_);
+    *was_destroyed_ = true;
+  }
+}
+
+bool MessagePumpEpoll::FdWatchController::StopWatchingFileDescriptor() {
+  watcher_ = nullptr;
+  if (pump_ && interest_) {
+    pump_->UnregisterInterest(interest_);
+    interest_.reset();
+    pump_.reset();
+  }
+  return true;
+}
+
+const scoped_refptr<MessagePumpEpoll::Interest>&
+MessagePumpEpoll::FdWatchController::AssignInterest(
+    const InterestParams& params) {
+  interest_ = MakeRefCounted<Interest>(this, params);
+  return interest_;
+}
+
+void MessagePumpEpoll::FdWatchController::ClearInterest() {
+  interest_.reset();
+}
+
+void MessagePumpEpoll::FdWatchController::OnFdReadable() {
+  if (!watcher_) {
+    // When a watcher is watching both read and write and both are possible, the
+    // pump will call OnFdWritable() first, followed by OnFdReadable(). But
+    // OnFdWritable() may stop or destroy the watch. If the watch is destroyed,
+    // the pump will not call OnFdReadable() at all, but if it's merely stopped,
+    // OnFdReadable() will be called while `watcher_` is  null. In this case we
+    // don't actually want to call the client.
+    return;
+  }
+  watcher_->OnFileCanReadWithoutBlocking(interest_->params().fd);
+}
+
+void MessagePumpEpoll::FdWatchController::OnFdWritable() {
+  DCHECK(watcher_);
+  watcher_->OnFileCanWriteWithoutBlocking(interest_->params().fd);
 }
 
 }  // namespace base

@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump.h"
-#include "base/message_loop/message_pump_libevent.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -29,11 +28,51 @@ namespace base {
 // systems with epoll API support.
 class BASE_EXPORT MessagePumpEpoll : public MessagePump,
                                      public WatchableIOMessagePumpPosix {
-  using InterestParams = MessagePumpLibevent::EpollInterestParams;
-  using Interest = MessagePumpLibevent::EpollInterest;
+  class Interest;
+  struct InterestParams;
 
  public:
-  using FdWatchController = MessagePumpLibevent::FdWatchController;
+  // Object which FD-watching clients must keep alive to continue watching
+  // their FD. See WatchFileDescriptor() below.
+  class FdWatchController : public FdWatchControllerInterface {
+   public:
+    explicit FdWatchController(const Location& from_here);
+
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
+    // Implicitly calls StopWatchingFileDescriptor.
+    ~FdWatchController() override;
+
+    // FdWatchControllerInterface:
+    bool StopWatchingFileDescriptor() override;
+
+   private:
+    friend class MessagePumpEpoll;
+    friend class MessagePumpEpollTest;
+
+    void set_watcher(FdWatcher* watcher) { watcher_ = watcher; }
+    void set_pump(WeakPtr<MessagePumpEpoll> pump) { pump_ = std::move(pump); }
+    const scoped_refptr<Interest>& interest() const { return interest_; }
+
+    // Creates a new Interest described by `params` and adopts it as this
+    // controller's exclusive interest. Any prior interest is dropped by the
+    // controller and should be unregistered on the MessagePumpEpoll.
+    const scoped_refptr<Interest>& AssignInterest(const InterestParams& params);
+    void ClearInterest();
+
+    void OnFdReadable();
+    void OnFdWritable();
+
+    raw_ptr<FdWatcher> watcher_ = nullptr;
+
+    // If this pointer is non-null when the FdWatchController is destroyed, the
+    // pointee is set to true.
+    raw_ptr<bool> was_destroyed_ = nullptr;
+
+    WeakPtr<MessagePumpEpoll> pump_;
+    scoped_refptr<Interest> interest_;
+  };
 
   MessagePumpEpoll();
   MessagePumpEpoll(const MessagePumpEpoll&) = delete;
@@ -43,6 +82,20 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   // Initializes features for this class. See `base::features::Init()`.
   static void InitializeFeatures();
 
+  // Starts watching `fd` for events as prescribed by `mode` (see
+  // WatchableIOMessagePumpPosix). When an event occurs, `watcher` is notified.
+  //
+  // If `persistent` is false, the watch only persists until a matching event
+  // is observed, and `watcher` will only see at most one event; otherwise it
+  // remains active until explicitly cancelled and `watcher` may see multiple
+  // events over time.
+  //
+  // The watch can be cancelled at any time by destroying the `controller` or
+  // explicitly calling StopWatchingFileDescriptor() on it.
+  //
+  // IMPORTANT: `fd` MUST remain open as long as controller is alive and not
+  // stopped. If `fd` is closed while the watch is still active, this will
+  // result in memory bugs.
   bool WatchFileDescriptor(int fd,
                            bool persistent,
                            int mode,
@@ -57,8 +110,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
       const Delegate::NextWorkInfo& next_work_info) override;
 
  private:
-  friend class MessagePumpLibevent;
-  friend class MessagePumpLibeventTest;
+  friend class MessagePumpEpollTest;
 
   // The WatchFileDescriptor API supports multiple FdWatchControllers watching
   // the same file descriptor, potentially for different events; but the epoll
