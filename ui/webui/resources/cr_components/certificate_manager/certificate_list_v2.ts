@@ -35,6 +35,8 @@ export interface CertificateListV2Element {
     exportCerts: HTMLElement,
     importCert: HTMLElement,
     noCertsRow: HTMLElement,
+    listHeader: HTMLElement,
+    expandButton: HTMLElement,
   };
 }
 
@@ -52,9 +54,15 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
       certSource: Number,
       headerText: String,
       showImport: Boolean,
+
+      // True if the list should not be collapsible.
+      // Empty lists will always not be collapsible.
+      noCollapse: Boolean,
+
       // True if the export button should be hidden.
       // Export button may also be hidden if there are no certs in the list.
       hideExport: Boolean,
+
       inSubpage: Boolean,
       expanded_: Boolean,
       certificates_: Array,
@@ -70,6 +78,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   showImport: boolean = false;
   hideExport: boolean = false;
   inSubpage: boolean = false;
+  noCollapse: boolean = false;
   private expanded_: boolean = true;
   private certificates_: SummaryCertInfo[] = [];
   private hasCerts_: boolean;
@@ -84,6 +93,9 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
 
     if (!this.inSubpage) {
       this.$.certs.classList.add('card');
+    }
+    if (this.inSubpage) {
+      this.$.listHeader.classList.add('subpage-padding');
     }
   }
 
@@ -110,6 +122,10 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
 
   private computeHasCerts_(): boolean {
     return this.certificates_.length > 0;
+  }
+
+  private hideCollapseButton_(): boolean {
+    return this.noCollapse || !this.hasCerts_;
   }
 
   private hideExportButton_(): boolean {

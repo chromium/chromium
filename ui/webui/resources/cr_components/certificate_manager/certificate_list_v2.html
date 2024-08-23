@@ -14,6 +14,11 @@
     border-top: none;
   }
 
+  /* Used when list is embedded in a subpage; added in .ts code */
+  .subpage-padding {
+    padding: 0 var(--cr-section-padding);
+  }
+
   /*
    * TODO(crbug.com/40928765): style is very similar to .section-title style
    * in certificate_manager_v2.html. Move shared styles to common CSS file
@@ -31,9 +36,10 @@
     padding-top: 8px;
 
     display: flex;
+    align-items: center;
   }
 </style>
-  <div class="list-title first cr-row">
+  <div id="listHeader" class="list-title first">
     [[headerText]]
     <div class="header-buttons">
       <cr-button hidden$="[[!showImport]]" id="importCert"
@@ -48,7 +54,8 @@
         [[i18n("certificateManagerV2ExportButtonLabel")]]
       </cr-button>
     </div>
-    <cr-expand-button expanded="{{expanded_}}" no-hover>
+    <cr-expand-button id="expandButton" expanded="{{expanded_}}" no-hover
+        hidden$="[[hideCollapseButton_(noCollapse, hasCerts_)]]">
     </cr-expand-button>
   </div>
 <cr-collapse id="certs" opened="[[expanded_]]">

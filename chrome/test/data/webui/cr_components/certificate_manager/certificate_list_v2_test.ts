@@ -61,6 +61,41 @@ suite('CertificateListV2Test', () => {
     assertEquals('deadbeef2', entries[1]!.sha256hashHex);
 
     assertFalse(isVisible(certList.$.noCertsRow));
+    assertTrue(isVisible(certList.$.expandButton));
+  });
+
+  test('collapse hidden', async () => {
+    testProxy.handler.setCertificatesCallback(() => {
+      return {
+        certs: [
+          {
+            sha256hashHex: 'deadbeef1',
+            displayName: 'cert1',
+          },
+          {
+            sha256hashHex: 'deadbeef2',
+            displayName: 'cert2',
+          },
+        ],
+      };
+    });
+
+    certList = document.createElement('certificate-list-v2');
+    certList.certSource = CertificateSource.kChromeRootStore;
+    certList.noCollapse = true;
+    document.body.appendChild(certList);
+
+    assertEquals(
+        CertificateSource.kChromeRootStore,
+        await testProxy.handler.whenCalled('getCertificates'),
+        'getCertificates called with wrong source');
+    await microtasksFinished();
+
+    const entries = certList.$.certs.querySelectorAll('certificate-entry-v2');
+    assertEquals(2, entries.length, 'no certs displayed');
+
+    assertFalse(isVisible(certList.$.noCertsRow));
+    assertFalse(isVisible(certList.$.expandButton));
   });
 
   test('export', async () => {
@@ -195,5 +230,6 @@ suite('CertificateListV2Test', () => {
 
     assertFalse(isVisible(certList.$.exportCerts));
     assertTrue(isVisible(certList.$.noCertsRow));
+    assertFalse(isVisible(certList.$.expandButton));
   });
 });
