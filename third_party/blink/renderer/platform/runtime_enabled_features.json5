@@ -2550,9 +2550,6 @@
       status: "test",
     },
     {
-      name: "LCPMouseoverHeuristics",
-    },
-    {
       name: "LCPMultipleUpdatesPerElement",
     },
     {

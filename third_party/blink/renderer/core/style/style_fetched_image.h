@@ -93,10 +93,6 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   bool IsOriginClean() const override { return origin_clean_; }
 
-  bool IsLoadedAfterMouseover() const override {
-    return is_loaded_after_mouseover_;
-  }
-
  private:
   bool IsEqual(const StyleImage&) const override;
   void Prefinalize();
@@ -122,12 +118,6 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   // Whether this was created by an ad-related CSSParserContext.
   const bool is_ad_related_;
-
-  // This indicates that the style image was loaded after a recent mouseover
-  // event. This is used for LCP heuristics to ignore zoom widgets as LCP
-  // candidates. StyleFetchedImage is the best place to save this state, as it
-  // relates to the reason the image was fetched.
-  bool is_loaded_after_mouseover_ = false;
 };
 
 template <>

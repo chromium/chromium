@@ -1562,19 +1562,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "lcp-mouseover-heuristics",
-    "owners": ["haoliuk@chromium.org", "iclelland@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/largest-contentful-paint/mouseover-heuristics-element.tentative.html",
-      "external/wpt/largest-contentful-paint/mouseover-heuristics-background.tentative.html"
-    ],
-    "args": [
-      "--enable-features=LCPMouseoverHeuristics"
-    ],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "low-priority-async-script-execution",
     "platforms": ["Linux", "Mac", "Win"],
     "exclusive_tests": "ALL",

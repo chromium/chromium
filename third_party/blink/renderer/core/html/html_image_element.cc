@@ -112,7 +112,6 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       is_legacy_format_or_unoptimized_image_(false),
       is_ad_related_(false),
       is_lcp_element_(false),
-      is_changed_shortly_after_mouseover_(false),
       is_auto_sized_(false),
       is_predicted_lcp_element_(false) {
   if (blink::LcppScriptObserverEnabled()) {
@@ -1002,8 +1001,6 @@ void HTMLImageElement::SelectSourceURL(
   if (!GetDocument().IsActive())
     return;
 
-  is_changed_shortly_after_mouseover_ =
-      PaintTiming::From(GetDocument()).IsLCPMouseoverDispatchedRecently();
   HTMLSourceElement* old_source = source_;
   ImageCandidate candidate = FindBestFitImageFromPictureParent();
   if (candidate.IsEmpty()) {

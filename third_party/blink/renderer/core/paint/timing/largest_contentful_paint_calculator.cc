@@ -236,10 +236,6 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
   latest_lcp_details_.largest_contentful_paint_type =
       blink::LargestContentfulPaintType::kNone;
   if (image_record) {
-    if (image_record->is_loaded_after_mouseover) {
-      latest_lcp_details_.largest_contentful_paint_type |=
-          blink::LargestContentfulPaintType::kAfterMouseover;
-    }
     // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
     // default, we'd be able to use the value of
     // largest_image_record->first_animated_frame_time directly.

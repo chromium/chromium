@@ -184,15 +184,6 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::Dispatch(
     EventTarget* related_target,
     const AtomicString& type,
     bool check_for_listener) {
-  if (target && type == event_type_names::kMouseover) {
-    HTMLImageElement* image_element =
-        DynamicTo<HTMLImageElement>(target->ToNode());
-    if (image_element && image_element->IsLCPElement()) {
-      PaintTiming& paint_timing =
-          PaintTiming::From(image_element->GetDocument());
-      paint_timing.SetLCPMouseoverDispatched();
-    }
-  }
   mouse_event_manager_->DispatchMouseEvent(target, type, *web_mouse_event_,
                                            nullptr, related_target,
                                            check_for_listener);
