@@ -3817,7 +3817,7 @@
   {
     "name": "enable-render-pass-drawn-rect",
     "owners": [ "petermcneeley@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-resampling-scroll-events-experimental-prediction",
