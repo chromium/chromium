@@ -7695,6 +7695,7 @@ interface ProtectedAudience
     method constructor
     method queryFeatureSupport
 interface PublicKeyCredential : Credential
+    static method getClientCapabilities
     static method isConditionalMediationAvailable
     static method isUserVerifyingPlatformAuthenticatorAvailable
     static method parseCreationOptionsFromJSON

@@ -142,6 +142,10 @@ export class MockAuthenticator {
     return {status, credential: response};
   }
 
+  async getClientCapabilities() {
+    return {};
+  }
+
   async report(options) {
     let status = this.status_;
     this.reset();

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/json.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-value.h"
@@ -44,6 +45,24 @@ std::optional<std::string> AuthenticatorAttachmentToString(
       return std::nullopt;
   }
 }
+
+void OnGetClientCapabilitiesComplete(
+    ScriptPromiseResolver<IDLRecord<IDLString, IDLBoolean>>* resolver,
+    const Vector<mojom::blink::WebAuthnClientCapabilityPtr> capabilities) {
+  Vector<std::pair<String, bool>> results;
+  for (const auto& capability : capabilities) {
+    results.emplace_back(std::move(capability->name), capability->supported);
+  }
+
+  // Results should be sorted lexicographically based on the keys.
+  std::sort(
+      results.begin(), results.end(),
+      [](const std::pair<String, bool>& a, const std::pair<String, bool>& b) {
+        return CodeUnitCompare(a.first, b.first) < 0;
+      });
+  resolver->Resolve(results);
+}
+
 }  // namespace
 
 PublicKeyCredential::PublicKeyCredential(
@@ -59,6 +78,31 @@ PublicKeyCredential::PublicKeyCredential(
       authenticator_attachment_(
           AuthenticatorAttachmentToString(authenticator_attachment)),
       extension_outputs_(extension_outputs) {}
+
+// static
+ScriptPromise<IDLRecord<IDLString, IDLBoolean>>
+PublicKeyCredential::getClientCapabilities(ScriptState* script_state) {
+  // Ignore calls if the current realm execution context is no longer valid,
+  // e.g., because the responsible document was detached.
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise<IDLRecord<IDLString, IDLBoolean>>::
+        RejectWithDOMException(
+            script_state,
+            MakeGarbageCollected<DOMException>(
+                DOMExceptionCode::kInvalidStateError, "Context is detached"));
+  }
+
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLRecord<IDLString, IDLBoolean>>>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  // TODO(crbug.com/360327828): Add "UseCounter".
+  auto* authenticator =
+      CredentialManagerProxy::From(script_state)->Authenticator();
+  authenticator->GetClientCapabilities(WTF::BindOnce(
+      &OnGetClientCapabilitiesComplete, WrapPersistent(resolver)));
+  return promise;
+}
 
 // static
 ScriptPromise<IDLBoolean>

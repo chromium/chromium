@@ -54,6 +54,9 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
   static ScriptPromise<IDLBoolean>
   isUserVerifyingPlatformAuthenticatorAvailable(ScriptState*);
 
+  static ScriptPromise<IDLRecord<IDLString, IDLBoolean>> getClientCapabilities(
+      ScriptState*);
+
   AuthenticationExtensionsClientOutputs* getClientExtensionResults() const;
 
   static ScriptPromise<IDLBoolean> isConditionalMediationAvailable(
