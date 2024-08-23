@@ -33,6 +33,7 @@ source_set("unit_tests") {
     ":model",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/web/public/test",
