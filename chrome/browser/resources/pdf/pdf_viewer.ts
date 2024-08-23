@@ -355,7 +355,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.tracker.add(
         this.inkController_.getEventTarget(),
         InkControllerEventType.HAS_UNSAVED_CHANGES, () => {
-          this.setShowBeforeUnloadDialog(true);
+          this.setShowBeforeUnloadDialog_(true);
         });
     // </if>
 
@@ -876,9 +876,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         return;
       // <if expr="enable_pdf_ink2">
       case 'finishInkStroke':
-        this.hasInk2Edits_ = true;
-        this.pluginController_!.getEventTarget().dispatchEvent(
-            new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
+        this.handleFinishInkStroke_();
         return;
       // </if>
       case 'metadata':
@@ -967,6 +965,15 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.navigator_!.navigate(url, disposition);
   }
 
+  // <if expr="enable_pdf_ink2">
+  /** Handles a new ink stroke in annotation mode. */
+  private handleFinishInkStroke_() {
+    this.hasInk2Edits_ = true;
+    this.pluginController_!.getEventTarget().dispatchEvent(
+        new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
+  }
+  // </if>
+
   /** Sets the document attachment data. */
   private setAttachments_(attachments: Attachment[]) {
     this.attachments_ = attachments;
@@ -1048,7 +1055,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             // <if expr="enable_ink">
             // Unblock closing the window now that the user has saved
             // successfully.
-            this.setShowBeforeUnloadDialog(false);
+            this.setShowBeforeUnloadDialog_(false);
             // </if>
           });
         });
@@ -1122,8 +1129,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_pdf_ink2">
-  private onCanUndoChanged_(e: CustomEvent<boolean>) {
-    this.hasInk2Edits_ = e.detail;
+  private onStrokesUpdated_(e: CustomEvent<number>) {
+    this.hasInk2Edits_ = e.detail > 0;
   }
   // </if>
 
@@ -1196,7 +1203,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             // <if expr="enable_ink">
             // Unblock closing the window now that the user has saved
             // successfully.
-            this.setShowBeforeUnloadDialog(false);
+            this.setShowBeforeUnloadDialog_(false);
             // </if>
           });
         });
@@ -1286,7 +1293,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * @param showDialog A boolean indicating whether to show the beforeunload
    * dialog.
    */
-  private setShowBeforeUnloadDialog(showDialog: boolean) {
+  private setShowBeforeUnloadDialog_(showDialog: boolean) {
     if (this.pdfOopifEnabled) {
       this.showBeforeUnloadDialog_ = showDialog;
     } else {

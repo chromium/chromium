@@ -460,11 +460,9 @@ export class ViewerToolbarElement extends CrLitElement {
     this.currentStroke--;
 
     this.updateCanUndoRedo_();
-    if (!this.canUndoAnnotation_) {
-      // Dispatch the event only on undo or redo.
-      this.dispatchEvent(new CustomEvent(
-          'can-undo-changed', {detail: false, bubbles: true, composed: true}));
-    }
+    this.dispatchEvent(new CustomEvent(
+        'strokes-updated',
+        {detail: this.currentStroke, bubbles: true, composed: true}));
   }
 
   /**
@@ -480,13 +478,10 @@ export class ViewerToolbarElement extends CrLitElement {
 
     this.pluginController_.redo();
     this.currentStroke++;
-
-    if (!this.canUndoAnnotation_) {
-      // Dispatch the event only on undo or redo.
-      this.dispatchEvent(new CustomEvent(
-          'can-undo-changed', {detail: true, bubbles: true, composed: true}));
-    }
     this.updateCanUndoRedo_();
+    this.dispatchEvent(new CustomEvent(
+        'strokes-updated',
+        {detail: this.currentStroke, bubbles: true, composed: true}));
   }
 
   /**
