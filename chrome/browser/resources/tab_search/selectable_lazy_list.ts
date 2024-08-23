@@ -8,7 +8,7 @@
  * The component expects a `max-height` property to be specified in order to
  * determine how many HTML elements to render initially.
  * The `items`, `itemSize` and `template` properties are passed through to the
- * inner `lazy-list'.
+ * inner `cr-lazy-list'.
  * `expandedList` is an attribute for showing an extra 16px padding at the
  * bottom of the innner list (tab search desired styling).
  * The `isSelectable()` property should return true when a selectable list
@@ -22,13 +22,13 @@
  * NO_SELECTION if nothing is selected.
  */
 
-import './lazy_list.js';
+import 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 
+import type {CrLazyListElement} from 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues, TemplateResult} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {LazyListElement} from './lazy_list.js';
 import {getCss} from './selectable_lazy_list.css.js';
 
 export const NO_SELECTION: number = -1;
@@ -48,7 +48,7 @@ export class SelectableLazyListElement<T = object> extends CrLitElement {
   override render() {
     // Render items into light DOM using the client provided template
     render(
-        html`<lazy-list id="list" .scrollTarget="${this}"
+        html`<cr-lazy-list id="list" .scrollTarget="${this}"
           .listItemHost="${(this.getRootNode() as ShadowRoot).host}"
           .itemSize="${this.itemSize}" .items="${this.items}"
           .minViewportHeight="${this.maxHeight}"
@@ -59,7 +59,7 @@ export class SelectableLazyListElement<T = object> extends CrLitElement {
           @viewport-filled="${this.updateSelectedItem_}"
           @fill-height-start="${this.onFillHeightStart_}"
           @fill-height-end="${this.onFillHeightEnd_}">
-        </lazy-list>`,
+        </cr-lazy-list>`,
         this, {
           host: this,
         });
@@ -141,11 +141,11 @@ export class SelectableLazyListElement<T = object> extends CrLitElement {
 
   private getDomItem_(index: number): HTMLElement|null {
     return this.querySelector<HTMLElement>(
-        `lazy-list > *:nth-child(${index + 1})`);
+        `cr-lazy-list > *:nth-child(${index + 1})`);
   }
 
-  private lazyList_(): LazyListElement {
-    const list = this.querySelector('lazy-list');
+  private lazyList_(): CrLazyListElement {
+    const list = this.querySelector('cr-lazy-list');
     assert(list);
     return list;
   }

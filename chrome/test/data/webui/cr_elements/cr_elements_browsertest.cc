@@ -81,6 +81,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrIconButton) {
   RunTest("cr_elements/cr_icon_button_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLazyList) {
+  RunTest("cr_elements/cr_lazy_list_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLazyRender) {
   RunTest("cr_elements/cr_lazy_render_test.js", "mocha.run()");
 }

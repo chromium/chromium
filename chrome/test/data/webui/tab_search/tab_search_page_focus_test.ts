@@ -207,7 +207,7 @@ suite('TabSearchAppFocusTest', () => {
     recentlyClosedTitleExpandButton.click();
 
     await microtasksFinished();
-    const tabsList = tabSearchPage.$.tabsList.querySelector('lazy-list');
+    const tabsList = tabSearchPage.$.tabsList.querySelector('cr-lazy-list');
     assertTrue(!!tabsList);
     // Assert that the tabs are in a overflowing state.
     assertGT(tabsList.scrollHeight, tabsList.clientHeight);

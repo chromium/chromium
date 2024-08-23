@@ -88,7 +88,7 @@ suite('SelectableLazyListTest', () => {
     await setupTest(tabItems);
 
     assertEquals(0, selectableList.scrollTop);
-    const lazyList = selectableList.querySelector('lazy-list');
+    const lazyList = selectableList.querySelector('cr-lazy-list');
     assertTrue(!!lazyList);
 
     const paddingBottomStyle =
@@ -286,11 +286,11 @@ suite('SelectableLazyListTest', () => {
     selectableList.items = sampleTabItems(sampleSiteNames(10));
     await microtasksFinished();
 
-    // lazy-list will render 1 item then return since item height is not valid.
-    // List item and lazy-list are not visible.
+    // cr-lazy-list will render 1 item then return since item height is not
+    // valid. List item and cr-lazy-list are not visible.
     assertEquals(1, queryRows().length);
     let firstItem = queryRows()[0]!;
-    assertFalse(isVisible(selectableList.querySelector('lazy-list')));
+    assertFalse(isVisible(selectableList.querySelector('cr-lazy-list')));
     assertFalse(isVisible(firstItem));
 
     testApp.style.display = '';
@@ -303,6 +303,6 @@ suite('SelectableLazyListTest', () => {
     assertGT(queryRows().length, 1);
     firstItem = queryRows()[0]!;
     assertTrue(isVisible(firstItem));
-    assertTrue(isVisible(selectableList.querySelector('lazy-list')));
+    assertTrue(isVisible(selectableList.querySelector('cr-lazy-list')));
   });
 });

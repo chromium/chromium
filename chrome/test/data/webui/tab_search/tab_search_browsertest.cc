@@ -23,10 +23,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, Search) {
   RunTest("tab_search/search_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchTest, LazyList) {
-  RunTest("tab_search/lazy_list_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(TabSearchTest, SelectableLazyList) {
   RunTest("tab_search/selectable_lazy_list_test.js", "mocha.run()");
 }

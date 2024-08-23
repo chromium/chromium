@@ -34,6 +34,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "browser_proxy.ts",
+    "infinite_list.ts",
     "metrics_proxy.ts",
     "utils.ts",
   ]
@@ -44,6 +45,7 @@ build_webui("build") {
     "history_clusters_shared_style.css",
     "history_clusters_shared_style_lit.css",
     "horizontal_carousel.css",
+    "infinite_list.css",
     "page_favicon.css",
     "search_query.css",
     "shared_vars.css",
@@ -63,7 +65,10 @@ build_webui("build") {
 
   ts_out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/history_clusters"
-  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
   ts_composite = true
   ts_deps = [
     "../page_image_service:build_ts",
