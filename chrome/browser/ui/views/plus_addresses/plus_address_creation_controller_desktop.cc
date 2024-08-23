@@ -89,7 +89,6 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   if (!suppress_ui_for_testing_) {
     dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
         GetWeakPtr(), &GetWebContents(), maybe_email.value(),
-        plus_address_service->IsRefreshingSupported(relevant_origin_),
         should_show_notice);
     constrained_window::ShowWebModalDialogViews(dialog_delegate_.get(),
                                                 &GetWebContents());
@@ -189,11 +188,10 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
   // Display result on UI only after setting `plus_profile_` to prevent
   // premature confirm without `plus_profile_` value.
   if (dialog_delegate_) {
-    if (PlusAddressService* service = GetPlusAddressService();
-        !service || !service->IsRefreshingSupported(relevant_origin_)) {
-      dialog_delegate_->HideRefreshButton();
-    }
-    dialog_delegate_->ShowReserveResult(maybe_plus_profile);
+    PlusAddressService* service = GetPlusAddressService();
+    const bool show_refresh =
+        service && service->IsRefreshingSupported(relevant_origin_);
+    dialog_delegate_->ShowReserveResult(maybe_plus_profile, show_refresh);
   }
 }
 

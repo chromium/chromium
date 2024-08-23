@@ -27,16 +27,14 @@ class PlusAddressCreationView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
 
   // Updates the view to either show the plus address in the bottom sheet and
-  // enable the OK button or show an error message.
-  virtual void ShowReserveResult(
-      const PlusProfileOrError& maybe_plus_profile) = 0;
+  // enable the OK button or show an error message. `offer_refresh` indicates
+  // whether a refresh button should be shown.
+  virtual void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile,
+                                 bool offer_refresh) = 0;
 
   // Either closes the UI or shows an error message.
   virtual void ShowConfirmResult(
       const PlusProfileOrError& maybe_plus_profile) = 0;
-
-  // Hides the button for refreshing the plus address.
-  virtual void HideRefreshButton() = 0;
 };
 
 }  // namespace plus_addresses

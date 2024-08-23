@@ -37,7 +37,6 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
       base::WeakPtr<PlusAddressCreationController> controller,
       content::WebContents* web_contents,
       const std::string& primary_email_address,
-      bool offer_refresh,
       bool show_notice);
   PlusAddressCreationDialogDelegate(const PlusAddressCreationDialogDelegate&) =
       delete;
@@ -49,9 +48,9 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   void OnWidgetInitialized() override;
 
   // PlusAddressCreationView:
-  void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile) override;
+  void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile,
+                         bool offer_refresh) override;
   void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile) override;
-  void HideRefreshButton() override;
 
   // Calls the respective controller method for `type`.
   void HandleButtonPress(PlusAddressViewButtonType type);
@@ -61,6 +60,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
 
   // Creates the logo displayed at the top of the dialog.
   std::unique_ptr<views::View> CreateLogo();
+  // Creates a hidden refresh button.
   std::unique_ptr<views::ImageButton> CreateRefreshButton();
   // Creates a view containing the two buttons for the dialog and saves a
   // pointer to the confirm button to `confirm_button_`.

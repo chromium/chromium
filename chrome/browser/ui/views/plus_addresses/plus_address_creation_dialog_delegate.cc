@@ -303,7 +303,6 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     base::WeakPtr<PlusAddressCreationController> controller,
     content::WebContents* web_contents,
     const std::string& primary_email_address,
-    bool offer_refresh,
     bool show_notice)
     : views::BubbleDialogDelegate(/*anchor_view=*/nullptr,
                                   views::BubbleBorder::Arrow::NONE),
@@ -360,7 +359,6 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       plus_address_label_container_->AddChildView(CreatePlusAddressLabel());
   refresh_button_ =
       plus_address_label_container_->AddChildView(CreateRefreshButton());
-  refresh_button_->SetVisible(offer_refresh);
 
   // The error report label is hidden by default.
   error_report_label_ =
@@ -390,15 +388,13 @@ void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {
   }
 }
 
-void PlusAddressCreationDialogDelegate::HideRefreshButton() {
-  refresh_button_->SetVisible(false);
-}
-
 void PlusAddressCreationDialogDelegate::ShowReserveResult(
-    const PlusProfileOrError& maybe_plus_profile) {
+    const PlusProfileOrError& maybe_plus_profile,
+    bool offer_refresh) {
   CHECK(plus_address_label_);
 
   SetProgressBarVisibility(false);
+  refresh_button_->SetVisible(offer_refresh);
   if (maybe_plus_profile.has_value()) {
     plus_address_label_->SetText(
         base::UTF8ToUTF16(*maybe_plus_profile->plus_address));
@@ -476,6 +472,7 @@ PlusAddressCreationDialogDelegate::CreateRefreshButton() {
   button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_PLUS_ADDRESS_MODAL_REFRESH_BUTTON_ACCESSIBLE_NAME));
   button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 8)));
+  button->SetVisible(false);
   return button;
 }
 
