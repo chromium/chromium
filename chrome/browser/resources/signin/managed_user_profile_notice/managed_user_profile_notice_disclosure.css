@@ -1,0 +1,133 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=/signin_shared_lit.css.js
+ * #import=/signin_vars.css.js
+ * #import=/tangible_sync_style_shared_lit.css.js
+ * #scheme=relative
+ * #include=signin-shared-lit tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host() {
+  color: var(--cr-primary-text-color);
+}
+
+#header-container {
+  position: relative;
+  width: 100%;
+}
+
+#avatar-container {
+  height: var(--tangible-sync-style-avatar-size);
+  left: 0;
+  margin: auto;
+  position: relative;
+  right: 0;
+  width: var(--tangible-sync-style-avatar-size);
+  z-index: 1;
+}
+
+#avatar {
+  border: 2px solid var(--md-background-color);
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+}
+
+.work-badge {
+  bottom: 0;
+  position: absolute;
+}
+
+#text-container {
+  text-align: center;
+}
+
+.tangible-sync-style .title {
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 44px;
+  margin-bottom: 6px;
+  text-align: center;
+
+}
+
+.subtitle {
+  color: var(--cr-secondary-text-color);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  margin-top: 6px;
+  text-align: center;
+
+}
+
+h2 {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 32px;
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+.disclaimer-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  margin-block-start: 30px;
+  max-height: 300px;
+  min-height: 212px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.disclaimer {
+  background-color: var(--md-background-color);
+  border-radius: 24px;
+  box-sizing: border-box;
+  height: 212px;
+  min-width: 212px;
+  padding: 24px;
+  text-align: center;
+  width: 360px;
+}
+
+.disclaimer .icon {
+  color: var(--google-blue-600);
+  height: 36px;
+  width: 36px;
+}
+
+.disclaimer p {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  margin-top: 0px;
+  text-align: center;
+
+}
+
+@media (prefers-color-scheme: dark) {
+  .work-badge {
+    border-color: var(--md-background-color);
+  }
+
+  .work-badge > cr-icon {
+    box-shadow: 0 0 2px rgba(var(--google-grey-800-rgb), 0.12),
+       0 0 6px rgba(var(--google-grey-800-rgb), 0.15);
+  }
+
+  .disclaimer {
+    background-color: var(--cr-fallback-color-surface);
+  }
+
+  .disclaimer .icon {
+    color: var(--google-blue-300);
+  }
+}

@@ -2,30 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './strings.m.js';
-import './tangible_sync_style_shared.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './managed_user_profile_notice_state.html.js';
+import {getCss} from './managed_user_profile_notice_state.css.js';
+import {getHtml} from './managed_user_profile_notice_state.html.js';
 
-export class ManagedUserProfileNoticeStateElement extends PolymerElement {
+export class ManagedUserProfileNoticeStateElement extends CrLitElement {
   static get is() {
     return 'managed-user-profile-notice-state';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      icon: String,
-      title: String,
-      subtitle: String,
+      title: {type: String},
+      subtitle: {type: String},
     };
   }
+
+  override title: string;
+  subtitle: string;
 }
 
 declare global {

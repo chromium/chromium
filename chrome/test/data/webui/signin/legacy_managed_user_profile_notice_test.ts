@@ -15,7 +15,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_profile_notice_browser_proxy.js';
 
@@ -284,7 +284,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           'Success State: Proceed label');
     });
 
-    test('onProfileInfoChanged', function() {
+    test('onProfileInfoChanged', async function() {
       const targetElement = useUpdatedUi ?
           app.shadowRoot!.querySelector<HTMLElement>('#disclosure')! :
           app;
@@ -334,6 +334,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
         showCancelButton: false,
         checkLinkDataCheckboxByDefault: false,
       });
+      await microtasksFinished();
 
       checkTextValues(
           'new_title', 'new_subtitle', 'new_enterprise_info',
