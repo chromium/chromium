@@ -55,7 +55,7 @@ BASE_FEATURE(kWebXrSharedBuffers,
 // SharedBuffers to local context.
 BASE_FEATURE(kUseTargetTexture2DForSharedBuffers,
              "UseTargetTexture2DForSharedBuffers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif
 
