@@ -2856,6 +2856,9 @@ extern const char kStrictSiteIsolationDescription[];
 extern const char kSurfacePolishName[];
 extern const char kSurfacePolishDescription[];
 
+extern const char kCrossDeviceTabPaneAndroidName[];
+extern const char kCrossDeviceTabPaneAndroidDescription[];
+
 extern const char kTabGroupCreationDialogAndroidName[];
 extern const char kTabGroupCreationDialogAndroidDescription[];
 

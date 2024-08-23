@@ -4872,6 +4872,11 @@ const char kTabletToolbarReorderingAndroidDescription[] =
     "placing the Home button from 1st to the 4th position after the Refresh"
     "button to match the Desktop toolbar";
 
+const char kCrossDeviceTabPaneAndroidName[] = "Cross Device Tab Pane Android";
+const char kCrossDeviceTabPaneAndroidDescription[] =
+    "Enables showing a new pane in the hub that displays the pre-existing "
+    "cross device tabs feature originally located in Recent Tabs.";
+
 const char kTabGroupCreationDialogAndroidName[] =
     "Tab Group Creation Dialog Android";
 const char kTabGroupCreationDialogAndroidDescription[] =

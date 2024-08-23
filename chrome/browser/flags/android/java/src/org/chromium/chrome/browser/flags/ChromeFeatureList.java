@@ -283,6 +283,7 @@ public abstract class ChromeFeatureList {
     public static final String COOKIE_DEPRECATION_FACILITATED_TESTING =
             "CookieDeprecationFacilitatedTesting";
     public static final String CORMORANT = "Cormorant";
+    public static final String CROSS_DEVICE_TAB_PANE_ANDROID = "CrossDeviceTabPaneAndroid";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";
     public static final String DATA_SHARING = "DataSharing";
@@ -831,6 +832,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
+    public static final MutableFlagWithSafeDefault sCrossDeviceTabPaneAndroid =
+            newMutableFlagWithSafeDefault(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final MutableFlagWithSafeDefault sGtsCloseTabAnimation =
             newMutableFlagWithSafeDefault(GTS_CLOSE_TAB_ANIMATION, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =

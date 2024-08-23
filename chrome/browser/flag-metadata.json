@@ -1833,6 +1833,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "cross-device-tab-pane-android",
+    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "crostini-container-install",
     "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
     "expiry_milestone": 130
