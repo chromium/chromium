@@ -92,14 +92,18 @@ class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
 
  private:
   NSMutableDictionary<NSNumber*, PickerObserver*>* __strong picker_observers_;
+  // Cached content filters are needed so that a stream can be restarted without
+  // having to show the native picker again.
+  NSMutableDictionary<NSNumber*, SCContentFilter*>* __strong
+      cached_content_filters_;
   DesktopMediaID::Id next_id_ = 0;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<NativeScreenCapturePickerMac> weak_ptr_factory_{this};
 };
 
 NativeScreenCapturePickerMac::NativeScreenCapturePickerMac()
-    : picker_observers_(
-          [[NSMutableDictionary<NSNumber*, PickerObserver*> alloc] init]) {
+    : picker_observers_([[NSMutableDictionary alloc] init]),
+      cached_content_filters_([[NSMutableDictionary alloc] init]) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -128,6 +132,10 @@ void NativeScreenCapturePickerMac::Open(
     [picker addObserver:picker_observer];
     picker.active = true;
     SCContentSharingPickerConfiguration* config = [picker defaultConfiguration];
+    // TODO(https://crbug.com/360781940): Add support for changing selected
+    // content. The problem to solve is how this should interact with stream
+    // restart.
+    config.allowsChangingSelectedContent = false;
     // Limits the maximum number of screen/window capture to 5.
     NSNumber* max_stream_count = @5;
     if (type == DesktopMediaID::Type::TYPE_SCREEN) {
@@ -170,10 +178,17 @@ void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
 std::unique_ptr<media::VideoCaptureDevice>
 NativeScreenCapturePickerMac::CreateDevice(const DesktopMediaID& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   NSNumber* source_id = @(source.id);
-  PickerObserver* picker_observer = [picker_observers_ objectForKey:source_id];
-  SCContentFilter* filter =
-      picker_observer ? [picker_observer contentFilter] : nullptr;
+  SCContentFilter* filter = cached_content_filters_[source_id];
+  if (!filter) {
+    PickerObserver* picker_observer = picker_observers_[source_id];
+    filter = [picker_observer contentFilter];
+    // TODO(https://crbug.com/360781940): Remove cached entries on close if the
+    // stream is not reopened within 1-2 minutes.
+    cached_content_filters_[source_id] = filter;
+  }
+
   std::unique_ptr<media::VideoCaptureDevice> device =
       CreateScreenCaptureKitDeviceMac(source, filter);
   return device;
