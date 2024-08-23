@@ -68,11 +68,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 63;
+  static constexpr int kCurrentVersionNumber = 64;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 63;
+  static constexpr int kCompatibleVersionNumber = 64;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -166,7 +166,8 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceInvalidTriggerSpecs = 29,
     kSourceDedupKeyQueryFailed = 30,
     kSourceInvalidRandomizedResponseRate = 31,
-    kMaxValue = kSourceInvalidRandomizedResponseRate,
+    kSourceInvalidAttributionScopesData = 32,
+    kMaxValue = kSourceInvalidAttributionScopesData,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionCorruptReportStatus)
 

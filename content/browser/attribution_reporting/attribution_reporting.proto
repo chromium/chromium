@@ -94,3 +94,11 @@ message AttributionNullAggregatableMetadata {
   // Stored as microseconds since the Windows epoch (1601-01-01 00:00:00 UTC).
   optional int64 fake_source_time = 2;
 }
+
+message AttributionScopesData {
+  repeated string scopes = 1;
+  // Must be positive.
+  optional uint32 scope_limit = 2;
+  // Must be positive.
+  optional uint32 max_event_states = 3;
+}

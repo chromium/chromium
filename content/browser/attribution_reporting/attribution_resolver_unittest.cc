@@ -4902,4 +4902,15 @@ TEST_F(AttributionResolverSourceDestinationLimitTest,
   }
 }
 
+TEST_F(AttributionResolverTest, SourceAttributionScopesData_RoundTrips) {
+  auto scopes = *attribution_reporting::AttributionScopesData::Create(
+      attribution_reporting::AttributionScopesSet({"1", "2"}),
+      /*attribution_scope_limit=*/5u,
+      /*max_event_states=*/3u);
+  storage()->StoreSource(
+      SourceBuilder().SetAttributionScopesData(scopes).Build());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(AttributionScopesDataIs(scopes)));
+}
+
 }  // namespace content

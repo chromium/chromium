@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/filters.h"
@@ -67,7 +68,8 @@ class CONTENT_EXPORT StoredSource {
       attribution_reporting::mojom::TriggerDataMatching,
       attribution_reporting::EventLevelEpsilon,
       absl::uint128 aggregatable_debug_key_piece,
-      int remaining_aggregatable_debug_budget);
+      int remaining_aggregatable_debug_budget,
+      std::optional<attribution_reporting::AttributionScopesData>);
 
   ~StoredSource();
 
@@ -150,6 +152,11 @@ class CONTENT_EXPORT StoredSource {
     return remaining_aggregatable_debug_budget_;
   }
 
+  const std::optional<attribution_reporting::AttributionScopesData>&
+  attribution_scopes_data() const {
+    return attribution_scopes_data_;
+  }
+
  private:
   StoredSource(CommonSourceInfo common_info,
                uint64_t source_event_id,
@@ -170,7 +177,8 @@ class CONTENT_EXPORT StoredSource {
                attribution_reporting::mojom::TriggerDataMatching,
                attribution_reporting::EventLevelEpsilon,
                absl::uint128 aggregatable_debug_key_piece,
-               int remaining_aggregatable_debug_budget);
+               int remaining_aggregatable_debug_budget,
+               std::optional<attribution_reporting::AttributionScopesData>);
 
   CommonSourceInfo common_info_;
 
@@ -206,6 +214,9 @@ class CONTENT_EXPORT StoredSource {
   absl::uint128 aggregatable_debug_key_piece_;
 
   int remaining_aggregatable_debug_budget_;
+
+  std::optional<attribution_reporting::AttributionScopesData>
+      attribution_scopes_data_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

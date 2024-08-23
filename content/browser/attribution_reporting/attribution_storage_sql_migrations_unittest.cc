@@ -666,4 +666,38 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion62ToCurrent) {
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion63ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(63), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    ASSERT_FALSE(db.DoesColumnExist("sources", "attribution_scopes_data"));
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT attribution_scopes_data FROM sources"));
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(sql::ColumnType::kNull, s.GetColumnType(0));
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
 }  // namespace content

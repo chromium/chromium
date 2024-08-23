@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
@@ -83,7 +84,9 @@ std::optional<StoredSource> StoredSource::Create(
     attribution_reporting::mojom::TriggerDataMatching trigger_data_matching,
     attribution_reporting::EventLevelEpsilon event_level_epsilon,
     absl::uint128 aggregatable_debug_key_piece,
-    int remaining_aggregatable_debug_budget) {
+    int remaining_aggregatable_debug_budget,
+    std::optional<attribution_reporting::AttributionScopesData>
+        attribution_scopes_data) {
   if (!AreFieldsValid(remaining_aggregatable_attribution_budget,
                       remaining_aggregatable_debug_budget,
                       randomized_response_rate, source_time, expiry_time,
@@ -99,7 +102,8 @@ std::optional<StoredSource> StoredSource::Create(
       debug_key, std::move(aggregation_keys), attribution_logic, active_state,
       source_id, remaining_aggregatable_attribution_budget,
       randomized_response_rate, trigger_data_matching, event_level_epsilon,
-      aggregatable_debug_key_piece, remaining_aggregatable_debug_budget);
+      aggregatable_debug_key_piece, remaining_aggregatable_debug_budget,
+      std::move(attribution_scopes_data));
 }
 
 StoredSource::StoredSource(
@@ -122,7 +126,9 @@ StoredSource::StoredSource(
     attribution_reporting::mojom::TriggerDataMatching trigger_data_matching,
     attribution_reporting::EventLevelEpsilon event_level_epsilon,
     absl::uint128 aggregatable_debug_key_piece,
-    int remaining_aggregatable_debug_budget)
+    int remaining_aggregatable_debug_budget,
+    std::optional<attribution_reporting::AttributionScopesData>
+        attribution_scopes_data)
     : common_info_(std::move(common_info)),
       source_event_id_(source_event_id),
       destination_sites_(std::move(destination_sites)),
@@ -143,8 +149,8 @@ StoredSource::StoredSource(
       trigger_data_matching_(std::move(trigger_data_matching)),
       event_level_epsilon_(event_level_epsilon),
       aggregatable_debug_key_piece_(aggregatable_debug_key_piece),
-      remaining_aggregatable_debug_budget_(
-          remaining_aggregatable_debug_budget) {
+      remaining_aggregatable_debug_budget_(remaining_aggregatable_debug_budget),
+      attribution_scopes_data_(std::move(attribution_scopes_data)) {
   DCHECK(AreFieldsValid(remaining_aggregatable_attribution_budget_,
                         remaining_aggregatable_debug_budget_,
                         randomized_response_rate_, source_time_, expiry_time_,

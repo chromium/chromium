@@ -44,6 +44,7 @@
 #include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
@@ -223,7 +224,7 @@ std::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement, int col) {
                    DeserializeUint64(statement.ColumnInt64(col)));
 }
 
-constexpr int kSourceColumnCount = 20;
+constexpr int kSourceColumnCount = 21;
 
 int64_t GetStorageFileSizeKB(const base::FilePath& path_to_database) {
   int64_t file_size = -1;
@@ -323,6 +324,15 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       DeserializeFilterData(statement, col++);
   if (!filter_data) {
     corruption_causes.Put(ReportCorruptionStatus::kSourceInvalidFilterData);
+  }
+
+  base::expected<std::optional<attribution_reporting::AttributionScopesData>,
+                 absl::monostate>
+      attribution_scopes_data =
+          DeserializeAttributionScopesData(statement, col++);
+  if (!attribution_scopes_data.has_value()) {
+    corruption_causes.Put(
+        ReportCorruptionStatus::kSourceInvalidAttributionScopesData);
   }
 
   bool event_level_active = statement.ColumnBool(col++);
@@ -445,7 +455,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       *attribution_logic, *active_state, source_id,
       remaining_aggregatable_attribution_budget, *randomized_response_rate,
       trigger_data_matching, event_level_epsilon, aggregatable_debug_key_piece,
-      remaining_aggregatable_debug_budget);
+      remaining_aggregatable_debug_budget, *std::move(attribution_scopes_data));
   if (!stored_source.has_value()) {
     // TODO(crbug.com/40287459): Consider enumerating errors from StoredSource.
     return base::unexpected(ReportCorruptionStatusSetAndIds(
@@ -657,8 +667,9 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
       "remaining_aggregatable_attribution_budget,"
       "num_aggregatable_attribution_reports,"
       "aggregatable_source,filter_data,read_only_source_data,"
-      "remaining_aggregatable_debug_budget,num_aggregatable_debug_reports)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,0)";
+      "remaining_aggregatable_debug_budget,num_aggregatable_debug_reports,"
+      "attribution_scopes_data)"
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,0,?)";
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(reg.source_event_id));
@@ -697,6 +708,13 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
               reg.aggregatable_debug_reporting_config.config().key_piece));
   statement.BindInt(18, remaining_aggregatable_debug_budget);
 
+  if (reg.attribution_scopes_data.has_value()) {
+    statement.BindBlob(19, SerializeAttributionScopesData(
+                               reg.attribution_scopes_data.value()));
+  } else {
+    statement.BindNull(19);
+  }
+
   if (!statement.Run()) {
     return std::nullopt;
   }
@@ -728,7 +746,7 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
       randomized_response_rate, reg.trigger_data_matching,
       reg.event_level_epsilon,
       reg.aggregatable_debug_reporting_config.config().key_piece,
-      remaining_aggregatable_debug_budget);
+      remaining_aggregatable_debug_budget, reg.attribution_scopes_data);
 }
 
 base::expected<std::optional<AttributionStorageSql::ReportIdAndPriority>,
@@ -1778,6 +1796,9 @@ bool AttributionStorageSql::CreateSchema() {
   // |proto::AttributionReadOnlySourceData| containing the source's
   // |attribution_reporting::EventReportWindows| as well as its max number of
   // event level reports.
+  // |attribution_scopes_data| is a serialized
+  // `attribution_reporting::AttributionScopeData` used for pre-attribution
+  // source matching.
   //
   // |source_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
@@ -1807,7 +1828,8 @@ bool AttributionStorageSql::CreateSchema() {
       "filter_data BLOB NOT NULL,"
       "read_only_source_data BLOB NOT NULL,"
       "remaining_aggregatable_debug_budget INTEGER NOT NULL,"
-      "num_aggregatable_debug_reports INTEGER NOT NULL)";
+      "num_aggregatable_debug_reports INTEGER NOT NULL,"
+      "attribution_scopes_data BLOB)";
   if (!db_.Execute(kImpressionTableSql)) {
     return false;
   }

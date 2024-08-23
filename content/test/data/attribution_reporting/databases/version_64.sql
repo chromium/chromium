@@ -2,7 +2,7 @@ PRAGMA foreign_keys=OFF;
 
 BEGIN TRANSACTION;
 
-CREATE TABLE sources(source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_event_id INTEGER NOT NULL,source_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,source_time INTEGER NOT NULL,expiry_time INTEGER NOT NULL,aggregatable_report_window_time INTEGER NOT NULL,num_attributions INTEGER NOT NULL,event_level_active INTEGER NOT NULL,aggregatable_active INTEGER NOT NULL,source_type INTEGER NOT NULL,attribution_logic INTEGER NOT NULL,priority INTEGER NOT NULL,source_site TEXT NOT NULL,debug_key INTEGER,remaining_aggregatable_attribution_budget INTEGER NOT NULL,num_aggregatable_attribution_reports INTEGER NOT NULL,aggregatable_source BLOB NOT NULL,filter_data BLOB NOT NULL,read_only_source_data BLOB NOT NULL,remaining_aggregatable_debug_budget INTEGER NOT NULL,num_aggregatable_debug_reports INTEGER NOT NULL);
+CREATE TABLE sources(source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_event_id INTEGER NOT NULL,source_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,source_time INTEGER NOT NULL,expiry_time INTEGER NOT NULL,aggregatable_report_window_time INTEGER NOT NULL,num_attributions INTEGER NOT NULL,event_level_active INTEGER NOT NULL,aggregatable_active INTEGER NOT NULL,source_type INTEGER NOT NULL,attribution_logic INTEGER NOT NULL,priority INTEGER NOT NULL,source_site TEXT NOT NULL,debug_key INTEGER,remaining_aggregatable_attribution_budget INTEGER NOT NULL,num_aggregatable_attribution_reports INTEGER NOT NULL,aggregatable_source BLOB NOT NULL,filter_data BLOB NOT NULL,read_only_source_data BLOB NOT NULL,remaining_aggregatable_debug_budget INTEGER NOT NULL,num_aggregatable_debug_reports INTEGER NOT NULL,attribution_scopes_data BLOB);
 
 CREATE TABLE reports(report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_id INTEGER NOT NULL,trigger_time INTEGER NOT NULL,report_time INTEGER NOT NULL,initial_report_time INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,external_report_id TEXT NOT NULL,debug_key INTEGER,context_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,report_type INTEGER NOT NULL,metadata BLOB NOT NULL);
 
@@ -17,8 +17,8 @@ CREATE TABLE aggregatable_debug_rate_limits(id INTEGER PRIMARY KEY NOT NULL,cont
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','63');
-INSERT INTO meta VALUES('last_compatible_version','63');
+INSERT INTO meta VALUES('version','64');
+INSERT INTO meta VALUES('last_compatible_version','64');
 
 CREATE INDEX sources_by_active_reporting_origin ON sources(event_level_active,aggregatable_active,reporting_origin);
 
@@ -49,7 +49,5 @@ CREATE INDEX rate_limit_report_id_idx ON rate_limits(scope,report_id)WHERE (scop
 CREATE INDEX aggregatable_debug_rate_limits_context_site_idx ON aggregatable_debug_rate_limits(context_site);
 
 CREATE INDEX aggregatable_debug_rate_limits_time_idx ON aggregatable_debug_rate_limits(time);
-
-INSERT INTO sources VALUES(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22);
 
 COMMIT;

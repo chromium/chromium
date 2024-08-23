@@ -115,6 +115,7 @@ struct AttributionSourceRecord {
   std::string read_only_source_data;
   int remaining_aggregatable_debug_budget;
   int num_aggregatable_debug_reports;
+  std::optional<std::string> attribution_scopes_data;
 };
 
 struct AttributionReportRecord {
@@ -342,7 +343,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     static constexpr char kStoreSourceSql[] =
         "INSERT INTO sources "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?)";
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?,?)";
     sql::Statement statement(raw_db.GetUniqueStatement(kStoreSourceSql));
     statement.BindInt64(0, record.source_id);
     statement.BindInt64(1, record.source_event_id);
@@ -371,6 +372,11 @@ class AttributionStorageSqlTest : public testing::Test {
     statement.BindBlob(18, record.read_only_source_data);
     statement.BindInt(19, record.remaining_aggregatable_debug_budget);
     statement.BindInt(20, record.num_aggregatable_debug_reports);
+    if (record.attribution_scopes_data.has_value()) {
+      statement.BindBlob(21, *record.attribution_scopes_data);
+    } else {
+      statement.BindNull(21);
+    }
     ASSERT_TRUE(statement.Run());
   }
 
@@ -2422,7 +2428,8 @@ TEST_F(AttributionStorageSqlTest,
       .event_level_active = 2,
       .aggregation_keys = "foo",
       .filter_data = "bar",
-      .read_only_source_data = "baz"};
+      .read_only_source_data = "baz",
+      .attribution_scopes_data = "qux"};
   AttributionReportRecord report_record{
       .report_id = 1,
       .source_id = 2,
@@ -2511,7 +2518,11 @@ TEST_F(AttributionStorageSqlTest,
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidEventLevelEpsilon,
                                1);
-  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 27);
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
+                               AttributionStorageSql::ReportCorruptionStatus::
+                                   kSourceInvalidAttributionScopesData,
+                               2);
+  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 29);
 }
 
 TEST_F(AttributionStorageSqlTest, SourceRemainingAggregatableBudget) {

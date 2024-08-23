@@ -38,6 +38,7 @@
 namespace attribution_reporting {
 class AggregatableValues;
 class AggregationKeys;
+class AttributionScopesData;
 class TriggerSpecs;
 }  // namespace attribution_reporting
 
@@ -128,6 +129,9 @@ class SourceBuilder {
       attribution_reporting::SourceAggregatableDebugReportingConfig);
 
   SourceBuilder& SetDestinationLimitPriority(int64_t priority);
+
+  SourceBuilder& SetAttributionScopesData(
+      attribution_reporting::AttributionScopesData);
 
   StorableSource Build() const;
 
@@ -443,6 +447,11 @@ MATCHER_P(AggregationKeysAre, matcher, "") {
 MATCHER_P(RemainingAggregatableAttributionBudgetIs, matcher, "") {
   return ExplainMatchResult(matcher,
                             arg.remaining_aggregatable_attribution_budget(),
+                            result_listener);
+}
+
+MATCHER_P(AttributionScopesDataIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.attribution_scopes_data(),
                             result_listener);
 }
 
