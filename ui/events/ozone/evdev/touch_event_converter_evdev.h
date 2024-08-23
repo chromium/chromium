@@ -25,7 +25,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/message_loop/message_pump_libevent.h"
+#include "base/message_loop/message_pump_epoll.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   friend class MockTouchEventConverterEvdev;
 
-  // Overidden from base::MessagePumpLibevent::FdWatcher.
+  // Overridden from base::MessagePumpEpoll::FdWatcher.
   void OnFileCanReadWithoutBlocking(int fd) override;
 
   virtual void Reinitialize();

@@ -13,7 +13,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/message_loop/message_pump_libevent.h"
+#include "base/message_loop/message_pump_epoll.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "ui/display/types/display_constants.h"
@@ -92,7 +92,7 @@ class TestSelectionDeviceManager;
 
 class TestWaylandServerThread : public TestOutput::Delegate,
                                 public base::Thread,
-                                base::MessagePumpLibevent::FdWatcher {
+                                base::MessagePumpEpoll::FdWatcher {
  public:
   class OutputDelegate;
 
@@ -219,7 +219,7 @@ class TestWaylandServerThread : public TestOutput::Delegate,
   // server's thread.
   void DoRun(base::OnceClosure closure);
 
-  // base::MessagePumpLibevent::FdWatcher
+  // base::MessagePumpEpoll::FdWatcher
   void OnFileCanReadWithoutBlocking(int fd) override;
   void OnFileCanWriteWithoutBlocking(int fd) override;
 
@@ -270,7 +270,7 @@ class TestWaylandServerThread : public TestOutput::Delegate,
 
   std::vector<std::unique_ptr<GlobalObject>> globals_;
 
-  base::MessagePumpLibevent::FdWatchController controller_;
+  base::MessagePumpEpoll::FdWatchController controller_;
 
   raw_ptr<OutputDelegate> output_delegate_ = nullptr;
 

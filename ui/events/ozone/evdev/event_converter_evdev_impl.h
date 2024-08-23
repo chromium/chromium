@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "base/message_loop/message_pump_libevent.h"
+#include "base/message_loop/message_pump_epoll.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event.h"
@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   unsigned int last_scan_code_ = 0;
 
   // Controller for watching the input fd.
-  base::MessagePumpLibevent::FdWatchController controller_;
+  base::MessagePumpEpoll::FdWatchController controller_;
 
   // The evdev codes of the keys which should be blocked.
   std::bitset<KEY_CNT> blocked_keys_;

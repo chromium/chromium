@@ -2257,7 +2257,6 @@ component("base") {
     sources += [
       "message_loop/message_pump_epoll.cc",
       "message_loop/message_pump_epoll.h",
-      "message_loop/message_pump_libevent.h",
     ]
   }
 

@@ -105,9 +105,9 @@ class CallClosureHandler : public MessagePumpForIO::FdWatcher {
 
   // base::WatchableIOMessagePumpPosix::FdWatcher:
   void OnFileCanReadWithoutBlocking(int fd) override {
-    // Empty the pipe buffer to reset the event. Otherwise libevent
-    // implementation of MessageLoop may call the event handler again even if
-    // |read_closure_| below quits the RunLoop.
+    // Empty the pipe buffer to reset the event. Otherwise MessagePumpEpoll
+    // call the event handler again even if |read_closure_| below quits the
+    // RunLoop.
     char c;
     int result = HANDLE_EINTR(read(fd, &c, 1));
     if (result == -1) {

@@ -180,12 +180,6 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
 
   void AddPostDoWorkExpectations(
       testing::StrictMock<MockMessagePumpDelegate>& delegate) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-    // MessagePumpLibEvent checks for native notifications once after processing
-    // a DoWork() but only instantiates a ScopedDoWorkItem that triggers
-    // MessagePumpLibevent::OnLibeventNotification() which this test does not
-    // so there are no post-work expectations at the moment.
-#endif
 #if defined(USE_GLIB)
     if (GetParam() == MessagePumpType::UI) {
       // The GLib MessagePump can create and destroy work items between DoWorks

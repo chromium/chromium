@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "base/message_loop/message_pump_libevent.h"
+#include "base/message_loop/message_pump_epoll.h"
 #include "ui/events/event.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(EVDEV) TabletEventConverterEvdev
   const base::ScopedFD input_device_fd_;
 
   // Controller for watching the input fd.
-  base::MessagePumpLibevent::FdWatchController controller_;
+  base::MessagePumpEpoll::FdWatchController controller_;
 
   // Shared cursor state.
   const raw_ptr<CursorDelegateEvdev> cursor_;
