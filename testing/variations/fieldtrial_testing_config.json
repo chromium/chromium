@@ -5093,7 +5093,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_ParitalMatch_SchemeHostRefQueryPath",
+                    "name": "Enabled_PartialMatch_Arm3",
                     "params": {
                         "lax_path": "true",
                         "lax_query": "true",
@@ -5105,7 +5105,7 @@
                     ]
                 },
                 {
-                    "name": "Enabled_ParitalMatch_SchemeHostRefQuery",
+                    "name": "Enabled_PartialMatch_Arm2",
                     "params": {
                         "lax_path": "false",
                         "lax_query": "true",
@@ -5117,7 +5117,7 @@
                     ]
                 },
                 {
-                    "name": "Enabled_ParitalMatch_SchemeHostRef",
+                    "name": "Enabled_PartialMatch_Arm1",
                     "params": {
                         "lax_path": "false",
                         "lax_query": "false",
@@ -5129,7 +5129,7 @@
                     ]
                 },
                 {
-                    "name": "Enabled_StrictMatch",
+                    "name": "Enabled_ExactMatch",
                     "params": {
                         "lax_path": "false",
                         "lax_query": "false",
