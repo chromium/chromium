@@ -46,6 +46,18 @@ suite('Toolbar', () => {
       assertTrue(!!colorButton);
       colorButton.click();
       assertTrue(toolbar.$.colorMenu.$.menu.$.lazyMenu.get().open);
+
+      const lineSpacingButton =
+          shadowRoot.querySelector<CrIconButtonElement>('#line-spacing');
+      assertTrue(!!lineSpacingButton);
+      lineSpacingButton.click();
+      assertTrue(toolbar.$.lineSpacingMenu.$.menu.$.lazyMenu.get().open);
+
+      const letterSpacingButton =
+          shadowRoot.querySelector<CrIconButtonElement>('#letter-spacing');
+      assertTrue(!!letterSpacingButton);
+      letterSpacingButton.click();
+      assertTrue(toolbar.$.letterSpacingMenu.$.menu.$.lazyMenu.get().open);
     });
   });
 
@@ -64,6 +76,18 @@ suite('Toolbar', () => {
       assertTrue(!!colorButton);
       colorButton.click();
       assertTrue(toolbar.$.colorMenu.$.menu.$.lazyMenu.get().open);
+
+      const lineSpacingButton =
+          shadowRoot.querySelector<CrIconButtonElement>('#line-spacing');
+      assertTrue(!!lineSpacingButton);
+      lineSpacingButton.click();
+      assertTrue(toolbar.$.lineSpacingMenu.$.menu.$.lazyMenu.get().open);
+
+      const letterSpacingButton =
+          shadowRoot.querySelector<CrIconButtonElement>('#letter-spacing');
+      assertTrue(!!letterSpacingButton);
+      letterSpacingButton.click();
+      assertTrue(toolbar.$.letterSpacingMenu.$.menu.$.lazyMenu.get().open);
     });
   });
 });

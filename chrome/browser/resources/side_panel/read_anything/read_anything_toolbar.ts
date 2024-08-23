@@ -6,6 +6,8 @@ import './icons.html.js';
 import './voice_selection_menu.js';
 import './menus/simple_action_menu.js';
 import './menus/color_menu.js';
+import './menus/line_spacing_menu.js';
+import './menus/letter_spacing_menu.js';
 import './read_anything_toolbar.css.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
@@ -30,6 +32,8 @@ import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polym
 import {emitEvent, getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 import type {SettingsPrefs} from './common.js';
 import type {ColorMenu} from './menus/color_menu.js';
+import type {LetterSpacingMenu} from './menus/letter_spacing_menu.js';
+import type {LineSpacingMenu} from './menus/line_spacing_menu.js';
 import type {MenuStateItem} from './menus/menu_util.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom, TimeTo} from './read_anything_logger.js';
@@ -40,8 +44,8 @@ export interface ReadAnythingToolbarElement {
   $: {
     rateMenu: CrLazyRenderElement<CrActionMenuElement>,
     colorMenu: ColorMenu,
-    lineSpacingMenu: CrLazyRenderElement<CrActionMenuElement>,
-    letterSpacingMenu: CrLazyRenderElement<CrActionMenuElement>,
+    lineSpacingMenu: LineSpacingMenu,
+    letterSpacingMenu: LetterSpacingMenu,
     fontMenu: CrLazyRenderElement<CrActionMenuElement>,
     fontSizeMenu: CrLazyRenderElement<CrActionMenuElement>,
     moreOptionsMenu: CrLazyRenderElement<CrActionMenuElement>,
@@ -95,8 +99,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   static get properties() {
     return {
       fontOptions_: Array,
-      letterSpacingOptions_: Array,
-      lineSpacingOptions_: Array,
       rateOptions: Array,
       textStyleOptions_: Array,
       textStyleToggles_: Array,
@@ -207,41 +209,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private fontOptions_: string[] = [];
 
-  private letterSpacingOptions_: Array<MenuStateItem<number>> = [
-    {
-      title: loadTimeData.getString('letterSpacingStandardTitle'),
-      icon: 'read-anything:letter-spacing-standard',
-      data: chrome.readingMode.standardLetterSpacing,
-    },
-    {
-      title: loadTimeData.getString('letterSpacingWideTitle'),
-      icon: 'read-anything:letter-spacing-wide',
-      data: chrome.readingMode.wideLetterSpacing,
-    },
-    {
-      title: loadTimeData.getString('letterSpacingVeryWideTitle'),
-      icon: 'read-anything:letter-spacing-very-wide',
-      data: chrome.readingMode.veryWideLetterSpacing,
-    },
-  ];
-
-  private lineSpacingOptions_: Array<MenuStateItem<number>> = [
-    {
-      title: loadTimeData.getString('lineSpacingStandardTitle'),
-      icon: 'read-anything:line-spacing-standard',
-      data: chrome.readingMode.standardLineSpacing,
-    },
-    {
-      title: loadTimeData.getString('lineSpacingLooseTitle'),
-      icon: 'read-anything:line-spacing-loose',
-      data: chrome.readingMode.looseLineSpacing,
-    },
-    {
-      title: loadTimeData.getString('lineSpacingVeryLooseTitle'),
-      icon: 'read-anything:line-spacing-very-loose',
-      data: chrome.readingMode.veryLooseLineSpacing,
-    },
-  ];
 
   private textStyleToggles_: ToggleButton[] = [
     {
@@ -375,14 +342,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           icon: 'read-anything:line-spacing',
           ariaLabel: loadTimeData.getString('lineSpacingTitle'),
           openMenu: (target: HTMLElement) =>
-              openMenu(this.$.lineSpacingMenu.get(), target),
+              this.$.lineSpacingMenu.open(target),
         },
         {
           id: 'letter-spacing',
           icon: 'read-anything:letter-spacing',
           ariaLabel: loadTimeData.getString('letterSpacingTitle'),
           openMenu: (target: HTMLElement) =>
-              openMenu(this.$.letterSpacingMenu.get(), target),
+              this.$.letterSpacingMenu.open(target),
         });
   }
 
@@ -482,14 +449,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
       this.setHighlightState_(chrome.readingMode.isHighlightOn());
     }
-    this.setCheckMarkForMenu_(
-        this.$.lineSpacingMenu.getIfExists(),
-        this.getIndexOfSetting_(
-            this.lineSpacingOptions_, chrome.readingMode.lineSpacing));
-    this.setCheckMarkForMenu_(
-        this.$.letterSpacingMenu.getIfExists(),
-        this.getIndexOfSetting_(
-            this.letterSpacingOptions_, chrome.readingMode.letterSpacing));
   }
 
   private getIndexOfSetting_(
@@ -508,18 +467,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private isFontItemSelected_(item: number): boolean {
     return item !== this.fontOptions_.indexOf(chrome.readingMode.fontName);
-  }
-
-  private isLineSpacingItemSelected_(item: number): boolean {
-    return item !==
-        this.getIndexOfSetting_(
-            this.lineSpacingOptions_, chrome.readingMode.lineSpacing);
-  }
-
-  private isLetterSpacingItemSelected_(item: number): boolean {
-    return item !==
-        this.getIndexOfSetting_(
-            this.letterSpacingOptions_, chrome.readingMode.letterSpacing);
   }
 
   private isRateItemSelected_(item: number): boolean {
@@ -553,8 +500,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private closeMenus_() {
     this.$.rateMenu.getIfExists()?.close();
-    this.$.lineSpacingMenu.getIfExists()?.close();
-    this.$.letterSpacingMenu.getIfExists()?.close();
     this.$.fontMenu.getIfExists()?.close();
   }
 
@@ -617,29 +562,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     emitEvent(this, ToolbarEvent.HIGHLIGHT_TOGGLE);
   }
 
-  private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
-    chrome.readingMode.onLetterSpacingChange(event.model.item.data);
-    this.onTextStyleClick_(
-        event, ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
-        this.$.letterSpacingMenu.get(), ToolbarEvent.LETTER_SPACING);
-  }
-
-  private onLineSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
-    chrome.readingMode.onLineSpacingChange(event.model.item.data);
-    this.onTextStyleClick_(
-        event, ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
-        this.$.lineSpacingMenu.get(), ToolbarEvent.LINE_SPACING);
-  }
-
-  private onTextStyleClick_(
-      event: DomRepeatEvent<MenuStateItem<any>>,
-      logVal: ReadAnythingSettingsChange, menuClicked: CrActionMenuElement,
-      emitEventName: string) {
-    this.logger_.logTextSettingsChange(logVal);
-    emitEvent(this, emitEventName);
-    this.setCheckMarkForMenu_(menuClicked, event.model.index);
-    this.closeMenus_();
-  }
 
   private onFontClick_(event: DomRepeatEvent<string>) {
     this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);

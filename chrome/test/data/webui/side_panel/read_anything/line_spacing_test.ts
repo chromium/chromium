@@ -4,83 +4,56 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MetricsBrowserProxyImpl, ReadAnythingLogger, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {LineSpacingMenu} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {getItemsInMenu, stubAnimationFrame, suppressInnocuousErrors} from './common.js';
+import {emitEventWithTarget, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('LineSpacing', () => {
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
-  let toolbar: ReadAnythingToolbarElement;
-  let spacingEmitted: boolean;
+  let lineSpacingMenu: LineSpacingMenu;
+  let metrics: TestMetricsBrowserProxy;
 
   setup(() => {
     suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    spacingEmitted = false;
-    document.addEventListener(
-        ToolbarEvent.LINE_SPACING, () => spacingEmitted = true);
-    toolbar = document.createElement('read-anything-toolbar');
-    document.body.appendChild(toolbar);
+
+    metrics = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metrics);
+    ReadAnythingLogger.setInstance(new ReadAnythingLogger());
+
+    lineSpacingMenu = document.createElement('line-spacing-menu');
+    document.body.appendChild(lineSpacingMenu);
     flush();
   });
 
-  test('is dropdown menu', () => {
-    stubAnimationFrame();
-    const menuButton =
-        toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#line-spacing');
+  test('spacing change', async () => {
+    const veryLoose = chrome.readingMode.veryLooseLineSpacing;
+    emitEventWithTarget(
+        lineSpacingMenu.$.menu, ToolbarEvent.LINE_SPACING,
+        {detail: {data: veryLoose}});
+    assertEquals(veryLoose, chrome.readingMode.lineSpacing);
 
-    menuButton!.click();
-    flush();
+    const loose = chrome.readingMode.looseLineSpacing;
+    emitEventWithTarget(
+        lineSpacingMenu.$.menu, ToolbarEvent.LINE_SPACING,
+        {detail: {data: loose}});
+    assertEquals(loose, chrome.readingMode.lineSpacing);
 
-    assertTrue(toolbar.$.lineSpacingMenu.get().open);
-  });
+    const standard = chrome.readingMode.standardLineSpacing;
+    emitEventWithTarget(
+        lineSpacingMenu.$.menu, ToolbarEvent.LINE_SPACING,
+        {detail: {data: standard}});
+    assertEquals(standard, chrome.readingMode.lineSpacing);
 
-  suite('menu', () => {
-    let lineSpacingMenuOptions: HTMLButtonElement[];
-
-    setup(() => {
-      lineSpacingMenuOptions = getItemsInMenu(toolbar.$.lineSpacingMenu);
-    });
-
-    test('has 3 options', () => {
-      assertEquals(3, lineSpacingMenuOptions.length);
-    });
-
-    test('first option propagates standard spacing', () => {
-      lineSpacingMenuOptions[0]!.click();
-
-      assertTrue(spacingEmitted);
-      assertEquals(
-          chrome.readingMode.standardLineSpacing,
-          chrome.readingMode.lineSpacing);
-    });
-
-    test('second option propagates loose spacing', () => {
-      lineSpacingMenuOptions[1]!.click();
-
-      assertTrue(spacingEmitted);
-      assertEquals(
-          chrome.readingMode.looseLineSpacing, chrome.readingMode.lineSpacing);
-    });
-
-    test('third option propagates very loose spacing', () => {
-      lineSpacingMenuOptions[2]!.click();
-
-      assertTrue(spacingEmitted);
-      assertEquals(
-          chrome.readingMode.veryLooseLineSpacing,
-          chrome.readingMode.lineSpacing);
-    });
+    assertEquals(
+        ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
+        await metrics.whenCalled('recordTextSettingsChange'));
+    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
   });
 });

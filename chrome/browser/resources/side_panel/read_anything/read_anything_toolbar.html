@@ -298,45 +298,12 @@
   <color-menu
       id="colorMenu" settings-prefs="[[settingsPrefs]]">
   </color-menu>
-  <cr-lazy-render id="lineSpacingMenu">
-    <template>
-      <cr-action-menu accessibility-label="$i18n{lineSpacingTitle}"
-          role-description="$i18n{menu}">
-        <template is="dom-repeat" items="[[lineSpacingOptions_]]"
-            index-as="index"
-            initial-count="3">
-          <button class="dropdown-item" on-click="onLineSpacingClick_">
-            <cr-icon class$="button-image check-mark
-                check-mark-hidden-[[isLineSpacingItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"
-                aria-label="$i18n{selected}">
-            </cr-icon>
-            <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
-            [[item.title]]
-          </button>
-        </template>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
-  <cr-lazy-render id="letterSpacingMenu">
-    <template>
-      <cr-action-menu accessibility-label="$i18n{letterSpacingTitle}"
-          role-description="$i18n{menu}">
-        <template is="dom-repeat" items="[[letterSpacingOptions_]]"
-            index-as="index"
-            initial-count="3">
-          <button class="dropdown-item" on-click="onLetterSpacingClick_">
-            <cr-icon class$="button-image check-mark
-                check-mark-hidden-[[isLetterSpacingItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"
-                aria-label="$i18n{selected}"></cr-icon>
-            <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
-            [[item.title]]
-          </button>
-        </template>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
+  <line-spacing-menu
+      id="lineSpacingMenu" settings-prefs="[[settingsPrefs]]">
+  </line-spacing-menu>
+  <letter-spacing-menu
+      id="letterSpacingMenu" settings-prefs="[[settingsPrefs]]">
+  </letter-spacing-menu>
   <cr-lazy-render id="fontMenu">
     <template>
       <cr-action-menu accessibility-label="$i18n{fontNameTitle}"
