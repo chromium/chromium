@@ -32,15 +32,6 @@ proto_library("tflite_op_resolver_proto") {
   cc_generator_options = "lite=true:"
 }
 
-proto_library("tflite_core_example_proto") {
-  proto_in_dir = "src"
-  sources = [
-    "src/tensorflow/core/example/example.proto",
-    "src/tensorflow/core/example/feature.proto",
-  ]
-  cc_generator_options = "lite=true:"
-}
-
 config("tflite_config") {
   include_dirs = [
     "$root_gen_dir/third_party/tflite/src",
@@ -621,10 +612,6 @@ flatbuffer("weight_cache_schema_generated") {
 # tflite version.
 tflite_static_library("tflite") {
   sources = [
-    "src/tensorflow/compiler/mlir/lite/allocation.cc",
-    "src/tensorflow/compiler/mlir/lite/allocation.h",
-    "src/tensorflow/compiler/mlir/lite/core/api/error_reporter.cc",
-    "src/tensorflow/compiler/mlir/lite/core/api/error_reporter.h",
     "src/tensorflow/compiler/mlir/lite/core/model_builder_base.cc",
     "src/tensorflow/compiler/mlir/lite/core/model_builder_base.h",
     "src/tensorflow/compiler/mlir/lite/experimental/remat/metadata_util.cc",
@@ -635,6 +622,7 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.h",
     "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.cc",
     "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.h",
+    "src/tensorflow/lite/allocation.cc",
     "src/tensorflow/lite/arena_planner.cc",
     "src/tensorflow/lite/array.cc",
     "src/tensorflow/lite/builtin_ops.h",
@@ -642,6 +630,7 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/c/common_internal.h",
     "src/tensorflow/lite/core/acceleration/configuration/delegate_registry.cc",
     "src/tensorflow/lite/core/acceleration/configuration/delegate_registry.h",
+    "src/tensorflow/lite/core/api/error_reporter.cc",
     "src/tensorflow/lite/core/api/error_reporter.h",
     "src/tensorflow/lite/core/api/flatbuffer_conversions.cc",
     "src/tensorflow/lite/core/api/flatbuffer_conversions.h",
@@ -761,10 +750,9 @@ tflite_static_library("tflite") {
   }
 
   if (is_win) {
-    sources +=
-        [ "src/tensorflow/compiler/mlir/lite/mmap_allocation_disabled.cc" ]
+    sources += [ "src/tensorflow/lite/mmap_allocation_disabled.cc" ]
   } else {
-    sources += [ "src/tensorflow/compiler/mlir/lite/mmap_allocation.cc" ]
+    sources += [ "src/tensorflow/lite/mmap_allocation.cc" ]
   }
 
   if (is_ios) {
@@ -862,7 +850,6 @@ executable("tflite_benchmark") {
   ]
   deps = [
     ":tflite_builtin_op_resolver_standalone",
-    ":tflite_core_example_proto",
     ":tflite_standalone",
     "//third_party/abseil-cpp:absl",
     "//third_party/ruy",
