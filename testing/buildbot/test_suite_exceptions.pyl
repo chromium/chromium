@@ -1579,6 +1579,12 @@
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
       },
+      'android-14-x64-rel': {
+        'args': [
+          # crbug.com/361638641
+          '--gtest_filter=-BrowsingTopicsStateTest.EpochsForSite_FourEpochs_SwitchTimeArrived',
+        ],
+      },
       'android-mte-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.components_unittests.filter',
