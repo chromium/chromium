@@ -27,6 +27,7 @@
 namespace {
 
 const char kEmail[] = "example@email.com";
+const char kProfileName[] = "default";
 
 }  // namespace
 
@@ -35,99 +36,85 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
   SigninBrowserStateInfoUpdaterTest()
       : signin_error_controller_(
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
-            identity_test_env()->identity_manager()),
-        signin_browser_state_info_updater_(
-            identity_test_env()->identity_manager(),
-            &signin_error_controller_,
-            browser_state_name()) {
-    profile_attributes_storage()->AddBrowserState(browser_state_name(),
-                                                  /*gaia_id=*/std::string(),
-                                                  /*username=*/std::string());
+            identity_test_env()->identity_manager()) {
+    // The Profile needs to be registered before SigninBrowserStateInfoUpdater
+    // construction (thus the std::unique_ptr<...>).
+    GetApplicationContext()
+        ->GetProfileManager()
+        ->GetProfileAttributesStorage()
+        ->AddProfile(kProfileName);
+    signin_browser_state_info_updater_ =
+        std::make_unique<SigninBrowserStateInfoUpdater>(
+            identity_test_env()->identity_manager(), &signin_error_controller_,
+            kProfileName);
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
   }
 
-  std::string browser_state_name() const { return "default"; }
-
-  ProfileAttributesStorageIOS* profile_attributes_storage() const {
+  ProfileAttributesIOS GetAttributesForProfile() const {
     return GetApplicationContext()
         ->GetProfileManager()
-        ->GetProfileAttributesStorage();
+        ->GetProfileAttributesStorage()
+        ->GetAttributesForProfileWithName(kProfileName);
   }
 
-  // Returns index of cached information.
-  size_t cached_information_index() const {
-    return profile_attributes_storage()->GetIndexOfBrowserStateWithName(
-        browser_state_name());
-  }
-
+ private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestChromeBrowserStateManager browser_state_manager_;
 
   signin::IdentityTestEnvironment identity_test_env_;
   SigninErrorController signin_error_controller_;
-  SigninBrowserStateInfoUpdater signin_browser_state_info_updater_;
+  std::unique_ptr<SigninBrowserStateInfoUpdater>
+      signin_browser_state_info_updater_;
 };
 
-// Tests that the browser state info is updated on signin and signout.
+// Tests that the profile info is updated on signin and signout.
 TEST_F(SigninBrowserStateInfoUpdaterTest, SigninSignout) {
-  const size_t cache_index = cached_information_index();
-
-  ProfileAttributesIOS attr =
-      profile_attributes_storage()->GetAttributesForProfileAtIndex(cache_index);
-  ASSERT_FALSE(attr.IsAuthenticated());
+  ASSERT_FALSE(GetAttributesForProfile().IsAuthenticated());
 
   // Signin.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kEmail, signin::ConsentLevel::kSync);
 
-  attr =
-      profile_attributes_storage()->GetAttributesForProfileAtIndex(cache_index);
-  EXPECT_TRUE(attr.IsAuthenticated());
-  EXPECT_EQ(account_info.gaia, attr.GetGaiaId());
-  EXPECT_EQ(kEmail, attr.GetUserName());
+  {
+    ProfileAttributesIOS attr = GetAttributesForProfile();
+    EXPECT_TRUE(attr.IsAuthenticated());
+    EXPECT_EQ(account_info.gaia, attr.GetGaiaId());
+    EXPECT_EQ(kEmail, attr.GetUserName());
+  }
 
   // Signout.
   identity_test_env()->ClearPrimaryAccount();
-  attr =
-      profile_attributes_storage()->GetAttributesForProfileAtIndex(cache_index);
-  EXPECT_FALSE(attr.IsAuthenticated());
+  EXPECT_FALSE(GetAttributesForProfile().IsAuthenticated());
 }
 
-// Tests that the browser state info is updated on auth error change.
+// Tests that the profile info is updated on auth error change.
 TEST_F(SigninBrowserStateInfoUpdaterTest, AuthError) {
-  const size_t cache_index = cached_information_index();
-
-  ProfileAttributesIOS attr =
-      profile_attributes_storage()->GetAttributesForProfileAtIndex(cache_index);
-  ASSERT_FALSE(attr.IsAuthenticated());
+  ASSERT_FALSE(GetAttributesForProfile().IsAuthenticated());
 
   // Signin.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kEmail, signin::ConsentLevel::kSync);
 
-  attr =
-      profile_attributes_storage()->GetAttributesForProfileAtIndex(cache_index);
-  EXPECT_TRUE(attr.IsAuthenticated());
-  EXPECT_FALSE(attr.HasAuthenticationError());
+  {
+    ProfileAttributesIOS attr = GetAttributesForProfile();
+    EXPECT_TRUE(attr.IsAuthenticated());
+    EXPECT_FALSE(attr.HasAuthenticationError());
+  }
 
   // Set auth error.
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
-  attr =
-      profile_attributes_storage()->GetAttributesForProfileAtIndex(cache_index);
-  EXPECT_TRUE(attr.HasAuthenticationError());
+  EXPECT_TRUE(GetAttributesForProfile().HasAuthenticationError());
 
   // Remove auth error.
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id, GoogleServiceAuthError::AuthErrorNone());
 
-  attr =
-      profile_attributes_storage()->GetAttributesForProfileAtIndex(cache_index);
-  EXPECT_FALSE(attr.HasAuthenticationError());
+  EXPECT_FALSE(GetAttributesForProfile().HasAuthenticationError());
 }

@@ -39,13 +39,11 @@ class ProfileAttributesStorageIOS {
 
   ~ProfileAttributesStorageIOS();
 
-  // Register profile with `name`, `gaia_id` and `user_name`.
-  void AddBrowserState(std::string_view name,
-                       std::string_view gaia_id,
-                       std::string_view user_name);
+  // Register profile with `name`.
+  void AddProfile(std::string_view name);
 
   // Remove informations about profile with `name`.
-  void RemoveBrowserState(std::string_view name);
+  void RemoveProfile(std::string_view name);
 
   // Returns the count of known profiles.
   size_t GetNumberOfProfiles() const;
@@ -71,7 +69,7 @@ class ProfileAttributesStorageIOS {
 
   // Returns the index of the profile with `name` or std::string::npos if
   // not found.
-  size_t GetIndexOfBrowserStateWithName(std::string_view name) const;
+  size_t GetIndexOfProfileWithName(std::string_view name) const;
 
   // Register the given browser state with the given scene. Browser state name
   // should not be empty.

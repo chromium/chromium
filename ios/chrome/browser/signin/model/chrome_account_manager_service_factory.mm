@@ -52,7 +52,7 @@ ChromeAccountManagerServiceFactory::BuildServiceInstanceFor(
     profile_index = GetApplicationContext()
                         ->GetProfileManager()
                         ->GetProfileAttributesStorage()
-                        ->GetIndexOfBrowserStateWithName(profile_name);
+                        ->GetIndexOfProfileWithName(profile_name);
   }
   return std::make_unique<ChromeAccountManagerService>(
       GetApplicationContext()->GetLocalState(), profile_index);

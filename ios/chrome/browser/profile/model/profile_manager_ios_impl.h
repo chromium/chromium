@@ -93,9 +93,6 @@ class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
       ChromeBrowserStateLoadedCallback initialized_callback,
       ChromeBrowserStateLoadedCallback created_callback);
 
-  // Adds `browser_state` to the browser state info cache if necessary.
-  void AddBrowserStateToCache(ChromeBrowserState* browser_state);
-
   // Final initialization of the browser state.
   void DoFinalInit(ChromeBrowserState* browser_state);
   void DoFinalInitForServices(ChromeBrowserState* browser_state);

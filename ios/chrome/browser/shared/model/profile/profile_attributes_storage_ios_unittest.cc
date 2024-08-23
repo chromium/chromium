@@ -66,50 +66,48 @@ class ProfileAttributesStorageIOSTest : public PlatformTest {
   TestingPrefServiceSimple testing_pref_service_;
 };
 
-// Tests that AddBrowserState(...) inserts data for a BrowserState.
-TEST_F(ProfileAttributesStorageIOSTest, AddBrowserState) {
+// Tests that AddProfile(...) inserts data for a Profile.
+TEST_F(ProfileAttributesStorageIOSTest, AddProfile) {
   ProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
-    EXPECT_EQ(storage.GetIndexOfBrowserStateWithName(account.name),
+    EXPECT_EQ(storage.GetIndexOfProfileWithName(account.name),
               std::string::npos);
 
-    storage.AddBrowserState(account.name, account.gaia, account.email);
+    storage.AddProfile(account.name);
 
-    const size_t index = storage.GetIndexOfBrowserStateWithName(account.name);
+    const size_t index = storage.GetIndexOfProfileWithName(account.name);
     EXPECT_NE(index, std::string::npos);
 
     ProfileAttributesIOS attr = storage.GetAttributesForProfileAtIndex(index);
     EXPECT_EQ(attr.GetProfileName(), account.name);
-    EXPECT_EQ(attr.GetGaiaId(), account.gaia);
-    EXPECT_EQ(attr.GetUserName(), account.email);
-    EXPECT_EQ(attr.IsAuthenticated(), account.authenticated);
+    EXPECT_EQ(std::move(attr).GetStorage(), base::Value::Dict());
   }
 
-  // There is no duplicate, so there should be exactly as many BrowserState
+  // There is no duplicate, so there should be exactly as many Profile
   // known to the storage as there are test accounts.
   EXPECT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
 }
 
-// Tests that RemoveBrowserState(...) removes data for a BrowserState.
-TEST_F(ProfileAttributesStorageIOSTest, RemoveBrowserState) {
+// Tests that RemoveProfile(...) removes data for a Profile.
+TEST_F(ProfileAttributesStorageIOSTest, RemoveProfile) {
   ProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
-    storage.AddBrowserState(account.name, account.gaia, account.email);
+    storage.AddProfile(account.name);
   }
 
-  // There is no duplicate, so there should be exactly as many BrowserState
+  // There is no duplicate, so there should be exactly as many Profile
   // known to the storage as there are test accounts.
   EXPECT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
 
   for (const TestAccount& account : kTestAccounts) {
-    EXPECT_NE(storage.GetIndexOfBrowserStateWithName(account.name),
+    EXPECT_NE(storage.GetIndexOfProfileWithName(account.name),
               std::string::npos);
 
-    storage.RemoveBrowserState(account.name);
+    storage.RemoveProfile(account.name);
 
-    EXPECT_EQ(storage.GetIndexOfBrowserStateWithName(account.name),
+    EXPECT_EQ(storage.GetIndexOfProfileWithName(account.name),
               std::string::npos);
   }
 }
@@ -141,7 +139,7 @@ TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
     ProfileAttributesStorageIOS storage(pref_service());
 
     for (const TestAccount& account : kTestAccounts) {
-      storage.AddBrowserState(account.name, "", "");
+      storage.AddProfile(account.name);
 
       storage.UpdateAttributesForProfileWithName(
           account.name,
@@ -157,7 +155,7 @@ TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
 
   ProfileAttributesStorageIOS storage(pref_service());
   for (const TestAccount& account : kTestAccounts) {
-    const size_t index = storage.GetIndexOfBrowserStateWithName(account.name);
+    const size_t index = storage.GetIndexOfProfileWithName(account.name);
     ASSERT_NE(index, std::string::npos);
 
     ProfileAttributesIOS attr = storage.GetAttributesForProfileAtIndex(index);
@@ -175,13 +173,13 @@ TEST_F(ProfileAttributesStorageIOSTest, GetAttributesForProfileWithName) {
   ProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
-    storage.AddBrowserState(account.name, account.gaia, account.email);
+    storage.AddProfile(account.name);
     ProfileAttributesIOS attr =
         storage.GetAttributesForProfileWithName(account.name);
 
     EXPECT_EQ(attr.GetProfileName(), account.name);
-    EXPECT_EQ(attr.GetGaiaId(), account.gaia);
-    EXPECT_EQ(attr.GetUserName(), account.email);
-    EXPECT_EQ(attr.IsAuthenticated(), account.authenticated);
+    EXPECT_EQ(attr.GetGaiaId(), "");
+    EXPECT_EQ(attr.GetUserName(), "");
+    EXPECT_EQ(attr.IsAuthenticated(), false);
   }
 }

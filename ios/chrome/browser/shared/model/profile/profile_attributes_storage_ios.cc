@@ -29,22 +29,16 @@ ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
 
 ProfileAttributesStorageIOS::~ProfileAttributesStorageIOS() = default;
 
-void ProfileAttributesStorageIOS::AddBrowserState(std::string_view name,
-                                                  std::string_view gaia_id,
-                                                  std::string_view user_name) {
-  CHECK_EQ(GetIndexOfBrowserStateWithName(name), std::string::npos);
-
+void ProfileAttributesStorageIOS::AddProfile(std::string_view name) {
   // Inserts the profile name in sorted position.
-  sorted_keys_.insert(base::ranges::upper_bound(sorted_keys_, name),
-                      std::string(name));
+  auto iterator = base::ranges::upper_bound(sorted_keys_, name);
+  CHECK(iterator == sorted_keys_.end() || *iterator != name);
+  sorted_keys_.insert(iterator, std::string(name));
 
-  // Inserts the information about the profile in the preferences.
+  // Inserts an empty dictionary for the profile in the preferences.
   {
-    ProfileAttributesIOS attr(name, /*attrs=*/nullptr);
-    attr.SetAuthenticationInfo(gaia_id, user_name);
-
     ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-    update->Set(name, std::move(attr).GetStorage());
+    update->Set(name, base::Value::Dict());
   }
 
   // Update the number of created profile.
@@ -57,24 +51,26 @@ void ProfileAttributesStorageIOS::AddBrowserState(std::string_view name,
   }
 }
 
-void ProfileAttributesStorageIOS::RemoveBrowserState(std::string_view name) {
-  CHECK_NE(GetIndexOfBrowserStateWithName(name), std::string::npos);
-  ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-  base::Value::Dict& cache = update.Get();
+void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
+  // Remove the profile name from the sorted dictionary.
+  auto iterator = base::ranges::find(sorted_keys_, name);
+  CHECK(iterator != sorted_keys_.end() && *iterator == name);
+  sorted_keys_.erase(iterator);
 
-  const int browser_states_count =
-      prefs_->GetInteger(prefs::kBrowserStatesNumCreated);
-  DCHECK_GE(browser_states_count, 1);
-  prefs_->SetInteger(prefs::kBrowserStatesNumCreated, browser_states_count - 1);
+  // Remove the profile from the list of last active profiles (if present).
+  {
+    ScopedListPrefUpdate update(prefs_, prefs::kBrowserStatesLastActive);
+    update->EraseValue(base::Value(name));
+  }
 
-  base::Value::List last_active_browser_states =
-      prefs_->GetList(prefs::kBrowserStatesLastActive).Clone();
-  last_active_browser_states.EraseValue(base::Value(name));
-  prefs_->SetList(prefs::kBrowserStatesLastActive,
-                  std::move(last_active_browser_states));
+  // Update the number of created profile.
+  prefs_->SetInteger(prefs::kBrowserStatesNumCreated, sorted_keys_.size());
 
-  cache.Remove(name);
-  sorted_keys_.erase(base::ranges::find(sorted_keys_, name));
+  // Remove the information about the profile from the preferences.
+  {
+    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
+    update->Remove(name);
+  }
 }
 
 size_t ProfileAttributesStorageIOS::GetNumberOfProfiles() const {
@@ -94,7 +90,7 @@ ProfileAttributesStorageIOS::GetAttributesForProfileAtIndex(
 ProfileAttributesIOS
 ProfileAttributesStorageIOS::GetAttributesForProfileWithName(
     std::string_view name) const {
-  const size_t index = GetIndexOfBrowserStateWithName(name);
+  const size_t index = GetIndexOfProfileWithName(name);
   return GetAttributesForProfileAtIndex(index);
 }
 
@@ -117,11 +113,11 @@ void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(
 void ProfileAttributesStorageIOS::UpdateAttributesForProfileWithName(
     std::string_view name,
     ProfileAttributesCallback callback) {
-  const size_t index = GetIndexOfBrowserStateWithName(name);
+  const size_t index = GetIndexOfProfileWithName(name);
   UpdateAttributesForProfileAtIndex(index, std::move(callback));
 }
 
-size_t ProfileAttributesStorageIOS::GetIndexOfBrowserStateWithName(
+size_t ProfileAttributesStorageIOS::GetIndexOfProfileWithName(
     std::string_view name) const {
   auto iterator = base::ranges::lower_bound(sorted_keys_, name);
   if (iterator == sorted_keys_.end() || *iterator != name) {

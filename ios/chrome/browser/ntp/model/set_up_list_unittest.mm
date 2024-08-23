@@ -97,15 +97,16 @@ class SetUpListTest : public PlatformTest {
         identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
     browser_state_manager_.GetProfileAttributesStorage()
-        ->UpdateAttributesForProfileAtIndex(
-            0, base::BindOnce(
-                   [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
-                     attr.SetAuthenticationInfo(
-                         base::SysNSStringToUTF8(identity.gaiaID),
-                         base::SysNSStringToUTF8(identity.userEmail));
-                     return attr;
-                   },
-                   identity));
+        ->UpdateAttributesForProfileWithName(
+            browser_state_->GetBrowserStateName(),
+            base::BindOnce(
+                [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
+                  attr.SetAuthenticationInfo(
+                      base::SysNSStringToUTF8(identity.gaiaID),
+                      base::SysNSStringToUTF8(identity.userEmail));
+                  return attr;
+                },
+                identity));
   }
 
   // Ensures that Chrome is considered as default browser.

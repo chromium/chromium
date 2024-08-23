@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -43,7 +44,6 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
         test_chrome_browser_state->GetBrowserStateName();
     pref_service_ = test_chrome_browser_state->GetPrefs();
 
-    profile_attributes_storage()->RemoveBrowserState(browser_state_name);
     manager_ = [[PushNotificationAccountContextManager alloc]
         initWithChromeBrowserStateManager:&browser_state_manager_];
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
@@ -84,7 +84,14 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
                              const std::string browser_state_name) {
     // Construct the BrowserStates with the given gaia id and add the gaia id
     // into the AccountContextManager.
-    storage->AddBrowserState(browser_state_name, gaia_id, std::string());
+    storage->UpdateAttributesForProfileWithName(
+        browser_state_name,
+        base::BindOnce(
+            [](const std::string& gaia_id, ProfileAttributesIOS attr) {
+              attr.SetAuthenticationInfo(gaia_id, /*user_name=*/std::string());
+              return attr;
+            },
+            gaia_id));
     [manager addAccount:gaia_id];
   }
 

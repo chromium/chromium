@@ -364,6 +364,15 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
     DoFinalInit(browser_state);
     iter->second.SetIsLoaded();
   } else {
+    if (is_new_browser_state) {
+      // TODO(crbug.com/335630301): Mark the data for removal and prevent the
+      // creation of a profile with the same name until the data has been
+      // deleted.
+      const std::string& name = browser_state->GetBrowserStateName();
+      profile_attributes_storage_.RemoveProfile(name);
+      DCHECK(!BrowserStateWithNameExists(name));
+    }
+
     browser_state = nullptr;
     browser_states_.erase(iter);
   }
@@ -396,7 +405,7 @@ std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
 bool ChromeBrowserStateManagerImpl::BrowserStateWithNameExists(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return profile_attributes_storage_.GetIndexOfBrowserStateWithName(name) !=
+  return profile_attributes_storage_.GetIndexOfProfileWithName(name) !=
          std::string::npos;
 }
 
@@ -425,6 +434,11 @@ bool ChromeBrowserStateManagerImpl::CreateBrowserStateWithMode(
         std::move(initialized_callback).Run(nullptr);
       }
       return false;
+    }
+
+    if (!existing) {
+      profile_attributes_storage_.AddProfile(name);
+      DCHECK(BrowserStateWithNameExists(name));
     }
 
     std::tie(iter, inserted) = browser_states_.insert(std::make_pair(
@@ -474,39 +488,10 @@ bool ChromeBrowserStateManagerImpl::CreateBrowserStateWithMode(
   return true;
 }
 
-void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
-    ChromeBrowserState* browser_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!browser_state->IsOffTheRecord());
-  CoreAccountInfo account_info =
-      IdentityManagerFactory::GetForBrowserState(browser_state)
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
-  const std::string& profile_name = browser_state->GetBrowserStateName();
-  const size_t index =
-      profile_attributes_storage_.GetIndexOfBrowserStateWithName(profile_name);
-  if (index == std::string::npos) {
-    profile_attributes_storage_.AddBrowserState(profile_name, account_info.gaia,
-                                                account_info.email);
-    return;
-  }
-
-  // The ProfileAttributes's info must match the IdentityManager.
-  profile_attributes_storage_.UpdateAttributesForProfileAtIndex(
-      index, base::BindOnce(
-                 [](CoreAccountInfo account_info, ProfileAttributesIOS attr) {
-                   attr.SetAuthenticationInfo(account_info.gaia,
-                                              account_info.email);
-                   return attr;
-                 },
-                 std::move(account_info)));
-}
-
 void ChromeBrowserStateManagerImpl::DoFinalInit(
     ChromeBrowserState* browser_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DoFinalInitForServices(browser_state);
-  AddBrowserStateToCache(browser_state);
 
   // Log the browser state size after a reasonable startup delay.
   DCHECK(!browser_state->IsOffTheRecord());

@@ -324,8 +324,8 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_3) {
 TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync) {
   // Pretends that a BrowserState named `kProfileName1` exists. Required as
   // LoadBrowserStateAsync(...) won't create new BrowserStates.
-  browser_state_manager().GetProfileAttributesStorage()->AddBrowserState(
-      kProfileName1, /*gaia_id=*/std::string(), /*user_name=*/std::string());
+  browser_state_manager().GetProfileAttributesStorage()->AddProfile(
+      kProfileName1);
 
   base::RunLoop run_loop;
   ChromeBrowserState* created_browser_state = nullptr;
@@ -364,8 +364,8 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync) {
 TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Reload) {
   // Pretends that a BrowserState named `kProfileName1` exists. Required as
   // LoadBrowserStateAsync(...) won't create new BrowserStates.
-  browser_state_manager().GetProfileAttributesStorage()->AddBrowserState(
-      kProfileName1, /*gaia_id=*/std::string(), /*user_name=*/std::string());
+  browser_state_manager().GetProfileAttributesStorage()->AddProfile(
+      kProfileName1);
 
   // Load the BrowserState a first time.
   {
@@ -440,7 +440,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Missing) {
   // BrowserStates.
   ASSERT_EQ(browser_state_manager()
                 .GetProfileAttributesStorage()
-                ->GetIndexOfBrowserStateWithName(kProfileName1),
+                ->GetIndexOfProfileWithName(kProfileName1),
             std::string::npos);
 
   base::RunLoop run_loop;
@@ -474,7 +474,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync) {
   // cause CreateBrowserStateAsync(...) to create a new ChromeBrowserSatet.
   ASSERT_EQ(browser_state_manager()
                 .GetProfileAttributesStorage()
-                ->GetIndexOfBrowserStateWithName(kProfileName1),
+                ->GetIndexOfProfileWithName(kProfileName1),
             std::string::npos);
 
   base::RunLoop run_loop;
@@ -516,7 +516,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync_Reload) {
   // cause CreateBrowserStateAsync(...) to create a new ChromeBrowserSatet.
   ASSERT_EQ(browser_state_manager()
                 .GetProfileAttributesStorage()
-                ->GetIndexOfBrowserStateWithName(kProfileName1),
+                ->GetIndexOfProfileWithName(kProfileName1),
             std::string::npos);
 
   // Load the BrowserState a first time.
@@ -590,8 +590,8 @@ TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync_Reload) {
 TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserState) {
   // Pretends that a BrowserState named `kProfileName1` exists. Required as
   // LoadBrowserState(...) won't create new BrowserStates.
-  browser_state_manager().GetProfileAttributesStorage()->AddBrowserState(
-      kProfileName1, /*gaia_id=*/std::string(), /*user_name=*/std::string());
+  browser_state_manager().GetProfileAttributesStorage()->AddProfile(
+      kProfileName1);
 
   // Load the BrowserState synchronously.
   ChromeBrowserState* browser_state =
@@ -613,7 +613,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserState_Missing) {
   // BrowserStates.
   ASSERT_EQ(browser_state_manager()
                 .GetProfileAttributesStorage()
-                ->GetIndexOfBrowserStateWithName(kProfileName1),
+                ->GetIndexOfProfileWithName(kProfileName1),
             std::string::npos);
 
   // Load the BrowserState synchronously.
@@ -631,7 +631,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserState) {
   // cause CreateBrowserStateAsync(...) to create a new ChromeBrowserSatet.
   ASSERT_EQ(browser_state_manager()
                 .GetProfileAttributesStorage()
-                ->GetIndexOfBrowserStateWithName(kProfileName1),
+                ->GetIndexOfProfileWithName(kProfileName1),
             std::string::npos);
 
   // Create the BrowserState synchronously.

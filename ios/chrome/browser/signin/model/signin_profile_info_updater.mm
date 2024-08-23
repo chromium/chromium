@@ -39,58 +39,32 @@ void SigninBrowserStateInfoUpdater::Shutdown() {
 }
 
 void SigninBrowserStateInfoUpdater::UpdateBrowserStateInfo() {
-  ProfileAttributesStorageIOS* storage = GetApplicationContext()
-                                             ->GetProfileManager()
-                                             ->GetProfileAttributesStorage();
-
-  // TODO(crbug.com/361551908): SigninBrowserStateInfoUpdater is created as
-  // part of the initialisation of the ProfileIOS. ProfileManagerIOS does not
-  // register the Profile with the ProfileAttributesStorageIOS before the end
-  // of the initialisation and UpdateBrowserStateInfo() is called during the
-  // constructor. All this together mean that the ProfileAttributesStorageIOS
-  // may not know the ProfileIOS in certain case. This should be fixed, but
-  // until this happen, return early if the Profile is not found. This is okay
-  // because ProfileManagerIOS duplicate this code (this duplicate logic must
-  // also be remove).
-  const size_t index =
-      storage->GetIndexOfBrowserStateWithName(browser_state_name_);
-  if (index == std::string::npos) {
-    return;
-  }
-
-  storage->UpdateAttributesForProfileAtIndex(
-      index, base::BindOnce(
-                 [](CoreAccountInfo info, ProfileAttributesIOS attr) {
-                   attr.SetAuthenticationInfo(info.gaia, info.email);
-                   return attr;
-                 },
-                 identity_manager_->GetPrimaryAccountInfo(
-                     signin::ConsentLevel::kSignin)));
-}
-
-void SigninBrowserStateInfoUpdater::OnErrorChanged() {
-  ProfileAttributesStorageIOS* storage = GetApplicationContext()
-                                             ->GetProfileManager()
-                                             ->GetProfileAttributesStorage();
-
-  // TODO(crbug.com/361551908): workaround similar to UpdateBrowserStateInfo().
-  // Probably unnecessary as OnErrorChanged() is not called by the constructor.
-  const size_t index =
-      storage->GetIndexOfBrowserStateWithName(browser_state_name_);
-  if (index == std::string::npos) {
-    return;
-  }
-
   GetApplicationContext()
       ->GetProfileManager()
       ->GetProfileAttributesStorage()
-      ->UpdateAttributesForProfileAtIndex(
-          index, base::BindOnce(
-                     [](bool has_error, ProfileAttributesIOS attr) {
-                       attr.SetHasAuthenticationError(has_error);
-                       return attr;
-                     },
-                     signin_error_controller_->HasError()));
+      ->UpdateAttributesForProfileWithName(
+          browser_state_name_,
+          base::BindOnce(
+              [](CoreAccountInfo info, ProfileAttributesIOS attr) {
+                attr.SetAuthenticationInfo(info.gaia, info.email);
+                return attr;
+              },
+              identity_manager_->GetPrimaryAccountInfo(
+                  signin::ConsentLevel::kSignin)));
+}
+
+void SigninBrowserStateInfoUpdater::OnErrorChanged() {
+  GetApplicationContext()
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
+      ->UpdateAttributesForProfileWithName(
+          browser_state_name_,
+          base::BindOnce(
+              [](bool has_error, ProfileAttributesIOS attr) {
+                attr.SetHasAuthenticationError(has_error);
+                return attr;
+              },
+              signin_error_controller_->HasError()));
 }
 
 void SigninBrowserStateInfoUpdater::OnPrimaryAccountChanged(
