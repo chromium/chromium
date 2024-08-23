@@ -5364,7 +5364,8 @@
         'args': [
           '--use-persistent-shell',
         ],
-        'ci_only': True, # crbug/1368281
+        # This builder is mirrored by CQ builder. Only multiple process tests run in CQ.
+        'ci_only': True,
         'swarming': {
           'shards': 3,
         },
