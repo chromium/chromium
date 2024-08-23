@@ -179,8 +179,10 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
 }
 
 // Tests that the right histograms are recorded for trigger criteria experiment.
+// TODO(crbug.com/361783027): This test launches the iOS Settings which causes
+// other tests to fail.
 TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
-       TestTriggerCriteriaExperimentPrimaryAction) {
+       DISABLED_TestTriggerCriteriaExperimentPrimaryAction) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
