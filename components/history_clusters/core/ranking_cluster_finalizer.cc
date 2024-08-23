@@ -6,7 +6,6 @@
 
 #include "base/containers/adapters.h"
 #include "components/history_clusters/core/history_clusters_util.h"
-#include "components/history_clusters/core/ntp_visit_scores.h"
 
 namespace history_clusters {
 
@@ -33,8 +32,8 @@ float Smoothstep(float low, float high, float value) {
 }  // namespace
 
 RankingClusterFinalizer::RankingClusterFinalizer(
-    ClusteringRequestSource clustering_request_source)
-    : clustering_request_source_(clustering_request_source) {}
+    ClusteringRequestSource clustering_request_source) {}
+
 RankingClusterFinalizer::~RankingClusterFinalizer() = default;
 
 void RankingClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
@@ -56,13 +55,6 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
           {visit.annotated_visit.visit_row.visit_id, visit_score});
     }
     it = url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
-
-    if (GetConfig().use_ntp_specific_intracluster_ranking &&
-        clustering_request_source_ == ClusteringRequestSource::kNewTabPage) {
-      it->second.set_ntp_visit_attributes_score(
-          GetNtpVisitAttributesScore(visit));
-      return;
-    }
 
     // Check if the visit is bookmarked.
     if (visit.annotated_visit.context_annotations.is_existing_bookmark ||

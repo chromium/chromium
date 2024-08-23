@@ -256,17 +256,6 @@ struct Config {
 
   bool apply_zero_state_filtering = true;
 
-  // The `kNtpChromeCartInHistoryClusterModule` child params.
-
-  // Whether to use the NTP-specific algorithms and signals for determining
-  // intracluster ranking.
-  bool use_ntp_specific_intracluster_ranking = false;
-
-  // Returns the weight to use for the visit duration when ranking visits within
-  // a cluster. Will always be greater than or equal to 0 specifically on the
-  // NTP surface when `use_ntp_specific_intracluster_ranking is true`.
-  float ntp_visit_duration_ranking_weight = 1.0;
-
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
