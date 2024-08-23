@@ -1,0 +1,12 @@
+include_rules = [
+  "-chrome",
+
+  "+chrome/browser/ui/ash/app_access",
+
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/chrome_pages.h",
+  "+chrome/test/base",
+]

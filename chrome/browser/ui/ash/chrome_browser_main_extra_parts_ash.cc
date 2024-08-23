@@ -57,7 +57,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
-#include "chrome/browser/ui/ash/app_access_notifier.h"
+#include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"

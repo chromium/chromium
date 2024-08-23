@@ -10,8 +10,6 @@ assert(is_chromeos_ash)
 
 static_library("ash") {
   sources = [
-    "app_access_notifier.cc",
-    "app_access_notifier.h",
     "app_icon_color_cache.cc",
     "app_icon_color_cache.h",
     "arc_custom_tab_modal_dialog_host.cc",
@@ -151,6 +149,7 @@ static_library("ash") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/ash/accessibility",
     "//chrome/browser/ui/ash/annotator",
+    "//chrome/browser/ui/ash/app_access",
     "//chrome/browser/ui/ash/back_gesture",
     "//chrome/browser/ui/ash/boca",
     "//chrome/browser/ui/ash/capture_mode",
@@ -315,7 +314,6 @@ source_set("unit_tests") {
 
   sources = [
     "accelerator_metadata_unittest.cc",
-    "app_access_notifier_unittest.cc",
     "app_icon_color_cache_unittest.cc",
     "arc_vm_data_migration_confirmation_dialog_unittest.cc",
     "window_pin_util_ash_unittest.cc",
@@ -360,6 +358,7 @@ source_set("unit_tests") {
     # Gather unit tests from subdirectories.
     "//chrome/browser/ui/ash/accessibility:unit_tests",
     "//chrome/browser/ui/ash/annotator:unit_tests",
+    "//chrome/browser/ui/ash/app_access:unit_tests",
     "//chrome/browser/ui/ash/assistant:unit_tests",
     "//chrome/browser/ui/ash/birch:unit_tests",
     "//chrome/browser/ui/ash/boca:unit_tests",
