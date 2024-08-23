@@ -852,8 +852,8 @@
   },
   {
     "name": "autofill-parse-vcn-card-on-file-standalone-cvc-fields",
-    "owners": [ "jsaul@google.com", "alexandertekle@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "alexandertekle@google.com", "jsaul@google.com"],
+    "expiry_milestone": 135
   },
   {
     "name": "autofill-remove-payments-butter-dropdown",
@@ -8417,7 +8417,7 @@
   {
     "name": "sync-autofill-wallet-usage-data",
     "owners": [ "alexandertekle@google.com", "treib@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "sync-chromeos-explicit-passphrase-sharing",
