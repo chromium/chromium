@@ -2083,6 +2083,16 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
         treat_as_error=False,
     ),
+    BanRule(
+        pattern='RunUntilIdle',
+        explanation=
+        ('Do not RunUntilIdle. If possible, explicitly quit the run loop using '
+         'run_loop.Quit() or run_loop.QuitClosure() if completion can be '
+         'observed using a lambda or callback. Otherwise, wait for the '
+         'condition to be true via base::test::RunUntil().'
+        ),
+        treat_as_error=False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
