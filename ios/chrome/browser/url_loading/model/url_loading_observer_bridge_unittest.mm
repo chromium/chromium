@@ -8,7 +8,7 @@
 #import "base/rand_util.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"

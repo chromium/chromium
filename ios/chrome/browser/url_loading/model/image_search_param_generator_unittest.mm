@@ -6,7 +6,7 @@
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
