@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, BiodFailsBeforeLockScreenReady) {
 
 // TODO(crbug.com/361782081): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
-                       DISABLED_ExceedAttemptsAndBiodRestart) {
+                       ExceedAttemptsAndBiodRestart) {
   ScreenLockerTester tester;
   biod::FingerprintMessage msg;
 

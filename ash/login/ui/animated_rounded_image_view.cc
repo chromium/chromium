@@ -185,7 +185,11 @@ void AnimatedRoundedImageView::StartOrStopAnimation() {
 }
 
 void AnimatedRoundedImageView::UpdateAnimationFrame() {
-  DCHECK(!frames_.empty());
+  if (frames_.empty()) {
+    // The frames_ was invalidated, awaiting the next OnPaint to regenerate the
+    // frames_.
+    return;
+  }
 
   // Note: |active_frame_| may be invalid.
   active_frame_ = (active_frame_ + 1) % frames_.size();
