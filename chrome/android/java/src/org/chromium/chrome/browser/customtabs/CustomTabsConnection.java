@@ -103,6 +103,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * Implementation of the ICustomTabsService interface.
@@ -2060,6 +2061,16 @@ public class CustomTabsConnection {
     /** Whether a CustomTabs instance should include interactive Omnibox. */
     public boolean shouldEnableOmniboxForIntent(BrowserServicesIntentDataProvider intentData) {
         return false;
+    }
+
+    /**
+     * Returns an alternate handler for taps on the Custom Tabs Omnibox, or null if the default
+     * handler should be used.
+     */
+    @Nullable
+    public Consumer<Tab> getAlternateOmniboxTapHandler(
+            BrowserServicesIntentDataProvider intentData) {
+        return null;
     }
 
     /** Specifies what content should be presented by the CustomTabs instance in location bar. */

@@ -838,6 +838,10 @@ const char kSearchInCCTName[] = "Search in Chrome Custom Tabs";
 const char kSearchInCCTDescription[] =
     "Permits apps to create searchable and "
     "navigable custom tabs.";
+const char kSearchInCCTAlternateTapHandlingName[] =
+    "Search in Chrome Custom Tabs Alternate Tap Handling";
+const char kSearchInCCTAlternateTapHandlingDescription[] =
+    "Search in Chrome Custom Tabs Alternate Tap Handling";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kSeparateWebAppShortcutBadgeIconName[] =

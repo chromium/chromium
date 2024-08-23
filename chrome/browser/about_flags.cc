@@ -7364,6 +7364,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSearchInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSearchInCCT)},
 
+    {"search-in-cct-alternate-tap-handling",
+     flag_descriptions::kSearchInCCTAlternateTapHandlingName,
+     flag_descriptions::kSearchInCCTAlternateTapHandlingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSearchInCCTAlternateTapHandling)},
+
     {"enable-search-resumption-module",
      flag_descriptions::kSearchResumptionModuleAndroidName,
      flag_descriptions::kSearchResumptionModuleAndroidDescription, kOsAndroid,

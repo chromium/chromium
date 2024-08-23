@@ -7990,6 +7990,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "search-in-cct-alternate-tap-handling",
+    "owners": [ "edmundw@google.com", "ender@google.com", "aga-cct@google.com", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "search-suggestion-for-prerender2",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 122

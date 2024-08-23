@@ -203,6 +203,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 /** Instrumentation tests for app menu, context menu, and toolbar of a {@link CustomTabActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -2793,6 +2794,37 @@ public class CustomTabActivityTest {
         UserActionTester userActionTester = new UserActionTester();
         ThreadUtils.runOnUiThreadBlocking(() -> titleBar.performClick());
         assertThat(userActionTester.getActions(), Matchers.hasItem("CustomTabs.OmniboxClicked"));
+    }
+
+    @Test
+    @MediumTest
+    public void omniboxInCCT_testInteractiveOmniboxOnEligibleCCTsWithAlternateHandler()
+            throws Exception {
+        var connection = Mockito.spy(CustomTabsConnection.getInstance());
+        // Permit Omnibox for any upcoming intent(s).
+        doReturn(true).when(connection).shouldEnableOmniboxForIntent(any());
+        Consumer<Tab> mockConsumer = Mockito.mock(Consumer.class);
+        // Provide an alternate tap handler on any upcoming intent(s).
+        doReturn(mockConsumer).when(connection).getAlternateOmniboxTapHandler(any());
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = createMinimalCustomTabIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        var tab = getActivity().getActivityTab();
+        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage);
+
+        var titleBar =
+                mCustomTabActivityTestRule.getActivity().findViewById(R.id.title_url_container);
+        Assert.assertTrue(titleBar.hasOnClickListeners());
+
+        var url = mCustomTabActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        Assert.assertNotNull(
+                "Url bar should have an accessibility delegate.", url.getAccessibilityDelegate());
+
+        UserActionTester userActionTester = new UserActionTester();
+        ThreadUtils.runOnUiThreadBlocking(() -> titleBar.performClick());
+        assertThat(userActionTester.getActions(), Matchers.hasItem("CustomTabs.OmniboxClicked"));
+        verify(mockConsumer).accept(tab);
     }
 
     @Test

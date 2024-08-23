@@ -443,6 +443,8 @@ public abstract class ChromeFeatureList {
     public static final String SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK =
             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck";
     public static final String SEARCH_IN_CCT = "SearchInCCT";
+    public static final String SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING =
+            "SearchInCCTAlternateTapHandling";
     public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
@@ -655,6 +657,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SAFETY_HUB_MAGIC_STACK, false);
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
+    public static final CachedFlag sSearchInCCTAlternateTapHandling =
+            newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING, false);
     public static final CachedFlag sSmallerTabStripTitleLimit =
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
@@ -771,6 +775,7 @@ public abstract class ChromeFeatureList {
                     sSafetyHubMagicStack,
                     sSearchEngineChoice,
                     sSearchInCCT,
+                    sSearchInCCTAlternateTapHandling,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sSurfacePolish,

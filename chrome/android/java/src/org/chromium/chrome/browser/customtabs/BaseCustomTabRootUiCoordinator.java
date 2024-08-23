@@ -303,13 +303,15 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             }
         }
 
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
         boolean shouldEnableOmnibox =
-                CustomTabsConnection.getInstance()
-                        .shouldEnableOmniboxForIntent(mIntentDataProvider.get());
+                connection.shouldEnableOmniboxForIntent(mIntentDataProvider.get());
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.Omnibox.EnabledState", shouldEnableOmnibox);
         if (shouldEnableOmnibox) {
-            toolbar.setOmniboxEnabled(mIntentDataProvider.get().getClientPackageName());
+            toolbar.setOmniboxEnabled(
+                    mIntentDataProvider.get().getClientPackageName(),
+                    connection.getAlternateOmniboxTapHandler(mIntentDataProvider.get()));
         }
     }
 

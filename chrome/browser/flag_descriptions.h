@@ -483,6 +483,8 @@ extern const char kBypassAppBannerEngagementChecksDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kSearchInCCTName[];
 extern const char kSearchInCCTDescription[];
+extern const char kSearchInCCTAlternateTapHandlingName[];
+extern const char kSearchInCCTAlternateTapHandlingDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kSeparateWebAppShortcutBadgeIconName[];

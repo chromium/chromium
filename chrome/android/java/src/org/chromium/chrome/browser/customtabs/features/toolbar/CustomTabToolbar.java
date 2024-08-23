@@ -125,6 +125,7 @@ import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /** The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs. */
 public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickListener {
@@ -363,9 +364,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mMinimizeButton.setOnClickListener(view -> delegate.minimize());
     }
 
-    /** Enables the interactive Omnibox in CCT. */
-    public void setOmniboxEnabled(String clientPackageName) {
-        mLocationBar.setOmniboxEnabled(clientPackageName);
+    /**
+     * Enables the interactive Omnibox in CCT.
+     *
+     * @param clientPackageName the package name of the custom tabs embedder.
+     * @param tapHandler a handler for taps on the omnibox, or null if the default handler should be
+     *     used.
+     */
+    public void setOmniboxEnabled(String clientPackageName, @Nullable Consumer<Tab> tapHandler) {
+        mLocationBar.setOmniboxEnabled(clientPackageName, tapHandler);
     }
 
     private void setButtonsVisibility() {
@@ -1879,7 +1886,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mPageInfoIPHController = pageInfoIPHController;
         }
 
-        void setOmniboxEnabled(String clientPackageName) {
+        void setOmniboxEnabled(String clientPackageName, @Nullable Consumer<Tab> tapHandler) {
             mOmniboxEnabled = true;
             mOmniboxBackground =
                     AppCompatResources.getDrawable(
@@ -1915,10 +1922,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     v -> {
                         RecordUserAction.record("CustomTabs.OmniboxClicked");
                         var tab = getCurrentTab();
-                        SearchActivityClientImpl.requestOmniboxForResult(
-                                tab.getWindowAndroid().getActivity().get(),
-                                tab.getUrl(),
-                                clientPackageName);
+                        if (tapHandler != null) {
+                            tapHandler.accept(tab);
+                        } else {
+                            SearchActivityClientImpl.requestOmniboxForResult(
+                                    tab.getWindowAndroid().getActivity().get(),
+                                    tab.getUrl(),
+                                    clientPackageName);
+                        }
                     });
 
             mUrlBar.setAccessibilityDelegate(

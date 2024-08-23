@@ -20528,6 +20528,7 @@ from previous Chrome versions.
   <int value="-5052940" label="enable-simplified-fullscreen"/>
   <int value="-3694064"
       label="AutofillForUnclassifiedFieldsAvailable:disabled"/>
+  <int value="-3102230" label="SearchInCCTAlternateTapHandling:enabled"/>
   <int value="-3093629" label="DcheckIsFatal:disabled"/>
   <int value="-2953333" label="AndroidHistoryManager:disabled"/>
   <int value="-2512468" label="OmniboxMaterialDesignWeatherIcons:disabled"/>
@@ -22828,6 +22829,7 @@ from previous Chrome versions.
   <int value="966626581" label="NewInstanceFromDraggedLink:disabled"/>
   <int value="966958557"
       label="CryptAuthV2DedupDeviceLastActivityTime:enabled"/>
+  <int value="967181153" label="SearchInCCTAlternateTapHandling:disabled"/>
   <int value="967706865" label="ForceEnablePasswordDomainCapabilities:enabled"/>
   <int value="968355926" label="ExportTaggedPDF:enabled"/>
   <int value="968715406"

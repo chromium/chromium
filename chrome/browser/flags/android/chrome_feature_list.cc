@@ -289,6 +289,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRelatedSearchesSwitch,
     &kReportParentalControlSitesChild,
     &kSearchInCCT,
+    &kSearchInCCTAlternateTapHandling,
     &kSearchResumptionModuleAndroid,
     &kShareCustomActionsInCCT,
     &kSmallerTabStripTitleLimit,
@@ -987,6 +988,10 @@ BASE_FEATURE(kTestDefaultEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchInCCT, "SearchInCCT", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSearchInCCTAlternateTapHandling,
+             "SearchInCCTAlternateTapHandling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedPositionAndroid,
              "FeedPositionAndroid",
