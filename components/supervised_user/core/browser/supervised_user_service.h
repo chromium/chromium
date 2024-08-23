@@ -26,10 +26,6 @@ class PrefService;
 class SupervisedUserServiceObserver;
 class SupervisedUserServiceFactory;
 
-namespace base {
-class Version;
-}  // namespace base
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -90,11 +86,6 @@ class SupervisedUserService : public KeyedService,
   // the history view. Both this method and the returned filter may only be used
   // on the UI thread.
   supervised_user::SupervisedUserURLFilter* GetURLFilter() const;
-
-  // Get the string used to identify an extension install or update request.
-  // Public for testing.
-  static std::string GetExtensionRequestId(const std::string& extension_id,
-                                           const base::Version& version);
 
   // Returns the email address of the custodian.
   std::string GetCustodianEmailAddress() const;
