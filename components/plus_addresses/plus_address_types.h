@@ -156,12 +156,6 @@ using PlusProfileOrError = base::expected<PlusProfile, PlusAddressRequestError>;
 using PlusAddressRequestCallback =
     base::OnceCallback<void(const PlusProfileOrError&)>;
 
-// Holds either a PlusAddressMap or an error that prevented us from getting it.
-using PlusAddressMapOrError =
-    base::expected<PlusAddressMap, PlusAddressRequestError>;
-using PlusAddressMapRequestCallback =
-    base::OnceCallback<void(const PlusAddressMapOrError&)>;
-
 // Defined for use in metrics and to share code for certain network-requests.
 enum class PlusAddressNetworkRequestType {
   kGetOrCreate = 0,

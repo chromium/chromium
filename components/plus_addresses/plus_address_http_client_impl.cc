@@ -142,36 +142,6 @@ constexpr net::NetworkTrafficAnnotationTag kPreallocatePlusAddressesAnnotation =
       }
     )");
 
-// TODO(b/295556954): Update the description and trigger fields when possible.
-//                    Also replace the policy_exception when we have a policy.
-constexpr net::NetworkTrafficAnnotationTag kGetAllPlusAddressesAnnotation =
-    net::DefineNetworkTrafficAnnotation("get_all_plus_addresses", R"(
-      semantics {
-        sender: "Chrome Plus Address Client"
-        description: "This request fetches all plus addresses from the "
-                      "enterprise-specified server."
-        trigger: "n/a. This happens in the background to keep the PlusAddress "
-                 "service in sync with the remote server."
-        internal {
-          contacts {
-              email: "dc-komics@google.com"
-          }
-        }
-        user_data {
-          type: ACCESS_TOKEN
-        }
-        data: "n/a"
-        destination: GOOGLE_OWNED_SERVICE
-        last_reviewed: "2023-09-13"
-      }
-      policy {
-        cookies_allowed: NO
-        setting: "Disable the Plus Addresses feature."
-        policy_exception_justification: "We don't have an opt-out policy yet"
-                                        " as Plus Addresses hasn't launched."
-      }
-    )");
-
 std::optional<GURL> ValidateAndGetUrl() {
   GURL maybe_url = GURL(features::kEnterprisePlusAddressServerUrl.Get());
   return maybe_url.is_valid() ? std::make_optional(maybe_url) : std::nullopt;
@@ -287,24 +257,11 @@ void PlusAddressHttpClientImpl::PreallocatePlusAddresses(
           std::move(callback), base::unexpected(kSignoutError))));
 }
 
-void PlusAddressHttpClientImpl::GetAllPlusAddresses(
-    PlusAddressMapRequestCallback on_completed) {
-  if (!server_url_) {
-    return;
-  }
-  GetAuthToken(
-      base::BindOnce(&PlusAddressHttpClientImpl::GetAllPlusAddressesInternal,
-                     base::Unretained(this),
-                     WrapAsAutorunCallback(std::move(on_completed),
-                                           base::unexpected(kSignoutError))));
-}
-
 void PlusAddressHttpClientImpl::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_token_fetcher_.reset();
   pending_callbacks_ = {};
   loaders_.clear();
-  loader_for_sync_.reset();
 }
 
 void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
@@ -386,29 +343,6 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddressInternal(
           loaders_.insert(loaders_.begin(), std::move(loader)),
           PlusAddressNetworkRequestType::kCreate, base::TimeTicks::Now(),
           std::move(on_completed)),
-      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
-}
-
-void PlusAddressHttpClientImpl::GetAllPlusAddressesInternal(
-    PlusAddressMapRequestCallback on_completed,
-    std::optional<std::string> auth_token) {
-  if (!auth_token.has_value()) {
-    return;
-  }
-
-  std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateRequest(kServerPlusProfileEndpoint,
-                    net::HttpRequestHeaders::kGetMethod, *auth_token);
-  loader_for_sync_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), kGetAllPlusAddressesAnnotation);
-  loader_for_sync_->SetTimeoutDuration(kRequestTimeout);
-  loader_for_sync_->DownloadToString(
-      url_loader_factory_.get(),
-      base::BindOnce(&PlusAddressHttpClientImpl::OnGetAllPlusAddressesComplete,
-                     // Safe since this class owns the loader_for_sync_.
-                     base::Unretained(this), base::TimeTicks::Now(),
-                     std::move(on_completed)),
-      // TODO(b/301984623) - Measure average download size and change this.
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
@@ -516,46 +450,6 @@ void PlusAddressHttpClientImpl::OnPreallocationComplete(
                   return;
                 }
                 std::move(callback).Run(*std::move(result));
-              },
-              std::move(on_completed))));
-}
-
-void PlusAddressHttpClientImpl::OnGetAllPlusAddressesComplete(
-    base::TimeTicks request_start,
-    PlusAddressMapRequestCallback on_completed,
-    std::unique_ptr<std::string> response) {
-  // Record relevant metrics.
-  metrics::RecordNetworkRequestLatency(PlusAddressNetworkRequestType::kList,
-                                       base::TimeTicks::Now() - request_start);
-  std::optional<int> response_code = GetResponseCode(loader_for_sync_.get());
-  if (response_code) {
-    metrics::RecordNetworkRequestResponseCode(
-        PlusAddressNetworkRequestType::kList, *response_code);
-  }
-  // Destroy the loader before returning.
-  loader_for_sync_.reset();
-  if (!response) {
-    std::move(on_completed)
-        .Run(base::unexpected(
-            PlusAddressRequestError::AsNetworkError(response_code)));
-    return;
-  }
-  metrics::RecordNetworkRequestResponseSize(
-      PlusAddressNetworkRequestType::kList, response->size());
-  // Parse the response & return it via callback.
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response,
-      base::BindOnce(&ParsePlusAddressMapFromV1List)
-          .Then(base::BindOnce(
-              [](PlusAddressMapRequestCallback callback,
-                 std::optional<PlusAddressMap> result) {
-                if (!result.has_value()) {
-                  std::move(callback).Run(
-                      base::unexpected(PlusAddressRequestError(
-                          PlusAddressRequestErrorType::kParsingError)));
-                  return;
-                }
-                std::move(callback).Run(result.value());
               },
               std::move(on_completed))));
 }
