@@ -491,40 +491,6 @@ TEST_F(LocalCardMigrationManagerTest,
   EXPECT_FALSE(local_card_migration_manager_->LocalCardMigrationWasTriggered());
 }
 
-// Tests that local cards that match full server cards do not count as
-// migratable.
-TEST_F(LocalCardMigrationManagerTest,
-       MigrateCreditCard_LocalCardMatchFullServerCard) {
-  // Set the billing_customer_number to designate existence of a Payments
-  // account.
-  personal_data().test_payments_data_manager().SetPaymentsCustomerData(
-      std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
-
-  // Add a full server card whose number matches a local card.
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "a123");
-  test::SetCreditCardInfo(&server_card, "Jane Doe", "4111111111111111", "11",
-                          test::NextYear().c_str(), "1");
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
-  // Add a local credit card whose number matches a full server card.
-  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
-                     test::NextYear().c_str(), "1",
-                     base::Uuid::GenerateRandomV4());
-  // Add another local credit card
-  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
-                     test::NextYear().c_str(), "1",
-                     base::Uuid::GenerateRandomV4());
-
-  // Set up our credit card form data.
-  FormData credit_card_form = CreateTestCreditCardFormData(true, false);
-  FormsSeen(std::vector<FormData>(1, credit_card_form));
-
-  // Edit the data, and submit.
-  EditCreditCardForm(credit_card_form, "Jane Doe", "5555555555554444", "11",
-                     test::NextYear(), "123");
-  FormSubmitted(credit_card_form);
-  EXPECT_FALSE(local_card_migration_manager_->LocalCardMigrationWasTriggered());
-}
-
 // GetDetectedValues() should includes cardholder name if all cards have it.
 TEST_F(LocalCardMigrationManagerTest, GetDetectedValues_AllWithCardHolderName) {
   // Set the billing_customer_number to designate existence of a Payments
