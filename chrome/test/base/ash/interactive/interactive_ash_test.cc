@@ -378,7 +378,8 @@ InteractiveAshTest::NavigateToPasspointSubscriptionSubpage(
     const ui::ElementIdentifier& element_id,
     const std::string& passpoint_name) {
   const WebContentsInteractionTestUtil::DeepQuery
-      passpoint_subscription_item_name({"cr-link-row", "div#label"});
+      passpoint_subscription_item_name(
+          {"cr-link-row#subscriptionItem", "div#label"});
 
   return Steps(
       NavigateToKnownNetworksPage(element_id),
