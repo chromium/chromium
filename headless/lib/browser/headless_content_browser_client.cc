@@ -56,6 +56,11 @@
 #include "content/public/common/content_descriptors.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(HEADLESS_USE_PREFS)
+#include "components/os_crypt/sync/os_crypt.h"  // nogncheck
+#include "content/public/browser/network_service_util.h"
+#endif
+
 #if defined(HEADLESS_USE_POLICY)
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "content/public/browser/navigation_handle.h"
@@ -429,6 +434,27 @@ HeadlessContentBrowserClient::CreateThrottlesForNavigation(
 
 void HeadlessContentBrowserClient::OnNetworkServiceCreated(
     ::network::mojom::NetworkService* network_service) {
+  HandleExplicitlyAllowedPorts(network_service);
+  SetEncryptionKey(network_service);
+}
+
+void HeadlessContentBrowserClient::GetHyphenationDictionary(
+    base::OnceCallback<void(const base::FilePath&)> callback) {
+  base::FilePath dir;
+  if (base::PathService::Get(base::DIR_EXE, &dir)) {
+    dir = dir.AppendASCII("hyphen-data");
+    std::move(callback).Run(dir);
+  }
+}
+
+std::unique_ptr<content::VideoOverlayWindow>
+HeadlessContentBrowserClient::CreateWindowForVideoPictureInPicture(
+    content::VideoPictureInPictureWindowController* controller) {
+  return std::make_unique<HeadlessVideoOverlayWindow>();
+}
+
+void HeadlessContentBrowserClient::HandleExplicitlyAllowedPorts(
+    ::network::mojom::NetworkService* network_service) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kExplicitlyAllowedPorts))
     return;
@@ -450,19 +476,19 @@ void HeadlessContentBrowserClient::OnNetworkServiceCreated(
   network_service->SetExplicitlyAllowedPorts(explicitly_allowed_ports);
 }
 
-void HeadlessContentBrowserClient::GetHyphenationDictionary(
-    base::OnceCallback<void(const base::FilePath&)> callback) {
-  base::FilePath dir;
-  if (base::PathService::Get(base::DIR_EXE, &dir)) {
-    dir = dir.AppendASCII("hyphen-data");
-    std::move(callback).Run(dir);
+void HeadlessContentBrowserClient::SetEncryptionKey(
+    ::network::mojom::NetworkService* network_service) {
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(HEADLESS_USE_PREFS)
+  // The OSCrypt keys are process bound, so if network service is out of
+  // process, send it the required key if it is available.
+  if (content::IsOutOfProcessNetworkService()
+#if BUILDFLAG(IS_WIN)
+      && OSCrypt::IsEncryptionAvailable()
+#endif
+  ) {
+    network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
   }
-}
-
-std::unique_ptr<content::VideoOverlayWindow>
-HeadlessContentBrowserClient::CreateWindowForVideoPictureInPicture(
-    content::VideoPictureInPictureWindowController* controller) {
-  return std::make_unique<HeadlessVideoOverlayWindow>();
+#endif
 }
 
 }  // namespace headless

@@ -143,6 +143,10 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::BadgeService> receiver);
 
+  void HandleExplicitlyAllowedPorts(
+      ::network::mojom::NetworkService* network_service);
+  void SetEncryptionKey(::network::mojom::NetworkService* network_service);
+
   raw_ptr<HeadlessBrowserImpl> browser_;  // Not owned.
 
   std::unique_ptr<StubBadgeService> stub_badge_service_;
