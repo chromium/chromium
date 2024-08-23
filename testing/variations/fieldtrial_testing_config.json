@@ -12441,7 +12441,6 @@
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
-                "android",
                 "android_webview"
             ],
             "experiments": [
