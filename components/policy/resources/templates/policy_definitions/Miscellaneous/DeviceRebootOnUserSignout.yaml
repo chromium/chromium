@@ -26,7 +26,6 @@ items:
   value: 4
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
 schema:
   enum:
   - 1

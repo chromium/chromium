@@ -15,7 +15,6 @@ items:
   value: false
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
 schema:
   type: boolean
 supported_on:

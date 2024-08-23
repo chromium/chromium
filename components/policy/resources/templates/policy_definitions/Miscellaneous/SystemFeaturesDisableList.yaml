@@ -62,7 +62,6 @@ items:
 owners:
 - file://components/policy/OWNERS
 - ayaelattar@chromium.org
-- pmarko@chromium.org
 schema:
   items:
     enum:
