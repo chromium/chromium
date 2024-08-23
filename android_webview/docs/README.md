@@ -18,3 +18,8 @@ See [//android\_webview/README.md](/android\_webview/README.md).
 ## Want to use WebView in an Android app?
 
 See [//android\_webview/README.md](/android\_webview/README.md).
+
+## File a bug report for Android WebView
+
+The best way to file a bug report is here:
+https://issues.chromium.org/issues/new?component=1456456&template=1923373
