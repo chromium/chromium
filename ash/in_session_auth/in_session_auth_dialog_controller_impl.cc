@@ -30,8 +30,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/impl/legacy_auth_surface_registry.h"
-#include "chromeos/ash/components/osauth/impl/request/password_manager_auth_request.h"
-#include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -131,13 +129,18 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
 
   if (reason == Reason::kAccessPasswordManager &&
       features::IsUseAuthPanelInSessionEnabled()) {
+    // CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
+    //                        account_id);
     Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-        std::make_unique<PasswordManagerAuthRequest>(
-            std::move(on_auth_complete)));
+        ActiveSessionAuthController::Reason::kPasswordManager,
+        std::move(on_auth_complete));
   } else if (reason == Reason::kAccessAuthenticationSettings &&
              features::IsUseAuthPanelInSessionEnabled()) {
+    // CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
+    //                        account_id);
     Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-        std::make_unique<SettingsAuthRequest>(std::move(on_auth_complete)));
+        ActiveSessionAuthController::Reason::kSettings,
+        std::move(on_auth_complete));
   } else {
     // We don't manage the lifetime of `AuthenticationDialog` here.
     // `AuthenticatonDialog` is-a View and it is instead owned by it's widget,

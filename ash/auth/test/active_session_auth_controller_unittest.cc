@@ -12,9 +12,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
-#include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
-#include "chromeos/ash/components/osauth/public/request/auth_request.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -159,7 +157,7 @@ TEST_F(ActiveSessionAuthControllerTest,
   OnAuthComplete future;
 
   Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-      std::make_unique<SettingsAuthRequest>(future.GetCallback()));
+      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
 
   base::RunLoop().RunUntilIdle();
 
@@ -190,7 +188,7 @@ TEST_F(ActiveSessionAuthControllerTest, StartAuthSessionReturnsPasswordAndPin) {
   OnAuthComplete future;
 
   Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-      std::make_unique<SettingsAuthRequest>(future.GetCallback()));
+      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
 
   // Await show.
   base::RunLoop().RunUntilIdle();
@@ -216,7 +214,7 @@ TEST_F(ActiveSessionAuthControllerTest, SubmitPassword) {
   OnAuthComplete future;
 
   Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-      std::make_unique<SettingsAuthRequest>(future.GetCallback()));
+      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
 
   // Await show.
   base::RunLoop().RunUntilIdle();
@@ -251,7 +249,7 @@ TEST_F(ActiveSessionAuthControllerTest, WrongPassword) {
   OnAuthComplete future;
 
   Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-      std::make_unique<SettingsAuthRequest>(future.GetCallback()));
+      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
 
   // Await show.
   base::RunLoop().RunUntilIdle();
@@ -295,7 +293,7 @@ TEST_F(ActiveSessionAuthControllerTest, SubmitPin) {
   OnAuthComplete future;
 
   Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-      std::make_unique<SettingsAuthRequest>(future.GetCallback()));
+      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
 
   // Await show.
   base::RunLoop().RunUntilIdle();
@@ -333,7 +331,7 @@ TEST_F(ActiveSessionAuthControllerTest, WrongPin) {
   OnAuthComplete future;
 
   Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-      std::make_unique<SettingsAuthRequest>(future.GetCallback()));
+      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
 
   // Await show.
   base::RunLoop().RunUntilIdle();
@@ -376,7 +374,7 @@ TEST_F(ActiveSessionAuthControllerTest, BadPinThenGoodPassword) {
   OnAuthComplete future;
 
   Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-      std::make_unique<SettingsAuthRequest>(future.GetCallback()));
+      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
 
   // Await show.
   base::RunLoop().RunUntilIdle();
@@ -423,7 +421,7 @@ TEST_F(ActiveSessionAuthControllerTest, OnAuthCancel) {
   OnAuthComplete future;
 
   Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-      std::make_unique<SettingsAuthRequest>(future.GetCallback()));
+      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
 
   // Await show.
   base::RunLoop().RunUntilIdle();

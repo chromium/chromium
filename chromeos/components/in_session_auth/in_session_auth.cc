@@ -10,15 +10,12 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "chromeos/ash/components/osauth/impl/request/password_manager_auth_request.h"
-#include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
-#include "chromeos/ash/components/osauth/public/request/auth_request.h"
 
 namespace chromeos::auth {
 
 using AuthReason = std::variant<ash::InSessionAuthDialogController::Reason,
-                                ash::AuthRequest::Reason>;
+                                ash::ActiveSessionAuthController::Reason>;
 
 AuthReason ToAshReason(chromeos::auth::mojom::Reason reason) {
   switch (reason) {
@@ -27,12 +24,14 @@ AuthReason ToAshReason(chromeos::auth::mojom::Reason reason) {
       // implementation of the `chromeos::auth::mojom::InSessionAuth` should
       // only be reachable from ash.
       return ash::features::IsUseAuthPanelInSessionEnabled()
-                 ? AuthReason{ash::AuthRequest::Reason::kPasswordManager}
+                 ? AuthReason{ash::ActiveSessionAuthController::Reason::
+                                  kPasswordManager}
                  : AuthReason{ash::InSessionAuthDialogController::
                                   kAccessPasswordManager};
     case chromeos::auth::mojom::Reason::kAccessAuthenticationSettings:
       return ash::features::IsUseAuthPanelInSessionEnabled()
-                 ? AuthReason{ash::AuthRequest::Reason::kSettings}
+                 ? AuthReason{ash::ActiveSessionAuthController::Reason::
+                                  kSettings}
                  : AuthReason{ash::InSessionAuthDialogController::
                                   kAccessAuthenticationSettings};
     case chromeos::auth::mojom::Reason::kAccessMultideviceSettings:
@@ -49,22 +48,6 @@ void InSessionAuth::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-std::unique_ptr<ash::AuthRequest> InSessionAuth::AuthRequestFromReason(
-    ash::AuthRequest::Reason reason,
-    RequestTokenCallback callback) {
-  switch (reason) {
-    case ash::AuthRequest::Reason::kPasswordManager:
-      return std::make_unique<ash::PasswordManagerAuthRequest>(
-          base::BindOnce(&InSessionAuth::OnAuthComplete,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
-    case ash::AuthRequest::Reason::kSettings:
-      return std::make_unique<ash::SettingsAuthRequest>(
-          base::BindOnce(&InSessionAuth::OnAuthComplete,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
-  NOTREACHED();
-}
-
 void InSessionAuth::RequestToken(chromeos::auth::mojom::Reason reason,
                                  const std::optional<std::string>& prompt,
                                  RequestTokenCallback callback) {
@@ -78,9 +61,11 @@ void InSessionAuth::RequestToken(chromeos::auth::mojom::Reason reason,
       },
 
       // New Code path
-      [&](ash::AuthRequest::Reason reason) {
+      [&](ash::ActiveSessionAuthController::Reason reason) {
         ash::ActiveSessionAuthController::Get()->ShowAuthDialog(
-            AuthRequestFromReason(reason, std::move(callback)));
+            reason,
+            base::BindOnce(&InSessionAuth::OnAuthComplete,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
       });
 
   std::visit(visitor, ToAshReason(reason));

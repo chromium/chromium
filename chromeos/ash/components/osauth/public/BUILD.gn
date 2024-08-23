@@ -11,7 +11,6 @@ assert(is_chromeos_ash,
 source_set("public") {
   deps = [
     "//base",
-    "//chromeos/ash/components/login/auth/public:authpublic",
     "//components/account_id",
   ]
   sources = [
@@ -26,7 +25,6 @@ source_set("public") {
     "auth_session_storage.h",
     "common_types.h",
     "cryptohome_core.h",
-    "request/auth_request.h",
     "string_utils.cc",
     "string_utils.h",
   ]

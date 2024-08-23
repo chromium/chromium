@@ -11,7 +11,6 @@
 #include "ash/auth/views/auth_common.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "base/timer/elapsed_timer.h"
-#include "chromeos/ash/components/osauth/public/request/auth_request.h"
 
 namespace ash {
 
@@ -27,7 +26,7 @@ class ASH_EXPORT ActiveSessionAuthMetricsRecorder {
 
   ~ActiveSessionAuthMetricsRecorder();
 
-  void RecordShow(AuthRequest::Reason reason);
+  void RecordShow(ActiveSessionAuthController::Reason reason);
   void RecordClose();
 
   void RecordAuthStarted(AuthInputType input_type);
@@ -35,7 +34,7 @@ class ASH_EXPORT ActiveSessionAuthMetricsRecorder {
   void RecordAuthSucceeded(AuthInputType input_type);
 
  private:
-  std::optional<AuthRequest::Reason> open_reason_;
+  std::optional<ActiveSessionAuthController::Reason> open_reason_;
   std::optional<AuthInputType> started_auth_type_;
   std::optional<base::ElapsedTimer> open_timer_;
 

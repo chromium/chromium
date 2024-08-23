@@ -85,11 +85,11 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
   return widget;
 }
 
-const char* ReasonToString(AuthRequest::Reason reason) {
+const char* ReasonToString(ActiveSessionAuthController::Reason reason) {
   switch (reason) {
-    case AuthRequest::Reason::kPasswordManager:
+    case ActiveSessionAuthController::Reason::kPasswordManager:
       return "PasswordManager";
-    case AuthRequest::Reason::kSettings:
+    case ActiveSessionAuthController::Reason::kSettings:
       return "Settings";
   }
   NOTREACHED();
@@ -116,6 +116,25 @@ const char* ActiveSessionAuthStateToString(
       return "PinAuthSucceeded";
   }
   NOTREACHED();
+}
+
+AuthSessionIntent IntentFromReason(
+    ActiveSessionAuthControllerImpl::Reason reason) {
+  switch (reason) {
+    case ActiveSessionAuthController::Reason::kPasswordManager:
+      return AuthSessionIntent::kVerifyOnly;
+    case ActiveSessionAuthController::Reason::kSettings:
+      return AuthSessionIntent::kDecrypt;
+  }
+}
+
+int MessageFromReason(ActiveSessionAuthControllerImpl::Reason reason) {
+  switch (reason) {
+    case ActiveSessionAuthController::Reason::kPasswordManager:
+      return IDS_ASH_IN_SESSION_AUTH_PASSWORD_MANAGER_PROMPT;
+    case ActiveSessionAuthController::Reason::kSettings:
+      return IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT;
+  }
 }
 
 }  // namespace
@@ -149,21 +168,21 @@ ActiveSessionAuthControllerImpl::ActiveSessionAuthControllerImpl() = default;
 ActiveSessionAuthControllerImpl::~ActiveSessionAuthControllerImpl() = default;
 
 bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
-    std::unique_ptr<AuthRequest> auth_request) {
-  CHECK(auth_request);
-  CHECK(!auth_request_);
-  auth_request_ = std::move(auth_request);
-  LOG(WARNING) << "Show is requested with reason: "
-               << ReasonToString(auth_request_->GetAuthReason());
+    Reason reason,
+    AuthCompletionCallback on_auth_complete) {
+  LOG(WARNING) << "Show is requested with reason: " << ReasonToString(reason);
   if (IsShown()) {
     LOG(ERROR) << "ActiveSessionAuthController widget is already exists.";
-    auth_request_->NotifyAuthFailure();
-    auth_request_.reset();
+    std::move(on_auth_complete)
+        .Run(false, ash::AuthProofToken{}, base::TimeDelta{});
     return false;
   }
 
+  reason_ = reason;
   title_ = l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
-  description_ = l10n_util::GetStringUTF16(auth_request_->GetDescription());
+  description_ = l10n_util::GetStringUTF16(MessageFromReason(reason));
+  CHECK(!on_auth_complete_);
+  on_auth_complete_ = std::move(on_auth_complete);
   auth_factor_editor_ =
       std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
   auth_performer_ = std::make_unique<AuthPerformer>(UserDataAuthClient::Get());
@@ -178,7 +197,7 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
           account_id_);
 
   auth_performer_->StartAuthSession(
-      std::move(user_context), ephemeral, auth_request_->GetAuthSessionIntent(),
+      std::move(user_context), ephemeral, IntentFromReason(reason),
       base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthSessionStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -200,7 +219,7 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
     return;
   }
 
-  uma_recorder_.RecordShow(auth_request_->GetAuthReason());
+  uma_recorder_.RecordShow(reason_);
   UserDataAuthClient::Get()->AddAuthFactorStatusUpdateObserver(this);
 
   available_factors_.Clear();
@@ -258,9 +277,9 @@ void ActiveSessionAuthControllerImpl::Close() {
 
   widget_.reset();
 
-  if (auth_request_) {
-    auth_request_->NotifyAuthFailure();
-    auth_request_.reset();
+  if (on_auth_complete_) {
+    std::move(on_auth_complete_)
+        .Run(false, ash::AuthProofToken{}, base::TimeDelta{});
   }
 
   if (user_context_) {
@@ -330,10 +349,26 @@ void ActiveSessionAuthControllerImpl::OnAuthComplete(
     SetState(input_type == AuthInputType::kPassword
                  ? ActiveSessionAuthState::kPasswordAuthSucceeded
                  : ActiveSessionAuthState::kPinAuthSucceeded);
-    auth_request_->NotifyAuthSuccess(std::move(user_context));
-    auth_request_.reset();
-    Close();
+    ExchangeForToken(
+        std::move(user_context),
+        base::BindOnce(&ActiveSessionAuthControllerImpl::NotifySuccess,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void ActiveSessionAuthControllerImpl::ExchangeForToken(
+    std::unique_ptr<UserContext> user_context,
+    InSessionAuthTokenProvider::OnAuthTokenGenerated callback) {
+  AuthProofToken token =
+      AuthSessionStorage::Get()->Store(std::move(user_context));
+  std::move(callback).Run(token, cryptohome::kAuthsessionInitialLifetime);
+}
+
+void ActiveSessionAuthControllerImpl::NotifySuccess(const AuthProofToken& token,
+                                                    base::TimeDelta timeout) {
+  CHECK(on_auth_complete_);
+  std::move(on_auth_complete_).Run(true, token, timeout);
+  Close();
 }
 
 void ActiveSessionAuthControllerImpl::OnClose() {
