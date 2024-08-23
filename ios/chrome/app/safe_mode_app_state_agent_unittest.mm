@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/testing/scoped_block_swizzler.h"

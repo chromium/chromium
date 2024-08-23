@@ -31,6 +31,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/app/profile/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",
   ]
 }
