@@ -132,6 +132,10 @@ const base::FeatureParam<std::string> kFilterTerms(&kHistoryEmbeddings,
                                                    "FilterTerms",
                                                    "");
 
+const base::FeatureParam<std::string> kFilterHashes(&kHistoryEmbeddings,
+                                                    "FilterHashes",
+                                                    "");
+
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&

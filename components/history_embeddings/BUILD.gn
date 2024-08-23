@@ -48,6 +48,7 @@ static_library("history_embeddings") {
     "//services/passage_embeddings/public/mojom",
     "//services/service_manager",
     "//sql",
+    "//third_party/farmhash",
     "//third_party/zlib/google:compression_utils",
     "//url",
   ]

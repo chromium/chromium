@@ -12,6 +12,7 @@ include_rules = [
   "+services/passage_embeddings",
   "+sql",
   "+third_party/blink/public",
+  "+third_party/farmhash",
   "+third_party/zlib",
   "+url",
 ]
