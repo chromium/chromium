@@ -213,6 +213,7 @@ chrome.test.runTests([
     // enabled.
     finishInkStroke(controller);
     finishInkStroke(controller);
+    await microtasksFinished();
 
     undoButton.click();
     await microtasksFinished();
@@ -227,8 +228,8 @@ chrome.test.runTests([
     // Simulate focusing on a text form field. Both buttons should be disabled.
     mockPlugin.dispatchEvent(new MessageEvent(
         'message', {data: {type: 'formFocusChange', focused: 'text'}}));
-
     await microtasksFinished();
+
     chrome.test.assertTrue(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);
 
@@ -236,16 +237,16 @@ chrome.test.runTests([
     // enabled.
     mockPlugin.dispatchEvent(new MessageEvent(
         'message', {data: {type: 'formFocusChange', focused: 'non-text'}}));
-
     await microtasksFinished();
+
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertFalse(redoButton.disabled);
 
     // Simulate removing focus from the form. Both buttons should be enabled.
     mockPlugin.dispatchEvent(new MessageEvent(
         'message', {data: {type: 'formFocusChange', focused: 'none'}}));
-
     await microtasksFinished();
+
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertFalse(redoButton.disabled);
     chrome.test.succeed();
@@ -289,8 +290,8 @@ chrome.test.runTests([
     // enabled.
     finishInkStroke(controller);
     finishInkStroke(controller);
-
     await microtasksFinished();
+
     getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo').click();
 
     // Exit annotation mode, since form fields can only be focused outside of
@@ -305,6 +306,7 @@ chrome.test.runTests([
     // disabled.
     mockPlugin.dispatchEvent(new MessageEvent(
         'message', {data: {type: 'formFocusChange', focused: 'text'}}));
+    await microtasksFinished();
 
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
@@ -318,6 +320,7 @@ chrome.test.runTests([
     // enabled.
     mockPlugin.dispatchEvent(new MessageEvent(
         'message', {data: {type: 'formFocusChange', focused: 'non-text'}}));
+    await microtasksFinished();
 
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
@@ -332,6 +335,7 @@ chrome.test.runTests([
     // Simulate removing focus from the form. Both shortcuts should be enabled.
     mockPlugin.dispatchEvent(new MessageEvent(
         'message', {data: {type: 'formFocusChange', focused: 'none'}}));
+    await microtasksFinished();
 
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
