@@ -52,10 +52,6 @@ class FakePasspointService
   void AddFakePasspointSubscription(
       FakePasspointSubscription fake_subscription);
 
-  // Clear all existing fake passpoint subscriptions, and it does not notify
-  // its listeners.
-  void ClearAll();
-
  private:
   FakePasspointService();
   ~FakePasspointService() override;

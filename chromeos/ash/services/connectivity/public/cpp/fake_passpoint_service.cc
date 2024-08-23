@@ -116,10 +116,6 @@ void FakePasspointService::AddFakePasspointSubscription(
   NotifyListenersSubscriptionAdded(id);
 }
 
-void FakePasspointService::ClearAll() {
-  id_to_subscription_map_.clear();
-}
-
 void FakePasspointService::BindPendingReceiver(
     mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
         pending_receiver) {
