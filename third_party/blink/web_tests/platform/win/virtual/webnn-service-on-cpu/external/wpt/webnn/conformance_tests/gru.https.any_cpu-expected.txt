@@ -1,25 +1,7 @@
 This is a testharness.js-based test.
-[FAIL] gru float32 tensors steps=1 with options.bias, options.recurrentBias and options.activations=['relu', 'relu']
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.375 should be close enough to expected -0.25 by the acceptable 3 ULP distance, but they have 4194304 ULP distance expected true got false
-[FAIL] gru float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and explicit options.direction='forward'
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.375 should be close enough to expected -0.25 by the acceptable 3 ULP distance, but they have 4194304 ULP distance expected true got false
-[FAIL] gru float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and explicit options.layout='zrn'
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.375 should be close enough to expected -0.25 by the acceptable 3 ULP distance, but they have 4194304 ULP distance expected true got false
-[FAIL] gru float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and options.layout='rzn'
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.375 should be close enough to expected -0.25 by the acceptable 3 ULP distance, but they have 4194304 ULP distance expected true got false
-[FAIL] gru float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and options.initialHiddenState
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.375 should be close enough to expected -0.25 by the acceptable 3 ULP distance, but they have 4194304 ULP distance expected true got false
-[FAIL] gru float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and explicit options.resetAfter=true
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.375 should be close enough to expected -0.25 by the acceptable 3 ULP distance, but they have 4194304 ULP distance expected true got false
-[FAIL] gru float32 tensors steps=1 all options
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.375 should be close enough to expected -0.25 by the acceptable 3 ULP distance, but they have 4194304 ULP distance expected true got false
-[FAIL] gru float32 tensors steps=2 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and options.direction='backward'
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.28068751096725464 should be close enough to expected -0.24974998831748962 by the acceptable 3 ULP distance, but they have 1046480 ULP distance expected true got false
-[FAIL] gru float32 tensors steps=2 with options.bias, options.recurrentBias, options.direction='backward', options.activations=['relu', 'relu'] and explicit options.returnSequence=false
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.28068751096725464 should be close enough to expected -0.24974998831748962 by the acceptable 3 ULP distance, but they have 1046480 ULP distance expected true got false
 [FAIL] gru float32 tensors steps=2 with options.bias, options.recurrentBias, options.direction='backward', options.activations=['relu', 'relu'] and options.returnSequence=true
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.28068751096725464 should be close enough to expected -0.24974998831748962 by the acceptable 3 ULP distance, but they have 1046480 ULP distance expected true got false
+  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.25 should be close enough to expected -0.24974998831748962 by the acceptable 3 ULP distance, but they have 16778 ULP distance expected true got false
 [FAIL] gru float32 tensors steps=2 with all options
-  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.28068751096725464 should be close enough to expected -0.24974998831748962 by the acceptable 3 ULP distance, but they have 1046480 ULP distance expected true got false
+  assert_true: assert_array_approx_equals_ulp: test gru float32 actual -0.25 should be close enough to expected -0.24974998831748962 by the acceptable 3 ULP distance, but they have 16778 ULP distance expected true got false
 Harness: the test ran to completion.
 

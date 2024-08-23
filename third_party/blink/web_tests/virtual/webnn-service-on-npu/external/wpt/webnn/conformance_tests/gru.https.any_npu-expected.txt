@@ -9,8 +9,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gru."
 [FAIL] gru float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and options.initialHiddenState
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gru."
-[FAIL] gru float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and explicit options.resetAfter=true
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gru."
 [FAIL] gru float32 tensors steps=1 all options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gru."
 [FAIL] gru float32 tensors steps=2 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and options.direction='backward'

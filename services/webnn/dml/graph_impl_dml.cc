@@ -3252,7 +3252,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
       .ActivationDescCount = static_cast<uint32_t>(activation_dml_descs.size()),
       .ActivationDescs = activation_dml_descs.data(),
       .Direction = MojoRecurrentNetworkDirectionToDml(direction),
-      .LinearBeforeReset = !gru->reset_after};
+      .LinearBeforeReset = gru->reset_after};
 
   const OperatorNode* gru_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_GRU, &gru_desc, inputs, label);
