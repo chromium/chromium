@@ -358,7 +358,7 @@
     'ci_only': True,
   },
   'cros-cbx-dut': {
-    'cros_cbx': 'True',
+    'cros_cbx': True,
   },
   'crosier-no-arc': {
     'args': [
