@@ -2025,11 +2025,14 @@ suite('WallpaperSearchTest', () => {
               '#inspirationCard .inspiration-title');
       assertTrue(!!inspirationTitles);
       assertEquals(2, inspirationTitles.length);
+      const separator = loadTimeData.getString('separator');
       assertEquals(
-          'foo, bar, baz, Yellow',
+          ['foo, bar, baz, Yellow'].join(separator),
           inspirationTitles[0]!.textContent!.trim(),
       );
-      assertEquals('foo, baz', inspirationTitles[1]!.textContent!.trim());
+      assertEquals(
+          ['foo, baz'].join(separator),
+          inspirationTitles[1]!.textContent!.trim());
     });
 
     test('setting inspiration to background calls backend', async () => {

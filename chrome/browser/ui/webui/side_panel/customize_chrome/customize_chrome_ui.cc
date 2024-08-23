@@ -156,6 +156,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"colorYellow", IDS_NTP_WALLPAPER_SEARCH_COLOR_YELLOW_LABEL},
       {"colorGreen", IDS_NTP_WALLPAPER_SEARCH_COLOR_GREEN_LABEL},
       {"colorBlack", IDS_NTP_WALLPAPER_SEARCH_COLOR_BLACK_LABEL},
+      {"separator", IDS_NTP_WALLPAPER_SEARCH_SEPARATOR},
       {"genericErrorDescription",
        IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION},
       {"genericErrorDescriptionWithHistory",

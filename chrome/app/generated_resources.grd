@@ -8607,6 +8607,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_9" desc="Accessibility label describing a wallpaper search inspiration image.">
         A large wave engulfs the ocean, with a dark forest ashore.
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SEPARATOR" desc="Text/punctuation that separates strings in a list. For example, 'meadow, oil painting, intellectual, and yellow.'" meaning="List separator for strings.">
+         , '''
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_BUTTON_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label describing the functionality of the button that opens the toolbar customization section of Customize Chrome.">
         Customize toolbar buttons
       </message>
