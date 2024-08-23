@@ -3194,10 +3194,10 @@ TEST_F(FormDataImporterTest, DuplicateMaskedServerCard) {
   server_card1.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card1);
-  CreditCard server_card2(CreditCard::RecordType::kFullServerCard, "c789");
+  CreditCard server_card2(CreditCard::RecordType::kMaskedServerCard, "c789");
   test::SetCreditCardInfo(&server_card2, "Clyde Barrow",
-                          "378282246310005" /* American Express */, "04",
-                          "2999", "");
+                          "0005" /* American Express */, "04", "2999", "");
+  server_card2.SetNetworkForMaskedCard(kAmericanExpressCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card2);
   EXPECT_EQ(
@@ -3269,9 +3269,10 @@ TEST_F(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
 // server card and user submitted an invalid expiration date month.
 TEST_F(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationMonth) {
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Clyde Barrow",
-                          "4444333322221111" /* Visa */, "04", "2111", "1");
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "c789");
+  test::SetCreditCardInfo(&server_card, "Clyde Barrow", "1111" /* Visa */, "04",
+                          "2111", "1");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card);
   EXPECT_EQ(
@@ -3305,9 +3306,10 @@ TEST_F(FormDataImporterTest,
 // server card and user submitted an invalid expiration date year.
 TEST_F(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationYear) {
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Clyde Barrow",
-                          "4444333322221111" /* Visa */, "04", "2111", "1");
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "c789");
+  test::SetCreditCardInfo(&server_card, "Clyde Barrow", "1111" /* Visa */, "04",
+                          "2111", "1");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card);
   EXPECT_EQ(
@@ -3342,9 +3344,10 @@ TEST_F(FormDataImporterTest,
 TEST_F(
     FormDataImporterTest,
     Metrics_SubmittedDifferentServerCardExpirationStatus_EmptyExpirationYear) {
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Clyde Barrow",
-                          "4111111111111111" /* Visa */, "04", "2111", "1");
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "c789");
+  test::SetCreditCardInfo(&server_card, "Clyde Barrow", "1881" /* Visa */, "04",
+                          "2111", "1");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card);
   EXPECT_EQ(
