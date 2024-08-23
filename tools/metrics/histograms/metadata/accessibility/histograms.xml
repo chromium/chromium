@@ -1158,6 +1158,19 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram
+    name="Accessibility.DependencyParserModelLoader.DependencyParserModel.WasLoaded"
+    enum="BooleanLoaded" expires_after="2025-02-28">
+  <owner>xiangxiao@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether the dependency parser model file provided by the
+    OptimizationGuide was valid and was successfully loaded by the
+    DependencyParserModelLoader. Recorded once per model update by the
+    OptimizationGuide.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.DlcInstallerFaceGazeAssetsInstallationDuration"
     units="ms" expires_after="2025-02-28">
   <owner>akihiroota@chromium.org</owner>
