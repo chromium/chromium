@@ -13,18 +13,16 @@ import common
 
 def main_run(args):
   with common.temporary_file() as tempfile_path:
-    rc = common.run_command(
-        [
-            'vpython3',
-            os.path.join(common.SRC_DIR, 'testing', 'test_env.py'),
-            os.path.join(common.SRC_DIR, 'tools', 'metrics',
-                         'metrics_python_tests.py'),
-            '--isolated-script-test-output',
-            tempfile_path,
-            '--skip-set-lpac-acls=1',
-        ],
-        cwd=args.build_dir
-        or os.path.join(common.SRC_DIR, 'out', args.build_config_fs))
+    rc = common.run_command([
+        'vpython3',
+        os.path.join(common.SRC_DIR, 'testing', 'test_env.py'),
+        os.path.join(common.SRC_DIR, 'tools', 'metrics',
+                     'metrics_python_tests.py'),
+        '--isolated-script-test-output',
+        tempfile_path,
+        '--skip-set-lpac-acls=1',
+    ],
+                            cwd=args.build_dir)
 
     with open(tempfile_path) as f:
       isolated_results = json.load(f)

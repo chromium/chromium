@@ -121,14 +121,9 @@ def run_script(argv, funcs):
       return json.load(f)
 
   parser = argparse.ArgumentParser()
-  # TODO(crbug.com/355218109): Remove '--build-config-fs' in favor of
-  # '--build-dir'.
-  parser.add_argument(
-      '--build-config-fs',
-      help='Release or debug "config" of the build. WARNING: This arg '
-      'is deprecated and should not be used If you want the build-dir path, '
-      'use "--build-dir".')
-  parser.add_argument('--build-dir', help='Absolute path to build-dir.')
+  parser.add_argument('--build-dir',
+                      help='Absolute path to build-dir.',
+                      required=True)
   parser.add_argument('--paths', type=parse_json, default={})
   # Properties describe the environment of the build, and are the same per
   # script invocation.

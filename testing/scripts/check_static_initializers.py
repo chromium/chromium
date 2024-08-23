@@ -179,18 +179,13 @@ def main_linux(src_dir):
 
 
 def main_run(args):
-  if args.build_dir:
-    with open(os.path.join(args.build_dir, 'args.gn')) as f:
-      gn_args = gn_helpers.FromGNArgs(f.read())
-    if gn_args.get('is_debug') or gn_args.get('is_official_build'):
-      raise Exception('Only release builds are supported')
-  elif args.build_config_fs != 'Release':
+  with open(os.path.join(args.build_dir, 'args.gn')) as f:
+    gn_args = gn_helpers.FromGNArgs(f.read())
+  if gn_args.get('is_debug') or gn_args.get('is_official_build'):
     raise Exception('Only release builds are supported')
 
   src_dir = args.paths['checkout']
-  build_dir = args.build_dir or os.path.join(src_dir, 'out',
-                                             args.build_config_fs)
-  os.chdir(build_dir)
+  os.chdir(args.build_dir)
 
   if sys.platform.startswith('darwin'):
     # If the checkout uses the hermetic xcode binaries, then otool must be
