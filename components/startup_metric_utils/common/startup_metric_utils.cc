@@ -14,6 +14,9 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/process/current_process.h"
+#include "base/process/process.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/trace_event/trace_event.h"
 
@@ -139,6 +142,43 @@ void CommonStartupMetricRecorder::AssertFirstCallInSession(
 #if DCHECK_IS_ON()
   DCHECK(GetSessionLog().insert(from_here.program_counter()).second);
 #endif  // DCHECK_IS_ON()
+}
+
+void CommonStartupMetricRecorder::EmitHistogramWithTraceEvent(
+    HistogramTimeFunction* histogram_function,
+    const char* name,
+    base::TimeTicks begin_ticks,
+    base::TimeTicks end_ticks) {
+  (*histogram_function)(name, end_ticks - begin_ticks);
+  EmitTraceEvent(name, begin_ticks, end_ticks);
+}
+
+void CommonStartupMetricRecorder::EnsureStartupTrackInit() {
+  if (!startup_track_ && TRACE_EVENT_CATEGORY_ENABLED("startup")) {
+    startup_track_.emplace(reinterpret_cast<uintptr_t>(this));
+    auto desc = startup_track_->Serialize();
+    desc.set_name("Startup " +
+                  base::CurrentProcess::GetInstance().GetName(
+                      base::CurrentProcess::NameKey()) +
+                  " " + base::NumberToString(base::Process::Current().Pid()));
+    base::TrackEvent::SetTrackDescriptor(*startup_track_, desc);
+  }
+}
+
+void CommonStartupMetricRecorder::EmitTraceEvent(const char* name,
+                                                 base::TimeTicks begin_ticks,
+                                                 base::TimeTicks end_ticks) {
+  EnsureStartupTrackInit();
+
+  // Emit the trace event asynchronously onto the `startup_track_`.
+  TRACE_EVENT_BEGIN("startup", perfetto::StaticString(name), *startup_track_,
+                    begin_ticks);
+  TRACE_EVENT_END("startup", *startup_track_, end_ticks);
+}
+
+void CommonStartupMetricRecorder::EmitInstantEvent(const char* name) {
+  EnsureStartupTrackInit();
+  TRACE_EVENT_INSTANT("startup", perfetto::StaticString(name), *startup_track_);
 }
 
 }  // namespace startup_metric_utils

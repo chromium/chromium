@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_STARTUP_METRIC_UTILS_COMMON_STARTUP_METRIC_UTILS_H_
 #define COMPONENTS_STARTUP_METRIC_UTILS_COMMON_STARTUP_METRIC_UTILS_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 
 // Utility functions to support metric collection for startup common across
 // processes. Timings should use TimeTicks whenever possible. OS-provided
@@ -83,6 +86,36 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   // reset in tests via ResetSessionForTesting()). Callers should use FROM_HERE
   // as a unique id.
   void AssertFirstCallInSession(base::Location from_here);
+
+  // Common helper to report startup trace events to the `startup_track_` as
+  // well as a histogram of the same name. Example call:
+  //     EmitHistogramWithTraceEvent(
+  //         &base::UmaHistogramLongTimes,
+  //         "Startup.LoadTime.ApplicationStartToChromeMain",
+  //         GetCommon().application_start_ticks_,
+  //         GetCommon().chrome_main_entry_ticks_);
+  using HistogramTimeFunction = void(const char* name, base::TimeDelta);
+  void EmitHistogramWithTraceEvent(HistogramTimeFunction* histogram_function,
+                                   const char* name,
+                                   base::TimeTicks begin_ticks,
+                                   base::TimeTicks end_ticks);
+
+  // Initializes `startup_track_` if it's not yet initialized.
+  void EnsureStartupTrackInit();
+
+  // Emit a "startup" event to `startup_track_`.
+  void EmitTraceEvent(const char* name,
+                      base::TimeTicks begin_ticks,
+                      base::TimeTicks end_ticks);
+
+  // Emit info to `startup_track_` in the form of an instant event.
+  void EmitInstantEvent(const char* name);
+
+  // Per-process perfetto Track for Startup events. Optional so it can be
+  // initialized upon emitting the first trace event (as this
+  // CommonStartupMetricRecorder comes up too early in startup when Perfetto
+  // isn't yet initialized).
+  std::optional<perfetto::Track> startup_track_;
 
   base::TimeTicks process_creation_ticks_;
 

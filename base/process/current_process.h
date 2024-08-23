@@ -15,6 +15,10 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/buildflag.h"
 
+namespace startup_metric_utils {
+class CommonStartupMetricRecorder;
+}
+
 namespace tracing {
 class TraceEventDataSource;
 class CustomEventRecorder;
@@ -99,6 +103,7 @@ class BASE_EXPORT CurrentProcess {
    private:
     NameKey() = default;
     friend class ::base::test::CurrentProcessForTest;
+    friend class ::startup_metric_utils::CommonStartupMetricRecorder;
     friend class ::tracing::TraceEventDataSource;
     friend void ::tracing::SetProcessTrackDescriptor(
         int64_t process_start_timestamp);

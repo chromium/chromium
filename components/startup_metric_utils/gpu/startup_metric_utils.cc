@@ -10,24 +10,8 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/trace_event/trace_event.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
 
-namespace {
-void UmaHistogramWithTrace(void (*histogram_function)(const std::string& name,
-                                                      base::TimeDelta),
-                           const char* histogram_basename,
-                           base::TimeTicks begin_ticks,
-                           base::TimeTicks end_ticks) {
-  (*histogram_function)(histogram_basename, end_ticks - begin_ticks);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "startup", histogram_basename, TRACE_ID_LOCAL(histogram_basename),
-      begin_ticks);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "startup", histogram_basename, TRACE_ID_LOCAL(histogram_basename),
-      end_ticks);
-}
-}  // namespace
 
 namespace startup_metric_utils {
 
@@ -62,21 +46,21 @@ void GpuStartupMetricRecorder::RecordGpuInitialized(base::TimeTicks ticks) {
   GetCommon().AssertFirstCallInSession(FROM_HERE);
   RecordGpuInitializationTicks(ticks);
 
-  UmaHistogramWithTrace(&base::UmaHistogramMediumTimes,
-                        "Startup.GPU.LoadTime.ProcessCreationToGpuInitialized",
-                        GetCommon().process_creation_ticks_,
-                        gpu_initialized_ticks_);
-  UmaHistogramWithTrace(&base::UmaHistogramMediumTimes,
-                        "Startup.GPU.LoadTime.ApplicationStartToGpuInitialized",
-                        GetCommon().application_start_ticks_,
-                        gpu_initialized_ticks_);
-  UmaHistogramWithTrace(&base::UmaHistogramMediumTimes,
-                        "Startup.GPU.LoadTime.ChromeMainToGpuInitialized",
-                        GetCommon().chrome_main_entry_ticks_,
-                        gpu_initialized_ticks_);
+  GetCommon().EmitHistogramWithTraceEvent(
+      &base::UmaHistogramMediumTimes,
+      "Startup.GPU.LoadTime.ProcessCreationToGpuInitialized",
+      GetCommon().process_creation_ticks_, gpu_initialized_ticks_);
+  GetCommon().EmitHistogramWithTraceEvent(
+      &base::UmaHistogramMediumTimes,
+      "Startup.GPU.LoadTime.ApplicationStartToGpuInitialized",
+      GetCommon().application_start_ticks_, gpu_initialized_ticks_);
+  GetCommon().EmitHistogramWithTraceEvent(
+      &base::UmaHistogramMediumTimes,
+      "Startup.GPU.LoadTime.ChromeMainToGpuInitialized",
+      GetCommon().chrome_main_entry_ticks_, gpu_initialized_ticks_);
   if (!GetCommon().preread_end_ticks_.is_null() &&
       !GetCommon().preread_begin_ticks_.is_null()) {
-    UmaHistogramWithTrace(
+    GetCommon().EmitHistogramWithTraceEvent(
         &base::UmaHistogramLongTimes, "Startup.GPU.LoadTime.PreReadFile",
         GetCommon().preread_begin_ticks_, GetCommon().preread_end_ticks_);
   }
