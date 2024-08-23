@@ -2008,10 +2008,7 @@ class ChromeDownloadManagerDelegateTestWithSafeBrowsing
     : public ChromeDownloadManagerDelegateTest,
       public ::testing::WithParamInterface<SafeBrowsingTestParameters> {
  public:
-  ChromeDownloadManagerDelegateTestWithSafeBrowsing() {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kDownloadReportWithoutUserDecision);
-  }
+  ChromeDownloadManagerDelegateTestWithSafeBrowsing() = default;
 
   void SetUp() override;
   void TearDown() override;
@@ -2040,7 +2037,6 @@ class ChromeDownloadManagerDelegateTestWithSafeBrowsing
   std::unique_ptr<TestDownloadProtectionService>
       test_download_protection_service_;
   scoped_refptr<FakeSafeBrowsingService> sb_service_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 void ChromeDownloadManagerDelegateTestWithSafeBrowsing::SetUp() {

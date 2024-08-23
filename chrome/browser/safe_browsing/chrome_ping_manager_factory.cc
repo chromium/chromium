@@ -91,14 +91,12 @@ bool ChromePingManagerFactory::ShouldFetchAccessTokenForReport(
 // static
 bool ChromePingManagerFactory::ShouldSendPersistedReport(Profile* profile) {
   return !profile->IsOffTheRecord() &&
-         IsExtendedReportingEnabled(*profile->GetPrefs()) &&
-         base::FeatureList::IsEnabled(kDownloadReportWithoutUserDecision);
+         IsExtendedReportingEnabled(*profile->GetPrefs());
 }
 
 bool ChromePingManagerFactory::ServiceIsCreatedWithBrowserContext() const {
-  // When kDownloadReportWithoutUserDecision is enabled, PingManager is created
-  // at startup to send persisted reports.
-  return base::FeatureList::IsEnabled(kDownloadReportWithoutUserDecision);
+  // PingManager is created at startup to send persisted reports.
+  return true;
 }
 
 bool ChromePingManagerFactory::ServiceIsNULLWhileTesting() const {

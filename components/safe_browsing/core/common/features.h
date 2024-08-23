@@ -72,11 +72,6 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // DLP endpoint based on ChromeDataRegionSetting policy.
 BASE_DECLARE_FEATURE(kDlpRegionalizedEndpoints);
 
-// Sends download report without explicit user decision. This can be either the
-// download is automatically discarded 1 hour after the warning is shown, or
-// the profile is closed while the warning is still showing.
-BASE_DECLARE_FEATURE(kDownloadReportWithoutUserDecision);
-
 // The kill switch for download tailored warnings. The main control is on the
 // server-side.
 BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);

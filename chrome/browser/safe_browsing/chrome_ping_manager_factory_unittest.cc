@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -18,7 +17,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -47,7 +45,6 @@ class ChromePingManagerFactoryTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
@@ -72,8 +69,6 @@ void ChromePingManagerFactoryTest::TearDown() {
     TestingBrowserProcess::GetGlobal()->safe_browsing_service()->ShutDown();
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
   }
-
-  feature_list_.Reset();
 }
 
 TestingProfile* ChromePingManagerFactoryTest::SetUpProfile(
@@ -164,7 +159,6 @@ TEST_F(ChromePingManagerFactoryTest,
 }
 
 TEST_F(ChromePingManagerFactoryTest, ShouldSendPersistedReport_Yes) {
-  feature_list_.InitAndEnableFeature(kDownloadReportWithoutUserDecision);
   TestingProfile* profile =
       SetUpProfile(/*is_enhanced_protection=*/true, /*is_signed_in=*/false);
   EXPECT_EQ(ShouldSendPersistedReport(profile), true);
@@ -172,27 +166,17 @@ TEST_F(ChromePingManagerFactoryTest, ShouldSendPersistedReport_Yes) {
 
 TEST_F(ChromePingManagerFactoryTest,
        ShouldSendPersistedReport_NotEnhancedProtection) {
-  feature_list_.InitAndEnableFeature(kDownloadReportWithoutUserDecision);
   TestingProfile* profile =
       SetUpProfile(/*is_enhanced_protection=*/false, /*is_signed_in=*/false);
   EXPECT_EQ(ShouldSendPersistedReport(profile), false);
 }
 
 TEST_F(ChromePingManagerFactoryTest, ShouldSendPersistedReport_Incognito) {
-  feature_list_.InitAndEnableFeature(kDownloadReportWithoutUserDecision);
   TestingProfile* profile =
       SetUpProfile(/*is_enhanced_protection=*/true, /*is_signed_in=*/false);
   EXPECT_EQ(ShouldSendPersistedReport(
                 TestingProfile::Builder().BuildIncognito(profile)),
             false);
-}
-
-TEST_F(ChromePingManagerFactoryTest,
-       ShouldSendPersistedReport_FeatureDisabled) {
-  feature_list_.InitAndDisableFeature(kDownloadReportWithoutUserDecision);
-  TestingProfile* profile =
-      SetUpProfile(/*is_enhanced_protection=*/true, /*is_signed_in=*/false);
-  EXPECT_EQ(ShouldSendPersistedReport(profile), false);
 }
 
 TEST_F(ChromePingManagerFactoryTest, NoPingManagerForIncognito) {

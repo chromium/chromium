@@ -86,10 +86,6 @@ BASE_FEATURE(kDlpRegionalizedEndpoints,
              "DlpRegionalizedEndpoints",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDownloadReportWithoutUserDecision,
-             "DownloadReportWithoutUserDecision",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -328,7 +324,6 @@ base::Value::List GetFeatureStatusList() {
       &kCreateNotificationsAcceptedClientSafeBrowsingReports,
       &kDelayedWarnings,
       &kDlpRegionalizedEndpoints,
-      &kDownloadReportWithoutUserDecision,
       &kDownloadTailoredWarnings,
       &kEnhancedSafeBrowsingPromo,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,

@@ -145,8 +145,7 @@ std::unique_ptr<ClientSafeBrowsingReportRequest> CreateDownloadReport(
     PopulateDownloadWarningActions(download, report.get());
     base::Time warning_first_shown_time =
         DownloadItemWarningData::WarningFirstShownTime(download);
-    if (!warning_first_shown_time.is_null() &&
-        base::FeatureList::IsEnabled(kDownloadReportWithoutUserDecision)) {
+    if (!warning_first_shown_time.is_null()) {
       report->set_warning_shown_timestamp_msec(
           warning_first_shown_time.InMillisecondsSinceUnixEpoch());
     }
