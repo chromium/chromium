@@ -11,11 +11,12 @@ code. Some code is used on Android.
 
 ## Structure, modularity:
 * Features should be modular.
-    * For most features, all business logic should live in some combination of
-      //chrome/browser/<feature>, //chrome/browser/ui/<feature> or
-      //component/<feature>.
-        * This includes views code. The historical rule disallowing views in
-          //chrome/browser/<feature> and //chrome/browser/ui/<feature> has been
+    * For most features, all code should live in some combination of
+      //component/<feature> and //chrome/browser/<feature> (or
+      //chrome/browser/ui/<feature>), and not in //chrome/browser/ui/views.
+        * The historical rule restricting access to views in //chrome/browser
+          and //chrome/browser/ui has been removed.
+        * The historical rule disallowing ui code in //chrome/browser has been
           removed.
     * WebUI resources are the only exception. They will continue to live in
       //chrome/browser/resources/<feature> alongside standalone BUILD.gn files.
