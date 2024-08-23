@@ -20,7 +20,8 @@ CreateObjectsMojomArrayFromServerResponse(
 // Returns a text mojom object pointer from a lens overlay server response.
 // Returns a null text ptr if there is no text in response.
 lens::mojom::TextPtr CreateTextMojomFromServerResponse(
-    const lens::LensOverlayServerResponse& response);
+    const lens::LensOverlayServerResponse& response,
+    const gfx::Size resized_bitmap_size);
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PROTO_CONVERTER_H_

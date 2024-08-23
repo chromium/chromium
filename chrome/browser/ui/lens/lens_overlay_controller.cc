@@ -864,6 +864,12 @@ void LensOverlayController::IssueTranslateSelectionRequestForTesting(
                                  selection_start_index, selection_end_index);
 }
 
+void LensOverlayController::IssueTranslateFullPageRequestForTesting(
+    const std::string& source_language,
+    const std::string& target_language) {
+  IssueTranslateFullPageRequest(source_language, target_language);
+}
+
 void LensOverlayController::IssueTranslateFullPageRequest(
     const std::string& source_language,
     const std::string& target_language) {

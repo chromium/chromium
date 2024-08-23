@@ -85,8 +85,8 @@ class LensOverlayQueryController {
   void EndQuery();
 
   // Sends a full image request to translate the page.
-  void SendFullPageTranslateQuery(const std::string& source_language,
-                                  const std::string& target_language);
+  virtual void SendFullPageTranslateQuery(const std::string& source_language,
+                                          const std::string& target_language);
 
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping
@@ -282,6 +282,10 @@ class LensOverlayQueryController {
 
   // The original screenshot image.
   SkBitmap original_screenshot_;
+
+  // The dimensions of the resized bitmap. Needed in case geometry needs to be
+  // recaclulated. For example, in the case of translated words.
+  gfx::Size resized_bitmap_size_;
 
   // The page url, if it is allowed to be shared.
   std::optional<GURL> page_url_;
