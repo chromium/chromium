@@ -64,6 +64,10 @@ class AIManagerKeyedServiceTest : public ChromeRenderViewHostTestHarness {
  protected:
   MockSupportsUserData* mock_host() { return &mock_host_; }
 
+  testing::NiceMock<MockOptimizationGuideKeyedService>* MockService() {
+    return mock_optimization_guide_keyed_service_;
+  }
+
  private:
   void SetUpOptimizationGuide() {
     mock_optimization_guide_keyed_service_ =
@@ -96,6 +100,16 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
   command_line->AppendSwitchASCII(
       optimization_guide::switches::kOnDeviceModelExecutionOverride,
       "invalid-on-device-model-file-path");
+
+  EXPECT_CALL(*MockService(), CanCreateOnDeviceSession(_, _))
+      .Times(AtMost(1))
+      .WillOnce(Invoke([](optimization_guide::ModelBasedCapabilityKey feature,
+                          optimization_guide::OnDeviceModelEligibilityReason*
+                              on_device_model_eligibility_reason) {
+        *on_device_model_eligibility_reason = optimization_guide::
+            OnDeviceModelEligibilityReason::kFeatureNotEnabled;
+        return false;
+      }));
 
   base::MockCallback<blink::mojom::AIManager::CanCreateTextSessionCallback>
       callback;

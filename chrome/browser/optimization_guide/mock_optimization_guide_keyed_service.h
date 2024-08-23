@@ -60,6 +60,12 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
        std::optional<optimization_guide::proto::RequestContextMetadata>
            request_context_metadata),
       (override));
+  MOCK_METHOD(bool,
+              CanCreateOnDeviceSession,
+              (optimization_guide::ModelBasedCapabilityKey feature,
+               optimization_guide::OnDeviceModelEligibilityReason*
+                   on_device_model_eligibility_reason),
+              (override));
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
               (optimization_guide::ModelBasedCapabilityKey feature,
@@ -71,6 +77,16 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
       (optimization_guide::ModelBasedCapabilityKey,
        const google::protobuf::MessageLite&,
        optimization_guide::OptimizationGuideModelExecutionResultCallback));
+  MOCK_METHOD(void,
+              AddOnDeviceModelAvailabilityChangeObserver,
+              (optimization_guide::ModelBasedCapabilityKey feature,
+               optimization_guide::OnDeviceModelAvailabilityObserver* observer),
+              (override));
+  MOCK_METHOD(void,
+              RemoveOnDeviceModelAvailabilityChangeObserver,
+              (optimization_guide::ModelBasedCapabilityKey feature,
+               optimization_guide::OnDeviceModelAvailabilityObserver* observer),
+              (override));
   MOCK_METHOD(bool,
               ShouldFeatureBeCurrentlyEnabledForUser,
               (optimization_guide::UserVisibleFeatureKey),

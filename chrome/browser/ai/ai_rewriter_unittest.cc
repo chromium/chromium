@@ -337,13 +337,23 @@ TEST_F(AIRewriterTest, CreateRewriterNoService) {
   run_loop.Run();
 }
 
-TEST_F(AIRewriterTest, CreateRewriterStartSessionError) {
+TEST_F(AIRewriterTest, CreateRewriterModelNotAvailable) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              CanCreateOnDeviceSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelEligibilityReason*
+                  on_device_model_eligibility_reason) {
+            *on_device_model_eligibility_reason = optimization_guide::
+                OnDeviceModelEligibilityReason::kModelNotAvailable;
+            return false;
+          }));
 
   MockCreateRewriterClient mock_create_rewriter_client;
   base::RunLoop run_loop;
@@ -360,6 +370,144 @@ TEST_F(AIRewriterTest, CreateRewriterStartSessionError) {
       blink::mojom::AIRewriterLength::kAsIs,
       mock_create_rewriter_client.BindNewPipeAndPassRemote());
   run_loop.Run();
+}
+
+TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
+  SetupMockOptimizationGuideKeyedService();
+
+  // StartSession must be called twice.
+  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            // Returns a nullptr for the first call.
+            return nullptr;
+          }))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            // Returns a MockSession for the second call.
+            return std::make_unique<optimization_guide::MockSession>();
+          }));
+
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              CanCreateOnDeviceSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelEligibilityReason*
+                  on_device_model_eligibility_reason) {
+            // Setting kConfigNotAvailableForFeature should trigger retry.
+            *on_device_model_eligibility_reason = optimization_guide::
+                OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
+            return false;
+          }));
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
+  MockCreateRewriterClient mock_create_rewriter_client;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_create_rewriter_client, OnResult(_))
+      .WillOnce(testing::Invoke(
+          [&](mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) {
+            // Create rewriter should succeed.
+            EXPECT_TRUE(rewriter);
+            run_loop.Quit();
+          }));
+
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  ai_manager->CreateRewriter(
+      kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+      blink::mojom::AIRewriterLength::kAsIs,
+      mock_create_rewriter_client.BindNewPipeAndPassRemote());
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+  // Send `kConfigNotAvailableForFeature` first to the observer.
+  availability_observer->OnDeviceModelAvailablityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kCompose,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  // And then send `kConfigNotAvailableForFeature` to the observer.
+  availability_observer->OnDeviceModelAvailablityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kCompose,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  // OnResult() should be called.
+  run_loop.Run();
+}
+
+TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
+  SetupMockOptimizationGuideKeyedService();
+
+  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; }));
+
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              CanCreateOnDeviceSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelEligibilityReason*
+                  on_device_model_eligibility_reason) {
+            // Setting kConfigNotAvailableForFeature should trigger retry.
+            *on_device_model_eligibility_reason = optimization_guide::
+                OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
+            return false;
+          }));
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  base::RunLoop run_loop_for_remove_observer;
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              RemoveOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            EXPECT_EQ(availability_observer, observer);
+            run_loop_for_remove_observer.Quit();
+          }));
+
+  auto mock_create_rewriter_client =
+      std::make_unique<MockCreateRewriterClient>();
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  ai_manager->CreateRewriter(
+      kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+      blink::mojom::AIRewriterLength::kAsIs,
+      mock_create_rewriter_client->BindNewPipeAndPassRemote());
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Reset `mock_create_rewriter_client` to abort the task of CreateRewriter().
+  mock_create_rewriter_client.reset();
+
+  // RemoveOnDeviceModelAvailabilityChangeObserver should be called.
+  run_loop_for_remove_observer.Run();
 }
 
 TEST_F(AIRewriterTest, ContextDestroyed) {
