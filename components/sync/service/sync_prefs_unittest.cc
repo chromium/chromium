@@ -459,24 +459,17 @@ TEST_F(SyncPrefsTest,
 #endif  // !BUILDFLAG(IS_IOS)
                             kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
-#if BUILDFLAG(IS_ANDROID)
-                            kWebApkBackupAndRestoreBackend,
-#endif  // BUILDFLAG(IS_ANDROID)
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
-  // Based on the feature flags set above, Passwords, Autofill, Payments, and
-  // Apps on Android are supported and enabled by default. Bookmarks and
-  // ReadingList are supported, but not enabled by default. Preferences,
-  // History, and Tabs are not supported without
-  // kReplaceSyncPromosWithSignInPromos. Transport mode is required for new sync
-  // types moving forward. Compare is one of those and is enabled when
-  // kReplaceSyncPromosWithSignInPromos is enabled.
+  // Based on the feature flags set above, Passwords, Autofill and Payments
+  // are supported and enabled by default. Bookmarks and ReadingList are
+  // supported, but not enabled by default. Preferences, History, and Tabs are
+  // not supported without kReplaceSyncPromosWithSignInPromos. Transport
+  // mode is required for new sync types moving forward. Compare is one of
+  // those and is enabled when kReplaceSyncPromosWithSignInPromos is enabled.
   UserSelectableTypeSet expected_types{UserSelectableType::kPasswords,
                                        UserSelectableType::kAutofill,
-#if BUILDFLAG(IS_ANDROID)
-                                       UserSelectableType::kApps,
-#endif  // BUILDFLAG(IS_ANDROID)
                                        UserSelectableType::kPayments};
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -500,25 +493,19 @@ TEST_F(SyncPrefsTest,
 #endif  // !BUILDFLAG(IS_IOS)
                             kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
-#if BUILDFLAG(IS_ANDROID)
-                            kWebApkBackupAndRestoreBackend,
-#endif  // BUILDFLAG(IS_ANDROID)
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
 
   // Based on the feature flags set above, Bookmarks, ReadingList, Passwords,
-  // Autofill, Payments, Preferences, and Apps on Android are supported and
-  // enabled by default. (History and Tabs are also supported, but require a
-  // separate opt-in.) Transport mode is required for new sync types moving
-  // forward. Compare is one of those and is enabled when
-  // kReplaceSyncPromosWithSignInPromos is enabled.
+  // Autofill, Payments and Preferences are supported and enabled by default.
+  // (History and Tabs are also supported, but require a separate opt-in.)
+  // Transport mode is required for new sync types moving forward. Compare is
+  // one of those and is enabled when kReplaceSyncPromosWithSignInPromos is
+  // enabled.
   UserSelectableTypeSet expected_types{
       UserSelectableType::kBookmarks,   UserSelectableType::kProductComparison,
       UserSelectableType::kReadingList, UserSelectableType::kPasswords,
       UserSelectableType::kAutofill,    UserSelectableType::kPayments,
-#if BUILDFLAG(IS_ANDROID)
-      UserSelectableType::kApps,
-#endif  // BUILDFLAG(IS_ANDROID)
       UserSelectableType::kPreferences};
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

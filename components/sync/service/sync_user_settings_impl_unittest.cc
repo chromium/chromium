@@ -180,9 +180,6 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
 #endif
                             kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
-#if BUILDFLAG(IS_ANDROID)
-                            kWebApkBackupAndRestoreBackend,
-#endif  // BUILDFLAG(IS_ANDROID)
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
 
@@ -196,15 +193,11 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
   // History and Tabs require a separate opt-in.
   // SavedTabGroups also requires a separate opt-in, either the same one as
   // history and tabs (on mobile), or a dedicated opt-in.
-  // Extensions, Themes and Cookies are not supported in transport mode, and
-  // Apps on non-Android platforms are also not supported in transport mode.
+  // Apps, Extensions, Themes and Cookies are not supported in transport mode.
   UserSelectableTypeSet expected_disabled_types = {
-      UserSelectableType::kHistory,        UserSelectableType::kTabs,
-      UserSelectableType::kExtensions,     UserSelectableType::kThemes,
-      UserSelectableType::kSavedTabGroups,
-#if !BUILDFLAG(IS_ANDROID)
-      UserSelectableType::kApps,
-#endif  // BUILDFLAG(IS_ANDROID)
+      UserSelectableType::kHistory, UserSelectableType::kTabs,
+      UserSelectableType::kApps,    UserSelectableType::kExtensions,
+      UserSelectableType::kThemes,  UserSelectableType::kSavedTabGroups,
       UserSelectableType::kCookies};
   if (!base::FeatureList::IsEnabled(kSyncSharedTabGroupDataInTransportMode)) {
     expected_disabled_types.Put(UserSelectableType::kSharedTabGroupData);
