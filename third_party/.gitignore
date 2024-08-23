@@ -146,6 +146,7 @@
 /spirv-headers/src
 /spirv-tools/src
 /sqlite4java/lib/
+/src
 /subresource-filter-ruleset/data/*
 /swift-format
 /swift-toolchain
