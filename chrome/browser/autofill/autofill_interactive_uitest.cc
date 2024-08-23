@@ -3427,6 +3427,15 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
                 OnFormSubmittedImpl,
                 (const FormData&, bool, mojom::SubmissionSource),
                 (override));
+
+    TestAutofillManagerWaiter& text_field_change_waiter() {
+      return text_field_change_waiter_;
+    }
+
+   private:
+    TestAutofillManagerWaiter text_field_change_waiter_{
+        *this,
+        {AutofillManagerEvent::kTextFieldDidChange}};
   };
 
   MockAutofillManager* autofill_manager() {
@@ -3480,13 +3489,12 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
 
   void EnterValues(const std::vector<FieldValue>& values,
                    size_t num_modified_textfields) {
-    TestAutofillManagerWaiter waiter(
-        *autofill_manager(), {AutofillManagerEvent::kTextFieldDidChange});
     for (const FieldValue& value : values) {
       ASSERT_TRUE(EnterTextIntoField(GetElementById(value.id), value.value,
                                      this, GetWebContents()));
     }
-    ASSERT_TRUE(waiter.Wait(num_modified_textfields));
+    ASSERT_TRUE(autofill_manager()->text_field_change_waiter().Wait(
+        num_modified_textfields));
   }
 
   struct NameValue {
