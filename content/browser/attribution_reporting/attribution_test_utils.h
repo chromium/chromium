@@ -219,6 +219,9 @@ class TriggerBuilder {
   TriggerBuilder& SetAggregatableDebugReportingConfig(
       attribution_reporting::AggregatableDebugReportingConfig);
 
+  TriggerBuilder& SetAttributionScopes(
+      attribution_reporting::AttributionScopesSet);
+
   TriggerBuilder& SetAggregatableFilteringIdMaxBytes(
       attribution_reporting::AggregatableFilteringIdsMaxBytes);
 
@@ -249,6 +252,7 @@ class TriggerBuilder {
       aggregatable_filtering_id_max_bytes_;
   attribution_reporting::AggregatableDebugReportingConfig
       aggregatable_debug_reporting_config_;
+  attribution_reporting::AttributionScopesSet attribution_scopes_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -452,6 +456,11 @@ MATCHER_P(RemainingAggregatableAttributionBudgetIs, matcher, "") {
 
 MATCHER_P(AttributionScopesDataIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.attribution_scopes_data(),
+                            result_listener);
+}
+
+MATCHER_P(AttributionScopesSetIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg->attribution_scopes_set(),
                             result_listener);
 }
 

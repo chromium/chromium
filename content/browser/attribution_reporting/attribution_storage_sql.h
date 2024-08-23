@@ -195,6 +195,12 @@ class CONTENT_EXPORT AttributionStorageSql {
       StoredSource::AttributionLogic attribution_logic,
       base::Time aggregatable_report_window_time);
 
+  [[nodiscard]] bool UpdateOrRemoveSourcesWithIncompatibleScopeFields(
+      const StorableSource&,
+      base::Time source_time);
+  [[nodiscard]] bool RemoveSourcesWithOutdatedScopes(const StorableSource&,
+                                                     base::Time source_time);
+
   CreateReportResult MaybeCreateAndStoreReport(AttributionTrigger);
   std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
@@ -430,6 +436,13 @@ class CONTENT_EXPORT AttributionStorageSql {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool DeleteEventLevelReportsTriggeredLaterThanForSources(
+      const std::vector<StoredSource::Id>&,
+      base::Time source_time) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool RemoveScopesDataForSource(StoredSource::Id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.

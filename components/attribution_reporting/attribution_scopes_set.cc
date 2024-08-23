@@ -177,4 +177,36 @@ void AttributionScopesSet::SerializeForTrigger(base::Value::Dict& dict) const {
   Serialize(scopes_, kAttributionScopes, dict);
 }
 
+// Rather than retrieving the whole intersection and checking its size using
+// `std::set_intersection`, we iterate through and compare each element and
+// early exit when two matching elements are found.
+bool AttributionScopesSet::HasIntersection(
+    const AttributionScopesSet& other_scopes) const {
+  const auto& scopes_2 = other_scopes.scopes();
+  if (scopes_.empty() || scopes_2.empty()) {
+    return false;
+  }
+
+  AttributionScopesSet::Scopes::const_iterator it_1 = scopes_.begin(),
+                                               it_1_end = scopes_.end();
+  AttributionScopesSet::Scopes::const_iterator it_2 = scopes_2.begin(),
+                                               it_2_end = scopes_2.end();
+
+  if (*it_1 > *scopes_2.rbegin() || *it_2 > *scopes_.rbegin()) {
+    return false;
+  }
+
+  while (it_1 != it_1_end && it_2 != it_2_end) {
+    if (*it_1 == *it_2) {
+      return true;
+    }
+    if (*it_1 < *it_2) {
+      it_1++;
+    } else {
+      it_2++;
+    }
+  }
+  return false;
+}
+
 }  // namespace attribution_reporting

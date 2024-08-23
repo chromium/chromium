@@ -328,6 +328,12 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
     return make_result(StoreSourceResult::InternalError());
   }
 
+  if (!storage_.UpdateOrRemoveSourcesWithIncompatibleScopeFields(source,
+                                                                 source_time) ||
+      !storage_.RemoveSourcesWithOutdatedScopes(source, source_time)) {
+    return make_result(StoreSourceResult::InternalError());
+  }
+
   const auto commit_and_return = [&](StoreSourceResult::Result&& result) {
     return transaction->Commit()
                ? make_result(std::move(result))

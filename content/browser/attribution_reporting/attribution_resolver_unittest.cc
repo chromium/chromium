@@ -34,6 +34,8 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -4911,6 +4913,316 @@ TEST_F(AttributionResolverTest, SourceAttributionScopesData_RoundTrips) {
       SourceBuilder().SetAttributionScopesData(scopes).Build());
   EXPECT_THAT(storage()->GetActiveSources(),
               UnorderedElementsAre(AttributionScopesDataIs(scopes)));
+}
+
+TEST_F(AttributionResolverTest, SourcesWithDifferentAttributionScopeLimits) {
+  // Default source, should be deleted once a source with scopes is registered.
+  EXPECT_EQ(storage()
+                ->StoreSource(SourceBuilder().SetSourceEventId(1).Build())
+                .status(),
+            StorableSource::Result::kSuccess);
+  // Should not be deleted along with its respective source as only reports with
+  // trigger time >= current time are deleted.
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  // Should delete the first source as that has no scopes.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(2)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(2u)));
+
+  // Should be stored initially.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(3)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://conversion.test")})
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/2u,
+                  /*max_event_states=*/3u))
+          .Build());
+  // Should be deleted once the respective source is deleted.
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetDestinationOrigin(
+                        *SuitableOrigin::Deserialize("https://a.test"))
+                    .SetAttributionScopes(
+                        attribution_reporting::AttributionScopesSet({"1", "2"}))
+                    .SetTriggerData(1)
+                    .Build()));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(2));
+
+  // Should remain in storage.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(4)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://conversion2.test")})
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/2u,
+                  /*max_event_states=*/3u))
+          .Build());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(SourceEventIdIs(2u), SourceEventIdIs(3u),
+                                   SourceEventIdIs(4u)));
+
+  // Should delete the third source as that has a lower scope limit.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(5)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(SourceEventIdIs(2u), SourceEventIdIs(4u),
+                                   SourceEventIdIs(5u)));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              UnorderedElementsAre(EventLevelDataIs(TriggerDataIs(7))));
+}
+
+TEST_F(AttributionResolverTest, IncomingEmptyScopes_RemovesOtherScopes) {
+  auto scopes = *attribution_reporting::AttributionScopesData::Create(
+      attribution_reporting::AttributionScopesSet({"1"}),
+      /*attribution_scope_limit=*/4u,
+      /*max_event_states=*/4u);
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceEventId(1)
+                             .SetAttributionScopesData(scopes)
+                             .Build());
+
+  // Should not be modified as it does not share the same destination site.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(2)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test")})
+          .SetAttributionScopesData(scopes)
+          .Build());
+
+  // Should not be modified as it does not share the same reporting origin.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(3)
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.test"))
+          .SetAttributionScopesData(scopes)
+          .Build());
+
+  // Should remove only the first source's scopes data.
+  storage()->StoreSource(SourceBuilder().SetSourceEventId(4).Build());
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      UnorderedElementsAre(
+          AllOf(SourceEventIdIs(1u), AttributionScopesDataIs(std::nullopt)),
+          AllOf(SourceEventIdIs(2u), AttributionScopesDataIs(scopes)),
+          AllOf(SourceEventIdIs(3u), AttributionScopesDataIs(scopes)),
+          AllOf(SourceEventIdIs(4u), AttributionScopesDataIs(std::nullopt))));
+}
+
+TEST_F(AttributionResolverTest, SourcesWithDifferentMaxEventStates) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(1)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://b.test")})
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetDestinationOrigin(
+                        *SuitableOrigin::Deserialize("https://a.test"))
+                    .SetAttributionScopes(
+                        attribution_reporting::AttributionScopesSet({"1", "2"}))
+                    .Build()));
+
+  // Should remain in storage.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(2)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://c.test")})
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  // Should delete the first source.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(3)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://b.test")})
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/2u))
+          .Build());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceEventIdIs(2u), SourceEventIdIs(3u)));
+
+  // Should delete the third source.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(4)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://b.test")})
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/4u))
+          .Build());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceEventIdIs(2u), SourceEventIdIs(4u)));
+}
+
+TEST_F(AttributionResolverTest, RemoveOutdatedScopes) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(1)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1", "2"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+  // Should be deleted along with source 1.
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetAttributionScopes(
+                        attribution_reporting::AttributionScopesSet({"1", "4"}))
+                    .Build()));
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(2)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"3", "4"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(3)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"3", "5"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(
+          AllOf(SourceEventIdIs(2u),
+                AttributionScopesDataIs(AttributionScopesSetIs(
+                    attribution_reporting::AttributionScopesSet({"3", "4"})))),
+          AllOf(
+              SourceEventIdIs(3u),
+              AttributionScopesDataIs(AttributionScopesSetIs(
+                  attribution_reporting::AttributionScopesSet({"3", "5"}))))));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  // This will delete sources 2 and 3 as the list of allowed scopes becomes
+  // `{"2", "1", "5", "4"}` due to prioritizing latest source time first.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(4)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1", "2"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(AllOf(
+          SourceEventIdIs(4u),
+          AttributionScopesDataIs(AttributionScopesSetIs(
+              attribution_reporting::AttributionScopesSet({"1", "2"}))))));
+}
+
+TEST_F(AttributionResolverTest, TriggerAttributesOnMatchingScope) {
+  // Should be attributed.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(1)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"1", "2"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  // Should be deleted.
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(2)
+          .SetPriority(5)
+          .SetAttributionScopesData(
+              *attribution_reporting::AttributionScopesData::Create(
+                  attribution_reporting::AttributionScopesSet({"3", "4"}),
+                  /*attribution_scope_limit=*/4u,
+                  /*max_event_states=*/3u))
+          .Build());
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetAttributionScopes(
+                        attribution_reporting::AttributionScopesSet({"5"}))
+                    .Build()));
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetAttributionScopes(
+                        attribution_reporting::AttributionScopesSet({"6", "2"}))
+                    .Build()));
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetAttributionScopes(
+                        attribution_reporting::AttributionScopesSet({"3"}))
+                    .Build()));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
+      ElementsAre(EventLevelDataIs(
+          Field(&AttributionReport::EventLevelData::source_event_id, 1u))));
 }
 
 }  // namespace content

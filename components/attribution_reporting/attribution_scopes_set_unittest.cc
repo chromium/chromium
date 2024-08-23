@@ -239,5 +239,25 @@ TEST(AttributionScopesSetTest, ToJsonTrigger) {
   }
 }
 
+TEST(AttributionScopesSetTest, HasIntersection) {
+  const struct {
+    AttributionScopesSet set_1;
+    AttributionScopesSet set_2;
+    bool expected;
+  } kTestCases[] = {
+      {AttributionScopesSet(), AttributionScopesSet(), false},
+      {AttributionScopesSet({"a"}), AttributionScopesSet(), false},
+      {AttributionScopesSet({"a"}), AttributionScopesSet({"a"}), true},
+      {AttributionScopesSet({"a", "c"}), AttributionScopesSet({"b", "c"}),
+       true},
+      {AttributionScopesSet({"a"}), AttributionScopesSet({"b"}), false}};
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.set_1.HasIntersection(test_case.set_2),
+                test_case.expected);
+    EXPECT_THAT(test_case.set_2.HasIntersection(test_case.set_1),
+                test_case.expected);
+  }
+}
+
 }  // namespace
 }  // namespace attribution_reporting

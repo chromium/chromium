@@ -412,6 +412,12 @@ TriggerBuilder& TriggerBuilder::SetAggregatableFilteringIdMaxBytes(
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetAttributionScopes(
+    attribution_reporting::AttributionScopesSet attribution_scopes) {
+  attribution_scopes_ = std::move(attribution_scopes);
+  return *this;
+}
+
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
   attribution_reporting::TriggerRegistration reg;
@@ -436,6 +442,7 @@ AttributionTrigger TriggerBuilder::Build(
           aggregatable_filtering_id_max_bytes_);
   reg.aggregatable_debug_reporting_config =
       aggregatable_debug_reporting_config_;
+  reg.attribution_scopes = attribution_scopes_;
 
   return AttributionTrigger(reporting_origin_, std::move(reg),
                             destination_origin_, is_within_fenced_frame_);

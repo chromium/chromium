@@ -45,6 +45,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionScopesSet {
 
   void SerializeForTrigger(base::Value::Dict&) const;
 
+  bool HasIntersection(const AttributionScopesSet& other_scopes) const;
+
   bool IsValidForSource(uint32_t scope_limit) const;
 
   friend bool operator==(const AttributionScopesSet&,

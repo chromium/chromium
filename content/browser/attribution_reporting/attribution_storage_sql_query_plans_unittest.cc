@@ -177,8 +177,7 @@ TEST_F(AttributionSqlQueryPlanTest, kUpdateFailedReportSql) {
 TEST_F(AttributionSqlQueryPlanTest,
        kDeleteEventLevelReportsForDestinationLimitSql) {
   EXPECT_THAT(
-      GetPlan(
-          attribution_queries::kDeleteEventLevelReportsForDestinationLimitSql),
+      GetPlan(attribution_queries::kDeletePendingEventLevelReportsForSourceSql),
       ValueIs(UsesIndex("reports_by_source_id_report_type")));
 }
 
