@@ -1459,12 +1459,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)manualFallbackPasswordIconMatcher {
   return grey_accessibilityID(
-      manual_fill::AccessoryPasswordAccessibilityIdentifier);
+      manual_fill::kAccessoryPasswordAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackKeyboardIconMatcher {
   return grey_accessibilityID(
-      manual_fill::AccessoryKeyboardAccessibilityIdentifier);
+      manual_fill::kAccessoryKeyboardAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackPasswordTableViewMatcher {
@@ -1479,17 +1479,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)manualFallbackManagePasswordsMatcher {
   return grey_accessibilityID(
-      manual_fill::ManagePasswordsAccessibilityIdentifier);
+      manual_fill::kManagePasswordsAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackManageSettingsMatcher {
   return grey_accessibilityID(
-      manual_fill::ManageSettingsAccessibilityIdentifier);
+      manual_fill::kManageSettingsAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackOtherPasswordsMatcher {
   return grey_accessibilityID(
-      manual_fill::OtherPasswordsAccessibilityIdentifier);
+      manual_fill::kOtherPasswordsAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackOtherPasswordsDismissMatcher {
@@ -1498,22 +1498,22 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)manualFallbackPasswordButtonMatcher {
-  return grey_buttonTitle(kMaskedPasswordTitle);
+  return grey_buttonTitle(manual_fill::kMaskedPasswordButtonText);
 }
 
 + (id<GREYMatcher>)manualFallbackProfilesIconMatcher {
   return grey_accessibilityID(
-      manual_fill::AccessoryAddressAccessibilityIdentifier);
+      manual_fill::kAccessoryAddressAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackProfilesTableViewMatcher {
   return grey_accessibilityID(
-      manual_fill::AddressTableViewAccessibilityIdentifier);
+      manual_fill::kAddressTableViewAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackManageProfilesMatcher {
   return grey_accessibilityID(
-      manual_fill::ManageAddressAccessibilityIdentifier);
+      manual_fill::kManageAddressAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackProfileTableViewWindowMatcher {
@@ -1525,12 +1525,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)manualFallbackCreditCardIconMatcher {
   return grey_accessibilityID(
-      manual_fill::AccessoryCreditCardAccessibilityIdentifier);
+      manual_fill::kAccessoryCreditCardAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackCreditCardTableViewMatcher {
   return grey_accessibilityID(
-      manual_fill::CardTableViewAccessibilityIdentifier);
+      manual_fill::kCardTableViewAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)manualFallbackManagePaymentMethodsMatcher {
@@ -1579,7 +1579,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher {
   return grey_accessibilityID(
-      manual_fill::SuggestPasswordAccessibilityIdentifier);
+      manual_fill::kSuggestPasswordAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)useSuggestedPasswordMatcher {

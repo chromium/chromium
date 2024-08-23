@@ -15,8 +15,6 @@ class GURL;
 @protocol ManualFillContentInjector;
 @class ManualFillCredential;
 
-extern NSString* const kMaskedPasswordTitle;
-
 // Wrapper to show password cells in a LegacyChromeTableViewController.
 @interface ManualFillCredentialItem : TableViewItem
 

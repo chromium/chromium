@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address+AutofillProfile.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -30,11 +31,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using autofill::AutofillProfile;
-
-namespace manual_fill {
-NSString* const ManageAddressAccessibilityIdentifier =
-    @"kManualFillManageAddressAccessibilityIdentifier";
-}  // namespace manual_fill
 
 @interface ManualFillAddressMediator () <PersonalDataManagerObserver>
 
@@ -161,7 +157,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
                [weakSelf.navigationDelegate openAddressSettings];
              }];
   manageAddressesItem.accessibilityIdentifier =
-      manual_fill::ManageAddressAccessibilityIdentifier;
+      manual_fill::kManageAddressAccessibilityIdentifier;
   [self.consumer presentActions:@[ manageAddressesItem ]];
 }
 

@@ -41,11 +41,6 @@ using manual_fill::PaymentFieldType;
 
 namespace manual_fill {
 
-NSString* const kManagePaymentMethodsAccessibilityIdentifier =
-    @"kManagePaymentMethodsAccessibilityIdentifier";
-NSString* const kAddPaymentMethodAccessibilityIdentifier =
-    @"kAddPaymentMethodAccessibilityIdentifier";
-
 // Returns `true` if overflow menu actions should be made available in the
 // manual fill cell of a card with the given `record_type`.
 bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {

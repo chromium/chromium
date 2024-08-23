@@ -20,11 +20,6 @@ class PersonalDataManager;
 @protocol CardListDelegate;
 @class ReauthenticationModule;
 
-namespace manual_fill {
-extern NSString* const kManagePaymentMethodsAccessibilityIdentifier;
-extern NSString* const kAddPaymentMethodAccessibilityIdentifier;
-}  // namespace manual_fill
-
 // Object in charge of getting the cards relevant for the manual fill
 // cards UI.
 @interface ManualFillCardMediator
