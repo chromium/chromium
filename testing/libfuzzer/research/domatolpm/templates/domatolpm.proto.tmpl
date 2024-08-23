@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 syntax = "proto3";
-package testing.libfuzzer.research.domatolpm;
+package {{proto_ns}};
 
 {% for message in messages %}
 message {{message.name}} {

@@ -9,4 +9,6 @@
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
 #include "{{basename}}.pb.h"
 
-bool {{root.name}}(domatolpm::Context* ctx, {{root.proto_type}});
+namespace {{cpp_ns}} {
+  bool {{root.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{root.proto_type}});
+} // {{cpp_ns}}
