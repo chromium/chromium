@@ -196,9 +196,9 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest, AutoconnectBehavior) {
       NavigateToInternetDetailsPage(kOSSettingsId,
                                     NetworkTypePattern::Cellular(),
                                     esim_info().nickname()),
-      WaitForElementTextContains(kOSSettingsId,
-                                 settings::InternetSettingsSubpageTitle(),
-                                 /*text=*/esim_info().nickname()),
+      WaitForElementTextContains(
+          kOSSettingsId, settings::cellular::CellularDetailsSubpageTitle(),
+          /*text=*/esim_info().nickname()),
 
       Log("Disabling auto-connect for the cellular network"),
 

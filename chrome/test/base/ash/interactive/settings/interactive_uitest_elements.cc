@@ -33,8 +33,7 @@ WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery InternetSettingsSubpageTitle() {
-  return InternetPage() + "os-settings-subpage.iron-selected" +
-         "h1#subpageTitle";
+  return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
 }
 
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState() {
@@ -264,6 +263,10 @@ WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle() {
   return CellularNetworksList() + "div#pSimLabel";
 }
 
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle() {
+  return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
+}
+
 WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsSubpageAutoConnectToggle() {
   return InternetDetailsSubpage() + "settings-toggle-button#autoConnectToggle";
@@ -468,49 +471,6 @@ namespace wifi {
 WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem() {
   return InternetPage() + "network-summary" + "network-summary-item#WiFi" +
          "div#networkSummaryItemRow";
-}
-
-WebContentsInteractionTestUtil::DeepQuery WifiKnownNetworksSubpageButton() {
-  return InternetPage() + "settings-internet-subpage" +
-         "cr-link-row#knownNetworksSubpageButton";
-}
-
-WebContentsInteractionTestUtil::DeepQuery KnownNetworksSubpage() {
-  return InternetPage() + "settings-internet-known-networks-subpage";
-}
-
-WebContentsInteractionTestUtil::DeepQuery
-KnownNetworksSubpagePasspointSubsciptions() {
-  return KnownNetworksSubpage() + "div#passpointSubscriptionList";
-}
-
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageExpirationDate() {
-  return InternetPage() + "settings-passpoint-subpage" +
-         "div#passpointExpirationDate";
-}
-
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageProviderSource() {
-  return InternetPage() + "settings-passpoint-subpage" +
-         "div#passpointSourceText";
-}
-
-WebContentsInteractionTestUtil::DeepQuery
-PasspointSubpageAssociatedNetworksListItem() {
-  return InternetPage() + "settings-passpoint-subpage" + "cr-link-row" +
-         "div#label";
-}
-
-WebContentsInteractionTestUtil::DeepQuery
-PasspointSubpageDomainExpansionButton() {
-  return InternetPage() + "settings-passpoint-subpage" + "cr-expand-button";
-}
-
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainList() {
-  return InternetPage() + "settings-passpoint-subpage" + "iron-collapse";
-}
-
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainListItem() {
-  return InternetPage() + "settings-passpoint-subpage" + "div#domainName";
 }
 
 }  // namespace wifi

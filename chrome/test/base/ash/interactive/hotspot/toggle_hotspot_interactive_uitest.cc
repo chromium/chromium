@@ -80,8 +80,7 @@ class ToggleHotspotInteractiveUITest : public InteractiveAshTest {
   void LockScreen() { SessionManagerClient::Get()->RequestLockScreen(); }
 
  private:
-  const ShillServiceInfo shill_service_info_ =
-      ShillServiceInfo(/*id=*/0, shill::kTypeCellular);
+  const ShillServiceInfo shill_service_info_ = ShillServiceInfo(/*id=*/0);
 };
 
 IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,

@@ -96,17 +96,6 @@ class InteractiveAshTest
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateToApnRevampDetailsPage(const ui::ElementIdentifier& element_id);
 
-  // Navigates the Settings app to the Known Networks subpage.
-  ui::test::internal::InteractiveTestPrivate::MultiStep
-  NavigateToKnownNetworksPage(const ui::ElementIdentifier& element_id);
-
-  // Navigates the Settings app to the passpoint subscription details page for
-  // the passpoint named `passpoint_name`.
-  ui::test::internal::InteractiveTestPrivate::MultiStep
-  NavigateToPasspointSubscriptionSubpage(
-      const ui::ElementIdentifier& element_id,
-      const std::string& passpoint_name);
-
   // This function expects the Settings app to already be open and on the APN
   // subpage.
   ui::test::internal::InteractiveTestPrivate::MultiStep

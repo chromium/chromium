@@ -41,7 +41,7 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:network",
     "//chromeos/ash/services/hotspot_config/public/mojom",
     "//ui/base:test_support",
   ]
