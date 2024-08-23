@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <xf86drmMode.h>
+
 #include <map>
 #include <memory>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
@@ -190,6 +192,9 @@ class HardwareDisplayController {
   // Adds trace records to |context|.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  size_t NumOfSupportedCursorSizesForTesting() const;
+  gfx::Size CurrentCursorSizeForTesting() const;
+
  private:
   // These values are persisted to logs. Entries should not be
   // renumbered and numeric values should never be reused.
@@ -217,11 +222,11 @@ class HardwareDisplayController {
       gfx::GpuFenceHandle* release_fence);
   void AllocateCursorBuffers();
   DrmDumbBuffer* NextCursorBuffer(const SkBitmap& image);
-  bool UpdateCursorImage();
+  void UpdateCursorImage();
   void UpdateCursorLocation();
   void ResetCursor();
   void DisableCursor();
-  void ProbeValidCursorSizes();
+  void InitSupportedCursorSizes();
 
   std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format) const;
 
@@ -238,11 +243,13 @@ class HardwareDisplayController {
   DrmOverlayPlaneList current_planes_;
   base::TimeTicks time_of_last_flip_;
 
-  // Stores all the valid width/height for cursor plane. We assume the
-  // width/height are always the same here.
-  std::vector<int> valid_cursor_sizes_;
-  // |cursor_buffer_map_| stores active buffers for each |valid_cursor_sizes_|.
-  base::flat_map<int, std::vector<std::unique_ptr<DrmDumbBuffer>>>
+  // Stores all the supported sizes for cursor plane.
+  std::vector<gfx::Size> supported_cursor_sizes_;
+  // |cursor_buffer_map_| stores active buffers for each
+  // |supported_cursor_sizes_|.
+  base::flat_map<gfx::Size,
+                 std::vector<std::unique_ptr<DrmDumbBuffer>>,
+                 CursorSizeComparator>
       cursor_buffer_map_;
   gfx::Point cursor_location_;
   raw_ptr<DrmDumbBuffer> current_cursor_ = nullptr;

@@ -89,6 +89,7 @@ const std::map<uint32_t, std::string> kPlaneRequiredPropertyNames = {
 const std::map<uint32_t, std::string> kPlaneOptionalPropertyNames = {
     {kColorEncodingPropId, "COLOR_ENCODING"},
     {kColorRangePropId, "COLOR_RANGE"},
+    {kSizeHintsPropId, "SIZE_HINTS"},
 };
 
 template <class T>
@@ -202,7 +203,6 @@ FakeDrmDevice::FakeDrmState& FakeDrmDevice::ResetStateWithDefaultObjects(
     std::vector<uint32_t> plane_supported_formats,
     std::vector<drm_format_modifier> plane_supported_format_modifiers) {
   ResetStateWithAllProperties();
-
   std::vector<uint32_t> crtc_ids;
   for (size_t i = 0; i < crtc_count; ++i) {
     const auto& props = AddCrtcAndConnector();
@@ -384,6 +384,18 @@ ScopedDrmPropertyBlob FakeDrmDevice::CreateInFormatsBlob(
          supported_format_modifiers.data(),
          sizeof(drm_format_modifier) * header.count_modifiers);
 
+  return CreatePropertyBlob(data.data(), data.size());
+}
+
+ScopedDrmPropertyBlob FakeDrmDevice::CreateSizeHintsBlob(
+    const std::vector<gfx::Size>& sizes) {
+  std::vector<drm_plane_size_hint> hints(sizes.size());
+  for (size_t i = 0; i < sizes.size(); i++) {
+    hints[i].width = sizes[i].width();
+    hints[i].height = sizes[i].height();
+  }
+  std::vector<uint8_t> data(sizeof(drm_plane_size_hint) * hints.size());
+  memcpy(data.data(), hints.data(), sizeof(drm_plane_size_hint) * hints.size());
   return CreatePropertyBlob(data.data(), data.size());
 }
 
