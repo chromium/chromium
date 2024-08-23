@@ -1,3 +1,5 @@
 include_rules = [
+  "+components/autofill",
   "+content/public/browser",
+  "+content/public/test",
 ]

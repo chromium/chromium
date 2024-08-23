@@ -10,11 +10,30 @@ source_set("sensitive_content") {
     "sensitive_content_manager.cc",
     "sensitive_content_manager.h",
   ]
-  deps = [
+  deps = [ "//content/public/browser" ]
+  public_deps = [
+    ":features",
     "//base",
-    "//content/public/browser",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
   ]
-  public_deps = [ ":features" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sensitive_content_manager_unittest.cc" ]
+  deps = [
+    ":sensitive_content",
+    "//base/test:test_support",
+    "//components/autofill/content/browser",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//content/test:test_support",
+    "//url",
+  ]
 }
 
 component("features") {
@@ -27,14 +46,16 @@ component("features") {
   public_deps = [ "//base" ]
 }
 
-java_cpp_features("java_features_srcjar") {
-  visibility = [ ":*" ]
-  sources = [ "//components/sensitive_content/features.cc" ]
-  template = "//components/sensitive_content/java_templates/SensitiveContentFeatures.java.tmpl"
-}
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "//components/sensitive_content/features.cc" ]
+    template = "//components/sensitive_content/java_templates/SensitiveContentFeatures.java.tmpl"
+  }
 
-# Used to expose the features to the WebView flag UI (the equivalent of
-# chrome://flags for WebView).
-android_library("sensitive_content_features_java") {
-  srcjar_deps = [ ":java_features_srcjar" ]
+  # Used to expose the features to the WebView flag UI (the equivalent of
+  # chrome://flags for WebView).
+  android_library("sensitive_content_features_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }
