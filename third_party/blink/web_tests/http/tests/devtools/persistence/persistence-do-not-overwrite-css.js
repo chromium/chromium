@@ -70,7 +70,7 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 
       function throwProtocolError(styleSheetId) {
         TestRunner.addResult('Protocol Error: FAKE PROTOCOL ERROR');
-        return Promise.resolve(null);
+        return Promise.resolve({ getError: () => 'FAKE PROTOCOL ERROR'});
       }
     },
 
