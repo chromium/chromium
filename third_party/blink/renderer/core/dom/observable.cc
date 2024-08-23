@@ -2188,15 +2188,6 @@ Observable* Observable::inspect(
 ScriptPromise<IDLSequence<IDLAny>> Observable::toArray(
     ScriptState* script_state,
     SubscribeOptions* options) {
-  if (!script_state->ContextIsValid()) {
-    CHECK(!GetExecutionContext());
-    return ScriptPromise<IDLSequence<IDLAny>>::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kInvalidStateError,
-            "toArray() cannot be used unless document is fully active."));
-  }
-
   ScriptPromiseResolver<IDLSequence<IDLAny>>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLAny>>>(
           script_state);
