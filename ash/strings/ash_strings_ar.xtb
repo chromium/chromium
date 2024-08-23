@@ -290,7 +290,7 @@
 <translation id="2075520525463668108">انقر لتفعيل/إيقاف "<ph name="CAPTURE_MEDIUM" />". "<ph name="CAPTURE_MEDIUM" />" - <ph name="CAPTURE_STATE" /></translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2083190527011054446">ليلة سعيدة <ph name="GIVEN_NAME" />،</translation>
-<translation id="2086334242442703436">فتح "أداة اختيار الرموز التعبيرية"</translation>
+<translation id="2086334242442703436">فتح "أداة اختيار رموز الإيموجي"</translation>
 <translation id="2088116547584365419">الألعاب</translation>
 <translation id="209965399369889474">لا يتوفّر اتصال بالشبكة</translation>
 <translation id="2107581415810719320">الزر الآخر "<ph name="BUTTON_NUMBER" />"</translation>
@@ -1510,7 +1510,7 @@
 <translation id="6520517963145875092">يُرجى تحديد نافذة للحصول لالتقاط صورة لها.</translation>
 <translation id="652139407789908527">ستظهر شاشتك فارغة لمدة أطول من المعتاد (تصل إلى دقيقة واحدة) أثناء هذا التحديث. يُرجى عدم الضغط على زر التشغيل خلال عملية التحديث.</translation>
 <translation id="6528179044667508675">عدم الإزعاج</translation>
-<translation id="65320610082834431">الرموز التعبيرية</translation>
+<translation id="65320610082834431">رموز الإيموجي</translation>
 <translation id="6537924328260219877">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، بطارية الهاتف <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">جارٍ فحص الملف <ph name="FILENAME" /> لتنزيله</translation>
 <translation id="6542521951477560771">البث على <ph name="RECEIVER_NAME" /></translation>

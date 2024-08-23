@@ -632,7 +632,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2145193671493396738">Economisch nieuws</translation>
 <translation id="214556005048008348">Betaling annuleren</translation>
 <translation id="2147117373852943630">Muziekinstrumenten</translation>
-<translation id="2148613324460538318">Pas toevoegen</translation>
+<translation id="2148613324460538318">Kaart toevoegen</translation>
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2149968176347646218">Verbinding is niet beveiligd</translation>
 <translation id="2152495481414285304">Applicaties</translation>
@@ -987,7 +987,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879233115503670140">Geldig tot <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">je schermvergrendeling te gebruiken om wachtwoorden in te vullen</translation>
-<translation id="2881276955470682203">Pas opslaan?</translation>
+<translation id="2881276955470682203">Kaart opslaan?</translation>
 <translation id="2882949212241984732">4-luik gesloten luikvouw</translation>
 <translation id="2891963978019740012">Je zoekmachine in Chrome</translation>
 <translation id="2893773853358652045">4e rol</translation>
@@ -3615,7 +3615,7 @@ Aanvullende informatie:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">De CVC van deze kaart wordt versleuteld en opgeslagen op je apparaat zodat je sneller kunt betalen</translation>
 <translation id="7937554595067888181">Verloopt op <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Toon bij het afrekenen welke beloningen en voordelen beschikbaar zijn voor je kaarten <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Meer informatie over kaartvoordelen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="7938490694919717008">Toon bij het afrekenen welke beloningen en voordelen beschikbaar zijn voor je kaarten. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Meer informatie over kaartvoordelen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Het servercertificaat is nog niet geldig.</translation>
 <translation id="7941628148012649605">Envelop Chou 4</translation>
 <translation id="794169214536209644">Snoep en zoetigheden</translation>
@@ -4116,7 +4116,7 @@ Aanvullende informatie:
 <translation id="8871485335898060555">Antiek en verzamelobjecten</translation>
 <translation id="8871553383647848643">Pas de vormgeving van je browser aan</translation>
 <translation id="8874790741333031443">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder browserbeveiliging hebt, maar dat sitefuncties waarschijnlijk wel werken zoals verwacht.</translation>
-<translation id="8874824191258364635">Geef een geldig kaartnummer op</translation>
+<translation id="8874824191258364635">Voer een geldig kaartnummer in</translation>
 <translation id="8877780815363510165">Vissen</translation>
 <translation id="888117890813270681"><ph name="DATA_CONTROLS_RESTRICTION" /> kan niet worden ingesteld op <ph name="DATA_CONTROLS_LEVEL" /></translation>
 <translation id="8884537526797090108">Kan geen vertrouwelijke content opnemen</translation>

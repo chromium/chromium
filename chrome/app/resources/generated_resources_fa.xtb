@@ -233,7 +233,7 @@
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> به میزکار <ph name="DESK_TITLE" /> تعلق دارد</translation>
 <translation id="1167262726334064738">گذرواژه جدیدی را امتحان کنید</translation>
 <translation id="1168020859489941584">باز کردن با <ph name="TIME_REMAINING" />...</translation>
-<translation id="1168704243733734901">زمینه جدید توسط هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" />، با حال‌وهوای <ph name="MOOD" />.</translation>
+<translation id="1168704243733734901">مضمون اخیر هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" />، با حال‌وهوای <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">تغییر خودکار زبان برای مطابقت با محتوای انتخاب‌شده</translation>
 <translation id="1169266963600477608">کنترل‌های بازی</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> حاوی داده‌های حساس یا خطرناکی است. پیام سرپرست: «<ph name="CUSTOM_MESSAGE" />»</translation>
@@ -2850,7 +2850,7 @@
 <translation id="3031532026314193077">استفاده از صفحه لمسی و صفحه‌کلید برای کلیک راست</translation>
 <translation id="3031557471081358569">مواردی را برای وارد کردن انتخاب کنید:</translation>
 <translation id="3032204772252313646">زیرنویس خودکار</translation>
-<translation id="3032272345862007156">زمینه توسط هوش مصنوعی <ph name="INDEX" /></translation>
+<translation id="3032272345862007156">مضمون هوش مصنوعی <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">«مزاحم نشوید» فعال است</translation>
 <translation id="3033348223765101500">کنترل داده‌ها</translation>
 <translation id="3036327949511794916">مهلت برگرداندن این <ph name="DEVICE_TYPE" /> گذشته است.</translation>
@@ -4868,7 +4868,7 @@
 <translation id="4549791035683739768">هیچ اثر انگشتی برای کلید امنیتی‌تان ذخیره نشده است</translation>
 <translation id="4550737096585299960">لطفاً چند دقیقه دیگر دوباره امتحان کنید.</translation>
 <translation id="4550926046134589611">برخی‌از پیوندهای پشتیبانی‌شده همچنان در <ph name="APP_NAME" /> باز خواهد شد.</translation>
-<translation id="4551379727767354516">زمینه‌های اخیر با هوش مصنوعی</translation>
+<translation id="4551379727767354516">مضمون‌های اخیر هوش مصنوعی</translation>
 <translation id="4551763574344810652">برای واگرد، <ph name="MODIFIER_KEY_DESCRIPTION" /> را فشار دهید</translation>
 <translation id="4553526521109675518">‏باید Chromebook را بازراه‌اندازی کنید تا زبان دستگاه تغییر کند. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">برنامه افزودنی خارجی در مقایسه با برنامه کنونی، دارای همان نسخه یا نسخه پایین‌تر است.</translation>
@@ -5857,7 +5857,7 @@
 <translation id="5297005732522718715">بازآوری پیکربندی اشتراک‌گذاری اینترنت</translation>
 <translation id="5297082477358294722">گذرواژه ذخیره شد. گذرواژه‌های ذخیره‌شده‌تان را در <ph name="SAVED_PASSWORDS_STORE" /> مشاهده و مدیریت کنید.</translation>
 <translation id="5297946558563358707">وقتی فرد دیگری به صفحه‌نمایشتان نگاه کند، نماد چشم «حریم خصوصی» در پایین سمت چپ صفحه‌نمایش نشان داده می‌شود</translation>
-<translation id="5297984209202974345">زمینه جدید توسط هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" /></translation>
+<translation id="5297984209202974345">مضمون اخیر هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">ایحاد زمینه توسط</translation>
 <translation id="5298315677001348398">آیا می‌خواهید ادامه دهید و به این نرم‌افزار اجازه دهید در دستگاهتان تغییرات ایجاد کند؟</translation>
 <translation id="5299109548848736476">ردیابی نشود</translation>
@@ -6215,7 +6215,7 @@
 <translation id="55601339223879446">تنظیم محدوه دسک‌تاپ شما در صفحه نمایشگر</translation>
 <translation id="5561162485081632007">رویدادهای خطرناک را درصورت وقوع شناسایی می‌کند و به شما هشدار می‌دهد</translation>
 <translation id="556321030400250233">فایل‌های محلی یا اشتراک‌گذاری شده</translation>
-<translation id="5563234215388768762">‏جستجوی Google یا تایپ نشانی وب</translation>
+<translation id="5563234215388768762">‏جستجو کردن در Google یا تایپ نشانی وب</translation>
 <translation id="5565735124758917034">فعال</translation>
 <translation id="5568069709869097550">ورود به سیستم ممکن نیست</translation>
 <translation id="5568525251731145240">داده‌ها و اجازه‌های سایت <ph name="SITE_NAME" />، همه سایت‌های تحت آن، و برنامه‌های نصب‌شده حذف شود؟</translation>
@@ -6417,7 +6417,7 @@
 <translation id="572328651809341494">برگه‌های اخیر</translation>
 <translation id="5723508132121499792">بدون برنامه‌های در حال اجرا در پس‌زمینه</translation>
 <translation id="5723967018671998714">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شده‌اند</translation>
-<translation id="5725112283692663422">ارسال بازخورد برای «ساختن زمینه با هوش مصنوعی»</translation>
+<translation id="5725112283692663422">ارسال بازخورد برای «ساختن مضمون با هوش مصنوعی»</translation>
 <translation id="5727728807527375859">ممکن است افزونه‌ها برنامه‌ها، و طرح‌های زمینه به رایانهٔ شما صدمه بزنند. آیا مطمئنید می‌خواهید ادامه دهید؟</translation>
 <translation id="5728072125198221967">‏سرویس‌های پیوندشده Google</translation>
 <translation id="5728290366864286776">این افزونه ممکن است اطلاعات سایت را بخواند و تغییر دهد یا در پس‌زمینه اجرا شود</translation>
@@ -8457,7 +8457,7 @@
 <translation id="7287143125007575591">دسترسی رد شد.</translation>
 <translation id="7287411021188441799">بازیابی پس‌زمینه پیش‌فرض</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />×<ph name="VERTICAL_DPI" /> نقطه در اینچ</translation>
-<translation id="7288761372977133974">زمینه جدید توسط هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" /></translation>
+<translation id="7288761372977133974">مضمون اخیر هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">‏شما قوی‌ترین امنیت Chrome را دارید</translation>
 <translation id="7289303553784750393">اگر آنلاین هستید اما این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید F6 را فشار دهید</translation>
@@ -9187,7 +9187,7 @@
 <translation id="7807711621188256451">دسترسی <ph name="HOST" /> به دوربین شما همیشه مجاز باشد</translation>
 <translation id="7810202088502699111">پنجره‌های بازشو در این صفحه مسدود شده‌اند.</translation>
 <translation id="7810367892333449285">‏ورودی باید در قالب <ph name="LPA_0" />$<ph name="LPA_1" />SM-‏DP+ نشانی<ph name="LPA_2" />$<ph name="LPA_3" />شناسه انطباق اختیاری<ph name="LPA_4" /> باشد</translation>
-<translation id="7811263553491007091">دوباره امتحان کنید یا یکی از زمینه‌های قبلاً تولیدشده را در زیر انتخاب کنید.</translation>
+<translation id="7811263553491007091">دوباره امتحان کنید یا یکی از مضمون‌های قبلاً تولیدشده را در زیر انتخاب کنید.</translation>
 <translation id="7812170317334653156">‏«تقویم Google» پنهان شد</translation>
 <translation id="7814090115158024843">هرگز در این سایت‌ها کمک برای نوشتن پیشنهاد نمی‌شود</translation>
 <translation id="7814458197256864873">&amp;کپی</translation>
@@ -9205,7 +9205,7 @@
 <translation id="7824864914877854148">به‌دلیل بروز خطا، پشتیبان‌گیری کامل نشد</translation>
 <translation id="782590969421016895">استفاده از صفحات فعلی</translation>
 <translation id="7825973332242257878">گروه برگه</translation>
-<translation id="7826039927887234077">زمینه جدید توسط هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، با حال‌وهوای <ph name="MOOD" />.</translation>
+<translation id="7826039927887234077">مضمون اخیر هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، با حال‌وهوای <ph name="MOOD" />.</translation>
 <translation id="7826174860695147464">‏«پشتیبانی از مرورگر قدیمی» (LBS) - داخلی</translation>
 <translation id="7826249772873145665">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) غیرفعال شد</translation>
 <translation id="7826254698725248775">شناسه دستگاه یکسان نیست.</translation>
@@ -9583,7 +9583,7 @@
 <translation id="8090234456044969073">خواندن فهرستی از وب‌سایت‌های غالباً بازدید شده شما</translation>
 <translation id="8090513782447872344">هرزمان بخواهید می‌توانید به اینجا برگردید و نگاه دیگری بیندازید</translation>
 <translation id="8090579562279016251">‏عملکرد را کاهش می‌دهد اما V8 را در برابر حملات مقاوم‌تر می‌کند</translation>
-<translation id="8090686009202681725">ساختن زمینه با هوش مصنوعی</translation>
+<translation id="8090686009202681725">ساختن مضمون با هوش مصنوعی</translation>
 <translation id="8091655032047076676">آزمایشی</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> پاسخ نمی‌دهد</translation>
 <translation id="8094536695728193970">زرد پرتقالی</translation>

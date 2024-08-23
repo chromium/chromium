@@ -1405,7 +1405,7 @@
 <translation id="2006638907958895361">فتح الرابط في <ph name="APP" /></translation>
 <translation id="2007404777272201486">الإبلاغ عن مشكلة...</translation>
 <translation id="200928901437634269">‏استخدِم حساب طفلك على Google أو حسابًا تديره مؤسسة تعليمية. ويمكنك أيضًا ضبط أدوات رقابة الأهل.</translation>
-<translation id="2009590708342941694">أداة الرموز التعبيرية</translation>
+<translation id="2009590708342941694">أداة رموز الإيموجي</translation>
 <translation id="2010501376126504057">الأجهزة المتوافقة</translation>
 <translation id="2010636492623189611">تم الاختيار</translation>
 <translation id="201217432804812273">تفعيل خيار "حفظ المجموعة"</translation>
@@ -3233,7 +3233,7 @@
 <translation id="3346306152660142597">‏تخصيص هذه الصفحة بواسطة الذكاء الاصطناعي (AI)</translation>
 <translation id="3347086966102161372">&amp;نسخ عنوان الصورة</translation>
 <translation id="3348038390189153836">تم اكتشاف جهاز قابل للإزالة</translation>
-<translation id="3348131053948466246">‏الرموز التعبيرية المُقترَحة. اضغط على السهم المتّجه للأعلى أو للأسفل للتنقُّل ثم اضغط على Enter للإدخال.</translation>
+<translation id="3348131053948466246">‏رموز الإيموجي المُقترَحة. اضغط على السهم المتّجه للأعلى أو للأسفل للتنقُّل ثم اضغط على Enter للإدخال.</translation>
 <translation id="3349933790966648062">الذاكرة المستخدَمة</translation>
 <translation id="3351472127384196879">إضافة أزرار على قلم الشاشة أو تحديد مكانها</translation>
 <translation id="3353786022389205125">يُرجى تفعيل ميزة "عرض شاشة القفل عند الخروج من وضع السكون"، ثمّ إعادة المحاولة.</translation>
@@ -3941,7 +3941,7 @@
 <translation id="3841964634449506551">كلمة المرور غير صالحة</translation>
 <translation id="3842552989725514455">‏خط Serif</translation>
 <translation id="3843464315703645664">القائمة المسموح بها داخليًا</translation>
-<translation id="3844888638014364087">تمّ إدراج رمز تعبيري</translation>
+<translation id="3844888638014364087">تمّ إدراج إيموجي</translation>
 <translation id="3846116211488856547">‏يمكنك الحصول على أدوات لتطوير المواقع الإلكترونية وتطبيقات Android والمزيد. سيؤدي تثبيت نظام التشغيل Linux إلى تنزيل <ph name="DOWNLOAD_SIZE" /> من البيانات.</translation>
 <translation id="3847319713229060696">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="3848547754896969219">فتح في نافذة &amp;التصفُّح المتخفي</translation>
@@ -6371,13 +6371,13 @@
 <translation id="5689516760719285838">الموقع الجغرافي</translation>
 <translation id="5689531695336322499">‏يبدو أنّه سبق وأن تم إعداد ميزة "التعرّف على الصوت" من قِبل <ph name="SUPERVISED_USER_NAME" /> في خدمة "مساعد Google" على جهاز آخر. أمّا بالنسبة إلى التسجيلات الصوتية السابقة، فقد تم استخدامها لإنشاء نموذج صوتي على هذا الجهاز.</translation>
 <translation id="56907980372820799">ربط البيانات</translation>
-<translation id="5691581861107245578">يمكنك الحصول على اقتراحات الرموز التعبيرية بناءً على النص الذي تتم كتابته.</translation>
+<translation id="5691581861107245578">يمكنك الحصول على اقتراحات رموز الإيموجي بناءً على النص الذي تتم كتابته.</translation>
 <translation id="5691772641933328258">لم يتمّ التعرُّف على البصمة</translation>
 <translation id="5693255400847650006">الميكروفون قيد الاستخدام</translation>
 <translation id="5695184138696833495">‏أداة ADB في تطبيق Android لنظام التشغيل Linux</translation>
 <translation id="5696143504434933566">الإبلاغ عن إساءة الاستخدام من "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">‏الملف الحالي بتنسيق PPD قيد الاستخدام: <ph name="PPD_NAME" /></translation>
-<translation id="5697832193891326782">أداة اختيار الرموز التعبيرية</translation>
+<translation id="5697832193891326782">أداة اختيار رموز الإيموجي</translation>
 <translation id="5698878456427040674">تحقَّق مما إذا كان الحساب الذي اخترته صحيحًا.</translation>
 <translation id="5699227710146832453">من</translation>
 <translation id="570043786759263127">‏تطبيقات Google Play وخدماته</translation>
@@ -8546,7 +8546,7 @@
 <translation id="7358338787722390626">‏إغلاق صفحة "بحث Google" في اللوحة الجانبية</translation>
 <translation id="735994578317267253">‏استخدام التطبيقات والإعدادات وغيرها الكثير على أي جهاز يعمل بنظام التشغيل Chrome</translation>
 <translation id="7360257054721917104">‏يتم عرض أسطح المكتب والنماذج المحفوظة. اضغط على مفتاح التبويب (Tab) للتنقّل بينها.</translation>
-<translation id="7360333718677093875">أداة اختيار الرموز التعبيرية</translation>
+<translation id="7360333718677093875">أداة اختيار رموز الإيموجي</translation>
 <translation id="7361297102842600584">انقر بزر الماوس الأيمن لتشغيل <ph name="PLUGIN_NAME" /></translation>
 <translation id="7361914392989692067">المِس زر التشغيل بإصبعك. يتم تخزين بيانات بصمة الإصبع بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> فقط.</translation>
 <translation id="7362387053578559123">السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة تتضمّن بلوتوث</translation>

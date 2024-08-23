@@ -3510,7 +3510,7 @@ Informations supplémentaires :
 <translation id="7684683146428206649">Métal</translation>
 <translation id="7684817988830401358">Bouton "Supprimer les données de navigation" à activer pour supprimer votre historique de navigation et les cookies, vider le cache et plus dans les paramètres Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> a été bloqué en raison des règles}one{<ph name="FILE_COUNT" /> fichier a été bloqué en raison des règles}other{<ph name="FILE_COUNT" /> fichiers ont été bloqués en raison des règles}}</translation>
-<translation id="7687186412095877299">Saisir automatiquement les informations correspondant aux modes de paiement enregistrés</translation>
+<translation id="7687186412095877299">Les informations correspondant aux modes de paiement enregistrés sont automatiquement renseignées</translation>
 <translation id="7687305263118037187">Délai de nouvelle tentative</translation>
 <translation id="7690647519407127574">Oufuku Hagaki (carte postale)</translation>
 <translation id="7693583928066320343">Ordre des pages reçu</translation>
@@ -3622,7 +3622,7 @@ Informations supplémentaires :
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Le code CVC de cette carte sera chiffré et enregistré sur votre appareil pour accélérer le paiement</translation>
 <translation id="7937554595067888181">Date d'expiration : <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Affichez les récompenses et avantages disponibles de vos cartes lors du paiement <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />En savoir plus sur les avantages des cartes<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="7938490694919717008">Affichez les récompenses et avantages disponibles de vos cartes lors du paiement. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />En savoir plus sur les avantages des cartes<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Le certificat du serveur n'est pas encore valide.</translation>
 <translation id="7941628148012649605">Enveloppe Chou 4</translation>
 <translation id="794169214536209644">Bonbons et sucreries</translation>

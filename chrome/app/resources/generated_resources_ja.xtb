@@ -1774,6 +1774,7 @@
 <translation id="2291452790265535215">ブックマークやジャーニーなどのサイドパネル表示をお試しください</translation>
 <translation id="229182044471402145">一致するフォントは見つかりませんでした。</translation>
 <translation id="2292848386125228270">通常のユーザーとして <ph name="PRODUCT_NAME" /> を起動してください。開発の目的でルートとして実行する必要がある場合は、--no-sandbox フラグを指定して再実行してください。</translation>
+<translation id="2292862094862078674">インターネット接続を確認してから、もう一度お試しください。以前に生成された下のテーマから選択することは可能です。</translation>
 <translation id="2294081976975808113">画面のプライバシー</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" /> をインストールしますか？</translation>
 <translation id="229477815107578534">設定をご確認ください</translation>
@@ -10411,7 +10412,7 @@
 <translation id="8724405322205516354">このアイコンが表示されているときは、本人確認や購入の承認に指紋認証を使用します。</translation>
 <translation id="8724409975248965964">指紋の登録完了</translation>
 <translation id="8724859055372736596">フォルダを開く(&amp;S)</translation>
-<translation id="8725066075913043281">やり直し</translation>
+<translation id="8725066075913043281">もう一度試す</translation>
 <translation id="8725178340343806893">お気に入り/ブックマーク</translation>
 <translation id="87254326763805752">パスキーの確認</translation>
 <translation id="8726206820263995930">サーバーからポリシー設定を取得するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>

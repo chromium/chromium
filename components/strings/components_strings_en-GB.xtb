@@ -1414,7 +1414,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3664782872746246217">Keywords:</translation>
 <translation id="3665100783276035932">Most sites should work as expected</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Learn more<ph name="LINK_END1" /></translation>
-<translation id="3671117652518853176">When turned off, you may be asked occasionally to verify for security purposes</translation>
+<translation id="3671117652518853176">When turned off, you may occasionally be asked to verify for security purposes</translation>
 <translation id="3671540257457995106">Allow resizing?</translation>
 <translation id="3672568546897166916">Error at <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Networking Equipment</translation>
@@ -2323,7 +2323,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5452270690849572955">This <ph name="HOST_NAME" /> page can’t be found</translation>
 <translation id="5455374756549232013">Bad policy timestamp</translation>
 <translation id="5456428544444655325">Never show</translation>
-<translation id="5456839782162429664">Manually verify every time that you pay using autofill</translation>
+<translation id="5456839782162429664">Verify manually every time that you pay using autofill</translation>
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
 <translation id="5463625433003343978">Finding devices…</translation>
@@ -3375,7 +3375,7 @@ Additional details:
 <translation id="7469935732330206581">Form is not secure</translation>
 <translation id="7470854469646445678">Provide reason for copying (required)</translation>
 <translation id="7471007961486718967">Provide reason for transferring (required)</translation>
-<translation id="7473891865547856676">No Thanks</translation>
+<translation id="7473891865547856676">No, thanks</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
 <translation id="7483482939016730822">School Supplies and Classroom Equipment</translation>
@@ -3577,7 +3577,7 @@ Additional details:
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Close tip</translation>
-<translation id="7810410097247356677">To pay faster next time, save your card, and security code to your device</translation>
+<translation id="7810410097247356677">To pay faster next time, save your card and encrypted security code to your device</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Remove form suggestion from Chrome?</translation>
 <translation id="781440967107097262">Share clipboard?</translation>

@@ -683,7 +683,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4527660062930312477">Váš účet je spravovaný</translation>
 <translation id="4536418791685807335">Skúste sa znova prihlásiť.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Nad klávesnicou je k dispozícii {count} uložený návrh automatického dopĺňania.}few{Nad klávesnicou sú k dispozícii {count} uložené návrhy automatického dopĺňania.}many{{count} saved autocomplete suggestions available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} uložených návrhov automatického dopĺňania.}}</translation>
-<translation id="4540780316273593836">Vyskytol sa problém</translation>
+<translation id="4540780316273593836">Niečo sa pokazilo</translation>
 <translation id="4550040941166547650">Iba v tomto zariadení</translation>
 <translation id="4564893319561643483">Skryť <ph name="TITLE" /></translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Chcete zavrieť {COUNT} neaktívnu kartu?}few{Chcete zavrieť {COUNT} neaktívne karty?}many{Close {COUNT} Inactive Tabs?}other{Chcete zavrieť {COUNT} neaktívnych kariet?}}</translation>
@@ -1256,7 +1256,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7340958967809483333">Možnosti kanála Objaviť</translation>
 <translation id="7346909386216857016">Dobre</translation>
 <translation id="734758817008927353">Možnosti uloženia karty</translation>
-<translation id="7352651011704765696">Vyskytla sa chyba</translation>
+<translation id="7352651011704765696">Niečo sa pokazilo</translation>
 <translation id="7353432112255316844">Overte, že ste to vy</translation>
 <translation id="7367530036083223701">Získajte zabezpečený prístup k svojim heslám z plochy pomocou miniaplikácie Správca hesiel.</translation>
 <translation id="7380220816562673297">Heslá môžete momentálne zdieľať iba s členmi rodiny. <ph name="BEGIN_LINK" />Vytvorte si rodinnú skupinu<ph name="END_LINK" /> až so šiestimi členmi a využívajte efektívnejšie svoje služby aj odbery na Googli.</translation>

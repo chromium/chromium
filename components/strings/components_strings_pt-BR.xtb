@@ -1414,7 +1414,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3664782872746246217">Palavras-chave:</translation>
 <translation id="3665100783276035932">A maioria dos sites vai funcionar conforme o esperado</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Saiba mais<ph name="LINK_END1" /></translation>
-<translation id="3671117652518853176">Quando essa opção estiver desativada, a verificação poderá ser solicitada ocasionalmente para fins de segurança</translation>
+<translation id="3671117652518853176">Quando essa opção estiver desativada, pode ser que a verificação seja solicitada para fins de segurança</translation>
 <translation id="3671540257457995106">Permitir o redimensionamento?</translation>
 <translation id="3672568546897166916">Erro em <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Equipamentos de rede</translation>
@@ -2496,7 +2496,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5784606427469807560">Ocorreu um problema ao confirmar seu cartão. Verifique a conexão com a Internet e tente novamente.</translation>
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Essa forma de pagamento vai ser excluída do dispositivo</translation>
+<translation id="5793317771769868848">A forma de pagamento será excluída do dispositivo</translation>
 <translation id="5800727402210090597">Serviços e assistência técnica para smartphones</translation>
 <translation id="580241730938216256">Iniciar atualização</translation>
 <translation id="5804241973901381774">Permissões</translation>
@@ -3509,7 +3509,7 @@ Mais detalhes:
 <translation id="7684683146428206649">Metal</translation>
 <translation id="7684817988830401358">Botão "Excluir dados de navegação": ative para excluir o histórico de navegação, cookies, cache e muito mais nas configurações do Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> foi bloqueado devido a uma política}one{<ph name="FILE_COUNT" /> arquivo foi bloqueado devido a uma política}other{<ph name="FILE_COUNT" /> arquivos foram bloqueados devido a uma política}}</translation>
-<translation id="7687186412095877299">Preencher formulários com suas formas de pagamento salvas</translation>
+<translation id="7687186412095877299">Preencher formulários com as formas de pagamento salvas</translation>
 <translation id="7687305263118037187">Novas tentativas esgotadas</translation>
 <translation id="7690647519407127574">Cartão postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Ordem de páginas recebida</translation>
@@ -3577,7 +3577,7 @@ Mais detalhes:
 <translation id="780301667611848630">Agora não</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Fechar dica</translation>
-<translation id="7810410097247356677">Para agilizar o pagamento na próxima vez, salve o cartão e o código de segurança criptografado no seu dispositivo</translation>
+<translation id="7810410097247356677">Para agilizar os próximos pagamentos, salve o cartão e o código de segurança criptografado no dispositivo</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Remover sugestão de formulário do Chrome?</translation>
 <translation id="781440967107097262">Compartilhar área de transferência?</translation>
