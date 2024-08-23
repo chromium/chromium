@@ -277,7 +277,6 @@ component("gpu") {
       ]
       deps += [ "//third_party/libaom:libaomrc" ]
     }
-    configs += [ "//third_party/khronos:khronos_headers" ]
     deps += [
       "//gpu/ipc/common:common",
       "//media/base/win:color_space_util_win",
@@ -511,6 +510,7 @@ if (is_android) {
       "//media/test:run_all_unittests",
       "//mojo/core/embedder",
       "//testing/gtest",
+      "//third_party/angle:includes",
       "//ui/android:ui_java",
       "//ui/base",
       "//ui/gfx",
@@ -520,8 +520,6 @@ if (is_android) {
       "//ui/gl:test_support",
       "//ui/gl/init",
     ]
-
-    configs += [ "//third_party/khronos:khronos_headers" ]
   }
 }
 

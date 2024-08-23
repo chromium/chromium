@@ -587,8 +587,6 @@ viz_source_set("unit_tests") {
     sources -= [ "display_embedder/buffer_queue_unittest.cc" ]
   }
 
-  configs = [ "//third_party/khronos:khronos_headers" ]
-
   deps = [
     ":service",
     ":viz_debugger",
@@ -614,6 +612,7 @@ viz_source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//third_party/libyuv",
     "//ui/display/types",
     "//ui/gfx:test_support",

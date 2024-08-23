@@ -121,10 +121,7 @@ source_set("gl") {
     "x11_gl_egl_utility.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//third_party/khronos:khronos_headers",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     ":x",
     "//base",

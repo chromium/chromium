@@ -149,8 +149,6 @@ component("gl") {
     defines += [ "GPU_ENABLE_SERVICE_LOGGING" ]
   }
 
-  include_dirs = [ "//third_party/mesa_headers" ]
-
   public_configs = [ "//third_party/khronos:khronos_headers" ]
 
   deps = [
@@ -422,12 +420,11 @@ static_library("gl_unittest_utils") {
     "gpu_timing_fake.h",
   ]
 
-  configs += [ "//third_party/khronos:khronos_headers" ]
-
   deps = [
     ":gl",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
   ]
 }
 
@@ -442,8 +439,6 @@ static_library("test_support") {
     "test/gl_test_support.h",
   ]
 
-  configs += [ "//third_party/khronos:khronos_headers" ]
-
   public_deps = [
     ":gl",
     "//ui/gl/init",
@@ -451,6 +446,7 @@ static_library("test_support") {
   deps = [
     "//base/test:test_support",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//ui/base",
   ]
 
@@ -517,8 +513,6 @@ test("gl_unittests") {
     ]
   }
 
-  include_dirs = [ "//third_party/khronos" ]
-
   deps = [
     ":gl",
     ":gl_unittest_utils",
@@ -527,6 +521,7 @@ test("gl_unittests") {
     "//base",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//ui/base:base",
     "//ui/gfx",
     "//ui/gfx:test_support",

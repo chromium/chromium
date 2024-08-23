@@ -256,6 +256,7 @@ source_set("wayland") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//skia",
+    "//third_party/angle:includes",
     "//third_party/libsync",
     "//third_party/wayland:wayland_client",
     "//third_party/wayland:wayland_cursor",
@@ -405,8 +406,6 @@ source_set("wayland") {
     ":wayland_proxy",
     "//ui/events/platform/wayland:wayland_event_watcher",
   ]
-
-  configs += [ "//third_party/khronos:khronos_headers" ]
 }
 
 source_set("test_support") {
