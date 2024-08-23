@@ -231,12 +231,6 @@ class IdlSchemaTest(unittest.TestCase):
     }
     self.assertEqual(expected, getType(schema, expected['id']))
 
-  def testInternalNamespace(self):
-    idl_basics = self.idl_basics
-    self.assertEqual('idl_basics', idl_basics['namespace'])
-    self.assertTrue(idl_basics['internal'])
-    self.assertFalse(idl_basics['nodoc'])
-
   def testReturnTypes(self):
     schema = self.idl_basics
     self.assertEqual({

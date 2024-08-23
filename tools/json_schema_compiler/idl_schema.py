@@ -440,14 +440,12 @@ class Namespace(object):
                namespace_node,
                description,
                nodoc=False,
-               internal=False,
                platforms=None,
                compiler_options=None,
                deprecated=None,
                documentation_options=None):
     self.namespace = namespace_node
     self.nodoc = nodoc
-    self.internal = internal
     self.platforms = platforms
     self.compiler_options = compiler_options
     self.events = []
@@ -498,7 +496,6 @@ class Namespace(object):
         'functions': self.functions,
         'properties': self.properties,
         'manifest_keys': self.manifest_keys,
-        'internal': self.internal,
         'events': self.events,
         'platforms': self.platforms,
         'compiler_options': compiler_options,
@@ -537,7 +534,6 @@ class IDLSchema(object):
   def process(self):
     namespaces = []
     nodoc = False
-    internal = False
     description = None
     platforms = None
     compiler_options = {}
@@ -553,14 +549,12 @@ class IDLSchema(object):
         namespace = Namespace(node,
                               description,
                               nodoc,
-                              internal,
                               platforms=platforms,
                               compiler_options=compiler_options or None,
                               deprecated=deprecated,
                               documentation_options=documentation_options)
         namespaces.append(namespace.process())
         nodoc = False
-        internal = False
         platforms = None
         compiler_options = None
       elif node.cls == 'Copyright':
@@ -570,8 +564,6 @@ class IDLSchema(object):
       elif node.cls == 'ExtAttribute':
         if node.name == 'nodoc':
           nodoc = bool(node.value)
-        elif node.name == 'internal':
-          internal = bool(node.value)
         elif node.name == 'platforms':
           platforms = list(node.value)
         elif node.name == 'implemented_in':
