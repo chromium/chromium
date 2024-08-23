@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "ash/auth/views/auth_input_row_view.h"
+#include "ash/auth/views/fingerprint_view.h"
 #include "ash/auth/views/pin_keyboard_view.h"
 #include "ash/auth/views/test_support/mock_auth_container_view_observer.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "base/containers/enum_set.h"
@@ -292,6 +294,25 @@ TEST_F(AuthContainerUnitTest, SetPinStatusTest) {
   // Now set the status back to an empty string.
   test_api_->GetView()->SetPinStatus(u"");
   EXPECT_FALSE(test_pin_status_->GetView()->GetVisible());
+}
+
+// Verify the fingerprint view visibility.
+TEST_F(AuthContainerUnitTest, FingerprintTest) {
+  FingerprintView* fp_view = test_api_->GetFingerprintView();
+  FingerprintView::TestApi test_fp_view(fp_view);
+
+  EXPECT_FALSE(fp_view->GetVisible());
+  EXPECT_EQ(test_fp_view.GetState(), FingerprintState::UNAVAILABLE);
+
+  // Turn on the fingerprint factor availability.
+  container_view_->SetFingerprintState(FingerprintState::AVAILABLE_DEFAULT);
+  EXPECT_TRUE(fp_view->GetVisible());
+  EXPECT_EQ(test_fp_view.GetState(), FingerprintState::AVAILABLE_DEFAULT);
+
+  // Turn off the fingerprint factor availability.
+  container_view_->SetFingerprintState(FingerprintState::UNAVAILABLE);
+  EXPECT_FALSE(fp_view->GetVisible());
+  EXPECT_EQ(test_fp_view.GetState(), FingerprintState::UNAVAILABLE);
 }
 
 }  // namespace

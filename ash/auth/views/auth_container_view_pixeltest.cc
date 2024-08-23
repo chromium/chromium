@@ -7,8 +7,10 @@
 
 #include "ash/auth/views/auth_container_view.h"
 #include "ash/auth/views/auth_input_row_view.h"
+#include "ash/auth/views/fingerprint_view.h"
 #include "ash/auth/views/pin_keyboard_view.h"
 #include "ash/auth/views/test_support/mock_auth_container_view_observer.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
@@ -141,6 +143,43 @@ TEST_F(AuthContainerPixelTest, PinStatusTest) {
   test_api_->GetView()->SetPinStatus(u"");
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "PasswordOnly", /*revision_number=*/0, container_view_));
+}
+
+// Verify the fingerprint view.
+TEST_F(AuthContainerPixelTest, PasswordWithFingerprintTest) {
+  // For better visibility
+  container_view_->SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysBaseElevated));
+
+  test_api_->GetView()->SetHasPin(false);
+  // Turn on the fingerprint factor availability.
+  container_view_->SetFingerprintState(FingerprintState::AVAILABLE_DEFAULT);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "PasswordWithFingerprint", /*revision_number=*/0, container_view_));
+
+  // Turn off the fingerprint factor availability.
+  container_view_->SetFingerprintState(FingerprintState::UNAVAILABLE);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "PasswordWithHiddenFingerprint", /*revision_number=*/0, container_view_));
+}
+
+// Verify the fingerprint view.
+TEST_F(AuthContainerPixelTest, PasswordAndPinWithFingerprintTest) {
+  // For better visibility
+  container_view_->SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysBaseElevated));
+
+  test_api_->GetView()->SetHasPin(true);
+  // Turn on the fingerprint factor availability.
+  container_view_->SetFingerprintState(FingerprintState::AVAILABLE_DEFAULT);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "PasswordAndPinWithFingerprint", /*revision_number=*/0, container_view_));
+
+  // Turn on the fingerprint factor availability.
+  container_view_->SetFingerprintState(FingerprintState::UNAVAILABLE);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "PasswordAndPinWithHiddenFingerprint", /*revision_number=*/0,
+      container_view_));
 }
 
 }  // namespace

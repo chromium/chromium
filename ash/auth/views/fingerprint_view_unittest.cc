@@ -105,6 +105,7 @@ TEST_F(FingerprintViewUnitTest, AvailableWithTouchSensorWarningTest) {
 
   fingerprint_view_->SetState(FingerprintState::AVAILABLE_DEFAULT);
   EXPECT_EQ(test_api.GetState(), FingerprintState::AVAILABLE_DEFAULT);
+  views::test::RunScheduledLayout(widget_.get());
 
   // The reset should happen after 1300 msec.
   ui::test::EventGenerator* generator = GetEventGenerator();

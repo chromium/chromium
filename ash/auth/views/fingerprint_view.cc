@@ -114,6 +114,8 @@ FingerprintState FingerprintView::TestApi::GetState() const {
 //----------------------- FingerprintView ------------------------
 
 FingerprintView::FingerprintView() {
+  SetVisible(false);
+
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kSpacingBetweenFingerprintIconAndLabelDp));
