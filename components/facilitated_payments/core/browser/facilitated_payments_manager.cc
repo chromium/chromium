@@ -291,7 +291,6 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
     // TODO: b/348143700 - Show error screen if the loading screen is being
     // shown.
     LogPaymentNotOfferedReason(PaymentNotOfferedReason::kRiskDataEmpty);
-    Reset();
     return;
   }
   initiate_payment_request_details_->risk_data_ = risk_data;
