@@ -7,6 +7,10 @@
 
 #include <string>
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace syncer {
 class SyncService;
 class SyncInvalidationsService;
@@ -24,6 +28,9 @@ class WebUIIOS;
 // Declares functions that must be implemented by the embedder, such as
 // ios/chrome and ios/web_view.
 namespace web_ui {
+
+// Gets the IdentityManager of the underlying original profile. May return null.
+signin::IdentityManager* GetIdentityManagerForWebUI(web::WebUIIOS* web_ui);
 
 // Gets the SyncService of the underlying original profile. May return null.
 syncer::SyncService* GetSyncServiceForWebUI(web::WebUIIOS* web_ui);

@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
@@ -55,6 +56,7 @@ SyncInternalsUI::SyncInternalsUI(content::WebUI* web_ui)
 
   auto* profile = Profile::FromWebUI(web_ui)->GetOriginalProfile();
   web_ui->AddMessageHandler(std::make_unique<ChromeSyncInternalsMessageHandler>(
+      IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),
       SyncInvalidationsServiceFactory::GetForProfile(profile),
       browser_sync::UserEventServiceFactory::GetForProfile(profile),

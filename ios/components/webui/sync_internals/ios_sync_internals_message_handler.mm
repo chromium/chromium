@@ -12,11 +12,13 @@
 #import "ios/web/public/webui/web_ui_ios.h"
 
 IOSSyncInternalsMessageHandler::IOSSyncInternalsMessageHandler(
+    signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::UserEventService* user_event_service,
     const std::string& channel)
     : message_handler_(this,
+                       identity_manager,
                        sync_service,
                        sync_invalidations_service,
                        user_event_service,

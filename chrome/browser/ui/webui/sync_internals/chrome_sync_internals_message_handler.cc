@@ -12,11 +12,13 @@
 #include "base/ranges/algorithm.h"
 
 ChromeSyncInternalsMessageHandler::ChromeSyncInternalsMessageHandler(
+    signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::UserEventService* user_event_service,
     const std::string& channel)
     : message_handler_(this,
+                       identity_manager,
                        sync_service,
                        sync_invalidations_service,
                        user_event_service,

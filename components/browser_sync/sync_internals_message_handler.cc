@@ -58,6 +58,7 @@ bool GetIncludeSpecificsInitialState() {
 
 SyncInternalsMessageHandler::SyncInternalsMessageHandler(
     Delegate* delegate,
+    signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::UserEventService* user_event_service,
@@ -66,6 +67,7 @@ SyncInternalsMessageHandler::SyncInternalsMessageHandler(
           delegate,
           base::BindRepeating(&syncer::sync_ui_util::ConstructAboutInformation,
                               syncer::sync_ui_util::IncludeSensitiveData(true)),
+          identity_manager,
           sync_service,
           sync_invalidations_service,
           user_event_service,
@@ -77,6 +79,7 @@ SyncInternalsMessageHandler::SyncInternalsMessageHandler(
 SyncInternalsMessageHandler::SyncInternalsMessageHandler(
     Delegate* delegate,
     GetAboutSyncDataCb get_about_sync_data_cb,
+    signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::UserEventService* user_event_service,
@@ -84,6 +87,7 @@ SyncInternalsMessageHandler::SyncInternalsMessageHandler(
     : include_specifics_(GetIncludeSpecificsInitialState()),
       delegate_(delegate),
       get_about_sync_data_cb_(std::move(get_about_sync_data_cb)),
+      identity_manager_(identity_manager),
       sync_service_(sync_service),
       sync_invalidations_service_(sync_invalidations_service),
       user_event_service_(user_event_service),

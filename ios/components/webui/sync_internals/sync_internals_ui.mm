@@ -40,6 +40,7 @@ SyncInternalsUI::SyncInternalsUI(web::WebUIIOS* web_ui, const std::string& host)
   web::WebUIIOSDataSource::Add(web_ui->GetWebState()->GetBrowserState(),
                                CreateSyncInternalsHTMLSource());
   web_ui->AddMessageHandler(std::make_unique<IOSSyncInternalsMessageHandler>(
+      web_ui::GetIdentityManagerForWebUI(web_ui),
       web_ui::GetSyncServiceForWebUI(web_ui),
       web_ui::GetSyncInvalidationsServiceForWebUI(web_ui),
       web_ui::GetUserEventServiceForWebUI(web_ui), web_ui::GetChannelString()));

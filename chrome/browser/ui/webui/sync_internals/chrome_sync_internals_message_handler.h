@@ -5,8 +5,20 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_CHROME_SYNC_INTERNALS_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_CHROME_SYNC_INTERNALS_MESSAGE_HANDLER_H_
 
+#include <string>
+
 #include "components/browser_sync/sync_internals_message_handler.h"
 #include "content/public/browser/web_ui_message_handler.h"
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace syncer {
+class SyncInvalidationsService;
+class SyncService;
+class UserEventService;
+}  // namespace syncer
 
 // Chrome-specific implementation of SyncInternalsMessageHandler.
 class ChromeSyncInternalsMessageHandler
@@ -14,6 +26,7 @@ class ChromeSyncInternalsMessageHandler
       public content::WebUIMessageHandler {
  public:
   ChromeSyncInternalsMessageHandler(
+      signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
       syncer::SyncInvalidationsService* sync_invalidations_service,
       syncer::UserEventService* user_event_service,

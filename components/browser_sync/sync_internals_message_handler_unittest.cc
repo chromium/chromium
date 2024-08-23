@@ -15,6 +15,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/task_environment.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/sync_internals_util.h"
 #include "components/sync/service/sync_service.h"
@@ -75,6 +77,10 @@ class SyncInternalsMessageHandlerTest : public testing::Test {
 
   MockDelegate* mock_delegate() { return &mock_delegate_; }
 
+  signin::IdentityManager* identity_manager() {
+    return identity_test_environment_.identity_manager();
+  }
+
   syncer::MockSyncService* mock_sync_service() { return &mock_sync_service_; }
 
   syncer::MockSyncInvalidationsService* mock_sync_invalidations_service() {
@@ -105,7 +111,10 @@ class SyncInternalsMessageHandlerTest : public testing::Test {
     return kAboutInformation.Clone();
   }
 
+  // SingleThreadTaskEnvironment is needed for IdentityTestEnvironment.
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockDelegate mock_delegate_;
+  signin::IdentityTestEnvironment identity_test_environment_;
   syncer::MockSyncService mock_sync_service_;
   syncer::MockSyncInvalidationsService mock_sync_invalidations_service_;
   syncer::FakeUserEventService fake_user_event_service_;
@@ -115,6 +124,7 @@ class SyncInternalsMessageHandlerTest : public testing::Test {
           base::BindRepeating(
               &SyncInternalsMessageHandlerTest::ConstructFakeAboutInformation,
               base::Unretained(this)),
+          identity_test_environment_.identity_manager(),
           &mock_sync_service_,
           &mock_sync_invalidations_service_,
           &fake_user_event_service_,
@@ -163,6 +173,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
       base::BindLambdaForTesting([&](syncer::SyncService*, const std::string&) {
         return kAboutInformation.Clone();
       }),
+      identity_manager(),
       /*sync_service=*/nullptr, mock_sync_invalidations_service(),
       fake_user_event_service(), kChannel);
   handler->GetMessageHandlerMap()

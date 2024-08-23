@@ -8,12 +8,23 @@
 #import "components/browser_sync/sync_internals_message_handler.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace syncer {
+class SyncInvalidationsService;
+class SyncService;
+class UserEventService;
+}  // namespace syncer
+
 // iOS-specific implementation of SyncInternalsMessageHandler.
 class IOSSyncInternalsMessageHandler
     : public browser_sync::SyncInternalsMessageHandler::Delegate,
       public web::WebUIIOSMessageHandler {
  public:
   IOSSyncInternalsMessageHandler(
+      signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
       syncer::SyncInvalidationsService* sync_invalidations_service,
       syncer::UserEventService* user_event_service,

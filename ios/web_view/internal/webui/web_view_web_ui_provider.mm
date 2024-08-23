@@ -4,13 +4,21 @@
 
 #import "ios/components/webui/web_ui_provider.h"
 
-#include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/version_info/channel.h"
-#include "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
-#include "ios/web_view/internal/sync/web_view_sync_service_factory.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "components/sync/invalidations/sync_invalidations_service.h"
+#import "components/version_info/channel.h"
+#import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace web_ui {
+
+signin::IdentityManager* GetIdentityManagerForWebUI(web::WebUIIOS* web_ui) {
+  ios_web_view::WebViewBrowserState* browser_state =
+      ios_web_view::WebViewBrowserState::FromWebUIIOS(web_ui);
+  return ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(
+      browser_state->GetRecordingBrowserState());
+}
 
 syncer::SyncService* GetSyncServiceForWebUI(web::WebUIIOS* web_ui) {
   ios_web_view::WebViewBrowserState* browser_state =

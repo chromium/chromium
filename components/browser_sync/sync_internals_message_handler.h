@@ -24,6 +24,10 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace syncer {
 class UserEventService;
 struct TypeEntitiesCount;
@@ -65,6 +69,7 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   // `delegate` must be non-null and outlive this object.
   SyncInternalsMessageHandler(
       Delegate* delegate,
+      signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
       syncer::SyncInvalidationsService* sync_invalidations_service,
       syncer::UserEventService* user_event_service,
@@ -74,6 +79,7 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   SyncInternalsMessageHandler(
       Delegate* delegate,
       GetAboutSyncDataCb get_about_sync_data_cb,
+      signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
       syncer::SyncInvalidationsService* sync_invalidations_service,
       syncer::UserEventService* user_event_service,
@@ -158,6 +164,8 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   const raw_ptr<Delegate> delegate_;
   // An abstraction of who creates the about sync info value map.
   const GetAboutSyncDataCb get_about_sync_data_cb_;
+  // TODO(crbug.com/361286061): Use it to add a button that gives sync consent.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
   const raw_ptr<syncer::UserEventService> user_event_service_;
