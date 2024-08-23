@@ -26,6 +26,7 @@
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_rules_registry.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/api/web_accessible_resources/web_accessible_resources_router.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
@@ -390,6 +391,16 @@ void OnDNRActionMatched(content::BrowserContext* browser_context,
   // `request.ShouldRecordMatchedAllowRuleInOnHeadersReceived` will only record
   // an allow rule matched in OnHeadersReceived with a greater priority than one
   // matched in OnBeforeRequest.
+}
+
+// The `use_dynamic_url` feature for web accessible resources requires that the
+// requested url be a dynamic url. A dynamic url is one where a session GUID is
+// used for the host instead of the static extension id.
+GURL GetNewUrl(const GURL& redirect_url,
+               content::BrowserContext* browser_context) {
+  auto dynamic_url =
+      TransformToDynamicURLIfNecessary(redirect_url, browser_context);
+  return dynamic_url.value_or(redirect_url);
 }
 
 using CallbacksForPageLoad = std::list<base::OnceClosure>;
@@ -994,7 +1005,7 @@ int WebRequestEventRouter::OnBeforeRequest(
           DCHECK_EQ(1u, actions.size());
           DCHECK(action.redirect_url);
           OnDNRActionMatched(browser_context, *request, action);
-          *new_url = action.redirect_url.value();
+          *new_url = GetNewUrl(action.redirect_url.value(), browser_context);
           // Collect redirect action data for the Extension Telemetry Service.
           if (action.type == DNRRequestAction::Type::REDIRECT) {
             ExtensionsBrowserClient::Get()
@@ -1222,7 +1233,8 @@ int WebRequestEventRouter::OnHeadersReceived(
 
           extension_web_request_api_helpers::
               RedirectRequestAfterHeadersReceived(
-                  *action.redirect_url, **override_response_headers,
+                  GetNewUrl(action.redirect_url.value(), browser_context),
+                  **override_response_headers,
                   preserve_fragment_on_redirect_url);
           return net::OK;
         case DNRRequestAction::Type::MODIFY_HEADERS:

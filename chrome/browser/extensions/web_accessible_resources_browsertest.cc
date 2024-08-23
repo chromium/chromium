@@ -330,5 +330,27 @@ IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
   EXPECT_EQ(net::Error::OK, navigation_observer.last_net_error_code());
 }
 
+// Succeed when DNR redirects a script to a WAR where use_dynamic_url is true.
+IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
+                       DNRRedirect) {
+  auto file_path =
+      test_data_dir_.AppendASCII("web_accessible_resources/dnr/redirect");
+  const Extension* extension = LoadExtension(file_path);
+  ASSERT_TRUE(extension);
+
+  // Navigate to a non extension page.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL gurl =
+      embedded_test_server()->GetURL("example.com", "/simple_with_script.html");
+  content::TestNavigationObserver navigation_observer(web_contents);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(gurl, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(net::Error::OK, navigation_observer.last_net_error_code());
+  auto result = EvalJs(web_contents, "document.body.textContent");
+  EXPECT_EQ("dnr redirect success", result.ExtractString());
+}
+
 }  // namespace
 }  // namespace extensions
