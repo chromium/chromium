@@ -23,6 +23,8 @@ namespace commerce {
 // Data containers that are provided by the above callbacks:
 
 // Discount cluster types.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
 enum class DiscountClusterType {
   kUnspecified = 0,
   kOfferLevel = 1,
@@ -31,6 +33,8 @@ enum class DiscountClusterType {
 };
 
 // Discount types.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
 enum class DiscountType {
   kUnspecified = 0,
   kFreeListingWithCode = 1,

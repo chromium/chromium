@@ -54,6 +54,11 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                                   const JavaParamRef<jobject>& j_gurl,
                                   const JavaParamRef<jobject>& j_callback);
 
+  void GetDiscountInfoForUrl(JNIEnv* env,
+                             const JavaParamRef<jobject>& obj,
+                             const JavaParamRef<jobject>& j_gurl,
+                             const JavaParamRef<jobject>& j_callback);
+
   void FetchPriceEmailPref(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
   void ScheduleSavedProductUpdate(JNIEnv* env,
@@ -107,6 +112,9 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
 
   bool IsPriceInsightsEligible(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
+  bool IsDiscountEligibleToShowOnNavigation(JNIEnv* env,
+                                            const JavaParamRef<jobject>& obj);
+
   ScopedJavaGlobalRef<jobject> java_ref() { return java_ref_; }
 
  private:
@@ -125,6 +133,11 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
       const ScopedJavaGlobalRef<jobject>& callback,
       const GURL& url,
       const std::optional<PriceInsightsInfo>& info);
+
+  void HandleDiscountInfoCallback(JNIEnv* env,
+                                  const ScopedJavaGlobalRef<jobject>& callback,
+                                  const GURL& url,
+                                  const std::vector<DiscountInfo> info);
 
   void OnSubscribe(const CommerceSubscription& sub, bool succeeded) override;
   void OnUnsubscribe(const CommerceSubscription& sub, bool succeeded) override;
