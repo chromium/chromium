@@ -91,31 +91,46 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
  public:
   VisitedURLRankingServiceImplTest() = default;
 
+  URLVisitAggregate::TabData GetSampleTabData(int32_t id, const char* url) {
+    return URLVisitAggregate::TabData(URLVisitAggregate::Tab(
+        id,
+        URLVisit(GURL(url), u"sample_title", base::Time::Now(),
+                 syncer::DeviceInfo::FormFactor::kUnknown,
+                 URLVisit::Source::kLocal),
+        "sample_tag", "sample_session_name"));
+  }
+
+  std::unique_ptr<MockURLVisitDataFetcher>
+  CreateMockTabDataFetcherWithExpectation(
+      std::vector<URLVisitAggregate::TabData> data) {
+    auto data_fetcher = std::make_unique<MockURLVisitDataFetcher>();
+    EXPECT_CALL(*data_fetcher, FetchURLVisitData(_, _, _))
+        .Times(1)
+        .WillOnce(testing::Invoke(
+            [data](const FetchOptions& options, const FetcherConfig& config,
+                   URLVisitDataFetcher::FetchResultCallback callback) {
+              std::map<URLMergeKey, URLVisitAggregate::URLVisitVariant>
+                  variant_data_map = {};
+              for (auto& tab_data : data) {
+                variant_data_map.emplace(
+                    tab_data.last_active_tab.visit.url.spec(),
+                    std::move(tab_data));
+              }
+              std::move(callback).Run(
+                  {FetchResult::Status::kSuccess, std::move(variant_data_map)});
+            }));
+
+    return data_fetcher;
+  }
+
   std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>>
   PrepareMockDataFetchers() {
-    auto session_tab_data_fetcher = std::make_unique<MockURLVisitDataFetcher>();
-    EXPECT_CALL(*session_tab_data_fetcher, FetchURLVisitData(_, _, _))
-        .Times(1)
-        .WillOnce(testing::Invoke([](const FetchOptions& options,
-                                     const FetcherConfig& config,
-                                     URLVisitDataFetcher::FetchResultCallback
-                                         callback) {
-          std::map<URLMergeKey, URLVisitAggregate::URLVisitVariant> data = {};
-          data.emplace(kSampleSearchUrl,
-                       URLVisitAggregate::TabData(URLVisitAggregate::Tab(
-                           1,
-                           URLVisit(GURL(kSampleSearchUrl), u"sample_title",
-                                    base::Time::Now(),
-                                    syncer::DeviceInfo::FormFactor::kUnknown,
-                                    URLVisit::Source::kLocal),
-                           "sample_tag", "sample_session_name")));
-          std::move(callback).Run(
-              {FetchResult::Status::kSuccess, std::move(data)});
-        }));
-
     std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers = {};
-    data_fetchers.emplace(Fetcher::kSession,
-                          std::move(session_tab_data_fetcher));
+    std::vector<URLVisitAggregate::TabData> tab_data_entries;
+    tab_data_entries.push_back(GetSampleTabData(1, kSampleSearchUrl));
+    data_fetchers.emplace(
+        Fetcher::kSession,
+        CreateMockTabDataFetcherWithExpectation(std::move(tab_data_entries)));
     return data_fetchers;
   }
 
@@ -290,17 +305,32 @@ TEST_F(VisitedURLRankingServiceImplTest,
           [](std::vector<URLVisitAggregate> aggregates,
              const FetchOptions& options,
              URLVisitAggregatesTransformer::OnTransformCallback callback) {
+            std::erase_if(
+                aggregates, [](const URLVisitAggregate& visit_aggregate) {
+                  const auto& visit_variant =
+                      visit_aggregate.fetcher_data_map.at(Fetcher::kSession);
+                  int id = std::get<URLVisitAggregate::TabData>(visit_variant)
+                               .last_active_tab.id;
+                  return static_cast<bool>(id % 2);
+                });
             std::move(callback).Run(
                 URLVisitAggregatesTransformer::Status::kSuccess,
                 std::move(aggregates));
           }));
 
+  std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers = {};
+  std::vector<URLVisitAggregate::TabData> tab_data_entries;
+  tab_data_entries.push_back(GetSampleTabData(1, "https://mail.google.com"));
+  tab_data_entries.push_back(GetSampleTabData(2, "https://docs.google.com"));
+  data_fetchers.emplace(
+      Fetcher::kSession,
+      CreateMockTabDataFetcherWithExpectation(std::move(tab_data_entries)));
   std::map<URLVisitAggregatesTransformType,
            std::unique_ptr<URLVisitAggregatesTransformer>>
       transformers = {};
   transformers.emplace(URLVisitAggregatesTransformType::kBookmarkData,
                        std::move(mock_bookmark_transformer));
-  InitService(PrepareMockDataFetchers(), std::move(transformers));
+  InitService(std::move(data_fetchers), std::move(transformers));
 
   FetchOptions fetch_options = FetchOptions(
       {
@@ -310,7 +340,6 @@ TEST_F(VisitedURLRankingServiceImplTest,
           {Fetcher::kSession,
            FetchOptions::FetchSources({URLVisit::Source::kForeign})},
       },
-
       base::Time::Now() - base::Days(1),
       {URLVisitAggregatesTransformType::kBookmarkData});
   VisitedURLRankingServiceImplTest::Result result =
@@ -323,8 +352,8 @@ TEST_F(VisitedURLRankingServiceImplTest,
       static_cast<int>(VisitedURLRankingRequestStepStatus::kSuccess), 1);
   histogram_tester.ExpectTotalCount(
       "VisitedURLRanking.TransformType.BookmarkData.Success", 1);
-  histogram_tester.ExpectTotalCount(
-      "VisitedURLRanking.TransformType.BookmarkData.InOutPercentage", 1);
+  histogram_tester.ExpectUniqueSample(
+      "VisitedURLRanking.TransformType.BookmarkData.InOutPercentage", 50, 1);
   histogram_tester.ExpectTotalCount(
       "VisitedURLRanking.TransformType.BookmarkData.Latency", 1);
 }

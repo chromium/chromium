@@ -5,6 +5,7 @@
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 
 #include <array>
+#include <cmath>
 #include <map>
 #include <memory>
 #include <queue>
@@ -466,7 +467,10 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
     base::UmaHistogramCustomCounts(
         base::StringPrintf("VisitedURLRanking.TransformType.%s.InOutPercentage",
                            URLVisitAggregatesTransformTypeName(transform_type)),
-        (aggregates.size() / previous_aggregates_count) * 100, 1, 100, 100);
+        std::round((static_cast<float>(aggregates.size()) /
+                    previous_aggregates_count) *
+                   100),
+        1, 100, 100);
 
     base::UmaHistogramMediumTimes(
         base::StringPrintf("VisitedURLRanking.TransformType.%s.Latency",
