@@ -21,15 +21,17 @@ function getUndoRedoModifier() {
 
 chrome.test.runTests([
   // Test that clicking the annotation button toggles annotation mode.
-  function testAnnotationButton() {
+  async function testAnnotationButton() {
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
     const annotateButton = getRequiredElement(viewerToolbar, '#annotate');
 
     annotateButton.click();
+    await microtasksFinished();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
 
     annotateButton.click();
+    await microtasksFinished();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
     chrome.test.succeed();
   },

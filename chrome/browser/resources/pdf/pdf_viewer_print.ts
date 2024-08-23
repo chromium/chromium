@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This import is necessary for html_to_wrapper to detect this is a Polymer
+// This import is necessary for html_to_wrapper to detect this is a Lit
 // element.
-import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/lit/v3_0/lit.rollup.js';
 import './elements/viewer_error_dialog.js';
 import './elements/viewer_page_indicator.js';
 import './elements/viewer_zoom_toolbar.js';
-import './pdf_viewer_shared_style.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {isRTL} from 'chrome://resources/js/util.js';
@@ -23,7 +22,8 @@ import type {ViewerZoomToolbarElement} from './elements/viewer_zoom_toolbar.js';
 import {deserializeKeyEvent, LoadState, serializeKeyEvent} from './pdf_scripting_api.js';
 import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
-import {getTemplate} from './pdf_viewer_print.html.js';
+import {getCss} from './pdf_viewer_print.css.js';
+import {getHtml} from './pdf_viewer_print.html.js';
 import type {DestinationMessageData, DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
@@ -44,8 +44,12 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
     return 'pdf-viewer-print';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private isPrintPreviewLoadingFinished_: boolean = false;

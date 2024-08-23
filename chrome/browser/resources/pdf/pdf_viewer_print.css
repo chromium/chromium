@@ -1,0 +1,27 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./pdf_viewer_shared_style.css.js
+ * #include=pdf-viewer-shared-style
+ * #css_wrapper_metadata_end */
+
+viewer-page-indicator {
+  opacity: 0;
+  visibility: hidden;
+  z-index: 2;
+}
+
+@media(max-height: 200px) {
+  viewer-zoom-toolbar {
+    display: none;
+  }
+}
+
+@media(max-width: 300px) {
+  viewer-zoom-toolbar {
+    display: none;
+  }
+}

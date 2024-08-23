@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This import is necessary for html_to_wrapper to detect this is a Polymer
-// element.
-import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import './elements/viewer_error_dialog.js';
 // <if expr="enable_ink">
 import './elements/viewer_ink_host.js';
@@ -16,15 +13,12 @@ import './elements/viewer_side_panel.js';
 import './elements/viewer_pdf_sidenav.js';
 import './elements/viewer_properties_dialog.js';
 import './elements/viewer_toolbar.js';
-import './elements/shared_vars.css.js';
-import './pdf_viewer_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BeforeUnloadProxyImpl} from './before_unload_proxy.js';
 import type {Bookmark} from './bookmark_type.js';
@@ -50,7 +44,8 @@ import {LocalStorageProxyImpl} from './local_storage_proxy.js';
 import {record, recordEnumeration, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 import {deserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
-import {getTemplate} from './pdf_viewer.html.js';
+import {getCss} from './pdf_viewer.css.js';
+import {getHtml} from './pdf_viewer.html.js';
 import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
@@ -136,181 +131,116 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     return 'pdf-viewer';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   static override get properties() {
     return {
-      annotationAvailable_: {
-        type: Boolean,
-        computed: 'computeAnnotationAvailable_(' +
-            'hadPassword_, clockwiseRotations_, canSerializeDocument_,' +
-            'twoUpViewEnabled_)',
-      },
+      // from PdfViewerBaseElement
+      showErrorDialog: {type: Boolean},
+      strings: {type: Object},
 
-      annotationMode_: {
-        type: Boolean,
-        value: false,
-      },
-
-      attachments_: {
-        type: Array,
-        value: () => [],
-      },
-
-      bookmarks_: {
-        type: Array,
-        value: () => [],
-      },
-
-      canSerializeDocument_: {
-        type: Boolean,
-        value: false,
-      },
-
-      clockwiseRotations_: {
-        type: Number,
-        value: 0,
-      },
+      annotationMode_: {type: Boolean},
+      attachments_: {type: Array},
+      bookmarks_: {type: Array},
+      canSerializeDocument_: {type: Boolean},
+      clockwiseRotations_: {type: Number},
 
       /** The number of pages in the PDF document. */
-      docLength_: Number,
+      docLength_: {type: Number},
+      documentHasFocus_: {type: Boolean},
 
-      documentHasFocus_: {
-        type: Boolean,
-        value: false,
-      },
+      documentMetadata_: {type: Object},
 
-      documentMetadata_: {
-        type: Object,
-        value: () => {},
-      },
-
-      fileName_: String,
-
-      hadPassword_: {
-        type: Boolean,
-        value: false,
-      },
-
-      hasEdits_: {
-        type: Boolean,
-        value: false,
-      },
-
-      hasEnteredAnnotationMode_: {
-        type: Boolean,
-        value: false,
-      },
+      fileName_: {type: String},
+      hadPassword_: {type: Boolean},
+      hasEdits_: {type: Boolean},
+      hasEnteredAnnotationMode_: {type: Boolean},
 
       // <if expr="enable_pdf_ink2">
-      hasInk2Edits_: {
-        type: Boolean,
-        value: false,
-      },
+      hasInk2Edits_: {type: Boolean},
       // </if>
 
-      formFieldFocus_: {
-        type: FormFieldFocusType,
-        value: FormFieldFocusType.NONE,
-      },
+      formFieldFocus_: {type: String},
 
       /** The current loading progress of the PDF document (0 - 100). */
-      loadProgress_: Number,
+      loadProgress_: {type: Number},
 
       /** The number of the page being viewed (1-based). */
-      pageNo_: Number,
-
-      pdfAnnotationsEnabled_: {
-        type: Boolean,
-        value: false,
-      },
+      pageNo_: {type: Number},
+      pdfAnnotationsEnabled_: {type: Boolean},
 
       // <if expr="enable_pdf_ink2">
-      pdfInk2Enabled_: {
-        type: Boolean,
-        value: false,
-      },
+      pdfInk2Enabled_: {type: Boolean},
       // </if>
 
-      printingEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showPasswordDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showPropertiesDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      sidenavCollapsed_: {
-        type: Boolean,
-        value: false,
-      },
-
-      title_: String,
-
-      twoUpViewEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      viewportZoom_: {
-        type: Number,
-        value: 1,
-      },
-
-      zoomBounds_: {
-        type: Object,
-        value: () => ({min: 0, max: 0}),
-      },
+      printingEnabled_: {type: Boolean},
+      showPasswordDialog_: {type: Boolean},
+      showPropertiesDialog_: {type: Boolean},
+      sidenavCollapsed_: {type: Boolean},
+      title_: {type: String},
+      twoUpViewEnabled_: {type: Boolean},
+      viewportZoom_: {type: Number},
+      zoomBounds_: {type: Object},
     };
   }
 
   beepCount: number = 0;
-  private annotationAvailable_: boolean;
-  private annotationMode_: boolean;
-  private attachments_: Attachment[];
-  private bookmarks_: Bookmark[];
-  private canSerializeDocument_: boolean;
-  private clockwiseRotations_: number;
-  private docLength_: number;
-  private documentHasFocus_: boolean;
-  private documentMetadata_: DocumentMetadata;
-  private embedded_: boolean;
-  private fileName_: string;
-  private hadPassword_: boolean;
-  private hasEdits_: boolean;
-  private hasEnteredAnnotationMode_: boolean;
+  protected annotationMode_: boolean = false;
+  protected attachments_: Attachment[] = [];
+  protected bookmarks_: Bookmark[] = [];
+  private canSerializeDocument_: boolean = false;
+  protected clockwiseRotations_: number = 0;
+  protected docLength_: number = 0;
+  protected documentHasFocus_: boolean = false;
+  protected documentMetadata_: DocumentMetadata = {
+    author: '',
+    canSerializeDocument: false,
+    creationDate: '',
+    creator: '',
+    fileSize: '',
+    keywords: '',
+    linearized: false,
+    modDate: '',
+    pageSize: '',
+    producer: '',
+    subject: '',
+    title: '',
+    version: '',
+  };
+  protected embedded_: boolean = false;
+  protected fileName_: string = '';
+  private hadPassword_: boolean = false;
+  protected hasEdits_: boolean = false;
+  protected hasEnteredAnnotationMode_: boolean = false;
   // <if expr="enable_pdf_ink2">
-  private hasInk2Edits_: boolean;
+  protected hasInk2Edits_: boolean = false;
   private hasSavedEdits_: boolean = false;
   // </if>
-  private formFieldFocus_: FormFieldFocusType;
-  private loadProgress_: number;
+  protected formFieldFocus_: FormFieldFocusType = FormFieldFocusType.NONE;
+  protected loadProgress_: number = 0;
   private navigator_: PdfNavigator|null = null;
-  private pageNo_: number;
-  private pdfAnnotationsEnabled_: boolean;
+  protected pageNo_: number = 0;
+  protected pdfAnnotationsEnabled_: boolean = false;
   // <if expr="enable_pdf_ink2">
-  private pdfInk2Enabled_: boolean = false;
+  protected pdfInk2Enabled_: boolean = false;
   // </if>
   private pluginController_: PluginController|null = null;
-  private printingEnabled_: boolean;
+  protected printingEnabled_: boolean = false;
   // <if expr="enable_pdf_ink2">
   private restoreAnnotationMode_: boolean = false;
   // </if>
   // <if expr="enable_ink or enable_pdf_ink2">
   private showBeforeUnloadDialog_: boolean = false;
   // </if>
-  private showPasswordDialog_: boolean;
-  private showPropertiesDialog_: boolean;
-  private sidenavCollapsed_: boolean;
+  protected showPasswordDialog_: boolean = false;
+  protected showPropertiesDialog_: boolean = false;
+  protected sidenavCollapsed_: boolean;
 
   /**
    * The state to which to restore `sidenavCollapsed_` after exiting annotation
@@ -318,11 +248,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    */
   private sidenavRestoreState_: boolean = false;
 
-  private title_: string;
-  private toolbarEnabled_: boolean = false;
-  private twoUpViewEnabled_: boolean;
-  private viewportZoom_: number;
-  private zoomBounds_: ZoomBounds;
+  protected title_: string = '';
+  protected toolbarEnabled_: boolean = false;
+  protected twoUpViewEnabled_: boolean = false;
+  protected viewportZoom_: number = 1;
+  protected zoomBounds_: ZoomBounds = {min: 0, max: 0};
 
   // <if expr="enable_ink">
   private inkController_: InkController|null = null;
@@ -336,6 +266,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         LocalStorageProxyImpl.getInstance().getItem(
             LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY)!,
         10));
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('showErrorDialog') && this.showErrorDialog) {
+      this.onErrorDialog_();
+    }
   }
 
   getBackgroundColor(): number {
@@ -475,7 +413,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_ink">
-  private onResetView_() {
+  protected onResetView_() {
     if (this.twoUpViewEnabled_) {
       assert(this.currentController);
       this.currentController.setTwoUpView(false);
@@ -521,7 +459,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   // <if expr="enable_ink or enable_pdf_ink2">
   /** Handles the annotation mode being toggled on or off. */
-  private async onAnnotationModeToggled_(e: CustomEvent<boolean>) {
+  protected async onAnnotationModeToggled_(e: CustomEvent<boolean>) {
     const annotationMode = e.detail;
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled_) {
@@ -605,7 +543,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
   // </if> enable_ink or enable_pdf_ink2
 
-  private onDisplayAnnotationsChanged_(e: CustomEvent<boolean>) {
+  protected onDisplayAnnotationsChanged_(e: CustomEvent<boolean>) {
     assert(this.currentController);
     this.currentController.setDisplayAnnotations(e.detail);
   }
@@ -665,7 +603,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // </if>
   }
 
-  private async onPresentClick_() {
+  protected async onPresentClick_() {
     await this.enterPresentationMode_();
 
     // When fullscreen changes, it means that the user exited Presentation
@@ -676,12 +614,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
 
-  private onPropertiesClick_() {
+  protected onPropertiesClick_() {
     assert(!this.showPropertiesDialog_);
     this.showPropertiesDialog_ = true;
   }
 
-  private onPropertiesDialogClose_() {
+  protected onPropertiesDialogClose_() {
     assert(this.showPropertiesDialog_);
     this.showPropertiesDialog_ = false;
   }
@@ -690,7 +628,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * Changes two up view mode for the controller. Controller will trigger
    * layout update later, which will update the viewport accordingly.
    */
-  private onTwoUpViewChanged_(e: CustomEvent<boolean>) {
+  protected onTwoUpViewChanged_(e: CustomEvent<boolean>) {
     const twoUpViewEnabled = e.detail;
     assert(this.currentController);
     this.currentController.setTwoUpView(twoUpViewEnabled);
@@ -739,7 +677,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     super.updateProgress(progress);
   }
 
-  private onErrorDialog_() {
+  protected onErrorDialog_() {
     // The error screen can only reload from a normal tab.
     if (!chrome.tabs || this.browserApi!.getStreamInfo().tabId === -1) {
       return;
@@ -762,7 +700,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
   }
 
-  private onPasswordDialogClose_() {
+  protected onPasswordDialogClose_() {
     this.showPasswordDialog_ = false;
   }
 
@@ -771,7 +709,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * when an event is entered into the password dialog.
    * @param event A password-submitted event.
    */
-  private onPasswordSubmitted_(event: CustomEvent<{password: string}>) {
+  protected onPasswordSubmitted_(event: CustomEvent<{password: string}>) {
     this.pluginController_!.getPasswordComplete(event.detail.password);
   }
 
@@ -1014,7 +952,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * downloading.
    * @param e The event which contains the index of attachment to be downloaded.
    */
-  private async onSaveAttachment_(e: CustomEvent<number>) {
+  protected async onSaveAttachment_(e: CustomEvent<number>) {
     const index = e.detail;
     const size = this.attachments_[index].size;
     assert(size !== -1);
@@ -1087,11 +1025,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.save_(saveMode);
   }
 
-  private onToolbarSave_(e: CustomEvent<SaveRequestType>) {
+  protected onToolbarSave_(e: CustomEvent<SaveRequestType>) {
     this.save_(e.detail);
   }
 
-  private onChangePage_(e: CustomEvent<ChangePageDetail>) {
+  protected onChangePage_(e: CustomEvent<ChangePageDetail>) {
     this.viewport.goToPage(e.detail.page);
     if (e.detail.origin === ChangePageOrigin.BOOKMARK) {
       record(UserAction.FOLLOW_BOOKMARK);
@@ -1102,19 +1040,19 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
   }
 
-  private onChangePageAndXy_(e: CustomEvent<ChangePageAndXyDetail>) {
+  protected onChangePageAndXy_(e: CustomEvent<ChangePageAndXyDetail>) {
     const point = this.viewport.convertPageToScreen(e.detail.page, e.detail);
     this.goToPageAndXy_(e.detail.origin, e.detail.page, point);
   }
 
-  private onNavigate_(e: CustomEvent<NavigateDetail>) {
+  protected onNavigate_(e: CustomEvent<NavigateDetail>) {
     const disposition = e.detail.newtab ?
         WindowOpenDisposition.NEW_BACKGROUND_TAB :
         WindowOpenDisposition.CURRENT_TAB;
     this.navigator_!.navigate(e.detail.uri, disposition);
   }
 
-  private onSidenavToggleClick_() {
+  protected onSidenavToggleClick_() {
     this.sidenavCollapsed_ = !this.sidenavCollapsed_;
 
     // Workaround for crbug.com/1119944, so that the PDF plugin resizes only
@@ -1133,7 +1071,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_pdf_ink2">
-  private onStrokesUpdated_(e: CustomEvent<number>) {
+  protected onStrokesUpdated_(e: CustomEvent<number>) {
     this.hasInk2Edits_ = e.detail > 0;
 
     // If the user already saved, always show the beforeunload dialog if the
@@ -1254,7 +1192,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
   }
 
-  private async onPrint_() {
+  protected async onPrint_() {
     record(UserAction.PRINT);
     // <if expr="enable_ink">
     await this.exitAnnotationMode_();
@@ -1268,12 +1206,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * conditions.
    * @return Whether annotations are available.
    */
-  private computeAnnotationAvailable_(): boolean {
+  protected annotationAvailable_(): boolean {
     return this.canSerializeDocument_ && !this.hadPassword_;
   }
 
   /** @return Whether the PDF contents are rotated. */
-  private isRotated_(): boolean {
+  protected isRotated_(): boolean {
     return this.clockwiseRotations_ !== 0;
   }
 
@@ -1281,7 +1219,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   /**
    * @returns Whether the PDF viewer has Ink2 enabled and is in annotation mode.
    */
-  private inInk2AnnotationMode_() {
+  protected inInk2AnnotationMode_() {
     return this.pdfInk2Enabled_ && this.annotationMode_;
   }
   // </if>

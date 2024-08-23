@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserApi} from './browser_api.js';
 import {ZoomBehavior} from './browser_api.js';
@@ -39,15 +39,11 @@ function getScrollbarWidth(): number {
 
 export type KeyEventData = MessageData&{keyEvent: SerializedKeyEvent};
 
-export abstract class PdfViewerBaseElement extends PolymerElement {
-  static get properties(): any {
+export abstract class PdfViewerBaseElement extends CrLitElement {
+  static override get properties() {
     return {
-      showErrorDialog: {
-        type: Boolean,
-        value: false,
-      },
-
-      strings: Object,
+      showErrorDialog: {type: Boolean},
+      strings: {type: Object},
     };
   }
 
@@ -59,7 +55,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
   protected originalUrl: string = '';
   protected paramsParser: OpenPdfParamsParser|null = null;
   protected pdfOopifEnabled: boolean = false;
-  showErrorDialog: boolean;
+  showErrorDialog: boolean = false;
   protected strings?: {[key: string]: string};
   protected tracker: EventTracker = new EventTracker();
   private delayedScriptingMessages_: MessageEvent[] = [];

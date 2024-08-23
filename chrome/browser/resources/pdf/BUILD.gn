@@ -112,12 +112,14 @@ build_webui("build") {
     "elements/viewer_thumbnail.css",
     "elements/viewer_thumbnail_bar.css",
     "elements/viewer_toolbar.css",
+    "pdf_viewer.css",
     "pdf_viewer_shared_style.css",
 
     # Files only used in Print Preview's PDF Viewer UI.
     "elements/viewer_page_indicator.css",
     "elements/viewer_zoom_button.css",
     "elements/viewer_zoom_toolbar.css",
+    "pdf_viewer_print.css",
   ]
 
   if (enable_pdf_ink2) {

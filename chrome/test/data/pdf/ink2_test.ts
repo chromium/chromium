@@ -19,13 +19,15 @@ chrome.test.runTests([
   },
 
   // Test that annotation mode can be toggled.
-  function testToggleAnnotationMode() {
+  async function testToggleAnnotationMode() {
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
     viewer.$.toolbar.toggleAnnotation();
+    await microtasksFinished();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
 
     viewer.$.toolbar.toggleAnnotation();
+    await microtasksFinished();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
     chrome.test.succeed();
   },
