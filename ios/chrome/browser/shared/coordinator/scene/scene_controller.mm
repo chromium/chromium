@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
-#import "ios/chrome/browser/browser_state_metrics/model/browser_state_activity_scene_agent.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
@@ -1042,7 +1041,6 @@ void OnListFamilyMembersResponse(
   [sceneState addAgent:defaultBrowserAgent];
   [sceneState
       addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
-  [sceneState addAgent:[[BrowserStateActivitySceneAgent alloc] init]];
 
   // Add scene agents that require CommandDispatcher.
   CommandDispatcher* mainCommandDispatcher =
