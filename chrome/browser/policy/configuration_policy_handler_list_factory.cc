@@ -3013,6 +3013,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kSystemTerminalSshAllowed,
       crostini::prefs::kTerminalSshAllowedByPolicy));
   handlers->AddHandler(std::make_unique<OsColorModePolicyHandler>());
+  handlers->AddHandler(std::make_unique<HelpMeWritePolicyHandler>());
   handlers->AddHandler(
       std::make_unique<bruschetta::BruschettaPolicyHandler>(chrome_schema));
   handlers->AddHandler(

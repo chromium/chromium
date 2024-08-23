@@ -36,7 +36,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/input_method/editor_consent_store.h"
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 #include "chrome/browser/ash/input_method/input_method_syncer.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -289,6 +289,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kEmojiSuggestionEnabled, true);
   registry->RegisterBooleanPref(prefs::kEmojiSuggestionEnterpriseAllowed, true);
   registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
+  registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
   registry->RegisterBooleanPref(prefs::kManagedOrcaEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kManagedPhysicalKeyboardAutocorrectAllowed, true);

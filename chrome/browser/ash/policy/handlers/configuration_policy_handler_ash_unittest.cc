@@ -66,6 +66,14 @@ void LoginScreenPowerManagementPolicyHandlerTest::SetUp() {
   chrome_schema_ = Schema::Wrap(GetChromeSchemaData());
 }
 
+// Test cases for the Help me write policy setting.
+class HelpMeWritePolicyHandlerTest : public testing::Test {
+ protected:
+  PolicyMap policy_;
+  PrefValueMap prefs_;
+  HelpMeWritePolicyHandler handler_;
+};
+
 base::Value GetPref(PrefValueMap* prefs, const std::string& name) {
   base::Value* pref_value = nullptr;
   if (prefs->GetValue(name, &pref_value)) {
@@ -588,6 +596,43 @@ TEST(ArcServicePolicyHandlerTest, UnderUserControlForConsumer) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   const base::Value* enabled = nullptr;
   EXPECT_FALSE(prefs.GetValue(arc::prefs::kArcBackupRestoreEnabled, &enabled));
+}
+
+TEST_F(HelpMeWritePolicyHandlerTest, Default) {
+  handler_.ApplyPolicySettings(policy_, &prefs_);
+
+  EXPECT_FALSE(prefs_.GetValue(ash::prefs::kOrcaEnabled, nullptr));
+  EXPECT_FALSE(prefs_.GetValue(ash::prefs::kOrcaFeedbackEnabled, nullptr));
+}
+
+TEST_F(HelpMeWritePolicyHandlerTest, EnabledWithModelImprovement) {
+  policy_.Set(key::kHelpMeWriteSettings, POLICY_LEVEL_MANDATORY,
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
+  handler_.ApplyPolicySettings(policy_, &prefs_);
+
+  EXPECT_EQ(base::Value(true), GetPref(&prefs_, ash::prefs::kOrcaEnabled));
+  EXPECT_EQ(base::Value(true),
+            GetPref(&prefs_, ash::prefs::kOrcaFeedbackEnabled));
+}
+
+TEST_F(HelpMeWritePolicyHandlerTest, EnabledWithoutModelImprovement) {
+  policy_.Set(key::kHelpMeWriteSettings, POLICY_LEVEL_MANDATORY,
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+  handler_.ApplyPolicySettings(policy_, &prefs_);
+
+  EXPECT_EQ(base::Value(true), GetPref(&prefs_, ash::prefs::kOrcaEnabled));
+  EXPECT_EQ(base::Value(false),
+            GetPref(&prefs_, ash::prefs::kOrcaFeedbackEnabled));
+}
+
+TEST_F(HelpMeWritePolicyHandlerTest, Disabled) {
+  policy_.Set(key::kHelpMeWriteSettings, POLICY_LEVEL_MANDATORY,
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(2), nullptr);
+  handler_.ApplyPolicySettings(policy_, &prefs_);
+
+  EXPECT_EQ(base::Value(false), GetPref(&prefs_, ash::prefs::kOrcaEnabled));
+  EXPECT_EQ(base::Value(false),
+            GetPref(&prefs_, ash::prefs::kOrcaFeedbackEnabled));
 }
 
 }  // namespace policy

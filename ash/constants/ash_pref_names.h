@@ -53,8 +53,12 @@ inline constexpr char kMagicBoostEnabled[] = "settings.magic_boost_enabled";
 // A boolean pref of whether orca is enabled.
 inline constexpr char kOrcaEnabled[] = "assistive_input.orca_enabled";
 
-// A boolean pref used by an admin policy to enable/disable Orca. See the policy
-// at OrcaEnabled.yaml.
+// A boolean pref indicating the status of the orca feedback.
+inline constexpr char kOrcaFeedbackEnabled[] =
+    "assistive_input.orca_feedback_enabled";
+
+// A boolean pref used by an admin policy to enable/disable Orca. See the
+// policy at OrcaEnabled.yaml.
 inline constexpr char kManagedOrcaEnabled[] =
     "assistive_input.managed.orca_enabled";
 
