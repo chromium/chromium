@@ -12,7 +12,7 @@
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ui/omnibox/test_web_location_bar.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/testing/nserror_util.h"
