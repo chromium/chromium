@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2024 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
+  <!-- Educational tip module dimens -->
+  <dimen name="educational_tip_module_padding_bottom">12dp</dimen>
+  <dimen name="educational_tip_module_size_without_padding">156dp</dimen>
+  <dimen name="educational_tip_module_content_image_size">72dp</dimen>
+  <dimen name="educational_tip_module_content_info_padding_start">16dp</dimen>
+  <dimen name="educational_tip_module_button_width">122dp</dimen>
+  <dimen name="educational_tip_module_button_height">48dp</dimen>
+  <dimen name="educational_tip_module_button_padding_start">14dp</dimen>
+</resources>

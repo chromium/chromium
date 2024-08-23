@@ -102,6 +102,7 @@ import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
+import org.chromium.chrome.browser.educational_tip.EducationalTipModuleBuilder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
@@ -2216,6 +2217,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mTabModelSelector,
                             getModalDialogManagerSupplier());
             moduleRegistry.registerModule(ModuleType.SAFETY_HUB, safetyHubMagicStackBuilder);
+        }
+
+        if (ChromeFeatureList.sEducationalTipModule.isEnabled()) {
+            EducationalTipModuleBuilder educationalTipModuleBuilder =
+                    new EducationalTipModuleBuilder(this);
+            moduleRegistry.registerModule(ModuleType.EDUCATIONAL_TIP, educationalTipModuleBuilder);
         }
 
         mModuleRegistrySupplier.set(moduleRegistry);

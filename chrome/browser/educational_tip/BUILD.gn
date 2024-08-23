@@ -1,0 +1,66 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilder.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleCoordinator.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleProperties.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleView.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinder.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_cached_flags_java",
+    "//base:base_java",
+    "//base:base_shared_preferences_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tabmodel:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.educational_tip"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/educational_tip_module_layout.xml",
+    "java/res/values/dimens.xml",
+  ]
+
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.educational_tip"
+
+  sources = [ "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilderUnitTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_junit_test_support",
+  ]
+}

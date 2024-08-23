@@ -28,7 +28,8 @@ public interface ModuleDelegate {
         ModuleType.PRICE_CHANGE,
         ModuleType.TAB_RESUMPTION,
         ModuleType.SAFETY_HUB,
-        ModuleType.NUM_ENTRIES,
+        ModuleType.EDUCATIONAL_TIP,
+        ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ModuleType {
@@ -36,7 +37,8 @@ public interface ModuleDelegate {
         int PRICE_CHANGE = 1;
         int TAB_RESUMPTION = 2;
         int SAFETY_HUB = 3;
-        int NUM_ENTRIES = 4;
+        int EDUCATIONAL_TIP = 4;
+        int NUM_ENTRIES = 5;
     }
 
     /**
