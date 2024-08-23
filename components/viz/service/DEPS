@@ -3,6 +3,7 @@
 include_rules = [
   "+cc",
   "+components/input",
+  "+components/input/render_input_router.mojom.h",
   "-components/viz/service",
   "+components/viz/service/debugger/viz_debugger.h",
   "+components/viz/service/gl/gpu_service_impl.h",
@@ -14,7 +15,6 @@ include_rules = [
   "+services/viz/public/mojom",
   "+skia/ext",
   "+third_party/skia",
-  "+third_party/blink/public/mojom/widget/platform_widget.mojom.h",
   "+ui/base/ozone_buildflags.h",
   "+ui/latency",
   "+ui/ozone/public",

@@ -122,9 +122,7 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
     mojom::CompositorFrameSinkClient* client,
     FrameSinkManagerImpl* frame_sink_manager,
     const FrameSinkId& frame_sink_id,
-    bool is_root,
-    std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-        rir_client)
+    bool is_root)
     : client_(client),
       frame_sink_manager_(frame_sink_manager),
       surface_manager_(frame_sink_manager->surface_manager()),
@@ -136,16 +134,6 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
           features::kBlitRequestsForViewTransition)) {
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
-
-  if (rir_client.has_value()) {
-    DCHECK(rir_client->is_valid());
-    DCHECK(input::TransferInputToViz() && !is_root);
-    render_input_router_.emplace(
-        /* host= */ nullptr,
-        /* fling_scheduler */ nullptr,
-        /* delegate= */ nullptr,
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-  }
 }
 
 CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
@@ -618,10 +606,6 @@ void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
     return;
   }
   frame_sink_type_ = type;
-  // `render_input_router_` shouldn't have been initialized for non-layer tree
-  // frame sinks.
-  DCHECK(!render_input_router_.has_value() ||
-         type == mojom::CompositorFrameSinkType::kLayerTree);
 
   if (frame_sink_manager_->frame_counter()) {
     frame_sink_manager_->frame_counter()->SetFrameSinkType(frame_sink_id_,

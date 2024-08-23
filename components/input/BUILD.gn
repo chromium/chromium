@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(
     use_blink,
@@ -80,6 +81,7 @@ component("input") {
     "web_touch_event_traits.h",
   ]
   deps = [
+    ":mojom",
     "//base",
     "//cc",
     "//services/viz/public/mojom",
@@ -121,6 +123,23 @@ component("input") {
       "Foundation.framework",
     ]
   }
+}
+
+mojom_component("mojom") {
+  sources = [ "render_input_router.mojom" ]
+  public_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  component_deps = [ "//third_party/blink/public/common" ]
+
+  # It's important to specify these settings for Blink bindings, because the
+  # dependency above requires linkage into the platform library.
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  output_prefix = "components_input_mojom"
+  macro_prefix = "COMPONENTS_INPUT_MOJOM"
 }
 
 source_set("unit_tests") {

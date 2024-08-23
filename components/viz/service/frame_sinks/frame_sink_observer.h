@@ -12,6 +12,8 @@ struct BeginFrameArgs;
 
 class FrameSinkObserver {
  public:
+  virtual ~FrameSinkObserver() = default;
+
   // Called when FrameSinkId is registered
   virtual void OnRegisteredFrameSinkId(const FrameSinkId& frame_sink_id) = 0;
 

@@ -46,6 +46,7 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/timeout_monitor.h"
 #include "components/input/utils.h"
@@ -3504,9 +3505,15 @@ void RenderWidgetHostImpl::CreateFrameSink(
          std::optional<mojo::PendingRemote<
              blink::mojom::RenderInputRouterClient>> viz_rir_client_remote,
          const viz::FrameSinkId& frame_sink_id) {
+        input::mojom::RenderInputRouterConfigPtr config;
+        if (input::TransferInputToViz()) {
+          DCHECK(viz_rir_client_remote.has_value());
+          config = input::mojom::RenderInputRouterConfig::New();
+          config->rir_client = std::move(viz_rir_client_remote.value());
+        }
         GetHostFrameSinkManager()->CreateCompositorFrameSink(
             frame_sink_id, std::move(receiver), std::move(client),
-            std::move(viz_rir_client_remote));
+            std::move(config));
       },
       std::move(compositor_frame_sink_receiver),
       std::move(compositor_frame_sink_client),

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -51,7 +52,7 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
       const std::optional<FrameSinkBundleId>& bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client)
+      input::mojom::RenderInputRouterConfigPtr render_input_router_config)
       override {}
   void DestroyCompositorFrameSink(
       const FrameSinkId& frame_sink_id,

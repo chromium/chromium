@@ -100,9 +100,7 @@ CompositorFrameSinkImpl::CompositorFrameSinkImpl(
     const FrameSinkId& frame_sink_id,
     std::optional<FrameSinkBundleId> bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
-    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-    std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-        rir_client)
+    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client)
     : compositor_frame_sink_client_(std::move(client)),
       proxying_client_(
           bundle_id.has_value()
@@ -116,8 +114,7 @@ CompositorFrameSinkImpl::CompositorFrameSinkImpl(
                            : compositor_frame_sink_client_.get(),
           frame_sink_manager,
           frame_sink_id,
-          false /* is_root */,
-          std::move(rir_client))) {
+          false /* is_root */)) {
   compositor_frame_sink_receiver_.set_disconnect_handler(
       base::BindOnce(&CompositorFrameSinkImpl::OnClientConnectionLost,
                      base::Unretained(this)));

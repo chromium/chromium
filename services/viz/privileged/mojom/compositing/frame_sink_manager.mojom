@@ -28,6 +28,7 @@ import "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "components/input/render_input_router.mojom";
 
 // Initialization parameters for a RootCompositorFrameSink.
 struct RootCompositorFrameSinkParams {
@@ -112,15 +113,14 @@ interface FrameSinkManager {
   // the client can submit frames for this sink in batch with other bundled
   // sinks using the FrameSinkBundle interface.
   //
-  // `render_input_router_client` is only set when `InputOnViz` flag is enabled,
+  // `config` is only set when `InputOnViz` flag is enabled,
   // and a layer tree frame sink for renderer is being requested.
   CreateCompositorFrameSink(
       FrameSinkId frame_sink_id,
       FrameSinkBundleId? bundle_id,
       pending_receiver<CompositorFrameSink> compositor_frame_sink,
       pending_remote<CompositorFrameSinkClient> compositor_frame_sink_client,
-      pending_remote<blink.mojom.RenderInputRouterClient>?
-          render_input_router_client);
+      input.mojom.RenderInputRouterConfig? config);
 
   // Destroys CompositorFrameSink created by Create[Root]CompositorFrameSink().
   // This function should only be used synchronously for destroying root

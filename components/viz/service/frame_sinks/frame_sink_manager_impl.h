@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -51,7 +52,6 @@
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
-#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
 namespace viz {
 
@@ -60,6 +60,7 @@ class CompositorFrameSinkSupport;
 class FrameSinkBundleImpl;
 class GmbVideoFramePoolContextProvider;
 class HintSessionFactory;
+class InputManager;
 class OutputSurfaceProvider;
 class SharedBitmapManager;
 class SharedImageInterfaceProvider;
@@ -124,6 +125,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     shared_image_interface_provider_ = provider;
   }
 
+  void SetInputManagerForTesting(std::unique_ptr<InputManager> input_manager);
+
   // Sets up a direction connection to |client| without using Mojo.
   void SetLocalClient(
       mojom::FrameSinkManagerClient* client,
@@ -146,7 +149,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       const std::optional<FrameSinkBundleId>& bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client)
+      input::mojom::RenderInputRouterConfigPtr render_input_router_config)
       override;
   void DestroyCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
@@ -242,6 +245,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   SharedBitmapManager* shared_bitmap_manager() {
     return shared_bitmap_manager_;
   }
+
+  virtual InputManager* GetInputManager();  // virtual for testing.
 
   void SubmitHitTestRegionList(
       const SurfaceId& surface_id,
@@ -435,6 +440,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   // Must be created after and destroyed before |surface_manager_|.
   HitTestManager hit_test_manager_;
+
+  // InputManager is created only when `kInputOnViz` (Android-only) flag is
+  // enabled. This is a pointer for testing.
+  std::unique_ptr<InputManager> input_manager_;
 
   // Restart id to generate unique begin frames across process restarts.  Used
   // for creating a BeginFrameSource for RootCompositorFrameSink.

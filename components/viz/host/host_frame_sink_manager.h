@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/hit_test/hit_test_region_observer.h"
@@ -135,8 +136,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       const FrameSinkId& frame_sink_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-      std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-          viz_rir_client_remote = std::nullopt);
+      input::mojom::RenderInputRouterConfigPtr render_input_router_config =
+          nullptr);
 
   // Creates a connection to control a set of related frame sinks through
   // batched IPCs on the FrameSinkBundle and FrameSinkBundleClient interfaces.
@@ -318,8 +319,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       std::optional<FrameSinkBundleId> bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-      std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-          viz_rir_client_remote);
+      input::mojom::RenderInputRouterConfigPtr render_input_router_config);
 
   // Handles connection loss to |frame_sink_manager_remote_|. This should only
   // happen when the GPU process crashes.
