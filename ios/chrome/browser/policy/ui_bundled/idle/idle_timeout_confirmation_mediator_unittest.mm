@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_mediator.h"
 
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_cofirmation_presenter.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_consumer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
