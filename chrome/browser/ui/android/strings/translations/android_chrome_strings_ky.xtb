@@ -199,6 +199,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="1928618076168182477">Визуалдык көрүнүш</translation>
 <translation id="1928696683969751773">Жаңыртуулар</translation>
 <translation id="1933845786846280168">Тандалган өтмөк</translation>
+<translation id="1939549834451474504">Google Play кызматтары жеткиликсиз болгондуктан, сырсөздөр жакында иштебей калат. Сакталган сырсөздөрүңүздү алар иштебей калганга чейин көчүрүп алсаңыз болот. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Сырсөздөрдү сактоо</translation>
 <translation id="1944535645109964458">Киргизүүчү ачкычтар жок</translation>
 <translation id="1957557050935255529">PDF жүктөлүүдө…</translation>
@@ -1003,7 +1004,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5828921839638612740">Бул маалыматты Chrome'дун параметрлеринен өчүрө аласыз</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" /> тизмесине сакталды</translation>
 <translation id="583281660410589416">Белгисиз</translation>
-<translation id="5833984609253377421">Шилтеме менен бөлүшүү</translation>
+<translation id="5833984609253377421">Шилтемени бөлүшүү</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5848257610304005265">PDF файлы <ph name="APP_NAME" /> колдонмосу менен ачылсынбы?</translation>
 <translation id="5853623416121554550">тындырылды</translation>
@@ -1385,6 +1386,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7454744349230173024">Уюмуңуз сырсөздөрдү сактоо параметрин өчүрүп койду</translation>
 <translation id="7455988709578031708">Көрүлгөн вебсайттардын негизинде көрсөтүлөт. Бул параметр күйүк.</translation>
 <translation id="7456774706094330779">Кеңейтилген алдын ала жүктөө</translation>
+<translation id="7466328545712777810">Кандайдыр бир сайтта баасы төмөндөсө, билдирме аласыз</translation>
 <translation id="7466431077154602932">Чакан көрүнүш</translation>
 <translation id="7474822150871987353">Вебсайттарда темалар жөнүндө барактан кетпей туруп билип алыңыз. Издөө үчүн барактан бир же бир нече сөздү тандаңыз.</translation>
 <translation id="7475192538862203634">Эгер бул нерсе улам-улам көрүнө берсе, бул <ph name="BEGIN_LINK" />сунуштарды<ph name="END_LINK" /> байкап көрүңүз.</translation>

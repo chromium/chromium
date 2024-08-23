@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3387527074123400161">Chromium 作業系統</translation>
 <translation id="3389599499324569679">要開啟「語音聽寫」功能嗎？</translation>
+<translation id="3392702002175498061">顯示所有瀏覽記錄內容</translation>
 <translation id="3394432020929931914">，展開咗</translation>
 <translation id="3401474642070997151">如要自訂建議，請用右鍵點擊或按住建議</translation>
 <translation id="3405101454990027959">開啟麥克風存取權</translation>
@@ -812,6 +813,7 @@
 <translation id="385300504083504382">開頭</translation>
 <translation id="3859364108019690">無法以串流方式使用應用程式</translation>
 <translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
+<translation id="3870197372373144624">請嘗試將裝置關機。</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -927,6 +929,7 @@
 <translation id="4264977415328155183">，收合咗</translation>
 <translation id="4265259722091164182">單詞首字母大楷</translation>
 <translation id="4269883910223712419">此裝置的管理員擁有下列權限：</translation>
+<translation id="4271841440229266861">顯示所有「檔案」內容</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下箭咀」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右箭咀。</translation>
 <translation id="4275283744500212192">開啟視窗版面配置選項</translation>
 <translation id="4275663329226226506">媒體</translation>
@@ -954,6 +957,7 @@
 <translation id="4327147325944669226">錄製遊戲</translation>
 <translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />，靜咗音</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
 <translation id="4356872429719185452">顯示熱點詳情。熱點正在開啟。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  正在錄製</translation>
@@ -1298,6 +1302,7 @@
 <translation id="5503884284981862082">開啟/關閉「Google 助理」</translation>
 <translation id="550391772491508736">繼續投放</translation>
 <translation id="5506975627792768506">開啟或關閉放大鏡</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />，㩒 Enter 鍵就可以變做靜音。</translation>
 <translation id="5512042095225963688">刪除上一個字詞</translation>
 <translation id="5519005148254860683">展開 Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2107,6 +2112,7 @@
 <translation id="8239034820133090126">啟用右側桌面</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，手機電量係 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，應用程式</translation>
+<translation id="825129991941217170">顯示所有「Google 雲端硬碟」內容</translation>
 <translation id="8257510091797044096">設定你的裝置</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262312463845990408">切換播放</translation>
@@ -2337,6 +2343,7 @@
 <translation id="9098969848082897657">將手機設為靜音</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">復原上一個操作</translation>
+<translation id="9126642911267312373">無法使用藍牙</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 分鐘後}other{# 分鐘後}}</translation>
 <translation id="9129245940793250979">後按鈕</translation>
 <translation id="9133335900048457298">無法錄影受保護的內容</translation>

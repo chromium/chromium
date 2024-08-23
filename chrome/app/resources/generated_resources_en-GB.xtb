@@ -265,6 +265,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1178601482396475810">Manage device sync</translation>
 <translation id="117916940443676133">Your security key is not protected with a PIN. To manage sign-in data, first create a PIN.</translation>
+<translation id="1179400851034021914">IBAN is invalid</translation>
 <translation id="1179902906564467236">Follow instructions on your phone or use the camera app</translation>
 <translation id="118057123461613219">Huge savings</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -1440,6 +1441,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="2002109485265116295">Real-time</translation>
 <translation id="2002160221914907025">Experimental AI</translation>
 <translation id="2003130567827682533">To activate '<ph name="NAME" />' data, first connect to a Wi-Fi network</translation>
+<translation id="2003596238737586336">Current schedule is set to <ph name="SUNRISE" /> – <ph name="SUNSET" />. This setting is managed by your administrator.</translation>
 <translation id="2004413981947727241">Use your passwords on any device</translation>
 <translation id="2004697686368036666">Features on some sites may not work</translation>
 <translation id="2005199804247617997">Other profiles</translation>
@@ -1705,6 +1707,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2191754378957563929">On</translation>
 <translation id="2192505247865591433">From:</translation>
 <translation id="219283042927675668">Tabs in group</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> is managing your new tab page, opens in a new tab</translation>
 <translation id="2193365732679659387">Trust settings</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="2195331105963583686">You'll still be able to use this <ph name="DEVICE_TYPE" /> after that time, but it will no longer get automatic software and security updates</translation>
@@ -2285,6 +2288,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2593499352046705383">Before starting, make sure that you have a backup of your data. Installing <ph name="DEVICE_OS" /> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Manage V8 security</translation>
 <translation id="2597073208962000830">Nearby Share uses Bluetooth scanning to find nearby devices.</translation>
+<translation id="2598136842498757793">Customise toolbar buttons</translation>
 <translation id="2598710988533271874">New Chrome available</translation>
 <translation id="2599048253926156421">Username copied to clipboard</translation>
 <translation id="2602501489742255173">Swipe up to get started</translation>
@@ -2514,6 +2518,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
 <translation id="2750020734439919571">More Chrome app settings and permissions</translation>
 <translation id="2750602041558385535">Unverified download blocked</translation>
+<translation id="275213133112113418">Your card is saved</translation>
 <translation id="2753623023919742414">Click to search</translation>
 <translation id="2754226775788136540">Looking for Fast Pair devices saved to <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Find the apps that you need, from productivity to entertainment, on the Google Play Store. You can install apps anytime.</translation>
@@ -3609,6 +3614,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3568431410312984116">Allow 'Help me write' to automatically open</translation>
 <translation id="3569382839528428029">Do you want <ph name="APP_NAME" /> to share your screen?</translation>
 <translation id="3569614820047645079">Your files in My Drive sync to your Chromebook automatically so that you can access them without an Internet connection.</translation>
+<translation id="3569617221227793022">Time zone is currently set to <ph name="TIME_ZONE_ENTRY" />. This setting is managed by your administrator.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> can view the following files and folders</translation>
 <translation id="3571734092741541777">Set up</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> extensions were turned off</translation>
@@ -4056,6 +4062,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3866142613641074814">You have passwords that are at risk</translation>
 <translation id="3866249974567520381">Description</translation>
 <translation id="3867134342671430205">Drag or use arrow keys to move a display</translation>
+<translation id="3867831579565057323">Map your touchscreen</translation>
 <translation id="3867944738977021751">Certificate Fields</translation>
 <translation id="3869917919960562512">Wrong index.</translation>
 <translation id="3870626286046977643">Also share system audio</translation>
@@ -4359,6 +4366,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4085298594534903246">JavaScript was blocked on this page.</translation>
 <translation id="4085566053793776107">Customise themes</translation>
 <translation id="4085620044235559093">Choose an app to open <ph name="FILE_TYPE" /> files</translation>
+<translation id="4086565736678483233">You can access it in your Payment methods</translation>
 <translation id="4087089424473531098">Created the extension:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5831,6 +5839,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5187641678926990264">&amp;Install page as app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs. <ph name="BEGIN_LINK1" />Learn more about using location<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Opting out of process sharing requires a browser restart. This browser will restart now.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Using <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Activate port</translation>
@@ -7070,6 +7079,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6097480669505687979">If you don’t free up space, users and data may be automatically removed.</translation>
 <translation id="6097600385983390082">Voice search closed</translation>
 <translation id="6098793583803863900">An unknown file is being scanned for dangerous content.</translation>
+<translation id="609892108553214365">Use this card on your iPhone</translation>
 <translation id="609942571968311933">Text copied from <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Always allow <ph name="HOST" /> to control and reprogramme your MIDI devices</translation>
 <translation id="6100736666660498114">Start menu</translation>
@@ -9182,6 +9192,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7663774460282684730">Keyboard shortcut available</translation>
 <translation id="7663859337051362114">Add eSIM profile</translation>
 <translation id="76641554187607347">No keyboard connected</translation>
+<translation id="7664442418269614729">Use this card on your iPhone</translation>
 <translation id="7665082356120621510">Reserve size</translation>
 <translation id="7665369617277396874">Add account</translation>
 <translation id="7665445336029073980">Full download history</translation>
@@ -9565,6 +9576,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> is sharing your screen and audio.</translation>
 <translation id="793293630927785390">New Wi-Fi Network Dialogue</translation>
 <translation id="7932969338829957666">Shared folders are available in Linux at <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Set up and map your touchscreen device to the correct display</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Unmute Site}other{Unmute Sites}}</translation>
 <translation id="7933486544522242079">&amp;Save and share</translation>
 <translation id="7933518760693751884">To save a page for later, click the bookmark icon</translation>
@@ -9789,6 +9801,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8081623398548615289">Your session is managed by <ph name="MANAGER_NAME" />. Administrators can delete your profile and also monitor your network traffic.</translation>
 <translation id="8081989000209387414">Disable ADB debugging?</translation>
 <translation id="8082106343289440791">Pair with "<ph name="DEVICE_NAME" />"?</translation>
+<translation id="8082132721957920509">Your card is saved</translation>
 <translation id="8082390128630131497">Disabling ADB debugging will reset this <ph name="DEVICE_TYPE" /> to factory settings. All user accounts and local data will be deleted.</translation>
 <translation id="8084114998886531721">Saved password</translation>
 <translation id="8084429490152575036">Cellular APN settings</translation>

@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">бүтэн дэлгэцийн томруулагч</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Дуу хоолойгоор бичихийг асаах уу?</translation>
+<translation id="3392702002175498061">Хөтчийн түүхийн бүх контентыг харуулах</translation>
 <translation id="3394432020929931914">, дэлгэсэн</translation>
 <translation id="3401474642070997151">Зөвлөмжүүдийг өөрчлөхийн тулд зөвлөмж дээр хулганын баруун талыг товших эсвэл удаан дарна уу</translation>
 <translation id="3405101454990027959">Микрофоны хандалтыг асаах</translation>
@@ -813,6 +814,7 @@
 <translation id="385300504083504382">Эхлэл</translation>
 <translation id="3859364108019690">Аппуудыг дамжуулах боломжгүй</translation>
 <translation id="3861651314799684201">Бүтэн дэлгэцийг бичихийн тулд enter дээр дарна уу</translation>
+<translation id="3870197372373144624">Төхөөрөмжөө унтрааж үзнэ үү.</translation>
 <translation id="3886872229787704059">Өнөөдөр нээсэн</translation>
 <translation id="3891340733213178823">Гарахын тулд Ctrl+Shift+Q дээр хоёр удаа дарна уу.</translation>
 <translation id="3893630138897523026">ChromeVox (ярьдаг санал хүсэлт)</translation>
@@ -928,6 +930,7 @@
 <translation id="4264977415328155183">, хураасан</translation>
 <translation id="4265259722091164182">Эхний үсгийг томоор</translation>
 <translation id="4269883910223712419">Энэ төхөөрөмжийн админ дараах зүйлсийг хийх боломжтой:</translation>
+<translation id="4271841440229266861">Файлсын бүх контентыг харуулах</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Доош сумны товчлуурын шууд холбоосыг өөрчилсөн байна. End товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Баруун сумыг дарна уу.</translation>
 <translation id="4275283744500212192">Цонхны бүдүүвчийн сонголтыг нээх</translation>
 <translation id="4275663329226226506">Медиа</translation>
@@ -955,6 +958,7 @@
 <translation id="4327147325944669226">Тоглоомыг бичих</translation>
 <translation id="4333628967105022692">Олон хэрэглэгч нэвтэрсэн үед Lacros-г дэмждэггүй.</translation>
 <translation id="4338109981321384717">Томруулдаг шил</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Дууг хаасан</translation>
 <translation id="4351244548802238354">Харилцах цонхыг хаах</translation>
 <translation id="4356872429719185452">Сүлжээний цэгийн дэлгэрэнгүйг харуулна уу. Сүлжээний цэгийг асааж байна.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Бичиж байна</translation>
@@ -1300,6 +1304,7 @@
 <translation id="5503884284981862082">Google туслахыг нээх/хаах</translation>
 <translation id="550391772491508736">Дамжуулахыг үргэлжлүүлэх</translation>
 <translation id="5506975627792768506">Томруулагчийг асаах эсвэл унтраах</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, Enter дарвал аудионы дууг хаана.</translation>
 <translation id="5512042095225963688">Өмнөх үгийг устгах</translation>
 <translation id="5519005148254860683">Google Tasks-г дэлгэх</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2110,6 +2115,7 @@
 <translation id="8239034820133090126">Дэлгэцийг баруун талд идэвхжүүлэх</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апп</translation>
+<translation id="825129991941217170">Google Драйвын бүх контентыг харуулах</translation>
 <translation id="8257510091797044096">Төхөөрөмжөө тохируулах</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8262312463845990408">Дахин тоглуулахыг асаах/унтраах</translation>
@@ -2341,6 +2347,7 @@
 <translation id="9098969848082897657">Утасны дууг хаах</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> эсвэл <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Сүүлийн үйлдлийг болих</translation>
+<translation id="9126642911267312373">Bluetooth боломжгүй</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 минутын дараа}other{# минутын дараа}}</translation>
 <translation id="9129245940793250979">Ар талын товчлуур</translation>
 <translation id="9133335900048457298">Хамгаалалттай контентыг бичих боломжгүй</translation>

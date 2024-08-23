@@ -429,6 +429,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7398989605938454041">Pomocí profilů prohlížeče Chromium můžete všechny své údaje v prohlížeči Chromium uchovávat odděleně. Budete tak moci snáze oddělit zábavu od práce.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu</translation>
+<translation id="7458892263350425044">Pokud chcete používat mikrofon, udělte prohlížeči Chromium přístup v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 7.</translation>
 <translation id="7467949745582939695">Restartovat Chromium?</translation>
 <translation id="7483335560992089831">Nelze nainstalovat verzi prohlížeče Chromium, která je právě spuštěná. Ukončete prohlížeč Chromium a zkuste to znovu.</translation>
@@ -470,6 +471,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="813913629614996137">Probíhá inicializace...</translation>
 <translation id="8166782796394721554">Zapnout další ochranu v modulu prohlížeče Chromium pro JavaScript a WebAssembly</translation>
 <translation id="81770708095080097">Tento soubor je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
+<translation id="8223363452568144035">Pokud chcete používat kameru, udělte prohlížeči Chromium přístup v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Toto rozšíření nemusí být bezpečné. Chromium nedokáže ověřit, odkud pochází. Odstraňte ho z prohlížeče Chromium, aby již nemohlo číst a měnit vaše data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="8248265253516264921">Pokud obrázek nemá užitečný popis, Chromium se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>
 <translation id="8254601181414348851">Přihlásit se do prohlížeče Chromium v novém profilu?</translation>
@@ -540,4 +542,5 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="983803489796659991">Instalace se nezdařila, protože server s aktualizací nemá hashovací data pro aplikaci.</translation>
 <translation id="985498048907240953">Použít Chromium bez účtu</translation>
 <translation id="985602178874221306">Autoři prohlížeče Chromium</translation>
+<translation id="992780518932311116">Pokud chcete používat polohu, udělte prohlížeči Chromium přístup v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" /></translation>
 </translationbundle>

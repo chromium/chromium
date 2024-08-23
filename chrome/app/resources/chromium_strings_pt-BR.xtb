@@ -422,6 +422,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7398989605938454041">Você pode usar os perfis do Chromium para separar todos os seus dados nele. Assim, fica mais fácil dividir suas atividades entre trabalho e diversão.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" />: Chromium Dev</translation>
 <translation id="7451052299415159299">O Chromium precisa de permissão para este site acessar sua câmera</translation>
+<translation id="7458892263350425044">Para usar o microfone, permita o acesso ao Chromium nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Para receber as próximas atualizações do Chromium, você precisa ter do Windows 10 ou versão mais recente. Este computador está usando o Windows 7.</translation>
 <translation id="7467949745582939695">Reiniciar o Chromium?</translation>
 <translation id="7483335560992089831">Não é possível instalar a mesma versão do Chromium que está sendo executada. Feche o Chromium e tente novamente.</translation>
@@ -463,6 +464,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8166782796394721554">Ative a proteção extra no mecanismo JavaScript e WebAssembly do Chromium</translation>
 <translation id="81770708095080097">Esse arquivo é perigoso, por isso ele foi bloqueado pelo Chromium.</translation>
+<translation id="8223363452568144035">Para usar a câmera, permita o acesso ao Chromium nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">O Chromium não pode conferir a origem dessa extensão, e talvez ela não seja segura. Remova do Chromium para que ela não apareça mais e mude seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
 <translation id="8248265253516264921">Se uma imagem não tiver uma descrição útil, o Chromium tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições. É possível desativar essa opção nas configurações a qualquer momento.</translation>
 <translation id="8254601181414348851">Fazer login no Chromium em um novo perfil?</translation>
@@ -533,4 +535,5 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem o hash dos dados para o aplicativo.</translation>
 <translation id="985498048907240953">Usar o Chromium sem uma conta</translation>
 <translation id="985602178874221306">Autores do Chromium</translation>
+<translation id="992780518932311116">Para usar a localização, permita o acesso ao Chromium nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 </translationbundle>

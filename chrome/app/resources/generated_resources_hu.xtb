@@ -2287,6 +2287,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2593499352046705383">A telepítés megkezdése előtt gondoskodjon adatai biztonsági mentéséről. A <ph name="DEVICE_OS" /> telepítése felülírja a merevlemezen tárolt adatokat. További információk: g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">V8 biztonsági beállítások kezelése</translation>
 <translation id="2597073208962000830">A Közeli megosztás funkció a Bluetooth használatával keres közelben lévő eszközöket.</translation>
+<translation id="2598136842498757793">Eszköztár gombjainak személyre szabása</translation>
 <translation id="2598710988533271874">Rendelkezésre áll az új Chrome</translation>
 <translation id="2599048253926156421">Felhasználónév vágólapra másolva</translation>
 <translation id="2602501489742255173">Az indításhoz csúsztasson felfelé</translation>
@@ -4060,6 +4061,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="3866142613641074814">Vannak veszélyben lévő jelszavai</translation>
 <translation id="3866249974567520381">Leírás</translation>
 <translation id="3867134342671430205">A kijelzőket húzással vagy a nyílbillentyűkkel helyezheti a kívánt helyre</translation>
+<translation id="3867831579565057323">Érintőképernyő társítása</translation>
 <translation id="3867944738977021751">Tanúsítvány mezői</translation>
 <translation id="3869917919960562512">Rossz index.</translation>
 <translation id="3870626286046977643">A rendszerhangok is legyenek megosztva</translation>
@@ -9572,6 +9574,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="79312157130859720">A(z) <ph name="APP_NAME" /> megosztja a képernyőt és a hangot.</translation>
 <translation id="793293630927785390">Új Wi-Fi-hálózat párbeszédpanele</translation>
 <translation id="7932969338829957666">A megosztott mappák a következő helyen találhatók a Linux rendszerben: <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Érintőképernyős eszköz beállítása és társítása a megfelelő kijelzőhöz</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Webhely némításának feloldása}other{Webhelyek némításának feloldása}}</translation>
 <translation id="7933486544522242079">&amp;Mentés és megosztás</translation>
 <translation id="7933518760693751884">Ha szeretné elmenteni az oldalt későbbi használatra, kattintson a Könyvjelző ikonra</translation>

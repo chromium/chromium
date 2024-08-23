@@ -596,7 +596,7 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1431188203598586230">最后一次软件更新</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
-<translation id="1433478348197382180">朗读模式</translation>
+<translation id="1433478348197382180">阅读模式</translation>
 <translation id="1433980411933182122">启动</translation>
 <translation id="1434696352799406980">这将重置您的启动页、“打开新的标签页”页面、搜索引擎和固定标签页，同时还会停用所有扩展程序并清除临时数据（例如 Cookie）。但是，系统不会清除您的书签、历史记录和保存的密码。</translation>
 <translation id="1434886155212424586">首页是新标签页</translation>
@@ -3336,7 +3336,7 @@
 <translation id="338583716107319301">分隔符</translation>
 <translation id="3385916046075724800">您的标签页分组现在会自动保存。</translation>
 <translation id="3387023983419383865">、</translation>
-<translation id="3387261909427947069">付款方式</translation>
+<translation id="3387261909427947069">支付方式</translation>
 <translation id="3387588771342841525">当此设置处于开启状态时，密码会保存到 <ph name="EMAIL" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
 <translation id="3387614642886316601">使用增强的“拼写检查”功能</translation>
 <translation id="3387829698079331264">不允许以下网站了解您何时在主动使用设备</translation>
@@ -11453,7 +11453,7 @@
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />，您好</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 摄像头正在录像且麦克风正在录音</translation>
-<translation id="984275831282074731">付款方式</translation>
+<translation id="984275831282074731">支付方式</translation>
 <translation id="984705303330760860">添加拼写检查语言</translation>
 <translation id="98515147261107953">风光</translation>
 <translation id="987068745968718743">Parallels Desktop：<ph name="PLUGIN_VM_NAME" /></translation>

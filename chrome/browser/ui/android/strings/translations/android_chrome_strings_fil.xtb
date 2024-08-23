@@ -199,6 +199,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="1928618076168182477">Ipinapakita ang visual view</translation>
 <translation id="1928696683969751773">Mga Update</translation>
 <translation id="1933845786846280168">Napiling Tab</translation>
+<translation id="1939549834451474504">Malapit nang hindi gumana ang mga password dahil hindi na available ang mga serbisyo ng Google Play. Puwede kang gumawa ng kopya ng iyong mga naka-save na password bago huminto sa paggana ang mga ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">I-save ang mga password</translation>
 <translation id="1944535645109964458">Walang available na passkey</translation>
 <translation id="1957557050935255529">Nilo-load ang PDF…</translation>
@@ -1385,6 +1386,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7454744349230173024">In-off ng iyong organisasyon ang pag-save ng mga password</translation>
 <translation id="7455988709578031708">Batay sa iyong history ng pag-browse. Naka-on ang setting na ito.</translation>
 <translation id="7456774706094330779">Na-extend na pag-preload</translation>
+<translation id="7466328545712777810">Maaabisuhan ka kung bumaba ang presyo sa anumang site</translation>
 <translation id="7466431077154602932">Compact view</translation>
 <translation id="7474822150871987353">Matuto tungkol sa mga paksa sa mga website nang hindi umaalis sa page. Pumili ng isa o higit pang salita sa page para hanapin ang mga ito.</translation>
 <translation id="7475192538862203634">Kung madalas mo itong makita, subukan ang <ph name="BEGIN_LINK" />mga suhestyon<ph name="END_LINK" /> na ito.</translation>

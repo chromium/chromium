@@ -661,6 +661,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Vols activar la funció de dictat?</translation>
+<translation id="3392702002175498061">Mostra tot el contingut de l'historial de navegació</translation>
 <translation id="3394432020929931914">, desplegat</translation>
 <translation id="3401474642070997151">Per personalitzar els suggeriments, fes clic amb el botó dret en un suggeriment o mantén-lo premut</translation>
 <translation id="3405101454990027959">Activa l'accés al micròfon</translation>
@@ -812,6 +813,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="385300504083504382">Principi</translation>
 <translation id="3859364108019690">No es poden reproduir aplicacions en continu</translation>
 <translation id="3861651314799684201">Prem Retorn per gravar la pantalla completa</translation>
+<translation id="3870197372373144624">Prova d'apagar el dispositiu.</translation>
 <translation id="3886872229787704059">Obert avui</translation>
 <translation id="3891340733213178823">Premeu Ctrl+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>
@@ -927,6 +929,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4264977415328155183">, replegat</translation>
 <translation id="4265259722091164182">Majúscules a cada paraula</translation>
 <translation id="4269883910223712419">L'administrador d'aquest dispositiu pot dur a terme les accions següents:</translation>
+<translation id="4271841440229266861">Mostra tot el contingut de Fitxers</translation>
 <translation id="4274537685965975248">La tecla de drecera Ctrl+Alt+fletxa avall ha canviat. Per fer servir la tecla de fi, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa dreta.</translation>
 <translation id="4275283744500212192">Obre les opcions de disseny de la finestra</translation>
 <translation id="4275663329226226506">Multimèdia</translation>
@@ -954,6 +957,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4327147325944669226">Grava la partida</translation>
 <translation id="4333628967105022692">Lacros no s'admet quan hi ha diversos usuaris amb la sessió iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, silenciat</translation>
 <translation id="4351244548802238354">Tanca el quadre de diàleg</translation>
 <translation id="4356872429719185452">Mostra els detalls del punt d'accés Wi‐Fi. El punt d'accés Wi‐Fi s'està activant.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  S'està gravant</translation>
@@ -1299,6 +1303,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5503884284981862082">Obre/Tanca l'Assistent de Google</translation>
 <translation id="550391772491508736">Reprèn l'emissió</translation>
 <translation id="5506975627792768506">Activa o desactiva la lupa</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />; en prémer la tecla Retorn, se silenciarà l'àudio.</translation>
 <translation id="5512042095225963688">Suprimeix la paraula anterior</translation>
 <translation id="5519005148254860683">Desplega Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8239034820133090126">Activa l'escriptori a la dreta</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicació</translation>
+<translation id="825129991941217170">Mostra tot el contingut de Google Drive</translation>
 <translation id="8257510091797044096">Configura el dispositiu</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8262312463845990408">Commuta la reproducció</translation>
@@ -2339,6 +2345,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9098969848082897657">Silencia el telèfon</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desfés l'última acció</translation>
+<translation id="9126642911267312373">Bluetooth no disponible</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{D'aquí a 1 min}other{D'aquí a # min}}</translation>
 <translation id="9129245940793250979">Botó posterior</translation>
 <translation id="9133335900048457298">No es pot gravar contingut protegit</translation>

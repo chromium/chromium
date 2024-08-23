@@ -430,6 +430,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7398989605938454041">Со профилите на Chromium може да ги одделите сите ваши работи на Chromium. Со ова е полесно да се одделат работата и забавата.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">На Chromium му треба дозвола за да пристапи до камерата за сајтов</translation>
+<translation id="7458892263350425044">За да го користи микрофонот, дајте му пристап на Chromium во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">За да добивате идни ажурирања на Chromium, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 7.</translation>
 <translation id="7467949745582939695">Да се рестартира Chromium?</translation>
 <translation id="7483335560992089831">Не може да се инсталира истата верзија на Chromium што работи во моментов. Затворете го Chromium и обидете се повторно.</translation>
@@ -471,6 +472,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="813913629614996137">Се иницијализира…</translation>
 <translation id="8166782796394721554">Вклучување дополнителна заштита во пребарувачот на JavaScript и WebAssembly во Chromium</translation>
 <translation id="81770708095080097">Датотекава е опасна, па затоа Chromium ја блокираше.</translation>
+<translation id="8223363452568144035">За да ја користи камерата, дајте му пристап на Chromium во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium не може да потврди од каде е екстензијава, па може да биде небезбедна. Отстранете ја од Chromium за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и личните податоци.</translation>
 <translation id="8248265253516264921">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
 <translation id="8254601181414348851">Ќе се најавите на Chromium во нов профил?</translation>
@@ -541,4 +543,5 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="983803489796659991">Инсталацијата не успеа бидејќи серверот за ажурирање нема хаш-податоци за апликацијата.</translation>
 <translation id="985498048907240953">Користете Chromium без сметка</translation>
 <translation id="985602178874221306">Автори на Chromium</translation>
+<translation id="992780518932311116">За да ја користи локацијата, дајте му пристап на Chromium во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 </translationbundle>

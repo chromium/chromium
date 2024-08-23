@@ -199,6 +199,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1928618076168182477">Mostrando a exibição visual</translation>
 <translation id="1928696683969751773">Atualizações</translation>
 <translation id="1933845786846280168">Guia selecionada</translation>
+<translation id="1939549834451474504">As senhas deixarão de funcionar em breve porque o Google Play Services não está disponível. Você pode fazer uma cópia das suas senhas salvas antes que elas deixem de funcionar. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Salvar senhas</translation>
 <translation id="1944535645109964458">Nenhuma chave de acesso disponível</translation>
 <translation id="1957557050935255529">Carregando PDF…</translation>
@@ -1037,7 +1038,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 página na sua Lista de leitura}one{# página na sua Lista de leitura}other{# páginas na sua Lista de leitura}}</translation>
 <translation id="5979084224081478209">Verificar senhas</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> O Chrome removeu essas permissões porque você não visitou o site recentemente</translation>
-<translation id="5995726099713306770">Fazer o download da página novamente?</translation>
+<translation id="5995726099713306770">Baixar página novamente?</translation>
 <translation id="6000066717592683814">Continuar usando o Google</translation>
 <translation id="6000203700195075278">Voltar a seguir</translation>
 <translation id="6002122790816966947">Seus dispositivos</translation>
@@ -1239,7 +1240,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Arquivos de áudio: 1 arquivo de áudio na lista}one{Arquivos de áudio: # arquivo de áudio na lista}other{Arquivos de áudio: # arquivos de áudio na lista}}</translation>
 <translation id="685850645784703949">Discover do Google (desativado)</translation>
 <translation id="686366188661646310">Excluir senha?</translation>
-<translation id="6864459304226931083">Fazer o download da imagem</translation>
+<translation id="6864459304226931083">Baixar imagem</translation>
 <translation id="686490460830618322">Página de filtro de apps</translation>
 <translation id="6865313869410766144">Preenchimento automático de dados de formulário</translation>
 <translation id="6867400383614725881">Nova guia anônima</translation>
@@ -1386,6 +1387,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7454744349230173024">Sua organização desativou o salvamento de senhas</translation>
 <translation id="7455988709578031708">Com base no seu histórico de navegação. Esta configuração está ativada.</translation>
 <translation id="7456774706094330779">Pré-carregamento estendido</translation>
+<translation id="7466328545712777810">Você vai receber notificações se houver uma redução no preço em algum site</translation>
 <translation id="7466431077154602932">Exibição compacta</translation>
 <translation id="7474822150871987353">Saiba mais sobre assuntos específicos em sites sem sair da página. Selecione uma ou mais palavras na página para fazer uma pesquisa.</translation>
 <translation id="7475192538862203634">Se estiver vendo isso com frequência, tente estas <ph name="BEGIN_LINK" />sugestões<ph name="END_LINK" />.</translation>

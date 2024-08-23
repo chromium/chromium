@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">Լիաէկրան խոշորացույց</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Միացնե՞լ թելադրումը</translation>
+<translation id="3392702002175498061">Ցույց տալ այցելությունների պատմության ամբողջ բովանդակությունը</translation>
 <translation id="3394432020929931914">, ծավալված է</translation>
 <translation id="3401474642070997151">Առաջարկներն անհատականացնելու համար սեղմեք մկնիկի աջ կոճակը կամ սեղմեք առաջարկի վրա և պահեք</translation>
 <translation id="3405101454990027959">Միացնել խոսափողի օգտագործման թույլտվությունը</translation>
@@ -812,6 +813,7 @@
 <translation id="385300504083504382">Սկիզբ</translation>
 <translation id="3859364108019690">Չհաջողվեց հեռարձակել հավելվածները</translation>
 <translation id="3861651314799684201">Սեղմեք Enter՝ ամբողջ էկրանը տեսագրելու համար</translation>
+<translation id="3870197372373144624">Փորձեք անջատել ձեր սարքը։</translation>
 <translation id="3886872229787704059">Այսօր բացել եք</translation>
 <translation id="3891340733213178823">Դուրս գրվելու համար երկու անգամ սեղմեք Ctrl+Shift+Q:</translation>
 <translation id="3893630138897523026">ChromeVox (ձայնային ուղեկցում)</translation>
@@ -927,6 +929,7 @@
 <translation id="4264977415328155183">, ծալված է</translation>
 <translation id="4265259722091164182">Անվանման Տառաշար</translation>
 <translation id="4269883910223712419">Այս սարքի ադմինիստրատորը կարող է՝</translation>
+<translation id="4271841440229266861">Ցույց տալ «Ֆայլեր» հավելվածի ամբողջ բովանդակությունը</translation>
 <translation id="4274537685965975248">«Ctrl + Alt + վար սլաք» ստեղնային դյուրանցումը փոփոխվել է։ End ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + աջ սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="4275283744500212192">Բացել պատուհանի դասավորության ընտրանքները</translation>
 <translation id="4275663329226226506">Տեսախցիկ և խոսափող</translation>
@@ -954,6 +957,7 @@
 <translation id="4327147325944669226">Տեսագրել խաղը</translation>
 <translation id="4333628967105022692">Lacros-ը չի աջակցվում, երբ մեկից ավելի օգտատերեր են մուտք գործում</translation>
 <translation id="4338109981321384717">Խոշորացույց</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Ձայնն անջատված է</translation>
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
 <translation id="4356872429719185452">Ցույց տալ թեժ կետի մանրամասները։ Թեժ կետը միանում է։</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Տեսագրում</translation>
@@ -1299,6 +1303,7 @@
 <translation id="5503884284981862082">Բացել/փակել Google Օգնականը</translation>
 <translation id="550391772491508736">Վերսկսել հեռարձակումը</translation>
 <translation id="5506975627792768506">Միացնել կամ անջատել խոշորացույցը</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, Եթե սեղմեք Enter, ձայնը կանջատվի։</translation>
 <translation id="5512042095225963688">Ջնջել նախորդ բառը</translation>
 <translation id="5519005148254860683">Ծավալել Google Tasks-ը</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@
 <translation id="8239034820133090126">Միացնել աջ աշխատասեղանը</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, հավելված</translation>
+<translation id="825129991941217170">Ցույց տալ Google Drive-ի ամբողջ բովանդակությունը</translation>
 <translation id="8257510091797044096">Կարգավորեք ձեր սարքը</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8262312463845990408">Միացնել/անջատել նվագարկումը</translation>
@@ -2339,6 +2345,7 @@
 <translation id="9098969848082897657">Անջատել հեռախոսի ձայնը</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> կամ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Հետարկել վերջին գործողությունը</translation>
+<translation id="9126642911267312373">Bluetooth-ը հասանելի չէ</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 րոպեից}one{# րոպեից}other{# րոպեից}}</translation>
 <translation id="9129245940793250979">Հետևի կոճակ</translation>
 <translation id="9133335900048457298">Հնարավոր չէ տեսագրել պաշտպանված բովանդակությունը</translation>

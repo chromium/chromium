@@ -430,6 +430,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7398989605938454041">Gamit ang mga profile sa Chromium, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chromium. Pinapadali nitong mapaghiwalay ang trabaho at kasiyahan.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Kailangan ng Chromium ng pahintulot na i-access ang iyong camera para sa site na ito</translation>
+<translation id="7458892263350425044">Para magamit ang iyong mikropono, bigyan ng access ang Chromium sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Para makatanggap ng mga update sa Chromium sa hinaharap, mangangailangan ka ng Windows 10 o mas bago. Ang computer na ito ay gumagamit ng Windows 7.</translation>
 <translation id="7467949745582939695">Muling ilunsad ang Chromium?</translation>
 <translation id="7483335560992089831">Hindi ma-install ang parehong Bersyon ng Chromium na kasalukuyang tumatakbo. Pakisara ang Chromium at subukan ulit.</translation>
@@ -471,6 +472,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
 <translation id="8166782796394721554">I-on ang karagdagang proteksyon sa JavaScript at WebAssembly engine ng Chromium</translation>
 <translation id="81770708095080097">Mapanganib ang file na ito, kaya na-block ito ng Chromium.</translation>
+<translation id="8223363452568144035">Para magamit ang iyong camera, bigyan ng access ang Chromium sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Hindi ma-verify ng Chromium kung saan galing ang extension na ito, at posibleng hindi ito ligtas. Alisin ito sa Chromium para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang personal na impormasyon.</translation>
 <translation id="8248265253516264921">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>
 <translation id="8254601181414348851">Mag-sign in sa Chromium sa bagong profile?</translation>
@@ -541,4 +543,5 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="983803489796659991">Hindi na-install dahil walang anumang data ng hash para sa application ang server ng update.</translation>
 <translation id="985498048907240953">Gamitin ang Chromium nang Walang Account</translation>
 <translation id="985602178874221306">Ang Mga May-akda ng Chromium</translation>
+<translation id="992780518932311116">Para magamit ang iyong lokasyon, bigyan ng access ang Chromium sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" /></translation>
 </translationbundle>

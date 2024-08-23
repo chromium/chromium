@@ -265,6 +265,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1178601482396475810">Gerätesynchronisierung verwalten</translation>
 <translation id="117916940443676133">Dein Sicherheitsschlüssel ist nicht durch eine PIN geschützt. Erstelle zuerst eine PIN, um die Anmeldedaten zu verwalten.</translation>
+<translation id="1179400851034021914">IBAN ist ungültig</translation>
 <translation id="1179902906564467236">Folge der Anleitung auf deinem Smartphone oder verwende die Kamera</translation>
 <translation id="118057123461613219">Sehr große Einsparungen</translation>
 <translation id="1181037720776840403">Entfernen</translation>
@@ -1427,6 +1428,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="2002109485265116295">Echtzeit</translation>
 <translation id="2002160221914907025">Experimentelle KI</translation>
 <translation id="2003130567827682533">Damit du "<ph name="NAME" />"-Daten aktivieren kannst, musst du zuerst eine Verbindung zu einem WLAN herstellen</translation>
+<translation id="2003596238737586336">Aktueller Zeitplan: <ph name="SUNRISE" />–<ph name="SUNSET" />. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="2004413981947727241">Passwörter auf allen Geräten verwenden</translation>
 <translation id="2004697686368036666">Einige Websites funktionieren dann möglicherweise nicht mehr richtig</translation>
 <translation id="2005199804247617997">Weitere Profile</translation>
@@ -1692,6 +1694,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2191754378957563929">An</translation>
 <translation id="2192505247865591433">von</translation>
 <translation id="219283042927675668">Tabs in Gruppe</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> verwaltet deine „Neuer Tab“-Seite; wird in neuem Tab geöffnet</translation>
 <translation id="2193365732679659387">Vertrauenseinstellungen</translation>
 <translation id="2194856509914051091">Wichtige Punkte</translation>
 <translation id="2195331105963583686">Du kannst dieses Gerät (<ph name="DEVICE_TYPE" />) auch danach verwenden, erhältst jedoch keine automatischen Software- und Sicherheitsupdates mehr</translation>
@@ -2499,6 +2502,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2749881179542288782">Grammatik zusammen mit Rechtschreibung prüfen</translation>
 <translation id="2750020734439919571">Weitere Einstellungen und Berechtigungen für die Chrome App</translation>
 <translation id="2750602041558385535">Ungeprüfter Download blockiert</translation>
+<translation id="275213133112113418">Deine Karte wurde gespeichert</translation>
 <translation id="2753623023919742414">Zum Suchen klicken</translation>
 <translation id="2754226775788136540">Suche nach für <ph name="PRIMARY_EMAIL" /> gespeicherte Geräte mit Unterstützung der Funktion „Schnelles Pairing“</translation>
 <translation id="2754825024506485820">Im Google Play Store findest du alle Apps, die du brauchst – so kannst du deine Produktivität steigern und dich unterhalten lassen. Du kannst Apps jederzeit installieren.</translation>
@@ -3592,6 +3596,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3568431410312984116">Automatisches Öffnen von „Formuliere für mich“ zulassen</translation>
 <translation id="3569382839528428029">Soll <ph name="APP_NAME" /> deinen Bildschirm freigeben?</translation>
 <translation id="3569614820047645079">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst.</translation>
+<translation id="3569617221227793022">Die Zeitzone ist derzeit auf <ph name="TIME_ZONE_ENTRY" /> eingestellt. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> darf die folgenden Dateien und Ordner aufrufen</translation>
 <translation id="3571734092741541777">Einrichten</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> Erweiterungen wurden deaktiviert</translation>
@@ -4343,6 +4348,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4085298594534903246">JavaScript wurde auf dieser Seite blockiert.</translation>
 <translation id="4085566053793776107">Designs anpassen</translation>
 <translation id="4085620044235559093">App zum Öffnen von <ph name="FILE_TYPE" />-Dateien auswählen</translation>
+<translation id="4086565736678483233">Du kannst über die Zahlungsmethoden darauf zugreifen</translation>
 <translation id="4087089424473531098">Die folgende Erweiterung wurde erstellt:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5814,6 +5820,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5187641678926990264">Seite als App &amp;installieren…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Standort verwenden. ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Android-Apps und ‑Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von deinem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf der Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer zu optimieren, bereitzustellen und zu verwalten. <ph name="BEGIN_LINK1" />Weitere Informationen zur Standortnutzung<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Zum Deaktivieren der Prozessfreigabe muss der Browser neu gestartet werden. Dieser Browser wird jetzt neu gestartet.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> werden verwendet</translation>
 <translation id="5190926251776387065">Port aktivieren</translation>
@@ -7049,6 +7056,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6097480669505687979">Wenn kein Speicherplatz freigegeben wird, können Nutzer und Daten automatisch entfernt werden.</translation>
 <translation id="6097600385983390082">Sprachsuche geschlossen</translation>
 <translation id="6098793583803863900">Eine unbekannte Datei wird zur Untersuchung auf schädliche Inhalte gescannt.</translation>
+<translation id="609892108553214365">Diese Karte auf deinem iPhone verwenden</translation>
 <translation id="609942571968311933">Text kopiert von <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061"><ph name="HOST" /> darf meine MIDI-Geräte immer steuern und neu programmieren</translation>
 <translation id="6100736666660498114">Startmenü</translation>
@@ -9161,6 +9169,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7663774460282684730">Tastenkombination verfügbar</translation>
 <translation id="7663859337051362114">eSIM-Profil hinzufügen</translation>
 <translation id="76641554187607347">Keine Tastatur verbunden</translation>
+<translation id="7664442418269614729">Diese Karte auf deinem iPhone verwenden</translation>
 <translation id="7665082356120621510">Speicherplatz reservieren</translation>
 <translation id="7665369617277396874">Konto hinzufügen</translation>
 <translation id="7665445336029073980">Vollständiger Downloadverlauf</translation>
@@ -9769,6 +9778,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8081623398548615289">Deine Sitzung wird von <ph name="MANAGER_NAME" /> verwaltet. Administratoren können dein Profil löschen und auch deinen Netzwerkverkehr ansehen.</translation>
 <translation id="8081989000209387414">ADB-Fehlerbehebung deaktivieren?</translation>
 <translation id="8082106343289440791">Mit "<ph name="DEVICE_NAME" />" koppeln?</translation>
+<translation id="8082132721957920509">Deine Karte wurde gespeichert</translation>
 <translation id="8082390128630131497">Wenn du die ADB-Fehlerbehebung deaktivierst, wird <ph name="DEVICE_TYPE" /> auf die Werkseinstellungen zurückgesetzt. Alle Benutzerkonten und lokalen Daten werden entfernt.</translation>
 <translation id="8084114998886531721">Gespeichertes Passwort</translation>
 <translation id="8084429490152575036">Einstellungen für Mobilfunk-APN</translation>

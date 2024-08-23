@@ -661,6 +661,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3386978599540877378">celoobrazovková lupa</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Zapnout diktování?</translation>
+<translation id="3392702002175498061">Zobrazit veškerý obsah historie procházení</translation>
 <translation id="3394432020929931914">, rozbaleno</translation>
 <translation id="3401474642070997151">Pokud si návrhy chcete přizpůsobit, klikněte na návrh pravým tlačítkem myši nebo ho podržte</translation>
 <translation id="3405101454990027959">Zapněte přístup k mikrofonu</translation>
@@ -812,6 +813,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="385300504083504382">Začátek</translation>
 <translation id="3859364108019690">Nelze streamovat aplikace</translation>
 <translation id="3861651314799684201">Stisknutím klávesy Enter spustíte nahrávání celé obrazovky</translation>
+<translation id="3870197372373144624">Zkuste zařízení vypnout.</translation>
 <translation id="3886872229787704059">Otevřeno dnes</translation>
 <translation id="3891340733213178823">Odhlaste se dvojitým stisknutím kombinace kláves Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (hlasová odezva)</translation>
@@ -927,6 +929,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4264977415328155183">, sbaleno</translation>
 <translation id="4265259722091164182">Velká písmena na začátku slov</translation>
 <translation id="4269883910223712419">Administrátor zařízení má následující možnosti:</translation>
+<translation id="4271841440229266861">Zobrazit veškerý obsah aplikace Soubory</translation>
 <translation id="4274537685965975248">Klávesová zkratka Ctrl + Alt + šipka dolů se změnila. Pokud chcete použít klávesu End, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vpravo.</translation>
 <translation id="4275283744500212192">Otevřít možnosti rozvržení okna</translation>
 <translation id="4275663329226226506">Média</translation>
@@ -954,6 +957,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4327147325944669226">Zaznamenat hru</translation>
 <translation id="4333628967105022692">Lacros není podporován, když je přihlášeno více uživatelů.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ztlumeno</translation>
 <translation id="4351244548802238354">Zavřít dialogové okno</translation>
 <translation id="4356872429719185452">Zobrazit podrobnosti o hotspotu. Probíhá zapínání hotspotu.</translation>
 <translation id="4364101114148522660">Zaznamenávání (<ph name="DURATION" />)</translation>
@@ -1299,6 +1303,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5503884284981862082">Otevřít/zavřít Asistenta Google</translation>
 <translation id="550391772491508736">Pokračovat v odesílání</translation>
 <translation id="5506975627792768506">Zapnout nebo vypnout lupu</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, stisknutím klávesy Enter ztlumíte zvuk.</translation>
 <translation id="5512042095225963688">Vymazat předchozí slovo</translation>
 <translation id="5519005148254860683">Rozbalit Úkoly Google</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2108,6 +2113,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8239034820133090126">Aktivovat plochu vpravo</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, baterie telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikace</translation>
+<translation id="825129991941217170">Zobrazit veškerý obsah na Disku Google</translation>
 <translation id="8257510091797044096">Nastavení zařízení</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8262312463845990408">Spustit nebo pozastavit přehrávání</translation>
@@ -2337,6 +2343,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9098969848082897657">Ztlumit telefon</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> nebo <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Vrátit zpět poslední akci</translation>
+<translation id="9126642911267312373">Bluetooth není k dispozici</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Za 1 min}few{Za # min}many{Za # min}other{Za # min}}</translation>
 <translation id="9129245940793250979">Zadní tlačítko</translation>
 <translation id="9133335900048457298">Chráněný obsah zaznamenat nelze</translation>

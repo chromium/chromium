@@ -661,6 +661,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3386978599540877378">a lupa em ecrã inteiro</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Ativar o ditado?</translation>
+<translation id="3392702002175498061">Mostrar todo o conteúdo do histórico de navegação</translation>
 <translation id="3394432020929931914">, expandido</translation>
 <translation id="3401474642070997151">Para personalizar as sugestões, clique com o botão direito do rato ou prima sem soltar uma sugestão</translation>
 <translation id="3405101454990027959">Ativar acesso ao microfone</translation>
@@ -812,6 +813,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="385300504083504382">Início</translation>
 <translation id="3859364108019690">Não é possível fazer stream de apps</translation>
 <translation id="3861651314799684201">Prima Enter para gravar o ecrã inteiro</translation>
+<translation id="3870197372373144624">Experimente encerrar o seu dispositivo.</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Prima Ctrl+Shift+Q duas vezes para terminar sessão.</translation>
 <translation id="3893630138897523026">ChromeVox (respostas faladas)</translation>
@@ -927,6 +929,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4264977415328155183">, reduzido</translation>
 <translation id="4265259722091164182">Iniciar Cada Palavra com Maiúscula</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode:</translation>
+<translation id="4271841440229266861">Mostrar todo o conteúdo do Files</translation>
 <translation id="4274537685965975248">O atalho de teclado Ctrl + Alt + seta para baixo foi alterado. Para utilizar a tecla Fim, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para a direita.</translation>
 <translation id="4275283744500212192">Abra as opções do esquema de janelas</translation>
 <translation id="4275663329226226506">Multimédia</translation>
@@ -954,6 +957,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4327147325944669226">Gravar jogo</translation>
 <translation id="4333628967105022692">O Lacros não é suportado enquanto vários utilizadores tiverem sessão iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, som desativado</translation>
 <translation id="4351244548802238354">Fechar caixa de diálogo</translation>
 <translation id="4356872429719185452">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi está a ser ativada.</translation>
 <translation id="4364101114148522660">A gravar: <ph name="DURATION" /></translation>
@@ -1299,6 +1303,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5503884284981862082">Abrir/fechar o Assistente Google</translation>
 <translation id="550391772491508736">Retomar transmissão</translation>
 <translation id="5506975627792768506">Ativar ou desativar a lupa</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, premir Enter desativa o áudio.</translation>
 <translation id="5512042095225963688">Eliminar a palavra anterior</translation>
 <translation id="5519005148254860683">Expandir Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8239034820133090126">Ativar espaço de trabalho à direita</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, bateria do telemóvel: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicação</translation>
+<translation id="825129991941217170">Mostrar todo o conteúdo do Google Drive</translation>
 <translation id="8257510091797044096">Configurar o dispositivo</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8262312463845990408">Ativar/desativar reprodução</translation>
@@ -2339,6 +2345,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9098969848082897657">Silenciar telemóvel</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Anular a última ação</translation>
+<translation id="9126642911267312373">Bluetooth indisponível</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Dentro de 1 min}other{Dentro de # min}}</translation>
 <translation id="9129245940793250979">Botão traseiro</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>

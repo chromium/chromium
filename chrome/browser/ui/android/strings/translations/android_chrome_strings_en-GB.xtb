@@ -199,6 +199,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1928618076168182477">Showing visual view</translation>
 <translation id="1928696683969751773">Updates</translation>
 <translation id="1933845786846280168">Selected Tab</translation>
+<translation id="1939549834451474504">Passwords will stop working soon because Google Play services isn't available. You can make a copy of your saved passwords before they stop working. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Save passwords</translation>
 <translation id="1944535645109964458">No passkeys available</translation>
 <translation id="1957557050935255529">Loading PDF…</translation>
@@ -1385,6 +1386,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7454744349230173024">Your organisation turned off saving passwords</translation>
 <translation id="7455988709578031708">Based on your browsing history. This setting is on.</translation>
 <translation id="7456774706094330779">Extended preloading</translation>
+<translation id="7466328545712777810">You'll get notified if the price drops on any site</translation>
 <translation id="7466431077154602932">Compact view</translation>
 <translation id="7474822150871987353">Learn about topics on websites without leaving the page. Select one or more words on the page to search for them.</translation>
 <translation id="7475192538862203634">If you’re seeing this frequently, try these <ph name="BEGIN_LINK" />suggestions<ph name="END_LINK" />.</translation>

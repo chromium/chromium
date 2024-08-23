@@ -661,6 +661,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="3386978599540877378">a lupa de pantalla completa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Queres activar a función de ditado?</translation>
+<translation id="3392702002175498061">Mostrar todo o contido do historial de navegación</translation>
 <translation id="3394432020929931914">, despregado</translation>
 <translation id="3401474642070997151">Para personalizar as suxestións, fai clic co botón dereito nunha ou mantena premida</translation>
 <translation id="3405101454990027959">Activar acceso ao micrófono</translation>
@@ -813,6 +814,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="385300504083504382">Comezo</translation>
 <translation id="3859364108019690">Non se pode reproducir en tempo real o contido das aplicacións</translation>
 <translation id="3861651314799684201">Premer Introducir para gravar a pantalla completa</translation>
+<translation id="3870197372373144624">Proba a apagar o dispositivo.</translation>
 <translation id="3886872229787704059">Abriuse hoxe</translation>
 <translation id="3891340733213178823">Preme Ctrl + Maiús + Q dúas veces para pechar sesión.</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios orais)</translation>
@@ -928,6 +930,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4264977415328155183">, contraído</translation>
 <translation id="4265259722091164182">Maiúscula En Cada Palabra</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode facer o seguinte:</translation>
+<translation id="4271841440229266861">Mostrar todo o contido de Ficheiros</translation>
 <translation id="4274537685965975248">O atallo Control + Alt + Frecha abaixo cambiou. Para usar a tecla Fin, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha dereita.</translation>
 <translation id="4275283744500212192">Abre as opcións de deseño de ventá</translation>
 <translation id="4275663329226226506">Multimedia</translation>
@@ -955,6 +958,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4327147325944669226">Gravar xogo</translation>
 <translation id="4333628967105022692">Non pode utilizarse Lacros se hai varios usuarios coa sesión iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, silenciado</translation>
 <translation id="4351244548802238354">Pechar cadro de diálogo</translation>
 <translation id="4356872429719185452">Mostrar os detalles da zona wifi. A zona wifi está activada.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Gravando</translation>
@@ -1300,6 +1304,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5503884284981862082">Abre ou pecha o Asistente de Google</translation>
 <translation id="550391772491508736">Retomar emisión</translation>
 <translation id="5506975627792768506">Activa ou desactiva a lupa</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, ao pulsar Introducir silenciarase o audio.</translation>
 <translation id="5512042095225963688">Elimina a palabra anterior</translation>
 <translation id="5519005148254860683">Despregar Tarefas de Google</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2110,6 +2115,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8239034820133090126">Activar escritorio da dereita</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicación</translation>
+<translation id="825129991941217170">Mostrar todo o contido de Google Drive</translation>
 <translation id="8257510091797044096">Configurar o teu dispositivo</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8262312463845990408">Activar/desactivar reprodución</translation>
@@ -2340,6 +2346,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desfai a última acción</translation>
+<translation id="9126642911267312373">O Bluetooth non está dispoñible</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Dentro de 1 min}other{Dentro de # min}}</translation>
 <translation id="9129245940793250979">Botón traseiro</translation>
 <translation id="9133335900048457298">Non se pode gravar contido protexido</translation>

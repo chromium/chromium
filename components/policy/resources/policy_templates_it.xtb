@@ -458,6 +458,27 @@ dall'upgrade ad HTTPS da parte di questa funzionalità.</translation>
 <translation id="1348603614848418219">Disattiva la migrazione dei dispositivi gestiti da <ph name="MS_AD_NAME" /> nella gestione del cloud.</translation>
 <translation id="1352799151662469739">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene bloccato quando viene usata l'alimentazione CA.</translation>
 <translation id="1353416417709895349">Disattiva controlli dell'intercettazione DNS e barre di informazioni "http://intranetsite/" alternative</translation>
+<translation id="1353910503649343481">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
+
+       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
+
+       L'impostazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e impedisce agli utenti di modificare le impostazioni del proxy
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, un URL a un file proxy .pac o uno script PAC codificato come URL di dati con tipo MIME application/x-ns-proxy-autoconfig
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, che impedisce allo stack di rete di eseguire il fallback alle connessioni dirette con script PAC non valido o non disponibile
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, un URL del server proxy
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, un elenco di host per i quali il proxy verrà bypassato
+
+       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+      Nota: per esempi più dettagliati, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1354280967938151061">Disattiva ARC</translation>
 <translation id="1354424209129232709">Massimo:</translation>
 <translation id="1355050231181289439"> Questo criterio consente di stabilire se la mappatura migliorata delle scorciatoie da tastiera internazionali è attivata.
@@ -4464,6 +4485,25 @@ Se questo criterio non viene configurato, la sintassi deprecata precedente verr�
           Se questo criterio viene impostato su true, WebSQL in contesti non sicuri sarà disponibile.
           Se il criterio viene impostato su false o se non viene configurato, WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.
 Questo criterio è stato rimosso nella versione M112.</translation>
+<translation id="4401357095119743747">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene trasferito all'interno di <ph name="PRODUCT_OS_NAME" />.
+
+      I campi <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene trasferito tra un'origine e una destinazione e quali tag includere nella richiesta di analisi di quel file. Un tag che corrisponde a una regola "enable" verrà incluso nella richiesta di analisi se l'origine e la destinazione corrispondono alla regola associata a questo tag, purché nessuna regola "disable" con lo stesso tag corrisponda al trasferimento. L'analisi viene eseguita se almeno un tag deve essere incluso nella richiesta. Una regola <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> è definita da un elenco di coppie, dove ogni coppia contiene un elenco di origini e un elenco di destinazioni. Il campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> definisce il file system a cui deve essere applicata una regola.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
+
+      Se il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> viene impostato su 1, <ph name="PRODUCT_OS_NAME" /> attende di ricevere una risposta dal servizio di analisi prima di consentire il trasferimento. Con qualsiasi altro valore intero, <ph name="PRODUCT_OS_NAME" /> consente immediatamente il trasferimento.
+
+      Se il campo <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" /> viene bloccato, <ph name="PRODUCT_OS_NAME" /> non consente agli utenti di trasferire il file se si verifica un errore durante la comunicazione con il servizio di analisi. Con qualsiasi altro valore, <ph name="PRODUCT_OS_NAME" /> consente il trasferimento del file se si verifica un errore durante la comunicazione con il servizio di analisi.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> consente di stabilire se <ph name="PRODUCT_OS_NAME" /> blocca o autorizza i file protetti tramite password.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> consente di controllare se <ph name="PRODUCT_OS_NAME" /> blocca o autorizza i file troppo grandi per essere analizzati.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> viene utilizzato per determinare per quali tag il connettore deve richiedere all'utente di inserire una giustificazione per ignorare una scansione che risulti in un avviso ignorabile. Se il campo non viene configurato, si presume che non sia richiesta alcuna giustificazione.
+
+      I campi <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> vengono utilizzati per configurare un messaggio da mostrare all'utente quando viene visualizzato un avviso dopo una scansione che ha rilevato dei problemi. Il campo del messaggio contiene il testo da mostrare all'utente e può includere al massimo 200 caratteri. Il campo <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> contiene un URL fornito dall'amministratore su cui l'utente potrà fare clic per ricevere maggiori informazioni fornite dal cliente sul motivo per cui l'azione è stata bloccata. Il campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> è facoltativo e contiene la lingua del messaggio. Un campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> vuoto o con il valore "default" indica il messaggio da utilizzare se non è disponibile alcun messaggio nella lingua dell'utente. Il campo dei tag consente di specificare per quale tipo di scansioni viene visualizzato il messaggio. L'elenco <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> può avere alcune voci o nessuna, e per ciascuna voce i campi del messaggio e dei tag non devono essere vuoti.
+
+      Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="4402887080007986374">La versione valida dei Termini di servizio dell'account della scuola</translation>
 <translation id="4408428864159735559">Elenco di condivisioni di file di rete preconfigurate.</translation>
 <translation id="4410236409016356088">Attiva la limitazione della larghezza di banda della rete</translation>

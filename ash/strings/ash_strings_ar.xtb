@@ -662,6 +662,7 @@
 <translation id="3386978599540877378">المكبِّر بملء الشاشة</translation>
 <translation id="3387527074123400161">‏نظام التشغيل Chromium</translation>
 <translation id="3389599499324569679">هل تريد تفعيل ميزة "إملاء"؟</translation>
+<translation id="3392702002175498061">عرض كل محتوى سجلّ التصفّح</translation>
 <translation id="3394432020929931914">، تم توسيعها</translation>
 <translation id="3401474642070997151">لتخصيص الاقتراحات، انقر بزر الماوس الأيمن على أحدها أو اضغط مع الاستمرار عليه</translation>
 <translation id="3405101454990027959">السماح بالوصول إلى الميكروفون</translation>
@@ -814,6 +815,7 @@
 <translation id="385300504083504382">البداية</translation>
 <translation id="3859364108019690">يتعذّر بث محتوى التطبيقات</translation>
 <translation id="3861651314799684201">‏اضغط على المفتاح Enter لتسجيل فيديو للشاشة بأكملها</translation>
+<translation id="3870197372373144624">جرِّب إيقاف تشغيل جهازك.</translation>
 <translation id="3886872229787704059">تم فتحه اليوم.</translation>
 <translation id="3891340733213178823">‏للخروج اضغط على Ctrl+Shift+Q مرتين.</translation>
 <translation id="3893630138897523026">‏ChromeVox (التعليق المنطوق)</translation>
@@ -929,6 +931,7 @@
 <translation id="4264977415328155183">، تم تصغيرها</translation>
 <translation id="4265259722091164182">حالة أحرف العنوان</translation>
 <translation id="4269883910223712419">يمتلك مشرف هذا الجهاز القدرة على ما يلي:</translation>
+<translation id="4271841440229266861">عرض كل محتوى تطبيق "الملفات"</translation>
 <translation id="4274537685965975248">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأسفل". لاستخدام مفتاح End، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليمين".</translation>
 <translation id="4275283744500212192">فتح خيارات تنسيق النوافذ</translation>
 <translation id="4275663329226226506">الوسائط</translation>
@@ -956,6 +959,7 @@
 <translation id="4327147325944669226">تسجيل اللعبة</translation>
 <translation id="4333628967105022692">‏لا يمكن استخدام متصفِّح Lacros إذا سجّل العديد من المستخدمين دخولهم.</translation>
 <translation id="4338109981321384717">العدسة المكبرة</translation>
+<translation id="4348580496249286403">‫<ph name="VOLUME_LEVEL" />، الصوت مكتوم</translation>
 <translation id="4351244548802238354">إغلاق مربع الحوار</translation>
 <translation id="4356872429719185452">يمكنك عرض تفاصيل نقطة الاتصال. ويجري الآن تفعيل نقطة الاتصال.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  جارٍ التسجيل</translation>
@@ -1301,6 +1305,7 @@
 <translation id="5503884284981862082">‏فتح/إغلاق "مساعد Google"</translation>
 <translation id="550391772491508736">استئناف البث</translation>
 <translation id="5506975627792768506">تفعيل المكبِّر أو إيقافه</translation>
+<translation id="5507778598655387680">‏‫<ph name="VOLUME_LEVEL" />، يؤدي الضغط على مفتاح Enter إلى كتم الصوت.</translation>
 <translation id="5512042095225963688">حذف الكلمة السابقة</translation>
 <translation id="5519005148254860683">‏توسيع "مهام Google"</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2112,6 +2117,7 @@
 <translation id="8239034820133090126">تفعيل سطح المكتب على يسار الشاشة</translation>
 <translation id="8247060538831475781">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، بطارية الهاتف <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />، تطبيق</translation>
+<translation id="825129991941217170">‏عرض كل محتوى Google Drive</translation>
 <translation id="8257510091797044096">ضبط إعدادات جهازك</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8262312463845990408">استئناف التشغيل أو إيقافه مؤقتًا</translation>
@@ -2342,6 +2348,7 @@
 <translation id="9098969848082897657">كتم صوت الهاتف</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> أو <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">التراجع عن الإجراء الأخير</translation>
+<translation id="9126642911267312373">البلوتوث غير متوفّر</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{بعد دقيقة واحدة}zero{بعد # دقيقة}two{بعد دقيقتين}few{بعد # دقائق}many{بعد # دقيقة}other{بعد # دقيقة}}</translation>
 <translation id="9129245940793250979">الزرّ الخلفي</translation>
 <translation id="9133335900048457298">لا يمكن تسجيل المحتوى المحمي</translation>

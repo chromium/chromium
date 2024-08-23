@@ -265,6 +265,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1178601482396475810">Xestionar a sincronización do dispositivo</translation>
 <translation id="117916940443676133">A túa chave de seguranza non está protexida cun PIN. Para xestionar os datos de inicio de sesión, primeiro crea un PIN.</translation>
+<translation id="1179400851034021914">O IBAN non é válido</translation>
 <translation id="1179902906564467236">Sigue as instrucións no teléfono ou usa a aplicación da cámara</translation>
 <translation id="118057123461613219">Aforro moi elevado</translation>
 <translation id="1181037720776840403">Eliminar</translation>
@@ -1429,6 +1430,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="2002109485265116295">Tempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Para activar <ph name="NAME" />, primeiro conéctate a unha rede wifi</translation>
+<translation id="2003596238737586336">Agora mesmo o horario está definido de <ph name="SUNRISE" /> a <ph name="SUNSET" />. A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="2004413981947727241">Usa os contrasinais en calquera dispositivo</translation>
 <translation id="2004697686368036666">As funcións dalgúns sitios poden deixar de funcionar</translation>
 <translation id="2005199804247617997">Outros perfís</translation>
@@ -1694,6 +1696,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2191754378957563929">Activado</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="219283042927675668">Pestanas no grupo</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> xestiona a túa páxina Nova pestana (abrirase nunha pestana nova)</translation>
 <translation id="2193365732679659387">Configuración de confianza</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2195331105963583686">Seguirás podendo utilizar este <ph name="DEVICE_TYPE" /> despois desta data, pero deixará de recibir actualizacións de software e seguranza automáticas</translation>
@@ -2271,6 +2274,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2593499352046705383">Antes de comezar, asegúrate de ter unha copia de seguranza dos teus datos. Ao instalar <ph name="DEVICE_OS" /> sobrescribirase a información da unidade de disco duro. Máis información en g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Xestionar seguranza de V8</translation>
 <translation id="2597073208962000830">A función Compartir por Nearby usa o Bluetooth para buscar dispositivos próximos.</translation>
+<translation id="2598136842498757793">Personalizar os botóns da barra de ferramentas</translation>
 <translation id="2598710988533271874">Nova versión de Chrome dispoñible</translation>
 <translation id="2599048253926156421">Copiouse o nome do usuario no portapapeis</translation>
 <translation id="2602501489742255173">Pasa o dedo cara arriba para comezar</translation>
@@ -2500,6 +2504,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2749881179542288782">Comprobar a gramática e a ortografía</translation>
 <translation id="2750020734439919571">Máis opcións de configuración e permisos da aplicación Chrome</translation>
 <translation id="2750602041558385535">Carga non verificada bloqueada</translation>
+<translation id="275213133112113418">Gardouse a tarxeta</translation>
 <translation id="2753623023919742414">Fai clic nun obxecto para buscalo</translation>
 <translation id="2754226775788136540">Buscando dispositivos de Vinculación rápida gardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">En Google Play Store, atopa as aplicacións que necesitas: tes desde material relacionado coa produtividade ata contido para entreterte. Podes instalar aplicacións cando queiras.</translation>
@@ -3595,6 +3600,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3568431410312984116">Permítese que a función Axúdame a escribir se abra automaticamente</translation>
 <translation id="3569382839528428029">Queres que <ph name="APP_NAME" /> comparta a túa pantalla?</translation>
 <translation id="3569614820047645079">Os ficheiros de A miña unidade sincronízanse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet.</translation>
+<translation id="3569617221227793022">O fuso horario actualmente está definido como <ph name="TIME_ZONE_ENTRY" />. A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os seguintes ficheiros e cartafoles</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3572031449439748861">Desactiváronse <ph name="NUM_EXTENSIONS" /> extensións</translation>
@@ -4045,6 +4051,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3866142613641074814">Tes contrasinais que están en perigo</translation>
 <translation id="3866249974567520381">Descrición</translation>
 <translation id="3867134342671430205">Para mover unha pantalla, arrástraa ou utiliza as teclas das frechas</translation>
+<translation id="3867831579565057323">Mapear a túa pantalla táctil</translation>
 <translation id="3867944738977021751">Campos de certificado</translation>
 <translation id="3869917919960562512">Índice incorrecto.</translation>
 <translation id="3870626286046977643">Compartir tamén audio do sistema</translation>
@@ -4348,6 +4355,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4085298594534903246">JavaScript bloqueouse nesta páxina.</translation>
 <translation id="4085566053793776107">Personalizar os temas</translation>
 <translation id="4085620044235559093">Escolle unha aplicación para abrir <ph name="FILE_TYPE" /> ficheiros</translation>
+<translation id="4086565736678483233">Poderás acceder a ela nos métodos de pago</translation>
 <translation id="4087089424473531098">Creouse a extensión:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5820,6 +5828,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5187641678926990264">&amp;Instalar páxina como aplicación...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Usa a localización. Permite que os servizos, sitios web e aplicacións para Android e ChromeOS con permiso de localización utilicen a do teu dispositivo. A opción Precisión da localización proporciónalles unha localización máis exacta aos servizos e aplicacións para Android. Con este fin, Google procesa periodicamente a información captada polos sinais sen fíos e os sensores do teu dispositivo para obter con participación colectiva a localización deses sinais. Estes datos utilízanse sen identificarte para mellorar a precisión da localización e os servizos baseados nela, así como para perfeccionar, proporcionar e manter os servizos de Google en función dos intereses lexítimos de Google e de terceiros coa finalidade de satisfacer as necesidades dos usuarios. <ph name="BEGIN_LINK1" />Máis información sobre o uso da localización<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Para desactivar o uso compartido de procesos, é necesario reiniciar o navegador. Este reiniciarase agora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> en uso</translation>
 <translation id="5190926251776387065">Activar porto</translation>
@@ -7056,6 +7065,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6097480669505687979">Se non liberas espazo, é posible que se eliminen usuarios e datos automaticamente.</translation>
 <translation id="6097600385983390082">Pechouse a busca por voz</translation>
 <translation id="6098793583803863900">Estase analizando un ficheiro descoñecido para comprobar se o seu contido é perigoso.</translation>
+<translation id="609892108553214365">Usa esta tarxeta no teu iPhone</translation>
 <translation id="609942571968311933">Copiouse o texto desde o dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="6099766472403716061">Permitir sempre que <ph name="HOST" /> controle e volva programar os teus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menú de inicio</translation>
@@ -9167,6 +9177,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7663774460282684730">Hai atallos de teclado dispoñibles</translation>
 <translation id="7663859337051362114">Engadir perfil de eSIM</translation>
 <translation id="76641554187607347">Non hai ningún teclado conectado</translation>
+<translation id="7664442418269614729">Usa esta tarxeta no teu iPhone</translation>
 <translation id="7665082356120621510">Reservar tamaño</translation>
 <translation id="7665369617277396874">Engadir conta</translation>
 <translation id="7665445336029073980">Historial de descargas completo</translation>
@@ -9550,6 +9561,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="79312157130859720"><ph name="APP_NAME" /> está compartindo a túa pantalla e o teu audio.</translation>
 <translation id="793293630927785390">Cadro de diálogo Nova rede wifi</translation>
 <translation id="7932969338829957666">En Linux, os cartafoles compartidos están en <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Configura o teu dispositivo de pantalla táctil e mapéao á pantalla correcta</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Activar o son do sitio}other{Activar o son dos sitios}}</translation>
 <translation id="7933486544522242079">&amp;Gardar e compartir</translation>
 <translation id="7933518760693751884">Se queres gardar unha páxina para lela despois, fai clic na icona do marcador</translation>
@@ -9773,6 +9785,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> xestiona a túa sesión. Os administradores poden eliminar o teu perfil e tamén supervisar o tráfico da túa rede.</translation>
 <translation id="8081989000209387414">Queres desactivar a depuración de ADB?</translation>
 <translation id="8082106343289440791">Queres sincronizar o dispositivo co teclado (<ph name="DEVICE_NAME" />)?</translation>
+<translation id="8082132721957920509">Gardouse a tarxeta</translation>
 <translation id="8082390128630131497">A desactivación da depuración de ADB restablecerá a configuración de fábrica deste <ph name="DEVICE_TYPE" />. Eliminaranse todas as contas de usuario e os datos locais.</translation>
 <translation id="8084114998886531721">Gardouse o contrasinal</translation>
 <translation id="8084429490152575036">Configuración do APN da rede móbil</translation>

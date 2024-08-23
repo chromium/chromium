@@ -265,6 +265,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1178601482396475810">Gestionar sincronización del dispositivo</translation>
 <translation id="117916940443676133">Tu llave de seguridad no está protegida mediante un PIN. Para gestionar los datos de inicio de sesión, primero debes crear un PIN.</translation>
+<translation id="1179400851034021914">El IBAN no es válido</translation>
 <translation id="1179902906564467236">Sigue las instrucciones que aparecen en tu teléfono o usa la aplicación de la cámara</translation>
 <translation id="118057123461613219">Ahorro muy elevado</translation>
 <translation id="1181037720776840403">Quitar</translation>
@@ -1430,6 +1431,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="2002109485265116295">En tiempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Para activar los datos de "<ph name="NAME" />", conéctate a una red Wi‑Fi</translation>
+<translation id="2003596238737586336">El horario actual establecido es de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Este ajuste lo gestiona tu administrador.</translation>
 <translation id="2004413981947727241">Usa tus contraseñas en cualquier dispositivo</translation>
 <translation id="2004697686368036666">Es posible que las funciones de algunos sitios no funcionen</translation>
 <translation id="2005199804247617997">Otros perfiles</translation>
@@ -1695,6 +1697,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2191754378957563929">Activado</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="219283042927675668">Pestañas en el grupo</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> gestiona tu página Nueva pestaña, se abre en una pestaña nueva</translation>
 <translation id="2193365732679659387">Configuración de confianza</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
 <translation id="2195331105963583686">Podrás seguir utilizando este <ph name="DEVICE_TYPE" /> después de esa fecha, pero ya no recibirás actualizaciones de software y seguridad automáticas.</translation>
@@ -2503,6 +2506,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2749881179542288782">Comprobar la ortografía y la gramática</translation>
 <translation id="2750020734439919571">Más ajustes y permisos de la aplicación Chrome</translation>
 <translation id="2750602041558385535">Descarga no verificada bloqueada</translation>
+<translation id="275213133112113418">Tu tarjeta se ha guardado</translation>
 <translation id="2753623023919742414">Haz clic para buscar</translation>
 <translation id="2754226775788136540">Buscando dispositivos de Emparejamiento rápido guardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Encuentra las aplicaciones que necesitas, como de productividad o de entretenimiento, en Google Play Store. Puedes descargarlas en cualquier momento.</translation>
@@ -3597,6 +3601,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3568431410312984116">Permitir que Ayúdame a escribir se abra automáticamente</translation>
 <translation id="3569382839528428029">¿Quieres que <ph name="APP_NAME" /> comparta tu pantalla?</translation>
 <translation id="3569614820047645079">Tus archivos de Mi unidad se sincronizan automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet.</translation>
+<translation id="3569617221227793022">La zona horaria definida es <ph name="TIME_ZONE_ENTRY" />. Este ajuste lo gestiona tu administrador.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> puede ver los siguientes archivos y carpetas:</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> extensiones se han desactivado</translation>
@@ -4347,6 +4352,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4085298594534903246">Se ha bloqueado JavaScript en esta página.</translation>
 <translation id="4085566053793776107">Personalizar temas</translation>
 <translation id="4085620044235559093">Elige una aplicación para abrir los archivos <ph name="FILE_TYPE" /></translation>
+<translation id="4086565736678483233">Puedes acceder a ella en tus métodos de pago</translation>
 <translation id="4087089424473531098">Se ha creado la extensión:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5818,6 +5824,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5187641678926990264">&amp;Instalar página como aplicación...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Usa la ubicación. Permite que las aplicaciones, los sitios web y los servicios de ChromeOS y Android que tengan el permiso de ubicación usen la ubicación de tu dispositivo. La precisión de la ubicación proporciona una ubicación más precisa para las aplicaciones y los servicios de Android. Para ello, Google procesa periódicamente la información de los sensores y señales inalámbricas de tu dispositivo para recoger las ubicaciones de las señales inalámbricas. Estos datos se usan sin identificarte para mejorar la precisión de la ubicación y los servicios basados en ella, así como para mejorar, proporcionar y mantener los servicios de Google en función de sus propios intereses legítimos y los de terceros con el fin de satisfacer las necesidades de los usuarios. <ph name="BEGIN_LINK1" />Más información sobre cómo usar la ubicación<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Para inhabilitar el uso compartido de procesos, es necesario reiniciar el navegador. Este navegador se reiniciará ahora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Usando <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Activar puerto</translation>
@@ -7056,6 +7063,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6097480669505687979">Si no liberas espacio, es posible que se eliminen automáticamente usuarios y datos.</translation>
 <translation id="6097600385983390082">La búsqueda por voz está cerrada</translation>
 <translation id="6098793583803863900">Se está analizando un archivo desconocido en busca de contenido peligroso.</translation>
+<translation id="609892108553214365">Usa esta tarjeta en tu iPhone</translation>
 <translation id="609942571968311933">Texto copiado desde <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Permitir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menú Inicio</translation>
@@ -9168,6 +9176,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7663774460282684730">Combinación de teclas disponible</translation>
 <translation id="7663859337051362114">Añadir perfil de eSIM</translation>
 <translation id="76641554187607347">No hay teclados conectados</translation>
+<translation id="7664442418269614729">Usa esta tarjeta en tu iPhone</translation>
 <translation id="7665082356120621510">Reservar tamaño</translation>
 <translation id="7665369617277396874">Añadir cuenta</translation>
 <translation id="7665445336029073980">Historial de descargas completo</translation>
@@ -9776,6 +9785,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> gestiona tu sesión. Los administradores pueden eliminar tu perfil y monitorizar tu tráfico de red.</translation>
 <translation id="8081989000209387414">¿Quieres inhabilitar la depuración ADB?</translation>
 <translation id="8082106343289440791">¿Quieres emparejar "<ph name="DEVICE_NAME" />"?</translation>
+<translation id="8082132721957920509">Tu tarjeta se ha guardado</translation>
 <translation id="8082390128630131497">Si se inhabilita la depuración ADB, se restablecerá la configuración de fábrica de este <ph name="DEVICE_TYPE" />. Se borrarán todas las cuentas de usuario y todos los datos locales.</translation>
 <translation id="8084114998886531721">Contraseña guardada</translation>
 <translation id="8084429490152575036">Ajustes de APN móvil</translation>

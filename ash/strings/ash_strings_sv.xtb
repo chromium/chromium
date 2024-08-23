@@ -661,6 +661,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3386978599540877378">helskärmsförstoraren</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Vill du aktivera diktering?</translation>
+<translation id="3392702002175498061">Visa allt innehåll i webbhistoriken</translation>
 <translation id="3394432020929931914">, utökad</translation>
 <translation id="3401474642070997151">Anpassa förslag genom att högerklicka eller trycka länge på ett förslag</translation>
 <translation id="3405101454990027959">Aktivera mikrofonåtkomst.</translation>
@@ -812,6 +813,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="385300504083504382">Början</translation>
 <translation id="3859364108019690">Det gick inte att streama appar</translation>
 <translation id="3861651314799684201">Tryck på retur för att spela in hela skärmen</translation>
+<translation id="3870197372373144624">Testa att stänga av enheten.</translation>
 <translation id="3886872229787704059">Öppnades i dag</translation>
 <translation id="3891340733213178823">Tryck på Ctrl+Skift+Q två gånger om du vill logga ut.</translation>
 <translation id="3893630138897523026">ChromeVox (talad feedback)</translation>
@@ -927,6 +929,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4264977415328155183">, komprimerad</translation>
 <translation id="4265259722091164182">Inledande versal</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>
+<translation id="4271841440229266861">Visa allt innehåll i Files</translation>
 <translation id="4274537685965975248">Kortkommandot Ctrl + Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + högerpil för att använda End-tangenten.</translation>
 <translation id="4275283744500212192">Öppna alternativ för fönsterlayout</translation>
 <translation id="4275663329226226506">Media</translation>
@@ -954,6 +957,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4327147325944669226">Spela in spel</translation>
 <translation id="4333628967105022692">Det finns inget stöd för Lacros när flera användare är inloggade.</translation>
 <translation id="4338109981321384717">Förstoringsglas</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />. Ljud av</translation>
 <translation id="4351244548802238354">Stäng dialogrutan</translation>
 <translation id="4356872429719185452">Visa information om surfzon. Surfzonen aktiveras.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Spelar in</translation>
@@ -1299,6 +1303,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5503884284981862082">Öppna/stäng Google Assistent</translation>
 <translation id="550391772491508736">Återuppta castingen</translation>
 <translation id="5506975627792768506">Aktivera och inaktivera skärmförstoraren</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />. Tryck på Retur för att stänga av ljudet.</translation>
 <translation id="5512042095225963688">Radera föregående ord</translation>
 <translation id="5519005148254860683">Utöka Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8239034820133090126">Aktivera skrivbordet till höger</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
+<translation id="825129991941217170">Visa allt Google Drive-innehåll</translation>
 <translation id="8257510091797044096">Konfigurera enheten</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8262312463845990408">Aktivera och inaktivera uppspelning</translation>
@@ -2339,6 +2345,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9098969848082897657">Inga telefonljud</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Ångra den senaste åtgärden</translation>
+<translation id="9126642911267312373">Bluetooth är inte tillgängligt</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Om 1 minut}other{Om # minuter}}</translation>
 <translation id="9129245940793250979">Bakre knapp</translation>
 <translation id="9133335900048457298">Det går inte att spela in skyddat innehåll</translation>

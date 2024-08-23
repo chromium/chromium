@@ -265,6 +265,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1178581264944972037">Pausatu</translation>
 <translation id="1178601482396475810">Kudeatu gailuaren sinkronizazioa</translation>
 <translation id="117916940443676133">Segurtasun-giltza ez daukazu PIN kodearekin babestuta. Saioa hasteko datuak kudeatzeko, sortu PIN bat.</translation>
+<translation id="1179400851034021914">IBANak ez du balio</translation>
 <translation id="1179902906564467236">Jarraitu zure telefonoko jarraibideei edo erabili Kamera aplikazioa</translation>
 <translation id="118057123461613219">Aurrezte oso handia</translation>
 <translation id="1181037720776840403">Kendu</translation>
@@ -1430,6 +1431,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="2002109485265116295">Denbora errealean</translation>
 <translation id="2002160221914907025">AA esperimentala</translation>
 <translation id="2003130567827682533">"<ph name="NAME" />" datuak aktibatzeko, konektatu wifi-sare batera</translation>
+<translation id="2003596238737586336"><ph name="SUNRISE" />-<ph name="SUNSET" /> tarterako dago ezarrita oraingo programazioa. Administratzaileak kudeatzen du ezarpen hau.</translation>
 <translation id="2004413981947727241">Erabili zure pasahitzak edozein gailutan</translation>
 <translation id="2004697686368036666">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="2005199804247617997">Beste profil batzuk</translation>
@@ -1695,6 +1697,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2191754378957563929">Aktibatuta</translation>
 <translation id="2192505247865591433">Igorlea:</translation>
 <translation id="219283042927675668">Taldeko fitxak</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> da zure fitxa berriaren orriaren kudeatzailea, fitxa berri batean irekitzen da</translation>
 <translation id="2193365732679659387">Fidagarritasun-ezarpenak</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="2195331105963583686">Handik aurrera, <ph name="DEVICE_TYPE" /> erabiltzen jarraitu ahal izango duzu, baina ez duzu jasoko software- eta segurtasun-eguneratze automatikorik</translation>
@@ -2272,6 +2275,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2593499352046705383">Hasi aurretik, ziurtatu datuen babeskopiak egin dituzula. <ph name="DEVICE_OS" /> instalatuz gero, disko gogorra gainidatziko da. Lortu informazio gehiago g.co/flex/InstallGuide helbidean.</translation>
 <translation id="2594832159966169099">Kudeatu V8-ren segurtasuna</translation>
 <translation id="2597073208962000830">Nearby Share-k Bluetooth bidezko bilaketa erabiltzen du inguruko gailuak aurkitzeko.</translation>
+<translation id="2598136842498757793">Pertsonalizatu tresna-barrako botoiak</translation>
 <translation id="2598710988533271874">Chrome berria erabilgarri</translation>
 <translation id="2599048253926156421">Kopiatu da erabiltzaile-izena arbelean</translation>
 <translation id="2602501489742255173">Hasteko, pasatu hatza gorantz</translation>
@@ -2501,6 +2505,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2749881179542288782">Zuzendu gramatika eta ortografia</translation>
 <translation id="2750020734439919571">Chrome-ren aplikazioaren ezarpen eta baimen gehiago</translation>
 <translation id="2750602041558385535">Egiaztatu gabeko deskarga blokeatu da</translation>
+<translation id="275213133112113418">Txartela gordeta dago</translation>
 <translation id="2753623023919742414">Sakatu bilatzeko</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> kontuan gordeta dauden Parekatze bizkorra darabilten gailuak bilatzen</translation>
 <translation id="2754825024506485820">Bilatu behar dituzun aplikazioak (direla produktibitaterako, direla aisiarako) Google Play Store-n. Edonoiz instala ditzakezu aplikazioak.</translation>
@@ -3594,6 +3599,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3568431410312984116">Eman Idazteko laguntza automatikoki irekitzeko baimena</translation>
 <translation id="3569382839528428029">Zure pantaila partekatzeko baimena eman nahi diozu <ph name="APP_NAME" /> aplikazioari?</translation>
 <translation id="3569614820047645079">Nire unitatea ataleko fitxategiak Chromebook-arekin automatikoki sinkronizatzen dira, Interneteko konexiorik gabe atzitu ahal izan ditzazun.</translation>
+<translation id="3569617221227793022"><ph name="TIME_ZONE_ENTRY" /> ordu-zona ezarrita dago. Administratzaileak kudeatzen du ezarpen hau.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> webguneak honako fitxategi eta karpeta hauek ikus ditzake</translation>
 <translation id="3571734092741541777">Konfiguratu</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> luzapen desaktibatu dira</translation>
@@ -4041,6 +4047,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3866142613641074814">Arriskuan dauden pasahitzak dituzu</translation>
 <translation id="3866249974567520381">Azalpena</translation>
 <translation id="3867134342671430205">Arrastatu edo erabili gezi-teklak pantaila bat mugitzeko</translation>
+<translation id="3867831579565057323">Esleitu ukipen-pantaila</translation>
 <translation id="3867944738977021751">Ziurtagiri-eremuak</translation>
 <translation id="3869917919960562512">Indize okerra.</translation>
 <translation id="3870626286046977643">Partekatu sistemaren audioa ere</translation>
@@ -4344,6 +4351,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4085298594534903246">JavaScript blokeatu da orri honetan.</translation>
 <translation id="4085566053793776107">Pertsonalizatu gaiak</translation>
 <translation id="4085620044235559093">Aukeratu <ph name="FILE_TYPE" /> zerbitzuko fitxategiak irekitzeko aplikazio bat</translation>
+<translation id="4086565736678483233">Zure ordainketa-metodoen atalean atzi dezakezu</translation>
 <translation id="4087089424473531098">Luzapen hau sortu da:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5815,6 +5823,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5187641678926990264">Instalatu orria aplikazio gisa…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Erabili kokapena. Eman gailuaren kokapena erabiltzeko baimena kokapen-baimena aktibatuta daukaten ChromeOS-erako eta Android-erako aplikazio, webgune eta zerbitzuei. Kokapen-zehaztasuna ezarpenari esker, Android-en aplikazio eta zerbitzuek kokapen zehatzagoa lortzen dute. Horretarako, Google-k gailuaren sentsoreei eta hari gabeko seinaleei buruzko informazioa prozesatzen du aldizka, auzolanean hari gabeko seinaleen kokapenak lortzeko. Zu identifikatu gabe erabiltzen dira datu horiek, kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko, baita Google-ren zerbitzuak hobetu, eman eta mantentzeko ere, Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta. <ph name="BEGIN_LINK1" />Lortu kokapena erabiltzeari buruzko informazio gehiago<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Prozesuak partekatzeko aukera ez erabiltzea aukeratzeko, arakatzailea berrabiarazi behar da. Orain berrabiaraziko da arakatzailea.</translation>
 <translation id="5189404424758444348">Steampunk-a</translation>
 <translation id="5190577235024772869">Erabilitako tokia: <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Aktibatu ataka</translation>
@@ -7050,6 +7059,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6097480669505687979">Tokirik egiten ez baduzu, baliteke erabiltzaileak eta datuak automatikoki kentzea.</translation>
 <translation id="6097600385983390082">Itxi da ahozko bilaketa</translation>
 <translation id="6098793583803863900">Fitxategi ezezagun bat aztertzen ari gara, eduki arriskutsurik duen ikusteko.</translation>
+<translation id="609892108553214365">Erabili txartela iPhone-an</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> gailutik kopiatu da testua</translation>
 <translation id="6099766472403716061">Eman zure MIDI gailuak kontrolatzeko eta berriro programatzeko baimena beti <ph name="HOST" /> webguneari</translation>
 <translation id="6100736666660498114">Hasierako menua</translation>
@@ -9160,6 +9170,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7663774460282684730">Lasterbideak erabil daitezke</translation>
 <translation id="7663859337051362114">Gehitu eSIMaren profila</translation>
 <translation id="76641554187607347">Ez dago teklaturik konektatuta</translation>
+<translation id="7664442418269614729">Erabili txartela iPhone-an</translation>
 <translation id="7665082356120621510">Gorde tamaina</translation>
 <translation id="7665369617277396874">Gehitu kontu bat</translation>
 <translation id="7665445336029073980">Deskargen historia osoa</translation>
@@ -9543,6 +9554,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="79312157130859720"><ph name="APP_NAME" /> zure pantaila eta audioa partekatzen ari da.</translation>
 <translation id="793293630927785390">"Wifi-sare berria" leihoa</translation>
 <translation id="7932969338829957666">Karpeta partekatuak Linux-eko direktorio honetan daude: <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Konfiguratu eta esleitu zure gailu ukipen-pantailaduna pantaila egokiari</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Aktibatu webguneko audioa}other{Aktibatu webguneetako audioa}}</translation>
 <translation id="7933486544522242079">Gorde eta partekatu</translation>
 <translation id="7933518760693751884">Orri bat gerorako gordetzeko, sakatu laster-markaren ikonoa</translation>
@@ -9766,6 +9778,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> bidez kudeatzen da saioa. Administratzaileek zure profila ezaba dezakete, eta sareko trafikoa gainbegiratu.</translation>
 <translation id="8081989000209387414">ADB arazketa desgaitu nahi duzu?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" gailuarekin parekatu?</translation>
+<translation id="8082132721957920509">Txartela gordeta dago</translation>
 <translation id="8082390128630131497">ADB arazketa desgaitzen baduzu, <ph name="DEVICE_TYPE" /> gailuaren jatorrizko ezarpenak berrezarriko dira. Erabiltzaile-kontu guztiak eta gailuko datuak ezabatu egingo dira.</translation>
 <translation id="8084114998886531721">Gordetako pasahitza</translation>
 <translation id="8084429490152575036">APN mugikorraren ezarpenak</translation>

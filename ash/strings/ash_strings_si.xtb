@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">පූර්ණ තිර විශාලකය</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">අනුලේඛනය සක්‍රීය කරන්නද?</translation>
+<translation id="3392702002175498061">සියලු බ්‍රවුස් කිරීමේ ඉතිහාස අන්තර්ගතය පෙන්වන්න</translation>
 <translation id="3394432020929931914">, දිග හරින ලදි</translation>
 <translation id="3401474642070997151">යෝජනා අභිරුචිකරණය කිරීමට, දකුණු-ක්ලික් කරන්න හෝ යෝජනාවක් ඔබාගෙන සිටින්න</translation>
 <translation id="3405101454990027959">මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
@@ -812,6 +813,7 @@
 <translation id="385300504083504382">ආරම්භය</translation>
 <translation id="3859364108019690">යෙදුම් ප්‍රවාහ කළ නොහැක</translation>
 <translation id="3861651314799684201">සම්පූර්ණ තිරය පටිගත කිරීමට Enter ඔබන්න</translation>
+<translation id="3870197372373144624">ඔබේ උපාංගය වසා දැමීමට උත්සාහ කරන්න.</translation>
 <translation id="3886872229787704059">අද විවෘත කරන ලදි</translation>
 <translation id="3891340733213178823">වැරිමට Ctrl+Shift+Q දෙසැරයක් ඔබන්න.</translation>
 <translation id="3893630138897523026">ChromeVox (කථා කළ අදහස්)</translation>
@@ -927,6 +929,7 @@
 <translation id="4264977415328155183">, හකුළන ලදි</translation>
 <translation id="4265259722091164182">වචනවල මුලකුරු කැපිටල් අකුරු</translation>
 <translation id="4269883910223712419">මෙම උපාංගයේ පරිපාලකයාට මේවා කළ හැක:</translation>
+<translation id="4271841440229266861">සියලු ගොනු අන්තර්ගතය පෙන්වන්න</translation>
 <translation id="4274537685965975248">Ctrl + Alt + පහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. End යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + දකුණට ඊතලය ඔබන්න.</translation>
 <translation id="4275283744500212192">කවුළු පිරිසැලසුම් විකල්ප විවෘත කරන්න</translation>
 <translation id="4275663329226226506">මාධ්‍ය</translation>
@@ -954,6 +957,7 @@
 <translation id="4327147325944669226">ක්‍රීඩාව පටිගත කරන්න</translation>
 <translation id="4333628967105022692">බහුපරිශීලකයින් පුරා සිටින අතරතුර Lacros සහාය නොදක්වයි.</translation>
 <translation id="4338109981321384717">විශාලක කාචය</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, නිහඬ කළ</translation>
 <translation id="4351244548802238354">සංවාදය වසන්න</translation>
 <translation id="4356872429719185452">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් ක්‍රියාත්මක වේ.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  පටිගත කිරීම</translation>
@@ -1299,6 +1303,7 @@
 <translation id="5503884284981862082">Google සහයක විවෘත කරන්න/වසන්න</translation>
 <translation id="550391772491508736">විකාශය නැවත පටන් ගන්න</translation>
 <translation id="5506975627792768506">විශාලකය සක්‍රීය හෝ අක්‍රිය කරන්න</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, enter එබීමෙන් ශ්‍රව්‍ය නිශ්ශබ්ද වනු ඇත.</translation>
 <translation id="5512042095225963688">පෙර වචනය මකන්න</translation>
 <translation id="5519005148254860683">Google Tasks දිග හරින්න</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@
 <translation id="8239034820133090126">දකුණු පස ඇති මේසය සක්‍රිය කරන්න</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, දුරකථන බැටරිය <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, යෙදුම</translation>
+<translation id="825129991941217170">සියලු Google Drive අන්තර්ගතය පෙන්වන්න</translation>
 <translation id="8257510091797044096">ඔබේ උපාංගය පිහිටුවන්න</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8262312463845990408">පසුධාවනය ටොගල කරන්න</translation>
@@ -2339,6 +2345,7 @@
 <translation id="9098969848082897657">දුරකථනය නිහඬ කරන්න</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> හෝ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">අවසාන ක්‍රියාව පසුගමනය කරන්න</translation>
+<translation id="9126642911267312373">බ්ලූටූත් නොමැත</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{මිනි 1කින්}one{මිනි #කින්}other{මිනි #කින්}}</translation>
 <translation id="9129245940793250979">පිටුපස බොත්තම</translation>
 <translation id="9133335900048457298">ආරක්ෂිත අන්තර්ගතය පටිගත කළ නොහැකිය</translation>

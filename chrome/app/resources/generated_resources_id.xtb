@@ -2288,6 +2288,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2593499352046705383">Sebelum memulai, pastikan Anda sudah mencadangkan data Anda. Menginstal <ph name="DEVICE_OS" /> akan menimpa semua data di hard drive. Pelajari lebih lanjut di g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Kelola keamanan V8</translation>
 <translation id="2597073208962000830">Berbagi Langsung menggunakan pemindaian Bluetooth untuk menemukan perangkat di sekitar.</translation>
+<translation id="2598136842498757793">Sesuaikan tombol toolbar</translation>
 <translation id="2598710988533271874">Chrome baru tersedia</translation>
 <translation id="2599048253926156421">Nama pengguna disalin ke papan klip</translation>
 <translation id="2602501489742255173">Geser ke atas untuk memulai</translation>
@@ -4061,6 +4062,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3866142613641074814">Anda memiliki sandi yang berisiko</translation>
 <translation id="3866249974567520381">Deskripsi</translation>
 <translation id="3867134342671430205">Tarik atau gunakan tombol panah untuk memindahkan layar</translation>
+<translation id="3867831579565057323">Petakan layar sentuh</translation>
 <translation id="3867944738977021751">Bidang Sertifikat</translation>
 <translation id="3869917919960562512">Indeks salah.</translation>
 <translation id="3870626286046977643">Juga bagikan audio sistem</translation>
@@ -9573,6 +9575,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="79312157130859720"><ph name="APP_NAME" /> membagikan layar dan audio Anda.</translation>
 <translation id="793293630927785390">Dialog Jaringan Wi-Fi Baru</translation>
 <translation id="7932969338829957666">Folder bersama tersedia pada Linux di <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Siapkan dan petakan perangkat layar sentuh Anda ke layar yang benar</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Bunyikan Audio Situs}other{Bunyikan Audio Situs}}</translation>
 <translation id="7933486544522242079">&amp;Simpan dan bagikan</translation>
 <translation id="7933518760693751884">Guna menyimpan halaman untuk dibaca nanti, klik ikon Bookmark</translation>

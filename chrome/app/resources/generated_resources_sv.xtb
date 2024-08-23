@@ -265,6 +265,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1178601482396475810">Hantera enhetssynkronisering</translation>
 <translation id="117916940443676133">Säkerhetsnyckeln skyddas inte av en pinkod. Skapa en pinkod först innan du hanterar inloggningsuppgifter.</translation>
+<translation id="1179400851034021914">Ogiltig IBAN</translation>
 <translation id="1179902906564467236">Följ anvisningarna på telefonen eller använd kameraappen</translation>
 <translation id="118057123461613219">Stora besparingar</translation>
 <translation id="1181037720776840403">Ta bort</translation>
@@ -1440,6 +1441,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="2002109485265116295">Realtid</translation>
 <translation id="2002160221914907025">Experimentell AI</translation>
 <translation id="2003130567827682533">Om du vill aktivera data från <ph name="NAME" /> ansluter du först till ett wifi-nätverk</translation>
+<translation id="2003596238737586336">Nuvarande schema är inställt på <ph name="SUNRISE" />–<ph name="SUNSET" />. Den här inställningen hanteras av administratören.</translation>
 <translation id="2004413981947727241">Använd dina lösenord på alla enheter</translation>
 <translation id="2004697686368036666">Vissa webbplatsers funktioner kanske inte fungerar</translation>
 <translation id="2005199804247617997">Andra profiler</translation>
@@ -1705,6 +1707,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2191754378957563929">På</translation>
 <translation id="2192505247865591433">Från:</translation>
 <translation id="219283042927675668">Flikar i gruppen</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> hanterar sidan Ny flik. Öppnas på en ny flik</translation>
 <translation id="2193365732679659387">Inställningar för tillförlitlighet</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="2195331105963583686">Du kan fortfarande använda <ph name="DEVICE_TYPE" /> efter det, men den får inte längre några automatiska program- eller säkerhetsuppdateringar</translation>
@@ -2285,6 +2288,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2593499352046705383">Kontrollera att du har en säkerhetskopia av din data innan du börjar. All data på hårddisken skrivs över när du installerar <ph name="DEVICE_OS" />. Läs mer på g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Hantera V8-säkerhet</translation>
 <translation id="2597073208962000830">Med Närdelning används Bluetooth-sökning för att hitta enheter i närheten.</translation>
+<translation id="2598136842498757793">Anpassa knappar i verktygsfältet</translation>
 <translation id="2598710988533271874">Nya Chrome är tillgängligt</translation>
 <translation id="2599048253926156421">Användarnamnet har kopierats till urklipp</translation>
 <translation id="2602501489742255173">Kom igång genom att svepa uppåt</translation>
@@ -2514,6 +2518,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2749881179542288782">Kontrollera grammatik och stavning</translation>
 <translation id="2750020734439919571">Fler inställningar och behörigheter för Chrome-appen</translation>
 <translation id="2750602041558385535">Overifierad nedladdning har blockerats</translation>
+<translation id="275213133112113418">Kortet har sparats</translation>
 <translation id="2753623023919742414">Klicka för att söka</translation>
 <translation id="2754226775788136540">Söker efter enheter med snabb parkoppling som sparats i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Google Play Butik har alla appar du behöver – från produktivitet till underhållning. Du kan installera appar när som helst.</translation>
@@ -3609,6 +3614,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3568431410312984116">Tillåt att Hjälp mig skriva öppnas automatiskt</translation>
 <translation id="3569382839528428029">Vill du att <ph name="APP_NAME" /> ska dela din skärm?</translation>
 <translation id="3569614820047645079">Filerna på Min enhet synkroniseras automatiskt med Chromebook så att du kan komma åt dem utan internetanslutning.</translation>
+<translation id="3569617221227793022">Tidszonen är för närvarande inställd på <ph name="TIME_ZONE_ENTRY" />. Den här inställningen hanteras av administratören.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> har visningsbehörighet till följande filer och mappar</translation>
 <translation id="3571734092741541777">Konfigurera</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> tillägg har inaktiverats</translation>
@@ -4056,6 +4062,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3866142613641074814">Du har lösenord som är i fara</translation>
 <translation id="3866249974567520381">Beskrivning</translation>
 <translation id="3867134342671430205">Flytta skärmarna med piltangenterna eller genom att dra</translation>
+<translation id="3867831579565057323">Mappa pekskärmen</translation>
 <translation id="3867944738977021751">Certifikatfält</translation>
 <translation id="3869917919960562512">Fel index.</translation>
 <translation id="3870626286046977643">Dela även systemljud</translation>
@@ -4359,6 +4366,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4085298594534903246">JavaScript är blockerat på den här sidan.</translation>
 <translation id="4085566053793776107">Anpassa teman</translation>
 <translation id="4085620044235559093">Välj en app för att öppna <ph name="FILE_TYPE" />-filer</translation>
+<translation id="4086565736678483233">Det finns bland dina betalningsmetoder</translation>
 <translation id="4087089424473531098">Skapade tillägget:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5831,6 +5839,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5187641678926990264">&amp;Installera sidan som en app …</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Använd plats. Tillåt att de appar, webbplatser och tjänster för ChromeOS och Android som har platsbehörighet använder enhetens plats. Platsangivelsens exakthet tillhandahåller en mer exakt plats för Android-appar och Android-tjänster. För att göra detta hanterar Google med jämna mellanrum information om enhetssensorer och trådlösa signaler från din enhet i samband med massinsamling av platser för trådlösa signaler. Dessa används utan att identifiera dig för att förbättra platsangivelsens exakthet och platsbaserade tjänster och för att förbättra, tillhandahålla och underhålla Googles tjänster baserat på Googles och tredje parters berättigade intressen för att tillgodose användarnas behov. <ph name="BEGIN_LINK1" />Läs mer om hur du använder plats<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Om du vill välja bort processdelning måste webbläsaren startas om. Webbläsaren startas om nu.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Använder <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Aktivera port</translation>
@@ -7070,6 +7079,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6097480669505687979">Om du inte frigör utrymme kan användare och data tas bort automatiskt.</translation>
 <translation id="6097600385983390082">Röstsökning har stängts</translation>
 <translation id="6098793583803863900">En okänd fil genomsöks efter farligt innehåll.</translation>
+<translation id="609892108553214365">Använd det här kortet på din iPhone</translation>
 <translation id="609942571968311933">Text kopierad från <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Tillåt alltid <ph name="HOST" /> att styra och omprogrammera dina MIDI-enheter</translation>
 <translation id="6100736666660498114">Start-meny</translation>
@@ -9182,6 +9192,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7663774460282684730">Kortkommandon tillgängliga</translation>
 <translation id="7663859337051362114">Lägg till eSIM-profil</translation>
 <translation id="76641554187607347">Inget tangentbord har anslutits</translation>
+<translation id="7664442418269614729">Använd det här kortet på din iPhone</translation>
 <translation id="7665082356120621510">Reservera storlek</translation>
 <translation id="7665369617277396874">Lägg till konto</translation>
 <translation id="7665445336029073980">Fullständig nedladdningshistorik</translation>
@@ -9565,6 +9576,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="79312157130859720"><ph name="APP_NAME" /> delar skärmen och ljudet.</translation>
 <translation id="793293630927785390">Dialogruta för nytt wifi-nätverk</translation>
 <translation id="7932969338829957666">Delade mappar finns i <ph name="BASE_DIR" /> i Linux.</translation>
+<translation id="7932992556896556665">Ställ in och mappa pekskärmsenheten till rätt skärm</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Sätt på webbplatsens ljud}other{Sätt på webbplatsernas ljud}}</translation>
 <translation id="7933486544522242079">&amp;Spara och dela</translation>
 <translation id="7933518760693751884">Klicka på bokmärkesikonen om du vill spara en sida till senare</translation>
@@ -9789,6 +9801,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8081623398548615289">Sessionen hanteras av <ph name="MANAGER_NAME" />. Administratören kan radera din profil och även övervaka nätverkstrafiken.</translation>
 <translation id="8081989000209387414">Vill du inaktivera felsökning med ADB?</translation>
 <translation id="8082106343289440791">Vill du parkoppla med <ph name="DEVICE_NAME" />?</translation>
+<translation id="8082132721957920509">Kortet har sparats</translation>
 <translation id="8082390128630131497">Denna <ph name="DEVICE_TYPE" /> återställs till standardinställningarna om du inaktiverar felsökning med ADB. Alla användarkonton och all lokal data rensas.</translation>
 <translation id="8084114998886531721">Sparat lösenord</translation>
 <translation id="8084429490152575036">APN-inställningar för mobilnätverk</translation>

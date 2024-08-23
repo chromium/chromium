@@ -661,6 +661,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="3386978599540877378">Kikuza skrini nzima</translation>
 <translation id="3387527074123400161">Mfumo wa uendeshaji wa Chromium</translation>
 <translation id="3389599499324569679">Je, ungependa kuwasha kipengele cha Kuandika kwa kutamka?</translation>
+<translation id="3392702002175498061">Onyesha maudhui yote ya historia ya kuvinjari</translation>
 <translation id="3394432020929931914">, imepanuliwa</translation>
 <translation id="3401474642070997151">Ili uweke mapendeleo ya mapendekezo, bofya kulia au bonyeza na ushikilie pendekezo</translation>
 <translation id="3405101454990027959">Washa ufikiaji wa maikrofoni</translation>
@@ -812,6 +813,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="385300504083504382">Mwanzo</translation>
 <translation id="3859364108019690">Imeshindwa kutiririsha programu</translation>
 <translation id="3861651314799684201">Bonyeza enter ili urekodi skrini nzima</translation>
+<translation id="3870197372373144624">Jaribu kuzima kifaa chako.</translation>
 <translation id="3886872229787704059">Imefunguliwa leo</translation>
 <translation id="3891340733213178823">Bonyeza Ctrl+Shift+Q mara mbili ili kuondoka katika akaunti.</translation>
 <translation id="3893630138897523026">ChromeVox (majibu yanayotamkwa)</translation>
@@ -927,6 +929,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4264977415328155183">, imekunjwa</translation>
 <translation id="4265259722091164182">Kila Neno Lianze kwa Herufi Kubwa</translation>
 <translation id="4269883910223712419">Msimamizi wa kifaa hiki ana uwezo wa:</translation>
+<translation id="4271841440229266861">Onyesha maudhui yote ya Faili</translation>
 <translation id="4274537685965975248">Mikato ya kibodi ya Ctrl + Alt + Kishale cha Chini imebadilika. Ili utumie kitufe cha End, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Kulia.</translation>
 <translation id="4275283744500212192">Fungua chaguo za muundo wa dirisha</translation>
 <translation id="4275663329226226506">Vyombo vya Habari</translation>
@@ -954,6 +957,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4327147325944669226">Rekodi mchezo</translation>
 <translation id="4333628967105022692">Lacros haiwezi kutumiwa wakati watumiaji wengi wameingia katika akaunti.</translation>
 <translation id="4338109981321384717">Lenzi</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Sauti imezimwa</translation>
 <translation id="4351244548802238354">Funga kidirisha</translation>
 <translation id="4356872429719185452">Onyesha maelezo ya mtandao pepe. Mtandao pepe unawashwa.</translation>
 <translation id="4364101114148522660">Inarekodi  <ph name="DURATION" /></translation>
@@ -1299,6 +1303,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5503884284981862082">Fungua au funga programu ya mratibu wa Google</translation>
 <translation id="550391772491508736">Endelea kutuma</translation>
 <translation id="5506975627792768506">Zima au uwashe kikuzaji</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, Ukibofya Enter utazima sauti.</translation>
 <translation id="5512042095225963688">Futa neno lililotangulia</translation>
 <translation id="5519005148254860683">Panua Majukumu kwenye Google</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2110,6 +2115,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8239034820133090126">Washa eneokazi la upande wa kulia</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Betri ya Simu <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Programu</translation>
+<translation id="825129991941217170">Onyesha maudhui yote ya Hifadhi ya Google</translation>
 <translation id="8257510091797044096">Weka mipangilio ya kifaa chako</translation>
 <translation id="8261506727792406068">Futa</translation>
 <translation id="8262312463845990408">Kipengele cha kuwasha uchezaji</translation>
@@ -2340,6 +2346,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9098969848082897657">Kuzima mlio wa simu</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> au <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Tendua kitendo cha mwisho</translation>
+<translation id="9126642911267312373">Bluetooth haipatikani</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Baada ya dak 1}other{Baada ya dak #}}</translation>
 <translation id="9129245940793250979">Kitufe cha Nyuma</translation>
 <translation id="9133335900048457298">Huwezi kurekodi maudhui yanayolindwa</translation>

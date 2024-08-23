@@ -661,6 +661,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3386978599540877378">la loupe plein écran</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Activer la Dictée?</translation>
+<translation id="3392702002175498061">Afficher tout le contenu de l'historique de navigation</translation>
 <translation id="3394432020929931914">, développé</translation>
 <translation id="3401474642070997151">Pour personnaliser les suggestions, faites un clic droit ou maintenez le doigt sur une suggestion</translation>
 <translation id="3405101454990027959">Activer l'accès au microphone</translation>
@@ -812,6 +813,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="385300504083504382">Début</translation>
 <translation id="3859364108019690">Impossible de diffuser des applications</translation>
 <translation id="3861651314799684201">Appuyez sur Entrée pour enregistrer en plein écran</translation>
+<translation id="3870197372373144624">Essayez d'éteindre votre appareil.</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
 <translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
@@ -926,6 +928,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4264977415328155183">, réduit</translation>
 <translation id="4265259722091164182">Majuscule au début de chaque mot</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
+<translation id="4271841440229266861">Afficher tout le contenu de Fichiers</translation>
 <translation id="4274537685965975248">Le raccourci-clavier Ctrl+Alt+flèche vers le bas a changé. Pour utiliser la touche Fin, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers la droite.</translation>
 <translation id="4275283744500212192">Ouvrir les options de mise en page des fenêtres</translation>
 <translation id="4275663329226226506">Médias</translation>
@@ -953,6 +956,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4327147325944669226">Enregistrer le jeu</translation>
 <translation id="4333628967105022692">Lacros ne peut pas fonctionner lorsque plusieurs utilisateurs sont connectés.</translation>
 <translation id="4338109981321384717">Loupe</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, désactivé</translation>
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
 <translation id="4356872429719185452">Afficher les détails du point d'accès sans fil. Activation du point d'accès sans fil en cours…</translation>
 <translation id="4364101114148522660">Enregistrement de <ph name="DURATION" /></translation>
@@ -1298,6 +1302,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5503884284981862082">Ouvrir/fermer l'Assistant Google</translation>
 <translation id="550391772491508736">Reprendre la diffusion</translation>
 <translation id="5506975627792768506">Activer ou désactiver la loupe</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, appuyer sur Entrée désactive l'audio.</translation>
 <translation id="5512042095225963688">Supprimer le mot précédent</translation>
 <translation id="5519005148254860683">Développer Google Tâches</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2108,6 +2113,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8239034820133090126">Activer le bureau à droite</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, pile du téléphone <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, application</translation>
+<translation id="825129991941217170">Afficher tout le contenu de Google Disque</translation>
 <translation id="8257510091797044096">Configurer votre appareil</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8262312463845990408">Activer/Désactiver la lecture</translation>
@@ -2337,6 +2343,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9098969848082897657">Désactiver le son du téléphone</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Annuler la dernière action</translation>
+<translation id="9126642911267312373">Bluetooth inaccessible</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Dans 1 min}one{Dans # min}other{Dans # min}}</translation>
 <translation id="9129245940793250979">Bouton arrière</translation>
 <translation id="9133335900048457298">Impossible d'enregistrer le contenu protégé</translation>

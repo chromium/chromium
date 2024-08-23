@@ -265,6 +265,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1178601482396475810">Faça a gestão da sincronização de dispositivos</translation>
 <translation id="117916940443676133">A sua chave de segurança não está protegida com um PIN. Para gerir os dados de início de sessão, crie primeiro um PIN.</translation>
+<translation id="1179400851034021914">O IBAN é inválido</translation>
 <translation id="1179902906564467236">Siga as instruções no telemóvel ou use a app da câmara</translation>
 <translation id="118057123461613219">Enormes poupanças</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -1430,6 +1431,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="2002109485265116295">Tempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Para ativar os dados de "<ph name="NAME" />", primeiro, ligue-se a uma rede Wi-Fi.</translation>
+<translation id="2003596238737586336">O horário atual está definido para <ph name="SUNRISE" /> - <ph name="SUNSET" />. Esta definição é gerida pelo seu administrador.</translation>
 <translation id="2004413981947727241">Use as suas palavras-passe em qualquer dispositivo</translation>
 <translation id="2004697686368036666">As funcionalidades em alguns sites podem não funcionar</translation>
 <translation id="2005199804247617997">Outros perfis</translation>
@@ -1695,6 +1697,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2191754378957563929">Ativado</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="219283042927675668">Separadores no grupo</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> está a gerir a página Novo separador, abre num novo separador</translation>
 <translation id="2193365732679659387">Definições fidedignas</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="2195331105963583686">Vai continuar a poder utilizar este <ph name="DEVICE_TYPE" /> após essa data, mas deixará de receber atualizações de software e de segurança automáticas.</translation>
@@ -2272,6 +2275,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2593499352046705383">Antes de iniciar, certifique-se de que tem uma cópia de segurança dos dados. A instalação do <ph name="DEVICE_OS" /> substitui o seu disco rígido. Saiba mais em g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Faça a gestão da segurança do V8</translation>
 <translation id="2597073208962000830">A funcionalidade Partilhar na proximidade usa a procura de Bluetooth para encontrar dispositivos próximos.</translation>
+<translation id="2598136842498757793">Personalizar botões da barra de ferramentas</translation>
 <translation id="2598710988533271874">Novo Chrome disponível</translation>
 <translation id="2599048253926156421">Nome de utilizador copiado para a área de transferência</translation>
 <translation id="2602501489742255173">Deslize rapidamente para cima para começar.</translation>
@@ -2501,6 +2505,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2749881179542288782">Rever gramática com a ortografia</translation>
 <translation id="2750020734439919571">Mais definições e autorizações da app Chrome</translation>
 <translation id="2750602041558385535">Transferência não validada bloqueada</translation>
+<translation id="275213133112113418">O seu cartão está guardado</translation>
 <translation id="2753623023919742414">Clique para pesquisar</translation>
 <translation id="2754226775788136540">A procurar dispositivos com o Fast Pair guardados em <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Encontre as apps de que precisa, desde produtividade a entretenimento, na Google Play Store. Pode instalar apps em qualquer altura.</translation>
@@ -3597,6 +3602,7 @@ Quer pará-lo?</translation>
 <translation id="3568431410312984116">Permitir que a opção "Ajuda-me a escrever" seja aberta automaticamente</translation>
 <translation id="3569382839528428029">Deseja que <ph name="APP_NAME" /> partilhe o seu ecrã?</translation>
 <translation id="3569614820047645079">Os seus ficheiros em O meu disco são sincronizados automaticamente com o Chromebook para que possa aceder-lhes sem uma ligação à Internet.</translation>
+<translation id="3569617221227793022">O fuso horário está atualmente definido como <ph name="TIME_ZONE_ENTRY" />. Esta definição é gerida pelo seu administrador.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os seguintes ficheiros e pastas</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> extensões foram desativadas</translation>
@@ -4044,6 +4050,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3866142613641074814">Tem palavras-passe em risco</translation>
 <translation id="3866249974567520381">Descrição</translation>
 <translation id="3867134342671430205">Arraste ou utilize as teclas de seta para mover um ecrã</translation>
+<translation id="3867831579565057323">Mapeie o ecrã tátil</translation>
 <translation id="3867944738977021751">Campos do certificado</translation>
 <translation id="3869917919960562512">Índice errado.</translation>
 <translation id="3870626286046977643">Partilhar também o áudio do sistema</translation>
@@ -4347,6 +4354,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4085298594534903246">O JavaScript foi bloqueado nesta página.</translation>
 <translation id="4085566053793776107">Personalizar temas</translation>
 <translation id="4085620044235559093">Escolha uma app para abrir ficheiros <ph name="FILE_TYPE" /></translation>
+<translation id="4086565736678483233">Pode consultá-lo nos seus métodos de pagamento</translation>
 <translation id="4087089424473531098">Criou a extensão:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5819,6 +5827,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5187641678926990264">&amp;Instalar página como app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Use a localização. Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização do seu dispositivo. A Precisão da localização oferece uma localização mais precisa para serviços e apps Android. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios do dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar o utilizador para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores. <ph name="BEGIN_LINK1" />Saiba mais acerca da utilização da localização<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Para desativar a partilha de processos, é necessário reiniciar o navegador. Este navegador vai ser reiniciado agora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">A usar <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Ativar porta</translation>
@@ -7059,6 +7068,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6097480669505687979">Se não libertar espaço, os utilizadores e os dados podem ser automaticamente removidos.</translation>
 <translation id="6097600385983390082">Pesquisa por voz encerrada</translation>
 <translation id="6098793583803863900">Um ficheiro desconhecido está a ser analisado quanto a conteúdos perigosos.</translation>
+<translation id="609892108553214365">Use este cartão no seu iPhone</translation>
 <translation id="609942571968311933">Texto copiado do <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Permitir sempre que <ph name="HOST" /> controle e reprograme os seus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menu Iniciar</translation>
@@ -9171,6 +9181,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7663774460282684730">Atalhos do teclado disponíveis</translation>
 <translation id="7663859337051362114">Adicionar perfil do eSIM</translation>
 <translation id="76641554187607347">Nenhum teclado ligado</translation>
+<translation id="7664442418269614729">Use este cartão no seu iPhone</translation>
 <translation id="7665082356120621510">Reservar tamanho</translation>
 <translation id="7665369617277396874">Adicionar conta</translation>
 <translation id="7665445336029073980">Histórico de transferências completo</translation>
@@ -9554,6 +9565,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="79312157130859720"><ph name="APP_NAME" /> está a partilhar o ecrã e o áudio.</translation>
 <translation id="793293630927785390">Caixa de diálogo Nova rede Wi-Fi</translation>
 <translation id="7932969338829957666">As pastas partilhadas estão disponíveis no Linux em <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Configure e mapeie o seu dispositivo com ecrã tátil para o ecrã correto</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Reativar o som do site}other{Reativar o som dos sites}}</translation>
 <translation id="7933486544522242079">&amp;Guardar e partilhar</translation>
 <translation id="7933518760693751884">Para guardar uma página para mais tarde, clique no ícone de marcador.</translation>
@@ -9778,6 +9790,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8081623398548615289">A sua sessão é gerida por <ph name="MANAGER_NAME" />. Os administradores podem eliminar o seu perfil e monitorizar o tráfego de rede.</translation>
 <translation id="8081989000209387414">Desativar a depuração do adb?</translation>
 <translation id="8082106343289440791">Sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"?</translation>
+<translation id="8082132721957920509">O seu cartão está guardado</translation>
 <translation id="8082390128630131497">A desativação da depuração do adb vai repor as definições de fábrica deste <ph name="DEVICE_TYPE" />. Todos os dados locais e contas de utilizador serão apagados.</translation>
 <translation id="8084114998886531721">Palavra-passe guardada</translation>
 <translation id="8084429490152575036">Definições do APN da rede móvel</translation>

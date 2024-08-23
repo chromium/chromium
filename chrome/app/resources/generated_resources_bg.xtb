@@ -265,6 +265,7 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178601482396475810">Управление на синхронизирането на устройството</translation>
 <translation id="117916940443676133">Ключът ви за сигурност не е защитен с ПИН. За да управлявате данни за вход, първо създайте ПИН.</translation>
+<translation id="1179400851034021914">IBAN е невалиден</translation>
 <translation id="1179902906564467236">Изпълнете инструкциите на телефона си или използвайте приложението за камера</translation>
 <translation id="118057123461613219">Много голяма икономия</translation>
 <translation id="1181037720776840403">Премахване</translation>
@@ -1436,6 +1437,7 @@
 <translation id="2002109485265116295">В реално време</translation>
 <translation id="2002160221914907025">Експериментален AI</translation>
 <translation id="2003130567827682533">За да активирате данните от „<ph name="NAME" />“, първо се свържете с Wi-Fi мрежа</translation>
+<translation id="2003596238737586336">Текущият график е зададен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. Тази настройка се управлява от администратора ви.</translation>
 <translation id="2004413981947727241">Използвайте паролите си на всяко устройство</translation>
 <translation id="2004697686368036666">Функциите в някои сайтове може да не работят</translation>
 <translation id="2005199804247617997">Други потребителски профили</translation>
@@ -1701,6 +1703,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2191754378957563929">Включено</translation>
 <translation id="2192505247865591433">От:</translation>
 <translation id="219283042927675668">Раздели в групата</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> управлява новия раздел в браузъра ви, отваря се в нов раздел</translation>
 <translation id="2193365732679659387">Настройки за доверие</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
 <translation id="2195331105963583686">След това пак ще можете да използвате устройството <ph name="DEVICE_TYPE" />, но то няма да получава повече автоматични актуализации на софтуера и сигурността</translation>
@@ -2511,6 +2514,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2749881179542288782">Проверка на граматиката заедно с правописа</translation>
 <translation id="2750020734439919571">Още настройки и разрешения за приложението Chrome</translation>
 <translation id="2750602041558385535">Непотвърденото изтегляне е блокирано</translation>
+<translation id="275213133112113418">Картата ви е запазена</translation>
 <translation id="2753623023919742414">Кликнете, за да търсите</translation>
 <translation id="2754226775788136540">Търсят се устройства за бързо сдвояване, запазени в(ъв) <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">От приложения за продуктивност до такива за развлечение – намерете тези, от които имате нужда, в Google Play Магазин. Можете да инсталирате приложения по всяко време.</translation>
@@ -3606,6 +3610,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3568431410312984116">Разрешаване функцията „Помощ при писане“ да се отваря автоматично</translation>
 <translation id="3569382839528428029">Искате ли <ph name="APP_NAME" /> да споделя екрана ви?</translation>
 <translation id="3569614820047645079">Файловете в „Моят диск“ се синхронизират автоматично с вашия Chromebook, за да имате достъп до тях без връзка с интернет.</translation>
+<translation id="3569617221227793022">Понастоящем зададената часова зона е <ph name="TIME_ZONE_ENTRY" />. Тази настройка се управлява от администратора ви.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да преглежда следните файлове и папки</translation>
 <translation id="3571734092741541777">Настройване</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> разширения бяха изключени</translation>
@@ -4358,6 +4363,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4085298594534903246">JavaScript е блокиран на тази страница.</translation>
 <translation id="4085566053793776107">Персонализиране на темите</translation>
 <translation id="4085620044235559093">Изберете приложение за отваряне на файловете във формат <ph name="FILE_TYPE" /></translation>
+<translation id="4086565736678483233">Имате достъп до нея от „Начини на плащане“</translation>
 <translation id="4087089424473531098">Създадено бе разширението:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5830,6 +5836,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5187641678926990264">Инсталиране на страницата като приложение...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Използване на местоположението. Позволете на ChromeOS, приложенията за Android, уебсайтовете и услугите да ползват местоположението на устройството ви, ако имат съответното разрешение. „Точност на местоположението“ предоставя на приложенията и услугите за Android по-точни данни за местоположението. За целта Google периодично обработва информацията от сензорите на устройството ви и безжичните сигнали от него, за да определя местоположенията на съответните сигнали посредством отворена ангажираност. Използваме тези данни, без да ви идентифицираме, за да подобряваме точността на местоположението и базиращите се на него услуги, както и да подобряваме, предоставяме и поддържаме услугите на Google въз основа на законните си интереси и тези на трети страни, така че да обслужваме нуждите на потребителите. <ph name="BEGIN_LINK1" />Научете повече за използването на местоположението<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">За да се откажете от споделянето на процеси, трябва да рестартирате браузъра. Браузърът ще се рестартира сега.</translation>
 <translation id="5189404424758444348">Стиймпънк</translation>
 <translation id="5190577235024772869">Използвате <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Активиране на порта</translation>
@@ -7070,6 +7077,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6097480669505687979">Ако не освободите място, може да последва автоматично премахване на потребители и данни.</translation>
 <translation id="6097600385983390082">Гласовото търсене бе затворено</translation>
 <translation id="6098793583803863900">Неизвестен файл се сканира за опасно съдържание.</translation>
+<translation id="609892108553214365">Използване на тази карта на вашия iPhone</translation>
 <translation id="609942571968311933">Текст, копиран от <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Контролирането и препрограмирането на MIDI устройствата ви да са винаги разрешени за <ph name="HOST" /></translation>
 <translation id="6100736666660498114">Меню „Старт“</translation>
@@ -9182,6 +9190,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7663774460282684730">Налице е клавишна комбинация</translation>
 <translation id="7663859337051362114">Добавяне на потребителски профил на електронна SIM карта</translation>
 <translation id="76641554187607347">Няма свързана клавиатура</translation>
+<translation id="7664442418269614729">Използване на тази карта на вашия iPhone</translation>
 <translation id="7665082356120621510">Запазване на място</translation>
 <translation id="7665369617277396874">Добавяне на профил</translation>
 <translation id="7665445336029073980">Пълна история на изтеглянията</translation>
@@ -9790,6 +9799,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8081623398548615289">Сесията ви се управлява от <ph name="MANAGER_NAME" />. Администраторите могат да изтрият потребителския ви профил и да следят трафика ви в мрежата.</translation>
 <translation id="8081989000209387414">Да се деактивира ли отстраняването на грешки през ADB?</translation>
 <translation id="8082106343289440791">Искате ли да сдвоите с(ъс) „<ph name="DEVICE_NAME" />“?</translation>
+<translation id="8082132721957920509">Картата ви е запазена</translation>
 <translation id="8082390128630131497">Деактивирането на отстраняването на грешки през ADB ще възстанови фабричните настройки на това устройство <ph name="DEVICE_TYPE" />. Всички профили на потребители и локални данни ще бъдат изтрити.</translation>
 <translation id="8084114998886531721">Запазена парола</translation>
 <translation id="8084429490152575036">Настройки за името на точката за достъп (APN) за мобилна мрежа</translation>

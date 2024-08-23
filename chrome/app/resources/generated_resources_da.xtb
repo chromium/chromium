@@ -265,6 +265,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1178601482396475810">Administrer enhedssynkronisering</translation>
 <translation id="117916940443676133">Din sikkerhedsnøgle er ikke beskyttet med en pinkode. Opret en pinkode for at administrere logindata.</translation>
+<translation id="1179400851034021914">IBAN er ugyldigt</translation>
 <translation id="1179902906564467236">Følg vejledningen på din telefon, eller brug kameraappen</translation>
 <translation id="118057123461613219">Store hukommelsesbesparelser</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -1441,6 +1442,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="2002109485265116295">Realtid</translation>
 <translation id="2002160221914907025">Eksperimentel AI</translation>
 <translation id="2003130567827682533">Hvis du vil aktivere data fra "<ph name="NAME" />", skal du først oprette forbindelse til et Wi-Fi-netværk</translation>
+<translation id="2003596238737586336">Den aktuelle tidsplan er indstillet til <ph name="SUNRISE" />-<ph name="SUNSET" />. Denne indstilling administreres af din administrator.</translation>
 <translation id="2004413981947727241">Brug dine adgangskoder på alle enheder</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
 <translation id="2005199804247617997">Andre profiler</translation>
@@ -1706,6 +1708,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2191754378957563929">Til</translation>
 <translation id="2192505247865591433">Fra:</translation>
 <translation id="219283042927675668">Faner i gruppe</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> administrerer siden Ny fane, åbnes på en ny fane</translation>
 <translation id="2193365732679659387">Tillidsindstillinger</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2195331105963583686">Du kan stadig bruge denne <ph name="DEVICE_TYPE" /> efter denne dato, men den vil ikke længere modtage automatiske software- og sikkerhedsopdateringer.</translation>
@@ -2516,6 +2519,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2749881179542288782">Kontrollér grammatik med stavning</translation>
 <translation id="2750020734439919571">Flere indstillinger og tilladelser for Chrome-appen</translation>
 <translation id="2750602041558385535">En uverificeret download er blokeret</translation>
+<translation id="275213133112113418">Dit kort er gemt</translation>
 <translation id="2753623023919742414">Klik for at søge</translation>
 <translation id="2754226775788136540">Søger efter enheder med Hurtig parring, der er gemt på <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Find de apps, du skal bruge, f.eks. produktivitetsapps eller apps til underholdning, i Google Play Butik. Du kan til enhver tid installere apps.</translation>
@@ -3611,6 +3615,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3568431410312984116">Tillad, at "Hjælp mig med at skrive" åbnes automatisk</translation>
 <translation id="3569382839528428029">Vil du acceptere, at <ph name="APP_NAME" /> deler din skærm?</translation>
 <translation id="3569614820047645079">Dine filer i Mit drev synkroniseres automatisk med din Chromebook, så du kan få adgang til dem uden en internetforbindelse.</translation>
+<translation id="3569617221227793022">Tidszonen er i øjeblikket indstillet til <ph name="TIME_ZONE_ENTRY" />. Denne indstilling administreres af din administrator.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan se følgende filer og mapper</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> udvidelser er deaktiveret</translation>
@@ -4362,6 +4367,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4085298594534903246">JavaScript blev blokeret på denne side.</translation>
 <translation id="4085566053793776107">Tilpas temaer</translation>
 <translation id="4085620044235559093">Vælg en app for at åbne <ph name="FILE_TYPE" />-filer</translation>
+<translation id="4086565736678483233">Du kan bruge det ved at gå til dine betalingsmetoder</translation>
 <translation id="4087089424473531098">Oprettede udvidelsen:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5834,6 +5840,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5187641678926990264">&amp;Installer siden som en app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Brug lokation. Tillad, at ChromeOS- og Android-apps, -websites og -tjenester med lokationstilladelse kan bruge din enheds lokation. Lokationsnøjagtighed giver Android-apps og -tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra din enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere dig med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov. <ph name="BEGIN_LINK1" />Få flere oplysninger om lokationstilladelse<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Hvis du vil fravælge procesdeling, skal du genstarte browseren. Denne browser genstarter nu.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Bruger <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Aktivér port</translation>
@@ -7073,6 +7080,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6097480669505687979">Hvis du ikke frigør plads, kan brugere og data blive fjernet automatisk.</translation>
 <translation id="6097600385983390082">Stemmesøgning er lukket</translation>
 <translation id="6098793583803863900">En ukendt fil scannes for skadeligt indhold.</translation>
+<translation id="609892108553214365">Brug dette kort på din iPhone</translation>
 <translation id="609942571968311933">Tekst kopieret fra <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Tillad altid, at <ph name="HOST" /> styrer og omprogrammerer dine MIDI-enheder</translation>
 <translation id="6100736666660498114">Startmenu</translation>
@@ -9187,6 +9195,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7663774460282684730">Du kan bruge en tastaturgenvej</translation>
 <translation id="7663859337051362114">Tilføj eSIM-profil</translation>
 <translation id="76641554187607347">Der er ikke tilsluttet nogen tastatur</translation>
+<translation id="7664442418269614729">Brug dette kort på din iPhone</translation>
 <translation id="7665082356120621510">Reservér størrelse</translation>
 <translation id="7665369617277396874">Tilføj konto</translation>
 <translation id="7665445336029073980">Komplet downloadhistorik</translation>
@@ -9794,6 +9803,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8081623398548615289">Din session administreres af <ph name="MANAGER_NAME" />. Administratorer kan slette din profil og overvåge din netværkstrafik.</translation>
 <translation id="8081989000209387414">Vil du deaktivere ADB-fejlretning?</translation>
 <translation id="8082106343289440791">Vil du parre med "<ph name="DEVICE_NAME" />"?</translation>
+<translation id="8082132721957920509">Dit kort er gemt</translation>
 <translation id="8082390128630131497">Hvis du deaktiverer ADB-fejlretning, gendannes fabriksindstillingerne på denne <ph name="DEVICE_TYPE" />. Alle brugerkonti og lokale data ryddes.</translation>
 <translation id="8084114998886531721">Gemt adgangskode</translation>
 <translation id="8084429490152575036">Indstillinger for APN-mobilnetværk</translation>

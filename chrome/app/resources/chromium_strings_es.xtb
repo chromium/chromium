@@ -430,6 +430,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7398989605938454041">Los perfiles de Chromium te permiten organizar todos tus elementos de Chromium. Esto permite separar el trabajo del entretenimiento con más facilidad.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> ‑ Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium necesita permiso para acceder a la cámara en este sitio web</translation>
+<translation id="7458892263350425044">Para usar el micrófono, da acceso a Chromium en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Para recibir futuras actualizaciones de Chromium, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 7.</translation>
 <translation id="7467949745582939695">¿Reiniciar Chromium?</translation>
 <translation id="7483335560992089831">No se puede instalar la misma versión de Chromium que se está ejecutando actualmente. Cierra Chromium y vuelve a intentarlo.</translation>
@@ -471,6 +472,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8166782796394721554">Activa la protección adicional en el motor de Chromium para JavaScript y WebAssembly</translation>
 <translation id="81770708095080097">Este archivo es peligroso, por lo que Chromium lo ha bloqueado.</translation>
+<translation id="8223363452568144035">Para usar la cámara, da acceso a Chromium en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium no puede verificar el origen de esta extensión y podría no ser segura. Elimínala de Chromium para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="8248265253516264921">Si una imagen no tiene ninguna descripción útil, Chromium intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>
 <translation id="8254601181414348851">¿Iniciar sesión en Chromium con un perfil nuevo?</translation>
@@ -541,4 +543,5 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="983803489796659991">No se ha podido realizar la instalación porque el servidor de actualizaciones no tiene datos hash de la aplicación.</translation>
 <translation id="985498048907240953">Usar Chromium sin una cuenta</translation>
 <translation id="985602178874221306">Los creadores de Chromium</translation>
+<translation id="992780518932311116">Para usar tu ubicación, da acceso a Chromium en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 </translationbundle>

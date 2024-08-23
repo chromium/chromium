@@ -2287,7 +2287,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2593499352046705383">Prije nego što počnete, provjerite jeste li napravili sigurnosnu kopiju podataka. Ako instalirate <ph name="DEVICE_OS" />, zamijenit će se svi podaci na tvrdom disku. Saznajte više na g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Upravljajte sigurnošću V8 pokretača</translation>
 <translation id="2597073208962000830">Dijeljenje u blizini koristi skeniranje putem Bluetootha da pronađe uređaje u blizini.</translation>
-<translation id="2598136842498757793">Prilagodite gumbe na alatnoj traci</translation>
+<translation id="2598136842498757793">Prilagođavanje dugmadi na alatnoj traci</translation>
 <translation id="2598710988533271874">Dostupan je novi Chrome</translation>
 <translation id="2599048253926156421">Korisničko ime kopirano u međumemoriju</translation>
 <translation id="2602501489742255173">Prevucite prema gore da počnete</translation>
@@ -4061,7 +4061,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="3866142613641074814">Imate lozinke koje su izložene riziku</translation>
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3867134342671430205">Prevucite ili koristite tipke sa strelicama da pomjerite ekran</translation>
-<translation id="3867831579565057323">Mapiranje dodirnog zaslona</translation>
+<translation id="3867831579565057323">Mapirajte ekran na dodir</translation>
 <translation id="3867944738977021751">Polja potvrda</translation>
 <translation id="3869917919960562512">Pogrešan indeks.</translation>
 <translation id="3870626286046977643">Dijeli i zvuk sistema</translation>
@@ -9579,7 +9579,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="79312157130859720">Aplikacija <ph name="APP_NAME" /> dijeli vaš ekran i zvuk.</translation>
 <translation id="793293630927785390">Dijaloški okvir "Nova WiFi mreža"</translation>
 <translation id="7932969338829957666">Dijeljeni folderi su dostupni u Linuxu na <ph name="BASE_DIR" />.</translation>
-<translation id="7932992556896556665">Postavite i mapirajte uređaj s dodirnim zaslonom na ispravan prikaz</translation>
+<translation id="7932992556896556665">Postavite i mapirajte uređaj s ekranom na dodir na odgovarajući prikaz</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Omogući zvuk na web lokaciji}one{Omogući zvuk na web lokacijama}few{Omogući zvuk na web lokacijama}other{Omogući zvuk na web lokacijama}}</translation>
 <translation id="7933486544522242079">&amp;Sačuvaj i dijeli</translation>
 <translation id="7933518760693751884">Da sačuvate stranicu za kasnije, kliknite na ikonu oznake</translation>

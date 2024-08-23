@@ -265,6 +265,7 @@
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1178601482396475810">Ylläpidä laitteen synkronointia</translation>
 <translation id="117916940443676133">Suojausavaintasi ei ole suojattu PIN-koodilla. Luo PIN-koodi, jotta voit ylläpitää kirjautumisdataa.</translation>
+<translation id="1179400851034021914">IBAN on virheellinen</translation>
 <translation id="1179902906564467236">Seuraa puhelimen ohjeita tai käytä kamerasovellusta</translation>
 <translation id="118057123461613219">Huikeat säästöt</translation>
 <translation id="1181037720776840403">Poista</translation>
@@ -1439,6 +1440,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="2002109485265116295">Reaaliaikainen</translation>
 <translation id="2002160221914907025">Kokeellinen tekoäly</translation>
 <translation id="2003130567827682533">Jos haluat aktivoida dataa (<ph name="NAME" />), muodosta yhteys Wi-Fi-verkkoon.</translation>
+<translation id="2003596238737586336">Aikatauluksi on asetettu <ph name="SUNRISE" />–<ph name="SUNSET" />. Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
 <translation id="2004413981947727241">Käytä salasanojasi kaikilla laitteilla</translation>
 <translation id="2004697686368036666">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi</translation>
 <translation id="2005199804247617997">Muut profiilit</translation>
@@ -1704,6 +1706,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2191754378957563929">Päällä</translation>
 <translation id="2192505247865591433">Lähettäjä:</translation>
 <translation id="219283042927675668">Ryhmän välilehdet</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> hallinnoi uutta välilehtisivua, avautuu uudelle välilehdelle</translation>
 <translation id="2193365732679659387">Luottamusasetukset</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
 <translation id="2195331105963583686"><ph name="DEVICE_TYPE" /> on käytettävissä jatkossakin, mutta se ei enää saa automaattisia ohjelmisto- ja tietoturvapäivityksiä</translation>
@@ -2284,6 +2287,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2593499352046705383">Varmista ennen aloittamista, että sinulla on varmuuskopio datastasi. Asentaminen (<ph name="DEVICE_OS" />) korvaa kiintolevysi sisällön. Lue lisää osoitteesta g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Ylläpidä V8-suojausta</translation>
 <translation id="2597073208962000830">Lähijakaminen etsii lähellä olevia laitteita Bluetooth-haun avulla.</translation>
+<translation id="2598136842498757793">Muokkaa yläpalkin painikkeita</translation>
 <translation id="2598710988533271874">Uusi Chrome saatavilla</translation>
 <translation id="2599048253926156421">Käyttäjätunnus kopioitu leikepöydälle</translation>
 <translation id="2602501489742255173">Aloita pyyhkäisemällä ylös</translation>
@@ -2513,6 +2517,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2749881179542288782">Tarkista kielioppi oikeinkirjoituksen yhteydessä</translation>
 <translation id="2750020734439919571">Lisää Chrome-sovelluksen asetuksia ja lupia</translation>
 <translation id="2750602041558385535">Vahvistamaton lataus estetty</translation>
+<translation id="275213133112113418">Korttisi on tallennettu</translation>
 <translation id="2753623023919742414">Hae klikkaamalla</translation>
 <translation id="2754226775788136540">Etsitään tilille <ph name="PRIMARY_EMAIL" /> tallennettuja pikaparilaitteita</translation>
 <translation id="2754825024506485820">Löydä tarvitsemasi sovellukset, esim. tuottavuus- ja viihdesovellukset, Google Play Kaupasta. Voit asentaa sovelluksia milloin tahansa.</translation>
@@ -3608,6 +3613,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3568431410312984116">Salli Apua kirjoittamiseen ‐ominaisuuden automaattinen avautuminen</translation>
 <translation id="3569382839528428029">Haluatko sovelluksen <ph name="APP_NAME" /> jakavan näyttösi?</translation>
 <translation id="3569614820047645079">Omassa Drivessa olevat tiedostot synkronoituvat Chromebookiin automaattisesti, joten voit käyttää niitä ilman internetyhteyttä.</translation>
+<translation id="3569617221227793022">Aikavyöhyke on tällä hetkellä <ph name="TIME_ZONE_ENTRY" />. Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> saa nähdä seuraavat tiedostot ja kansiot</translation>
 <translation id="3571734092741541777">Ota käyttöön</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> laajennusta on laitettu pois päältä</translation>
@@ -4055,6 +4061,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3866142613641074814">Sinulla on vaarantuneita salasanoja</translation>
 <translation id="3866249974567520381">Kuvaus</translation>
 <translation id="3867134342671430205">Siirrä näyttöä vetämällä tai nuolinäppäimillä</translation>
+<translation id="3867831579565057323">Mäppää kosketusnäyttö</translation>
 <translation id="3867944738977021751">Varmenteen kentät</translation>
 <translation id="3869917919960562512">Väärä numero.</translation>
 <translation id="3870626286046977643">Jaa myös järjestelmän audio</translation>
@@ -4355,6 +4362,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4085298594534903246">JavaScript estettiin tällä sivulla.</translation>
 <translation id="4085566053793776107">Muokkaa teemoja</translation>
 <translation id="4085620044235559093">Valitse sovellus, jolla haluat avata tiedostot: <ph name="FILE_TYPE" /></translation>
+<translation id="4086565736678483233">Löydät sen Maksutavat-osiosta</translation>
 <translation id="4087089424473531098">Loi laajennuksen:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5827,6 +5835,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5187641678926990264">Asenna sivu sovelluksena…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Käytä sijaintia. Salli laitteen sijainnin käyttäminen ChromeOS‑ ja Android-sovelluksille, ‑verkkosivustoille ja ‑palveluille, joilla on sijaintilupa. Sijaintitietojen tarkkuus tarjoaa tarkemman sijainnin Android-sovelluksille ja ‑palveluille. Google käsittelee ajoittain laitteen anturien ja langattoman signaalin tietoja langattomien signaalien sijainnin keräämistä varten. Näitä tietoja käytetään (sinua tunnistamatta) sijaintitietojen tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen sekä Googlen palvelujen kehittämiseen, tarjoamiseen ja ylläpitämiseen. Tämä perustuu Googlen ja kolmansien osapuolten oikeutettuun etuun palvella käyttäjien tarpeita. <ph name="BEGIN_LINK1" />Lue lisää sijainnin käytöstä<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Prosessin jakamisen poistaminen käytöstä edellyttää selaimen uudelleenkäynnistystä. Selain käynnistyy uudelleen nyt.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" />-sovelluksen käyttäminen</translation>
 <translation id="5190926251776387065">Aktivoi portti</translation>
@@ -7066,6 +7075,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6097480669505687979">Jos et vapauta tilaa, käyttäjiä ja tietoja voidaan poistaa automaattisesti.</translation>
 <translation id="6097600385983390082">Puhehaku suljettu</translation>
 <translation id="6098793583803863900">Tuntematonta tiedostoa skannataan vaarallisen sisällön varalta.</translation>
+<translation id="609892108553214365">Käytä tätä korttia iPhonella</translation>
 <translation id="609942571968311933">Teksti kopioitu laitteelta <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061"><ph name="HOST" /> saa aina ohjata ja uudelleenohjelmoida MIDI-laitteitasi</translation>
 <translation id="6100736666660498114">Käynnistysvalikko</translation>
@@ -9178,6 +9188,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7663774460282684730">Pikanäppäin käytettävissä</translation>
 <translation id="7663859337051362114">Lisää eSIM-profiili</translation>
 <translation id="76641554187607347">Ei yhdistettyä näppäimistöä</translation>
+<translation id="7664442418269614729">Käytä tätä korttia iPhonella</translation>
 <translation id="7665082356120621510">Varaa koko</translation>
 <translation id="7665369617277396874">Lisää tili</translation>
 <translation id="7665445336029073980">Koko lataushistoria</translation>
@@ -9560,6 +9571,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="79312157130859720"><ph name="APP_NAME" /> jakaa näyttösi ja äänesi.</translation>
 <translation id="793293630927785390">Uusi Wi-Fi-verkko ‑valintaikkuna</translation>
 <translation id="7932969338829957666">Jaettujen kansioiden sijainti Linuxissa: <ph name="BASE_DIR" /></translation>
+<translation id="7932992556896556665">Ota kosketusnäyttölaite käyttöön ja mäppää se oikeaan näyttöön</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Poista sivuston mykistys}other{Poista sivustojen mykistys}}</translation>
 <translation id="7933486544522242079">&amp;Tallenna ja jaa</translation>
 <translation id="7933518760693751884">Voit tallentaa sivun myöhempää käyttöä varten klikkaamalla kirjanmerkkikuvaketta</translation>
@@ -9784,6 +9796,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> ylläpitää tätä istuntoa. Järjestelmänvalvojat voivat poistaa profiilisi ja seurata verkkoliikennettäsi.</translation>
 <translation id="8081989000209387414">Poistetaanko ADB-virheenkorjaus käytöstä?</translation>
 <translation id="8082106343289440791">Lisätäänkö <ph name="DEVICE_NAME" /> laitepariksi?</translation>
+<translation id="8082132721957920509">Korttisi on tallennettu</translation>
 <translation id="8082390128630131497">Kun ADB-virheenkorjaus poistetaan käytöstä, <ph name="DEVICE_TYPE" /> on palautettava tehdasasetuksiin. Kaikki käyttäjätilit ja paikalliset tiedot poistetaan.</translation>
 <translation id="8084114998886531721">Salasana tallennettu</translation>
 <translation id="8084429490152575036">Matkapuhelimen APN-asetukset</translation>
