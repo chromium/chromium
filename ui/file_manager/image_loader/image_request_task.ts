@@ -20,6 +20,9 @@ const ExtensionContentTypeMap = new Map<string, string>([
   ['jpeg', 'image/jpeg'],
 ]);
 
+const adpRegExp = RegExp(
+    '^filesystem:chrome-extension://[a-z]+/external/arc-documents-provider/');
+
 /**
  * Creates and starts downloading and then resizing of the image. Finally,
  * returns the image using the callback.
@@ -324,13 +327,8 @@ export class ImageRequestTask {
       return;
     }
 
-    // Load DocumentsProvider thumbnail, if supported.
-    const isDocumentsProviderRequest = !!requestUrl.match(
-        RegExp(
-            'filesystem:chrome-extension://[a-z]+/external/arc-documents-provider/.*',
-            ),
-    );
-    if (isDocumentsProviderRequest) {
+    // Load ARC DocumentsProvider thumbnail, if supported.
+    if (requestUrl.match(adpRegExp)) {
       const {width, height} = this.targetThumbnailSize_();
       chrome.imageLoaderPrivate.getArcDocumentsProviderThumbnail(
           requestUrl,
