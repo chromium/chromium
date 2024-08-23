@@ -17,6 +17,8 @@ namespace gfx {
 
 class GFX_EXPORT PlatformFontMac : public PlatformFont {
  public:
+  static constexpr int kDefaultFontSize = 0;
+
   // An enum indicating a type of system-specified font.
   //   - kGeneral: +[NSFont systemFontOfSize:(weight:)]
   //   - kMenu: +[NSFont menuFontOfSize:]
@@ -26,7 +28,8 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   // Constructs a PlatformFontMac for a system-specified font of
   // |system_font_type| type. For a non-system-specified font, use any other
   // constructor.
-  explicit PlatformFontMac(SystemFontType system_font_type);
+  explicit PlatformFontMac(SystemFontType system_font_type,
+                           int font_size = kDefaultFontSize);
 
   // Constructs a PlatformFontMac for containing the CTFontRef |ct_font|. Do
   // not call this for a system-specified font; use the |SystemFontType|
