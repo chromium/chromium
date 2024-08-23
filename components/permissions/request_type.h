@@ -65,6 +65,9 @@ enum class RequestType {
 #endif
   kStorageAccess,
   kVrSession,
+#if !BUILDFLAG(IS_ANDROID)
+  kWebAppInstallation,
+#endif
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   kWebPrinting,
 #endif

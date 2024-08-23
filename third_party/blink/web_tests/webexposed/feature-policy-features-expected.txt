@@ -78,6 +78,7 @@ sync-xhr
 unload
 usb
 vertical-scroll
+web-app-installation
 window-management
 xr-spatial-tracking
 

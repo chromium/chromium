@@ -1392,6 +1392,7 @@ domain Browser
       videoCapturePanTiltZoom
       wakeLockScreen
       wakeLockSystem
+      webAppInstallation
       windowManagement
 
   experimental type PermissionSetting extends string
@@ -8098,6 +8099,7 @@ domain Page
       usb
       usb-unrestricted
       vertical-scroll
+      web-app-installation
       web-printing
       web-share
       window-management

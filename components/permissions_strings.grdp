@@ -183,6 +183,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to scroll and zoom a captured tab.">
     Scroll and zoom the contents of your shared tab
   </message>
+  <message name="IDS_WEB_APP_INSTALLATION_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to install a web app.">
+    Ask to install web apps
+  </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow
   </message>

@@ -149,6 +149,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS;
     case RequestType::kCapturedSurfaceControl:
       return RequestTypeForUma::CAPTURED_SURFACE_CONTROL;
+    case RequestType::kWebAppInstallation:
+      return RequestTypeForUma::PERMISSION_WEB_APP_INSTALLATION;
 #endif
     case RequestType::kIdentityProvider:
       return RequestTypeForUma::PERMISSION_IDENTITY_PROVIDER;
@@ -246,6 +248,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "PointerLock";
     case RequestTypeForUma::MULTIPLE_KEYBOARD_AND_POINTER_LOCK:
       return "KeyboardAndPointerLock";
+    case RequestTypeForUma::PERMISSION_WEB_APP_INSTALLATION:
+      return "WebAppInstallation";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -1413,6 +1417,10 @@ void PermissionUmaUtil::RecordPermissionAction(
     case ContentSettingsType::KEYBOARD_LOCK:
       base::UmaHistogramEnumeration("Permissions.Action.KeyboardLock", action,
                                     PermissionAction::NUM);
+      break;
+    case ContentSettingsType::WEB_APP_INSTALLATION:
+      base::UmaHistogramEnumeration("Permissions.Action.WebAppInstallation",
+                                    action, PermissionAction::NUM);
       break;
     // The user is not prompted for these permissions, thus there is no
     // permission action recorded for them.

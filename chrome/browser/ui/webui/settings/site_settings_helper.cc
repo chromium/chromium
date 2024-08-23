@@ -166,6 +166,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::POINTER_LOCK, "pointer-lock"},
     {ContentSettingsType::TRACKING_PROTECTION, "tracking-protection"},
     {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, "top-level-storage-access"},
+    {ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting

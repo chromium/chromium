@@ -886,6 +886,8 @@ chromium-metrics-reviews@google.com.
     <variant name="tracking-protection"
         summary="Tracking Protection exceptions"/>
     <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
+    <variant name="web-app-installation"
+        summary="Web app installation exceptions"/>
     <variant name="webid-active-session" summary="FedCM Active Session"/>
     <variant name="webid-request" summary="FedCM Request"/>
     <variant name="webid-share" summary="FedCM Share"/>

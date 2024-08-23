@@ -824,6 +824,16 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+
+  Register(ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation",
+           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{},
+           /*valid_settings=*/
+           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsRegistry::DESKTOP,
+           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
+           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 }
 
 void ContentSettingsRegistry::Register(

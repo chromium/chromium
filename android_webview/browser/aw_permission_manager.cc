@@ -383,6 +383,7 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::KEYBOARD_LOCK:
       case PermissionType::POINTER_LOCK:
       case PermissionType::AUTOMATIC_FULLSCREEN:
+      case PermissionType::WEB_APP_INSTALLATION:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
         pending_request_raw->SetPermissionStatus(permissions[i],
@@ -608,6 +609,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::VR:
     case blink::PermissionType::WAKE_LOCK_SCREEN:
     case blink::PermissionType::WAKE_LOCK_SYSTEM:
+    case blink::PermissionType::WEB_APP_INSTALLATION:
     case blink::PermissionType::WEB_PRINTING:
     case blink::PermissionType::WINDOW_MANAGEMENT:
       return PermissionStatus::DENIED;
@@ -760,6 +762,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::KEYBOARD_LOCK:
       case PermissionType::POINTER_LOCK:
       case PermissionType::AUTOMATIC_FULLSCREEN:
+      case PermissionType::WEB_APP_INSTALLATION:
         NOTIMPLEMENTED() << "CancelPermission not implemented for "
                          << static_cast<int>(permission);
         break;

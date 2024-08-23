@@ -38,6 +38,7 @@ enum PermissionName {
   KEYBOARD_LOCK,
   POINTER_LOCK,
   FULLSCREEN,
+  WEB_APP_INSTALLATION,
 };
 
 struct MidiPermissionDescriptor {

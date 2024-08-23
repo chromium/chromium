@@ -124,6 +124,9 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       // TODO(crbug.com/40944087): Use a proper smart card icon.
       return vector_icons::kDevicesIcon;
 #endif
+    case RequestType::kWebAppInstallation:
+      // TODO(crbug.com/333795265): provide a dedicated icon.
+      return vector_icons::kTouchpadMouseIcon;
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     case RequestType::kWebPrinting:
       return vector_icons::kPrinterIcon;
@@ -175,6 +178,9 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kKeyboardLockOffIcon;
     case RequestType::kPointerLock:
       return vector_icons::kPointerLockOffIcon;
+    case RequestType::kWebAppInstallation:
+      // TODO(crbug.com/333795265): provide a dedicated icon.
+      return gfx::kNoneIcon;
     default:
       NOTREACHED_IN_MIGRATION();
   }
@@ -458,6 +464,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
       return "web_printing";
 #endif
 #if !BUILDFLAG(IS_ANDROID)
+    case permissions::RequestType::kWebAppInstallation:
+      return "web_app_installation";
     case permissions::RequestType::kWindowManagement:
       return "window_management";
 #endif

@@ -478,6 +478,11 @@
       depends_on: ["ExperimentalPolicies"],
     },
     {
+      name: "WebAppInstallation",
+      permissions_policy_name: "web-app-installation",
+      depends_on: ["WebAppInstallation"],
+    },
+    {
       name: "WebPrinting",
       permissions_policy_name: "web-printing",
       depends_on: ["WebPrinting"],

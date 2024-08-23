@@ -212,6 +212,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::AUTOMATIC_FULLSCREEN:
       *out = PermissionType::AUTOMATIC_FULLSCREEN;
       break;
+    case ContentSettingsType::WEB_APP_INSTALLATION:
+      *out = PermissionType::WEB_APP_INSTALLATION;
+      break;
     default:
       return false;
   }
@@ -364,6 +367,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::POINTER_LOCK;
     case PermissionType::AUTOMATIC_FULLSCREEN:
       return ContentSettingsType::AUTOMATIC_FULLSCREEN;
+    case PermissionType::WEB_APP_INSTALLATION:
+      return ContentSettingsType::WEB_APP_INSTALLATION;
     case PermissionType::NUM:
       break;
   }

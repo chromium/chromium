@@ -3171,6 +3171,7 @@ Called by update_net_error_codes.py.-->
   <int value="126" label="Javascript optimizer"/>
   <int value="127" label="Storage Access Header Origin Trial"/>
   <int value="128" label="Hand Tracking"/>
+  <int value="129" label="Web App Installation"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
@@ -10960,6 +10961,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="121" label="MediaPlaybackWhileNotVisible"/>
   <int value="122" label="AllScreensCapture"/>
   <int value="123" label="PartitionedPopins"/>
+  <int value="124" label="WebAppInstallation"/>
 </enum>
 
 <enum name="FedCmContinueOnPopupResult">
@@ -28609,6 +28611,7 @@ Called by update_net_error_codes.py.-->
   <int value="31" label="PERMISSION_DISPLAY_CAPTURE"/>
   <int value="32" label="PERMISSION_FILE_HANDLING__REMOVED_IN_M98"/>
   <int value="33" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
+  <int value="34" label="PERMISSION_WEB_APP_INSTALLATION"/>
 </enum>
 
 <enum name="PIIType">

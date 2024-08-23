@@ -63,6 +63,7 @@ enum class PermissionType {
   POINTER_LOCK = 39,
   AUTOMATIC_FULLSCREEN = 40,
   HAND_TRACKING = 41,
+  WEB_APP_INSTALLATION = 42,
 
   // Always keep this at the end.
   NUM,

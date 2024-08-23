@@ -45,6 +45,8 @@ var PermissionsHelper = (function() {
           return {name: "captured-surface-control"};
       case "speaker-selection":
         return {name: "speaker-selection"};
+      case "web-app-installation":
+        return {name: "web-app-installation"};
       default:
         throw "Invalid permission name provided";
     }
