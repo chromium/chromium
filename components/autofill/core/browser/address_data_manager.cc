@@ -9,11 +9,14 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
@@ -25,6 +28,7 @@
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -834,10 +838,31 @@ void AddressDataManager::LogStoredDataMetrics() const {
   const std::vector<const AutofillProfile*> profiles = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profiles);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profiles);
+  auto log_deduplication_startup_metrics = base::BindOnce(
+      [](base::WeakPtr<const AddressDataManager> adm) {
+        if (!adm) {
+          return;
+        }
+        autofill_metrics::LogDeduplicationStartupMetrics(adm->GetProfiles(),
+                                                         adm->app_locale());
+      },
+      weak_factory_.GetWeakPtr());
+
   if (base::FeatureList::IsEnabled(
           features::kAutofillLogDeduplicationMetrics)) {
-    autofill_metrics::LogDeduplicationStartupMetrics(profiles, app_locale_);
+    // Followup metrics introduce more complex logic, if they are enabled the
+    // recording should be delayed by 30 seconds(arbitrary number that should be
+    // greater than the startup time) to allow for a faster browser startup.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillLogDeduplicationMetricsFollowup)) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, std::move(log_deduplication_startup_metrics),
+          base::Seconds(30));
+    } else {
+      std::move(log_deduplication_startup_metrics).Run();
+    }
   }
+
   autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
                                                    app_locale_);
 }
