@@ -704,74 +704,9 @@
 
 #pragma mark - Manual Fallback
 
-// Returns a matcher for the scroll view in keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackFormSuggestionViewMatcher;
-
-// Returns a matcher for the keyboard icon in the keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackKeyboardIconMatcher;
-
-// Returns a matcher for the password icon in the keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackPasswordIconMatcher;
-
-// Returns a matcher for the password table view in manual fallback.
-+ (id<GREYMatcher>)manualFallbackPasswordTableViewMatcher;
-
-// Returns a matcher for the password search bar in manual fallback.
-+ (id<GREYMatcher>)manualFallbackPasswordSearchBarMatcher;
-
-// Returns a matcher for the button to open password settings in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackManageSettingsMatcher;
-
-// Returns a matcher for the button to open Password Manager in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackManagePasswordsMatcher;
-
-// Returns a matcher for the button to open all passwords in manual fallback.
-+ (id<GREYMatcher>)manualFallbackOtherPasswordsMatcher;
-
-// Returns a matcher for the button to dismiss all passwords in manual fallback.
-+ (id<GREYMatcher>)manualFallbackOtherPasswordsDismissMatcher;
-
-// Returns a matcher for the a password in the manual fallback list.
-+ (id<GREYMatcher>)manualFallbackPasswordButtonMatcher;
-
-// Returns a matcher for the profiles icon in the keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackProfilesIconMatcher;
-
-// Returns a matcher for the profiles table view in manual fallback.
-+ (id<GREYMatcher>)manualFallbackProfilesTableViewMatcher;
-// Returns a matcher for the button to open profile settings in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackManageProfilesMatcher;
-
-// Returns a matcher for the ProfileTableView window.
-+ (id<GREYMatcher>)manualFallbackProfileTableViewWindowMatcher;
-
-// Returns a matcher for the credit card icon in the keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackCreditCardIconMatcher;
-
-// Returns a matcher for the credit card table view in manual fallback.
-+ (id<GREYMatcher>)manualFallbackCreditCardTableViewMatcher;
-
-// Returns a matcher for the button to open payment method settings in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackManagePaymentMethodsMatcher;
-
-// Returns a matcher for the button to add a payment method in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackAddPaymentMethodMatcher;
-
-// Returns a matcher for the CreditCardTableView window.
-+ (id<GREYMatcher>)manualFallbackCreditCardTableViewWindowMatcher;
-
 // Returns the matcher for the Activity View header.
 + (id<GREYMatcher>)activityViewHeaderWithURLHost:(NSString*)host
                                            title:(NSString*)pageTitle;
-
-// Returns a matcher for the button to trigger password generation on manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher;
 
 // Returns a matcher for the button to accept the generated password.
 + (id<GREYMatcher>)useSuggestedPasswordMatcher;

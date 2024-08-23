@@ -664,6 +664,12 @@ id<GREYMatcher> SafetyCheckTableViewMatcher();
 // Returns a matcher for action in an AlertCoordinator.
 id<GREYMatcher> AlertAction(NSString* title);
 
+// Returns the matcher for the iOS 13+ Activity View header.
+id<GREYMatcher> ActivityViewHeader(NSString* url_host, NSString* page_title);
+
+// Returns a matcher for the button to accept the generated password.
+id<GREYMatcher> UseSuggestedPasswordMatcher();
+
 #pragma mark - Promo style view controller
 
 // Returns matcher for the primary action button.
@@ -691,82 +697,6 @@ id<GREYMatcher> IncognitoInterstitialOpenInChromeButton();
 
 // Returns a matcher for the Cancel button in the Incognito Interstitial.
 id<GREYMatcher> IncognitoInterstitialCancelButton();
-
-#pragma mark - Manual Fallback
-
-// Returns a matcher for the scroll view in keyboard accessory bar.
-id<GREYMatcher> ManualFallbackFormSuggestionViewMatcher();
-
-// Returns a matcher for the keyboard icon in the keyboard accessory bar.
-id<GREYMatcher> ManualFallbackKeyboardIconMatcher();
-
-// Returns a matcher for the password icon in the keyboard accessory bar.
-id<GREYMatcher> ManualFallbackPasswordIconMatcher();
-
-// Returns a matcher for the password table view in manual fallback.
-id<GREYMatcher> ManualFallbackPasswordTableViewMatcher();
-
-// Returns a matcher for the password search bar in manual fallback.
-id<GREYMatcher> ManualFallbackPasswordSearchBarMatcher();
-
-// Returns a matcher for the button to open Password Manager in manual
-// fallback.
-id<GREYMatcher> ManualFallbackManagePasswordsMatcher();
-
-// Returns a matcher for the button to open password settings in manual
-// fallback.
-id<GREYMatcher> ManualFallbackManageSettingsMatcher();
-
-// Returns a matcher for the button to open all passwords in manual fallback.
-id<GREYMatcher> ManualFallbackOtherPasswordsMatcher();
-
-// Returns a matcher for the button to dismiss all passwords in manual fallback.
-id<GREYMatcher> ManualFallbackOtherPasswordsDismissMatcher();
-
-// Returns a matcher for the a password in the manual fallback list.
-id<GREYMatcher> ManualFallbackPasswordButtonMatcher();
-
-// Returns a matcher for the profiles icon in the keyboard accessory bar.
-id<GREYMatcher> ManualFallbackProfilesIconMatcher();
-
-// Returns a matcher for the profiles table view in manual fallback.
-id<GREYMatcher> ManualFallbackProfilesTableViewMatcher();
-// Returns a matcher for the button to open profile settings in manual
-// fallback.
-id<GREYMatcher> ManualFallbackManageProfilesMatcher();
-
-// Returns a matcher for the profiles settings collection view.
-id<GREYMatcher> SettingsProfileMatcher();
-
-// Returns a matcher for the ProfileTableView window.
-id<GREYMatcher> ManualFallbackProfileTableViewWindowMatcher();
-
-// Returns a matcher for the credit card icon in the keyboard accessory bar.
-id<GREYMatcher> ManualFallbackCreditCardIconMatcher();
-
-// Returns a matcher for the credit card table view in manual fallback.
-id<GREYMatcher> ManualFallbackCreditCardTableViewMatcher();
-
-// Returns a matcher for the button to open payment method settings in manual
-// fallback.
-id<GREYMatcher> ManualFallbackManagePaymentMethodsMatcher();
-
-// Returns a matcher for the button to add a payment method in manual
-// fallback.
-id<GREYMatcher> ManualFallbackAddPaymentMethodMatcher();
-
-// Returns a matcher for the CreditCardTableView window.
-id<GREYMatcher> ManualFallbackCreditCardTableViewWindowMatcher();
-
-// Returns the matcher for the iOS 13+ Activity View header.
-id<GREYMatcher> ActivityViewHeader(NSString* url_host, NSString* page_title);
-
-// Returns a matcher for the button to trigger password generation on manual
-// fallback.
-id<GREYMatcher> ManualFallbackSuggestPasswordMatcher();
-
-// Returns a matcher for the button to accept the generated password.
-id<GREYMatcher> UseSuggestedPasswordMatcher();
 
 #pragma mark - Overflow Menu Destinations
 

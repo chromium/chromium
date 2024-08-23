@@ -13,6 +13,7 @@
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -32,11 +33,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::ManualFallbackCreditCardTableViewMatcher;
-using chrome_test_util::ManualFallbackOtherPasswordsDismissMatcher;
-using chrome_test_util::ManualFallbackOtherPasswordsMatcher;
-using chrome_test_util::ManualFallbackPasswordTableViewMatcher;
-using chrome_test_util::ManualFallbackProfilesTableViewMatcher;
 using manual_fill::ManualFillDataType;
 using net::test_server::EmbeddedTestServer;
 
@@ -325,7 +321,7 @@ id<GREYMatcher> AutofillFormButton() {
 
 - (void)openAllPasswordListFromPasswordTab {
   // Tap the "Select Password..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::OtherPasswordsMatcher()]
       performAction:grey_tap()];
 
   // Acknowledge concerns using other passwords on a website.
@@ -338,7 +334,7 @@ id<GREYMatcher> AutofillFormButton() {
 
   // Verify that the all password list is visible.
   [[EarlGrey
-      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      selectElementWithMatcher:manual_fill::OtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -381,7 +377,7 @@ id<GREYMatcher> AutofillFormButton() {
                                   fieldToFill:kPasswordFieldID];
 
   // The password view controller should be visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -399,8 +395,7 @@ id<GREYMatcher> AutofillFormButton() {
                                   fieldToFill:kCardNameFieldID];
 
   // The payment method view controller should be visible.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -418,7 +413,7 @@ id<GREYMatcher> AutofillFormButton() {
                                   fieldToFill:kNameFieldID];
 
   // The address view controller should be visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -437,22 +432,21 @@ id<GREYMatcher> AutofillFormButton() {
   // visible.
   [[EarlGrey selectElementWithMatcher:SegmentedControlAddressTab()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Select the payment method tab and confirm that the payment method view
   // controller is visible.
   [[EarlGrey selectElementWithMatcher:SegmentedControlPaymentMethodTab()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Select the password tab and confirm that the password view controller is
   // visible.
   [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -498,7 +492,7 @@ id<GREYMatcher> AutofillFormButton() {
   // visible.
   [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Confirm that the password option is visible.
@@ -554,7 +548,7 @@ id<GREYMatcher> AutofillFormButton() {
                                   fieldToFill:kNameFieldID];
 
   // Scroll down and check that the "Autofill Form" button exists.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_sufficientlyVisible()];

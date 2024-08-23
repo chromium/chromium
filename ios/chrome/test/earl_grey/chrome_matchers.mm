@@ -816,6 +816,15 @@ id<GREYMatcher> AlertAction(NSString* title) {
       grey_interactable(), nil);
 }
 
+id<GREYMatcher> ActivityViewHeader(NSString* url_host, NSString* page_title) {
+  return [ChromeMatchersAppInterface activityViewHeaderWithURLHost:url_host
+                                                             title:page_title];
+}
+
+id<GREYMatcher> UseSuggestedPasswordMatcher() {
+  return [ChromeMatchersAppInterface useSuggestedPasswordMatcher];
+}
+
 #pragma mark - Overflow Menu Destinations
 
 id<GREYMatcher> BookmarksDestinationButton() {
@@ -896,100 +905,6 @@ id<GREYMatcher> IncognitoInterstitialOpenInChromeButton() {
 
 id<GREYMatcher> IncognitoInterstitialCancelButton() {
   return [ChromeMatchersAppInterface incognitoInterstitialCancelButton];
-}
-
-#pragma mark - Manual Fallback
-
-id<GREYMatcher> ManualFallbackFormSuggestionViewMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackFormSuggestionViewMatcher];
-}
-
-id<GREYMatcher> ManualFallbackKeyboardIconMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackKeyboardIconMatcher];
-}
-
-id<GREYMatcher> ManualFallbackPasswordIconMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackPasswordIconMatcher];
-}
-
-id<GREYMatcher> ManualFallbackPasswordTableViewMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackPasswordTableViewMatcher];
-}
-
-id<GREYMatcher> ManualFallbackPasswordSearchBarMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackPasswordSearchBarMatcher];
-}
-
-id<GREYMatcher> ManualFallbackManagePasswordsMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackManagePasswordsMatcher];
-}
-
-id<GREYMatcher> ManualFallbackManageSettingsMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackManageSettingsMatcher];
-}
-
-id<GREYMatcher> ManualFallbackOtherPasswordsMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackOtherPasswordsMatcher];
-}
-
-id<GREYMatcher> ManualFallbackOtherPasswordsDismissMatcher() {
-  return
-      [ChromeMatchersAppInterface manualFallbackOtherPasswordsDismissMatcher];
-}
-
-id<GREYMatcher> ManualFallbackPasswordButtonMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackPasswordButtonMatcher];
-}
-
-id<GREYMatcher> ManualFallbackProfilesIconMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackProfilesIconMatcher];
-}
-
-id<GREYMatcher> ManualFallbackProfilesTableViewMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackProfilesTableViewMatcher];
-}
-
-id<GREYMatcher> ManualFallbackManageProfilesMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackManageProfilesMatcher];
-}
-
-id<GREYMatcher> ManualFallbackProfileTableViewWindowMatcher() {
-  return
-      [ChromeMatchersAppInterface manualFallbackProfileTableViewWindowMatcher];
-}
-
-id<GREYMatcher> ManualFallbackCreditCardIconMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackCreditCardIconMatcher];
-}
-
-id<GREYMatcher> ManualFallbackCreditCardTableViewMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackCreditCardTableViewMatcher];
-}
-
-id<GREYMatcher> ManualFallbackManagePaymentMethodsMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackManagePaymentMethodsMatcher];
-}
-
-id<GREYMatcher> ManualFallbackAddPaymentMethodMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackAddPaymentMethodMatcher];
-}
-
-id<GREYMatcher> ManualFallbackCreditCardTableViewWindowMatcher() {
-  return [ChromeMatchersAppInterface
-      manualFallbackCreditCardTableViewWindowMatcher];
-}
-
-id<GREYMatcher> ActivityViewHeader(NSString* url_host, NSString* page_title) {
-  return [ChromeMatchersAppInterface activityViewHeaderWithURLHost:url_host
-                                                             title:page_title];
-}
-
-id<GREYMatcher> ManualFallbackSuggestPasswordMatcher() {
-  return [ChromeMatchersAppInterface manualFallbackSuggestPasswordMatcher];
-}
-
-id<GREYMatcher> UseSuggestedPasswordMatcher() {
-  return [ChromeMatchersAppInterface useSuggestedPasswordMatcher];
 }
 
 #pragma mark - Tab Grid Edit Mode

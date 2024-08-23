@@ -123,6 +123,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled/manual_fill:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/manual_fill:manual_fill_constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",

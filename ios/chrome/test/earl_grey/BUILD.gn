@@ -88,8 +88,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/autofill/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled:ui",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory:eg_app_support+eg2",
-    "//ios/chrome/browser/autofill/ui_bundled/manual_fill",
-    "//ios/chrome/browser/autofill/ui_bundled/manual_fill:manual_fill_ui",
     "//ios/chrome/browser/bookmarks/ui_bundled:constants",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/bring_android_tabs/ui_bundled:eg_app_support+eg2",

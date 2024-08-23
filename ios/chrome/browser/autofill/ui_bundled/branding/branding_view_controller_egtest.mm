@@ -5,6 +5,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -19,8 +20,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::ManualFallbackKeyboardIconMatcher;
-using chrome_test_util::ManualFallbackPasswordIconMatcher;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::WebViewMatcher;
 
@@ -88,7 +87,7 @@ void OpenManualFallback() {
                                    kFormInputAccessoryViewAccessibilityID)),
                                nil);
   } else {
-    button_to_tap = ManualFallbackPasswordIconMatcher();
+    button_to_tap = manual_fill::PasswordIconMatcher();
   }
 
   [[EarlGrey selectElementWithMatcher:button_to_tap] performAction:grey_tap()];
@@ -150,9 +149,8 @@ void OpenManualFallback() {
   OpenManualFallback();
 
   if (!base::ios::IsRunningOnIOS16OrLater() && [ChromeEarlGrey isIPadIdiom]) {
-    [ChromeEarlGreyUI
-        dismissByTappingOnTheWindowOfPopover:
-            chrome_test_util::ManualFallbackPasswordTableViewMatcher()];
+    [ChromeEarlGreyUI dismissByTappingOnTheWindowOfPopover:
+                          manual_fill::PasswordTableViewMatcher()];
   }
 
   DismissKeyboard();

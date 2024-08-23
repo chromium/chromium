@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
@@ -32,8 +33,6 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-using chrome_test_util::ManualFallbackFormSuggestionViewMatcher;
 
 namespace {
 
@@ -398,11 +397,11 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   // Wait for the keyboard accessory to appear.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      ManualFallbackFormSuggestionViewMatcher()];
+                      manual_fill::FormSuggestionViewMatcher()];
 
   // Scroll to the right of the keyboard accessory so that the second card
   // suggestion is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
 
   id<GREYMatcher> cc_chip = grey_text(base::SysUTF16ToNSString(card.GetInfo(

@@ -286,6 +286,23 @@ source_set("requesters") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "manual_fill_matchers.h",
+    "manual_fill_matchers.mm",
+  ]
+
+  deps = [
+    ":manual_fill_constants",
+    "//ios/chrome/browser/autofill/model:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -310,6 +327,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled/manual_fill:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet:eg_test_support+eg2",
     "//ios/chrome/browser/plus_addresses/ui:eg_test_support+eg2",

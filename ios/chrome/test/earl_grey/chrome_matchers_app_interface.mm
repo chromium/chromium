@@ -5,19 +5,11 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_accessory_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/download/ui_bundled/download_manager_constants.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
@@ -1453,103 +1445,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 #pragma mark - Manual Fallback
 
-+ (id<GREYMatcher>)manualFallbackFormSuggestionViewMatcher {
-  return grey_accessibilityID(kFormSuggestionsViewAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackPasswordIconMatcher {
-  return grey_accessibilityID(
-      manual_fill::kAccessoryPasswordAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackKeyboardIconMatcher {
-  return grey_accessibilityID(
-      manual_fill::kAccessoryKeyboardAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackPasswordTableViewMatcher {
-  return grey_accessibilityID(
-      manual_fill::kPasswordTableViewAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackPasswordSearchBarMatcher {
-  return grey_accessibilityID(
-      manual_fill::kPasswordSearchBarAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackManagePasswordsMatcher {
-  return grey_accessibilityID(
-      manual_fill::kManagePasswordsAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackManageSettingsMatcher {
-  return grey_accessibilityID(
-      manual_fill::kManageSettingsAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackOtherPasswordsMatcher {
-  return grey_accessibilityID(
-      manual_fill::kOtherPasswordsAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackOtherPasswordsDismissMatcher {
-  return grey_accessibilityID(
-      manual_fill::kPasswordDoneButtonAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackPasswordButtonMatcher {
-  return grey_buttonTitle(manual_fill::kMaskedPasswordButtonText);
-}
-
-+ (id<GREYMatcher>)manualFallbackProfilesIconMatcher {
-  return grey_accessibilityID(
-      manual_fill::kAccessoryAddressAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackProfilesTableViewMatcher {
-  return grey_accessibilityID(
-      manual_fill::kAddressTableViewAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackManageProfilesMatcher {
-  return grey_accessibilityID(
-      manual_fill::kManageAddressAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackProfileTableViewWindowMatcher {
-  id<GREYMatcher> classMatcher = grey_kindOfClass([UIWindow class]);
-  id<GREYMatcher> parentMatcher =
-      grey_descendant([self manualFallbackProfilesTableViewMatcher]);
-  return grey_allOf(classMatcher, parentMatcher, nil);
-}
-
-+ (id<GREYMatcher>)manualFallbackCreditCardIconMatcher {
-  return grey_accessibilityID(
-      manual_fill::kAccessoryCreditCardAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackCreditCardTableViewMatcher {
-  return grey_accessibilityID(
-      manual_fill::kCardTableViewAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackManagePaymentMethodsMatcher {
-  return grey_accessibilityID(
-      manual_fill::kManagePaymentMethodsAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackAddPaymentMethodMatcher {
-  return grey_accessibilityID(
-      manual_fill::kAddPaymentMethodAccessibilityIdentifier);
-}
-
-+ (id<GREYMatcher>)manualFallbackCreditCardTableViewWindowMatcher {
-  id<GREYMatcher> classMatcher = grey_kindOfClass([UIWindow class]);
-  id<GREYMatcher> parentMatcher =
-      grey_descendant([self manualFallbackCreditCardTableViewMatcher]);
-  return grey_allOf(classMatcher, parentMatcher, nil);
-}
-
 + (id<GREYMatcher>)activityViewHeaderWithURLHost:(NSString*)host
                                            title:(NSString*)pageTitle {
   // The title of the activity view starts as the URL, then asynchronously
@@ -1575,11 +1470,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
                                            descriptionBlock:describe],
       nil);
-}
-
-+ (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher {
-  return grey_accessibilityID(
-      manual_fill::kSuggestPasswordAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)useSuggestedPasswordMatcher {
