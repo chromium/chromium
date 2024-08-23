@@ -43,7 +43,7 @@ inline constexpr char kBrowserLockdownModeEnabled[] =
 // A map of browser state data directory to cached information. This cache can
 // be used to display information about browser states without actually having
 // to load them.
-inline constexpr char kBrowserStateInfoCache[] = "profile.info_cache";
+inline constexpr char kProfileInfoCache[] = "profile.info_cache";
 
 // Directory of the browser state profile used.
 // TODO(crbug.com/325921947): Remove use of this key, kBrowserStatesLastActive

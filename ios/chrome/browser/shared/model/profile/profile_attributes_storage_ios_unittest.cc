@@ -79,11 +79,11 @@ TEST_F(ProfileAttributesStorageIOSTest, AddBrowserState) {
     const size_t index = storage.GetIndexOfBrowserStateWithName(account.name);
     EXPECT_NE(index, std::string::npos);
 
-    EXPECT_EQ(storage.GetNameOfBrowserStateAtIndex(index), account.name);
-    EXPECT_EQ(storage.GetGAIAIdOfBrowserStateAtIndex(index), account.gaia);
-    EXPECT_EQ(storage.GetUserNameOfBrowserStateAtIndex(index), account.email);
-    EXPECT_EQ(storage.BrowserStateIsAuthenticatedAtIndex(index),
-              account.authenticated);
+    ProfileAttributesIOS attr = storage.GetAttributesForProfileAtIndex(index);
+    EXPECT_EQ(attr.GetProfileName(), account.name);
+    EXPECT_EQ(attr.GetGaiaId(), account.gaia);
+    EXPECT_EQ(attr.GetUserName(), account.email);
+    EXPECT_EQ(attr.IsAuthenticated(), account.authenticated);
   }
 
   // There is no duplicate, so there should be exactly as many BrowserState
@@ -114,38 +114,6 @@ TEST_F(ProfileAttributesStorageIOSTest, RemoveBrowserState) {
   }
 }
 
-// Test the ProfileAttributesStorageIOS saves the data to PrefService and can
-// later load it correctly.
-TEST_F(ProfileAttributesStorageIOSTest, PrefService) {
-  // Add data to a first ProfileAttributesStorageIOS, it should store the
-  // data in the PrefService.
-  {
-    ProfileAttributesStorageIOS storage(pref_service());
-    for (const TestAccount& account : kTestAccounts) {
-      storage.AddBrowserState(account.name, account.gaia, account.email);
-      storage.SetLastActiveTimeOfBrowserStateAtIndex(
-          storage.GetNumberOfProfiles() - 1, account.last_active_time);
-    }
-  }
-
-  // Create a new ProfileAttributesStorageIOS and check that it loads the
-  // data from the PrefService correctly.
-  const ProfileAttributesStorageIOS storage(pref_service());
-
-  for (const TestAccount& account : kTestAccounts) {
-    const size_t index = storage.GetIndexOfBrowserStateWithName(account.name);
-    EXPECT_NE(index, std::string::npos);
-
-    EXPECT_EQ(storage.GetNameOfBrowserStateAtIndex(index), account.name);
-    EXPECT_EQ(storage.GetGAIAIdOfBrowserStateAtIndex(index), account.gaia);
-    EXPECT_EQ(storage.GetUserNameOfBrowserStateAtIndex(index), account.email);
-    EXPECT_EQ(storage.BrowserStateIsAuthenticatedAtIndex(index),
-              account.authenticated);
-    EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(index),
-              account.last_active_time);
-  }
-}
-
 // Tests that the saved browser state can be retrieve with the scene ID.
 TEST_F(ProfileAttributesStorageIOSTest, MapBrowserStateAndSceneID) {
   ProfileAttributesStorageIOS storage(pref_service());
@@ -162,30 +130,6 @@ TEST_F(ProfileAttributesStorageIOSTest, MapBrowserStateAndSceneID) {
 
   storage.ClearBrowserStateForSceneID(sceneID);
   EXPECT_EQ(storage.GetBrowserStateNameForSceneID(sceneID), std::string());
-}
-
-TEST_F(ProfileAttributesStorageIOSTest, SetAndGetLastActiveTime) {
-  ProfileAttributesStorageIOS storage(pref_service());
-
-  for (const TestAccount& account : kTestAccounts) {
-    storage.AddBrowserState(account.name, account.gaia, account.email);
-  }
-
-  // The last-active time is initially unset.
-  EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(0), base::Time());
-
-  // Once set, it can be queried again.
-  const base::Time time0 = base::Time::UnixEpoch() + base::Minutes(1);
-  storage.SetLastActiveTimeOfBrowserStateAtIndex(0, time0);
-  EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(0), time0);
-
-  // Different BrowserStates do not affect each other.
-  const base::Time time1 = base::Time::UnixEpoch() + base::Minutes(2);
-  EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(1), base::Time());
-  storage.SetLastActiveTimeOfBrowserStateAtIndex(1, time1);
-  EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(1), time1);
-  EXPECT_NE(storage.GetLastActiveTimeOfBrowserStateAtIndex(0),
-            storage.GetLastActiveTimeOfBrowserStateAtIndex(1));
 }
 
 // Tests that settings and getting the attributes using ProfileAttributesIOS

@@ -39,9 +39,12 @@ class ProfileAttributesStorageIOS {
 
   ~ProfileAttributesStorageIOS();
 
+  // Register profile with `name`, `gaia_id` and `user_name`.
   void AddBrowserState(std::string_view name,
                        std::string_view gaia_id,
                        std::string_view user_name);
+
+  // Remove informations about profile with `name`.
   void RemoveBrowserState(std::string_view name);
 
   // Returns the count of known profiles.
@@ -66,19 +69,9 @@ class ProfileAttributesStorageIOS {
   void UpdateAttributesForProfileWithName(std::string_view name,
                                           ProfileAttributesCallback callback);
 
-  // Gets and sets information related to browser states.
+  // Returns the index of the profile with `name` or std::string::npos if
+  // not found.
   size_t GetIndexOfBrowserStateWithName(std::string_view name) const;
-  const std::string& GetNameOfBrowserStateAtIndex(size_t index) const;
-  const std::string& GetGAIAIdOfBrowserStateAtIndex(size_t index) const;
-  const std::string& GetUserNameOfBrowserStateAtIndex(size_t index) const;
-  bool BrowserStateIsAuthenticatedAtIndex(size_t index) const;
-  void SetAuthInfoOfBrowserStateAtIndex(size_t index,
-                                        std::string_view gaia_id,
-                                        std::string_view user_name);
-  void SetBrowserStateIsAuthErrorAtIndex(size_t index, bool value);
-  bool BrowserStateIsAuthErrorAtIndex(size_t index) const;
-  base::Time GetLastActiveTimeOfBrowserStateAtIndex(size_t index) const;
-  void SetLastActiveTimeOfBrowserStateAtIndex(size_t index, base::Time time);
 
   // Register the given browser state with the given scene. Browser state name
   // should not be empty.
@@ -94,12 +87,6 @@ class ProfileAttributesStorageIOS {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  // Returns the dictionary storing information about a browser state.
-  const base::Value::Dict* GetInfoForBrowserStateAtIndex(size_t index) const;
-
-  // Saves the browser state info to a cache.
-  void SetInfoForBrowserStateAtIndex(size_t index, base::Value::Dict info);
-
   raw_ptr<PrefService> prefs_;
   std::vector<std::string> sorted_keys_;
 };
