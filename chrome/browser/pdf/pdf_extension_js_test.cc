@@ -41,14 +41,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-class PDFExtensionJSTest : public base::test::WithFeatureOverride,
-                           public PDFExtensionTestBase {
- public:
-  PDFExtensionJSTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
-
-  bool UseOopif() const override { return GetParam(); }
-
+class PDFExtensionJSTestBase : public PDFExtensionTestBase {
  protected:
   void SetUpOnMainThread() override {
     PDFExtensionTestBase::SetUpOnMainThread();
@@ -131,6 +124,15 @@ class PDFExtensionJSTest : public base::test::WithFeatureOverride,
   }
 
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;
+};
+
+class PDFExtensionJSTest : public base::test::WithFeatureOverride,
+                           public PDFExtensionJSTestBase {
+ public:
+  PDFExtensionJSTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+
+  bool UseOopif() const override { return GetParam(); }
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Basic) {
