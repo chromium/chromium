@@ -1645,23 +1645,41 @@ UseCase MainThreadSchedulerImpl::ComputeCurrentUseCase(
   any_thread_lock_.AssertAcquired();
 
   // Above all else we want to be responsive to user input.
-  *expected_use_case_duration =
-      any_thread().user_model.TimeLeftInUserGesture(now);
-  if (expected_use_case_duration->is_positive()) {
-    // Has a gesture been fully established?
-    if (any_thread().awaiting_touch_start_response) {
-      // No, so arrange for compositor tasks to be run at the highest priority.
-      return UseCase::kTouchstart;
-    }
+  *expected_use_case_duration = base::TimeDelta();
+  base::TimeDelta time_left_in_continuous_gesture =
+      any_thread().user_model.TimeLeftInContinuousUserGesture(now);
+  base::TimeDelta time_left_in_discrete_gesture =
+      any_thread().user_model.TimeLeftUntilDiscreteInputResponseDeadline(now);
 
-    if (base::FeatureList::IsEnabled(features::kDeferRendererTasksAfterInput)) {
-      if (any_thread().awaiting_discrete_input_response) {
-        return UseCase::kDiscreteInputResponse;
-      }
-    }
+  // A touchstart event can turn into either an actual gesture (scroll) or a
+  // discrete input event (click/tap). The policies for these are similar in
+  // that both prioritize the compositor task queue and both defer tasks, but
+  // the deferral details are a bit different. For now, the existing behavior
+  // takes precedent.
+  //
+  // TODO(crbug.com/350540984): Try to align the different deferral policies
+  // after experimenting with discrete input-based deferral.
+  if (time_left_in_continuous_gesture.is_positive() &&
+      any_thread().awaiting_touch_start_response) {
+    // The gesture hasn't been fully established; arrange for compositor tasks
+    // to be run at the highest priority, and for tasks to be deferred as to not
+    // block gesture establishment.
+    *expected_use_case_duration = time_left_in_continuous_gesture;
+    return UseCase::kTouchstart;
+  }
 
-    // Yes a gesture has been established.  Based on how the gesture is handled
-    // we need to choose between one of four use cases:
+  if (time_left_in_discrete_gesture.is_positive() &&
+      any_thread().awaiting_discrete_input_response) {
+    CHECK(
+        base::FeatureList::IsEnabled(features::kDeferRendererTasksAfterInput));
+    *expected_use_case_duration = time_left_in_discrete_gesture;
+    return UseCase::kDiscreteInputResponse;
+  }
+
+  if (time_left_in_continuous_gesture.is_positive()) {
+    *expected_use_case_duration = time_left_in_continuous_gesture;
+    // A gesture has been established. Based on how the gesture is handled we
+    // need to choose between one of four use cases:
     // 1. kCompositorGesture where the gesture is processed only on the
     //    compositor thread.
     // 2. MAIN_THREAD_GESTURE where the gesture is processed only on the main

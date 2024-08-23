@@ -67,25 +67,6 @@ void UserModel::DidProcessDiscreteInputResponse() {
   last_discrete_input_time_ = base::TimeTicks();
 }
 
-base::TimeDelta UserModel::TimeLeftInUserGesture(base::TimeTicks now) const {
-  const base::TimeDelta time_left_in_continuous_gesture =
-      TimeLeftInContinuousUserGesture(now);
-  CHECK(!time_left_in_continuous_gesture.is_negative());
-
-  const base::TimeDelta time_left_until_discrete_input_deadline =
-      TimeLeftUntilDiscreteInputResponseDeadline(now);
-  CHECK(!time_left_until_discrete_input_deadline.is_negative());
-
-  if (time_left_in_continuous_gesture.is_zero()) {
-    return time_left_until_discrete_input_deadline;
-  }
-  if (time_left_until_discrete_input_deadline.is_zero()) {
-    return time_left_in_continuous_gesture;
-  }
-  return std::min(time_left_in_continuous_gesture,
-                  time_left_until_discrete_input_deadline);
-}
-
 base::TimeDelta UserModel::TimeLeftInContinuousUserGesture(
     base::TimeTicks now) const {
   // If the input event is still pending, go into input prioritized policy and
