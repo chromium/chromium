@@ -72,9 +72,7 @@ PrerenderNoVarySearchHintCommitDeferringCondition::MaybeCreate(
 
   // Don't wait for the No-Vary-Search header if this navigation can match
   // without the header
-  std::optional<UrlMatchType> match_type =
-      prerender_host.IsUrlMatch(navigation_request.GetURL());
-  if (match_type.has_value()) {
+  if (prerender_host.IsUrlMatch(navigation_request.GetURL())) {
     return nullptr;
   }
 
