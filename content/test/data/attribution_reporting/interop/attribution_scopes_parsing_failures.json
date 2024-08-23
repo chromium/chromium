@@ -1,0 +1,596 @@
+{
+  "description": "Registrations with invalid attribution scopes fields are dropped",
+  "api_config": {
+    "needs_attribution_scopes": true
+  },
+  "input": {
+    "registrations": [
+      // Scopes wrong type.
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": [],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Scopes value wrong type.
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": "2"
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Scopes list value wrong type.
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    3
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Scopes limit wrong type.
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": "3",
+                  "values": [
+                    "3"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Scopes limit is 0.
+      {
+        "timestamp": "4",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scope_limit": 0,
+                "attribution_scopes": {
+                  "limit": 0,
+                  "values": [
+                    "3"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Scopes limit is negative.
+      {
+        "timestamp": "5",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": -3,
+                  "values": [
+                    "3"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Scopes limit above max.
+      {
+        "timestamp": "6",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 4294967296,
+                  "values": [
+                    "3"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Scopes limit not an integer.
+      {
+        "timestamp": "7",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 3.5,
+                  "values": [
+                    "3"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Max event states wrong type.
+      {
+        "timestamp": "8",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "max_event_states": "3",
+                  "values": [
+                    "4"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Max event states is 0.
+      {
+        "timestamp": "9",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "max_event_states": 0,
+                  "values": [
+                    "4"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Max event states is negative.
+      {
+        "timestamp": "10",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "max_event_states": -3,
+                  "values": [
+                    "4"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Max event states above max.
+      {
+        "timestamp": "11",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "max_event_states": 4294967296,
+                  "values": [
+                    "4"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Max event states not an integer.
+      {
+        "timestamp": "12",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "max_event_states": 3.5,
+                  "values": [
+                    "4"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Scopes not present.
+      {
+        "timestamp": "13",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "max_event_states": 3
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Scope limit not present.
+      {
+        "timestamp": "14",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "attribution_scopes": {
+                  "max_event_states": 3,
+                  "values": [
+                    "4"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":[],\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "0",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"values\":\"2\"},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "1",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"values\":[3]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "2",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":\"3\",\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "3",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scope_limit\":0,\"attribution_scopes\":{\"limit\":0,\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "4",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":-3,\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "5",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":4294967296.0,\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "6",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":3.5,\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "7",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":\"3\",\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "8",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":0,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "9",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":-3,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "10",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":4294967296.0,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "11",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":3.5,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "12",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":3},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "13",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     },
+     {
+      "payload": [ {
+        "body": {
+           "context_site": "https://source.test",
+           "header": "Attribution-Reporting-Register-Source",
+           "value": "{\"attribution_scopes\":{\"max_event_states\":3,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+        },
+        "type": "header-parsing-error"
+      } ],
+      "report_time": "14",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+     }
+    ]
+  }
+}

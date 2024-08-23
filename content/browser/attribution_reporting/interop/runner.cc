@@ -440,6 +440,11 @@ RunAttributionInteropSimulation(
         kPrivacySandboxAggregationServiceFilteringIds);
   }
 
+  if (run.config.needs_attribution_scopes) {
+    enabled_features.emplace_back(
+        attribution_reporting::features::kAttributionScopes);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       enabled_features,
