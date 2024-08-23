@@ -142,11 +142,7 @@
 
 - (void)entrypointTapped {
   // Cancel any pending transition timers since user interacted with entrypoint.
-  _transitionToEntrypointLoudMomentTimer = nullptr;
-  _transitionToDefaultEntrypointTimer = nullptr;
-
-  [self dismissEntrypointIPHAnimated:YES];
-  [self.delegate enableFullscreen];
+  [self resetTimersAndUIStateAnimated:YES];
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
@@ -224,6 +220,8 @@
     }
   }
 
+  [self resetTimersAndUIStateAnimated:NO];
+
   // Return early if no new webstates are active.
   if (!status.new_active_web_state) {
     return;
@@ -262,15 +260,20 @@
 
 #pragma mark - private
 
+// Cancels pending timers, dismisses any showing IPH and removes any active
+// fullscreen disabler.
+- (void)resetTimersAndUIStateAnimated:(BOOL)animated {
+  _transitionToEntrypointLoudMomentTimer = nullptr;
+  _transitionToDefaultEntrypointTimer = nullptr;
+  [self dismissEntrypointIPHAnimated:animated];
+  [self.delegate enableFullscreen];
+}
+
 // Updates the entrypoint state whenever the active tab changes or new data is
 // provided.
 - (void)activeTabHasNewData:
     (base::WeakPtr<ContextualPanelItemConfiguration>)config {
-  _transitionToEntrypointLoudMomentTimer = nullptr;
-  _transitionToDefaultEntrypointTimer = nullptr;
-
-  [self dismissEntrypointIPHAnimated:NO];
-  [self.delegate enableFullscreen];
+  [self resetTimersAndUIStateAnimated:NO];
 
   if (!config) {
     [self.consumer hideEntrypoint];

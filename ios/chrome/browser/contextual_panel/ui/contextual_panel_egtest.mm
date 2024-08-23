@@ -197,6 +197,15 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
   [ChromeEarlGrey closeTabAtIndex:0];
 }
 
+// Tests that closing the last tab before the large entrypoint callback is run
+// doesn't crash.
+- (void)testCloseLastTabBeforeLargeEntrypointAppears {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
+
+  // Close the tab.
+  [ChromeEarlGrey closeTabAtIndex:0];
+}
+
 // Tests that the contextual panel transitions neatly between iOS sheet
 // controller (full iPad layout) and the panel's custom sheet component (other
 // window open/iPhone-style layout).
