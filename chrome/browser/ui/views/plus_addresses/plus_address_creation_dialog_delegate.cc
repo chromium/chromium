@@ -167,10 +167,9 @@ std::unique_ptr<views::View> CreateDescription(
       .Build();
 }
 
-// Creates a view that contains the box with an icon, the proposed plus address,
-// and if `offer_refresh` is true, a refresh button.
-std::unique_ptr<views::TableLayoutView> CreatePlusAddressLabelContainer(
-    bool offer_refresh) {
+// Creates a view with a table layout for three rows: an icon, the proposed
+// plus address, and a refresh button.
+std::unique_ptr<views::TableLayoutView> CreatePlusAddressLabelContainer() {
   // Create a bubble for the plus address to be displayed in.
   std::unique_ptr<views::Background> background =
       views::CreateThemedRoundedRectBackground(
@@ -191,14 +190,9 @@ std::unique_ptr<views::TableLayoutView> CreatePlusAddressLabelContainer(
                        kPlusAddressIconColumnWidth, 0);
   container->AddColumn(Alignment::kStart, Alignment::kCenter, 1.0f,
                        ColumnSize::kUsePreferred, 0, 0);
-  if (offer_refresh) {
-    container->AddColumn(Alignment::kStart, Alignment::kStretch,
-                         views::TableLayout::kFixedSize, ColumnSize::kFixed,
-                         kPlusAddressRefreshColumnWidth, 0);
-  } else {
-    container->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                kPlusAddressIconColumnWidth);
-  }
+  container->AddColumn(Alignment::kStart, Alignment::kStretch,
+                       views::TableLayout::kFixedSize, ColumnSize::kFixed,
+                       kPlusAddressRefreshColumnWidth, 0);
   return container;
 }
 
@@ -354,8 +348,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
 
   // The container that contains the suggested plus address (or a loading
   // message).
-  plus_address_label_container_ = primary_view->AddChildView(
-      CreatePlusAddressLabelContainer(offer_refresh));
+  plus_address_label_container_ =
+      primary_view->AddChildView(CreatePlusAddressLabelContainer());
   plus_address_label_container_->AddRows(1, views::TableLayout::kFixedSize);
   plus_address_label_container_->AddChildView(
       views::Builder<views::ImageView>()
@@ -364,10 +358,9 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .Build());
   plus_address_label_ =
       plus_address_label_container_->AddChildView(CreatePlusAddressLabel());
-  if (offer_refresh) {
-    refresh_button_ =
-        plus_address_label_container_->AddChildView(CreateRefreshButton());
-  }
+  refresh_button_ =
+      plus_address_label_container_->AddChildView(CreateRefreshButton());
+  refresh_button_->SetVisible(offer_refresh);
 
   // The error report label is hidden by default.
   error_report_label_ =
@@ -398,13 +391,7 @@ void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {
 }
 
 void PlusAddressCreationDialogDelegate::HideRefreshButton() {
-  if (!refresh_button_) {
-    return;
-  }
-  std::unique_ptr<views::View> button =
-      refresh_button_->parent()->RemoveChildViewT(refresh_button_.get());
-  refresh_button_ = nullptr;
-  plus_address_label_->SetProperty(views::kMarginsKey, gfx::Insets());
+  refresh_button_->SetVisible(false);
 }
 
 void PlusAddressCreationDialogDelegate::ShowReserveResult(
