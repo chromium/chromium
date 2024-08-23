@@ -7,11 +7,15 @@
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
-import type {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {BeforeUnloadProxyImpl} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {BeforeUnloadProxy, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// <if expr="enable_pdf_ink2">
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+// </if>
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 export class MockElement {
@@ -385,5 +389,22 @@ export function finishInkStroke(controller: PluginController) {
 
   eventTarget.dispatchEvent(new CustomEvent(
       PluginControllerEventType.PLUGIN_MESSAGE, {detail: message}));
+}
+
+export class TestBeforeUnloadProxy extends TestBrowserProxy implements
+    BeforeUnloadProxy {
+  constructor() {
+    super(['preventDefault']);
+  }
+
+  preventDefault() {
+    this.methodCalled('preventDefault');
+  }
+}
+
+export function getNewTestBeforeUnloadProxy(): TestBeforeUnloadProxy {
+  const testProxy = new TestBeforeUnloadProxy();
+  BeforeUnloadProxyImpl.setInstance(testProxy);
+  return testProxy;
 }
 // </if>

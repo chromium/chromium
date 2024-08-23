@@ -487,6 +487,28 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2SidePanel) {
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2ViewerToolbar) {
   RunTestsInJsModule("ink2_viewer_toolbar_test.js", "test.pdf");
 }
+
+class PDFExtensionJSInk2BeforeUnloadTest : public PDFExtensionJSTestBase {
+ public:
+  // OOPIF PDF only, since MimeHandler handles the beforeunload event instead.
+  bool UseOopif() const override { return true; }
+
+ protected:
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+    auto enabled = PDFExtensionJSTestBase::GetEnabledFeatures();
+    enabled.push_back(chrome_pdf::features::kPdfInk2);
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2BeforeUnloadTest, Stroke) {
+  RunTestsInJsModule("ink2_before_unload_stroke_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2BeforeUnloadTest, Undo) {
+  RunTestsInJsModule("ink2_before_unload_undo_test.js", "test.pdf");
+}
+
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer

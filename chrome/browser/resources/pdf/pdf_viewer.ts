@@ -290,6 +290,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private hasEnteredAnnotationMode_: boolean;
   // <if expr="enable_pdf_ink2">
   private hasInk2Edits_: boolean;
+  private hasSavedEdits_: boolean = false;
   // </if>
   private formFieldFocus_: FormFieldFocusType;
   private loadProgress_: number;
@@ -303,6 +304,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private printingEnabled_: boolean;
   // <if expr="enable_pdf_ink2">
   private restoreAnnotationMode_: boolean = false;
+  // </if>
+  // <if expr="enable_ink or enable_pdf_ink2">
+  private showBeforeUnloadDialog_: boolean = false;
   // </if>
   private showPasswordDialog_: boolean;
   private showPropertiesDialog_: boolean;
@@ -322,7 +326,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   // <if expr="enable_ink">
   private inkController_: InkController|null = null;
-  private showBeforeUnloadDialog_: boolean = false;
   // </if>
 
   constructor() {
@@ -971,6 +974,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.hasInk2Edits_ = true;
     this.pluginController_!.getEventTarget().dispatchEvent(
         new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
+    this.setShowBeforeUnloadDialog_(true);
   }
   // </if>
 
@@ -1131,6 +1135,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_pdf_ink2">
   private onStrokesUpdated_(e: CustomEvent<number>) {
     this.hasInk2Edits_ = e.detail > 0;
+
+    // If the user already saved, always show the beforeunload dialog if the
+    // strokes have updated. If the user hasn't saved, only show the
+    // beforeunload dialog if there's edits.
+    this.setShowBeforeUnloadDialog_(this.hasSavedEdits_ || this.hasInk2Edits_);
   }
   // </if>
 
@@ -1200,10 +1209,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           }
           entry!.createWriter((writer: FileWriter) => {
             writer.write(blob);
-            // <if expr="enable_ink">
+            // <if expr="enable_ink or enable_pdf_ink2">
             // Unblock closing the window now that the user has saved
             // successfully.
             this.setShowBeforeUnloadDialog_(false);
+            // </if>
+            // <if expr="enable_pdf_ink2">
+            this.hasSavedEdits_ =
+                this.hasSavedEdits_ || requestType === SaveRequestType.EDITED;
             // </if>
           });
         });
@@ -1273,7 +1286,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
   // </if>
 
-  // <if expr="enable_ink">
+  // <if expr="enable_ink or enable_pdf_ink2">
   /**
    * Handles the `BeforeUnloadEvent` event.
    * @param event The `BeforeUnloadEvent` object representing the event.
@@ -1294,13 +1307,18 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * dialog.
    */
   private setShowBeforeUnloadDialog_(showDialog: boolean) {
-    if (this.pdfOopifEnabled) {
-      this.showBeforeUnloadDialog_ = showDialog;
-    } else {
+    if (this.showBeforeUnloadDialog_ === showDialog) {
+      return;
+    }
+
+    this.showBeforeUnloadDialog_ = showDialog;
+    if (!this.pdfOopifEnabled) {
       chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(showDialog);
     }
   }
+  // </if>
 
+  // <if expr="enable_ink">
   getCurrentControllerForTesting(): ContentController|null {
     return this.currentController;
   }
