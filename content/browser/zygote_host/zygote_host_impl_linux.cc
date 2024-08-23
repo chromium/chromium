@@ -130,7 +130,7 @@ void ZygoteHostImpl::Init(const base::CommandLine& command_line) {
            "Linux distro that has disabled unprivileged user namespaces with "
            "AppArmor, see "
            "https://chromium.googlesource.com/chromium/src/+/main/"
-           "docs/security/apparmor-userns-restrictions.md. Otherwise see"
+           "docs/security/apparmor-userns-restrictions.md. Otherwise see "
            "https://chromium.googlesource.com/chromium/src/+/main/"
            "docs/linux/suid_sandbox_development.md for more information on "
            "developing with the (older) SUID sandbox. "
