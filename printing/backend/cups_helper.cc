@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_deleters.h"
+#include "printing/backend/cups_weak_functions.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
@@ -45,14 +46,6 @@ namespace printing {
 
 // This section contains helper code for PPD parsing for semantic capabilities.
 namespace {
-
-// Function availability can be tested by checking whether its address is not
-// nullptr. Weak symbols remove the need for platform specific build flags and
-// allow for appropriate CUPS usage on platforms with non-uniform version
-// support, namely Linux.
-#define WEAK_CUPS_FN(x) extern "C" __attribute__((weak)) decltype(x) x
-
-WEAK_CUPS_FN(httpConnect2);
 
 // Timeout for establishing a CUPS connection.  It is expected that cupsd is
 // able to start and respond on all systems within this duration.

@@ -22,6 +22,7 @@
 #include "chrome/services/cups_proxy/public/cpp/cups_util.h"
 #include "net/http/http_util.h"
 #include "printing/backend/cups_ipp_helper.h"
+#include "printing/backend/cups_weak_functions.h"
 
 namespace cups_proxy {
 namespace {

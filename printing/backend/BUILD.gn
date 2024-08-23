@@ -83,6 +83,7 @@ component("backend") {
       "cups_deleters.h",
       "cups_helper.cc",
       "cups_helper.h",
+      "cups_weak_functions.h",
     ]
 
     if (is_linux || is_chromeos) {
