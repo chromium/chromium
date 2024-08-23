@@ -76,6 +76,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_utils.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "services/network/public/cpp/features.h"
@@ -83,6 +84,10 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif
 
 namespace site_settings {
 
@@ -609,6 +614,12 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
       base_types->push_back(ContentSettingsType::KEYBOARD_LOCK);
       base_types->push_back(ContentSettingsType::POINTER_LOCK);
     }
+
+#if BUILDFLAG(ENABLE_VR)
+    if (device::features::IsHandTrackingEnabled()) {
+      base_types->push_back(ContentSettingsType::HAND_TRACKING);
+    }
+#endif
 
     initialized = true;
   }

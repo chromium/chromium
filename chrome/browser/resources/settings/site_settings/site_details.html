@@ -262,6 +262,12 @@
       <site-details-permission category="[[contentSettingsTypesEnum_.VR]]"
           icon="privacy:cardboard" label="$i18n{siteSettingsVr}">
       </site-details-permission>
+      <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
+        <site-details-permission
+            category="[[contentSettingsTypesEnum_.HAND_TRACKING]]"
+            icon="privacy:hand-gesture" label="$i18n{siteSettingsHandTracking}">
+        </site-details-permission>
+      </template>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
           icon="settings:devices"
