@@ -133,8 +133,11 @@
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI.">
     Search your history, powered by AI
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI.">
-    Using everyday language, you can search your browsing history using phrases like "pizza places near me" or “family-friendly parks downtown". Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Manage your history search setting<ph name="END_LINK">&lt;/a&gt;</ph>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI." translateable="false">
+    In a few words, describe what you’re looking for, like "comfortable walking shoes" or "vegetarian pasta recipes." As you visit more sites on this device, you’ll see more results powered by AI.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT" desc="On the history page, the text of the link to edit the user's history search setting." translateable="false">
+    Manage your history search setting
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL" desc="On the history page, the accessibility label on the menu to select whether to filter results grouped by date or by group." translateable="false">
     Filter
