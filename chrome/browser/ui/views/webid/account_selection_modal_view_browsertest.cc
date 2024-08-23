@@ -123,7 +123,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog_->ShowLoadingDialog();
   }
 
-  void PerformHeaderChecks(views::View* header) {
+  void PerformHeaderChecks(views::View* header,
+                           bool expect_visible_icon = true) {
     // Perform some basic dialog checks.
     EXPECT_FALSE(dialog()->ShouldShowCloseButton());
     EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
@@ -168,11 +169,13 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     views::View* icon_image =
         static_cast<views::View*>(icon_container_children[0]);
     ASSERT_TRUE(icon_image);
-    EXPECT_TRUE(icon_image->GetVisible());
+    EXPECT_EQ(icon_image->GetVisible(), expect_visible_icon);
 
-    // Check icon image is of the correct size.
-    EXPECT_EQ(icon_image->size(),
-              gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
+    if (expect_visible_icon) {
+      // Check icon image is of the correct size.
+      EXPECT_EQ(icon_image->size(),
+                gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
+    }
 
     // Check title text.
     views::Label* title_view = static_cast<views::Label*>(header_children[1]);
@@ -409,7 +412,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_THAT(GetChildClassNames(dialog()),
                 testing::ElementsAreArray(expected_class_names));
 
-    PerformHeaderChecks(dialog()->children()[1]);
+    PerformHeaderChecks(dialog()->children()[1], /*expect_visible_icon=*/false);
 
     std::vector<raw_ptr<views::View, VectorExperimental>>
         placeholder_account_chooser = dialog()->children()[2]->children();

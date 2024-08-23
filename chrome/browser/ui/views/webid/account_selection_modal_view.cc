@@ -426,7 +426,8 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   RemoveNonHeaderChildViews();
 
   ConfigureBrandImageView(brand_icon_,
-                          idp_display_data_list[0].idp_metadata.brand_icon_url);
+                          idp_display_data_list[0].idp_metadata.brand_icon_url,
+                          /*show_placeholder=*/true);
 
   // Show the "Choose an account to continue" label.
   CHECK(body_label_);
@@ -548,7 +549,8 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
   RemoveNonHeaderChildViews();
 
   ConfigureBrandImageView(brand_icon_,
-                          idp_display_data.idp_metadata.brand_icon_url);
+                          idp_display_data.idp_metadata.brand_icon_url,
+                          /*show_placeholder=*/true);
 
   // Show the "Choose an account to continue" label.
   CHECK(body_label_);
@@ -607,7 +609,8 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
   RemoveNonHeaderChildViews();
 
   ConfigureBrandImageView(brand_icon_,
-                          idp_display_data.idp_metadata.brand_icon_url);
+                          idp_display_data.idp_metadata.brand_icon_url,
+                          /*show_placeholder=*/true);
 
   // Hide the "Choose an account to continue" label.
   CHECK(body_label_);
@@ -652,13 +655,12 @@ AccountSelectionModalView::CreateBrandIconImageView(
   brand_icon_ = brand_icon_image_view.get();
   brand_icon_image_view->SetImageSize(
       gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
-  if (brand_icon_url.is_valid()) {
-    ConfigureBrandImageView(brand_icon_image_view.get(), brand_icon_url);
-  } else {
-    brand_icon_image_view->SetImage(ui::ImageModel::FromVectorIcon(
-        kWebidGlobeIcon, ui::kColorIconSecondary, kModalIdpIconSize));
-    brand_icon_image_view->SetVisible(true);
-  }
+
+  // The brand icon image view is first created in the loading dialog. Do not
+  // show the placeholder globe icon in the loading dialog because we do not yet
+  // know whether there will be an icon.
+  ConfigureBrandImageView(brand_icon_image_view.get(), brand_icon_url,
+                          /*show_placeholder=*/false);
 
   // Create background image view.
   std::unique_ptr<BackgroundImageView> background_image_view =

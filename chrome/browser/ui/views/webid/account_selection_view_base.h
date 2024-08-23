@@ -288,9 +288,11 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
       const IdentityProviderDisplayData& idp_display_data);
 
   // Sets the brand views::ImageView visibility and image. Initiates the
-  // download of the brand icon if necessary.
+  // download of the brand icon if necessary. If `show_placeholder` is true, a
+  // globe icon will be shown if the icon cannot be fetched.
   void ConfigureBrandImageView(BrandIconImageView* image_view,
-                               const GURL& brand_icon_url);
+                               const GURL& brand_icon_url,
+                               bool show_placeholder);
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
