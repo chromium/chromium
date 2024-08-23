@@ -583,8 +583,8 @@ void CloudBinaryUploadService::MaybeFinishRequest(Request::Id request_id) {
 
   // Set `result` to be unknown, if the request is terminated with incomplete
   // response.
-  // TODO(b/356900195): Add a new result value to represent incomplete response.
-  Result result = response_is_complete ? Result::SUCCESS : Result::UNKNOWN;
+  Result result =
+      response_is_complete ? Result::SUCCESS : Result::INCOMPLETE_RESPONSE;
   FinishRequest(request, result, std::move(response));
 }
 

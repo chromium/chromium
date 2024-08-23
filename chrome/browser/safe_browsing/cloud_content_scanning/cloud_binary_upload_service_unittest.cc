@@ -836,7 +836,7 @@ TEST_P(CloudBinaryUploadServiceTest,
   content::RunAllTasksUntilIdle();
   run_loop.Run();
 
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNKNOWN);
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::INCOMPLETE_RESPONSE);
 }
 
 TEST_P(CloudBinaryUploadServiceTest, IsAuthorizedValidTimer) {

@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -84,6 +85,7 @@ bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
     case BinaryUploadService::Result::TOO_MANY_REQUESTS:
     case BinaryUploadService::Result::UNKNOWN:
+    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
       DVLOG(1) << __func__
                << ": handled by fail-closed settings, "
                   "default_action_allow_data_use="
@@ -340,7 +342,8 @@ bool ResultIsFailClosed(BinaryUploadService::Result result) {
          result == BinaryUploadService::Result::TIMEOUT ||
          result == BinaryUploadService::Result::FAILED_TO_GET_TOKEN ||
          result == BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-         result == BinaryUploadService::Result::UNKNOWN;
+         result == BinaryUploadService::Result::UNKNOWN ||
+         result == BinaryUploadService::Result::INCOMPLETE_RESPONSE;
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 

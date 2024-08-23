@@ -3466,6 +3466,7 @@ failing to fetch the updates which puts users' security at risk. -->
     <variant name=".FailedToGetVerdict" summary="a FailedToGetVerdict"/>
     <variant name=".FileEncrypted" summary="a FileEncrypted"/>
     <variant name=".FileTooLarge" summary="a FileTooLarge"/>
+    <variant name=".IncompleteResponse" summary="an IncompleteResponse"/>
     <variant name=".Success" summary="a Success"/>
     <variant name=".Timeout" summary="a Timeout"/>
     <variant name=".TooManyRequests" summary="a TooManyRequests"/>

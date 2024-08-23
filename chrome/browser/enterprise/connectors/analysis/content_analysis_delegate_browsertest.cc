@@ -2157,7 +2157,8 @@ INSTANTIATE_TEST_SUITE_P(
             safe_browsing::BinaryUploadService::Result::TIMEOUT,
             safe_browsing::BinaryUploadService::Result::FAILED_TO_GET_TOKEN,
             safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS,
-            safe_browsing::BinaryUploadService::Result::UNKNOWN),
+            safe_browsing::BinaryUploadService::Result::UNKNOWN,
+            safe_browsing::BinaryUploadService::Result::INCOMPLETE_RESPONSE),
         testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateDefaultActionSettingBrowserTest,
