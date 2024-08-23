@@ -19,6 +19,7 @@ static_library("shell_init") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/ash/shell_delegate",
     "//chromeos/ash/components/dbus",
     "//content/public/browser",
     "//ui/aura",

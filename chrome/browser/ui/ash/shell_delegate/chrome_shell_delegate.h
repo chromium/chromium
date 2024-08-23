@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CHROME_SHELL_DELEGATE_H_
-#define CHROME_BROWSER_UI_ASH_CHROME_SHELL_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_ASH_SHELL_DELEGATE_CHROME_SHELL_DELEGATE_H_
+#define CHROME_BROWSER_UI_ASH_SHELL_DELEGATE_CHROME_SHELL_DELEGATE_H_
 
 #include <memory>
 #include <string>
@@ -102,4 +102,4 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   bool IsNoFirstRunSwitchOn() const override;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_CHROME_SHELL_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_ASH_SHELL_DELEGATE_CHROME_SHELL_DELEGATE_H_
