@@ -73,19 +73,28 @@ NSString* GetSizeString(int64_t size_in_bytes) {
 
 // Returns the appropriate image for a destination icon.
 UIImage* GetDownloadFileDestinationImage(DownloadFileDestination destination) {
-  NSString* image_name = nil;
+  UIImage* destination_image = nil;
+
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  static dispatch_once_t once_token;
+  static UIImage* files_image;
+  static UIImage* drive_image;
+  dispatch_once(&once_token, ^{
+    files_image = [UIImage imageNamed:kFilesAppWithBackgroundImage];
+    drive_image = [UIImage imageNamed:kDriveAppWithBackgroundImage];
+  });
+
   switch (destination) {
     case DownloadFileDestination::kFiles:
-      image_name = kFilesAppWithBackgroundImage;
+      destination_image = files_image;
       break;
     case DownloadFileDestination::kDrive:
-      image_name = kDriveAppWithBackgroundImage;
+      destination_image = drive_image;
       break;
   }
-
 #endif
-  return image_name ? [UIImage imageNamed:image_name] : nil;
+
+  return destination_image;
 }
 
 // The font used for action buttons.
