@@ -5994,6 +5994,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="BottomSheet_CreditCard_SuggestionAccepted">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Continue&quot; button from the Payment
+    Suggestion Bottom Sheet to fill the current form with the selected payment
+    method suggestion. iOS only.
+  </description>
+</action>
+
+<action name="BottomSheet_Password_SuggestionAccepted">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Continue&quot; button from the Password
+    Suggestion Bottom Sheet to fill the current form with the selected password
+    suggestion. iOS only.
+  </description>
+</action>
+
 <action name="BrowserActions.MenuOpened">
   <obsolete>Deprecated in M77 with the removal of Browser Actions.</obsolete>
   <owner>ltian@chromium.org</owner>
@@ -14878,6 +14898,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="KeyboardAccessory_SuggestionAccepted">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on a suggestion from the Keyboard Accessory to fill the
+    current form. iOS only.
+  </description>
+</action>
+
 <action name="KeyboardShortcutViewer.CreateWindow">
   <owner>wutao@chromium.org</owner>
   <description>
@@ -19580,6 +19609,17 @@ should be able to be added at any place in this file.
   <description>The chrome://management page was viewed.</description>
 </action>
 
+<action name="ManualFallback_AllPasswords_SuggestionAccepted">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Autofill Form&quot; button of a password
+    suggestion from the All Passwords Manual Fallback view, which is opened by
+    tapping on the &quot;Select Password...&quot; button in the Password Manual
+    Fallback view, to fill the current form with the suggestion. iOS only.
+  </description>
+</action>
+
 <action name="ManualFallback_Close">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -19671,6 +19711,16 @@ should be able to be added at any place in this file.
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on an expiration year in the Credit Card Fallback view.
+  </description>
+</action>
+
+<action name="ManualFallback_CreditCard_SuggestionAccepted">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Autofill Form&quot; button of a payment method
+    suggestion from the Credit Card Manual Fallback view to fill the current
+    form with the suggestion. iOS only.
   </description>
 </action>
 
@@ -19781,6 +19831,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_Password_SuggestionAccepted">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Autofill Form&quot; button of a password
+    suggestion from the Password Manual Fallback view to fill the current form
+    with the suggestion. iOS only.
+  </description>
+</action>
+
 <action name="ManualFallback_Profiles_Address1">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -19884,6 +19944,16 @@ should be able to be added at any place in this file.
   <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a state / province in the Address Manual Fallback view.
+  </description>
+</action>
+
+<action name="ManualFallback_Profiles_SuggestionAccepted">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Autofill Form&quot; button of an address
+    suggestion from the Address Manual Fallback view to fill the current form
+    with the suggestion. iOS only.
   </description>
 </action>
 

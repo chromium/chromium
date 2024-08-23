@@ -45,7 +45,7 @@ class GURL;
                          cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
-            shouldReauthToAutofill:(BOOL)shouldReauthToAutofill
+           fromAllPasswordsContext:(BOOL)fromAllPasswordsContext
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -66,8 +66,8 @@ class GURL;
 // is positioned in the list of passwords to show. `cellIndexAccessibilityLabel`
 // is the cell's accessibility label and is used to indicate the cell's index
 // (1-based) and the number of available passwords to accessibility users.
-// `shouldReauthToAutofill` indicates whether the user should be asked to
-// re-authenticate before autofilling an entire form.
+// `fromAllPasswordsContext` indicates whether the cell is presented in the all
+// password list.
 - (void)setUpWithCredential:(ManualFillCredential*)credential
       isConnectedToPreviousCell:(BOOL)isConnectedToPreviousCell
           isConnectedToNextCell:(BOOL)isConnectedToNextCell
@@ -76,7 +76,7 @@ class GURL;
                       cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
-         shouldReauthToAutofill:(BOOL)shouldReauthToAutofill;
+        fromAllPasswordsContext:(BOOL)fromAllPasswordsContext;
 
 // Configures the cell for the passed favicon attributes.
 - (void)configureWithFaviconAttributes:(FaviconAttributes*)attributes;

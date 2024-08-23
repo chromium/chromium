@@ -823,6 +823,8 @@ CGFloat GPayIconTopAnchorOffset() {
   base::UmaHistogramSparse(
       "Autofill.UserAcceptedSuggestionAtIndex.CreditCard.ManualFallback",
       _cellIndex);
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_CreditCard_SuggestionAccepted"));
 
   autofill::SuggestionType type =
       autofill::VirtualCardFeatureEnabled() &&

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -228,6 +229,8 @@ CGFloat const kSpacingAfterTitle = 4;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  base::RecordAction(
+      base::UserMetricsAction("BottomSheet_Password_SuggestionAccepted"));
   NSInteger index = [self selectedRow];
   base::UmaHistogramSparse(
       "Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet", index);
