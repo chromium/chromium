@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOASTS_TOAST_SPECIFICATION_H_
-#define CHROME_BROWSER_UI_TOASTS_TOAST_SPECIFICATION_H_
+#ifndef CHROME_BROWSER_UI_TOASTS_API_TOAST_SPECIFICATION_H_
+#define CHROME_BROWSER_UI_TOASTS_API_TOAST_SPECIFICATION_H_
 
 #include <memory>
 #include <optional>
@@ -84,4 +84,4 @@ class ToastSpecification {
   bool is_persistent_toast_ = false;
 };
 
-#endif  // CHROME_BROWSER_UI_TOASTS_TOAST_SPECIFICATION_H_
+#endif  // CHROME_BROWSER_UI_TOASTS_API_TOAST_SPECIFICATION_H_

@@ -12,37 +12,15 @@ source_set("toasts") {
     "toast_controller.h",
     "toast_features.cc",
     "toast_features.h",
-    "toast_id.h",
-    "toast_registry.cc",
-    "toast_registry.h",
-    "toast_specification.cc",
-    "toast_specification.h",
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/ui/toasts/api:toasts",
     "//content/public/browser",
     "//ui/base",
   ]
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "toast_registry_unittest.cc" ]
-  deps = [
-    ":toasts",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/app:generated_resources",
-    "//chrome/app:generated_resources_grit",
-    "//chrome/browser",
-    "//chrome/browser:browser_process",
-    "//chrome/test:test_support",
-    "//content/public/browser",
-    "//testing/gtest",
-    "//ui/gfx",
   ]
 }

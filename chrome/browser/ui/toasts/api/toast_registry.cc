@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toasts/toast_registry.h"
+#include "chrome/browser/ui/toasts/api/toast_registry.h"
 
 #include <memory>
 
 #include "base/check.h"
-#include "chrome/browser/ui/toasts/toast_id.h"
-#include "chrome/browser/ui/toasts/toast_specification.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/api/toast_specification.h"
 
 ToastRegistry::ToastRegistry() = default;
 ToastRegistry::~ToastRegistry() = default;

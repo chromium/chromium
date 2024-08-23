@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/toasts/toast_controller.h"
 
-#include "chrome/browser/ui/toasts/toast_id.h"
-#include "chrome/browser/ui/toasts/toast_registry.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/api/toast_registry.h"
 
 ToastParams::ToastParams(ToastId id) : toast_id_(id) {}
 ToastParams::~ToastParams() = default;

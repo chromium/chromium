@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOASTS_TOAST_ID_H_
-#define CHROME_BROWSER_UI_TOASTS_TOAST_ID_H_
+#ifndef CHROME_BROWSER_UI_TOASTS_API_TOAST_ID_H_
+#define CHROME_BROWSER_UI_TOASTS_API_TOAST_ID_H_
 
 // Each toast is supposed to have its own unique toast id.
 enum class ToastId {
@@ -13,4 +13,4 @@ enum class ToastId {
   kMax = kImageCopied
 };
 
-#endif  // CHROME_BROWSER_UI_TOASTS_TOAST_ID_H_
+#endif  // CHROME_BROWSER_UI_TOASTS_API_TOAST_ID_H_

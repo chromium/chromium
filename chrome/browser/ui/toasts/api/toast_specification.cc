@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toasts/toast_specification.h"
+#include "chrome/browser/ui/toasts/api/toast_specification.h"
 
 #include <memory>
 
