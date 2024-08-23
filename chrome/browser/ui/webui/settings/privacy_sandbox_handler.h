@@ -50,7 +50,7 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
   void HandleShouldShowAdTopicsCard(const base::Value::List& args);
 
   virtual PrivacySandboxCountries* GetPrivacySandboxCountries();
-  PrivacySandboxService* GetPrivacySandboxService();
+  virtual PrivacySandboxService* GetPrivacySandboxService();
 
   void OnFledgeJoiningSitesRecieved(const std::string& callback_id,
                                     std::vector<std::string> joining_sites);

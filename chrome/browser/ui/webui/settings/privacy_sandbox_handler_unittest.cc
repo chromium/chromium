@@ -261,6 +261,9 @@ class FakePrivacySandboxHandler : public PrivacySandboxHandler {
   FakePrivacySandboxHandler() {
     mock_privacy_sandbox_countries_ =
         std::make_unique<MockPrivacySandboxCountries>();
+    mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
+        PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(), base::BindRepeating(&BuildMockPrivacySandboxService)));
   }
 
   ~FakePrivacySandboxHandler() override {
@@ -272,12 +275,21 @@ class FakePrivacySandboxHandler : public PrivacySandboxHandler {
                            AdTopicsCardShownForUserInConsentCountry);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
                            AdTopicsCardNotShownForUserNotInConsentCountry);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
+                           TopicsToggleChanged);
 
   MockPrivacySandboxCountries* GetPrivacySandboxCountries() override {
     return mock_privacy_sandbox_countries_.get();
   }
 
+  MockPrivacySandboxService* GetPrivacySandboxService() override {
+    return mock_privacy_sandbox_service_;
+  }
+  TestingProfile* profile() { return &profile_; }
+
   std::unique_ptr<MockPrivacySandboxCountries> mock_privacy_sandbox_countries_;
+  TestingProfile profile_;
+  raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
 };
 
 class PrivacySandboxHandlerPrivacyGuideAdTopicsTest : public testing::Test {
@@ -348,6 +360,21 @@ TEST_F(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
   EXPECT_TRUE(data.arg2()->GetBool());
   ASSERT_TRUE(data.arg3()->is_bool());
   EXPECT_FALSE(data.arg3()->GetBool());
+}
+
+TEST_F(PrivacySandboxHandlerPrivacyGuideAdTopicsTest, TopicsToggleChanged) {
+  std::vector<bool> states = {true, false};
+  for (bool state : states) {
+    EXPECT_CALL(*handler()->GetPrivacySandboxService(),
+                TopicsToggleChanged(state));
+
+    base::Value::List args;
+    args.Append(state);
+    web_ui()->ProcessWebUIMessage(GURL(), "topicsToggleChanged",
+                                  std::move(args));
+    testing::Mock::VerifyAndClearExpectations(
+        handler()->GetPrivacySandboxService());
+  }
 }
 
 }  // namespace settings
