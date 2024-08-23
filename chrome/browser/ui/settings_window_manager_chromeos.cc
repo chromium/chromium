@@ -7,13 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/wm/window_properties.h"
 #include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/ash/window_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -29,6 +29,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/aura/window.h"
 #include "url/gurl.h"
 
 namespace chrome {
@@ -162,7 +163,8 @@ void SettingsWindowManager::ShowChromePageForProfile(
 
   auto* window = browser->window()->GetNativeWindow();
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
-  window->SetProperty(kOverrideWindowIconResourceIdKey, IDR_SETTINGS_LOGO_192);
+  window->SetProperty(ash::kOverrideWindowIconResourceIdKey,
+                      IDR_SETTINGS_LOGO_192);
 
   for (SettingsWindowManagerObserver& observer : observers_) {
     observer.OnNewSettingsWindow(browser);

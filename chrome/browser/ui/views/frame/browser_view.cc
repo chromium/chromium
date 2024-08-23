@@ -300,8 +300,8 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/wm/window_properties.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ui/ash/window_properties.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "ui/compositor/throughput_tracker.h"
 #else
@@ -3874,7 +3874,7 @@ ui::ImageModel BrowserView::GetWindowIcon() {
   }
   auto* window = GetNativeWindow();
   int override_window_icon_resource_id =
-      window ? window->GetProperty(kOverrideWindowIconResourceIdKey) : -1;
+      window ? window->GetProperty(ash::kOverrideWindowIconResourceIdKey) : -1;
   if (override_window_icon_resource_id >= 0)
     return ui::ImageModel::FromImage(
         rb.GetImageNamed(override_window_icon_resource_id));

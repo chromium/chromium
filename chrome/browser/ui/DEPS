@@ -60,6 +60,9 @@ specific_include_rules = {
   "sad_tab_helper.cc": [
     "+content/common/content_navigation_policy.h",
   ],
+  "settings_window_manager_chromeos\.cc": [
+    "+ash/wm/window_properties.h",
+  ],
   "hid_chooser_controller_unittest\.cc": [
     "+services/device/hid",
   ],
