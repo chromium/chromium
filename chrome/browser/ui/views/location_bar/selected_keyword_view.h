@@ -13,6 +13,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 
+class Profile;
 class TemplateURLService;
 
 namespace gfx {
@@ -33,11 +34,12 @@ class SelectedKeywordView : public IconLabelBubbleView {
   // behavior, e.g. "Search google.com" or an equivalent translation, with
   // consideration for bidirectional text safety using |service|. Empty
   // names are returned if service is null.
-  static KeywordLabelNames GetKeywordLabelNames(const std::u16string& keyword,
-                                                TemplateURLService* service);
+  static KeywordLabelNames GetKeywordLabelNames(
+      const std::u16string& keyword,
+      const TemplateURLService* service);
 
   SelectedKeywordView(IconLabelBubbleView::Delegate* delegate,
-                      TemplateURLService* template_url_service,
+                      Profile* profile,
                       const gfx::FontList& font_list);
   SelectedKeywordView(const SelectedKeywordView&) = delete;
   SelectedKeywordView& operator=(const SelectedKeywordView&) = delete;
@@ -67,7 +69,8 @@ class SelectedKeywordView : public IconLabelBubbleView {
 
   void SetLabelForCurrentWidth();
 
-  raw_ptr<TemplateURLService> template_url_service_;
+  // May be nullptr in tests.
+  const raw_ptr<Profile> profile_;
 
   // The keyword we're showing. If empty, no keyword is selected.
   // NOTE: we don't cache the TemplateURL as it is possible for it to get
