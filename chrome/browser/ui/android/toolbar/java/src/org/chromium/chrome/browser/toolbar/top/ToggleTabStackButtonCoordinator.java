@@ -178,6 +178,10 @@ public class ToggleTabStackButtonCoordinator {
         mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
     }
 
+    public Supplier<Boolean> getIsIncognitoSupplier() {
+        return mIsIncognitoSupplier;
+    }
+
     private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
         assert layoutStateProvider != null;
         assert mLayoutStateProvider == null : "the mLayoutStateProvider should set at most once.";
