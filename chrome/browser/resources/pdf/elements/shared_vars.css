@@ -15,3 +15,8 @@ html {
   --viewer-side-background-color: var(--viewer-pdf-toolbar-background-color);
   --viewer-text-input-selection-color: rgba(255, 255, 255, 0.3);
 }
+
+html[pdfcr23enabled] {
+  --viewer-pdf-toolbar-background-color: rgb(60, 60, 60);
+  --viewer-side-background-color: rgb(40, 41, 42);
+}
