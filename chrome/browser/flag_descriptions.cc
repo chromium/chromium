@@ -464,6 +464,12 @@ const char kAutofillEnableCvcStorageAndFillingDescription[] =
     "When enabled, we will store CVC for both local and server credit cards. "
     "This will also allow the users to autofill their CVCs on checkout pages.";
 
+const char kAutofillEnableCvcStorageAndFillingEnhancementName[] =
+    "Enable CVC storage and filling enhancement for payments autofill";
+const char kAutofillEnableCvcStorageAndFillingEnhancementDescription[] =
+    "When enabled, will enhance CVV storage project. Provide better "
+    "suggestion, resolve conflict with COF project and add logging.";
+
 const char kAutofillEnableFpanRiskBasedAuthenticationName[] =
     "Enable risk-based authentication for FPAN retrieval";
 const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =

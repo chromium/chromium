@@ -698,6 +698,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-enable-cvc-storage-and-filling-enhancement",
+    "owners": [ "jialihuang@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "autofill-enable-dynamically-loading-fields-on-input",
     "owners": [ "vidhanj@google.com" ],
     "expiry_milestone": 129

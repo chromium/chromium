@@ -17294,6 +17294,8 @@ from previous Chrome versions.
   <int value="-1355267677"
       label="ArcTrackpadScrollTouchscreenEmulation:enabled"/>
   <int value="-1354983077" label="CameraAppAutoQRDetection:disabled"/>
+  <int value="-1354870958"
+      label="AutofillEnableCvcStorageAndFillingEnhancement:disabled"/>
   <int value="-1354845182" label="DynamicSafeAreaInsetsOnScroll:enabled"/>
   <int value="-1353926640" label="GMSCoreEmoji:disabled"/>
   <int value="-1353897328" label="FileTransferEnterpriseConnectorUI:disabled"/>
@@ -20431,6 +20433,8 @@ from previous Chrome versions.
   <int value="-41460305" label="InfobarScrollOptimization:disabled"/>
   <int value="-41254374" label="WebRtcMetronomeTaskQueue:enabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
+  <int value="-38147034"
+      label="AutofillEnableCvcStorageAndFillingEnhancement:enabled"/>
   <int value="-38104294" label="AudioSelectionImprovement:disabled"/>
   <int value="-37966026" label="PermissionPredictions:enabled"/>
   <int value="-36550471" label="HTMLPopoverAttribute:enabled"/>
