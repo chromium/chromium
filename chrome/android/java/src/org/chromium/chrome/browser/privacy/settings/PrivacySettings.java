@@ -389,12 +389,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
     private boolean shouldShowIpProtectionUI() {
         return !showTrackingProtectionUI()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1);
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
     }
 
     private boolean shouldShowFpProtectionUI() {
         return !showTrackingProtectionUI()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING);
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
     }
 
     @Override

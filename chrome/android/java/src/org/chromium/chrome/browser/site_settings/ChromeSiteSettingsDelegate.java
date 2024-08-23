@@ -329,15 +329,15 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean shouldDisplayIpProtection() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_USER_BYPASS)
+                // This is copied from the `IsIpProtectionEnabled` check in the TPS API.
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)
                 && UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED);
     }
 
     @Override
     public boolean shouldDisplayFingerprintingProtection() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING)
-                && UserPrefs.get(mProfile).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED);
+        // Note: this is an interim check and will have to be updated for incognito FPP.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS);
     }
 
     @Override

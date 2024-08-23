@@ -295,7 +295,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
+    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
     @Features.DisableFeatures({
         ChromeFeatureList.TRACKING_PROTECTION_3PCD,
     })
@@ -373,7 +373,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
+    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
     @Features.DisableFeatures({
         ChromeFeatureList.TRACKING_PROTECTION_3PCD,
     })
@@ -392,7 +392,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING)
+    @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
     @Features.DisableFeatures({
         ChromeFeatureList.TRACKING_PROTECTION_3PCD,
     })
@@ -414,7 +414,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.EnableFeatures({
-        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.IP_PROTECTION_UX,
         ChromeFeatureList.TRACKING_PROTECTION_3PCD,
     })
     public void testIpProtectionSettingsWithTrackingProtectionEnabled() {
@@ -432,7 +432,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.EnableFeatures({
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
         ChromeFeatureList.TRACKING_PROTECTION_3PCD,
     })
     public void testFingerprintingProtectionSettingsWithTrackingProtectionEnabled() {
