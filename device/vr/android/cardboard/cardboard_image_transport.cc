@@ -45,11 +45,14 @@ CardboardImageTransport::CardboardImageTransport(
 CardboardImageTransport::~CardboardImageTransport() = default;
 
 void CardboardImageTransport::DoRuntimeInitialization(int texture_target) {
-  CHECK_EQ(texture_target, GL_TEXTURE_EXTERNAL_OES);
+  CHECK(texture_target == GL_TEXTURE_EXTERNAL_OES ||
+        texture_target == GL_TEXTURE_2D);
   // TODO(crbug.com/40900864): Move this into helper classes rather than
   // directly using the cardboard types here.
   CardboardOpenGlEsDistortionRendererConfig config = {
-      CardboardSupportedOpenGlEsTextureType::kGlTextureExternalOes,
+      texture_target == GL_TEXTURE_EXTERNAL_OES
+          ? CardboardSupportedOpenGlEsTextureType::kGlTextureExternalOes
+          : CardboardSupportedOpenGlEsTextureType::kGlTexture2D,
   };
   eye_texture_target_ = texture_target;
 
