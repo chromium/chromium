@@ -262,16 +262,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
-// TODO(crbug.com/361658564): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_UseElementBoundsInScreenToSendInput \
-  DISABLED_UseElementBoundsInScreenToSendInput
-#else
-#define MAYBE_UseElementBoundsInScreenToSendInput \
-  UseElementBoundsInScreenToSendInput
-#endif
 IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
-                       MAYBE_UseElementBoundsInScreenToSendInput) {
+                       UseElementBoundsInScreenToSendInput) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMouseMoveCustomEvent);
