@@ -425,6 +425,17 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
       if (sql_database) {
         sql_database->iteration_statement_.reset();
       }
+      base::UmaHistogramCounts1000(
+          "History.Embeddings.DatabaseIterationSkippedPassages",
+          skipped_passages);
+      base::UmaHistogramCounts1000(
+          "History.Embeddings.DatabaseIterationSkippedEmbeddings",
+          skipped_embeddings);
+      base::UmaHistogramCounts1000(
+          "History.Embeddings.DatabaseIterationSkippedMismatches",
+          skipped_mismatches);
+      base::UmaHistogramCounts1000(
+          "History.Embeddings.DatabaseIterationYielded", yielded);
     }
 
     const UrlPassagesEmbeddings* Next() override {
@@ -433,7 +444,8 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
       }
       sql::Statement* statement = sql_database->iteration_statement_.get();
       CHECK(statement);
-      if (statement->Step()) {
+      // Don't expect perfect data; step until we find valid data.
+      while (statement->Step()) {
         data = UrlPassagesEmbeddings(/*url_id=*/statement->ColumnInt64(0),
                                      /*visit_id=*/statement->ColumnInt64(1),
                                      /*visit_time=*/statement->ColumnTime(2));
@@ -441,14 +453,18 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
         std::optional<proto::PassagesValue> passages_value =
             PassagesBlobToProto(statement->ColumnBlob(3),
                                 *sql_database->encryptor_);
-        if (passages_value.has_value()) {
-          data.url_passages.passages = std::move(passages_value.value());
+        if (!passages_value.has_value()) {
+          skipped_passages++;
+          continue;
         }
+        data.url_passages.passages = std::move(passages_value.value());
+
         // Embeddings
         base::span<const uint8_t> blob = statement->ColumnBlob(4);
         proto::EmbeddingsValue value;
         if (!value.ParseFromArray(blob.data(), blob.size())) {
-          return nullptr;
+          skipped_embeddings++;
+          continue;
         }
         for (const proto::EmbeddingVector& vector : value.vectors()) {
           data.url_embeddings.embeddings.emplace_back(
@@ -456,14 +472,27 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
               vector.passage_word_count());
         }
 
+        if (data.url_embeddings.embeddings.empty() ||
+            data.url_embeddings.embeddings.size() !=
+                static_cast<size_t>(
+                    data.url_passages.passages.passages_size())) {
+          skipped_mismatches++;
+          continue;
+        }
+
+        yielded++;
         return &data;
-      } else {
-        return nullptr;
       }
+      return nullptr;
     }
 
     base::WeakPtr<SqlDatabase> sql_database;
     UrlPassagesEmbeddings data;
+    // Keep stats on any data loading failures, and report histogram in dtor.
+    int skipped_passages = 0;
+    int skipped_embeddings = 0;
+    int skipped_mismatches = 0;
+    int yielded = 0;
   };
 
   return std::make_unique<RowDataIterator>(weak_ptr_factory_.GetWeakPtr(),

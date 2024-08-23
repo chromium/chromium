@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
@@ -53,6 +54,8 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
       url_data_1.url_passages.passages.add_passages("fake passage 2");
       url_data_1.url_embeddings.embeddings.emplace_back(
           std::vector<float>(kEmbeddingsSize, 1.0f));
+      url_data_1.url_embeddings.embeddings.emplace_back(
+          std::vector<float>(kEmbeddingsSize, 1.0f));
       ASSERT_TRUE(sql_database->AddUrlData(url_data_1));
     }
 
@@ -60,6 +63,8 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
       UrlPassagesEmbeddings url_data_2(2, 11, base::Time::Now());
       url_data_2.url_passages.passages.add_passages("fake passage 3");
       url_data_2.url_passages.passages.add_passages("fake passage 4");
+      url_data_2.url_embeddings.embeddings.emplace_back(
+          std::vector<float>(kEmbeddingsSize, 1.0f));
       url_data_2.url_embeddings.embeddings.emplace_back(
           std::vector<float>(kEmbeddingsSize, 1.0f));
       ASSERT_TRUE(sql_database->AddUrlData(url_data_2));
@@ -433,6 +438,45 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
 
   // Absent `url_id` returns std::nullopt.
   EXPECT_FALSE(sql_database->GetUrlData(2).has_value());
+}
+
+TEST_F(HistoryEmbeddingsSqlDatabaseTest, IterationSkipsAndReportsMismatches) {
+  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
+                                    GetEncryptorInstance());
+
+  // Write embeddings.
+  UrlPassagesEmbeddings url_datas[] = {
+      UrlPassagesEmbeddings(1, 1, base::Time::Now()),
+      UrlPassagesEmbeddings(2, 2, base::Time::Now()),
+  };
+  url_datas[0].url_passages.passages.add_passages("data 0 passage 0");
+  url_datas[0].url_embeddings.embeddings.push_back(FakeEmbedding());
+  url_datas[1].url_passages.passages.add_passages("data 1 passage 0");
+  url_datas[1].url_passages.passages.add_passages("data 1 passage 1");
+  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
+  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
+  // Add one too many embeddings to trigger a mismatch.
+  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
+  EXPECT_TRUE(sql_database->AddUrlData(url_datas[0]));
+  EXPECT_TRUE(sql_database->AddUrlData(url_datas[1]));
+
+  base::HistogramTester histogram_tester;
+  int observed = 0;
+  {
+    // Iterate through stored data once.
+    std::unique_ptr<VectorDatabase::UrlDataIterator> iterator =
+        sql_database->MakeUrlDataIterator({});
+    EXPECT_TRUE(iterator);
+    while (iterator->Next()) {
+      observed++;
+    }
+  }
+  EXPECT_EQ(observed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.DatabaseIterationSkippedMismatches", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.DatabaseIterationYielded", 1, 1);
 }
 
 }  // namespace history_embeddings
