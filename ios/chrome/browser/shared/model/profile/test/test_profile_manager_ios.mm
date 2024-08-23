@@ -130,8 +130,8 @@ TestProfileManagerIOS::AddBrowserStateWithBuilder(
   DCHECK(insertion_success);
 
   // Notify of the creation of the ChromeBrowserState before updating the
-  // BrowserStateInfoCache or the last_used_browser_state_name_ since the
-  // observers may observe similar behaviour with the real implementation
+  // ProfileAttributesStorageIOS or the last_used_browser_state_name_ since
+  // the observers may observe similar behaviour with the real implementation
   // when the ChromeBrowserState is loaded asynchronously.
   for (auto& observer : observers_) {
     observer.OnChromeBrowserStateCreated(this, iterator->second.get());

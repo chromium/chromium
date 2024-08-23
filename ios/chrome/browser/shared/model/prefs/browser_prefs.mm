@@ -453,7 +453,7 @@ void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   autofill::prefs::RegisterLocalStatePrefs(registry);
   breadcrumbs::RegisterPrefs(registry);
-  BrowserStateInfoCache::RegisterPrefs(registry);
+  ProfileAttributesStorageIOS::RegisterPrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   signin::IdentityManager::RegisterLocalStatePrefs(registry);
   IOSChromeMetricsServiceClient::RegisterPrefs(registry);

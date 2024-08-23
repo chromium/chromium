@@ -91,7 +91,7 @@ struct PermissionsPref {
                     forAccount:(const std::string&)gaiaID {
   PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
   // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
-  // ConsistencySigninPromo UI updates the BrowserStateInfoCache.
+  // ConsistencySigninPromo UI updates the ProfileAttributesStorageIOS.
   if (!pref.service) {
     return;
   }
@@ -105,7 +105,7 @@ struct PermissionsPref {
                      forAccount:(const std::string&)gaiaID {
   PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
   // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
-  // ConsistencySigninPromo UI updates the BrowserStateInfoCache.
+  // ConsistencySigninPromo UI updates the ProfileAttributesStorageIOS.
   if (!pref.service) {
     return;
   }
@@ -119,7 +119,7 @@ struct PermissionsPref {
                                 forAccount:(const std::string&)gaiaID {
   PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
   // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
-  // ConsistencySigninPromo UI updates the BrowserStateInfoCache.
+  // ConsistencySigninPromo UI updates the ProfileAttributesStorageIOS.
   if (!pref.service) {
     return NO;
   }
@@ -197,7 +197,8 @@ struct PermissionsPref {
       ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
       if (!browserState) {
         // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome
-        // via ConsistencySigninPromo UI updates the BrowserStateInfoCache.
+        // via ConsistencySigninPromo UI updates the
+        // ProfileAttributesStorageIOS.
         return {nullptr, prefs::kFeaturePushNotificationPermissions, clientKey};
       }
       return {browserState->GetPrefs(),

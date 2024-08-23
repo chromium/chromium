@@ -15,7 +15,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 
 // This class listens to various signin events and updates the signin-related
-// fields of BrowserStateInfoCache.
+// fields of ProfileAttributesStorageIOS.
 // TODO(crbug.com/361040177): Rename this class to SigninProfileInfoUpdater.
 class SigninBrowserStateInfoUpdater : public KeyedService,
                                       public SigninErrorController::Observer,

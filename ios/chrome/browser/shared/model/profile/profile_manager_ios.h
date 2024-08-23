@@ -12,12 +12,8 @@
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ProfileManagerObserverIOS;
-
-// TODO(crbug.com/359492423): Remove this forward declaration and typedef when
-// no usage of BrowserStateInfoCache remains.
 class ProfileAttributesStorageIOS;
-using BrowserStateInfoCache = ProfileAttributesStorageIOS;
+class ProfileManagerObserverIOS;
 
 // TODO(crbug.com/358356195): Remove this forward declaration and typedef when
 // no usage of ChromeBrowserStateManager remains.
@@ -102,12 +98,6 @@ class ProfileManagerIOS {
 
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;
-
-  // Returns the ProfileAttributesStorageIOS associated with this manager.
-  // DEPRECATED: use GetProfileAttributesStorage() instead.
-  ProfileAttributesStorageIOS* GetBrowserStateInfoCache() {
-    return GetProfileAttributesStorage();
-  }
 
  protected:
   ProfileManagerIOS() {}
