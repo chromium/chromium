@@ -6,21 +6,27 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-static_library("focus_mode") {
+static_library("web_view") {
   sources = [
-    "chrome_focus_mode_delegate.cc",
-    "chrome_focus_mode_delegate.h",
+    "ash_web_view_factory_impl.cc",
+    "ash_web_view_factory_impl.h",
+    "ash_web_view_impl.cc",
+    "ash_web_view_impl.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash",
+    "//ash/public/cpp",
     "//base",
-    "//chrome/browser/profiles",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
-    "//google_apis/common",
-    "//net/traffic_annotation",
+    "//content/public/browser",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views/controls/webview",
   ]
 }
 
@@ -29,23 +35,17 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "focus_mode_browsertest.cc",
-    "focus_mode_policy_browsertest.cc",
-  ]
+  sources = [ "ash_web_view_impl_browsertest.cc" ]
 
   deps = [
-    ":focus_mode",
-    "//ash",
-    "//ash/constants",
+    ":web_view",
     "//ash/public/cpp",
-    "//base/test:test_support",
-    "//chrome/browser/ash/accessibility:browser_tests",
-    "//chrome/browser/policy:test_support",
-    "//chrome/browser/ui/ash/web_view",
+    "//base",
     "//chrome/test:test_support",
-    "//chrome/test/base/ash/util:test_support",
+    "//content/public/browser",
     "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
     "//ui/views",
   ]
 }

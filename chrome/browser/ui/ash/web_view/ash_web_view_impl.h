@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_ASH_WEB_VIEW_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_ASH_WEB_VIEW_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_WEB_VIEW_ASH_WEB_VIEW_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_WEB_VIEW_ASH_WEB_VIEW_IMPL_H_
 
 #include "ash/public/cpp/ash_web_view.h"
 #include "base/memory/raw_ptr.h"
@@ -116,4 +116,4 @@ class AshWebViewImpl : public ash::AshWebView,
   base::WeakPtrFactory<AshWebViewImpl> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_ASH_WEB_VIEW_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_WEB_VIEW_ASH_WEB_VIEW_IMPL_H_

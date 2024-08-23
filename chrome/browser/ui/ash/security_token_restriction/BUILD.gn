@@ -24,7 +24,5 @@ static_library("security_token_restriction") {
     "//ui/views",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/login",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/login" ]
 }

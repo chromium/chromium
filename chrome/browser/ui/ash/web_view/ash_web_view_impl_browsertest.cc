@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/ash_web_view_impl.h"
+#include "chrome/browser/ui/ash/web_view/ash_web_view_impl.h"
 
 #include <memory>
 #include <string>

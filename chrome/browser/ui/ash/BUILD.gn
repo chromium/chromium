@@ -18,10 +18,6 @@ static_library("ash") {
     "arc_open_url_delegate_impl.h",
     "arc_vm_data_migration_confirmation_dialog.cc",
     "arc_vm_data_migration_confirmation_dialog.h",
-    "ash_web_view_factory_impl.cc",
-    "ash_web_view_factory_impl.h",
-    "ash_web_view_impl.cc",
-    "ash_web_view_impl.h",
     "browser_data_migration_error_dialog.cc",
     "browser_data_migration_error_dialog.h",
     "chrome_accelerator_prefs_delegate.cc",
@@ -179,6 +175,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/ash/user_education",
     "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/ash/web_view",
     "//chrome/browser/ui/chromeos",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
@@ -393,7 +390,6 @@ source_set("browser_tests") {
   sources = [
     "accelerator_commands_browsertest.cc",
     "arc_open_url_delegate_impl_browsertest.cc",
-    "ash_web_view_impl_browsertest.cc",
     "event_latency_metrics_browsertest.cc",
     "feature_discovery_duration_reporter_browsertest.cc",
     "float_controller_browsertest.cc",
@@ -483,6 +479,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/thumbnail_loader:browser_tests",
     "//chrome/browser/ui/ash/user_education:browser_tests",
     "//chrome/browser/ui/ash/user_education/views:browser_tests",
+    "//chrome/browser/ui/ash/web_view:browser_tests",
   ]
 
   if (enable_assistant_integration_tests) {

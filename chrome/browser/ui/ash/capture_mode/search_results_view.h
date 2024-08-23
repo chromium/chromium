@@ -6,7 +6,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_CAPTURE_MODE_SEARCH_RESULTS_VIEW_H_
 #define CHROME_BROWSER_UI_ASH_CAPTURE_MODE_SEARCH_RESULTS_VIEW_H_
 
-#include "chrome/browser/ui/ash/ash_web_view_impl.h"
+#include "chrome/browser/ui/ash/web_view/ash_web_view_impl.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
