@@ -22,6 +22,7 @@ class Label;
 namespace ash {
 
 class FocusModeCountdownView;
+class FocusModeSoundsView;
 class FocusModeTaskView;
 class HoverHighlightView;
 class IconButton;
@@ -171,6 +172,7 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // The view contains a header view and a `focus_mode_task_view_`.
   raw_ptr<RoundedContainer> task_view_container_ = nullptr;
   raw_ptr<FocusModeTaskView> focus_mode_task_view_ = nullptr;
+  raw_ptr<FocusModeSoundsView> focus_mode_sounds_view_ = nullptr;
 
   // This view contains a toggle for turning on/off DND.
   raw_ptr<RoundedContainer> do_not_disturb_view_ = nullptr;
