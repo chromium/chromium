@@ -7760,6 +7760,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_WHY_THIS_SUGGESTION" desc="The title of a menu entry and bubble that explains why this suggestion appears in the omnibox popup.">
         Why this suggestion?
       </message>
+      <message name="IDS_OMNIBOX_CLOSE_IPH_SUGGESTION" desc="The text displayed when hovering over the button to close the omnibox IPH suggestion." translateable="false">
+        Close
+      </message>
+      <message name="IDS_OMNIBOX_THUMBS_UP_SUGGESTION" desc="The text displayed when hovering over the thumbs up button to provide feedback about an omnibox suggestion." translateable="false">
+        Thumbs up submits feedback that you like this result.
+      </message>
+      <message name="IDS_OMNIBOX_THUMBS_DOWN_SUGGESTION" desc="The text displayed when hovering over the thumbs down button to provide feedback about an omnibox suggestion." translateable="false">
+        Thumbs down opens a form for submitting detailed feedback on why you dislike this result.
+      </message>
       <message name="IDS_OMNIBOX_REMOVE_SUGGESTION" desc="The text of a context menu entry to delete an omnibox suggestion.">
         Remove suggestion
       </message>

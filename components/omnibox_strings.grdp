@@ -292,6 +292,9 @@
   <message name="IDS_ACC_DISMISS_CHROME_TIP_FOCUSED_PREFIX" desc="Announcement when dismiss chrome tip button is focused.">
     Dismiss Chrome Tip button, press Enter to dismiss, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>Type @gemini to Chat with Gemini</ex></ph>
   </message>
+  <message name="IDS_ACC_DISMISS_CHROME_TIP_BUTTON" desc="Announcement when dismiss chrome tip button is focused." translateable="false">
+    Dismiss Chrome Tip button, press Enter to dismiss
+  </message>
 
   <!-- Site Search/Keyword mode Starter Pack strings. Note: kCurrentDataVersion in template_url_starter_pack_data.cc must also be updated when changing these values. -->
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME" desc = "The name of the chrome bookmarks search engine as it appears on chrome://settings/searchEngines">
