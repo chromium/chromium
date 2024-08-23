@@ -53,7 +53,8 @@ class FeaturedSearchProvider : public AutocompleteProvider {
                    const std::u16string& iph_contents,
                    const std::u16string& matched_term,
                    const std::u16string& iph_link_text,
-                   const GURL& iph_link_url);
+                   const GURL& iph_link_url,
+                   bool deletable);
 
   void AddFeaturedEnterpriseSearchMatch(const TemplateURL& template_url,
                                         const AutocompleteInput& input);
