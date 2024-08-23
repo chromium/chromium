@@ -39,6 +39,11 @@ void ProfileReportGenerator::set_is_machine_scope(bool is_machine) {
   is_machine_scope_ = is_machine;
 }
 
+void ProfileReportGenerator::SetExtensionsEnabledCallback(
+    ExtensionsEnabledCallback callback) {
+  extensions_enabled_callback_ = std::move(callback);
+}
+
 std::unique_ptr<em::ChromeUserProfileInfo>
 ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
                                       const std::string& name,
@@ -70,7 +75,8 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
   delegate_->GetAffiliationInfo(report_.get());
 #endif
 
-  if (extensions_enabled_) {
+  if (extensions_enabled_ &&
+      (!extensions_enabled_callback_ || extensions_enabled_callback_.Run())) {
     delegate_->GetExtensionInfo(report_.get());
   }
 

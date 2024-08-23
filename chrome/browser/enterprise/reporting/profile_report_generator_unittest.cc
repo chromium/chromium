@@ -39,6 +39,11 @@
 #include "extensions/browser/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
+#endif
+
 using ::testing::NiceMock;
 
 namespace em = enterprise_management;
@@ -414,6 +419,26 @@ TEST_F(ProfileReportGeneratorTest, TooManyRequests) {
   for (int id = 0; id < kMaxNumberOfExtensionRequest; id += 1)
     EXPECT_EQ(report->extension_requests(id).id(),
               report2->extension_requests(id).id());
+}
+
+TEST_F(ProfileReportGeneratorTest, DisableExtensionInfo) {
+  extensions::ExtensionBuilder builder(
+      "name", extensions::ExtensionBuilder::Type::EXTENSION);
+
+  auto extension = builder.SetID("abcdefghijklmnoabcdefghijklmnoab").Build();
+  extensions::ExtensionRegistry::Get(profile())->AddEnabled(extension);
+
+  EXPECT_EQ(1, GenerateReport()->extensions_size());
+
+  bool is_extension_enabled = false;
+  generator_.SetExtensionsEnabledCallback(base::BindRepeating(
+      [](bool* is_extension_enabled) { return *is_extension_enabled; },
+      &is_extension_enabled));
+
+  EXPECT_EQ(0, GenerateReport()->extensions_size());
+
+  is_extension_enabled = true;
+  EXPECT_EQ(1, GenerateReport()->extensions_size());
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
