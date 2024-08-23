@@ -44,11 +44,13 @@ class OmniboxMatchCellView : public views::View {
   static void ComputeMatchMaxWidths(int contents_width,
                                     int separator_width,
                                     int description_width,
+                                    int iph_link_width,
                                     int available_width,
                                     bool description_on_separate_line,
                                     bool allow_shrinking_contents,
                                     int* contents_max_width,
-                                    int* description_max_width);
+                                    int* description_max_width,
+                                    int* iph_link_max_width);
 
   explicit OmniboxMatchCellView(OmniboxResultView* result_view);
   OmniboxMatchCellView(const OmniboxMatchCellView&) = delete;
