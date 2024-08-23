@@ -152,6 +152,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.CLIPBOARD:
       case ContentSettingsTypes.FILE_SYSTEM_WRITE:
       case ContentSettingsTypes.GEOLOCATION:
+      case ContentSettingsTypes.HAND_TRACKING:
       case ContentSettingsTypes.HID_DEVICES:
       case ContentSettingsTypes.IDLE_DETECTION:
       case ContentSettingsTypes.KEYBOARD_LOCK:

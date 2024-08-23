@@ -73,7 +73,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.AR,
       label: 'siteSettingsAr',
       icon: 'privacy:cardboard',
-      // TODO(crbug.com/40176677): Fix redesign string when available.
       enabledLabel: 'siteSettingsArAsk',
       disabledLabel: 'siteSettingsArBlock',
     },
@@ -181,6 +180,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:location-on',
       enabledLabel: 'siteSettingsLocationAllowed',
       disabledLabel: 'siteSettingsLocationBlocked',
+    },
+    {
+      route: routes.SITE_SETTINGS_HAND_TRACKING,
+      id: Id.HAND_TRACKING,
+      label: 'siteSettingsHandTracking',
+      icon: 'privacy:hand-gesture',
+      enabledLabel: 'siteSettingsHandTrackingAsk',
+      disabledLabel: 'siteSettingsHandTrackingBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableHandTrackingContentSetting'),
     },
     {
       route: routes.SITE_SETTINGS_HID_DEVICES,
@@ -508,6 +517,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.BLUETOOTH_SCANNING,
               Id.AR,
               Id.VR,
+              Id.HAND_TRACKING,
               Id.IDLE_DETECTION,
               Id.WEB_PRINTING,
               Id.WINDOW_MANAGEMENT,

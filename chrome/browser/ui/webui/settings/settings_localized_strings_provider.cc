@@ -175,6 +175,10 @@
 #include "extensions/common/extension_urls.h"
 #endif
 
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif
+
 namespace settings {
 namespace {
 
@@ -3024,6 +3028,19 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SITE_SETTINGS_FONTS_ALLOWED_EXCEPTIONS},
       {"siteSettingsFontsBlockedExceptions",
        IDS_SETTINGS_SITE_SETTINGS_FONTS_BLOCKED_EXCEPTIONS},
+      {"siteSettingsHandTrackingDescription",
+       IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_DESCRIPTION},
+      {"siteSettingsHandTracking", IDS_SITE_SETTINGS_TYPE_HAND_TRACKING},
+      {"siteSettingsHandTrackingMidSentence",
+       IDS_SITE_SETTINGS_TYPE_HAND_TRACKING_MID_SENTENCE},
+      {"siteSettingsHandTrackingAsk",
+       IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_ASK},
+      {"siteSettingsHandTrackingBlock",
+       IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_BLOCK},
+      {"siteSettingsHandTrackingAllowedExceptions",
+       IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_ALLOWED_EXCEPTIONS},
+      {"siteSettingsHandTrackingBlockedExceptions",
+       IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_BLOCKED_EXCEPTIONS},
       {"siteSettingsHidDevicesDescription",
        IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_DESCRIPTION},
       {"siteSettingsHidDevicesAllowed",
@@ -3384,6 +3401,13 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "enablePaymentHandlerContentSetting",
       base::FeatureList::IsEnabled(features::kServiceWorkerPaymentApps));
+
+  html_source->AddBoolean("enableHandTrackingContentSetting",
+#if BUILDFLAG(ENABLE_VR)
+                          device::features::IsHandTrackingEnabled());
+#else
+                          false);
+#endif
 
   html_source->AddBoolean(
       "enableWebPrintingContentSetting",

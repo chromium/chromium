@@ -114,6 +114,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "crypto/crypto_buildflags.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
@@ -191,6 +192,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/webui/settings/mac_system_settings_handler.h"
+#endif
+
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
 #endif
 
 namespace settings {
@@ -372,6 +377,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableCbdTimeframeRequired",
       base::FeatureList::IsEnabled(features::kCbdTimeframeRequired));
+
+  html_source->AddBoolean("enableHandTrackingContentSetting",
+#if BUILDFLAG(ENABLE_VR)
+                          device::features::IsHandTrackingEnabled());
+#else
+                          false);
+#endif
 
   html_source->AddBoolean("enableHashPrefixRealTimeLookups",
                           safe_browsing::hash_realtime_utils::

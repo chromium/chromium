@@ -43,6 +43,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsFileSystemWriteMidSentence';
     case ContentSettingsTypes.GEOLOCATION:
       return 'siteSettingsLocationMidSentence';
+    case ContentSettingsTypes.HAND_TRACKING:
+      return 'siteSettingsHandTrackingMidSentence';
     case ContentSettingsTypes.HID_DEVICES:
       return 'siteSettingsHidDevicesMidSentence';
     case ContentSettingsTypes.IDLE_DETECTION:

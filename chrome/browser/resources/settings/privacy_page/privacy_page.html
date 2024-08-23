@@ -1228,6 +1228,31 @@
           </category-setting-exceptions>
         </settings-subpage>
       </template>
+      <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
+        <template is="dom-if" route-path="/content/handTracking" no-search>
+        <settings-subpage page-title="$i18n{siteSettingsHandTracking}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsHandTrackingDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.HAND_TRACKING]]"
+              allow-option-label="$i18n{siteSettingsHandTrackingAsk}"
+              allow-option-icon="privacy:hand-gesture"
+              block-option-label="$i18n{siteSettingsHandTrackingBlock}"
+              block-option-icon="privacy:hand-gesture-off">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.HAND_TRACKING]]"
+              read-only-list
+              allow-header="$i18n{siteSettingsHandTrackingAllowedExceptions}"
+              block-header="$i18n{siteSettingsHandTrackingBlockedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
+      </template>
       <template is="dom-if" route-path="/content/idleDetection" no-search>
         <settings-subpage page-title="$i18n{siteSettingsIdleDetection}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
