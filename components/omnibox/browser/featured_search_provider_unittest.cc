@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -125,6 +126,19 @@ class FeaturedSearchProviderTest : public testing::Test {
       }
     } else {
       EXPECT_EQ(matches.size(), expected_iphs.size());
+    }
+  }
+
+  void RunAndVerifyIphTypes(const AutocompleteInput& input,
+                            const std::vector<IphType> expected_iph_types) {
+    provider_->Start(input, false);
+    EXPECT_TRUE(provider_->done());
+    ACMatches matches = provider_->matches();
+    if (matches.size() == expected_iph_types.size()) {
+      for (size_t j = 0; j < expected_iph_types.size(); ++j)
+        EXPECT_EQ(matches[j].iph_type, expected_iph_types[j]);
+    } else {
+      EXPECT_EQ(matches.size(), expected_iph_types.size());
     }
   }
 
@@ -377,7 +391,7 @@ TEST_F(FeaturedSearchProviderTest,
 
   // Run the provider, there should be one match corresponding to IPH for
   // Starter Pack.
-  EXPECT_TRUE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_FALSE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
   provider_->Start(input, false);
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
@@ -389,7 +403,7 @@ TEST_F(FeaturedSearchProviderTest,
   provider_->DeleteMatch(matches[0]);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 0u);
-  EXPECT_FALSE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_TRUE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
 
   // Run the provider again, IPH match should not be provided.
   provider_->Start(input, false);
@@ -458,8 +472,8 @@ TEST_F(FeaturedSearchProviderTest,
   // Run the provider, there should be one match corresponding to IPH for
   // featured Enterprise search.
   PrefService* prefs = client_->GetPrefs();
-  EXPECT_TRUE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
+  EXPECT_FALSE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
   provider_->Start(input, false);
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
@@ -471,8 +485,8 @@ TEST_F(FeaturedSearchProviderTest,
   provider_->DeleteMatch(matches[0]);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 0u);
-  EXPECT_FALSE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
+  EXPECT_TRUE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
 
   // Run the provider again, IPH match should not be provided.
   provider_->Start(input, false);
@@ -505,9 +519,9 @@ TEST_F(FeaturedSearchProviderTest,
   // Run the provider, there should be one match corresponding to IPH for
   // featured Enterprise search.
   PrefService* prefs = client_->GetPrefs();
-  EXPECT_TRUE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
-  EXPECT_TRUE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_FALSE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
+  EXPECT_FALSE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
   provider_->Start(input, false);
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
@@ -519,13 +533,13 @@ TEST_F(FeaturedSearchProviderTest,
   provider_->DeleteMatch(matches[0]);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 0u);
-  EXPECT_FALSE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
-  EXPECT_TRUE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_TRUE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
+  EXPECT_FALSE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
 
   // Run the provider again, there should be one match corresponding to IPH for
   // Starter Pack.
-  EXPECT_TRUE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_FALSE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
   provider_->Start(input, false);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
@@ -537,9 +551,9 @@ TEST_F(FeaturedSearchProviderTest,
   provider_->DeleteMatch(matches[0]);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 0u);
-  EXPECT_FALSE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
-  EXPECT_FALSE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_TRUE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
+  EXPECT_TRUE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
 
   // Run the provider again, IPH match should not be provided.
   provider_->Start(input, false);
@@ -678,5 +692,64 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
   {
     SCOPED_TRACE("");
     RunAndVerifyIph(scope_input, {});
+  }
+}
+
+TEST_F(FeaturedSearchProviderTest, IphShownLimit) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{omnibox::kStarterPackIPH, {}},
+       {history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kOmniboxScoped.name, "true"}}}},
+      {});
+  AddStarterPackEntriesToTemplateUrlService();
+  AutocompleteInput input;
+  input.set_focus_type(metrics::INTERACTION_FOCUS);
+
+  auto test = [&](const AutocompleteInput& input,
+                  const std::vector<IphType> expected_iph_types) {
+    RunAndVerifyIphTypes(input, expected_iph_types);
+    // Notify the provider which matches were shown.
+    AutocompleteResult result;
+    result.AppendMatches(provider_->matches());
+    provider_->RegisterDisplayedMatches(result);
+  };
+
+  // Show up to 3 IPHs per session.
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kGemini});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kGemini});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kGemini});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {});
+  }
+
+  // Start a new session, should see an IPH 3 more times. But not the same IPH
+  // as before, since it already consumed its limit.
+  provider_ = new FeaturedSearchProvider(client_.get());
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kHistoryScopePromo});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kHistoryScopePromo});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kHistoryScopePromo});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {});
   }
 }

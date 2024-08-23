@@ -63,7 +63,6 @@
 #include "components/omnibox/browser/most_visited_sites_provider.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
 #include "components/omnibox/browser/page_classification_functions.h"
@@ -1250,7 +1249,9 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (provider_types & AutocompleteProvider::TYPE_FEATURED_SEARCH) {
-    providers_.push_back(new FeaturedSearchProvider(provider_client_.get()));
+    featured_search_provider_ =
+        new FeaturedSearchProvider(provider_client_.get());
+    providers_.push_back(featured_search_provider_.get());
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
@@ -1451,8 +1452,17 @@ void AutocompleteController::PostProcessMatches() {
   MaybeRemoveCompanyEntityImages(&internal_result_);
   MaybeCleanSuggestionsForKeywordMode(input_, &internal_result_);
 
+  // Notify providers which of their matches were shown. If we end up with more
+  // providers to notify, we should add `RegisterDisplayedMatches()` to the
+  // `AutocompleteProvider` interface and iterate all providers here.
   if (search_provider_)
     search_provider_->RegisterDisplayedAnswers(internal_result_);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // `featured_search_provider_` isn't interested in "invisible" autocomplete
+  // runs, e.g. when text is copied.
+  if (featured_search_provider_ && !input_.omit_asynchronous_matches())
+    featured_search_provider_->RegisterDisplayedMatches(internal_result_);
+#endif
 
   // Mark the rich autocompletion feature triggered if the top match, or
   // would-be-top-match if rich autocompletion is counterfactual enabled, is

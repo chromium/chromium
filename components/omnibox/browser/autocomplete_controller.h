@@ -42,6 +42,7 @@
 
 class ClipboardProvider;
 class DocumentProvider;
+class FeaturedSearchProvider;
 class HistoryFuzzyProvider;
 class HistoryQuickProvider;
 class HistoryURLProvider;
@@ -502,6 +503,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_;
 
   raw_ptr<OpenTabProvider> open_tab_provider_;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  raw_ptr<FeaturedSearchProvider> featured_search_provider_;
+#endif
 
   // A vector of scoring signals annotators for URL suggestions.
   // Unlike the other existing annotators (e.g., pedals and keywords), these

@@ -1130,11 +1130,6 @@ bool IsStarterPackExpansionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion);
 }
 
-const base::FeatureParam<int> kStarterPackIPHPerSessionLimit(
-    &omnibox::kStarterPackIPH,
-    "StarterPackIPHPerSessionLimit",
-    3);
-
 bool IsStarterPackIPHEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackIPH);
 }
