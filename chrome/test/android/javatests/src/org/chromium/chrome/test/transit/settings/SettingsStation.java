@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.test.transit.settings;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.FragmentElement;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.base.test.transit.Transition;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 
 /**
@@ -19,12 +19,24 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
  * <p>TODO(crbug.com/328277614): This is a stub; add more elements and methods.
  */
 public class SettingsStation extends Station {
-
-    public static final ViewSpec SEARCH_ENGINE = viewSpec(withText("Search engine"));
+    private FragmentElement<MainSettings, SettingsActivity> mMainSettings;
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareActivity(SettingsActivity.class);
-        elements.declareView(SEARCH_ENGINE);
+        ActivityElement<SettingsActivity> activityElement =
+                elements.declareActivity(SettingsActivity.class);
+        mMainSettings =
+                elements.declareElement(new FragmentElement<>(MainSettings.class, activityElement));
+    }
+
+    public PreferenceFacility scrollToPref(String prefKey) {
+        assertSuppliersCanBeUsed();
+        String title = mMainSettings.get().findPreference(prefKey).getTitle().toString();
+        return enterFacilitySync(
+                new PreferenceFacility(title),
+                Transition.newOptions().withPossiblyAlreadyFulfilled().build(),
+                () ->
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () -> mMainSettings.get().scrollToPreference(prefKey)));
     }
 }
