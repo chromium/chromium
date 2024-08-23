@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
+
 #import <UIKit/UIKit.h>
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_view_controller.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
