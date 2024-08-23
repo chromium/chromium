@@ -58,6 +58,9 @@ struct NET_EXPORT HttpRequestInfo {
   // True if it is a subframe's document resource.
   bool is_subframe_document_resource = false;
 
+  // True if it is a main frame navigation.
+  bool is_main_frame_navigation = false;
+
   // Any extra request headers (including User-Agent).
   HttpRequestHeaders extra_headers;
 
@@ -104,6 +107,11 @@ struct NET_EXPORT HttpRequestInfo {
   // The frame origin associated with a request. This is used to isolate shared
   // dictionaries between different frame origins.
   std::optional<url::Origin> frame_origin;
+
+  // The origin of the context which initiated this request. nullptr for
+  // browser-initiated navigations. For more info, see
+  // `URLRequest::initiator()`.
+  std::optional<url::Origin> initiator;
 
   // Idempotency of the request, which determines that if it is safe to enable
   // 0-RTT for the request. By default, 0-RTT is only enabled for safe

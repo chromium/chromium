@@ -46,6 +46,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace net {
 
 class HttpNetworkSession;
@@ -258,18 +262,38 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Get the URL from the entry's cache key.
   static std::string GetResourceURLFromHttpCacheKey(const std::string& key);
 
-  // Generates the cache key for a request. Returns nullopt if the cache is
-  // configured to be split by the NetworkIsolationKey, and the
-  // NetworkIsolationKey is transient, in which case nothing should generally be
-  // stored to disk.
-  static std::optional<std::string> GenerateCacheKey(
-      const GURL& url,
-      int load_flags,
-      const NetworkIsolationKey& network_isolation_key,
-      int64_t upload_data_identifier,
-      bool is_subframe_document_resource);
+  // Generates the cache key for a request.
   static std::optional<std::string> GenerateCacheKeyForRequest(
       const HttpRequestInfo* request);
+
+  enum class ExperimentMode {
+    // No additional partitioning is done for top-level navigations.
+    kStandard,
+    // A boolean is incorporated into the cache key that is true for
+    // renderer-initiated main frame navigations when the request initiator is
+    // cross-site to the URL being navigated to.
+    kCrossSiteNavigationBoolean,
+    // The request initiator is incorporated into the cache key for
+    // renderer-initiated main frame navigations when the request initiator is
+    // cross-site to the URL being navigated to. If the request initiator is
+    // opaque, then no caching is performed of the navigated-to document.
+    kMainFrameNavigationInitiator,
+    // The request initiator is incorporated into the cache key for all
+    // renderer-initiated navigations (including subframe navigations) when the
+    // request initiator is cross-site to the URL being navigated to. If the
+    // request initiator is opaque, then no caching is performed of the
+    // navigated-to document. When this scheme is used, the
+    // `is-subframe-document-resource` boolean is not incorporated into the
+    // cache key, since incorporating the initiator for subframe navigations
+    // should be sufficient for mitigating the attacks that the
+    // `is-subframe-document-resource` mitigates.
+    kNavigationInitiator,
+  };
+
+  // Returns the HTTP Cache partitioning experiment mode currently in use. Only
+  // one experiment mode feature flag should be enabled at a time, but if
+  // multiple are enabled then `ExperimentMode::kStandard` will be returned.
+  static ExperimentMode GetExperimentMode();
 
   // Enable split cache feature if not already overridden in the feature list.
   // Should only be invoked during process initialization before the HTTP
@@ -495,6 +519,25 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Methods ------------------------------------------------------------------
 
+  // Returns whether a request can be cached. Certain types of requests can't or
+  // shouldn't be cached, such as requests with a transient NetworkIsolationKey
+  // (when network state partitioning is enabled) or requests with an opaque
+  // initiator (for HTTP cache experiment partition schemes that incorporate the
+  // initiator into the cache key).
+  static bool CanGenerateCacheKeyForRequest(const HttpRequestInfo* request);
+
+  // Generates a cache key given the various pieces used to construct the key.
+  // Must not be called if a corresponding `CanGenerateCacheKeyForRequest`
+  // returns false.
+  static std::string GenerateCacheKey(
+      const GURL& url,
+      int load_flags,
+      const NetworkIsolationKey& network_isolation_key,
+      int64_t upload_data_identifier,
+      bool is_subframe_document_resource,
+      bool is_mainframe_navigation,
+      std::optional<url::Origin> initiator);
+
   // Creates a WorkItem and sets it as the |pending_op|'s writer, or adds it to
   // the queue if a writer already exists.
   Error CreateAndSetWorkItem(scoped_refptr<ActiveEntry>* entry,
@@ -535,7 +578,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // isolation key.
   void DoomMainEntryForUrl(const GURL& url,
                            const NetworkIsolationKey& isolation_key,
-                           bool is_subframe_document_resource);
+                           bool is_subframe_document_resource,
+                           bool is_main_frame_navigation,
+                           const std::optional<url::Origin>& initiator);
 
   // Returns if there is an entry that is currently in use and not doomed, or
   // NULL.

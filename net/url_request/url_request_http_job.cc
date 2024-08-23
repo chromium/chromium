@@ -445,6 +445,9 @@ void URLRequestHttpJob::Start() {
   request_info_.is_subframe_document_resource =
       request_->isolation_info().request_type() ==
       net::IsolationInfo::RequestType::kSubFrame;
+  request_info_.is_main_frame_navigation =
+      request_->isolation_info().IsMainFrameRequest();
+  request_info_.initiator = request_->initiator();
   request_info_.load_flags = request_->load_flags();
   request_info_.priority_incremental = request_->priority_incremental();
   request_info_.secure_dns_policy = request_->secure_dns_policy();
