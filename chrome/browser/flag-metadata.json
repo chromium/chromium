@@ -3076,7 +3076,7 @@
     // This should expire once all cookie handling changes have been enabled by
     // default. This is expected to take a while, and this expiry will probably
     // need to be extended.
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "enable-experimental-rgb-keyboard-patterns",
