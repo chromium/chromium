@@ -232,11 +232,6 @@ bool TestAutofillManagerWaiter::IsRelevant(Event event) const {
 void TestAutofillManagerWaiter::OnBefore(Event event,
                                          const base::Location& location) {
   base::AutoLock lock(state_->lock);
-  if (!IsRelevant(event)) {
-    VLOG(1) << "Ignoring irrelevant event: " << __func__ << "("
-            << location.function_name() << ")";
-    return;
-  }
   if (state_->run_loop.AnyQuitCalled()) {
     VLOG(1) << "Ignoring event because there are no pending expected events: "
             << __func__ << "(" << location.function_name() << ")";
@@ -251,11 +246,6 @@ void TestAutofillManagerWaiter::OnBefore(Event event,
 void TestAutofillManagerWaiter::OnAfter(Event event,
                                         const base::Location& location) {
   base::AutoLock lock(state_->lock);
-  if (!IsRelevant(event)) {
-    VLOG(1) << "Ignoring irrelevant event: " << __func__ << "("
-            << location.function_name() << ")";
-    return;
-  }
   if (state_->run_loop.AnyQuitCalled()) {
     VLOG(1) << "Ignoring event because there are no pending expected events: "
             << __func__ << "(" << location.function_name() << ")";
