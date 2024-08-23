@@ -146,12 +146,6 @@ void ClearRelevantData() {
             (testManagedAccountClearsDataForSignedInPeriod)]) {
     config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
   }
-  if ([self isRunningTest:@selector(testMigrateSyncToSignin_ManagedAccount)]) {
-    // Disable `kClearDeviceDataOnSignOutForManagedUsers` because the feature
-    // shows a different dialog.
-    config.features_disabled.push_back(
-        kClearDeviceDataOnSignOutForManagedUsers);
-  }
 
   return config;
 }
@@ -902,7 +896,7 @@ void ClearRelevantData() {
   // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
              enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
-            disabledFeatures:{kClearDeviceDataOnSignOutForManagedUsers}];
+            disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
                                 syncTimeout:kSyncOperationTimeout];
