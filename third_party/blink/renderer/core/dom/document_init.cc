@@ -331,8 +331,7 @@ Document* DocumentInit::CreateDocument() const {
     case Type::kViewSource:
       return MakeGarbageCollected<HTMLViewSourceDocument>(*this);
     case Type::kText: {
-      if (MIMETypeRegistry::IsJSONMimeType(mime_type_) &&
-          RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled()) {
+      if (MIMETypeRegistry::IsJSONMimeType(mime_type_)) {
         return MakeGarbageCollected<JSONDocument>(*this);
       }
       return MakeGarbageCollected<TextDocument>(*this);

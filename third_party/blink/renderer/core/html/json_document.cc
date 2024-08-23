@@ -74,7 +74,6 @@ class JSONDocumentParser : public HTMLDocumentParser {
 
  private:
   void Append(const String& input) override {
-    CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
     if (!document_initialized_) {
       CreateDocumentStructure();
     }
@@ -82,7 +81,6 @@ class JSONDocumentParser : public HTMLDocumentParser {
   }
 
   void CreateDocumentStructure() {
-    CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
     auto* html = MakeGarbageCollected<HTMLHtmlElement>(*GetDocument());
     GetDocument()->ParserAppendChild(html);
     auto* head = MakeGarbageCollected<HTMLHeadElement>(*GetDocument());

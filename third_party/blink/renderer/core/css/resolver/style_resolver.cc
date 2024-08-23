@@ -917,8 +917,7 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
     func(default_style_sheets.DefaultForcedColorStyle());
   }
 
-  if (RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled() &&
-      GetDocument().IsJSONDocument()) {
+  if (GetDocument().IsJSONDocument()) {
     func(default_style_sheets.DefaultJSONDocumentStyle());
   }
 

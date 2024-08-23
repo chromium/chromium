@@ -102,10 +102,7 @@ void EscapeStringForJSON(const String& str, StringBuilder* dst) {
   for (unsigned i = 0; i < str.length(); ++i) {
     UChar c = str[i];
     if (!EscapeChar(c, dst)) {
-      if (c < 32 ||
-          (!RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled() &&
-           c > 126) ||
-          c == '<' || c == '>') {
+      if (c < 32 || c == '<' || c == '>') {
         // 1. Escaping <, > to prevent script execution.
         AppendUnsignedAsHex(c, dst);
       } else {

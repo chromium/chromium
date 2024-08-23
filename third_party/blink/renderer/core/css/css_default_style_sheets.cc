@@ -233,7 +233,6 @@ RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
 }
 
 RuleSet* CSSDefaultStyleSheets::DefaultJSONDocumentStyle() {
-  CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
   if (!default_json_document_style_) {
     StyleSheetContents* stylesheet = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_JSON_DOCUMENT_CSS));
@@ -527,8 +526,7 @@ void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
   if (document.IsViewSource() && DefaultViewSourceStyle()) {
     features.Merge(DefaultViewSourceStyle()->Features());
   }
-  if (RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled() &&
-      document.IsJSONDocument() && DefaultJSONDocumentStyle()) {
+  if (document.IsJSONDocument() && DefaultJSONDocumentStyle()) {
     features.Merge(DefaultJSONDocumentStyle()->Features());
   }
 }

@@ -3310,12 +3310,6 @@
       status: "stable",
     },
     {
-      // When enabled, gives the option to pretty-print JSON documents to
-      // cleanly format the JSON and make it readable.
-      name:"PrettyPrintJSONDocument",
-      status: "stable",
-    },
-    {
       // When enabled, prevents undo to be applied if the enclosing block
       // is not editable
       name: "PreventUndoIfNotEditable",
