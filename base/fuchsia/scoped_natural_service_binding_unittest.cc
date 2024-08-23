@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -88,11 +87,7 @@ TEST_F(ScopedNaturalServiceBindingTest, ConnectDebugService) {
   // service directory.
   auto release_stub =
       CreateTestInterfaceClient(test_context_.published_services_natural());
-  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
-  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
-  EXPECT_THAT(VerifyTestInterface(release_stub),
-              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
-                             testing::Eq(ZX_ERR_NOT_FOUND)));
+  EXPECT_EQ(VerifyTestInterface(release_stub), ZX_ERR_NOT_FOUND);
 }
 
 // Test the last client callback is called every time the number of active
