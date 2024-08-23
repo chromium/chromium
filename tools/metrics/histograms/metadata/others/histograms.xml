@@ -6768,6 +6768,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.Linux.CanUseLibsecret" enum="BooleanAllowed"
+    expires_after="2025-08-15">
+  <owner>thomasanderson@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    False if libsecret would deadlock when attempting to use the default
+    keyring. Logged once before libsecret initialization.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.Linux.DecryptedWithEmptyKey" enum="Boolean"
     expires_after="2025-05-19">
   <owner>thestig@chromium.org</owner>

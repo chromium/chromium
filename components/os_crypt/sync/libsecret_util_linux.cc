@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -171,7 +172,15 @@ void LibsecretLoader::SearchHelper::Search(const SecretSchema* schema,
 
 // static
 bool LibsecretLoader::EnsureLibsecretLoaded() {
-  return CanUseLibsecret() && LoadLibsecret() && LibsecretIsAvailable();
+  // CanUseLibsecret() is a workaround for an issue in gnome-keyring, and it
+  // should be removed when possible.  https://crbug.com/40086962 tracks
+  // implementing support for org.freedesktop.portal.Secret.  The workaround may
+  // be removed once the implementation is completed and is rolled out for
+  // several Chrome releases to give users time for their stored credentials to
+  // be migrated to the new backend.
+  const bool can_use_libsecret = CanUseLibsecret();
+  base::UmaHistogramBoolean("OSCrypt.Linux.CanUseLibsecret", can_use_libsecret);
+  return can_use_libsecret && LoadLibsecret() && LibsecretIsAvailable();
 }
 
 // static
