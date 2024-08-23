@@ -13,6 +13,7 @@
 
 
 import './certificate_entry_v2.js';
+import './certificate_manager_style_v2.css.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';

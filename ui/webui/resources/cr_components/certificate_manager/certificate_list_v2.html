@@ -1,13 +1,7 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style certificate-manager-style-v2">
 
   .header-buttons {
     margin-left: auto;
-  }
-
-  .card {
-    background-color: var(--cr-card-background-color);
-    border-radius: var(--cr-card-border-radius);
-    box-shadow: var(--cr-card-shadow);
   }
 
   .no-certs {
@@ -19,27 +13,12 @@
     padding: 0 var(--cr-section-padding);
   }
 
-  /*
-   * TODO(crbug.com/40928765): style is very similar to .section-title style
-   * in certificate_manager_v2.html. Move shared styles to common CSS file
-   * and use it in both places.
-   */
   .list-title {
-    color: var(--cr-primary-text-color);
-    font-size: 108%;
-    font-weight: 400;
-    letter-spacing: .25px;
-    margin-bottom: 12px;
-    margin-top: var(--cr-section-vertical-margin);
-    outline: none;
-    padding-bottom: 4px;
-    padding-top: 8px;
-
     display: flex;
     align-items: center;
   }
 </style>
-  <div id="listHeader" class="list-title first">
+  <div id="listHeader" class="section-title list-title first">
     [[headerText]]
     <div class="header-buttons">
       <cr-button hidden$="[[!showImport]]" id="importCert"

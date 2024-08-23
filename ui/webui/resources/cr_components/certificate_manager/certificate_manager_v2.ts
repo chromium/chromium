@@ -13,6 +13,7 @@ import './certificate_info_dialog.js';
 import './certificate_password_dialog.js';
 import './certificate_subpage_v2.js';
 import './certificate_manager_v2_icons.html.js';
+import './certificate_manager_style_v2.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';

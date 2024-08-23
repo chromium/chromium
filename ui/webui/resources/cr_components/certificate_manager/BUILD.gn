@@ -34,6 +34,7 @@ build_webui("build") {
   web_component_files = []
   non_web_component_files = []
   static_files = []
+  css_files = []
 
   if (use_nss_certs) {
     web_component_files += [
@@ -51,6 +52,7 @@ build_webui("build") {
       "certificate_manager_types.ts",
       "certificates_browser_proxy.ts",
     ]
+    css_files += [ "certificate_shared.css" ]
   }
 
   if (chrome_root_store_cert_management_ui) {
@@ -74,6 +76,7 @@ build_webui("build") {
     mojo_files = [ "$target_gen_dir/certificate_manager_v2.mojom-webui.ts" ]
 
     icons_html_files = [ "certificate_manager_v2_icons.html" ]
+    css_files += [ "certificate_manager_style_v2.css" ]
   }
 
   if (is_chromeos) {
@@ -84,8 +87,6 @@ build_webui("build") {
     ]
     non_web_component_files += [ "certificate_provisioning_browser_proxy.ts" ]
   }
-
-  css_files = [ "certificate_shared.css" ]
 
   ts_out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/certificate_manager"
