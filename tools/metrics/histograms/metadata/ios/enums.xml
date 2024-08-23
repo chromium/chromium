@@ -879,6 +879,8 @@ the generic promo launch. -->
   <int value="4" label="SetUpList Continuation"/>
   <int value="5" label="Docking"/>
   <int value="6" label="Omnibox Position"/>
+  <int value="7" label="Lens"/>
+  <int value="8" label="Enhanced Safe Browsing"/>
 </enum>
 
 <enum name="IOSTipsNotificationUserType">

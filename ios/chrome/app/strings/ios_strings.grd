@@ -2678,6 +2678,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON" desc="The text for the button in notifications opt-in screen that enables the selected notifications.">
         Turn on Notifications
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_BODY" desc="Text for the body of a Tips notification that encourages the user to enable Enhanced Safe Browsing">
+        Add an extra layer of protection against online threats.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_LENS_BODY" desc="Text for the body of a Tips notification that encourages the user to search with Lens">
+        Shop, translate, and identify what you see with your camera.
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY" desc="Text for the body of a Tips notification that reminds the user to set their preferred omnibox position">
         Switch the position of your address bar for a customized experience.
       </message>

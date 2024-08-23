@@ -597,11 +597,11 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_TIPS_SETTINGS_TOGGLE_MESSSAGE" desc="The label for the notification opt-in toggle message for tips notifications.">
         Tips on getting the most out of Chrome.
       </message>
-      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_TITLE" desc="Text for the title of a Tips notification that encourages the user to set the app as their default browser">
-        Chrome Tip: Use Chrome by Default
-      </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY" desc="Text for the body of a Tips notification that encourages the user to set the app as their default browser">
         Use Chrome anytime you tap links in messages or other apps.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_TITLE" desc="Text for the title of a Tips notification that encourages the user to set the app as their default browser">
+        Chrome Tip: Use Chrome by Default
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPAD" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
         Access Chrome faster from your iPad's Home Screen Dock.
@@ -611,6 +611,12 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_TITLE" desc="Text for the title of a Tips notification that encourages the user to put the app into the iOS dock">
         Chrome Tip: Move Chrome to the Dock
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_TITLE" desc="Text for the title of a Tips notification that encourages the user to enable Enhanced Safe Browsing">
+        Chrome Tip: Get Chrome's strongest security
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_LENS_TITLE" desc="Text for the title of a Tips notification that encourages the user to search with Lens">
+        Chrome Tip: Search with Lens
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE" desc="Text for the title of a Tips notification that reminds the user to set their preferred omnibox position">
         Chrome Tip: Choose your address bar position

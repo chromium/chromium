@@ -47,6 +47,12 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kOmniboxPosition:
       return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY};
+    case TipsNotificationType::kLens:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_LENS_BODY};
+    case TipsNotificationType::kEnhancedSafeBrowsing:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_BODY};
     case TipsNotificationType::kError:
       NOTREACHED();
   }

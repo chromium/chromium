@@ -334,6 +334,8 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
       return ShouldSendDocking();
     case TipsNotificationType::kOmniboxPosition:
       return ShouldSendOmniboxPosition();
+    case TipsNotificationType::kLens:
+    case TipsNotificationType::kEnhancedSafeBrowsing:
     case TipsNotificationType::kError:
       NOTREACHED();
   }
@@ -443,6 +445,8 @@ void TipsNotificationClient::ShowUIForNotificationType(
     case TipsNotificationType::kOmniboxPosition:
       ShowOmniboxPosition();
       break;
+    case TipsNotificationType::kLens:
+    case TipsNotificationType::kEnhancedSafeBrowsing:
     case TipsNotificationType::kError:
       NOTREACHED();
   }
