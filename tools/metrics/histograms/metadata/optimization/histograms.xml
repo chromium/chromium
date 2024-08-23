@@ -1559,8 +1559,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadStatus"
-    enum="OptimizationGuidePredictionModelDownloadStatus"
-    expires_after="2024-09-15">
+    enum="OptimizationGuidePredictionModelDownloadStatus" expires_after="M135">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1571,7 +1570,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded"
-    enum="BooleanSuccess" expires_after="2024-09-15">
+    enum="BooleanSuccess" expires_after="M135">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
