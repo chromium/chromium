@@ -236,7 +236,7 @@ int64_t CalculateExpectedFileSize(
   return static_cast<int64_t>(sizeof(third_party_dlls::PackedListMetadata) +
                               packed_list_metadata.module_count *
                                   sizeof(third_party_dlls::PackedListModule) +
-                              std::extent<decltype(base::MD5Digest::a)>());
+                              sizeof(base::MD5Digest::a));
 }
 
 bool ModuleLess::operator()(
