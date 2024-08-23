@@ -466,13 +466,6 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            as_pinned_home_tab);
 }
 
-void SetWebContentsActingAsApp(content::WebContents* contents,
-                               const webapps::AppId& app_id) {
-  auto* helper = WebAppTabHelper::FromWebContents(contents);
-  helper->SetAppId(app_id);
-  helper->set_acting_as_app(true);
-}
-
 void SetWebContentsIsPinnedHomeTab(content::WebContents* contents) {
   auto* helper = WebAppTabHelper::FromWebContents(contents);
   helper->set_is_pinned_home_tab(true);
@@ -668,10 +661,6 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
 
   content::WebContents* const web_contents =
       nav_params.navigated_or_inserted_contents;
-
-  if (web_contents) {
-    SetWebContentsActingAsApp(web_contents, app_id);
-  }
 
   return web_contents;
 }

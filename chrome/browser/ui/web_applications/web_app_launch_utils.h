@@ -66,12 +66,6 @@ Browser* ReparentWebAppForActiveTab(Browser* browser);
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            const webapps::AppId& app_id);
 
-// Tags `contents` with the given app id and marks it as an app. This
-// differentiates it from a `WebContents` which happens to be hosting a page
-// that is part of an app.
-void SetWebContentsActingAsApp(content::WebContents* contents,
-                               const webapps::AppId& app_id);
-
 // Marks the web contents as being the pinned home tab of a tabbed web app.
 void SetWebContentsIsPinnedHomeTab(content::WebContents* contents);
 

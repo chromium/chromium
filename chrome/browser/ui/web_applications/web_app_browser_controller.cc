@@ -707,19 +707,17 @@ void WebAppBrowserController::SetManifestUpdateAppliedCallbackForTesting(
 void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
 
-  // If a `WebContents` is inserted into an app browser (e.g. after
-  // installation), it is "appy". Note that if and when it's moved back into a
-  // tabbed browser window (e.g. via "Open in Chrome" menu item), it is still
-  // considered "appy".
-  WebAppTabHelper::FromWebContents(contents)->set_acting_as_app(true);
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
+  tab_helper->SetIsInAppWindow(true);
 
   if (AppUsesTabbed() && IsUrlInHomeTabScope(contents->GetLastCommittedURL())) {
-    WebAppTabHelper::FromWebContents(contents)->set_is_pinned_home_tab(true);
+    tab_helper->set_is_pinned_home_tab(true);
   }
 }
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
+  WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(false);
 }
 
 const WebAppRegistrar& WebAppBrowserController::registrar() const {
