@@ -11366,7 +11366,6 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ui/ash",
           "//chrome/browser/ui/ash/cast_config",
           "//chrome/browser/ui/ash/multi_user",
-          "//chrome/browser/ui/chromeos",
           "//chrome/test/base/ash/interactive:test_support",
           "//chromeos/ash/components/dbus/fwupd",
           "//chromeos/ash/components/fwupd",
