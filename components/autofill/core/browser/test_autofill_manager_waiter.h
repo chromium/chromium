@@ -45,17 +45,13 @@ enum class AutofillManagerEvent {
 // OnBeforeFoo() is followed by OnAfterFoo() in normal circumstances.
 //
 // If an OnBeforeFoo() event happens multiple times, the waiter expects multiple
-// OnAfterFoo() events.
+// OnAfterFoo() events. Which events Wait() should be waiting for can be limited
+// by providing a list of `relevant_events` to the constructor.
 //
-// Which events Wait() should be waiting for can be limited by providing a list
-// of `relevant_events` to the constructor. This list should contain the
-// OnAfterFoo(), *not* the OnBeforeFoo() events.
-//
-// By default, Wait() succeeds immediately if there are no pending calls, that
-// is, if no OnBeforeFoo() without matching OnAfterFoo() has been observed.
-// Calling Wait(k) with an integer argument `k` overrides this behaviour: in
-// this case, it expects a total of at least `k` OnAfterFoo() events to happen
-// or have happened.
+// `Wait(k)` blocks until
+// - at least `k` relevant OnBeforeFoo() events have been seen and
+// - for every observed (relevant or non-relevant) OnBeforeFoo() event the
+//   associated OnAfterFoo() event has happened.
 //
 // The waiter resets itself on OnAutofillManagerStateChanged() events for
 // kPendingReset. This makes it suitable for use with
@@ -95,9 +91,9 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   ~TestAutofillManagerWaiter() override;
 
   // Blocks until all pending OnAfterFoo() events have been observed and at
-  // least `num_awaiting_calls` relevant events have been observed.
+  // least `num_expected_relevant_events` relevant events have been observed.
   [[nodiscard]] testing::AssertionResult Wait(
-      size_t num_awaiting_calls = 0,
+      size_t num_expected_relevant_events = 0,
       const base::Location& location = FROM_HERE);
 
   // Equivalent to re-initialization.
@@ -111,13 +107,18 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
  private:
   struct EventCount {
+    // The number of pairs of On{Before,After}Foo() events.
+    // This is just the same as `num_after_events`.
+    size_t num_completed_events() const;
+    // The number of outstanding OnAfterFoo() events.
+    size_t num_pending_events() const;
+
     // The OnBeforeFoo() function. Used for meaningful error messages.
     base::Location location;
     // The total number of recorded OnBeforeFoo() events.
-    size_t num_total_calls = 0;
-    // The number of recorded OnBeforeFoo() events without a corresponding
-    // OnAfterFoo() event.
-    size_t num_pending_calls = 0;
+    size_t num_before_events = 0;
+    // The total number of recorded OnAfterFoo() events.
+    size_t num_after_events = 0;
   };
 
   // State variables for easy resetting.
@@ -130,27 +131,29 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
     EventCount& GetOrCreate(Event event, const base::Location& location);
     EventCount* Get(Event event);
 
-    size_t num_total_calls() const;
-    size_t num_pending_calls() const;
-
     std::string Describe() const;
 
     // The std::map guarantees that references aren't invalidated by
     // GetOrCreate().
     std::map<Event, EventCount> events;
-    // Decrement() unblocks Wait() when the number of awaited calls reaches 0.
-    size_t num_awaiting_total_calls = std::numeric_limits<size_t>::max();
-    // Running iff there are no awaited and no pending calls.
-    base::RunLoop run_loop = base::RunLoop();
+    // OnAfter() unblocks Wait() only once all expected events have been seen.
+    size_t num_expected_relevant_events = std::numeric_limits<size_t>::max();
+    // Runs iff there are open expectations (i.e., not enough relevant events
+    // have been seen) or pending events (i.e., we're in between OnBeforeFoo()
+    // and OnAfterFoo()).
+    base::RunLoop run_loop;
     // True iff the `run_loop` ran and timed out.
     bool timed_out = false;
     // Functions that access the state should be mutually exclusive.
     base::Lock lock;
   };
 
+  size_t num_pending_events() const;
+  size_t num_completed_relevant_events() const;
+
   bool IsRelevant(Event event) const;
-  void Increment(Event event, const base::Location& location = FROM_HERE);
-  void Decrement(Event event, const base::Location& location = FROM_HERE);
+  void OnBefore(Event event, const base::Location& location = FROM_HERE);
+  void OnAfter(Event event, const base::Location& location = FROM_HERE);
 
   void OnAutofillManagerStateChanged(
       AutofillManager& manager,
@@ -218,8 +221,7 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 };
 
 // Returns a FormStructure that satisfies `pred` if such a form exists at call
-// time or appears within a RunLoop's timeout. Returns nullptr if no such form
-// exists.
+// time or appears within a RunLoop's timeout. Returns nullptr otherwise.
 const FormStructure* WaitForMatchingForm(
     AutofillManager* manager,
     base::RepeatingCallback<bool(const FormStructure&)> pred,
