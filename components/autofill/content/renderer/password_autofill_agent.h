@@ -547,9 +547,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // True indicates that a safe browsing reputation check has been triggered.
   bool checked_safe_browsing_reputation_;
 
-  // Records the username typed before suggestions preview.
-  std::u16string username_query_prefix_;
-
   raw_ptr<AutofillAgent> autofill_agent_ = nullptr;
 
   raw_ptr<PasswordGenerationAgent>

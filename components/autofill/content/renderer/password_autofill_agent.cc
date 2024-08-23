@@ -990,22 +990,16 @@ void PasswordAutofillAgent::PreviewSuggestion(
   if (!element || !IsElementEditable(element)) {
     return;
   }
-
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info;
-
   if (!HasElementsToFill(element, UseFallbackData(true), &username_element,
                          &password_element, &password_info)) {
     return;
   }
-
   if (IsUsernameAmendable(
           username_element,
           element.FormControlTypeForAutofill() == kInputPassword)) {
-    if (username_query_prefix_.empty())
-      username_query_prefix_ = username_element.Value().Utf16();
-
     DoPreviewField(username_element, username, /*is_password=*/false);
   }
   if (password_element && IsElementEditable(password_element)) {
@@ -1785,9 +1779,6 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     AutofillSuggestionTriggerSource trigger_source) {
   base::UmaHistogramEnumeration("PasswordManager.SuggestionPopupTriggerSource",
                                 trigger_source);
-
-  username_query_prefix_ = typed_username;
-
   FormData form;
   FormFieldData field;
   if (std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
@@ -1834,7 +1825,6 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   previewed_elements_.clear();
   sent_request_to_store_ = false;
   checked_safe_browsing_reputation_ = false;
-  username_query_prefix_.clear();
   username_detector_cache_.clear();
   forms_structure_cache_.clear();
   autofilled_elements_cache_.clear();
