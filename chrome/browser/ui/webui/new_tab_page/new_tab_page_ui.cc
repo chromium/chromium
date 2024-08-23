@@ -30,7 +30,6 @@
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
-#include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -651,13 +650,6 @@ void NewTabPageUI::BindInterface(
   most_relevant_tab_resumption_handler_ =
       std::make_unique<MostRelevantTabResumptionPageHandler>(
           std::move(pending_page_handler), web_contents());
-}
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<ntp::tab_resumption::mojom::PageHandler>
-        pending_page_handler) {
-  tab_resumption_handler_ = std::make_unique<TabResumptionPageHandler>(
-      std::move(pending_page_handler), web_contents());
 }
 
 void NewTabPageUI::BindInterface(

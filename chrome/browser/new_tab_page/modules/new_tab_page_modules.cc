@@ -54,9 +54,6 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
           ntp_features::kNtpMostRelevantTabResumptionModule)) {
     details.emplace_back("tab_resumption",
                          IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE);
-  } else if (base::FeatureList::IsEnabled(
-                 ntp_features::kNtpTabResumptionModule)) {
-    details.emplace_back("tab_resumption", IDS_NTP_TAB_RESUMPTION_TITLE);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {

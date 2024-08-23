@@ -154,7 +154,6 @@
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
-#include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
@@ -1318,11 +1317,6 @@ void PopulateChromeWebUIFrameBinders(
   if (IsDriveModuleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         file_suggestion::mojom::FileSuggestionHandler, NewTabPageUI>(map);
-  }
-
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpTabResumptionModule)) {
-    RegisterWebUIControllerInterfaceBinder<
-        ntp::tab_resumption::mojom::PageHandler, NewTabPageUI>(map);
   }
 
   if (base::FeatureList::IsEnabled(

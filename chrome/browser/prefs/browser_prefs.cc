@@ -283,7 +283,6 @@
 #include "chrome/browser/new_tab_page/modules/safe_browsing/safe_browsing_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
-#include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/screen_ai/pref_names.h"
@@ -1008,6 +1007,9 @@ constexpr char kNtpPhotosSoftOptOutCountPrefName[] =
     "NewTabPage.Photos.SoftOptOutCount";
 constexpr char kNtpPhotosLastSoftOptedOutTimePrefName[] =
     "NewTabPage.Photos.LastSoftOptedoutTime";
+// Deprecated 08/2024
+constexpr char kDismissedTabsPrefName[] =
+    "NewTabPage.TabResumption.DismissedTabs";
 #endif
 
 // Deprecated 07/2024.
@@ -1427,6 +1429,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kNtpPhotosLastSoftOptedOutTimePrefName,
                              base::Time());
   registry->RegisterIntegerPref(kNtpPhotosSoftOptOutCountPrefName, 0);
+  // Deprecated 08/2024
+  registry->RegisterListPref(kDismissedTabsPrefName);
 #endif
 
   // Deprecated 07/2024.
@@ -1997,7 +2001,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   send_tab_to_self::RegisterProfilePrefs(registry);
   signin::RegisterProfilePrefs(registry);
   StartupBrowserCreator::RegisterProfilePrefs(registry);
-  TabResumptionPageHandler::RegisterProfilePrefs(registry);
   MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(registry);
   tab_groups::saved_tab_groups::prefs::RegisterProfilePrefs(registry);
   tab_organization_prefs::RegisterProfilePrefs(registry);
@@ -2724,6 +2727,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNtpPhotosLastMemoryOpenTimePrefName);
   profile_prefs->ClearPref(kNtpPhotosLastSoftOptedOutTimePrefName);
   profile_prefs->ClearPref(kNtpPhotosSoftOptOutCountPrefName);
+  // Added 08/2024
+  profile_prefs->ClearPref(kDismissedTabsPrefName);
 #endif
 
   // Added 07/2024.

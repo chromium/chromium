@@ -814,7 +814,8 @@ class CustomizeChromePageHandlerWithModulesTest
   void SetUp() override {
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpTabResumptionModule},
+        /*enabled_features=*/{ntp_features::
+                                  kNtpMostRelevantTabResumptionModule},
         /*disabled_features=*/{});
     CustomizeChromePageHandlerTest::SetUp();
   }

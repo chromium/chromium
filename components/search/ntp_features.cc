@@ -356,11 +356,6 @@ BASE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon,
              "NtpMostRelevantTabResumptionModuleDeviceIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the Tab Resumption module will be shown.
-BASE_FEATURE(kNtpTabResumptionModule,
-             "NtpTabResumptionModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNtpTabResumptionModuleCategories,
              "NtpTabResumptionModuleCategories",
              base::FEATURE_DISABLED_BY_DEFAULT);

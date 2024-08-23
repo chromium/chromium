@@ -5321,11 +5321,6 @@ const char kNtpMostRelevantTabResumptionModuleDeviceIconDescription[] =
     "Shows the device icon instead of device name on Most Relevant Tab "
     "Resumption Module on the New Tab Page.";
 
-const char kNtpTabResumptionModuleName[] =
-    "NTP Cross Device Tab Resumption Module";
-const char kNtpTabResumptionModuleDescription[] =
-    "Shows the Cross Device Tab Resumption Module on the New Tab Page.";
-
 const char kNtpMiddleSlotPromoDismissalName[] =
     "NTP Middle Slot Promo Dismissal";
 const char kNtpMiddleSlotPromoDismissalDescription[] =

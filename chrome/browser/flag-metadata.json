@@ -6344,11 +6344,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "ntp-tab-resumption-module",
-    "owners": [ "mfacey@chromium.org", "romanarora@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta@chromium.org", "sczs@chromium.org" ],
     "expiry_milestone": 130

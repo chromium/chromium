@@ -85,7 +85,6 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon);
-BASE_DECLARE_FEATURE(kNtpTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleTimeLimit);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButton);

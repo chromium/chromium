@@ -2104,13 +2104,6 @@ const FeatureEntry::FeatureVariation
         {"- All Visits", kNtpMostRelevantTabResumptionModuleVisitData,
          std::size(kNtpMostRelevantTabResumptionModuleVisitData), nullptr},
 };
-
-const FeatureEntry::FeatureParam kNtpTabResumptionModuleFakeData[] = {
-    {ntp_features::kNtpTabResumptionModuleDataParam, "Fake Data"}};
-const FeatureEntry::FeatureVariation kNtpTabResumptionModuleVariations[] = {
-    {"- Fake Data", kNtpTabResumptionModuleFakeData,
-     std::size(kNtpTabResumptionModuleFakeData), nullptr},
-};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -7130,13 +7123,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-sharepoint-module", flag_descriptions::kNtpSharepointModuleName,
      flag_descriptions::kNtpSharepointModuleDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpSharepointModule)},
-
-    {"ntp-tab-resumption-module",
-     flag_descriptions::kNtpTabResumptionModuleName,
-     flag_descriptions::kNtpTabResumptionModuleDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpTabResumptionModule,
-                                    kNtpTabResumptionModuleVariations,
-                                    "NtpTabResumptionModules")},
 
     {"ntp-wallpaper-search-button",
      flag_descriptions::kNtpWallpaperSearchButtonName,
