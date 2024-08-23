@@ -69,10 +69,12 @@ FakeAutocompleteProviderClient::GetHistoryClustersService() {
   return history_clusters_service_;
 }
 
+#if !BUILDFLAG(IS_IOS)
 history_embeddings::HistoryEmbeddingsService*
 FakeAutocompleteProviderClient::GetHistoryEmbeddingsService() {
-  return history_embeddings_service_;
+  return history_embeddings_service_.get();
 }
+#endif
 
 bookmarks::BookmarkModel* FakeAutocompleteProviderClient::GetBookmarkModel() {
   return bookmark_model_.get();

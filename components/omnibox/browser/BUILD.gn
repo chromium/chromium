@@ -759,6 +759,10 @@ static_library("test_support") {
       "fake_on_device_tail_model_service.h",
     ]
   }
+
+  if (!is_ios) {
+    deps += [ "//components/history_embeddings" ]
+  }
 }
 
 bundle_data("unit_tests_bundle_data") {
