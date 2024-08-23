@@ -240,8 +240,12 @@
 #pragma mark - InfobarBadgeTabHelperObserving
 
 - (void)infobarBadgesUpdated:(InfobarBadgeTabHelper*)tabHelper {
-  DCHECK_EQ(tabHelper, InfobarBadgeTabHelper::GetOrCreateForWebState(
-                           _webStateList->GetActiveWebState()));
+  // Return early if the notification doesn't come from the currently active
+  // webstate's tab helper.
+  if (tabHelper != InfobarBadgeTabHelper::GetOrCreateForWebState(
+                       _webStateList->GetActiveWebState())) {
+    return;
+  }
 
   size_t badgesCount = tabHelper->GetInfobarBadgesCount();
 
