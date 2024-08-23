@@ -385,7 +385,7 @@ AccountSelectionModalView::CreateAccountChooserHeader(
 
 std::unique_ptr<views::View>
 AccountSelectionModalView::CreateMultipleAccountChooser(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
+    const std::vector<content::IdentityProviderData>& idp_data_list) {
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
@@ -401,7 +401,7 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
 
   int num_rows = 0;
   constexpr int kMultipleAccountsVerticalPadding = 2;
-  for (const auto& idp_display_data : idp_display_data_list) {
+  for (const auto& idp_display_data : idp_data_list) {
     for (const auto& account : idp_display_data.accounts) {
       content->AddChildView(CreateAccountRow(
           account, idp_display_data,
@@ -420,33 +420,31 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
 }
 
 void AccountSelectionModalView::ShowMultiAccountPicker(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+    const std::vector<content::IdentityProviderData>& idp_data_list,
     bool show_back_button,
     bool is_choose_an_account) {
   DCHECK(!show_back_button);
   RemoveNonHeaderChildViews();
 
   ConfigureBrandImageView(brand_icon_,
-                          idp_display_data_list[0].idp_metadata.brand_icon_url,
+                          idp_data_list[0].idp_metadata.brand_icon_url,
                           /*show_placeholder=*/true);
 
   // Show the "Choose an account to continue" label.
   CHECK(body_label_);
   body_label_->SetVisible(/*visible=*/true);
 
-  account_chooser_ =
-      AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
+  account_chooser_ = AddChildView(CreateMultipleAccountChooser(idp_data_list));
 
   std::optional<views::Button::PressedCallback> use_other_account_callback =
       std::nullopt;
 
   // TODO(crbug.com/324052630): Support add account with multi IDP API.
-  if (idp_display_data_list[0].idp_metadata.supports_add_account) {
+  if (idp_data_list[0].idp_metadata.supports_add_account) {
     use_other_account_callback = base::BindRepeating(
         &AccountSelectionViewBase::Observer::OnLoginToIdP,
-        base::Unretained(observer_),
-        idp_display_data_list[0].idp_metadata.config_url,
-        idp_display_data_list[0].idp_metadata.idp_login_url);
+        base::Unretained(observer_), idp_data_list[0].idp_metadata.config_url,
+        idp_data_list[0].idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                std::move(use_other_account_callback)));
@@ -458,7 +456,7 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
 
 void AccountSelectionModalView::ShowVerifyingSheet(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_display_data,
+    const content::IdentityProviderData& idp_display_data,
     const std::u16string& title) {
   // A different type of sheet must have been shown prior to ShowVerifyingSheet.
   // This might change if we choose to integrate auto re-authn with button mode.
@@ -500,7 +498,7 @@ void AccountSelectionModalView::ShowVerifyingSheet(
 
 std::unique_ptr<views::View>
 AccountSelectionModalView::CreateSingleAccountChooser(
-    const IdentityProviderDisplayData& idp_display_data,
+    const content::IdentityProviderData& idp_display_data,
     const content::IdentityRequestAccount& account,
     bool should_hover,
     bool show_disclosure_label,
@@ -545,7 +543,7 @@ AccountSelectionModalView::CreateSingleAccountChooser(
 
 void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_display_data,
+    const content::IdentityProviderData& idp_display_data,
     bool show_back_button) {
   RemoveNonHeaderChildViews();
 
@@ -606,7 +604,7 @@ void AccountSelectionModalView::ShowLoadingDialog() {
 
 void AccountSelectionModalView::ShowRequestPermissionDialog(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_display_data) {
+    const content::IdentityProviderData& idp_display_data) {
   RemoveNonHeaderChildViews();
 
   ConfigureBrandImageView(brand_icon_,
@@ -638,7 +636,7 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
 }
 
 void AccountSelectionModalView::ShowSingleReturningAccountDialog(
-    const std::vector<IdentityProviderDisplayData>& idp_data_list) {
+    const std::vector<content::IdentityProviderData>& idp_data_list) {
   NOTREACHED_IN_MIGRATION()
       << "ShowSingleReturningAccountDialog is only implemented for "
          "AccountSelectionBubbleView";

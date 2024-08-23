@@ -59,7 +59,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   TestAccountSelectionView& operator=(const TestAccountSelectionView&) = delete;
 
   void ShowMultiAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_data_list,
+      const std::vector<content::IdentityProviderData>& idp_data_list,
       bool show_back_button,
       bool is_choose_an_account) override {
     CHECK(!is_choose_an_account || show_back_button);
@@ -76,7 +76,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   }
 
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
-                          const IdentityProviderDisplayData& idp_data,
+                          const content::IdentityProviderData& idp_data,
                           const std::u16string& title) override {
     sheet_type_ = SheetType::kVerifying;
     account_ids_ = {account.id};
@@ -86,7 +86,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
 
   void ShowSingleAccountConfirmDialog(
       const content::IdentityRequestAccount& account,
-      const IdentityProviderDisplayData& idp_data,
+      const content::IdentityProviderData& idp_data,
       bool show_back_button) override {
     show_back_button_ = show_back_button;
     is_choose_an_account_ = false;
@@ -114,7 +114,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
 
   void ShowRequestPermissionDialog(
       const content::IdentityRequestAccount& account,
-      const IdentityProviderDisplayData& idp_display_data) override {
+      const content::IdentityProviderData& idp_display_data) override {
     show_back_button_ = true;
     is_choose_an_account_ = false;
     sheet_type_ = SheetType::kRequestPermission;
@@ -122,7 +122,8 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   }
 
   void ShowSingleReturningAccountDialog(
-      const std::vector<IdentityProviderDisplayData>& idp_data_list) override {
+      const std::vector<content::IdentityProviderData>& idp_data_list)
+      override {
     show_back_button_ = false;
     is_choose_an_account_ = false;
     sheet_type_ = SheetType::kSingleReturningAccount;
@@ -299,7 +300,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  IdentityProviderDisplayData CreateIdentityProviderDisplayData(
+  content::IdentityProviderData CreateIdentityProviderData(
       const std::vector<std::pair<std::string, LoginState>>& account_infos,
       bool has_login_status_mismatch = false,
       bool request_permission = true) {
@@ -311,10 +312,11 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
                             /*labels=*/std::vector<std::string>(),
                             account_info.second);
     }
-    return IdentityProviderDisplayData(
-        u"", content::IdentityProviderMetadata(),
-        content::ClientMetadata(GURL(), GURL(), GURL()), std::move(accounts),
-        request_permission, has_login_status_mismatch);
+    return content::IdentityProviderData(
+        "", std::move(accounts), content::IdentityProviderMetadata(),
+        content::ClientMetadata(GURL(), GURL(), GURL()),
+        blink::mojom::RpContext::kSignIn, request_permission,
+        has_login_status_mismatch);
   }
 
   std::vector<content::IdentityRequestAccount> CreateAccount(
@@ -344,7 +346,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     return accounts;
   }
 
-  content::IdentityProviderData CreateIdentityProviderData(
+  content::IdentityProviderData CreateNewIdpData(
       std::vector<content::IdentityRequestAccount> accounts,
       bool has_login_status_mismatch = false,
       bool request_permission = true) {
@@ -457,7 +459,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMultiIdp(
-      const std::vector<IdentityProviderDisplayData>& idp_list,
+      const std::vector<content::IdentityProviderData>& idp_list,
       SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
@@ -465,10 +467,9 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     std::vector<content::IdentityProviderData> idp_data;
     for (const auto& idp : idp_list) {
       idp_data.emplace_back(
-          reinterpret_cast<const char*>(idp.idp_etld_plus_one.data()),
-          idp.accounts, idp.idp_metadata, idp.client_metadata,
-          blink::mojom::RpContext::kSignIn, idp.request_permission,
-          idp.has_login_status_mismatch);
+          idp.idp_for_display, idp.accounts, idp.idp_metadata,
+          idp.client_metadata, blink::mojom::RpContext::kSignIn,
+          idp.request_permission, idp.has_login_status_mismatch);
     }
     controller->Show(kTopFrameEtldPlusOne, idp_data, sign_in_mode, rp_mode,
                      /*new_accounts_idp=*/std::nullopt);
@@ -504,8 +505,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       const std::vector<std::pair<std::string, LoginState>>& old_account_infos,
       const std::vector<std::pair<std::string, LoginState>>& new_account_infos,
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget) {
-    IdentityProviderDisplayData idp_data =
-        CreateIdentityProviderDisplayData(old_account_infos);
+    content::IdentityProviderData idp_data =
+        CreateIdentityProviderData(old_account_infos);
     const std::vector<Account>& accounts = idp_data.accounts;
     std::unique_ptr<TestFedCmAccountSelectionView> controller =
         CreateAndShow(accounts, SignInMode::kExplicit, rp_mode);
@@ -523,8 +524,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 
     std::vector<content::IdentityRequestAccount> new_accounts =
         CreateAccounts(new_account_infos);
-    content::IdentityProviderData new_idp_data =
-        CreateIdentityProviderData(new_accounts);
+    content::IdentityProviderData new_idp_data = CreateNewIdpData(new_accounts);
 
     std::vector<std::pair<std::string, LoginState>> combined_account_infos =
         old_account_infos;
@@ -538,8 +538,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       combined_account_infos.emplace_back(account_info);
     }
 
-    IdentityProviderDisplayData combined_idp_data =
-        CreateIdentityProviderDisplayData(combined_account_infos);
+    content::IdentityProviderData combined_idp_data =
+        CreateIdentityProviderData(combined_account_infos);
 
     Show(*controller, combined_idp_data.accounts, SignInMode::kExplicit,
          rp_mode, new_idp_data);
@@ -567,8 +567,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 };
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
@@ -589,7 +589,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignIn}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
@@ -611,7 +611,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignUp},
       {kAccountId2, LoginState::kSignUp},
   });
@@ -667,11 +667,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
             account_selection_view_->sheet_type_);
 
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignUp},
   });
-  content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
-      CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
+  content::IdentityProviderData new_idp_data =
+      CreateNewIdpData(CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kWidget, new_idp_data);
 
@@ -698,7 +698,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
             account_selection_view_->sheet_type_);
 
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignUp},
   });
 
@@ -706,8 +706,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // the associated FedCM tab is inactive. Show() should not show the
   // views::Widget in this case.
   controller->OnTabBackgrounded();
-  content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
-      CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
+  content::IdentityProviderData new_idp_data =
+      CreateNewIdpData(CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kWidget, new_idp_data);
   EXPECT_FALSE(dialog_widget_->IsVisible());
@@ -726,8 +726,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, AutoReauthnSingleAccountFlow) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignIn}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignIn}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kAuto);
@@ -777,7 +777,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountSelectedDeletesView) {
   ViewDeletingAccountSelectionViewDelegate* view_deleting_delegate =
       static_cast<ViewDeletingAccountSelectionViewDelegate*>(delegate_.get());
 
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignIn},
   });
   const std::vector<Account>& accounts = idp_data.accounts;
@@ -796,8 +796,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountSelectedDeletesView) {
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
@@ -833,8 +833,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {
 // Tests that when the auth re-authn dialog is closed, the relevant metric is
 // recorded.
 TEST_F(FedCmAccountSelectionViewDesktopTest, CloseAutoReauthnSheetMetric) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignIn}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignIn}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kAuto);
@@ -992,10 +992,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
     // Emulate IdP sending the IdP sign-in status header which updates the
     // mismatch dialog to an accounts dialog.
-    IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+    content::IdentityProviderData idp_data = CreateIdentityProviderData({
         {kAccountId1, LoginState::kSignUp},
     });
-    content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
+    content::IdentityProviderData new_idp_data = CreateNewIdpData(
         CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
     Show(*controller, idp_data.accounts, SignInMode::kExplicit,
          blink::mojom::RpMode::kWidget, new_idp_data);
@@ -1039,10 +1039,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
     // Emulate IdP sending the IdP sign-in status header which updates the
     // mismatch dialog to an accounts dialog.
-    IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+    content::IdentityProviderData idp_data = CreateIdentityProviderData({
         {kAccountId1, LoginState::kSignUp},
     });
-    content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
+    content::IdentityProviderData new_idp_data = CreateNewIdpData(
         CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
     Show(*controller, idp_data.accounts, SignInMode::kExplicit,
          blink::mojom::RpMode::kWidget, new_idp_data);
@@ -1095,10 +1095,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
     // Emulate IdP sending the IdP sign-in status header which updates the
     // failure dialog to an accounts dialog.
-    IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+    content::IdentityProviderData idp_data = CreateIdentityProviderData({
         {kAccountId1, LoginState::kSignUp},
     });
-    content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
+    content::IdentityProviderData new_idp_data = CreateNewIdpData(
         CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
     Show(*controller, idp_data.accounts, SignInMode::kExplicit,
          blink::mojom::RpMode::kWidget, new_idp_data);
@@ -1288,11 +1288,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate IdP sending the IdP sign-in status header which updates the
   // mismatch dialog to an accounts dialog.
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignUp},
   });
-  content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
-      CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
+  content::IdentityProviderData new_idp_data =
+      CreateNewIdpData(CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kWidget, new_idp_data);
   EXPECT_FALSE(dialog_widget_->IsVisible());
@@ -1334,11 +1334,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate IdP sending the IdP sign-in status header which updates the
   // mismatch dialog to an accounts dialog.
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignUp},
   });
-  content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
-      CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
+  content::IdentityProviderData new_idp_data =
+      CreateNewIdpData(CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kWidget, new_idp_data);
 
@@ -1357,12 +1357,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   AccountSelectionViewBase::Observer* observer =
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
   std::vector<content::IdentityRequestAccount> new_accounts = CreateAccounts(
       {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
-  content::IdentityProviderData new_idp_data =
-      CreateIdentityProviderData(new_accounts);
+  content::IdentityProviderData new_idp_data = CreateNewIdpData(new_accounts);
 
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kWidget, new_idp_data);
@@ -1408,11 +1407,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate IdP sending the IdP sign-in status header which updates the
   // mismatch dialog to an accounts dialog.
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
-  content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
-      CreateAccounts({{kAccountId1, LoginState::kSignUp},
-                      {kAccountId2, LoginState::kSignUp}}));
+  content::IdentityProviderData new_idp_data =
+      CreateNewIdpData(CreateAccounts({{kAccountId1, LoginState::kSignUp},
+                                       {kAccountId2, LoginState::kSignUp}}));
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kWidget, new_idp_data);
   EXPECT_FALSE(account_selection_view_->show_back_button_);
@@ -1536,13 +1535,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // chooser UI if it's a returning account.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        LoginStatusLoggedOutModalForReturningAccount) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignIn}},
       /*has_login_status_mismatch=*/false, /*request_permission=*/false);
   std::vector<content::IdentityRequestAccount> all_accounts =
       CreateAccount(LoginState::kSignIn, LoginState::kSignIn);
-  content::IdentityProviderData new_idp_data =
-      CreateIdentityProviderData(all_accounts);
+  content::IdentityProviderData new_idp_data = CreateNewIdpData(all_accounts);
 
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowAccountsModalThroughPopupWindow(all_accounts, new_idp_data);
@@ -1559,13 +1557,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // chooser UI if it's a non-returning account.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        LoginStatusLoggedOutModalForNonReturningAccount) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}},
       /*has_login_status_mismatch=*/false, /*request_permission=*/false);
   std::vector<content::IdentityRequestAccount> all_accounts =
       CreateAccount(LoginState::kSignUp, LoginState::kSignUp);
-  content::IdentityProviderData new_idp_data =
-      CreateIdentityProviderData(all_accounts);
+  content::IdentityProviderData new_idp_data = CreateNewIdpData(all_accounts);
 
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowAccountsModalThroughPopupWindow(all_accounts, new_idp_data);
@@ -1581,14 +1578,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // chooser UI when in conflict with login state.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        BrowserTrustedLoginStateTakesPrecedenceOverLoginState) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}},
       /*has_login_status_mismatch=*/false, /*request_permission=*/false);
   std::vector<content::IdentityRequestAccount> all_accounts =
       CreateAccount(/*idp_claimed_login_state=*/LoginState::kSignIn,
                     /*browser_trusted_login_state=*/LoginState::kSignUp);
-  content::IdentityProviderData new_idp_data =
-      CreateIdentityProviderData(all_accounts);
+  content::IdentityProviderData new_idp_data = CreateNewIdpData(all_accounts);
 
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowAccountsModalThroughPopupWindow(all_accounts, new_idp_data);
@@ -1607,8 +1603,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // closing the pop-up from the first use another account flow.
 TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountTwiceModal) {
   const char kAccountId[] = "account_id";
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
@@ -1637,8 +1633,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountTwiceModal) {
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        UseAnotherAccountCloseThenReopenModal) {
   const char kAccountId[] = "account_id";
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
@@ -1672,8 +1668,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // button in the modal without completing the use other account flow.
 TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountThenCancel) {
   const char kAccountId[] = "account_id";
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
@@ -1766,10 +1762,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogMoreDetailsClicked) {
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpWithOneIdpMismatch) {
-  std::vector<IdentityProviderDisplayData> idp_list = {
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}}),
-      CreateIdentityProviderDisplayData(/*account_infos=*/{},
-                                        /*has_login_status_mismatch*/ true)};
+  std::vector<content::IdentityProviderData> idp_list = {
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}}),
+      CreateIdentityProviderData(/*account_infos=*/{},
+                                 /*has_login_status_mismatch*/ true)};
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowMultiIdp(idp_list, SignInMode::kExplicit,
                             blink::mojom::RpMode::kWidget);
@@ -1796,11 +1792,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpWithOneIdpMismatch) {
 
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        MultiIdpWithSingleReturningAccount) {
-  std::vector<IdentityProviderDisplayData> idp_list = {
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignIn}}),
-      CreateIdentityProviderDisplayData({{kAccountId2, LoginState::kSignUp}}),
-      CreateIdentityProviderDisplayData({},
-                                        /*has_login_status_mismatch=*/true)};
+  std::vector<content::IdentityProviderData> idp_list = {
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignIn}}),
+      CreateIdentityProviderData({{kAccountId2, LoginState::kSignUp}}),
+      CreateIdentityProviderData({},
+                                 /*has_login_status_mismatch=*/true)};
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowMultiIdp(idp_list, SignInMode::kExplicit,
                             blink::mojom::RpMode::kWidget);
@@ -1865,11 +1861,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // does not cause a crash.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        MultiIdpWithSingleReturningAccountClose) {
-  std::vector<IdentityProviderDisplayData> idp_list = {
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignIn}}),
-      CreateIdentityProviderDisplayData({{kAccountId2, LoginState::kSignUp}}),
-      CreateIdentityProviderDisplayData({},
-                                        /*has_login_status_mismatch=*/true)};
+  std::vector<content::IdentityProviderData> idp_list = {
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignIn}}),
+      CreateIdentityProviderData({{kAccountId2, LoginState::kSignUp}}),
+      CreateIdentityProviderData({},
+                                 /*has_login_status_mismatch=*/true)};
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowMultiIdp(idp_list, SignInMode::kExplicit,
                             blink::mojom::RpMode::kWidget);
@@ -1913,10 +1909,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpMismatchAndShow) {
-  std::vector<IdentityProviderDisplayData> idp_list = {
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}}),
-      CreateIdentityProviderDisplayData(/*account_infos=*/{},
-                                        /*has_login_status_mismatch=*/true)};
+  std::vector<content::IdentityProviderData> idp_list = {
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}}),
+      CreateIdentityProviderData(/*account_infos=*/{},
+                                 /*has_login_status_mismatch=*/true)};
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowMultiIdp(idp_list, SignInMode::kExplicit,
                             blink::mojom::RpMode::kWidget);
@@ -1931,7 +1927,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpMismatchAndShow) {
   // The backend will pass the accounts reordered.
   std::vector<content::IdentityRequestAccount> all_accounts = CreateAccounts(
       {{kAccountId2, LoginState::kSignUp}, {kAccountId1, LoginState::kSignUp}});
-  content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
+  content::IdentityProviderData new_idp_data = CreateNewIdpData(
       CreateAccount(LoginState::kSignUp, LoginState::kSignUp, kAccountId2));
 
   Show(*controller, all_accounts, SignInMode::kExplicit,
@@ -1958,8 +1954,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpMismatchAndShow) {
 // selecting an account shows the request permission sheet. Then, confirming the
 // account on the request permission sheet shows the verifying sheet.
 TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowModal) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
@@ -1989,7 +1985,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowModal) {
 // selecting an account shows the request permission sheet. Then, confirming the
 // account on the request permission sheet shows the verifying sheet.
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowModal) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
@@ -2019,8 +2015,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowModal) {
 // Tests that if a single account chooser is opened in button flow mode,
 // selecting a returning account shows the verifying sheet.
 TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowReturningModal) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignIn}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignIn}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
@@ -2044,7 +2040,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowReturningModal) {
 // selecting a returning account shows the verifying sheet.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        MultipleAccountFlowReturningModal) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
@@ -2069,8 +2065,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // clicking the back button in the request permission dialog returns the user to
 // the single account chooser.
 TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowBackModal) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
@@ -2115,7 +2111,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowBackModal) {
 // clicking the back button in the request permission dialog returns the user to
 // the multiple account chooser.
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBackModal) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignUp},
       {kAccountId2, LoginState::kSignUp},
   });
@@ -2166,7 +2162,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       CreateAndShowLoadingDialog();
 
   EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(0);
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignIn},
   });
   Show(*controller, idp_data.accounts, SignInMode::kAuto,
@@ -2226,8 +2222,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // notifies the observer.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        UserClosingPopupAfterVerifyingSheetShouldNotify) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
@@ -2253,8 +2249,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // programmatically, does not notify the observer.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        CodeClosingPopupAfterVerifyingSheetShouldNotNotify) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
@@ -2280,7 +2276,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // shown.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        SkipRequestPermissionShowsVerifying) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}}, /*has_login_status_mismatch=*/false,
       /*request_permission=*/false);
   const std::vector<Account>& accounts = idp_data.accounts;
@@ -2306,11 +2302,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // Tests that if IDP supports add account, the correct sheet type is shown
 // depending on the number of accounts and the rp mode.
 TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
-  IdentityProviderDisplayData single_account_idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
-  IdentityProviderDisplayData multiple_accounts_idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignIn},
-                                         {kAccountId2, LoginState::kSignIn}});
+  content::IdentityProviderData single_account_idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData multiple_accounts_idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignIn},
+                                  {kAccountId2, LoginState::kSignIn}});
 
   content::IdentityProviderMetadata idp_metadata;
   idp_metadata.supports_add_account = true;
@@ -2369,11 +2365,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
             account_selection_view_->sheet_type_);
 
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignUp},
   });
-  content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
-      CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
+  content::IdentityProviderData new_idp_data =
+      CreateNewIdpData(CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
   content::IdentityProviderMetadata idp_metadata;
   idp_metadata.supports_add_account = true;
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
@@ -2401,8 +2397,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
 // Tests that the correct account chooser result metrics are recorded.
 TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   auto CheckForSampleAndReset(
       [&](FedCmAccountSelectionView::AccountChooserResult result) {
         histogram_tester_->ExpectUniqueSample(
@@ -2466,8 +2462,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
     // record a sample.
     std::vector<content::IdentityRequestAccount> all_accounts =
         CreateAccount(LoginState::kSignIn, LoginState::kSignIn);
-    content::IdentityProviderData new_idp_data =
-        CreateIdentityProviderData(all_accounts);
+    content::IdentityProviderData new_idp_data = CreateNewIdpData(all_accounts);
     std::unique_ptr<TestFedCmAccountSelectionView> controller =
         CreateAndShowAccountsModalThroughPopupWindow(all_accounts,
                                                      new_idp_data);
@@ -2487,8 +2482,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
     // sample.
     std::vector<content::IdentityRequestAccount> all_accounts =
         CreateAccount(LoginState::kSignUp, LoginState::kSignUp);
-    content::IdentityProviderData new_idp_data =
-        CreateIdentityProviderData(all_accounts);
+    content::IdentityProviderData new_idp_data = CreateNewIdpData(all_accounts);
     std::unique_ptr<TestFedCmAccountSelectionView> controller =
         CreateAndShowAccountsModalThroughPopupWindow(all_accounts,
                                                      new_idp_data);
@@ -2515,8 +2509,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
 // bubble, since the error UI does not have a modal equivalent.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        AccountsToErrorButtonFlowResetsView) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
@@ -2537,7 +2531,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       CreateAndShowLoadingDialog();
 
   EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(0);
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+  content::IdentityProviderData idp_data = CreateIdentityProviderData({
       {kAccountId1, LoginState::kSignUp},
   });
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
@@ -2548,8 +2542,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // on whether the dialog can fit within the web contents.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        ResizeWebContentsChangesDialogVisibility) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
@@ -2574,8 +2568,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // the dialog is contained is visible.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        ResizeWebContentsWithWindowVisibilityChanges) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
@@ -2630,8 +2624,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // hidden.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        VisibilityChangesUpdatesDialogPosition) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
@@ -2651,8 +2645,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // Tests that the Lens overlay showing hides the dialog until the overlay is
 // closed.
 TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlayHidesDialog) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
@@ -2667,8 +2661,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlayHidesDialog) {
 
 // Tests that the dialog does not open if the Lens overlay is already showing.
 TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlaySuppressesDialog) {
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  content::IdentityProviderData idp_data =
+      CreateIdentityProviderData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowWithLensOverlay(accounts, SignInMode::kExplicit);
@@ -2685,13 +2679,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlaySuppressesDialog) {
 // disclosure UI after logging in through the popup when logged out.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        RequestPermissionFalseAndNewIdpDataDisclosureText) {
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(
       {{kAccountId1, LoginState::kSignUp}},
       /*has_login_status_mismatch=*/false, /*request_permission=*/false);
   std::vector<content::IdentityRequestAccount> all_accounts =
       CreateAccount(LoginState::kSignUp, LoginState::kSignUp);
-  content::IdentityProviderData new_idp_data =
-      CreateIdentityProviderData(all_accounts);
+  content::IdentityProviderData new_idp_data = CreateNewIdpData(all_accounts);
   new_idp_data.request_permission = false;
 
   std::unique_ptr<TestFedCmAccountSelectionView> controller =

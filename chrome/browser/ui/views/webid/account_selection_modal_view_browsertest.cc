@@ -68,9 +68,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       const std::string& terms_of_service_url,
       bool show_auto_reauthn_checkbox = false) {
     CreateAccountSelectionModal();
-    IdentityProviderDisplayData idp_data(
-        kIdpETLDPlusOne, idp_metadata,
-        CreateTestClientMetadata(terms_of_service_url), {account},
+    content::IdentityProviderData idp_data(
+        kIdpForDisplay, {account}, idp_metadata,
+        CreateTestClientMetadata(terms_of_service_url),
+        blink::mojom::RpContext::kSignIn,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowSingleAccountConfirmDialog(account, idp_data,
                                             show_back_button);
@@ -83,13 +84,14 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         CreateTestIdentityRequestAccounts(account_suffixes);
 
     CreateAccountSelectionModal();
-    std::vector<IdentityProviderDisplayData> idp_data;
+    std::vector<content::IdentityProviderData> idp_data;
     content::IdentityProviderMetadata metadata;
     metadata.supports_add_account = supports_add_account;
-    idp_data.emplace_back(
-        kIdpETLDPlusOne, metadata,
-        CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list,
-        /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+    idp_data.emplace_back(kIdpForDisplay, account_list, metadata,
+                          CreateTestClientMetadata(/*terms_of_service_url=*/""),
+                          blink::mojom::RpContext::kSignIn,
+                          /*request_permission=*/true,
+                          /*has_login_status_mismatch=*/false);
     dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/false,
                                     /*is_choose_an_account=*/false);
   }
@@ -99,9 +101,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       const content::IdentityProviderMetadata& idp_metadata,
       const std::string& terms_of_service_url) {
     CreateAccountSelectionModal();
-    IdentityProviderDisplayData idp_data(
-        kIdpETLDPlusOne, idp_metadata,
-        CreateTestClientMetadata(terms_of_service_url), {account},
+    content::IdentityProviderData idp_data(
+        kIdpForDisplay, {account}, idp_metadata,
+        CreateTestClientMetadata(terms_of_service_url),
+        blink::mojom::RpContext::kSignIn,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowRequestPermissionDialog(account, idp_data);
   }
@@ -111,9 +114,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     const std::string kAccountSuffix = "suffix";
     content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
-    IdentityProviderDisplayData idp_data(
-        kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-        CreateTestClientMetadata(/*terms_of_service_url=*/""), {account},
+    content::IdentityProviderData idp_data(
+        kIdpForDisplay, {account}, content::IdentityProviderMetadata(),
+        CreateTestClientMetadata(/*terms_of_service_url=*/""),
+        blink::mojom::RpContext::kSignIn,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowVerifyingSheet(account, idp_data, kTitleSignIn);
   }

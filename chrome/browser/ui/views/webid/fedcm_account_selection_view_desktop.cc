@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/webid/account_selection_modal_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
-#include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -96,8 +95,7 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
 
 bool FedCmAccountSelectionView::Show(
     const std::string& rp_for_display,
-    const std::vector<content::IdentityProviderData>&
-        identity_provider_data_list,
+    const std::vector<content::IdentityProviderData>& idp_data_list,
     Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
     const std::optional<content::IdentityProviderData>& new_accounts_idp) {
@@ -108,10 +106,10 @@ bool FedCmAccountSelectionView::Show(
         PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp;
     // We need to use ShowNoReturn() here because it is not allowed to bind
     // WeakPtrs to methods with return values.
-    show_accounts_dialog_callback_ = base::BindOnce(
-        base::IgnoreResult(&FedCmAccountSelectionView::Show),
-        weak_ptr_factory_.GetWeakPtr(), rp_for_display,
-        identity_provider_data_list, sign_in_mode, rp_mode, new_accounts_idp);
+    show_accounts_dialog_callback_ =
+        base::BindOnce(base::IgnoreResult(&FedCmAccountSelectionView::Show),
+                       weak_ptr_factory_.GetWeakPtr(), rp_for_display,
+                       idp_data_list, sign_in_mode, rp_mode, new_accounts_idp);
     // This is considered successful since we are intentionally delaying showing
     // the UI.
     return true;
@@ -126,21 +124,16 @@ bool FedCmAccountSelectionView::Show(
   // modal is not yet implemented.
   bool has_modal_support = true;
 
-  idp_display_data_list_.clear();
+  idp_data_list_ = idp_data_list;
   started_as_single_returning_account_ = false;
 
   size_t accounts_or_mismatches_size = 0u;
   bool supports_add_account = false;
   size_t returning_accounts_size = 0u;
   blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn;
-  for (const auto& identity_provider : identity_provider_data_list) {
+  for (const auto& identity_provider : idp_data_list) {
     DCHECK(identity_provider.accounts.size() ||
            identity_provider.has_login_status_mismatch);
-    idp_display_data_list_.emplace_back(
-        base::UTF8ToUTF16(identity_provider.idp_for_display),
-        identity_provider.idp_metadata, identity_provider.client_metadata,
-        identity_provider.accounts, identity_provider.request_permission,
-        identity_provider.has_login_status_mismatch);
     // TODO(crbug.com/40252518): Decide what we should display if the IdPs use
     // different contexts here.
     rp_context = identity_provider.rp_context;
@@ -158,9 +151,9 @@ bool FedCmAccountSelectionView::Show(
   }
 
   std::optional<std::u16string> idp_title =
-      idp_display_data_list_.size() == 1u
+      idp_data_list_.size() == 1u
           ? std::make_optional<std::u16string>(
-                idp_display_data_list_[0].idp_etld_plus_one)
+                base::UTF8ToUTF16(idp_data_list_[0].idp_for_display))
           : std::nullopt;
   rp_for_display_ = base::UTF8ToUTF16(rp_for_display);
 
@@ -168,8 +161,7 @@ bool FedCmAccountSelectionView::Show(
   // this type of dialog, reset account_selection_view_ to create a bubble
   // dialog instead. We also reset for widget multi IDP to recalculate the title
   // and other parts of the header.
-  if ((rp_mode == blink::mojom::RpMode::kWidget &&
-       idp_display_data_list_.size() > 1) ||
+  if ((rp_mode == blink::mojom::RpMode::kWidget && idp_data_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kButton && !has_modal_support)) {
     MaybeResetAccountSelectionView();
   }
@@ -193,33 +185,28 @@ bool FedCmAccountSelectionView::Show(
     if (GetDialogType() == DialogType::MODAL) {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
-          idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+          idp_data_list_[0].accounts[0], idp_data_list_[0],
           /*show_back_button=*/false);
     }
 
     state_ = State::AUTO_REAUTHN;
 
     // When auto re-authn flow is triggered, the parameter
-    // `idp_display_data_list_` would only include the single returning
+    // `idp_data_list_` would only include the single returning
     // account and its IDP.
-    DCHECK_EQ(idp_display_data_list_.size(), 1u);
-    DCHECK_EQ(idp_display_data_list_[0].accounts.size(), 1u);
+    DCHECK_EQ(idp_data_list_.size(), 1u);
+    DCHECK_EQ(idp_data_list_[0].accounts.size(), 1u);
     // If ShowVerifyingSheet returns false, `this` got deleted, so just
     // return.
-    if (!ShowVerifyingSheet(idp_display_data_list_[0].accounts[0],
-                            idp_display_data_list_[0])) {
+    if (!ShowVerifyingSheet(idp_data_list_[0].accounts[0], idp_data_list_[0])) {
       return false;
     }
   } else if (new_accounts_idp) {
     // When we just logged in to an account that is not a single returning
     // account: on the modal, we'd show all the accounts and on the bubble, we'd
     // show only the new accounts.
-    new_accounts_idp_display_data_ = {IdentityProviderDisplayData(
-        base::UTF8ToUTF16(new_accounts_idp->idp_for_display),
-        new_accounts_idp->idp_metadata, new_accounts_idp->client_metadata,
-        new_accounts_idp->accounts, new_accounts_idp->request_permission,
-        new_accounts_idp->has_login_status_mismatch)};
-    const IdentityProviderDisplayData& new_idp_data =
+    new_accounts_idp_display_data_ = {*new_accounts_idp};
+    const content::IdentityProviderData& new_idp_data =
         new_accounts_idp_display_data_[0];
 
     if (GetDialogType() == DialogType::MODAL) {
@@ -257,7 +244,7 @@ bool FedCmAccountSelectionView::Show(
         // with most recently signed in accounts at the top to reduce the
         // exposure of extra UI surfaces and to work around the account picker
         // not having a back button.
-        ShowMultiAccountPicker(idp_display_data_list_,
+        ShowMultiAccountPicker(idp_data_list_,
                                /*show_back_button=*/false,
                                /*is_choose_an_account=*/false);
       }
@@ -279,35 +266,32 @@ bool FedCmAccountSelectionView::Show(
         state_ = State::NEWLY_LOGGED_IN_ACCOUNT_PICKER;
       }
     }
-  } else if (idp_display_data_list_.size() == 1u &&
-             accounts_or_mismatches_size == 1u) {
+  } else if (idp_data_list_.size() == 1u && accounts_or_mismatches_size == 1u) {
     if (GetDialogType() == DialogType::MODAL) {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
-          idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+          idp_data_list_[0].accounts[0], idp_data_list_[0],
           /*show_back_button=*/false);
     } else if (supports_add_account) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
-      ShowMultiAccountPicker(idp_display_data_list_, /*show_back_button=*/false,
+      ShowMultiAccountPicker(idp_data_list_, /*show_back_button=*/false,
                              /*is_choose_an_account=*/false);
     } else {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
-          idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+          idp_data_list_[0].accounts[0], idp_data_list_[0],
           /*show_back_button=*/false);
     }
-  } else if (identity_provider_data_list.size() > 1u &&
-             returning_accounts_size == 1u) {
+  } else if (idp_data_list.size() > 1u && returning_accounts_size == 1u) {
     // For now we only highlight the single returning account in the multi IDP
     // case, but in the future we may want to do so in the single IDP case as
     // well.
     state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
     started_as_single_returning_account_ = true;
-    account_selection_view_->ShowSingleReturningAccountDialog(
-        idp_display_data_list_);
+    account_selection_view_->ShowSingleReturningAccountDialog(idp_data_list_);
   } else {
-    ShowMultiAccountPicker(idp_display_data_list_,
+    ShowMultiAccountPicker(idp_data_list_,
                            /*show_back_button=*/false,
                            /*is_choose_an_account=*/false);
   }
@@ -388,8 +372,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   // this type of dialog, reset account_selection_view_ to create a bubble
   // dialog instead.  We also reset for widget multi IDP to recalculate the
   // title and other parts of the header.
-  if ((rp_mode == blink::mojom::RpMode::kWidget &&
-       idp_display_data_list_.size() > 1) ||
+  if ((rp_mode == blink::mojom::RpMode::kWidget && idp_data_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kButton && !has_modal_support)) {
     MaybeResetAccountSelectionView();
   }
@@ -454,8 +437,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
   // this type of dialog, reset account_selection_view_ to create a bubble
   // dialog instead. We also reset for widget multi IDP to recalculate the title
   // and other parts of the header.
-  if ((rp_mode == blink::mojom::RpMode::kWidget &&
-       idp_display_data_list_.size() > 1) ||
+  if ((rp_mode == blink::mojom::RpMode::kWidget && idp_data_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kButton && !has_modal_support)) {
     MaybeResetAccountSelectionView();
   }
@@ -647,7 +629,7 @@ void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
 
 void FedCmAccountSelectionView::OnAccountSelected(
     const Account& account,
-    const IdentityProviderDisplayData& idp_display_data,
+    const content::IdentityProviderData& idp_display_data,
     const ui::Event& event) {
   DCHECK(state_ != State::IDP_SIGNIN_STATUS_MISMATCH);
   DCHECK(state_ != State::AUTO_REAUTHN);
@@ -708,12 +690,11 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
 
   // If the dialog type is modal and there is only one IDP and one account, show
   // the single account picker.
-  if (GetDialogType() == DialogType::MODAL &&
-      idp_display_data_list_.size() == 1u &&
-      idp_display_data_list_[0].accounts.size() == 1u) {
+  if (GetDialogType() == DialogType::MODAL && idp_data_list_.size() == 1u &&
+      idp_data_list_[0].accounts.size() == 1u) {
     state_ = State::SINGLE_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleAccountConfirmDialog(
-        idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+        idp_data_list_[0].accounts[0], idp_data_list_[0],
         /*show_back_button=*/false);
     return;
   }
@@ -721,12 +702,11 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
   // to the single returning account.
   if (state_ == State::MULTI_ACCOUNT_PICKER) {
     state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
-    account_selection_view_->ShowSingleReturningAccountDialog(
-        idp_display_data_list_);
+    account_selection_view_->ShowSingleReturningAccountDialog(idp_data_list_);
     return;
   }
   ShowMultiAccountPicker(
-      idp_display_data_list_,
+      idp_data_list_,
       /*show_back_button=*/started_as_single_returning_account_,
       /*is_choose_an_account=*/last_multi_account_is_choose_an_account_);
 }
@@ -884,7 +864,7 @@ content::WebContents* FedCmAccountSelectionView::GetRpWebContents() {
 }
 
 void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
-  ShowMultiAccountPicker(idp_display_data_list_,
+  ShowMultiAccountPicker(idp_data_list_,
                          /*show_back_button=*/true,
                          /*is_choose_an_account=*/true);
   base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
@@ -904,7 +884,7 @@ void FedCmAccountSelectionView::OnPopupWindowDestroyed() {
 
 bool FedCmAccountSelectionView::ShowVerifyingSheet(
     const Account& account,
-    const IdentityProviderDisplayData& idp_display_data) {
+    const content::IdentityProviderData& idp_display_data) {
   DCHECK(state_ == State::VERIFYING || state_ == State::AUTO_REAUTHN);
   notify_delegate_of_dismiss_ = false;
 
@@ -1131,11 +1111,11 @@ FedCmAccountSelectionView::GetWeakPtr() {
 }
 
 void FedCmAccountSelectionView::ShowMultiAccountPicker(
-    const std::vector<IdentityProviderDisplayData>& idp_data_list,
+    const std::vector<content::IdentityProviderData>& idp_data_list,
     bool show_back_button,
     bool is_choose_an_account) {
   state_ = State::MULTI_ACCOUNT_PICKER;
   last_multi_account_is_choose_an_account_ = is_choose_an_account;
   account_selection_view_->ShowMultiAccountPicker(
-      idp_display_data_list_, show_back_button, is_choose_an_account);
+      idp_data_list_, show_back_button, is_choose_an_account);
 }

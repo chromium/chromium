@@ -49,16 +49,16 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   void InitDialogWidget() override;
 
   void ShowMultiAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+      const std::vector<content::IdentityProviderData>& idp_data_list,
       bool show_back_button,
       bool is_choose_an_account) override;
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
-                          const IdentityProviderDisplayData& idp_display_data,
+                          const content::IdentityProviderData& idp_display_data,
                           const std::u16string& title) override;
 
   void ShowSingleAccountConfirmDialog(
       const content::IdentityRequestAccount& account,
-      const IdentityProviderDisplayData& idp_display_data,
+      const content::IdentityProviderData& idp_display_data,
       bool show_back_button) override;
 
   void ShowFailureDialog(
@@ -71,10 +71,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   void ShowRequestPermissionDialog(
       const content::IdentityRequestAccount& account,
-      const IdentityProviderDisplayData& idp_display_data) override;
+      const content::IdentityProviderData& idp_display_data) override;
 
   void ShowSingleReturningAccountDialog(
-      const std::vector<IdentityProviderDisplayData>& idp_data_list) override;
+      const std::vector<content::IdentityProviderData>& idp_data_list) override;
 
   void ShowLoadingDialog() override;
 
@@ -101,21 +101,21 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // information, disclosure text and a button for the user to confirm the
   // selection. The size of the `idp_display_data.accounts` vector must be 1.
   std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const IdentityProviderDisplayData& idp_display_data,
+      const content::IdentityProviderData& idp_display_data,
       const content::IdentityRequestAccount& account);
 
   // Adds a separator as well as a multiple account chooser. The chooser
   // contains the info for each account in a button, so the user can pick an
   // account. It also contains mismatch login URLs in the multiple IDP case.
   void AddSeparatorAndMultipleAccountChooser(
-      const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
+      const std::vector<content::IdentityProviderData>& idp_data_list);
 
   // Adds the accounts matching the provided LoginState to the given view. This
   // method does not reorder the accounts, and assumes they are provided in the
   // correct order. Updates `out_position` to 1 + the last position of the
   // accounts added.
   void AddAccounts(
-      const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+      const std::vector<content::IdentityProviderData>& idp_data_list,
       views::View* accounts_content,
       content::IdentityRequestAccount::LoginState login_state,
       int& out_position);
@@ -125,7 +125,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // used first. In the other case, AddAccounts() can be invoked directly.
   // Updates `out_position` to 1 + the last position of the accounts added.
   void AddSignInAccounts(
-      const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+      const std::vector<content::IdentityProviderData>& idp_data_list,
       views::View* accounts_content,
       int& out_position);
 
@@ -133,7 +133,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // 'choose an account' which will show all accounts and IDPs that are
   // available.
   std::unique_ptr<views::View> CreateSingleReturningAccountChooser(
-      const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
+      const std::vector<content::IdentityProviderData>& idp_data_list);
 
   // Returns a view containing a button for the user to login to an IDP for
   // which there was a login status mismatch, to be used in the multiple account

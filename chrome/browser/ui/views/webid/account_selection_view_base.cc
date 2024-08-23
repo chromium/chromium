@@ -418,7 +418,7 @@ void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
 
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_display_data,
+    const content::IdentityProviderData& idp_display_data,
     std::optional<int> clickable_position,
     bool should_include_idp,
     bool is_modal_dialog,
@@ -502,9 +502,10 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
       if (last_used_string) {
         footer = l10n_util::GetStringFUTF16(
             IDS_MULTI_IDP_ACCOUNT_ORIGIN_AND_LAST_USED,
-            idp_display_data.idp_etld_plus_one, *last_used_string);
+            base::UTF8ToUTF16(idp_display_data.idp_for_display),
+            *last_used_string);
       } else {
-        footer = idp_display_data.idp_etld_plus_one;
+        footer = base::UTF8ToUTF16(idp_display_data.idp_for_display);
       }
     }
     // We can pass crefs to OnAccountSelected because the `observer_` owns the
@@ -596,7 +597,7 @@ void AccountSelectionViewBase::ConfigureBrandImageView(
 
 std::unique_ptr<views::StyledLabel>
 AccountSelectionViewBase::CreateDisclosureLabel(
-    const IdentityProviderDisplayData& idp_display_data) {
+    const content::IdentityProviderData& idp_display_data) {
   // It requires a StyledLabel so that we can add the links
   // to the privacy policy and terms of service URLs.
   std::unique_ptr<views::StyledLabel> disclosure_label =
@@ -629,7 +630,7 @@ AccountSelectionViewBase::CreateDisclosureLabel(
 
   // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
   std::vector<std::u16string> replacements = {
-      idp_display_data.idp_etld_plus_one};
+      base::UTF8ToUTF16(idp_display_data.idp_for_display)};
   replacements.insert(replacements.end(), link_data.size() * 2,
                       std::u16string());
 

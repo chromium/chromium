@@ -24,6 +24,10 @@ const std::u16string kTitleRequestPermission =
     u"idp-example.com";
 const std::u16string kBodySignIn = u"Choose an account to continue";
 
+// The char version of `kIdpETLDPlusOne`.
+inline constexpr char kIdpForDisplay[] = "idp-example.com";
+// The char version of `kSecondIdpETLDPlusOne`.
+inline constexpr char kSecondIdpForDisplay[] = "idp2.com";
 inline constexpr char kIdBase[] = "id";
 inline constexpr char kEmailBase[] = "email";
 inline constexpr char kNameBase[] = "name";
