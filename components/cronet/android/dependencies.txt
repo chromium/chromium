@@ -3,6 +3,7 @@
 //base/allocator/partition_allocator
 //base/allocator/partition_allocator/src/partition_alloc
 //base/numerics
+//base/third_party/cityhash
 //base/third_party/double_conversion
 //build
 //build/android
@@ -51,7 +52,6 @@
 //third_party/jdk
 //third_party/jni_zero
 //third_party/kotlin_stdlib
-//third_party/libevent
 //third_party/metrics_proto
 //third_party/modp_b64
 //third_party/protobuf

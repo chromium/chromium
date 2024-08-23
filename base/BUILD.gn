@@ -813,8 +813,6 @@ component("base") {
     "task/updateable_sequenced_task_runner.h",
     "test/scoped_logging_settings.h",
     "test/spin_wait.h",
-    "third_party/cityhash/city.cc",
-    "third_party/cityhash/city.h",
     "third_party/cityhash_v103/src/city_v103.cc",
     "third_party/cityhash_v103/src/city_v103.h",
     "third_party/icu/icu_utf.h",
@@ -1040,6 +1038,7 @@ component("base") {
   deps = [
     ":check_version_internal",
     "//base/allocator:buildflags",
+    "//base/third_party/cityhash",
     "//base/third_party/double_conversion",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
