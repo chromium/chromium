@@ -1791,7 +1791,7 @@ if (enable_java_templates) {
       # The name needs to match the SOURCES_JSON_FILES_SUFFIX in
       # generate_coverage_metadata_for_java.py.
       _sources_json_file = "$target_out_dir/${target_name}__jacoco_sources.json"
-      _jacococli_jar = "//third_party/jacoco/lib/jacococli.jar"
+      _jacococli_jar = "//third_party/jacoco/cipd/lib/jacococli.jar"
 
       script = "//build/android/gyp/jacoco_instr.py"
       inputs = invoker.source_files + java_paths_for_inputs + [

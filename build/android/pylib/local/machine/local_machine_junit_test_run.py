@@ -129,7 +129,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                                           '%s.exec' % self._test_instance.suite)
       if self._test_instance.coverage_on_the_fly:
         jacoco_agent_path = os.path.join(host_paths.DIR_SOURCE_ROOT,
-                                         'third_party', 'jacoco', 'lib',
+                                         'third_party', 'jacoco', 'cipd', 'lib',
                                          'jacocoagent.jar')
 
         # inclnolocationclasses is false to prevent no class def found error.

@@ -1944,7 +1944,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/jacoco': {
+  'src/third_party/jacoco/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/jacoco',

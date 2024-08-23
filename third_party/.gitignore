@@ -59,11 +59,6 @@
 /googlefonts_testdata/data
 /guava/lib/
 /instrumented_libs/
-/jacoco/coverage/
-/jacoco/doc/
-/jacoco/index.html
-/jacoco/lib/
-/jacoco/test/
 /javalang/src/
 /javax_inject/lib/
 /jdk/current/
