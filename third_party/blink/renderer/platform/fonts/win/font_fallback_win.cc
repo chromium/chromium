@@ -403,10 +403,12 @@ const char* FirstAvailableEmojiFont(const SkFontMgr& font_manager) {
   static const char* const kEmojiFonts[] = {"Segoe UI Emoji",
                                             "Segoe UI Symbol"};
   static const char* emoji_font = nullptr;
-  static std::once_flag once_flag;
-  std::call_once(once_flag, [&] {
+  // `std::once()` may cause hangs. crbug.com/349456407
+  static bool initialized = false;
+  if (!initialized) {
     emoji_font = FirstAvailableFont(kEmojiFonts, font_manager);
-  });
+    initialized = true;
+  }
   return emoji_font;
 }
 
@@ -414,10 +416,12 @@ const char* FirstAvailableMathFont(const SkFontMgr& font_manager) {
   static const char* const kMathFonts[] = {"Cambria Math", "Segoe UI Symbol",
                                            "Code2000"};
   static const char* math_font = nullptr;
-  static std::once_flag once_flag;
-  std::call_once(once_flag, [&] {
+  // `std::once()` may cause hangs. crbug.com/349456407
+  static bool initialized = false;
+  if (!initialized) {
     math_font = FirstAvailableFont(kMathFonts, font_manager);
-  });
+    initialized = true;
+  }
   return math_font;
 }
 
