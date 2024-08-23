@@ -6,22 +6,16 @@
 #define PDF_INK_INK_BRUSH_BEHAVIOR_H_
 
 #include <cstdint>
-#include <optional>
+#include <vector>
 
 namespace chrome_pdf {
 
 struct InkBrushBehavior {
   struct EnabledToolTypes {
-    bool operator==(const EnabledToolTypes& other) const;
-    bool operator!=(const EnabledToolTypes& other) const;
-
     bool unknown = false;
     bool mouse = false;
     bool touch = false;
     bool stylus = false;
-
-    bool HasAnyTypes() const;
-    bool HasAllTypes() const;
   };
 
   static constexpr EnabledToolTypes kAllToolTypes = {.unknown = true,
@@ -36,12 +30,29 @@ struct InkBrushBehavior {
     kTiltXAndY,
   };
 
-  bool operator==(const InkBrushBehavior& other) const;
-  bool operator!=(const InkBrushBehavior& other) const;
+  // TODO(crbug.com/339682315): Add more types if needed.
+  enum class Type {
+    kFallbackFilter,
+    kToolTypeFilter,
+  };
 
-  float response_time_seconds;
-  EnabledToolTypes enabled_tool_types = kAllToolTypes;
-  std::optional<OptionalInputProperty> is_fallback_for;
+  // Deliberately avoid using absl::variant in this header.
+  struct BaseNode {
+    Type type;
+  };
+
+  struct FallbackFilterNode : public BaseNode {
+    OptionalInputProperty is_fallback_for;
+  };
+
+  struct ToolTypeFilterNode : public BaseNode {
+    EnabledToolTypes enabled_tool_types;
+  };
+
+  InkBrushBehavior();
+  ~InkBrushBehavior();
+
+  std::vector<BaseNode> nodes;
 };
 
 }  // namespace chrome_pdf

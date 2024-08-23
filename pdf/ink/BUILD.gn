@@ -26,6 +26,7 @@ source_set("interface") {
     "ink_affine_transform.cc",
     "ink_affine_transform.h",
     "ink_brush.h",
+    "ink_brush_behavior.cc",
     "ink_brush_behavior.h",
     "ink_brush_family.h",
     "ink_brush_paint.cc",
