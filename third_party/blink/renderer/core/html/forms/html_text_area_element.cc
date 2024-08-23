@@ -170,9 +170,6 @@ int HTMLTextAreaElement::scrollHeight() {
 
 void HTMLTextAreaElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
-  if (!RuntimeEnabledFeatures::TextAreaChildrenChangedStillValidatesEnabled()) {
-    SetLastChangeWasNotUserEdit();
-  }
   if (is_dirty_)
     SetInnerEditorValue(Value());
   else
