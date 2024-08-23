@@ -56,7 +56,8 @@ def index_one_target(target_name,
                      logger,
                      ninja_path='ninja',
                      gn_path='gn',
-                     logfile=None):
+                     logfile=None,
+                     reduce_cores_used=False):
   try:
     process_stdout = subprocess.check_output([gn_path, 'clean', out_path])
     log_subprocess_output(process_stdout)
@@ -79,12 +80,15 @@ def index_one_target(target_name,
     exit(1)
 
   print("Tracing compilation.")
+  trace_command = [
+      codeql_binary_path, 'database', 'trace-command', db_path,
+      f'--working-dir={src_path}', '--', ninja_path, '-C', out_path, target_name
+  ]
+  if reduce_cores_used:
+    usable_cpu_count = int(multiprocessing.cpu_count() / 2)
+    trace_command.extend(['-j', str(usable_cpu_count)])
   try:
-    process_stdout = subprocess.check_output([
-        codeql_binary_path, 'database', 'trace-command', db_path,
-        f'--working-dir={src_path}', '--', ninja_path, '-C', out_path,
-        target_name
-    ])
+    process_stdout = subprocess.check_output(trace_command)
     log_subprocess_output(process_stdout)
   except subprocess.CalledProcessError as e:
     print("CodeQL trace-process failed with return code %s" % e.returncode)
@@ -166,6 +170,11 @@ def main():
       default='ninja',
       help=('Path to the ninja executable. If this is not set, the script '
             'assumes it is located at `ninja` somehwere in the user\'s PATH.'))
+  parser.add_argument(
+      '--reduce_cores_used',
+      default=False,
+      action='store_true',
+      help=('If set, reduces the number of cores used when building a target.'))
   args = parser.parse_args()
 
   if (args.logfile):
@@ -185,7 +194,7 @@ def main():
   for target in actual_targets_to_index:
     index_one_target(target, src_path, args.db_path, args.codeql_binary_path,
                      args.out_path, logger, args.ninja_path, args.gn_path,
-                     args.logfile)
+                     args.logfile, args.reduce_cores_used)
 
 if __name__ == '__main__':
   main()
