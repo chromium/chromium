@@ -1138,7 +1138,16 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
       owner_version_->cross_origin_embedder_policy();
   const network::DocumentIsolationPolicy* dip =
       owner_version_->document_isolation_policy();
-  CHECK(coep && dip);
+  // Prior to PlzServiceWorker launch, the COEP and/or DIP headers might not be
+  // known initially.  The in-flight CacheStorage requests are kept until the
+  // main script has loaded the headers and the COEP one is known.
+  // Now that PlzServiceWorker is fully launched, this _should_ no longer be
+  // necessary, but crbug.com/352690275 suggests otherwise.
+  // TODO(crbug.com/352690275): Replace with CHECK once behavior causing missing
+  //    headers is better understood.
+  if (!coep || !dip) {
+    return;
+  }
 
   for (auto& request : pending_cache_storage_requests_) {
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
