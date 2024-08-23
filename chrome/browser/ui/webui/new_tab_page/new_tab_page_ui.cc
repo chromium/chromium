@@ -30,7 +30,6 @@
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
-#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -470,8 +469,8 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()),
       module_id_names_(
-          ntp::MakeModuleIdNames(IsDriveModuleEnabledForProfile(profile_),
-                                 NewTabPageUI::IsManagedProfile(profile_))) {
+          ntp::MakeModuleIdNames(NewTabPageUI::IsManagedProfile(profile_),
+                                 profile_)) {
   auto* source = CreateAndAddNewTabPageUiHtmlSource(profile_);
   bool wallpaper_search_button_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&

@@ -77,8 +77,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
       module_id_names_(
-          ntp::MakeModuleIdNames(IsDriveModuleEnabledForProfile(profile_),
-                                 NewTabPageUI::IsManagedProfile(profile_))),
+          ntp::MakeModuleIdNames(NewTabPageUI::IsManagedProfile(profile_),
+                                 profile_)),
       page_factory_receiver_(this),
       id_(RandInt64()) {
   const bool wallpaper_search_enabled =

@@ -15,12 +15,18 @@ class VariationsService;
 
 bool IsCartModuleEnabled();
 bool IsDriveModuleEnabled();
-bool IsDriveModuleEnabledForProfile(Profile* profile);
+bool IsDriveModuleEnabledForProfile(bool is_managed_profile, Profile* profile);
 bool IsEnUSLocaleOnlyFeatureEnabled(const base::Feature& ntp_feature);
+bool IsFeatureEnabled(const base::Feature& feature);
+bool IsFeatureForceEnabled(const base::Feature& feature);
+bool IsGoogleCalendarModuleEnabled(bool is_managed_profile);
+bool IsOutlookCalendarModuleEnabled(bool is_managed_profile);
 
 // Return the country code as provided by the variations service.
 std::string GetVariationsServiceCountryCode(
     variations::VariationsService* variations_service);
-void LogDriveModuleEnablement(bool enabled, const std::string& reason);
+void LogModuleEnablement(const base::Feature& feature,
+                         bool enabled,
+                         const std::string& reason);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_
