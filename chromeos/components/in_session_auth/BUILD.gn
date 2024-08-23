@@ -16,6 +16,7 @@ static_library("in_session_auth") {
 
   deps = [
     "//ash/public/cpp",
+    "//chromeos/ash/components/osauth/impl",
     "//chromeos/ash/components/osauth/public",
   ]
 
