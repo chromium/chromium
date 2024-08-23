@@ -8309,6 +8309,10 @@ const char kAccessiblePDFFormName[] = "Accessible PDF Forms";
 const char kAccessiblePDFFormDescription[] =
     "Enables accessibility support for PDF forms.";
 
+const char kPdfCr23Name[] = "PDF Chrome Refresh 2023";
+const char kPdfCr23Description[] =
+    "Use new CR23 icons and colors for the PDF Viewer.";
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
 const char kPdfInk2Name[] = "PDF Ink Signatures";
 const char kPdfInk2Description[] =

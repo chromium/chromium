@@ -4832,6 +4832,9 @@ extern const char kPaintPreviewDemoDescription[];
 extern const char kAccessiblePDFFormName[];
 extern const char kAccessiblePDFFormDescription[];
 
+extern const char kPdfCr23Name[];
+extern const char kPdfCr23Description[];
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
 extern const char kPdfInk2Name[];
 extern const char kPdfInk2Description[];

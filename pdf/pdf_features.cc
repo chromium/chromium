@@ -17,6 +17,8 @@ BASE_FEATURE(kAccessiblePDFForm,
              "AccessiblePDFForm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPdfCr23, "PdfCr23", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // "Incremental loading" refers to loading the PDF as it arrives.
 // TODO(crbug.com/40123601): Remove this once incremental loading is fixed.
 BASE_FEATURE(kPdfIncrementalLoading,

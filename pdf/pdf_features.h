@@ -16,6 +16,7 @@ static_assert(BUILDFLAG(ENABLE_PDF), "ENABLE_PDF not set to true");
 namespace chrome_pdf::features {
 
 BASE_DECLARE_FEATURE(kAccessiblePDFForm);
+BASE_DECLARE_FEATURE(kPdfCr23);
 BASE_DECLARE_FEATURE(kPdfIncrementalLoading);
 BASE_DECLARE_FEATURE(kPdfOopif);
 BASE_DECLARE_FEATURE(kPdfPartialLoading);

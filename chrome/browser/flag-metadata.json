@@ -7014,6 +7014,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "pdf-cr23",
+    "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "pdf-ink2",
     "owners": [ "andyphan@chromium.org", "awscreen@chromium.org", "thestig@chromium.org" ],
     "expiry_milestone": 134
