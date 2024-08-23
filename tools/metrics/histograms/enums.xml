@@ -12222,6 +12222,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="-2147180534"
       label="elevation_service::Elevator::kErrorUnsupportedProtectionLevel"/>
   <int value="-2147180287" label="os_crypt::kErrorWrongData"/>
+  <int value="-2147174366" label="MSPR_E_NEEDS_INDIVIDUALIZATION"/>
   <int value="-2147174250" label="MSPR_E_NO_DECRYPTOR_AVAILABLE"/>
   <int value="-2147172346" label="DRM_E_INVALID_LICENSE"/>
   <int value="-2147172343" label="DRM_E_LICENSEEXPIRED"/>
