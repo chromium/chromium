@@ -19,7 +19,7 @@ LogSource::LogSource(const std::string& filepath,
                      base::TimeDelta poll_rate,
                      size_t batch_size)
     : LocalDataSource(poll_rate,
-                      /*data_needs_redacting=*/true,
+                      /*data_needs_redacting=*/false,
                       /*is_incremental=*/true),
       log_file_(filepath),
       batch_size_(batch_size) {
