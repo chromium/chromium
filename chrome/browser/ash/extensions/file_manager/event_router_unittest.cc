@@ -172,11 +172,11 @@ class FileManagerEventRouterTest : public testing::Test {
   display::test::TestScreen test_screen_{/*create_display=*/true,
                                          /*register_screen=*/true};
   base::ScopedTempDir temp_dir_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
   std::unique_ptr<TestingProfile> profile_;
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  ash::disks::FakeDiskMountManager disk_mount_manager_;
 };
 
 MATCHER(ExpectNoArgs, "") {
