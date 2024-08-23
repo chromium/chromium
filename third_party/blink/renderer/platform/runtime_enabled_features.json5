@@ -3683,9 +3683,7 @@
     },
     {
       name: "SchedulerYield",
-      origin_trial_feature_name: "SchedulerYield",
-      origin_trial_allows_third_party: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
