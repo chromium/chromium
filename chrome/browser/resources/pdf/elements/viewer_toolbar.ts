@@ -497,6 +497,18 @@ export class ViewerToolbarElement extends CrLitElement {
     this.canRedoAnnotation_ =
         !isTextFormFieldFocused && this.currentStroke < this.mostRecentStroke;
   }
+
+  /**
+   * Reset the stroke counts for testing. This allows tests to re-use the same
+   * toolbar.
+   */
+  resetStrokesForTesting() {
+    this.currentStroke = 0;
+    this.mostRecentStroke = 0;
+    this.updateCanUndoRedo_();
+    this.dispatchEvent(new CustomEvent(
+        'strokes-updated', {detail: 0, bubbles: true, composed: true}));
+  }
   // </if>
 
   protected isFormFieldFocused_(): boolean {

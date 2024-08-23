@@ -189,6 +189,8 @@ chrome.test.runTests([
 
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);
+
+    viewerToolbar.resetStrokesForTesting();
     chrome.test.succeed();
   },
   // Test that the undo and redo buttons are disabled when a text form field is
@@ -249,6 +251,8 @@ chrome.test.runTests([
 
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertFalse(redoButton.disabled);
+
+    viewerToolbar.resetStrokesForTesting();
     chrome.test.succeed();
   },
   // Test the behavior of the undo redo keyboard shortcuts.
@@ -277,6 +281,8 @@ chrome.test.runTests([
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationRedo') !== undefined);
+
+    viewerToolbar.resetStrokesForTesting();
     chrome.test.succeed();
   },
   // Test that the undo and redo keyboard shortcuts are disabled when a text
@@ -344,6 +350,8 @@ chrome.test.runTests([
         mockPlugin.findMessage('annotationUndo') !== undefined);
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationRedo') !== undefined);
+
+    viewerToolbar.resetStrokesForTesting();
     chrome.test.succeed();
   },
 ]);
