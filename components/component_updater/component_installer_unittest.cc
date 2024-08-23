@@ -32,6 +32,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_service_internal.h"
@@ -356,7 +357,13 @@ TEST_F(ComponentInstallerTest, RegisterComponent) {
   EXPECT_STREQ("fake name", component.name.c_str());
   EXPECT_EQ(expected_attrs, component.installer_attributes);
   EXPECT_TRUE(component.requires_network_encryption);
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // In Chrome for Testing component updates are disabled.
+  EXPECT_FALSE(component.updates_enabled);
+#else
   EXPECT_TRUE(component.updates_enabled);
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 // Tests that `ComponentInstallerPolicy::ComponentReady` and the completion

@@ -22,15 +22,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "components/component_updater/component_updater_service_internal.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/update_client/crx_update_item.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "components/update_client/crx_update_item.h"
 
 using Configurator = update_client::Configurator;
 using Result = update_client::CrxInstaller::Result;
@@ -498,7 +499,12 @@ TEST_F(ComponentUpdaterTest, ComponentDetails) {
   EXPECT_EQ(registered.version, version);
   EXPECT_EQ(registered.name, name);
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // In Chrome for Testing component updates are disabled.
+  EXPECT_FALSE(registered.updates_enabled);
+#else
   EXPECT_TRUE(registered.updates_enabled);
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 TEST_F(ComponentUpdaterTest, UpdatesDisabled) {
