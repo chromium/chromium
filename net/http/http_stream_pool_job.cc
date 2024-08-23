@@ -169,9 +169,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     const NetLogWithSource& net_log) {
   // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
   // this method.
-  CHECK(!CanUseExistingQuicSession());
+  DCHECK(!CanUseExistingQuicSession());
   CHECK(!spdy_session_);
-  CHECK(!spdy_session_pool()->FindAvailableSession(
+  DCHECK(!spdy_session_pool()->FindAvailableSession(
       spdy_session_key(), enable_ip_based_pooling_,
       /*is_websocket=*/false, net_log));
 
@@ -289,17 +289,28 @@ SSLConfig HttpStreamPool::Job::GetSSLConfig() {
 }
 
 void HttpStreamPool::Job::ProcessPendingRequest() {
-  if (PendingRequestCount() == 0) {
+  CHECK(!is_failing_);
+
+  const size_t pending_request_count = PendingRequestCount();
+  const size_t pending_preconnect_count = PendingPreconnectCount();
+
+  if (pending_request_count == 0 && pending_preconnect_count == 0) {
     return;
   }
 
-  std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
-  if (stream_socket) {
-    const StreamSocketHandle::SocketReuseType reuse_type =
-        GetReuseTypeFromIdleStreamSocket(*stream_socket);
-    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
-                                   LoadTimingInfo::ConnectTiming());
-    return;
+  CHECK(!CanUseExistingQuicSession());
+  CHECK(!spdy_session_);
+
+  // Try to assign an idle stream to a request.
+  if (pending_request_count > 0) {
+    std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
+    if (stream_socket) {
+      const StreamSocketHandle::SocketReuseType reuse_type =
+          GetReuseTypeFromIdleStreamSocket(*stream_socket);
+      CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
+                                     LoadTimingInfo::ConnectTiming());
+      return;
+    }
   }
 
   MaybeAttemptConnection(/*max_attempts=*/1);
@@ -406,12 +417,25 @@ LoadState HttpStreamPool::Job::GetLoadState() const {
 }
 
 RequestPriority HttpStreamPool::Job::GetPriority() const {
-  CHECK(!requests_.empty());
+  if (requests_.empty()) {
+    CHECK(!preconnects_.empty());
+    // Preconnets have IDLE priority.
+    return RequestPriority::IDLE;
+  }
   return static_cast<RequestPriority>(requests_.FirstMax().priority());
 }
 
 bool HttpStreamPool::Job::IsStalledByPoolLimit() {
+  if (is_failing_) {
+    return false;
+  }
+
   if (!GetIPEndPointToAttempt().has_value()) {
+    return false;
+  }
+
+  if (CanUseExistingQuicSession() || spdy_session_) {
+    CHECK_EQ(PendingPreconnectCount(), 0u);
     return false;
   }
 
@@ -443,8 +467,7 @@ void HttpStreamPool::Job::OnQuicTaskComplete(int rv) {
   const bool has_requests = !requests_.empty() || !notified_requests_.empty();
 
   if (rv == OK) {
-    group_->Refresh(kSwitchingToHttp3);
-    NotifyPreconnectsComplete(OK);
+    HandleQuicSessionReady();
     if (has_requests) {
       CreateQuicStreamAndNotify();
       return;
@@ -525,6 +548,11 @@ bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
       if (quic_session_pool()->HasMatchingIpSessionForServiceEndpoint(
               quic_session_alias_key, endpoint,
               service_endpoint_request_->GetDnsAliasResults(), true)) {
+        if (quic_task_) {
+          quic_task_result_ = OK;
+          quic_task_.reset();
+        }
+        HandleQuicSessionReady();
         // Use PostTask() because we could reach here from RequestStream()
         // synchronously when the DNS resolution finishes immediately.
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -549,7 +577,7 @@ bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
             spdy_session_key(), endpoint,
             service_endpoint_request_->GetDnsAliasResults());
     if (spdy_session_) {
-      group_->Refresh(kSwitchingToHttp2);
+      HandleSpdySessionReady();
       // Use PostTask() because we could reach here from RequestStream()
       // synchronously when the DNS resolution finishes immediately.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1068,6 +1096,23 @@ void HttpStreamPool::Job::NotifyStreamReady(std::unique_ptr<HttpStream> stream,
   entry->delegate()->OnStreamReady(proxy_info_, std::move(stream));
 }
 
+void HttpStreamPool::Job::HandleSpdySessionReady() {
+  CHECK(!is_failing_);
+  CHECK(spdy_session_);
+
+  group_->Refresh(kSwitchingToHttp2);
+  NotifyPreconnectsComplete(OK);
+}
+
+void HttpStreamPool::Job::HandleQuicSessionReady() {
+  CHECK(!is_failing_);
+  CHECK(!quic_task_);
+  DCHECK(CanUseExistingQuicSession());
+
+  group_->Refresh(kSwitchingToHttp3);
+  NotifyPreconnectsComplete(OK);
+}
+
 HttpStreamPool::Job::RequestEntry*
 HttpStreamPool::Job::ExtractFirstRequestToNotify() {
   if (requests_.empty()) {
@@ -1172,13 +1217,8 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
       HandleAttemptFailure(std::move(in_flight_attempt), create_result);
       return;
     }
-    CHECK(spdy_session_);
 
-    // Cancel in-flight requests and close idle streams as we don't need them
-    // anymore.
-    group_->Refresh(kSwitchingToHttp2);
-
-    NotifyPreconnectsComplete(OK);
+    HandleSpdySessionReady();
     CreateSpdyStreamAndNotify();
     return;
   }

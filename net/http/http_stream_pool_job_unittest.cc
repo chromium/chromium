@@ -2031,6 +2031,31 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionOk) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 }
 
+TEST_F(HttpStreamPoolJobTest, SpdyPreconnectMatchingIpSession) {
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  StreamRequester requester_a;
+  requester_a.set_destination("https://www.example.org");
+
+  CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
+  requester_a.RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector_b("https://example.test");
+  preconnector_b.Preconnect(pool());
+
+  endpoint_request
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  EXPECT_THAT(preconnector_b.result(), Optional(IsOk()));
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
+}
+
 TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionAlreadyHaveSession) {
   const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
 
@@ -2706,6 +2731,122 @@ TEST_F(HttpStreamPoolJobTest, RequestStreamAndPreconnectWhileFailing) {
   EXPECT_THAT(preconnector2.Preconnect(pool()), IsOk());
 }
 
+TEST_F(HttpStreamPoolJobTest, PreconnectPriority) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+  auto data_a = std::make_unique<SequencedSocketData>();
+  data_a->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data_a.get());
+
+  Preconnector preconnector("https://a.test");
+  int rv = preconnector.Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_EQ(pool()
+                .GetOrCreateGroupForTesting(preconnector.GetStreamKey())
+                .GetJobForTesting()
+                ->GetPriority(),
+            RequestPriority::IDLE);
+}
+
+// Tests that when a Job is failing, it's not treated as stalled.
+TEST_F(HttpStreamPoolJobTest, FailingIsNotStalled) {
+  constexpr std::string_view kDestinationA = "http://a.test";
+  constexpr std::string_view kDestinationB = "http://b.test";
+
+  // For destination A. This fails.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+  auto data_a = std::make_unique<SequencedSocketData>();
+  data_a->set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(data_a.get());
+
+  // For destination B. This succeeds.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint())
+      .CompleteStartSynchronously(OK);
+  auto data_b = std::make_unique<SequencedSocketData>();
+  data_b->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data_b.get());
+
+  StreamRequester requester_a;
+  requester_a.set_destination(kDestinationA).RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester_a.result(), Optional(IsError(ERR_CONNECTION_RESET)));
+
+  StreamRequester requester_b;
+  requester_b.set_destination(kDestinationB).RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester_b.result(), Optional(IsOk()));
+
+  // Release the connection for B. It triggers processing pending requests in
+  // group/job for A. The group/job for A is still alive because we don't
+  // release `requester_a` yet. The group/job should not be treated as stalled
+  // because these are failing.
+  requester_b.ReleaseStream().reset();
+  EXPECT_FALSE(pool()
+                   .GetOrCreateGroupForTesting(requester_a.GetStreamKey())
+                   .GetJobForTesting()
+                   ->IsStalledByPoolLimit());
+}
+
+// Tests that when a Job has a SPDY session, it's not treated as stalled.
+TEST_F(HttpStreamPoolJobTest, HavingSpdySessionIsNotStalled) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(data.get());
+  auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(ssl.get());
+
+  StreamRequester requester;
+  requester.set_destination("https://a.test").RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  EXPECT_FALSE(pool()
+                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
+                   .GetJobForTesting()
+                   ->IsStalledByPoolLimit());
+}
+
+// Tests that when a Job has a QUIC session, it's not treated as stalled.
+TEST_F(HttpStreamPoolJobTest, HavingQuicSessionIsNotStalled) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  AddQuicData();
+
+  // Make the TCP attempt stalled forever.
+  SequencedSocketData tcp_data;
+  tcp_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  EXPECT_FALSE(pool()
+                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
+                   .GetJobForTesting()
+                   ->IsStalledByPoolLimit());
+}
+
 TEST_F(HttpStreamPoolJobTest, ReuseTypeUnused) {
   resolver()
       ->AddFakeRequest()
@@ -2996,7 +3137,7 @@ TEST_F(HttpStreamPoolJobTest, QuicMatchingIpSession) {
 
   AddQuicData();
 
-  // Make TCP attempts stalled forever.
+  // Make the TCP attempt stalled forever.
   SequencedSocketData tcp_data;
   tcp_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
   socket_factory()->AddSocketDataProvider(&tcp_data);
@@ -3025,13 +3166,118 @@ TEST_F(HttpStreamPoolJobTest, QuicMatchingIpSession) {
       .set_quic_version(quic_version())
       .RequestStream(pool());
   RunUntilIdle();
-  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
   ASSERT_EQ(quic_session_pool()->FindExistingSession(
                 requester1.GetStreamKey().ToQuicSessionKey(),
                 requester1.GetStreamKey().destination()),
             quic_session_pool()->FindExistingSession(
                 requester2.GetStreamKey().ToQuicSessionKey(),
                 requester2.GetStreamKey().destination()));
+}
+
+// The same as above test, but the ServiceEndpointRequest provides two IP
+// addresses separately, the first address does not match the existing session
+// and the second address matches the existing session.
+TEST_F(HttpStreamPoolJobTest, QuicMatchingIpSessionOnEndpointsUpdated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  constexpr std::string_view kAltDestination = "https://alt.example.org";
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  AddQuicData();
+
+  // Make the TCP attempt stalled forever.
+  SequencedSocketData tcp_data;
+  tcp_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+
+  // Make the second QUIC attempt stalled forever.
+  SequencedSocketData quic_data2;
+  quic_data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&quic_data2);
+
+  FakeServiceEndpointRequest* endpoint_request1 = resolver()->AddFakeRequest();
+  endpoint_request1
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+
+  FakeServiceEndpointRequest* endpoint_request2 = resolver()->AddFakeRequest();
+
+  StreamRequester requester2;
+  requester2.set_destination(kAltDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  endpoint_request2
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+  ASSERT_FALSE(requester2.result().has_value());
+
+  endpoint_request2
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_EQ(quic_session_pool()->FindExistingSession(
+                requester1.GetStreamKey().ToQuicSessionKey(),
+                requester1.GetStreamKey().destination()),
+            quic_session_pool()->FindExistingSession(
+                requester2.GetStreamKey().ToQuicSessionKey(),
+                requester2.GetStreamKey().destination()));
+}
+
+// Tests that preconnect completes when there is a QUIC session of which IP
+// address matches to the service endpoint resolution of the preconnect.
+TEST_F(HttpStreamPoolJobTest, QuicPreconnectMatchingIpSession) {
+  constexpr std::string_view kAltDestination = "https://alt.example.org";
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  AddQuicData();
+
+  // Make the TCP attempt stalled forever.
+  SequencedSocketData tcp_data;
+  tcp_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+
+  FakeServiceEndpointRequest* endpoint_request1 = resolver()->AddFakeRequest();
+  endpoint_request1
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+
+  FakeServiceEndpointRequest* endpoint_request2 = resolver()->AddFakeRequest();
+  endpoint_request2
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  Preconnector preconnector2(kAltDestination);
+  preconnector2.set_quic_version(quic_version()).Preconnect(pool());
+  RunUntilIdle();
+  EXPECT_THAT(preconnector2.result(), Optional(IsOk()));
+  EXPECT_EQ(quic_session_pool()->FindExistingSession(
+                requester1.GetStreamKey().ToQuicSessionKey(),
+                requester1.GetStreamKey().destination()),
+            quic_session_pool()->FindExistingSession(
+                preconnector2.GetStreamKey().ToQuicSessionKey(),
+                preconnector2.GetStreamKey().destination()));
 }
 
 // Tests that when disabled IP-based pooling, QUIC attempts are also disabled.

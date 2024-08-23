@@ -107,7 +107,7 @@ class HttpStreamPool::Job
   int WaitForSSLConfigReady(CompletionOnceCallback callback) override;
   SSLConfig GetSSLConfig() override;
 
-  // Tries to process a pending request.
+  // Tries to process a single pending request/preconnect.
   void ProcessPendingRequest();
 
   // Returns the number of total requests in this job.
@@ -128,7 +128,8 @@ class HttpStreamPool::Job
   size_t PendingRequestCount() const;
   size_t PendingPreconnectCount() const;
 
-  // Returns the highest priority in `requests_`.
+  // Returns the highest priority in `requests_` when there is at least one
+  // request. Otherwise, returns IDLE assuming this job is doing preconnects.
   RequestPriority GetPriority() const;
 
   // Returns true when `this` is blocked by the pool's stream limit.
@@ -301,6 +302,14 @@ class HttpStreamPool::Job
 
   void NotifyStreamReady(std::unique_ptr<HttpStream> stream,
                          NextProto negotiated_protocol);
+
+  // Called when a SPDY session is ready to use. Cancels in-flight attempts.
+  // Closes idle streams. Completes preconnects.
+  void HandleSpdySessionReady();
+
+  // Called when a QUIC session is ready to use. Cancels in-flight attempts.
+  // Closes idle streams. Completes preconnects.
+  void HandleQuicSessionReady();
 
   // Extracts an entry from `requests_` of which priority is highest. The
   // ownership of the entry is moved to `notified_requests_`.
