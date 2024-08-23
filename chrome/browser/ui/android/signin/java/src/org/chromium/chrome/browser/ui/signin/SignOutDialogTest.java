@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -357,7 +358,6 @@ public class SignOutDialogTest {
         setUpMocks();
         mockAllowDeletingBrowserHistoryPref(true);
         when(mProfile.isChild()).thenReturn(true);
-        when(mSigninManagerMock.isSignOutAllowed()).thenReturn(true);
         doAnswer(
                         args -> {
                             args.getArgument(0, Runnable.class).run();
@@ -370,6 +370,7 @@ public class SignOutDialogTest {
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         onView(withId(android.R.id.message)).check(doesNotExist());
 
+        verify(mSigninManagerMock, times(0)).isSignOutAllowed();
         verify(mSigninManagerMock)
                 .revokeSyncConsent(
                         eq(SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS),
