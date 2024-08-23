@@ -13,6 +13,12 @@ namespace visited_url_ranking::features {
 // Core feature flag for Visited URL Ranking service.
 BASE_DECLARE_FEATURE(kVisitedURLRankingService);
 
+// Parameter determining if the History data fetcher should discard zero ms
+// duration visits when computing computing history based URL visit
+// aggregate data.
+extern const base::FeatureParam<bool>
+    kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits;
+
 // Parameter determining the fetch option's default query duration in hours.
 extern const char kVisitedURLRankingFetchDurationInHoursParam[];
 

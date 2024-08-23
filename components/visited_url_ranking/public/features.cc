@@ -13,6 +13,12 @@ BASE_FEATURE(kVisitedURLRankingService,
              "VisitedURLRankingService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<bool>
+    kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits{
+        &kVisitedURLRankingService,
+        /*name=*/"history_fetcher_discard_zero_duration_visits",
+        /*default_value=*/true};
+
 const char kVisitedURLRankingFetchDurationInHoursParam[] =
     "VisitedURLRankingFetchDurationInHoursParam";
 

@@ -4,15 +4,18 @@
 
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 
+#include <cmath>
 #include <map>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
@@ -95,8 +98,25 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
     FetchOptions::FetchSources requested_fetch_sources,
     const FetcherConfig& config,
     std::vector<history::AnnotatedVisit> annotated_visits) {
-  std::map<std::string, URLVisitAggregate::HistoryData> url_annotations;
+  if (features::kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits
+          .Get()) {
+    size_t original_visit_count = annotated_visits.size();
+    const auto kZeroMillis = base::Milliseconds(0);
+    std::erase_if(
+        annotated_visits,
+        [&kZeroMillis](const history::AnnotatedVisit& annotated_visit) {
+          return annotated_visit.visit_row.visit_duration == kZeroMillis;
+        });
+    base::UmaHistogramCustomCounts(
+        "VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits."
+        "InOutPercentage",
+        std::round((static_cast<float>(annotated_visits.size()) /
+                    original_visit_count) *
+                   100),
+        1, 100, 100);
+  }
 
+  std::map<std::string, URLVisitAggregate::HistoryData> url_annotations;
   base::Time::Exploded time_exploded;
   config.clock->Now().LocalExplode(&time_exploded);
   DayGroup current_day_group = GetDayGroupForExplodedTime(time_exploded);
