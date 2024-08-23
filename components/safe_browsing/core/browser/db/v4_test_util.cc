@@ -43,9 +43,7 @@ std::ostream& operator<<(std::ostream& os, const ThreatMetadata& meta) {
 TestV4Store::TestV4Store(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::FilePath& store_path)
-    : V4Store(task_runner,
-              store_path,
-              std::make_unique<InMemoryHashPrefixMap>()) {}
+    : V4Store(task_runner, store_path) {}
 
 TestV4Store::~TestV4Store() = default;
 

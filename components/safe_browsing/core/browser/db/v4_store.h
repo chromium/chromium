@@ -128,7 +128,7 @@ class V4Store {
   // applying an update.
   V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
           const base::FilePath& store_path,
-          std::unique_ptr<HashPrefixMap> hash_prefix_map,
+          std::unique_ptr<HashPrefixMap> hash_prefix_map = nullptr,
           int64_t old_file_size = 0);
   virtual ~V4Store();
 

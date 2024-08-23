@@ -26,18 +26,9 @@ using ::google::protobuf::int32;
 using ::google::protobuf::RepeatedField;
 using ::google::protobuf::RepeatedPtrField;
 
-class InMemoryV4Store : public V4Store {
- public:
-  InMemoryV4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-                  const base::FilePath& store_path)
-      : V4Store(task_runner,
-                store_path,
-                std::make_unique<InMemoryHashPrefixMap>()) {}
-};
-
 class V4StoreTest : public PlatformTest {
  public:
-  V4StoreTest() : task_runner_(new base::TestSimpleTaskRunner) {}
+  V4StoreTest() {}
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -76,10 +67,9 @@ class V4StoreTest : public PlatformTest {
     base::WriteFile(store_path_, file_format_string);
   }
 
-  void UpdatedStoreReady(bool* called_back,
+  void UpdatedStoreReady(base::RunLoop* run_loop,
                          bool expect_store,
                          V4StorePtr store) {
-    *called_back = true;
     if (expect_store) {
       ASSERT_TRUE(store);
       EXPECT_EQ(2u, store->hash_prefix_map_->view().size());
@@ -90,6 +80,7 @@ class V4StoreTest : public PlatformTest {
     }
 
     updated_store_ = std::move(store);
+    run_loop->Quit();
   }
 
   base::Time GetLastModifiedTime(const base::FilePath& path) {
@@ -99,9 +90,12 @@ class V4StoreTest : public PlatformTest {
     return info.last_modified;
   }
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner() {
+    return base::SequencedTaskRunner::GetCurrentDefault();
+  }
+
   base::ScopedTempDir temp_dir_;
   base::FilePath store_path_;
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::test::TaskEnvironment task_environment_;
   V4StorePtr updated_store_{nullptr, V4StoreDeleter(nullptr)};
 };
@@ -109,21 +103,21 @@ class V4StoreTest : public PlatformTest {
 TEST_F(V4StoreTest, TestReadFromEmptyFile) {
   base::CloseFile(base::OpenFile(store_path_, "wb+"));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   EXPECT_EQ(FILE_EMPTY_FAILURE, store.ReadFromDisk());
   EXPECT_FALSE(store.HasValidData());
 }
 
 TEST_F(V4StoreTest, TestReadFromAbsentFile) {
   EXPECT_EQ(FILE_UNREADABLE_FAILURE,
-            InMemoryV4Store(task_runner_, store_path_).ReadFromDisk());
+            V4Store(task_runner(), store_path_).ReadFromDisk());
 }
 
 TEST_F(V4StoreTest, TestReadFromInvalidContentsFile) {
   const char kInvalidContents[] = "Chromium";
   base::WriteFile(store_path_, kInvalidContents);
   EXPECT_EQ(PROTO_PARSING_FAILURE,
-            InMemoryV4Store(task_runner_, store_path_).ReadFromDisk());
+            V4Store(task_runner(), store_path_).ReadFromDisk());
 }
 
 TEST_F(V4StoreTest, TestReadFromFileWithUnknownProto) {
@@ -136,25 +130,25 @@ TEST_F(V4StoreTest, TestReadFromFileWithUnknownProto) {
   // Even though we wrote a completely different proto to file, the proto
   // parsing method does not fail. This shows the importance of a magic number.
   EXPECT_EQ(UNEXPECTED_MAGIC_NUMBER_FAILURE,
-            InMemoryV4Store(task_runner_, store_path_).ReadFromDisk());
+            V4Store(task_runner(), store_path_).ReadFromDisk());
 }
 
 TEST_F(V4StoreTest, TestReadFromUnexpectedMagicFile) {
   WriteFileFormatProtoToFile(111);
   EXPECT_EQ(UNEXPECTED_MAGIC_NUMBER_FAILURE,
-            InMemoryV4Store(task_runner_, store_path_).ReadFromDisk());
+            V4Store(task_runner(), store_path_).ReadFromDisk());
 }
 
 TEST_F(V4StoreTest, TestReadFromLowVersionFile) {
   WriteFileFormatProtoToFile(0x600D71FE, 2);
   EXPECT_EQ(FILE_VERSION_INCOMPATIBLE_FAILURE,
-            InMemoryV4Store(task_runner_, store_path_).ReadFromDisk());
+            V4Store(task_runner(), store_path_).ReadFromDisk());
 }
 
 TEST_F(V4StoreTest, TestReadFromNoHashPrefixInfoFile) {
   WriteFileFormatProtoToFile(0x600D71FE, 9);
   EXPECT_EQ(HASH_PREFIX_INFO_MISSING_FAILURE,
-            InMemoryV4Store(task_runner_, store_path_).ReadFromDisk());
+            V4Store(task_runner(), store_path_).ReadFromDisk());
 }
 
 TEST_F(V4StoreTest, TestReadFromNoHashPrefixesFile) {
@@ -162,7 +156,7 @@ TEST_F(V4StoreTest, TestReadFromNoHashPrefixesFile) {
   list_update_response.set_platform_type(LINUX_PLATFORM);
   list_update_response.set_response_type(ListUpdateResponse::FULL_UPDATE);
   WriteFileFormatProtoToFile(0x600D71FE, 9, &list_update_response);
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   EXPECT_EQ(READ_SUCCESS, store.ReadFromDisk());
   EXPECT_TRUE(store.hash_prefix_map_->view().empty());
   EXPECT_EQ(14, store.file_size_);
@@ -242,7 +236,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesWithSameSizesInEachMap) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "22222bcdef", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   // Proof of checksum validity using python:
   // >>> import hashlib
   // >>> m = hashlib.sha256()
@@ -257,6 +251,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesWithSameSizesInEachMap) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions, nullptr,
                               expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   EXPECT_EQ(2u, prefix_map.size());
@@ -287,7 +283,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesWithDifferentSizesInEachMap) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "22222bcdef", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   std::string expected_checksum = std::string(
       "\xA5\x8B\xCAsD\xC7\xF9\xCE\xD2\xF4\x4="
       "\xB2\"\x82\x1A\xC1\xB8\x1F\x10\r\v\x9A\x93\xFD\xE1\xB8"
@@ -296,6 +292,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesWithDifferentSizesInEachMap) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions, nullptr,
                               expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   EXPECT_EQ(2u, prefix_map.size());
@@ -319,7 +317,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesOldMapRunsOutFirst) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(4, "2222", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   std::string expected_checksum = std::string(
       "\x84\x92\xET\xED\xF7\x97"
       "C\xCE}\xFF"
@@ -328,6 +326,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesOldMapRunsOutFirst) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions, nullptr,
                               expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   EXPECT_EQ(1u, prefix_map.size());
@@ -348,7 +348,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesAdditionsMapRunsOutFirst) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(4, "00001111", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   std::string expected_checksum = std::string(
       "\x84\x92\xET\xED\xF7\x97"
       "C\xCE}\xFF"
@@ -357,6 +357,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesAdditionsMapRunsOutFirst) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions, nullptr,
                               expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   EXPECT_EQ(1u, prefix_map.size());
@@ -377,7 +379,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesFailsForRepeatedHashPrefix) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(4, "2222", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   std::string expected_checksum;
   EXPECT_EQ(ADDITIONS_HAS_EXISTING_PREFIX_FAILURE,
             store.MergeUpdate(prefix_map_old, prefix_map_additions, nullptr,
@@ -394,7 +396,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesFailsWhenRemovalsIndexTooLarge) {
 
   // Even though the merged map could have size 3 without removals, the
   // removals index should only count the entries in the old map.
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   RepeatedField<int32> raw_removals;
   // old_store: ["2222"]
   raw_removals.Add(1);
@@ -412,7 +414,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesOnlyElement) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_,
+                std::make_unique<InMemoryHashPrefixMap>());
   RepeatedField<int32> raw_removals;
   // old_store: ["2222"]
   raw_removals.Add(0);  // Removes "2222"
@@ -425,6 +428,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesOnlyElement) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions,
                               &raw_removals, expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   // The size is 2 since we reserve space anyway.
@@ -441,7 +446,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesFirstElement) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   RepeatedField<int32> raw_removals;
   // old_store: ["2222", "4444"]
   raw_removals.Add(0);  // Removes "2222"
@@ -454,6 +459,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesFirstElement) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions,
                               &raw_removals, expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   // The size is 2 since we reserve space anyway.
@@ -470,7 +477,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMiddleElement) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   RepeatedField<int32> raw_removals;
   // old_store: ["2222", "3333", 4444"]
   raw_removals.Add(1);  // Removes "3333"
@@ -482,6 +489,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMiddleElement) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions,
                               &raw_removals, expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   // The size is 2 since we reserve space anyway.
@@ -498,7 +507,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesLastElement) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   RepeatedField<int32> raw_removals;
   // old_store: ["2222", "3333", 4444"]
   raw_removals.Add(2);  // Removes "4444"
@@ -509,6 +518,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesLastElement) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions,
                               &raw_removals, expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   // The size is 2 since we reserve space anyway.
@@ -527,7 +538,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesWhenOldHasDifferentSizes) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   RepeatedField<int32> raw_removals;
   // old_store: ["2222", "3333", 4444", "aaaaa", "bbbbb"]
   raw_removals.Add(3);  // Removes "aaaaa"
@@ -539,6 +550,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesWhenOldHasDifferentSizes) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions,
                               &raw_removals, expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   // The size is 2 since we reserve space anyway.
@@ -557,7 +570,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMultipleAcrossDifferentSizes) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "11111", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   RepeatedField<int32> raw_removals;
   // old_store: ["2222", "3333", "33333", "44444", "aaaa", "bbbbb"]
   raw_removals.Add(1);  // Removes "3333"
@@ -571,6 +584,8 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMultipleAcrossDifferentSizes) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(prefix_map_old, prefix_map_additions,
                               &raw_removals, expected_checksum));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
   // The size is 2 since we reserve space anyway.
@@ -580,7 +595,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMultipleAcrossDifferentSizes) {
 }
 
 TEST_F(V4StoreTest, TestReadFullResponseWithValidHashPrefixMap) {
-  InMemoryV4Store write_store(task_runner_, store_path_);
+  V4Store write_store(task_runner(), store_path_);
   write_store.hash_prefix_map_->Append(4, "00000abc");
   write_store.hash_prefix_map_->Append(5, "00000abcde");
   write_store.state_ = "test_client_state";
@@ -588,13 +603,13 @@ TEST_F(V4StoreTest, TestReadFullResponseWithValidHashPrefixMap) {
   EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
   EXPECT_TRUE(base::PathExists(write_store.store_path_));
 
-  InMemoryV4Store read_store(task_runner_, store_path_);
+  V4Store read_store(task_runner(), store_path_);
   EXPECT_EQ(READ_SUCCESS, read_store.ReadFromDisk());
   EXPECT_EQ("test_client_state", read_store.state_);
   ASSERT_EQ(2u, read_store.hash_prefix_map_->view().size());
   EXPECT_EQ("00000abc", read_store.hash_prefix_map_->view()[4]);
   EXPECT_EQ("00000abcde", read_store.hash_prefix_map_->view()[5]);
-  EXPECT_EQ(71, read_store.file_size_);
+  EXPECT_EQ(write_store.file_size_, read_store.file_size_);
 }
 
 // This tests fails to read the prefix map from the disk because the file on
@@ -602,14 +617,16 @@ TEST_F(V4StoreTest, TestReadFullResponseWithValidHashPrefixMap) {
 // size is 5 so the parser isn't able to split the hash prefixes list
 // completely.
 TEST_F(V4StoreTest, TestReadFullResponseWithInvalidHashPrefixMap) {
-  InMemoryV4Store write_store(task_runner_, store_path_);
+  V4Store write_store(task_runner(), store_path_,
+                      std::make_unique<InMemoryHashPrefixMap>());
   write_store.hash_prefix_map_->Append(5, "abcdef");
   write_store.state_ = "test_client_state";
   EXPECT_FALSE(base::PathExists(write_store.store_path_));
   EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
   EXPECT_TRUE(base::PathExists(write_store.store_path_));
 
-  InMemoryV4Store read_store(task_runner_, store_path_);
+  V4Store read_store(task_runner(), store_path_,
+                     std::make_unique<InMemoryHashPrefixMap>());
   EXPECT_EQ(HASH_PREFIX_MAP_GENERATION_FAILURE, read_store.ReadFromDisk());
   EXPECT_TRUE(read_store.state_.empty());
   EXPECT_TRUE(read_store.hash_prefix_map_->view().empty());
@@ -659,50 +676,65 @@ TEST_F(V4StoreTest, TestHashPrefixDoesNotExistInConcatenatedList) {
 }
 
 TEST_F(V4StoreTest, TestFullHashExistsInMapWithSingleSize) {
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   store.hash_prefix_map_->Append(
       32, "0111222233334444555566667777888811112222333344445555666677778888");
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
   FullHashStr full_hash = "11112222333344445555666677778888";
   EXPECT_EQ("11112222333344445555666677778888",
             store.GetMatchingHashPrefix(full_hash));
 }
 
 TEST_F(V4StoreTest, TestFullHashExistsInMapWithDifferentSizes) {
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   store.hash_prefix_map_->Append(4, "22223333aaaa");
   store.hash_prefix_map_->Append(32, "11112222333344445555666677778888");
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
+
   FullHashStr full_hash = "11112222333344445555666677778888";
   EXPECT_EQ("11112222333344445555666677778888",
             store.GetMatchingHashPrefix(full_hash));
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsInMapWithSingleSize) {
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   store.hash_prefix_map_->Append(4, "22223333aaaa");
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
   FullHashStr full_hash = "22222222222222222222222222222222";
   EXPECT_EQ("2222", store.GetMatchingHashPrefix(full_hash));
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsInMapWithDifferentSizes) {
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   store.hash_prefix_map_->Append(4, "22223333aaaa");
   store.hash_prefix_map_->Append(5, "11111hhhhh");
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
+
   FullHashStr full_hash = "22222222222222222222222222222222";
   EXPECT_EQ("2222", store.GetMatchingHashPrefix(full_hash));
 }
 
 TEST_F(V4StoreTest, TestHashPrefixDoesNotExistInMapWithDifferentSizes) {
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   store.hash_prefix_map_->Append(4, "3333aaaa");
   store.hash_prefix_map_->Append(5, "11111hhhhh");
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
+
   FullHashStr full_hash = "22222222222222222222222222222222";
   EXPECT_TRUE(store.GetMatchingHashPrefix(full_hash).empty());
 }
 
 TEST_F(V4StoreTest, GetMatchingHashPrefixSize32Or21) {
   HashPrefixStr prefix = "0123";
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   store.hash_prefix_map_->Append(4, prefix);
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
 
   FullHashStr full_hash_21 = "0123456789ABCDEF01234";
   EXPECT_EQ(prefix, store.GetMatchingHashPrefix(full_hash_21));
@@ -722,7 +754,7 @@ TEST_F(V4StoreTest, TestAdditionsWithRiceEncodingFailsWithInvalidInput) {
   addition->mutable_rice_hashes()->set_num_entries(-1);
   InMemoryHashPrefixMap additions_map;
   EXPECT_EQ(RICE_DECODING_FAILURE,
-            InMemoryV4Store(task_runner_, store_path_)
+            V4Store(task_runner(), store_path_)
                 .UpdateHashPrefixMapFromAdditions("V4Metric", additions,
                                                   &additions_map));
 }
@@ -743,7 +775,7 @@ TEST_F(V4StoreTest, TestAdditionsWithRiceEncodingSucceeds) {
       "\xbf\xa8\x3f\xfb\xf\xf\x5e\x27\xe6\xc3\x1d\xc6\x38");
   InMemoryHashPrefixMap additions_map;
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
-            InMemoryV4Store(task_runner_, store_path_)
+            V4Store(task_runner(), store_path_)
                 .UpdateHashPrefixMapFromAdditions("V4Metric", additions,
                                                   &additions_map));
   EXPECT_EQ(1u, additions_map.view().size());
@@ -759,7 +791,7 @@ TEST_F(V4StoreTest, TestRemovalsWithRiceEncodingSucceeds) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "22222bcdef", &prefix_map_additions));
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   std::string expected_checksum = std::string(
       "\xA5\x8B\xCAsD\xC7\xF9\xCE\xD2\xF4\x4="
       "\xB2\"\x82\x1A\xC1\xB8\x1F\x10\r\v\x9A\x93\xFD\xE1\xB8"
@@ -769,6 +801,9 @@ TEST_F(V4StoreTest, TestRemovalsWithRiceEncodingSucceeds) {
             store.MergeUpdate(prefix_map_old, prefix_map_additions, nullptr,
                               expected_checksum));
   EXPECT_FALSE(store.HasValidData());  // Never actually read from disk.
+
+  V4StoreFileFormat file_format;
+  store.WriteToDisk(&file_format);
 
   // At this point, the store map looks like this:
   // 4: 1111abcdefgh
@@ -786,20 +821,16 @@ TEST_F(V4StoreTest, TestRemovalsWithRiceEncodingSucceeds) {
   rice_indices->set_rice_parameter(2);
   rice_indices->set_encoded_data("\x16");
 
-  bool called_back = false;
+  base::RunLoop run_loop;
   UpdatedStoreReadyCallback store_ready_callback =
       base::BindOnce(&V4StoreTest::UpdatedStoreReady, base::Unretained(this),
-                     &called_back, true /* expect_store */);
-  EXPECT_FALSE(base::PathExists(store.store_path_));
-  store.ApplyUpdate(std::move(lur), task_runner_,
+                     &run_loop, true /* expect_store */);
+  store.ApplyUpdate(std::move(lur), task_runner(),
                     std::move(store_ready_callback));
   EXPECT_TRUE(base::PathExists(store.store_path_));
 
-  task_runner_->RunPendingTasks();
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
-  // This ensures that the callback was called.
-  EXPECT_TRUE(called_back);
   // ApplyUpdate was successful, so we have valid data.
   ASSERT_TRUE(updated_store_);
   EXPECT_TRUE(updated_store_->HasValidData());
@@ -818,7 +849,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesFailsChecksum) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(4, "2222", &prefix_map_old));
   EXPECT_EQ(CHECKSUM_MISMATCH_FAILURE,
-            InMemoryV4Store(task_runner_, store_path_)
+            V4Store(task_runner(), store_path_)
                 .MergeUpdate(prefix_map_old, InMemoryHashPrefixMap(), nullptr,
                              "aawc"));
 }
@@ -832,7 +863,7 @@ TEST_F(V4StoreTest, TestChecksumErrorOnStartup) {
   list_update_response.mutable_checksum()->set_sha256(
       std::string(crypto::kSHA256Length, 0));
   WriteFileFormatProtoToFile(0x600D71FE, 9, &list_update_response);
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   EXPECT_TRUE(store.expected_checksum_.empty());
   EXPECT_EQ(READ_SUCCESS, store.ReadFromDisk());
   EXPECT_TRUE(!store.expected_checksum_.empty());
@@ -859,7 +890,7 @@ TEST_F(V4StoreTest, TestChecksumErrorOnStartup) {
   additions->mutable_raw_hashes()->set_raw_hashes("abcde");
   list_update_response.mutable_checksum()->set_sha256(expected_checksum);
   WriteFileFormatProtoToFile(0x600D71FE, 9, &list_update_response);
-  InMemoryV4Store another_store(task_runner_, store_path_);
+  V4Store another_store(task_runner(), store_path_);
   EXPECT_TRUE(another_store.expected_checksum_.empty());
 
   EXPECT_EQ(READ_SUCCESS, another_store.ReadFromDisk());
@@ -873,26 +904,25 @@ TEST_F(V4StoreTest, TestChecksumErrorOnStartup) {
 TEST_F(V4StoreTest, WriteToDiskFails) {
   // Pass the directory name as file name so that when the code tries to rename
   // the temp store file to |store_path_| it fails.
-  EXPECT_EQ(UNABLE_TO_RENAME_FAILURE,
-            InMemoryV4Store(task_runner_, temp_dir_.GetPath())
-                .WriteToDisk(Checksum()));
+  EXPECT_EQ(
+      UNABLE_TO_RENAME_FAILURE,
+      V4Store(task_runner(), temp_dir_.GetPath()).WriteToDisk(Checksum()));
 
   // Give a location that isn't writable, even for the tmp file.
   base::FilePath non_writable_dir =
       temp_dir_.GetPath()
           .Append(FILE_PATH_LITERAL("nonexistent_dir"))
           .Append(FILE_PATH_LITERAL("some.store"));
-  EXPECT_EQ(
-      UNEXPECTED_BYTES_WRITTEN_FAILURE,
-      InMemoryV4Store(task_runner_, non_writable_dir).WriteToDisk(Checksum()));
+  EXPECT_EQ(UNEXPECTED_BYTES_WRITTEN_FAILURE,
+            V4Store(task_runner(), non_writable_dir).WriteToDisk(Checksum()));
 }
 
 TEST_F(V4StoreTest, FullUpdateFailsChecksumSynchronously) {
-  InMemoryV4Store store(task_runner_, store_path_);
-  bool called_back = false;
+  V4Store store(task_runner(), store_path_);
+  base::RunLoop run_loop;
   UpdatedStoreReadyCallback store_ready_callback =
       base::BindOnce(&V4StoreTest::UpdatedStoreReady, base::Unretained(this),
-                     &called_back, false /* expect_store */);
+                     &run_loop, false /* expect_store */);
   EXPECT_FALSE(base::PathExists(store.store_path_));
   EXPECT_FALSE(store.HasValidData());  // Never actually read from disk.
 
@@ -900,17 +930,13 @@ TEST_F(V4StoreTest, FullUpdateFailsChecksumSynchronously) {
   std::unique_ptr<ListUpdateResponse> lur(new ListUpdateResponse);
   lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
   lur->mutable_checksum()->set_sha256(std::string(crypto::kSHA256Length, 0));
-  store.ApplyUpdate(std::move(lur), task_runner_,
+  store.ApplyUpdate(std::move(lur), task_runner(),
                     std::move(store_ready_callback));
   // The update should fail synchronously and not create a store file.
   EXPECT_FALSE(base::PathExists(store.store_path_));
 
-  // Run everything on the task runner to ensure there are no pending tasks.
-  task_runner_->RunPendingTasks();
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
-  // This ensures that the callback was called.
-  EXPECT_TRUE(called_back);
   // Ensure that the file is still not created.
   EXPECT_FALSE(base::PathExists(store.store_path_));
   EXPECT_FALSE(updated_store_);
@@ -937,8 +963,7 @@ TEST_F(V4StoreTest, VerifyChecksumMmapFile) {
 
   WriteFileFormatProtoToFile(&file_format, 0x600D71FE, 9,
                              &list_update_response);
-  V4Store store(task_runner_, store_path_,
-                std::make_unique<MmapHashPrefixMap>(store_path_));
+  V4Store store(task_runner(), store_path_);
   EXPECT_TRUE(store.expected_checksum_.empty());
 
   EXPECT_EQ(READ_SUCCESS, store.ReadFromDisk());
@@ -964,8 +989,7 @@ TEST_F(V4StoreTest, FailedMmapOnRead) {
 
   WriteFileFormatProtoToFile(&file_format, 0x600D71FE, 9,
                              &list_update_response);
-  V4Store store(task_runner_, store_path_,
-                std::make_unique<MmapHashPrefixMap>(store_path_));
+  V4Store store(task_runner(), store_path_);
 
   EXPECT_EQ(HASH_PREFIX_MAP_GENERATION_FAILURE, store.ReadFromDisk());
 }
@@ -973,21 +997,20 @@ TEST_F(V4StoreTest, FailedMmapOnRead) {
 TEST_F(V4StoreTest, MigrateToMmap) {
   const std::string kFullHash = "abcdefghijklmnopqrstu";
   const std::string kHash = "abcde";
-  InMemoryV4Store write_store(task_runner_, store_path_);
+  V4Store write_store(task_runner(), store_path_);
   write_store.state_ = "test_client_state";
   write_store.hash_prefix_map_->Append(5, kHash);
   EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
 
   // Make sure an in-memory store can read correctly.
-  InMemoryV4Store in_memory_store(task_runner_, store_path_);
+  V4Store in_memory_store(task_runner(), store_path_);
   EXPECT_EQ(READ_SUCCESS, in_memory_store.ReadFromDisk());
   EXPECT_EQ("test_client_state", in_memory_store.state());
   EXPECT_EQ(in_memory_store.hash_prefix_map_->view()[5], kHash);
   EXPECT_EQ(in_memory_store.GetMatchingHashPrefix(kFullHash), kHash);
 
   // Migrate to a mmap store.
-  V4Store mmap_store(task_runner_, store_path_,
-                     std::make_unique<MmapHashPrefixMap>(store_path_));
+  V4Store mmap_store(task_runner(), store_path_);
   EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
   EXPECT_EQ("test_client_state", mmap_store.state());
   EXPECT_EQ(mmap_store.hash_prefix_map_->view()[5], kHash);
@@ -1010,61 +1033,10 @@ TEST_F(V4StoreTest, MigrateToMmap) {
 
   // Reading again should not migrate.
   base::Time last_modified = GetLastModifiedTime(store_path_);
-  V4Store mmap_store2(task_runner_, store_path_,
-                      std::make_unique<MmapHashPrefixMap>(store_path_));
+  V4Store mmap_store2(task_runner(), store_path_);
   EXPECT_EQ(READ_SUCCESS, mmap_store2.ReadFromDisk());
   EXPECT_EQ(GetLastModifiedTime(store_path_), last_modified);
   EXPECT_EQ(mmap_store2.GetMatchingHashPrefix(kFullHash), kHash);
-}
-
-TEST_F(V4StoreTest, MigrateToInMemory) {
-  const std::string kFullHash = "abcdefghijklmnopqrstu";
-  const std::string kHash = "abcde";
-  auto mmap_map = std::make_unique<MmapHashPrefixMap>(store_path_);
-  auto* mmap_map_raw = mmap_map.get();
-  V4Store write_store(task_runner_, store_path_, std::move(mmap_map));
-  write_store.state_ = "test_client_state";
-  write_store.hash_prefix_map_->Append(5, kHash);
-  base::FilePath hashes_path = MmapHashPrefixMap::GetPath(
-      store_path_, mmap_map_raw->GetExtensionForTesting(5));
-  EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
-  EXPECT_EQ(write_store.GetMatchingHashPrefix(kFullHash), kHash);
-
-  // Make sure a mmap store can read correctly.
-  auto mmap_map2 = std::make_unique<MmapHashPrefixMap>(store_path_);
-  auto* mmap_map_raw2 = mmap_map2.get();
-  V4Store mmap_store(task_runner_, store_path_, std::move(mmap_map2));
-  EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
-  EXPECT_EQ("test_client_state", mmap_store.state());
-  EXPECT_EQ(mmap_store.hash_prefix_map_->view()[5], kHash);
-  EXPECT_TRUE(base::PathExists(hashes_path));
-  EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash), kHash);
-
-  mmap_map_raw->ClearAndWaitForTesting();
-  mmap_map_raw2->ClearAndWaitForTesting();
-
-  write_store.Reset();
-  mmap_store.Reset();
-
-  // Migrate to an in-memory store.
-  InMemoryV4Store in_memory_store(task_runner_, store_path_);
-  EXPECT_EQ(READ_SUCCESS, in_memory_store.ReadFromDisk());
-  EXPECT_EQ("test_client_state", in_memory_store.state());
-  EXPECT_EQ(in_memory_store.hash_prefix_map_->view()[5], kHash);
-  EXPECT_EQ(in_memory_store.GetMatchingHashPrefix(kFullHash), kHash);
-
-  EXPECT_FALSE(base::PathExists(hashes_path));
-
-  int64_t file_size;
-  EXPECT_TRUE(base::GetFileSize(store_path_, &file_size));
-  EXPECT_EQ(in_memory_store.file_size(), file_size);
-
-  // Reading again should not migrate.
-  base::Time last_modified = GetLastModifiedTime(store_path_);
-  InMemoryV4Store in_memory_store2(task_runner_, store_path_);
-  EXPECT_EQ(READ_SUCCESS, in_memory_store2.ReadFromDisk());
-  EXPECT_EQ(GetLastModifiedTime(store_path_), last_modified);
-  EXPECT_EQ(in_memory_store2.GetMatchingHashPrefix(kFullHash), kHash);
 }
 
 TEST_F(V4StoreTest, MigrateFileOffsets) {
@@ -1075,8 +1047,7 @@ TEST_F(V4StoreTest, MigrateFileOffsets) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "8"}});
-  V4Store write_store(task_runner_, store_path_,
-                      std::make_unique<MmapHashPrefixMap>(store_path_));
+  V4Store write_store(task_runner(), store_path_);
   write_store.state_ = "test_client_state";
   write_store.hash_prefix_map_->Append(4, kHash + kHash2);
   EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
@@ -1087,32 +1058,12 @@ TEST_F(V4StoreTest, MigrateFileOffsets) {
   feature_list.InitAndEnableFeatureWithParameters(
       kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "4"}});
 
-  V4Store mmap_store(task_runner_, store_path_,
-                     std::make_unique<MmapHashPrefixMap>(store_path_));
+  V4Store mmap_store(task_runner(), store_path_);
 
   EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
   EXPECT_EQ("test_client_state", mmap_store.state());
   EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash), kHash);
   EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash2), kHash2);
-}
-
-TEST_F(V4StoreTest, MigrateToInMemoryFails) {
-  ListUpdateResponse list_update_response;
-  list_update_response.set_platform_type(LINUX_PLATFORM);
-  list_update_response.set_response_type(ListUpdateResponse::FULL_UPDATE);
-
-  V4StoreFileFormat file_format;
-  auto* hash_file = file_format.add_hash_files();
-  hash_file->set_prefix_size(5);
-  // File has not been created.
-  hash_file->set_extension("foo");
-
-  WriteFileFormatProtoToFile(&file_format, 0x600D71FE, 9,
-                             &list_update_response);
-
-  // Migrate to an in-memory store.
-  InMemoryV4Store in_memory_store(task_runner_, store_path_);
-  EXPECT_EQ(MIGRATION_FAILURE, in_memory_store.ReadFromDisk());
 }
 
 TEST_F(V4StoreTest, CleanUpOldFiles) {
@@ -1123,7 +1074,7 @@ TEST_F(V4StoreTest, CleanUpOldFiles) {
   base::FilePath other_path = temp_dir_.GetPath().AppendASCII("SomePath");
   base::WriteFile(other_path, "stuff");
 
-  InMemoryV4Store store(task_runner_, store_path_);
+  V4Store store(task_runner(), store_path_);
   EXPECT_EQ(WRITE_SUCCESS, store.WriteToDisk(Checksum()));
 
   EXPECT_FALSE(base::PathExists(old_hashes_path));
@@ -1131,8 +1082,7 @@ TEST_F(V4StoreTest, CleanUpOldFiles) {
 }
 
 TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
-  V4Store write_store(task_runner_, store_path_,
-                      std::make_unique<MmapHashPrefixMap>(store_path_));
+  V4Store write_store(task_runner(), store_path_);
   write_store.hash_prefix_map_->Append(4, "abcd");
   EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
 
@@ -1146,8 +1096,7 @@ TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
   EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
   EXPECT_EQ(write_store.file_size(), original_file_size + 4);
 
-  V4Store read_store(task_runner_, store_path_,
-                     std::make_unique<MmapHashPrefixMap>(store_path_));
+  V4Store read_store(task_runner(), store_path_);
   EXPECT_EQ(READ_SUCCESS, read_store.ReadFromDisk());
   EXPECT_EQ(read_store.file_size(), original_file_size + 4);
 }
@@ -1196,8 +1145,7 @@ TEST_F(V4StoreTest, MergeUpdatesWithMmapHashPrefixMap) {
   prefix_map_additions.Append(4, "----1111bbbb");
   prefix_map_additions.Append(5, "22222bcdef");
 
-  V4Store store(task_runner_, store_path_,
-                std::make_unique<MmapHashPrefixMap>(store_path_));
+  V4Store store(task_runner(), store_path_);
   // Proof of checksum validity using python:
   // >>> import hashlib
   // >>> m = hashlib.sha256()

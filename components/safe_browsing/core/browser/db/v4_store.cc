@@ -345,10 +345,8 @@ std::ostream& operator<<(std::ostream& os, const V4Store& store) {
 V4StorePtr V4StoreFactory::CreateV4Store(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::FilePath& store_path) {
-  V4StorePtr new_store(
-      new V4Store(task_runner, store_path,
-                  std::make_unique<MmapHashPrefixMap>(store_path, task_runner)),
-      V4StoreDeleter(task_runner));
+  V4StorePtr new_store(new V4Store(task_runner, store_path),
+                       V4StoreDeleter(task_runner));
   new_store->Initialize();
   return new_store;
 }
@@ -375,7 +373,10 @@ V4Store::V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                  const base::FilePath& store_path,
                  std::unique_ptr<HashPrefixMap> hash_prefix_map,
                  const int64_t old_file_size)
-    : hash_prefix_map_(std::move(hash_prefix_map)),
+    : hash_prefix_map_(
+          hash_prefix_map
+              ? std::move(hash_prefix_map)
+              : std::make_unique<MmapHashPrefixMap>(store_path, task_runner)),
       file_size_(old_file_size),
       has_valid_data_(false),
       store_path_(store_path),
