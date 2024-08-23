@@ -2230,14 +2230,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Android.IsolatedSplits.PreloadWaitTime" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2025-02-01">
 <!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
 
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <summary>
     Amount of time spent waiting for a split preload task to finish. This will
-    only be recorded if isolated splits are enabled.
+    only be recorded if isolated splits are enabled. This histogram was expired
+    between 2023-11-12 and 2024-08-23.
   </summary>
 </histogram>
 
