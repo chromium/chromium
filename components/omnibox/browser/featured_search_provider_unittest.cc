@@ -615,7 +615,8 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
     RunAndVerifyIph(non_zero_input, {});
   }
 
-  // chrome://settings/ai promo shown when not opted-in and in @history scope.
+  // chrome://settings/historySearch promo shown when not opted-in and in
+  // @history scope.
   mock_setting(true, false);
   {
     SCOPED_TRACE("");
@@ -624,7 +625,8 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
         {{IphType::kHistoryEmbeddingsSettingsPromo,
           // Should end with whitespace since there's a link following it.
           u"For a more powerful way to search your browsing history, turn on ",
-          u"History search, powered by AI", GURL("chrome://settings/ai")}});
+          u"History search, powered by AI",
+          GURL("chrome://settings/historySearch")}});
   }
   // Not shown for unscoped inputs. Zero input will show the '@history' promo
   // tested above, so just test `non_zero_input` here.
@@ -650,7 +652,7 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
           u"Your searches, best matches, and their page contents are sent to "
           u"Google and may be seen by human reviewers to improve this feature. "
           u"This is an experimental feature and won't always get it right. ",
-          u"Learn more", GURL("chrome://settings/ai")}});
+          u"Learn more", GURL("chrome://settings/historySearch")}});
   }
   // Not shown for unscoped inputs. Zero input will show the '@history' AI promo
   // tested above, so just test `non_zero_input` here.
