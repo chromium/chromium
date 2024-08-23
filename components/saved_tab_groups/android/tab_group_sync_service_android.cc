@@ -109,6 +109,16 @@ void TabGroupSyncServiceAndroid::OnTabGroupRemoved(const base::Uuid& sync_id,
       static_cast<jint>(source));
 }
 
+void TabGroupSyncServiceAndroid::OnTabGroupLocalIdChanged(
+    const base::Uuid& sync_id,
+    const std::optional<LocalTabGroupID>& local_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_local_id =
+      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id);
+  Java_TabGroupSyncServiceImpl_onTabGroupLocalIdChanged(
+      env, java_obj_, UuidToJavaString(env, sync_id), j_local_id);
+}
+
 ScopedJavaLocalRef<jstring> TabGroupSyncServiceAndroid::CreateGroup(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,

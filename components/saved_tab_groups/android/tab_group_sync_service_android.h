@@ -37,6 +37,9 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                          TriggerSource source) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          TriggerSource source) override;
+  void OnTabGroupLocalIdChanged(
+      const base::Uuid& sync_id,
+      const std::optional<LocalTabGroupID>& local_id) override;
 
   // Mutation methods (Java -> native).
   // Mutator methods that result in group metadata mutation.

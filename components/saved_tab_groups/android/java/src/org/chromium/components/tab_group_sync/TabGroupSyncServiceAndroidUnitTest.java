@@ -119,6 +119,11 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
+    public void testOnTabGroupLocalIdChanged() {
+        verify(mObserver).onTabGroupLocalIdChanged(anyString(), eq(LOCAL_TAB_GROUP_ID_1));
+    }
+
+    @CalledByNative
     public void testCreateGroup() {
         String uuid = mService.createGroup(LOCAL_TAB_GROUP_ID_1);
         Assert.assertFalse(TextUtils.isEmpty(uuid));

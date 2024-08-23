@@ -52,6 +52,9 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
   MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
+  MOCK_METHOD(void,
+              OnTabGroupLocalIdChanged,
+              (const base::Uuid&, const std::optional<LocalTabGroupID>&));
 };
 
 class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
@@ -684,17 +687,17 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedOnTabGroupIdMappingChange) {
   // Close a group.
-  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
-                                            Eq(TriggerSource::LOCAL)))
+  EXPECT_CALL(*observer_, OnTabGroupLocalIdChanged(Eq(group_1_.saved_guid()),
+                                                   Eq(std::nullopt)))
       .Times(1);
   model_->OnGroupClosedInTabStrip(local_group_id_1_);
 
   // Open a group.
-  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_2_.saved_guid()),
-                                            Eq(TriggerSource::LOCAL)))
+  LocalTabGroupID local_id_2 = test::GenerateRandomTabGroupID();
+  EXPECT_CALL(*observer_, OnTabGroupLocalIdChanged(Eq(group_2_.saved_guid()),
+                                                   Eq(local_id_2)))
       .Times(1);
-  model_->OnGroupOpenedInTabStrip(group_2_.saved_guid(),
-                                  test::GenerateRandomTabGroupID());
+  model_->OnGroupOpenedInTabStrip(group_2_.saved_guid(), local_id_2);
 }
 
 TEST_F(TabGroupSyncServiceTest, TabIDMappingIsCleardOnGroupClose) {

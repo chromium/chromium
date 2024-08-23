@@ -164,6 +164,14 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupRemoved) {
   Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupRemoved(env, j_test_);
 }
 
+TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupLocalIdChanged) {
+  auto* env = AttachCurrentThread();
+  base::Uuid group_id = base::Uuid::GenerateRandomV4();
+  bridge_->OnTabGroupLocalIdChanged(group_id, test_tab_group_id_);
+  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupLocalIdChanged(env,
+                                                                       j_test_);
+}
+
 TEST_F(TabGroupSyncServiceAndroidTest, CreateGroup) {
   auto* env = AttachCurrentThread();
   SavedTabGroup captured_group = test::CreateTestSavedTabGroup();

@@ -4,6 +4,8 @@
 
 package org.chromium.components.tab_group_sync;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -238,6 +240,13 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     private void onTabGroupRemovedWithSyncId(String syncId, @TriggerSource int triggerSource) {
         for (Observer observer : mObservers) {
             observer.onTabGroupRemoved(syncId, triggerSource);
+        }
+    }
+
+    @CalledByNative
+    private void onTabGroupLocalIdChanged(String syncId, @Nullable LocalTabGroupId localId) {
+        for (Observer observer : mObservers) {
+            observer.onTabGroupLocalIdChanged(syncId, localId);
         }
     }
 

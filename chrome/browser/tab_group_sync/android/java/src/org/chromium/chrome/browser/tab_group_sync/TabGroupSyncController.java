@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -94,6 +96,10 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
 
                 @Override
                 public void onTabGroupRemoved(String syncTabGroupId, int source) {}
+
+                @Override
+                public void onTabGroupLocalIdChanged(
+                        String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {}
             };
 
     /** Constructor. */

@@ -5,6 +5,7 @@
 package org.chromium.components.tab_group_sync;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
@@ -64,6 +65,16 @@ public interface TabGroupSyncService {
          * @param source The source of the event which can be local or remote.
          */
         void onTabGroupRemoved(String syncTabGroupId, @TriggerSource int source);
+
+        /**
+         * Called when the local ID for a tab group changes. Since Android uses stable tab group ID,
+         * this is only fired when the group is opened or closed.
+         *
+         * @param syncTabGroupId The sync ID corresponding to the tab group.
+         * @param localTabGroupId The new local ID of the tab group.
+         */
+        void onTabGroupLocalIdChanged(
+                String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId);
     }
 
     /**

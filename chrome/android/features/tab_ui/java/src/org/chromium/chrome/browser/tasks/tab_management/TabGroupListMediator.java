@@ -129,6 +129,12 @@ public class TabGroupListMediator {
                 public void onTabGroupRemoved(String syncId, @TriggerSource int source) {
                     mPendingRefresh.post();
                 }
+
+                @Override
+                public void onTabGroupLocalIdChanged(
+                        String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {
+                    mPendingRefresh.post();
+                }
             };
 
     private final SyncService.SyncStateChangedListener mSyncStateChangeListener =

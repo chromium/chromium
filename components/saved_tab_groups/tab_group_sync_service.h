@@ -67,6 +67,14 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     // All other consumers should use the local ID variant of this method.
     virtual void OnTabGroupRemoved(const base::Uuid& sync_id,
                                    TriggerSource source) {}
+
+    // The local ID for a tab group was changed. This is usually fired when the
+    // group is opened, closed (not always), or (desktop only) restored from
+    // session restore. Not all the cases where the tab group is closed is
+    // covered.
+    virtual void OnTabGroupLocalIdChanged(
+        const base::Uuid& sync_id,
+        const std::optional<LocalTabGroupID>& local_id) {}
   };
 
 #if BUILDFLAG(IS_ANDROID)

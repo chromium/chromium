@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -47,4 +49,8 @@ class DataSharingTabObserver implements TabGroupSyncService.Observer {
 
     @Override
     public void onTabGroupRemoved(String syncId, @TriggerSource int source) {}
+
+    @Override
+    public void onTabGroupLocalIdChanged(
+            String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {}
 }

@@ -593,7 +593,8 @@ void TabGroupSyncServiceImpl::SavedTabGroupLocalIdChanged(
   }
 
   for (auto& observer : observers_) {
-    observer.OnTabGroupUpdated(*saved_tab_group, TriggerSource::LOCAL);
+    observer.OnTabGroupLocalIdChanged(group_guid,
+                                      saved_tab_group->local_group_id());
   }
 }
 
