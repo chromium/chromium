@@ -195,7 +195,8 @@ public class TabModelSelectorTabObserverTest {
     private Tab createTestTab(boolean incognito) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    return new MockTab(mTabId++, incognito ? mIncognitoProfile : mProfile);
+                    return new MockTab(
+                            Tab.INVALID_TAB_ID, incognito ? mIncognitoProfile : mProfile);
                 });
     }
 

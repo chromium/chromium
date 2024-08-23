@@ -58,7 +58,9 @@ public class MockTabCreator extends TabCreator {
             int position) {
         Tab tab =
                 new MockTab(
-                        0, mSelector.getModel(mIsIncognito).getProfile(), TabLaunchType.FROM_LINK);
+                        Tab.INVALID_TAB_ID,
+                        mSelector.getModel(mIsIncognito).getProfile(),
+                        TabLaunchType.FROM_LINK);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(false));
         TabTestUtils.initialize(
                 tab, null, null, loadUrlParams, title, null, null, false, null, false);
