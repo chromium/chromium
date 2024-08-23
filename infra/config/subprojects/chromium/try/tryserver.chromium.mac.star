@@ -352,6 +352,8 @@ try_.builder(
             "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
