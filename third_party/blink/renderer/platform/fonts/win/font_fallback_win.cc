@@ -422,9 +422,14 @@ const char* FirstAvailableMathFont(const SkFontMgr& font_manager) {
 }
 
 const AtomicString& GetEmojiFont(const SkFontMgr& font_manager) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kEmojiFont,
-                                  (FirstAvailableEmojiFont(font_manager)));
-  return kEmojiFont;
+  // Calling `FirstAvailableEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+  // may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
+  if (emoji_font.empty() && !emoji_font.IsNull()) {
+    emoji_font = AtomicString(FirstAvailableEmojiFont(font_manager));
+    CHECK(!emoji_font.empty() || emoji_font.IsNull());
+  }
+  return emoji_font;
 }
 
 const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
