@@ -3084,17 +3084,17 @@ void View::DoRemoveChildView(View* view,
     }
   }
 
+  // Need to notify the layout manager because one of the callbacks below might
+  // want to know the view's new preferred size, minimum size, etc.
+  if (HasLayoutManager()) {
+    GetLayoutManager()->ViewRemoved(this, view);
+  }
+
   // Make sure the layers belonging to the subtree rooted at |view| get
   // removed.
   view->OrphanLayers();
   if (widget) {
     widget->LayerTreeChanged();
-  }
-
-  // Need to notify the layout manager because one of the callbacks below might
-  // want to know the view's new preferred size, minimum size, etc.
-  if (HasLayoutManager()) {
-    GetLayoutManager()->ViewRemoved(this, view);
   }
 
   view->PropagateRemoveNotifications(this, new_parent, is_removed_from_widget);
