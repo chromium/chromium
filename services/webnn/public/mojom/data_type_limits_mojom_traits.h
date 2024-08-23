@@ -30,6 +30,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.arg_min_max_output;
   }
+  static webnn::SupportedDataTypes cast_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.cast_input;
+  }
+  static webnn::SupportedDataTypes clamp_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.clamp_input;
+  }
   static webnn::SupportedDataTypes concat_inputs(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.concat_inputs;
@@ -146,6 +154,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.elu_input;
   }
+  static webnn::SupportedDataTypes expand_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.expand_input;
+  }
   static webnn::SupportedDataTypes gather_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_input;
@@ -157,6 +169,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
   static webnn::SupportedDataTypes gelu_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gelu_input;
+  }
+  static webnn::SupportedDataTypes gemm_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.gemm_input;
   }
   static webnn::SupportedDataTypes hard_sigmoid_input(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -174,6 +190,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.linear_input;
   }
+  static webnn::SupportedDataTypes matmul_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.matmul_input;
+  }
+  static webnn::SupportedDataTypes pad_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.pad_input;
+  }
   static webnn::SupportedDataTypes average_pool2d_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.average_pool2d_input;
@@ -185,6 +209,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
   static webnn::SupportedDataTypes max_pool2d_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.max_pool2d_input;
+  }
+  static webnn::SupportedDataTypes prelu_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.prelu_input;
   }
   static webnn::SupportedDataTypes reduce_l1_input(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -288,6 +316,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
     return data.ReadInput(&out->input) && data.ReadConstant(&out->constant) &&
            data.ReadArgMinMaxInput(&out->arg_min_max_input) &&
            data.ReadArgMinMaxOutput(&out->arg_min_max_output) &&
+           data.ReadCastInput(&out->cast_input) &&
+           data.ReadClampInput(&out->clamp_input) &&
            data.ReadConcatInputs(&out->concat_inputs) &&
            data.ReadAddInput(&out->add_input) &&
            data.ReadSubInput(&out->sub_input) &&
@@ -317,16 +347,21 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadSqrtInput(&out->sqrt_input) &&
            data.ReadTanInput(&out->tan_input) &&
            data.ReadEluInput(&out->elu_input) &&
+           data.ReadExpandInput(&out->expand_input) &&
            data.ReadGatherInput(&out->gather_input) &&
            data.ReadGatherIndices(&out->gather_indices) &&
            data.ReadGeluInput(&out->gelu_input) &&
+           data.ReadGemmInput(&out->gemm_input) &&
            data.ReadHardSigmoidInput(&out->hard_sigmoid_input) &&
            data.ReadHardSwishInput(&out->hard_swish_input) &&
            data.ReadLeakyReluInput(&out->leaky_relu_input) &&
            data.ReadLinearInput(&out->linear_input) &&
+           data.ReadMatmulInput(&out->matmul_input) &&
+           data.ReadPadInput(&out->pad_input) &&
            data.ReadAveragePool2dInput(&out->average_pool2d_input) &&
            data.ReadL2Pool2dInput(&out->l2_pool2d_input) &&
            data.ReadMaxPool2dInput(&out->max_pool2d_input) &&
+           data.ReadPreluInput(&out->prelu_input) &&
            data.ReadReduceL1Input(&out->reduce_l1_input) &&
            data.ReadReduceL2Input(&out->reduce_l2_input) &&
            data.ReadReduceLogSumInput(&out->reduce_log_sum_input) &&

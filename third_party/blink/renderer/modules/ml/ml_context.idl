@@ -27,11 +27,6 @@ dictionary MLSupportLimits {
   sequence<DOMString> dataTypes;
 };
 
-dictionary MLArgMinMaxSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits output;
-};
-
 dictionary MLBinarySupportLimits {
   MLSupportLimits a;
   MLSupportLimits b;
@@ -40,11 +35,26 @@ dictionary MLBinarySupportLimits {
 
 dictionary MLConcatSupportLimits {
   MLSupportLimits inputs;
+  MLSupportLimits output;
 };
 
 dictionary MLGatherSupportLimits {
   MLSupportLimits input;
   MLSupportLimits indices;
+  MLSupportLimits output;
+};
+
+dictionary MLGemmSupportLimits {
+  MLSupportLimits a;
+  MLSupportLimits b;
+  MLSupportLimits c;
+  MLSupportLimits output;
+};
+
+dictionary MLPreluSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits slope;
+  MLSupportLimits output;
 };
 
 dictionary MLLogicalNotSupportLimits {
@@ -61,6 +71,7 @@ dictionary MLWhereSupportLimits {
   MLSupportLimits condition;
   MLSupportLimits trueValue;
   MLSupportLimits falseValue;
+  MLSupportLimits output;
 };
 
 dictionary MLOpSupportLimits {
@@ -69,8 +80,10 @@ dictionary MLOpSupportLimits {
   MLSupportLimits constant;
   MLSupportLimits output;
 
-  MLArgMinMaxSupportLimits argMin;
-  MLArgMinMaxSupportLimits argMax;
+  MLSingleInputSupportLimits argMin;
+  MLSingleInputSupportLimits argMax;
+  MLSingleInputSupportLimits cast;
+  MLSingleInputSupportLimits clamp;
   MLConcatSupportLimits concat;
 
   // Element-wise binary ops.
@@ -106,12 +119,17 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits tan;
 
   MLSingleInputSupportLimits elu;
+  MLSingleInputSupportLimits expand;
   MLGatherSupportLimits gather;
   MLSingleInputSupportLimits gelu;
+  MLGemmSupportLimits gemm;
   MLSingleInputSupportLimits hardSigmoid;
   MLSingleInputSupportLimits hardSwish;
   MLSingleInputSupportLimits leakyRelu;
   MLSingleInputSupportLimits linear;
+  MLBinarySupportLimits matmul;
+  MLSingleInputSupportLimits pad;
+  MLPreluSupportLimits prelu;
 
   // Pool2d.
   MLSingleInputSupportLimits averagePool2d;

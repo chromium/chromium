@@ -87,6 +87,12 @@ ContextProperties ContextImplDml::GetProperties(
        /*arg_min_max_input=*/SupportedDataTypes::All(),
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_cast_operator_desc#tensor-support
+       /*cast_input=*/SupportedDataTypes::All(),
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_clip_operator_desc#tensor-support
+       /*clamp_input=*/kFloat16To32Ints8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
        /*concat_inputs=*/kFloat16To32Ints8To32,
 
@@ -177,6 +183,9 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_elu_operator_desc
        /*elu_input=*/DataTypeConstraint::kFloat16To32,
 
+       // Expand is emulated by identity.
+       /*expand_input=*/kFloat16To32Ints8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc#tensor-support
        /*gather_input=*/kFloat16To32Ints8To32,
        /*gather_indices=*/kGatherIndicesSupportedDataTypes,
@@ -184,6 +193,9 @@ ContextProperties ContextImplDml::GetProperties(
        // Gelu is emulated when the feature level is less than 5.1.
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gemm_operator_desc#tensor-support
+       /*gemm_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_hard_sigmoid_operator_desc
        /*hard_sigmoid_input=*/DataTypeConstraint::kFloat16To32,
@@ -198,6 +210,12 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_linear_operator_desc#tensor-support
        /*linear_input=*/DataTypeConstraint::kFloat16To32,
 
+       // Matmul is emulated by gemm.
+       /*matmul_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_padding_operator_desc#tensor-support
+       /*pad_input=*/kFloat16To32Ints8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_average_pooling_operator_desc
        /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
 
@@ -206,6 +224,9 @@ ContextProperties ContextImplDml::GetProperties(
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_max_pooling_operator_desc
        /*max_pool2d_input=*/kFloat16To32Ints8,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_parameterized_relu_operator_desc#tensor-support
+       /*prelu_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_reduce_operator_desc#tensor-support-according-to-function
        /*reduce_l1_input=*/DataTypeConstraint::kFloat16To32,
@@ -283,6 +304,7 @@ ContextProperties ContextImplDml::GetProperties(
         SupportedDataTypes::All();
     properties.data_type_limits.abs_input = kFloat16To32Int8To64;
     properties.data_type_limits.identity_input = SupportedDataTypes::All();
+    properties.data_type_limits.expand_input = SupportedDataTypes::All();
     properties.data_type_limits.gather_input = SupportedDataTypes::All();
     properties.data_type_limits.reshape_input = SupportedDataTypes::All();
     properties.data_type_limits.slice_input = SupportedDataTypes::All();
@@ -293,8 +315,10 @@ ContextProperties ContextImplDml::GetProperties(
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_0) {
+    properties.data_type_limits.clamp_input = SupportedDataTypes::All();
     properties.data_type_limits.max_input = SupportedDataTypes::All();
     properties.data_type_limits.min_input = SupportedDataTypes::All();
+    properties.data_type_limits.pad_input = SupportedDataTypes::All(),
     properties.data_type_limits.reduce_l1_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
     properties.data_type_limits.reduce_max_input = SupportedDataTypes::All();
@@ -312,6 +336,8 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.sub_input = SupportedDataTypes::All();
     properties.data_type_limits.mul_input = SupportedDataTypes::All();
     properties.data_type_limits.div_input = kFloat16To32Ints8To32;
+    properties.data_type_limits.prelu_input =
+        DataTypeConstraint::kFloat16To32Int8To32;
     properties.data_type_limits.relu_input =
         DataTypeConstraint::kFloat16To32Int8To32;
     properties.data_type_limits.triangular_input = SupportedDataTypes::All();

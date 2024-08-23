@@ -20,7 +20,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_binary_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
@@ -28,10 +27,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_logical_not_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_op_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_prelu_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_single_input_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h"
@@ -225,21 +226,37 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   op_support_limits->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.output()));
 
-  MLArgMinMaxSupportLimits* argmin = MLArgMinMaxSupportLimits::Create();
+  MLSingleInputSupportLimits* argmin = MLSingleInputSupportLimits::Create();
   argmin->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.arg_min_max_input));
   argmin->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.arg_min_max_output));
   op_support_limits->setArgMin(argmin);
-  MLArgMinMaxSupportLimits* argmax = MLArgMinMaxSupportLimits::Create();
+  MLSingleInputSupportLimits* argmax = MLSingleInputSupportLimits::Create();
   argmax->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.arg_min_max_input));
   argmax->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.arg_min_max_output));
   op_support_limits->setArgMax(argmax);
 
+  MLSingleInputSupportLimits* cast = MLSingleInputSupportLimits::Create();
+  cast->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.cast_input));
+  cast->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.cast_input));
+  op_support_limits->setCast(cast);
+
+  MLSingleInputSupportLimits* clamp = MLSingleInputSupportLimits::Create();
+  clamp->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.clamp_input));
+  clamp->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.clamp_input));
+  op_support_limits->setClamp(clamp);
+
   MLConcatSupportLimits* concat = MLConcatSupportLimits::Create();
   concat->setInputs(
+      SupportedDataTypesToSupportLimits(data_type_limits.concat_inputs));
+  concat->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.concat_inputs));
   op_support_limits->setConcat(concat);
 
@@ -395,11 +412,20 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   elu->setOutput(SupportedDataTypesToSupportLimits(data_type_limits.elu_input));
   op_support_limits->setElu(elu);
 
+  MLSingleInputSupportLimits* expand = MLSingleInputSupportLimits::Create();
+  expand->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.expand_input));
+  expand->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.expand_input));
+  op_support_limits->setExpand(expand);
+
   MLGatherSupportLimits* gather = MLGatherSupportLimits::Create();
   gather->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.gather_input));
   gather->setIndices(
       SupportedDataTypesToSupportLimits(data_type_limits.gather_indices));
+  gather->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.gather_input));
   op_support_limits->setGather(gather);
 
   MLSingleInputSupportLimits* gelu = MLSingleInputSupportLimits::Create();
@@ -408,6 +434,14 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   gelu->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.gelu_input));
   op_support_limits->setGelu(gelu);
+
+  MLGemmSupportLimits* gemm = MLGemmSupportLimits::Create();
+  gemm->setA(SupportedDataTypesToSupportLimits(data_type_limits.gemm_input));
+  gemm->setB(SupportedDataTypesToSupportLimits(data_type_limits.gemm_input));
+  gemm->setC(SupportedDataTypesToSupportLimits(data_type_limits.gemm_input));
+  gemm->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.gemm_input));
+  op_support_limits->setGemm(gemm);
 
   MLSingleInputSupportLimits* hard_sigmoid =
       MLSingleInputSupportLimits::Create();
@@ -438,6 +472,20 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.linear_input));
   op_support_limits->setLinear(linear);
 
+  MLBinarySupportLimits* matmul = MLBinarySupportLimits::Create();
+  matmul->setA(
+      SupportedDataTypesToSupportLimits(data_type_limits.matmul_input));
+  matmul->setB(
+      SupportedDataTypesToSupportLimits(data_type_limits.matmul_input));
+  matmul->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.matmul_input));
+  op_support_limits->setMatmul(matmul);
+
+  MLSingleInputSupportLimits* pad = MLSingleInputSupportLimits::Create();
+  pad->setInput(SupportedDataTypesToSupportLimits(data_type_limits.pad_input));
+  pad->setOutput(SupportedDataTypesToSupportLimits(data_type_limits.pad_input));
+  op_support_limits->setPad(pad);
+
   // Pool2d.
   MLSingleInputSupportLimits* average_pool2d =
       MLSingleInputSupportLimits::Create();
@@ -460,6 +508,15 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   max_pool2d->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.max_pool2d_input));
   op_support_limits->setMaxPool2d(max_pool2d);
+
+  MLPreluSupportLimits* prelu = MLPreluSupportLimits::Create();
+  prelu->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.prelu_input));
+  prelu->setSlope(
+      SupportedDataTypesToSupportLimits(data_type_limits.prelu_input));
+  prelu->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.prelu_input));
+  op_support_limits->setPrelu(prelu);
 
   // Reduction ops.
   MLSingleInputSupportLimits* reduce_l1 = MLSingleInputSupportLimits::Create();
@@ -618,6 +675,8 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   where->setTrueValue(
       SupportedDataTypesToSupportLimits(data_type_limits.where_value));
   where->setFalseValue(
+      SupportedDataTypesToSupportLimits(data_type_limits.where_value));
+  where->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.where_value));
   op_support_limits->setWhere(where);
 

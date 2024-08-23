@@ -455,7 +455,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidatePadAndInferOutput(const OperandDescriptor& input,
+    ValidatePadAndInferOutput(const ContextProperties& context_properties,
+                              const OperandDescriptor& input,
                               base::span<const uint32_t> beginning_padding,
                               base::span<const uint32_t> ending_padding,
                               std::string_view label);
@@ -463,9 +464,11 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // Validate and infer output information of matmul operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-matmul
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
-    WEBNN_PUBLIC_CPP) ValidateMatmulAndInferOutput(const OperandDescriptor& a,
-                                                   const OperandDescriptor& b,
-                                                   std::string_view label);
+    WEBNN_PUBLIC_CPP)
+    ValidateMatmulAndInferOutput(const ContextProperties& context_properties,
+                                 const OperandDescriptor& a,
+                                 const OperandDescriptor& b,
+                                 std::string_view label);
 
 // Validate and infer output information of 2-D pooling operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d
@@ -502,7 +505,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateGemmAndInferOutput(const OperandDescriptor& a,
+    ValidateGemmAndInferOutput(const ContextProperties& context_properties,
+                               const OperandDescriptor& a,
                                const OperandDescriptor& b,
                                const GemmAttributes& attributes);
 
@@ -582,7 +586,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-prelu
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidatePreluAndInferOutput(const OperandDescriptor& input,
+    ValidatePreluAndInferOutput(const ContextProperties& context_properties,
+                                const OperandDescriptor& input,
                                 const OperandDescriptor& slope,
                                 std::string_view label);
 

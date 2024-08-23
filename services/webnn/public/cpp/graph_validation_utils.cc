@@ -837,6 +837,7 @@ ValidateConvTranspose2dAndInferOutput(
 }
 
 base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     base::span<const uint32_t> beginning_padding,
     base::span<const uint32_t> ending_padding,
@@ -844,6 +845,13 @@ base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
   if (input.Rank() == 0) {
     return base::unexpected(
         ErrorWithLabel(label, "The input should not be a scalar."));
+  }
+
+  if (!context_properties.data_type_limits.pad_input.Has(input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentTypeError(
+            input.data_type(), context_properties.data_type_limits.pad_input)));
   }
 
   // Validate the beginning_padding and ending_padding.
@@ -880,13 +888,15 @@ base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
 }
 
 base::expected<OperandDescriptor, std::string> ValidateMatmulAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& a,
     const OperandDescriptor& b,
     std::string_view label) {
-  if (!IsFloatingPointType(a.data_type())) {
+  if (!context_properties.data_type_limits.matmul_input.Has(a.data_type())) {
     return base::unexpected(ErrorWithLabel(
         label,
-        "The data type of inputs must be one of the floating point types."));
+        NotSupportedInputArgumentTypeError(
+            a.data_type(), context_properties.data_type_limits.matmul_input)));
   }
 
   if (a.data_type() != b.data_type()) {
@@ -1271,14 +1281,16 @@ GemmAttributes::GemmAttributes(GemmAttributes&& other) = default;
 GemmAttributes& GemmAttributes::operator=(GemmAttributes&& other) = default;
 
 base::expected<OperandDescriptor, std::string> ValidateGemmAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& a,
     const OperandDescriptor& b,
     const GemmAttributes& attributes) {
   const std::string& label = attributes.label;
-  if (!IsFloatingPointType(a.data_type())) {
+  if (!context_properties.data_type_limits.gemm_input.Has(a.data_type())) {
     return base::unexpected(ErrorWithLabel(
         label,
-        "The data type of inputs must be one of the floating point types."));
+        NotSupportedInputArgumentTypeError(
+            a.data_type(), context_properties.data_type_limits.gemm_input)));
   }
 
   if (a.data_type() != b.data_type()) {
@@ -2011,14 +2023,15 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
 }
 
 base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     const OperandDescriptor& slope,
     std::string_view label) {
-  if (!DataTypeConstraint::kFloat16To32Int8To32.Has(input.data_type())) {
+  if (!context_properties.data_type_limits.prelu_input.Has(input.data_type())) {
     return base::unexpected(ErrorWithLabel(
-        label,
-        "The data type of input and slope must be one of {float32, float16, "
-        "int32, int8}."));
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.prelu_input)));
   }
   if (input.data_type() != slope.data_type()) {
     return base::unexpected(ErrorWithLabel(

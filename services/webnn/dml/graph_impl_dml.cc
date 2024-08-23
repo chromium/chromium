@@ -1476,13 +1476,17 @@ void CreateOperatorNodeForBatchNormalization(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
-void CreateOperatorNodeForClamp(const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForClamp(const ContextProperties& context_properties,
+                                const IdToOperandMap& id_to_operand_map,
                                 const mojom::ClampPtr& clamp,
                                 GraphBuilderDml& graph_builder,
                                 IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, clamp->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
+
+  CHECK(context_properties.data_type_limits.clamp_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   uint64_t output_id = clamp->output_operand_id;
   auto output_tensor_desc =
@@ -1865,13 +1869,17 @@ void CreateOperatorNodeForBinary(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
-void CreateOperatorNodeForPad(const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForPad(const ContextProperties& context_properties,
+                              const IdToOperandMap& id_to_operand_map,
                               const mojom::PadPtr& pad,
                               GraphBuilderDml& graph_builder,
                               IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, pad->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
+
+  CHECK(context_properties.data_type_limits.pad_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   uint64_t output_id = pad->output_operand_id;
   const auto& output_tensor_desc =
@@ -2052,17 +2060,17 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   return base::ok();
 }
 
-void CreateOperatorNodeForPrelu(const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForPrelu(const ContextProperties context_properties,
+                                const IdToOperandMap& id_to_operand_map,
                                 const mojom::PreluPtr& prelu,
                                 GraphBuilderDml& graph_builder,
                                 IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, prelu->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
-  CHECK(input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_FLOAT32 ||
-        input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_FLOAT16 ||
-        input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_INT32 ||
-        input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_INT8);
+
+  CHECK(context_properties.data_type_limits.prelu_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   const NodeOutput* slope =
       GetNodeOutputForOperand(id_to_node_output_map, prelu->slope_operand_id);
@@ -2273,6 +2281,8 @@ void CreateOperatorNodeForElementWiseUnary(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kCast: {
+      CHECK(
+          context_properties.data_type_limits.cast_input.Has(input_data_type));
       return CreateOperatorNodeForUnary<DML_CAST_OPERATOR_DESC,
                                         DML_OPERATOR_CAST>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
@@ -2567,13 +2577,17 @@ void CreateOperatorNodeForElu(const IdToOperandMap& id_to_operand_map,
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 }
 
-void CreateOperatorNodeForExpand(const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForExpand(const ContextProperties& context_properties,
+                                 const IdToOperandMap& id_to_operand_map,
                                  const mojom::ExpandPtr& expand,
                                  GraphBuilderDml& graph_builder,
                                  IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, expand->input_operand_id);
   auto input_tensor_desc = input->GetTensorDesc();
+
+  CHECK(context_properties.data_type_limits.expand_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   const uint64_t output_id = expand->output_operand_id;
   const auto output_tensor_desc =
@@ -2857,6 +2871,7 @@ void CreateOperatorNodeForGelu(
 // Creates a DirectML operator for the WebNN general matrix multiplication
 // (GEMM) of the expression alpha * A * B + beta * C.
 void CreateOperatorNodeForGemm(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
     const std::map<const Operation*, const Operation*>&
@@ -2867,7 +2882,9 @@ void CreateOperatorNodeForGemm(
   const NodeOutput* input_a_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, gemm->a_operand_id);
   auto input_a_tensor_desc = input_a_node_output->GetTensorDesc();
-  CHECK(kDmlFloatDataTypes.contains(input_a_tensor_desc.GetDataType()));
+
+  CHECK(context_properties.data_type_limits.gemm_input.Has(
+      DmlDataTypeToOperand(input_a_tensor_desc.GetDataType())));
 
   const NodeOutput* input_b_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, gemm->b_operand_id);
@@ -3913,6 +3930,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 
 // Using DML_GEMM_OPERATOR_DESC to implement WebNN matmul.
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
     const std::map<const Operation*, const Operation*>&
@@ -3965,6 +3983,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
     input_b_tensor_desc.BroadcastTo(output_tensor_dims, 2);
   }
 
+  CHECK(context_properties.data_type_limits.matmul_input.Has(
+      DmlDataTypeToOperand(input_a_tensor_desc.GetDataType())));
   CHECK_EQ(input_a_tensor_desc.GetDimensions().size(),
            input_b_tensor_desc.GetDimensions().size());
   CHECK_EQ(input_a_tensor_desc.GetDimensions().size(),
@@ -5515,8 +5535,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kClamp: {
-        CreateOperatorNodeForClamp(id_to_operand_map, operation->get_clamp(),
-                                   graph_builder, id_to_node_output_map);
+        CreateOperatorNodeForClamp(context_properties, id_to_operand_map,
+                                   operation->get_clamp(), graph_builder,
+                                   id_to_node_output_map);
         break;
       }
       case Operation::Tag::kConcat: {
@@ -5551,8 +5572,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kExpand: {
-        CreateOperatorNodeForExpand(id_to_operand_map, operation->get_expand(),
-                                    graph_builder, id_to_node_output_map);
+        CreateOperatorNodeForExpand(context_properties, id_to_operand_map,
+                                    operation->get_expand(), graph_builder,
+                                    id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kGather: {
@@ -5570,7 +5592,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       }
       case mojom::Operation::Tag::kGemm: {
         CreateOperatorNodeForGemm(
-            id_to_operand_map, operation.get(),
+            context_properties, id_to_operand_map, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_builder, id_to_node_output_map);
         break;
@@ -5665,15 +5687,16 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       }
       case mojom::Operation::Tag::kMatmul: {
         create_operator_result = CreateOperatorNodeForMatmul(
-            id_to_operand_map, operation.get(),
+            context_properties, id_to_operand_map, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_fusion_info.output_id_to_fusible_transpose_map, graph_builder,
             id_to_node_output_map);
         break;
       }
       case Operation::Tag::kPad: {
-            CreateOperatorNodeForPad(id_to_operand_map, operation->get_pad(),
-                                     graph_builder, id_to_node_output_map);
+        CreateOperatorNodeForPad(context_properties, id_to_operand_map,
+                                 operation->get_pad(), graph_builder,
+                                 id_to_node_output_map);
         break;
       }
       case Operation::Tag::kPool2d: {
@@ -5683,8 +5706,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kPrelu: {
-        CreateOperatorNodeForPrelu(id_to_operand_map, operation->get_prelu(),
-                                   graph_builder, id_to_node_output_map);
+        CreateOperatorNodeForPrelu(context_properties, id_to_operand_map,
+                                   operation->get_prelu(), graph_builder,
+                                   id_to_node_output_map);
         break;
       }
       case Operation::Tag::kReduce: {

@@ -526,7 +526,8 @@ bool ValidateUnaryOperation(const IdToOperandMap& id_to_operand_map,
   return output->descriptor == input->descriptor;
 }
 
-bool ValidateCastOperation(const IdToOperandMap& id_to_operand_map,
+bool ValidateCastOperation(const ContextProperties& context_properties,
+                           const IdToOperandMap& id_to_operand_map,
                            const mojom::ElementWiseUnary& operation,
                            base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(operation.input_operand_id)) {
@@ -545,6 +546,15 @@ bool ValidateCastOperation(const IdToOperandMap& id_to_operand_map,
   if (!base::ranges::equal(output->descriptor.shape(),
                            input->descriptor.shape())) {
     // The output shape is not expected.
+    return false;
+  }
+
+  if (!context_properties.data_type_limits.cast_input.Has(
+          input->descriptor.data_type())) {
+    return false;
+  }
+  if (!context_properties.data_type_limits.cast_input.Has(
+          output->descriptor.data_type())) {
     return false;
   }
 
@@ -636,11 +646,13 @@ bool ValidateArgMinMax(const ContextProperties& context_properties,
   return true;
 }
 
-bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
+bool ValidateClamp(const ContextProperties& context_properties,
+                   const IdToOperandMap& id_to_operand_map,
                    const mojom::Clamp& clamp,
                    base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, clamp,
-                              SupportedDataTypes::All(), processed_operands)) {
+                              context_properties.data_type_limits.clamp_input,
+                              processed_operands)) {
     return false;
   }
   if (!ValidateClampAttributes(clamp)) {
@@ -883,8 +895,8 @@ bool ValidateElementWiseUnary(const ContextProperties& context_properties,
           id_to_operand_map, operation,
           context_properties.data_type_limits.abs_input, processed_operands);
     case mojom::ElementWiseUnary::Kind::kCast:
-      return ValidateCastOperation(id_to_operand_map, operation,
-                                   processed_operands);
+      return ValidateCastOperation(context_properties, id_to_operand_map,
+                                   operation, processed_operands);
     case mojom::ElementWiseUnary::Kind::kCeil:
       return ValidateUnaryOperation(
           id_to_operand_map, operation,
@@ -943,7 +955,8 @@ bool ValidateElementWiseUnary(const ContextProperties& context_properties,
   }
 }
 
-bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
+bool ValidateExpand(const ContextProperties& context_properties,
+                    const IdToOperandMap& id_to_operand_map,
                     const mojom::Expand& expand,
                     base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(expand.input_operand_id)) {
@@ -955,6 +968,10 @@ bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
   auto* output = GetMojoOperand(id_to_operand_map, expand.output_operand_id);
   if (!input || !output || output == input) {
     // The expand operator is invalid.
+    return false;
+  }
+  if (!context_properties.data_type_limits.expand_input.Has(
+          input->descriptor.data_type())) {
     return false;
   }
   if (output->descriptor.data_type() != input->descriptor.data_type()) {
@@ -1004,7 +1021,8 @@ bool ValidateGather(const ContextProperties& context_properties,
   return true;
 }
 
-bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
+bool ValidateGemm(const ContextProperties& context_properties,
+                  const IdToOperandMap& id_to_operand_map,
                   const mojom::Gemm& gemm,
                   base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(gemm.a_operand_id) ||
@@ -1027,7 +1045,7 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   auto validated_output = ValidateGemmAndInferOutput(
-      a->descriptor, b->descriptor,
+      context_properties, a->descriptor, b->descriptor,
       ConvertToGemmAttributes(id_to_operand_map, gemm));
   if (!validated_output.has_value()) {
     return false;
@@ -1498,7 +1516,8 @@ bool ValidateInstanceNormalization(
   return true;
 }
 
-bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
+bool ValidateMatmul(const ContextProperties& context_properties,
+                    const IdToOperandMap& id_to_operand_map,
                     const mojom::Matmul& matmul,
                     base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(matmul.a_operand_id) ||
@@ -1514,8 +1533,8 @@ bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
     // The matmul operator is invalid.
     return false;
   }
-  auto validated_output =
-      ValidateMatmulAndInferOutput(a->descriptor, b->descriptor, matmul.label);
+  auto validated_output = ValidateMatmulAndInferOutput(
+      context_properties, a->descriptor, b->descriptor, matmul.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1526,7 +1545,8 @@ bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidatePad(const IdToOperandMap& id_to_operand_map,
+bool ValidatePad(const ContextProperties& context_properties,
+                 const IdToOperandMap& id_to_operand_map,
                  const mojom::Pad& pad,
                  base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(pad.input_operand_id)) {
@@ -1542,7 +1562,8 @@ bool ValidatePad(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidatePadAndInferOutput(
-      input->descriptor, pad.beginning_padding, pad.ending_padding, pad.label);
+      context_properties, input->descriptor, pad.beginning_padding,
+      pad.ending_padding, pad.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1586,7 +1607,8 @@ bool ValidatePool2d(const ContextProperties& context_properties,
   return true;
 }
 
-bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
+bool ValidatePrelu(const ContextProperties& context_properties,
+                   const IdToOperandMap& id_to_operand_map,
                    const mojom::Prelu& prelu,
                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(prelu.input_operand_id) ||
@@ -1604,7 +1626,7 @@ bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidatePreluAndInferOutput(
-      input->descriptor, slope->descriptor, prelu.label);
+      context_properties, input->descriptor, slope->descriptor, prelu.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1941,8 +1963,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
                                         *operation.get_batch_normalization(),
                                         processed_operands);
     case mojom::Operation::Tag::kClamp:
-      return ValidateClamp(id_to_operand_map, *operation.get_clamp(),
-                           processed_operands);
+      return ValidateClamp(context_properties, id_to_operand_map,
+                           *operation.get_clamp(), processed_operands);
     case mojom::Operation::Tag::kConcat:
       return ValidateConcat(context_properties, id_to_operand_map,
                             *operation.get_concat(), processed_operands);
@@ -1961,8 +1983,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
                                       *operation.get_element_wise_unary(),
                                       processed_operands);
     case mojom::Operation::Tag::kExpand:
-      return ValidateExpand(id_to_operand_map, *operation.get_expand(),
-                            processed_operands);
+      return ValidateExpand(context_properties, id_to_operand_map,
+                            *operation.get_expand(), processed_operands);
     case mojom::Operation::Tag::kGather:
       return ValidateGather(context_properties, id_to_operand_map,
                             *operation.get_gather(), processed_operands);
@@ -1971,8 +1993,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
           id_to_operand_map, *operation.get_gelu(),
           context_properties.data_type_limits.gelu_input, processed_operands);
     case mojom::Operation::Tag::kGemm:
-      return ValidateGemm(id_to_operand_map, *operation.get_gemm(),
-                          processed_operands);
+      return ValidateGemm(context_properties, id_to_operand_map,
+                          *operation.get_gemm(), processed_operands);
     case mojom::Operation::Tag::kGru:
       return ValidateGru(id_to_operand_map, *operation.get_gru(),
                          processed_operands);
@@ -2007,17 +2029,17 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateLstmCell(id_to_operand_map, *operation.get_lstm_cell(),
                               processed_operands);
     case mojom::Operation::Tag::kMatmul:
-      return ValidateMatmul(id_to_operand_map, *operation.get_matmul(),
-                            processed_operands);
+      return ValidateMatmul(context_properties, id_to_operand_map,
+                            *operation.get_matmul(), processed_operands);
     case mojom::Operation::Tag::kPad:
-      return ValidatePad(id_to_operand_map, *operation.get_pad(),
-                         processed_operands);
+      return ValidatePad(context_properties, id_to_operand_map,
+                         *operation.get_pad(), processed_operands);
     case mojom::Operation::Tag::kPool2d:
       return ValidatePool2d(context_properties, id_to_operand_map,
                             *operation.get_pool2d(), processed_operands);
     case mojom::Operation::Tag::kPrelu:
-      return ValidatePrelu(id_to_operand_map, *operation.get_prelu(),
-                           processed_operands);
+      return ValidatePrelu(context_properties, id_to_operand_map,
+                           *operation.get_prelu(), processed_operands);
     case mojom::Operation::Tag::kReduce:
       return ValidateReduce(context_properties, id_to_operand_map,
                             *operation.get_reduce(), processed_operands);

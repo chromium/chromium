@@ -1118,9 +1118,10 @@ MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, the output tensor of
   // clamp has the same data type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kClamp,
-                            webnn::SupportedDataTypes::All(), input, options);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kClamp,
+      ml_context_->GetProperties().data_type_limits.clamp_input, input,
+      options);
 }
 
 MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
@@ -1287,10 +1288,34 @@ MLOperand* MLGraphBuilder::cast(const MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
+  const std::string label = options->label().Utf8();
+
+  if (!ml_context_->GetProperties().data_type_limits.cast_input.Has(
+          input->DataType())) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        String(NotSupportedInputArgumentTypeError(
+            input->DataType(),
+            ml_context_->GetProperties().data_type_limits.cast_input)));
+    return nullptr;
+  }
+
+  const webnn::OperandDataType cast_data_type =
+      FromBlinkDataType(output_data_type.AsEnum());
+
+  if (!ml_context_->GetProperties().data_type_limits.cast_input.Has(
+          cast_data_type)) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        String(NotSupportedOpOutputTypeError(
+            cast_data_type,
+            ml_context_->GetProperties().data_type_limits.cast_input)));
+    return nullptr;
+  }
+
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(
-          FromBlinkDataType(output_data_type.AsEnum()), input->Shape()));
+      webnn::OperandDescriptor::Create(cast_data_type, input->Shape()));
 
   auto* cast = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kElementWiseUnary, options,
@@ -1354,9 +1379,20 @@ MLOperand* MLGraphBuilder::expand(const MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
+  const std::string label = options->label().Utf8();
+
+  const webnn::SupportedDataTypes& data_type_constraint =
+      ml_context_->GetProperties().data_type_limits.expand_input;
+  if (!data_type_constraint.Has(input->DataType())) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
+        String(NotSupportedInputArgumentTypeError(input->DataType(),
+                                                  data_type_constraint)));
+    return nullptr;
+  }
+
   auto output_shape = webnn::BroadcastShapes(input->Shape(), new_shape,
                                              /*bidirectional=*/false);
-  const std::string label = options->label().Utf8();
   if (!output_shape) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
@@ -1431,7 +1467,8 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateGemmAndInferOutput(a->Descriptor(), b->Descriptor(),
+      webnn::ValidateGemmAndInferOutput(ml_context_->GetProperties(),
+                                        a->Descriptor(), b->Descriptor(),
                                         ConvertToGemmAttributes(options)));
 
   auto* gemm = MakeGarbageCollected<MLOperator>(
@@ -1796,7 +1833,8 @@ MLOperand* MLGraphBuilder::matmul(const MLOperand* a,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateMatmulAndInferOutput(a->Descriptor(), b->Descriptor(),
+      webnn::ValidateMatmulAndInferOutput(ml_context_->GetProperties(),
+                                          a->Descriptor(), b->Descriptor(),
                                           options->label().Utf8()));
 
   // Create matmul operator and its output operand. Connect the matmul operator
@@ -1822,7 +1860,8 @@ MLOperand* MLGraphBuilder::pad(ScriptState* script_state,
   const std::string label = options->label().Utf8();
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidatePadAndInferOutput(input->Descriptor(), beginning_padding,
+      webnn::ValidatePadAndInferOutput(ml_context_->GetProperties(),
+                                       input->Descriptor(), beginning_padding,
                                        ending_padding, label));
 
   if (options->mode().AsEnum() != V8MLPaddingMode::Enum::kConstant &&
@@ -1910,7 +1949,8 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidatePreluAndInferOutput(
-          input->Descriptor(), slope->Descriptor(), options->label().Utf8()));
+          ml_context_->GetProperties(), input->Descriptor(),
+          slope->Descriptor(), options->label().Utf8()));
 
   auto* prelu = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kPrelu, options);

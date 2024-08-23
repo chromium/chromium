@@ -17,6 +17,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes constant,
                  SupportedDataTypes arg_min_max_input,
                  SupportedDataTypes arg_min_max_output,
+                 SupportedDataTypes cast_input,
+                 SupportedDataTypes clamp_input,
                  SupportedDataTypes concat_inputs,
                  SupportedDataTypes add_input,
                  SupportedDataTypes sub_input,
@@ -46,16 +48,21 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes sqrt_input,
                  SupportedDataTypes tan_input,
                  SupportedDataTypes elu_input,
+                 SupportedDataTypes expand_input,
                  SupportedDataTypes gather_input,
                  SupportedDataTypes gather_indices,
                  SupportedDataTypes gelu_input,
+                 SupportedDataTypes gemm_input,
                  SupportedDataTypes hard_sigmoid_input,
                  SupportedDataTypes hard_swish_input,
                  SupportedDataTypes leaky_relu_input,
                  SupportedDataTypes linear_input,
+                 SupportedDataTypes matmul_input,
+                 SupportedDataTypes pad_input,
                  SupportedDataTypes average_pool2d_input,
                  SupportedDataTypes l2_pool2d_input,
                  SupportedDataTypes max_pool2d_input,
+                 SupportedDataTypes prelu_input,
                  SupportedDataTypes reduce_l1_input,
                  SupportedDataTypes reduce_l2_input,
                  SupportedDataTypes reduce_log_sum_input,
@@ -95,6 +102,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes constant;
   SupportedDataTypes arg_min_max_input;
   SupportedDataTypes arg_min_max_output;
+  SupportedDataTypes cast_input;
+  SupportedDataTypes clamp_input;
   SupportedDataTypes concat_inputs;
   SupportedDataTypes add_input;
   SupportedDataTypes sub_input;
@@ -124,16 +133,21 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes sqrt_input;
   SupportedDataTypes tan_input;
   SupportedDataTypes elu_input;
+  SupportedDataTypes expand_input;
   SupportedDataTypes gather_input;
   SupportedDataTypes gather_indices;
   SupportedDataTypes gelu_input;
+  SupportedDataTypes gemm_input;
   SupportedDataTypes hard_sigmoid_input;
   SupportedDataTypes hard_swish_input;
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes linear_input;
+  SupportedDataTypes matmul_input;
+  SupportedDataTypes pad_input;
   SupportedDataTypes average_pool2d_input;
   SupportedDataTypes l2_pool2d_input;
   SupportedDataTypes max_pool2d_input;
+  SupportedDataTypes prelu_input;
   SupportedDataTypes reduce_l1_input;
   SupportedDataTypes reduce_l2_input;
   SupportedDataTypes reduce_log_sum_input;
@@ -166,6 +180,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.constant == rhs.constant &&
          lhs.arg_min_max_input == rhs.arg_min_max_input &&
          lhs.arg_min_max_output == rhs.arg_min_max_output &&
+         lhs.cast_input == rhs.cast_input &&
+         lhs.clamp_input == rhs.clamp_input &&
          lhs.concat_inputs == rhs.concat_inputs &&
          lhs.add_input == rhs.add_input &&
          lhs.sub_input == rhs.sub_input &&
@@ -195,14 +211,19 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.sqrt_input == rhs.sqrt_input &&
          lhs.tan_input == rhs.tan_input &&
          lhs.elu_input == rhs.elu_input &&
+         lhs.expand_input == rhs.expand_input &&
          lhs.gelu_input == rhs.gelu_input &&
+         lhs.gemm_input == rhs.gemm_input &&
          lhs.hard_sigmoid_input == rhs.hard_sigmoid_input &&
          lhs.hard_swish_input == rhs.hard_swish_input &&
          lhs.leaky_relu_input == rhs.leaky_relu_input &&
          lhs.linear_input == rhs.linear_input &&
+         lhs.matmul_input == rhs.matmul_input &&
+         lhs.pad_input == rhs.pad_input &&
          lhs.average_pool2d_input == rhs.average_pool2d_input &&
          lhs.l2_pool2d_input == rhs.l2_pool2d_input &&
          lhs.max_pool2d_input == rhs.max_pool2d_input &&
+         lhs.prelu_input == rhs.prelu_input &&
          lhs.reduce_l1_input == rhs.reduce_l1_input &&
          lhs.reduce_l2_input == rhs.reduce_l2_input &&
          lhs.reduce_log_sum_input == rhs.reduce_log_sum_input &&
