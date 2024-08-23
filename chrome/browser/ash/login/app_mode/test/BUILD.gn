@@ -120,7 +120,6 @@ source_set("browser_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/app_mode/test:test_support",
     "//chrome/browser/ash",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/accessibility:test_support",
