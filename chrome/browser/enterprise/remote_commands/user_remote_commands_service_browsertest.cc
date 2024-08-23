@@ -137,7 +137,7 @@ class UserRemoteCommandsServiceTest
         g_browser_process->profile_manager()->user_data_dir();
     profile_ = Profile::CreateProfile(
         dest_path.Append(FILE_PATH_LITERAL("New Profile 1")),
-        /*delegate=*/nullptr, Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
 #else
     profile_ = chrome_test_utils::GetProfile(this);
 #endif

@@ -155,7 +155,7 @@ class PendingProfileCreation : public Profile::Delegate {
     profile_ = nullptr;
 
     delegate->OnProfileCreationFinished(
-        profile, Profile::CREATE_MODE_ASYNCHRONOUS, success, is_new_profile_);
+        profile, Profile::CreateMode::kAsynchronous, success, is_new_profile_);
     return true;
   }
 

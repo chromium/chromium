@@ -523,8 +523,9 @@ void TestingProfile::FinishInit() {
   }
 
   if (delegate_) {
-    delegate_->OnProfileCreationFinished(this, CREATE_MODE_ASYNCHRONOUS, true,
-                                         false);
+    delegate_->OnProfileCreationFinished(this, CreateMode::kAsynchronous,
+                                         /*success=*/true,
+                                         /*is_new_profile=*/false);
   }
 }
 

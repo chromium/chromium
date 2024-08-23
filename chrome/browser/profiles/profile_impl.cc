@@ -349,23 +349,25 @@ std::unique_ptr<Profile> Profile::CreateProfile(const base::FilePath& path,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
   base::Time creation_time = base::Time::Now();
-  if (create_mode == CREATE_MODE_ASYNCHRONOUS) {
-    DCHECK(delegate);
-    creation_time = CreateProfileDirectory(io_task_runner.get(), path, true);
-  } else if (create_mode == CREATE_MODE_SYNCHRONOUS) {
-    if (base::PathExists(path)) {
-      creation_time = GetCreationTimeForPath(path);
-    } else {
-      // TODO(rogerta): http://crbug/160553 - Bad things happen if we can't
-      // write to the profile directory.  We should eventually be able to run in
-      // this situation.
-      if (!base::CreateDirectory(path))
-        return nullptr;
+  switch (create_mode) {
+    case CreateMode::kAsynchronous:
+      DCHECK(delegate);
+      creation_time = CreateProfileDirectory(io_task_runner.get(), path, true);
+      break;
+    case CreateMode::kSynchronous:
+      if (base::PathExists(path)) {
+        creation_time = GetCreationTimeForPath(path);
+      } else {
+        // TODO(rogerta): http://crbug/160553 - Bad things happen if we can't
+        // write to the profile directory.  We should eventually be able to run
+        // in this situation.
+        if (!base::CreateDirectory(path)) {
+          return nullptr;
+        }
 
-      CreateProfileReadme(path);
-    }
-  } else {
-    NOTREACHED_IN_MIGRATION();
+        CreateProfileReadme(path);
+      }
+      break;
   }
 
   std::unique_ptr<Profile> profile = base::WrapUnique(new ProfileImpl(
@@ -471,7 +473,7 @@ ProfileImpl::ProfileImpl(
   }
 
   // The ProfileImpl can be created both synchronously and asynchronously.
-  bool async_prefs = create_mode == CREATE_MODE_ASYNCHRONOUS;
+  bool async_prefs = create_mode == CreateMode::kAsynchronous;
 
 #if BUILDFLAG(IS_ANDROID)
   auto* startup_data = g_browser_process->startup_data();
@@ -1176,24 +1178,28 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (create_mode == CREATE_MODE_SYNCHRONOUS) {
-    // Synchronous create mode implies that either it is restart after crash,
-    // or we are in tests. In both cases the first loaded locale is correct.
-    OnLocaleReady(create_mode);
-  } else {
-    if (ash::ProfileHelper::IsPrimaryProfile(this)) {
-      auto& map = profile_policy_connector_->policy_service()->GetPolicies(
-          policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-      ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-          map, IsNewProfile(), IsRegularProfile());
-      crosapi::browser_util::CacheLacrosAvailability(map);
-      crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(map);
-      ash::standalone_browser::CacheLacrosSelection(map);
-    }
+  switch (create_mode) {
+    case CreateMode::kSynchronous:
+      // Synchronous create mode implies that either it is restart after crash,
+      // or we are in tests. In both cases the first loaded locale is correct.
+      OnLocaleReady(create_mode);
+      break;
+    case CreateMode::kAsynchronous:
+      if (ash::ProfileHelper::IsPrimaryProfile(this)) {
+        auto& map = profile_policy_connector_->policy_service()->GetPolicies(
+            policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
+                                    std::string()));
+        ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
+            map, IsNewProfile(), IsRegularProfile());
+        crosapi::browser_util::CacheLacrosAvailability(map);
+        crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(map);
+        ash::standalone_browser::CacheLacrosSelection(map);
+      }
 
-    ash::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(
-        this, base::BindOnce(&ProfileImpl::OnLocaleReady,
-                             base::Unretained(this), create_mode));
+      ash::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(
+          this, base::BindOnce(&ProfileImpl::OnLocaleReady,
+                               base::Unretained(this), create_mode));
+      break;
   }
 #else
   OnLocaleReady(create_mode);

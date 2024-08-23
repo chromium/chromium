@@ -249,8 +249,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   std::unique_ptr<Profile> other_profile;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    other_profile =
-        Profile::CreateProfile(path, nullptr, Profile::CREATE_MODE_SYNCHRONOUS);
+    other_profile = Profile::CreateProfile(path, nullptr,
+                                           Profile::CreateMode::kSynchronous);
   }
   Profile* other_profile_ptr = other_profile.get();
   profile_manager->RegisterTestingProfile(std::move(other_profile), true);

@@ -1234,12 +1234,12 @@ std::unique_ptr<Profile> ProfileManager::CreateProfileHelper(
     const base::FilePath& path) {
   TRACE_EVENT0("browser", "ProfileManager::CreateProfileHelper");
 
-  return Profile::CreateProfile(path, this, Profile::CREATE_MODE_SYNCHRONOUS);
+  return Profile::CreateProfile(path, this, Profile::CreateMode::kSynchronous);
 }
 
 std::unique_ptr<Profile> ProfileManager::CreateProfileAsyncHelper(
     const base::FilePath& path) {
-  return Profile::CreateProfile(path, this, Profile::CREATE_MODE_ASYNCHRONOUS);
+  return Profile::CreateProfile(path, this, Profile::CreateMode::kAsynchronous);
 }
 
 bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,
@@ -1812,7 +1812,7 @@ void ProfileManager::OnProfileCreationFinished(Profile* profile,
   CHECK(iter != profiles_info_.end(), base::NotFatalUntil::M130);
   ProfileInfo* info = iter->second.get();
 
-  if (create_mode == Profile::CREATE_MODE_SYNCHRONOUS) {
+  if (create_mode == Profile::CreateMode::kSynchronous) {
     // Already initialized in OnProfileCreationStarted().
     // TODO(nicolaso): Figure out why this would break browser tests:
     //     DCHECK_EQ(profile, profiles_info_->GetCreatedProfile());
@@ -1862,7 +1862,7 @@ void ProfileManager::OnProfileCreationStarted(Profile* profile,
     observer.OnProfileCreationStarted(profile);
   }
 
-  if (create_mode == Profile::CREATE_MODE_ASYNCHRONOUS) {
+  if (create_mode == Profile::CreateMode::kAsynchronous) {
     // Profile will be registered later, in CreateProfileAsync().
     return;
   }
