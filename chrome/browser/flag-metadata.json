@@ -1273,7 +1273,7 @@
   {
     "name": "campaigns-test-tag",
     "owners": [ "llin@google.com", "cros-growth@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "campbell-glyph",
@@ -2003,7 +2003,7 @@
   {
     "name": "demo-mode-test-tag",
     "owners": [ "llin@google.com", "cros-demo-mode-eng@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "deprecate-alt-click",
@@ -4997,7 +4997,7 @@
   {
     "name": "growth-campaigns",
     "owners": [ "llin@google.com", "cros-growth@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "gts-close-tab-animation",
