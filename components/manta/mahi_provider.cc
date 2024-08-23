@@ -30,6 +30,49 @@ namespace {
 
 constexpr char kOauthConsumerName[] = "manta_mahi";
 
+const net::NetworkTrafficAnnotationTag kMahiTrafficAnnotationTag =
+    net::DefineNetworkTrafficAnnotation("help_me_read_request",
+                                        R"(
+        semantics {
+          sender: "Help Me Read"
+          description:
+            "ChromeOS can help you read articles on webpages or PDF files by "
+            "summarizing or answering questions by sending the content, along "
+            "with user input question if provided, to Google's servers. Google "
+            "returns summary or answers that will be displayed on the screen."
+          trigger: "User right clicks within a distillable surface, e.g. a "
+                   "webpage or a PDF file opened in the Gallery app with "
+                   "enough extractable text content, clicks 'Summarize' button "
+                   "or asks a question then clicks 'Send' icon."
+          internal {
+            contacts {
+                email: "cros-manta-team@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: USER_CONTENT
+            type: WEB_CONTENT
+          }
+          data: "The text content of the webpage or the PDF file where the "
+                "'Help Me Read' feature is triggered, along with user input "
+                "question if provided."
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2024-08-24"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "You can enable or disable this feature via 'Help me read' in "
+            "ChromeOS's settings under 'System preferences > Search engine > "
+            "Use Google AI to get help reading and writing'."
+          chrome_policy {
+            HelpMeReadSettings {
+                HelpMeReadSettings: 2
+            }
+          }
+        })");
+
 void OnServerResponseOrErrorReceived(
     MantaGenericCallback callback,
     std::unique_ptr<proto::Response> manta_response,
@@ -89,11 +132,9 @@ void MahiProvider::Summarize(const std::string& input,
   input_data->set_tag("model_input");
   input_data->set_text(input);
 
-  // TODO(b:333459933): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
-      kOauthConsumerName, MISSING_TRAFFIC_ANNOTATION, request,
+      kOauthConsumerName, kMahiTrafficAnnotationTag, request,
       MantaMetricType::kMahiSummary,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)));
@@ -131,11 +172,9 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
     input_data->set_text(previous_answer);
   }
 
-  // TODO(b:288019728): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
-      kOauthConsumerName, MISSING_TRAFFIC_ANNOTATION, request,
+      kOauthConsumerName, kMahiTrafficAnnotationTag, request,
       MantaMetricType::kMahiQA,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)));
