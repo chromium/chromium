@@ -1061,7 +1061,7 @@
 <translation id="2991174974383378012">与网站分享</translation>
 <translation id="299122504639061328">管理您的默认搜索引擎和网站搜索</translation>
 <translation id="2991571918955627853">您目前无法访问 <ph name="SITE" />，因为此网站使用了 HSTS。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
-<translation id="2991865971341174470">验证您的身份，以便 Chrome 能填充您的付款信息。</translation>
+<translation id="2991865971341174470">您需要验证身份，Chrome 才能填充您的付款信息。</translation>
 <translation id="2995517112308048736">文件大小：</translation>
 <translation id="299990983510665749">掀背车</translation>
 <translation id="3002501248619246229">检查进纸匣媒体</translation>
@@ -1266,7 +1266,7 @@
 <translation id="3381668585148405088">验证您的购买交易</translation>
 <translation id="3383566085871012386">当前优先级顺序</translation>
 <translation id="3384522979010096022">贵组织不允许您查看此网站</translation>
-<translation id="3387261909427947069">付款方式</translation>
+<translation id="3387261909427947069">支付方式</translation>
 <translation id="3391030046425686457">递送地址</translation>
 <translation id="3391482648489541560">文件修改</translation>
 <translation id="3392028486601120379">网址格式“<ph name="URL_PATTERN" />”中指定了路径。此键不支持路径。请移除该路径，然后重试。例如 *://example.com/ =&gt; *://example.com</translation>
@@ -4380,7 +4380,7 @@
 <translation id="979503328401807348">更实用的广告</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="984101218975906499">医药与生物技术</translation>
-<translation id="984275831282074731">付款方式</translation>
+<translation id="984275831282074731">支付方式</translation>
 <translation id="985199708454569384">&lt;p&gt;如果您的计算机或移动设备的日期与时间不准确，您就会看到这条错误消息。&lt;/p&gt;
     &lt;p&gt;要修正该错误，请打开您设备的时钟，并确保日期与时间正确无误。&lt;/p&gt;</translation>
 <translation id="986257639512122511">您已向 <ph name="ORIGIN" /> 授予<ph name="PERMISSION" />使用期限</translation>
