@@ -314,7 +314,7 @@ BASE_FEATURE(kEnhancedSafeBrowsingPromo,
 
 constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
     &kSafeBrowsingDailyPhishingReportsLimit,
-    /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/3};
+    /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/10};
 
 // Returns the list of the experimental features that are enabled or disabled,
 // as part of currently running Safe Browsing experiments.
