@@ -2,15 +2,86 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
+
+#include "base/debug/stack_trace.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "v8/include/v8-local-handle.h"
 
 namespace blink {
 
-using WindowProxyTest = SimTest;
+namespace {
+
+class DidClearWindowObjectCounter
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  explicit DidClearWindowObjectCounter(int& counter) : counter_(counter) {}
+
+  void DidClearWindowObject() override { ++*counter_; }
+
+ private:
+  raw_ref<int> counter_;
+};
+
+class WindowProxyTest : public SimTest {
+ public:
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+  CreateWebFrameClientForMainFrame() override {
+    return std::make_unique<DidClearWindowObjectCounter>(
+        did_clear_window_object_count_);
+  }
+
+  int DidClearWindowObjectCount() const {
+    return did_clear_window_object_count_;
+  }
+
+ private:
+  int did_clear_window_object_count_ = 0;
+};
+
+// A document without any script should not trigger WindowProxy initialization.
+TEST_F(WindowProxyTest, NotInitializedIfNoScript) {
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(
+      R"HTML(<!DOCTYPE html><html><body></body></html>)HTML");
+
+  EXPECT_EQ(1, DidClearWindowObjectCount());
+
+  LocalFrame* const frame = GetDocument().GetFrame();
+  v8::Isolate* const isolate = ToIsolate(frame);
+  // Technically not needed for this test, but if something is broken, it fails
+  // more gracefully with a HandleScope.
+  v8::HandleScope scope(Window().GetIsolate());
+  v8::Local<v8::Context> context =
+      ToV8ContextMaybeEmpty(frame, DOMWrapperWorld::MainWorld(isolate));
+  EXPECT_TRUE(context.IsEmpty());
+}
+
+// A named item currently triggers WindowProxy initialization.
+// TODO(dcheng): It's not clear if this is necessary or if it can be done lazily
+// instead.
+TEST_F(WindowProxyTest, NamedItem) {
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(
+      R"HTML(<!DOCTYPE html><html><body><iframe name="x"></iframe></body></html>)HTML");
+
+  EXPECT_EQ(2, DidClearWindowObjectCount());
+
+  LocalFrame* const frame = GetDocument().GetFrame();
+  v8::Isolate* const isolate = ToIsolate(frame);
+  v8::HandleScope scope(Window().GetIsolate());
+  v8::Local<v8::Context> context =
+      ToV8ContextMaybeEmpty(frame, DOMWrapperWorld::MainWorld(isolate));
+  EXPECT_FALSE(context.IsEmpty());
+}
 
 // Tests that a WindowProxy is reinitialized after a navigation, even if the new
 // Document does not use any scripting.
@@ -95,5 +166,7 @@ TEST_F(WindowProxyTest, IsolatedWorldReinitializedAfterNavigation) {
   EXPECT_TRUE(top_via_saved->IsObject());
   EXPECT_TRUE(window_top->StrictEquals(top_via_saved));
 }
+
+}  // namespace
 
 }  // namespace blink
