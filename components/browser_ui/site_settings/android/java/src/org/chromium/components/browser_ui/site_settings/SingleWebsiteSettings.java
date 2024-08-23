@@ -147,6 +147,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 return "camera_permission_list";
             case ContentSettingsType.GEOLOCATION:
                 return "location_access_list";
+            case ContentSettingsType.HAND_TRACKING:
+                return "hand_tracking_permission_list";
             case ContentSettingsType.MEDIASTREAM_MIC:
                 return "microphone_permission_list";
             case ContentSettingsType.MIDI_SYSEX:

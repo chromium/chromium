@@ -18,6 +18,7 @@ import androidx.preference.Preference;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -50,6 +51,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.webxr.WebXrAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -150,6 +152,10 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                         .hasSwitch(ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
                 return ContentFeatureMap.isEnabled(ContentFeatures.FED_CM);
+            case SiteSettingsCategory.Type.HAND_TRACKING:
+                return PackageManagerUtils.hasSystemFeature(
+                                PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)
+                        && WebXrAndroidFeatureMap.isHandTrackingEnabled();
             case SiteSettingsCategory.Type.NFC:
                 return ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC);
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:

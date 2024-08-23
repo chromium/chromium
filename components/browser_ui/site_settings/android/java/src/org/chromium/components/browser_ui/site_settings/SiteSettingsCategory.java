@@ -48,6 +48,7 @@ public class SiteSettingsCategory {
         Type.BLUETOOTH_SCANNING,
         Type.CAMERA,
         Type.CLIPBOARD,
+        Type.HAND_TRACKING,
         Type.IDLE_DETECTION,
         Type.DEVICE_LOCATION,
         Type.JAVASCRIPT,
@@ -107,9 +108,10 @@ public class SiteSettingsCategory {
         int ZOOM = 28;
         int STORAGE_ACCESS = 29;
         int TRACKING_PROTECTION = 30;
+        int HAND_TRACKING = 31;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 31;
+        int NUM_ENTRIES = 32;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -214,6 +216,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.GEOLOCATION;
             case Type.FEDERATED_IDENTITY_API:
                 return ContentSettingsType.FEDERATED_IDENTITY_API;
+            case Type.HAND_TRACKING:
+                return ContentSettingsType.HAND_TRACKING;
             case Type.IDLE_DETECTION:
                 return ContentSettingsType.IDLE_DETECTION;
             case Type.JAVASCRIPT:
@@ -295,6 +299,8 @@ public class SiteSettingsCategory {
                 return "device_location";
             case Type.FEDERATED_IDENTITY_API:
                 return "federated_identity_api";
+            case Type.HAND_TRACKING:
+                return "hand_tracking";
             case Type.IDLE_DETECTION:
                 return "idle_detection";
             case Type.JAVASCRIPT:

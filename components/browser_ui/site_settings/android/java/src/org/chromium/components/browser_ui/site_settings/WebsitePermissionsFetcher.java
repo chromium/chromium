@@ -91,6 +91,7 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.AR:
             case ContentSettingsType.CLIPBOARD_READ_WRITE:
             case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.HAND_TRACKING:
             case ContentSettingsType.IDLE_DETECTION:
             case ContentSettingsType.MEDIASTREAM_CAMERA:
             case ContentSettingsType.MEDIASTREAM_MIC:

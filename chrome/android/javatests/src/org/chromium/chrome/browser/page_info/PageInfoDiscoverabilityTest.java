@@ -116,11 +116,10 @@ public class PageInfoDiscoverabilityTest {
                     new ParameterSet()
                             .name("RequestType.kGeolocation")
                             .value(ContentSettingsType.GEOLOCATION, true));
-            // TODO(crbug.com/359418633): Add Site Setting entry for Hand Tracking.
             parameters.add(
                     new ParameterSet()
                             .name("RequestType.kHandTracking")
-                            .value(ContentSettingsType.HAND_TRACKING, false));
+                            .value(ContentSettingsType.HAND_TRACKING, true));
             parameters.add(
                     new ParameterSet()
                             .name("RequestType.kIdleDetection")

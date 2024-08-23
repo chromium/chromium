@@ -20,4 +20,12 @@ static jboolean JNI_WebXrAndroidFeatureMap_IsOpenXrEnabled(JNIEnv* env) {
 #endif
 }
 
+static jboolean JNI_WebXrAndroidFeatureMap_IsHandTrackingEnabled(JNIEnv* env) {
+#if BUILDFLAG(ENABLE_OPENXR)
+  return device::features::IsHandTrackingEnabled();
+#else
+  return false;
+#endif
+}
+
 }  // namespace webxr
