@@ -127,15 +127,11 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
   }
 
   {
-    int icon_id = page_info_client_->GetJavaResourceId(
-        PageInfoUI::GetConnectionIconID(identity_info.connection_status));
-    int icon_color_id = page_info_client_->GetJavaResourceId(
-        PageInfoUI::GetConnectionIconColorID(identity_info.connection_status));
-
     ScopedJavaLocalRef<jstring> description = ConvertUTF8ToJavaString(
         env, identity_info.connection_status_description);
     Java_ConnectionInfoView_addDescriptionSection(
-        env, popup_jobject_, icon_id, nullptr, description, icon_color_id);
+        env, popup_jobject_, /*iconId=*/0, nullptr, description,
+        /*iconColorId=*/0);
   }
 
   Java_ConnectionInfoView_addMoreInfoLink(

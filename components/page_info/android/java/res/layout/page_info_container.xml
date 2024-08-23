@@ -18,6 +18,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- Used as an empty block of equal size to the close button to allow the dialog
+        title to be properly centered -->
+        <TextView
+            android:id="@+id/page_info_close_left_padding"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:visibility="gone"
+            android:focusable="false"/>
+
         <LinearLayout
             android:id="@+id/page_info_url_wrapper"
             android:layout_width="0dp"
@@ -83,8 +92,8 @@
                 android:id="@+id/subpage_back_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="-12dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="-4dp"
+                android:layout_marginEnd="12dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/back"
                 android:minWidth="@dimen/min_touch_target_size"

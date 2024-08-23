@@ -120,9 +120,14 @@ public class ConnectionInfoView implements OnClickListener {
     private View addSection(int iconId, String headline, String description, int iconColorId) {
         View section = LayoutInflater.from(mContext).inflate(R.layout.connection_info, null);
         ImageView i = section.findViewById(R.id.connection_info_icon);
-        i.setImageResource(iconId);
-        ImageViewCompat.setImageTintList(
-                i, AppCompatResources.getColorStateList(mContext, iconColorId));
+        if (iconId == 0) {
+            assert iconColorId == 0;
+            i.setVisibility(View.INVISIBLE);
+        } else {
+            i.setImageResource(iconId);
+            ImageViewCompat.setImageTintList(
+                    i, AppCompatResources.getColorStateList(mContext, iconColorId));
+        }
 
         TextView d = section.findViewById(R.id.connection_info_description);
         d.setText(description);
@@ -136,7 +141,7 @@ public class ConnectionInfoView implements OnClickListener {
         assert mCertificateViewerTextView == null;
         mCertificateViewerTextView = new AppCompatTextView(mContext);
         mCertificateViewerTextView.setText(label);
-        mCertificateViewerTextView.setTextAppearance(R.style.TextAppearance_TextSmall_Link);
+        mCertificateViewerTextView.setTextAppearance(R.style.TextAppearance_TextMedium_Link);
         mCertificateViewerTextView.setOnClickListener(this);
         mCertificateViewerTextView.setPadding(0, mPaddingVertical, 0, 0);
         mCertificateLayout.addView(mCertificateViewerTextView);
@@ -162,7 +167,7 @@ public class ConnectionInfoView implements OnClickListener {
         mMoreInfoLink = new AppCompatTextView(mContext);
         mLinkUrl = HELP_URL;
         mMoreInfoLink.setText(linkText);
-        mMoreInfoLink.setTextAppearance(R.style.TextAppearance_TextSmall_Link);
+        mMoreInfoLink.setTextAppearance(R.style.TextAppearance_TextMedium_Link);
         mMoreInfoLink.setPadding(0, mPaddingVertical, 0, 0);
         mMoreInfoLink.setOnClickListener(this);
         mDescriptionLayout.addView(mMoreInfoLink);

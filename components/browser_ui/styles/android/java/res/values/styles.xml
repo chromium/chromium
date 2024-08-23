@@ -200,9 +200,6 @@ found in the LICENSE file.
     <style name="TextAppearance.TextAccentMediumThick.Link" parent="TextAppearance.TextAccentMediumThick">
         <item name="android:textColor">@color/default_text_color_link_tint_list</item>
     </style>
-    <style name="TextAppearance.TextSmall.Link" parent="TextAppearance.TextSmall">
-        <item name="android:textColor">@color/default_text_color_link_tint_list</item>
-    </style>
 
     <!-- Formerly inverse text styles -->
     <!-- Text styles used on dark background on light theme, and light background on dark theme. -->
