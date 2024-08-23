@@ -5,6 +5,8 @@
 #ifndef ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_TEST_API_H_
 #define ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_TEST_API_H_
 
+#include <vector>
+
 #include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
@@ -16,7 +18,9 @@
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/user_state.h"
 #include "ash/public/cpp/login_types.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
+#include "ui/views/view.h"
 
 namespace ash {
 

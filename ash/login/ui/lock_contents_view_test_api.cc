@@ -4,6 +4,8 @@
 
 #include "ash/login/ui/lock_contents_view_test_api.h"
 
+#include <vector>
+
 #include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
@@ -15,7 +17,10 @@
 #include "ash/login/ui/note_action_launch_button.h"
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/public/cpp/login_types.h"
+#include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
