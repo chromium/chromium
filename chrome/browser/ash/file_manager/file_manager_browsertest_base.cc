@@ -2449,12 +2449,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(search_features::kLauncherImageSearchOcr);
   }
 
-  if (options.enable_fsps_in_recents) {
-    enabled_features.push_back(ash::features::kFSPsInRecents);
-  } else {
-    disabled_features.push_back(ash::features::kFSPsInRecents);
-  }
-
   if (options.enable_google_one_offer_files_banner) {
     enabled_features.push_back(ash::features::kGoogleOneOfferFilesBanner);
   } else {
