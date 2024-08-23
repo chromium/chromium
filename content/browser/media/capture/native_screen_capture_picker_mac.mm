@@ -7,6 +7,7 @@
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
 #include "base/features.h"
+#include "base/timer/timer.h"
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
@@ -100,11 +101,16 @@ class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
   base::WeakPtr<NativeScreenCapturePicker> GetWeakPtr() override;
 
  private:
+  void ScheduleCleanup(DesktopMediaID::Id id);
+  void CleanupContentFilter(DesktopMediaID::Id id);
+
   NSMutableDictionary<NSNumber*, PickerObserver*>* __strong picker_observers_;
   // Cached content filters are needed so that a stream can be restarted without
   // having to show the native picker again.
   NSMutableDictionary<NSNumber*, SCContentFilter*>* __strong
       cached_content_filters_;
+  std::unordered_map<DesktopMediaID::Id, base::OneShotTimer>
+      cached_content_filters_cleanup_timers_;
   DesktopMediaID::Id next_id_ = 0;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<NativeScreenCapturePickerMac> weak_ptr_factory_{this};
@@ -165,6 +171,7 @@ void NativeScreenCapturePickerMac::Open(
 void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (@available(macOS 14.0, *)) {
+    ScheduleCleanup(device_id.id);
     NSNumber* source_id = @(device_id.id);
     PickerObserver* picker_observer = picker_observers_[source_id];
     if (!picker_observer) {
@@ -187,19 +194,36 @@ std::unique_ptr<media::VideoCaptureDevice>
 NativeScreenCapturePickerMac::CreateDevice(const DesktopMediaID& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  cached_content_filters_cleanup_timers_.erase(source.id);
   NSNumber* source_id = @(source.id);
   SCContentFilter* filter = cached_content_filters_[source_id];
   if (!filter) {
     PickerObserver* picker_observer = picker_observers_[source_id];
     filter = [picker_observer contentFilter];
-    // TODO(https://crbug.com/360781940): Remove cached entries on close if the
-    // stream is not reopened within 1-2 minutes.
     cached_content_filters_[source_id] = filter;
   }
 
   std::unique_ptr<media::VideoCaptureDevice> device =
       CreateScreenCaptureKitDeviceMac(source, filter);
   return device;
+}
+
+void NativeScreenCapturePickerMac::ScheduleCleanup(DesktopMediaID::Id id) {
+  // We need to retain the content filter for some time in case the device is
+  // restarted, e.g., when ApplyConstraints is called on a MediaStreamTrack.
+  cached_content_filters_cleanup_timers_[id].Start(
+      FROM_HERE, base::Seconds(60),
+      base::BindOnce(
+          &NativeScreenCapturePickerMac::CleanupContentFilter,
+          // Passing `this` is safe since
+          // `cached_content_filters_cleanup_timers_` is owned by `this`.
+          base::Unretained(this), id));
+}
+
+void NativeScreenCapturePickerMac::CleanupContentFilter(DesktopMediaID::Id id) {
+  NSNumber* source_id = @(id);
+  [cached_content_filters_ removeObjectForKey:source_id];
+  cached_content_filters_cleanup_timers_.erase(id);
 }
 
 base::WeakPtr<NativeScreenCapturePicker>
