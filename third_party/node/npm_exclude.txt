@@ -43,3 +43,6 @@ lit-html/*
 @mediapipe/tasks-vision/vision_bundle.cjs
 @mediapipe/tasks-vision/vision_bundle.cjs.map
 @mediapipe/tasks-vision/vision_bundle.mjs.map
+
+# Exlude unnecessary files fom @rollup/wasm-node.
+@rollup/wasm-node/dist/es/*
