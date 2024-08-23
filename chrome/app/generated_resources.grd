@@ -8559,7 +8559,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_ROMANTIC" desc="The label for a wallpaper search mood (ex Chaotic).">
         Romantic
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SERENE" desc="The label for a wallpaper search mood (ex Chaotic).">
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SERENE" desc="The label for a wallpaper search mood (ex Chaotic)." meaning="A mood that refers to a calm and peaceful state of mind or feeling.">
         Serene
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SNOWY" desc="The label for a wallpaper search mood (ex Chaotic).">
