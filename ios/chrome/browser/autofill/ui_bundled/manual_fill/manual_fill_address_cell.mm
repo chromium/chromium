@@ -4,14 +4,15 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_cell.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -731,6 +732,10 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 // Called when the "Autofill Form" button is tapped. Fills the current form with
 // the address' data.
 - (void)onAutofillFormButtonTapped {
+  base::UmaHistogramSparse(
+      "Autofill.UserAcceptedSuggestionAtIndex.Address.ManualFallback",
+      _cellIndex);
+
   FormSuggestion* suggestion = [FormSuggestion
              suggestionWithValue:nil
                       minorValue:nil

@@ -131,6 +131,28 @@ NSString* ExpirationDateNSString() {
                                  autofill::test::NextYear().substr(2));
 }
 
+// Verifies that the number of accepted suggestions recorded for the given
+// `suggestion_index` is as expected.
+void CheckAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index) {
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
+      @"Unexpected histogram count for accepted card suggestion index.");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:@"Autofill.UserAcceptedSuggestionAtIndex."
+                                      @"CreditCard.BottomSheet"],
+      @"Unexpected histogram count for bottom sheet accepted card suggestion "
+      @"index.");
+}
+
 #pragma mark - Helper methods
 
 // Loads simple page on localhost.
@@ -213,15 +235,9 @@ NSString* ExpirationDateNSString() {
               forHistogram:@"Autofill.TouchToFill.CreditCard.SelectedIndex"],
       @"Unexpected histogram error for touch to fill credit card selected");
 
-  // Verify that the acceptance of the card suggestion at index 0 was recorded
-  // in the right histogram.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:0
-                         forHistogram:
-                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
-      @"Unexpected histogram error for accepted credit card suggestion index.");
+  // Verify that the acceptance of the card suggestion at index 0 was correctly
+  // recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
 
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
@@ -251,15 +267,9 @@ NSString* ExpirationDateNSString() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 
-  // Verify that the acceptance of the card suggestion at index 1 was recorded
-  // in the right histogram.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:1
-                         forHistogram:
-                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
-      @"Unexpected histogram error for accepted credit card suggestion index.");
+  // Verify that the acceptance of the card suggestion at index 1 was correctly
+  // recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/1);
 
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];

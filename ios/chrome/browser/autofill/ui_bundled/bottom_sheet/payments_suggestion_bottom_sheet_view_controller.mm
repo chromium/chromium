@@ -224,6 +224,8 @@ CGFloat const kTitleLogoHeight = 32;
   self.disableBottomSheetOnExit = NO;
 
   NSInteger index = [self selectedRow];
+  base::UmaHistogramSparse(
+      "Autofill.UserAcceptedSuggestionAtIndex.CreditCard.BottomSheet", index);
   [self.handler primaryButtonTappedForCard:_creditCardData[index]
                                    atIndex:index];
 

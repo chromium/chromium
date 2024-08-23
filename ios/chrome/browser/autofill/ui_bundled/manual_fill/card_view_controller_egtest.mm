@@ -228,6 +228,28 @@ id<GREYMatcher> CvcChipButton() {
       grey_interactable(), nullptr);
 }
 
+// Verifies that the number of accepted suggestions recorded for the given
+// `suggestion_index` is as expected.
+void CheckAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index) {
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
+      @"Unexpected histogram count for accepted card suggestion index.");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:@"Autofill.UserAcceptedSuggestionAtIndex."
+                                      @"CreditCard.ManualFallback"],
+      @"Unexpected histogram count for manual fallback accepted card "
+      @"suggestion index.");
+}
+
 // Checks that the chip buttons of the local card are all visible.
 void CheckChipButtonsOfLocalCard() {
   autofill::CreditCard card = autofill::test::GetCreditCard();
@@ -1205,15 +1227,9 @@ void DismissPaymentBottomSheet() {
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 
-  // Verify that the acceptance of the card suggestion at index 1 was
-  // recorded in the right histogram.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:0
-                         forHistogram:
-                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
-      @"Unexpected histogram error for accepted card suggestion index.");
+  // Verify that the acceptance of the card suggestion at index 0 was correctly
+  // recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
 
   [AutofillAppInterface clearMockReauthenticationModule];
 }
