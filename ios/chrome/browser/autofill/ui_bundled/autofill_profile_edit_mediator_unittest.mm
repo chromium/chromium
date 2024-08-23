@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
