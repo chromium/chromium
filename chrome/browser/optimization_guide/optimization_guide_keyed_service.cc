@@ -605,17 +605,18 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
 
 bool OptimizationGuideKeyedService::CanCreateOnDeviceSession(
     optimization_guide::ModelBasedCapabilityKey feature,
-    raw_ptr<optimization_guide::OnDeviceModelEligibilityReason> debug_reason) {
+    optimization_guide::OnDeviceModelEligibilityReason*
+        on_device_model_eligibility_reason) {
   if (!model_execution_manager_) {
-    if (debug_reason) {
-      *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
-          kFeatureNotEnabled;
+    if (on_device_model_eligibility_reason) {
+      *on_device_model_eligibility_reason = optimization_guide::
+          OnDeviceModelEligibilityReason::kFeatureNotEnabled;
     }
     return false;
   }
 
-  return model_execution_manager_->CanCreateOnDeviceSession(feature,
-                                                            debug_reason);
+  return model_execution_manager_->CanCreateOnDeviceSession(
+      feature, on_device_model_eligibility_reason);
 }
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>

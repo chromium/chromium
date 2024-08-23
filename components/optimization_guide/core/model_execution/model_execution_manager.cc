@@ -281,18 +281,19 @@ void ModelExecutionManager::ExecuteModel(
 
 bool ModelExecutionManager::CanCreateOnDeviceSession(
     ModelBasedCapabilityKey feature,
-    raw_ptr<OnDeviceModelEligibilityReason> debug_reason) {
+    OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) {
   if (!on_device_model_service_controller_) {
-    if (debug_reason) {
-      *debug_reason = OnDeviceModelEligibilityReason::kFeatureNotEnabled;
+    if (on_device_model_eligibility_reason) {
+      *on_device_model_eligibility_reason =
+          OnDeviceModelEligibilityReason::kFeatureNotEnabled;
     }
     return false;
   }
 
   OnDeviceModelEligibilityReason reason =
       on_device_model_service_controller_->CanCreateSession(feature);
-  if (debug_reason) {
-    *debug_reason = reason;
+  if (on_device_model_eligibility_reason) {
+    *on_device_model_eligibility_reason = reason;
   }
   return reason == OnDeviceModelEligibilityReason::kSuccess;
 }

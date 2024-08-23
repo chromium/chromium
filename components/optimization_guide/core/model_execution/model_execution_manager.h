@@ -76,7 +76,7 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
   // for why an on-device session could not be created.
   bool CanCreateOnDeviceSession(
       ModelBasedCapabilityKey feature,
-      raw_ptr<OnDeviceModelEligibilityReason> debug_reason);
+      OnDeviceModelEligibilityReason* on_device_model_eligibility_reason);
 
   // Starts a new session for `feature`.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> StartSession(

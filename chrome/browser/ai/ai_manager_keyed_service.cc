@@ -47,8 +47,9 @@ bool IsModelPathValid(const std::string& model_path_str) {
 
 blink::mojom::ModelAvailabilityCheckResult
 ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
-    optimization_guide::OnDeviceModelEligibilityReason debug_reason) {
-  switch (debug_reason) {
+    optimization_guide::OnDeviceModelEligibilityReason
+        on_device_model_eligibility_reason) {
+  switch (on_device_model_eligibility_reason) {
     case optimization_guide::OnDeviceModelEligibilityReason::kUnknown:
       return blink::mojom::ModelAvailabilityCheckResult::kNoUnknown;
     case optimization_guide::OnDeviceModelEligibilityReason::kFeatureNotEnabled:
@@ -293,14 +294,15 @@ void AIManagerKeyedService::
 
   // If the `OptimizationGuideKeyedService` cannot create new session, return
   // false.
-  optimization_guide::OnDeviceModelEligibilityReason debug_reason;
+  optimization_guide::OnDeviceModelEligibilityReason
+      on_device_model_eligibility_reason;
   if (!service->CanCreateOnDeviceSession(
           optimization_guide::ModelBasedCapabilityKey::kPromptApi,
-          &debug_reason)) {
+          &on_device_model_eligibility_reason)) {
     std::move(callback).Run(
         /*result=*/
         ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
-            debug_reason));
+            on_device_model_eligibility_reason));
     return;
   }
 

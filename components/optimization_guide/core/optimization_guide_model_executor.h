@@ -212,11 +212,11 @@ class OptimizationGuideModelExecutor {
   };
 
   // Whether an on-device session can be created for `feature`. An optional
-  // `debug_reason` parameter can be provided for more detailed reasons for why
-  // an on-device session could not be created.
+  // `on_device_model_eligibility_reason` parameter can be provided for more
+  // detailed reasons for why an on-device session could not be created.
   virtual bool CanCreateOnDeviceSession(
       ModelBasedCapabilityKey feature,
-      raw_ptr<OnDeviceModelEligibilityReason> debug_reason) = 0;
+      OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) = 0;
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should

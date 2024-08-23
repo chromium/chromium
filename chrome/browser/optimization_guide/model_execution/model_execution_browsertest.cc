@@ -217,9 +217,9 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
   bool CanCreateOnDeviceSession(
       ModelBasedCapabilityKey feature,
-      raw_ptr<OnDeviceModelEligibilityReason> debug_reason) {
+      OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) {
     return GetOptimizationGuideKeyedService()->CanCreateOnDeviceSession(
-        feature, debug_reason);
+        feature, on_device_model_eligibility_reason);
   }
 
   void SetExpectedBearerAccessToken(
@@ -389,17 +389,19 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
                        CanCreateOnDeviceSessionExecutionDisabled) {
-  OnDeviceModelEligibilityReason debug_reason;
+  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
   EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &debug_reason));
-  EXPECT_EQ(debug_reason, OnDeviceModelEligibilityReason::kFeatureNotEnabled);
+                                        &on_device_model_eligibility_reason));
+  EXPECT_EQ(on_device_model_eligibility_reason,
+            OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionDisabledBrowserTest,
     CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        /*debug_reason=*/nullptr));
+  EXPECT_FALSE(
+      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
+                               /*on_device_model_eligibility_reason=*/nullptr));
 }
 
 class ModelExecutionEnabledOnDeviceDisabledBrowserTest
@@ -414,17 +416,19 @@ class ModelExecutionEnabledOnDeviceDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledOnDeviceDisabledBrowserTest,
                        CanCreateOnDeviceSessionOnDeviceDisabled) {
-  OnDeviceModelEligibilityReason debug_reason;
+  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
   EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &debug_reason));
-  EXPECT_EQ(debug_reason, OnDeviceModelEligibilityReason::kFeatureNotEnabled);
+                                        &on_device_model_eligibility_reason));
+  EXPECT_EQ(on_device_model_eligibility_reason,
+            OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledOnDeviceDisabledBrowserTest,
     CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        /*debug_reason=*/nullptr));
+  EXPECT_FALSE(
+      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
+                               /*on_device_model_eligibility_reason=*/nullptr));
 }
 
 class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
@@ -613,17 +617,19 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        CanCreateOnDeviceSessionNoModelAvailable) {
-  OnDeviceModelEligibilityReason debug_reason;
+  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
   EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &debug_reason));
-  EXPECT_EQ(debug_reason, OnDeviceModelEligibilityReason::kModelNotAvailable);
+                                        &on_device_model_eligibility_reason));
+  EXPECT_EQ(on_device_model_eligibility_reason,
+            OnDeviceModelEligibilityReason::kModelNotAvailable);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledBrowserTest,
     CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        /*debug_reason=*/nullptr));
+  EXPECT_FALSE(
+      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
+                               /*on_device_model_eligibility_reason=*/nullptr));
 }
 
 class ModelExecutionInternalsPageBrowserTest

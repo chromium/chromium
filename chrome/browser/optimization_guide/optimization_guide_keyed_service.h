@@ -126,8 +126,8 @@ class OptimizationGuideKeyedService
   // optimization_guide::OptimizationGuideModelExecutor implementation:
   bool CanCreateOnDeviceSession(
       optimization_guide::ModelBasedCapabilityKey feature,
-      raw_ptr<optimization_guide::OnDeviceModelEligibilityReason> debug_reason)
-      override;
+      optimization_guide::OnDeviceModelEligibilityReason*
+          on_device_model_eligibility_reason) override;
   std::unique_ptr<Session> StartSession(
       optimization_guide::ModelBasedCapabilityKey feature,
       const std::optional<optimization_guide::SessionConfigParams>&

@@ -20,7 +20,7 @@ class MockOptimizationGuideModelExecutor
   MOCK_METHOD(bool,
               CanCreateOnDeviceSession,
               (ModelBasedCapabilityKey feature,
-               raw_ptr<OnDeviceModelEligibilityReason> debug_reason),
+               OnDeviceModelEligibilityReason* debug_reason),
               (override));
 
   MOCK_METHOD(std::unique_ptr<Session>,
