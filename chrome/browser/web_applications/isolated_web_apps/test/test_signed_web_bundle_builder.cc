@@ -68,7 +68,7 @@ constexpr std::array<uint8_t, 32> kEcdsaP256PrivateKey = {
 // from `key_pair`'s public key.
 web_package::SignedWebBundleId GetWebBundleIdWithFallback(
     const std::optional<web_package::SignedWebBundleId>& web_bundle_id,
-    const web_package::WebBundleSigner::KeyPair& key_pair) {
+    const web_package::test::KeyPair& key_pair) {
   if (web_bundle_id) {
     return *web_bundle_id;
   }
@@ -91,9 +91,9 @@ std::string EncodeAsPng(const SkBitmap& bitmap) {
                      icon_skdata->size());
 }
 
-web_package::WebBundleSigner::Ed25519KeyPair GetDefaultEd25519KeyPair() {
-  return web_package::WebBundleSigner::Ed25519KeyPair(kEd25519PublicKey,
-                                                      kEd25519PrivateKey);
+web_package::test::Ed25519KeyPair GetDefaultEd25519KeyPair() {
+  return web_package::test::Ed25519KeyPair(kEd25519PublicKey,
+                                           kEd25519PrivateKey);
 }
 
 web_package::SignedWebBundleId GetDefaultEd25519WebBundleId() {
@@ -101,9 +101,9 @@ web_package::SignedWebBundleId GetDefaultEd25519WebBundleId() {
       GetDefaultEd25519KeyPair().public_key);
 }
 
-web_package::WebBundleSigner::EcdsaP256KeyPair GetDefaultEcdsaP256KeyPair() {
-  return web_package::WebBundleSigner::EcdsaP256KeyPair(kEcdsaP256PublicKey,
-                                                        kEcdsaP256PrivateKey);
+web_package::test::EcdsaP256KeyPair GetDefaultEcdsaP256KeyPair() {
+  return web_package::test::EcdsaP256KeyPair(kEcdsaP256PublicKey,
+                                             kEcdsaP256PrivateKey);
 }
 
 web_package::SignedWebBundleId GetDefaultEcdsaP256WebBundleId() {
@@ -125,15 +125,15 @@ TestSignedWebBundle::TestSignedWebBundle(TestSignedWebBundle&&) = default;
 TestSignedWebBundle::~TestSignedWebBundle() = default;
 
 TestSignedWebBundleBuilder::TestSignedWebBundleBuilder(
-    web_package::WebBundleSigner::KeyPair key_pair,
-    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing)
+    web_package::test::KeyPair key_pair,
+    web_package::test::WebBundleSigner::ErrorsForTesting errors_for_testing)
     : key_pairs_({std::move(key_pair)}),
       errors_for_testing_(errors_for_testing) {}
 
 TestSignedWebBundleBuilder::TestSignedWebBundleBuilder(
-    std::vector<web_package::WebBundleSigner::KeyPair> key_pairs,
+    web_package::test::KeyPairs key_pairs,
     const web_package::SignedWebBundleId& web_bundle_id,
-    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing)
+    web_package::test::WebBundleSigner::ErrorsForTesting errors_for_testing)
     : key_pairs_(std::move(key_pairs)),
       web_bundle_id_(web_bundle_id),
       errors_for_testing_(std::move(errors_for_testing)) {
@@ -224,7 +224,7 @@ TestSignedWebBundle TestSignedWebBundleBuilder::Build() {
       GetWebBundleIdWithFallback(web_bundle_id_, key_pairs_[0]);
 
   return TestSignedWebBundle(
-      web_package::WebBundleSigner::SignBundle(
+      web_package::test::WebBundleSigner::SignBundle(
           builder_.CreateBundle(), key_pairs_,
           /*ib_attributes=*/{{.web_bundle_id = web_bundle_id.id()}},
           errors_for_testing_),

@@ -49,9 +49,9 @@ namespace web_app {
 namespace {
 
 using IntegritySignatureErrorForTesting =
-    web_package::WebBundleSigner::IntegritySignatureErrorForTesting;
+    web_package::test::WebBundleSigner::IntegritySignatureErrorForTesting;
 using IntegrityBlockErrorForTesting =
-    web_package::WebBundleSigner::IntegrityBlockErrorForTesting;
+    web_package::test::WebBundleSigner::IntegrityBlockErrorForTesting;
 
 using base::test::ErrorIs;
 using base::test::HasValue;

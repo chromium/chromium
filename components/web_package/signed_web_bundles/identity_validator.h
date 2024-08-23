@@ -16,6 +16,11 @@
 
 namespace web_package {
 
+namespace test {
+class SignedWebBundleSignatureVerifierTestBase;
+class SignedWebBundleSignatureVerifierGoToolTest;
+}  // namespace test
+
 class IdentityValidator {
  public:
   IdentityValidator(const IdentityValidator&) = delete;
@@ -35,8 +40,8 @@ class IdentityValidator {
  private:
   friend base::NoDestructor<IdentityValidator>;
 
-  friend class SignedWebBundleSignatureVerifierTestBase;
-  friend class SignedWebBundleSignatureVerifierGoToolTest;
+  friend class test::SignedWebBundleSignatureVerifierTestBase;
+  friend class test::SignedWebBundleSignatureVerifierGoToolTest;
 
   static void CreateInstanceForTesting();
 };

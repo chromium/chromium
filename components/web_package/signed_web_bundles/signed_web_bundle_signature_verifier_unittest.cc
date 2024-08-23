@@ -43,7 +43,7 @@
 #include "components/web_package/web_bundle_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace web_package {
+namespace web_package::test {
 
 namespace {
 
@@ -133,7 +133,7 @@ constexpr uint8_t kEcdsaP256BundleIdCbor[] = {
 
 };
 
-SignedWebBundleId CreateForKeyPair(const WebBundleSigner::KeyPair& key_pair) {
+SignedWebBundleId CreateForKeyPair(const KeyPair& key_pair) {
   return absl::visit(
       [](const auto& key_pair) {
         return SignedWebBundleId::CreateForPublicKey(key_pair.public_key);
@@ -253,8 +253,7 @@ class SignedWebBundleSignatureVerifierTestBase : public ::testing::Test {
     IdentityValidator::CreateInstanceForTesting();
   }
 
-  std::vector<uint8_t> CreateSignedWebBundle(
-      const std::vector<WebBundleSigner::KeyPair>& key_pairs) {
+  std::vector<uint8_t> CreateSignedWebBundle(const KeyPairs& key_pairs) {
     WebBundleBuilder builder;
     auto web_bundle = builder.CreateBundle();
 
@@ -290,7 +289,7 @@ class SignedWebBundleSignatureVerifierTestBase : public ::testing::Test {
 class SignedWebBundleSignatureVerifierTest
     : public SignedWebBundleSignatureVerifierTestBase,
       public ::testing::WithParamInterface<
-          std::pair<std::vector<WebBundleSigner::KeyPair>,
+          std::pair<KeyPairs,
                     std::optional<SignedWebBundleSignatureVerifier::Error>>> {};
 
 TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
@@ -343,38 +342,27 @@ INSTANTIATE_TEST_SUITE_P(
     SignedWebBundleSignatureVerifierTest,
     ::testing::Values(
         // one signature
+        std::make_pair(KeyPairs{Ed25519KeyPair::CreateRandom()}, std::nullopt),
+        std::make_pair(KeyPairs{EcdsaP256KeyPair::CreateRandom()},
+                       std::nullopt),
         std::make_pair(
-            std::vector<WebBundleSigner::KeyPair>{
-                WebBundleSigner::Ed25519KeyPair::CreateRandom()},
-            std::nullopt),
-        std::make_pair(
-            std::vector<WebBundleSigner::KeyPair>{
-                WebBundleSigner::EcdsaP256KeyPair::CreateRandom()},
-            std::nullopt),
-        std::make_pair(
-            std::vector<WebBundleSigner::KeyPair>{
-                WebBundleSigner::Ed25519KeyPair::CreateRandom(
-                    /*produce_invalid_signature=*/true)},
+            KeyPairs{Ed25519KeyPair::CreateRandom(
+                /*produce_invalid_signature=*/true)},
             SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
                 "The signature is invalid.")),
         std::make_pair(
-            std::vector<WebBundleSigner::KeyPair>{
-                WebBundleSigner::EcdsaP256KeyPair::CreateRandom(
-                    /*produce_invalid_signature=*/true)},
+            KeyPairs{EcdsaP256KeyPair::CreateRandom(
+                /*produce_invalid_signature=*/true)},
             SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
                 "The signature is invalid.")),
 
         // two signatures
-        std::make_pair(
-            std::vector<WebBundleSigner::KeyPair>{
-                WebBundleSigner::Ed25519KeyPair::CreateRandom(),
-                WebBundleSigner::Ed25519KeyPair::CreateRandom()},
-            std::nullopt),
-        std::make_pair(
-            std::vector<WebBundleSigner::KeyPair>{
-                WebBundleSigner::EcdsaP256KeyPair::CreateRandom(),
-                WebBundleSigner::Ed25519KeyPair::CreateRandom()},
-            std::nullopt)),
+        std::make_pair(KeyPairs{Ed25519KeyPair::CreateRandom(),
+                                Ed25519KeyPair::CreateRandom()},
+                       std::nullopt),
+        std::make_pair(KeyPairs{EcdsaP256KeyPair::CreateRandom(),
+                                Ed25519KeyPair::CreateRandom()},
+                       std::nullopt)),
     [](const ::testing::TestParamInfo<
         SignedWebBundleSignatureVerifierTest::ParamType>& info) {
       return base::StringPrintf(
@@ -382,4 +370,4 @@ INSTANTIATE_TEST_SUITE_P(
           info.param.second.has_value() ? "error" : "no_error");
     });
 
-}  // namespace web_package
+}  // namespace web_package::test

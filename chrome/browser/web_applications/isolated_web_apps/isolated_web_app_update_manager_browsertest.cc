@@ -441,8 +441,7 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
  protected:
-  void AddBundleSignedBy(
-      const web_package::WebBundleSigner::KeyPair& key_pair) {
+  void AddBundleSignedBy(const web_package::test::KeyPair& key_pair) {
     update_server_mixin_.AddBundle(
         IsolatedWebAppBuilder(
             ManifestBuilder().SetName("app-1.0.0").SetVersion("1.0.0"))

@@ -12,8 +12,9 @@
 #include "components/cbor/values.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 
-namespace web_package {
+namespace web_package::test {
 
 // A class for use in tests to create signed web bundles. It can also be used to
 // create wrongly signed bundles by passing `ErrorForTesting` != `kNoError`.
@@ -69,54 +70,6 @@ class WebBundleSigner {
     std::vector<IntegritySignatureErrorsForTesting> signatures_errors;
   };
 
-  struct Ed25519KeyPair {
-    static Ed25519KeyPair CreateRandom(bool produce_invalid_signature = false);
-
-    Ed25519KeyPair(
-        base::span<const uint8_t, Ed25519PublicKey::kLength> public_key_bytes,
-        base::span<const uint8_t, 64> private_key_bytes,
-        bool produce_invalid_signature = false);
-    Ed25519KeyPair(const Ed25519KeyPair&);
-    Ed25519KeyPair& operator=(const Ed25519KeyPair&);
-
-    Ed25519KeyPair(Ed25519KeyPair&&) noexcept;
-    Ed25519KeyPair& operator=(Ed25519KeyPair&&) noexcept;
-
-    ~Ed25519KeyPair();
-
-    Ed25519PublicKey public_key;
-    // We don't have a wrapper for private keys since they are only used in
-    // tests.
-    std::array<uint8_t, 64> private_key;
-    bool produce_invalid_signature;
-  };
-
-  struct EcdsaP256KeyPair {
-    static EcdsaP256KeyPair CreateRandom(
-        bool produce_invalid_signature = false);
-
-    EcdsaP256KeyPair(
-        base::span<const uint8_t, EcdsaP256PublicKey::kLength> public_key_bytes,
-        base::span<const uint8_t, 32> private_key_bytes,
-        bool produce_invalid_signature = false);
-
-    EcdsaP256KeyPair(const EcdsaP256KeyPair&);
-    EcdsaP256KeyPair& operator=(const EcdsaP256KeyPair&);
-
-    EcdsaP256KeyPair(EcdsaP256KeyPair&&) noexcept;
-    EcdsaP256KeyPair& operator=(EcdsaP256KeyPair&&) noexcept;
-
-    ~EcdsaP256KeyPair();
-
-    EcdsaP256PublicKey public_key;
-    // We don't have a wrapper for private keys since they are only used in
-    // tests.
-    std::array<uint8_t, 32> private_key;
-    bool produce_invalid_signature;
-  };
-
-  using KeyPair = absl::variant<Ed25519KeyPair, EcdsaP256KeyPair>;
-
   struct IntegrityBlockAttributes {
     std::string web_bundle_id;
   };
@@ -127,7 +80,7 @@ class WebBundleSigner {
   // from the first key.
   static std::vector<uint8_t> SignBundle(
       base::span<const uint8_t> unsigned_bundle,
-      const std::vector<KeyPair>& key_pairs,
+      const KeyPairs& key_pairs,
       std::optional<IntegrityBlockAttributes> ib_attributes = {},
       ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
                                              /*signatures_errors=*/{}});
@@ -137,11 +90,11 @@ class WebBundleSigner {
   // function, mainly for convenience.
   static std::vector<uint8_t> SignBundle(
       base::span<const uint8_t> unsigned_bundle,
-      const WebBundleSigner::KeyPair& key_pair,
+      const KeyPair& key_pair,
       ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
                                              /*signatures_errors=*/{}});
 };
 
-}  // namespace web_package
+}  // namespace web_package::test
 
 #endif  // COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_SIGNED_WEB_BUNDLES_WEB_BUNDLE_SIGNER_H_

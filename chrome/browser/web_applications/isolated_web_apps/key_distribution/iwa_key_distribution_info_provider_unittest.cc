@@ -122,14 +122,14 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
        VerifySignaturesWithKeyDistribution) {
   using Error = web_package::SignedWebBundleSignatureVerifier::Error;
 
-  auto key_pairs = std::vector<web_package::WebBundleSigner::KeyPair>{
-      web_package::WebBundleSigner::EcdsaP256KeyPair::CreateRandom(),
-      web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom()};
+  auto key_pairs = web_package::test::KeyPairs{
+      web_package::test::EcdsaP256KeyPair::CreateRandom(),
+      web_package::test::Ed25519KeyPair::CreateRandom()};
 
-  web_package::WebBundleSigner::IntegrityBlockAttributes ib_attributes(
+  web_package::test::WebBundleSigner::IntegrityBlockAttributes ib_attributes(
       {.web_bundle_id = kWebBundleId});
 
-  auto signed_web_bundle = web_package::WebBundleSigner::SignBundle(
+  auto signed_web_bundle = web_package::test::WebBundleSigner::SignBundle(
       web_package::WebBundleBuilder().CreateBundle(), key_pairs, ib_attributes);
   base::FilePath signed_web_bundle_path =
       WriteSignedWebBundleToDisk(signed_web_bundle);
@@ -164,8 +164,7 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
                                                   parsed_integrity_block),
               HasValue());
 
-  auto random_key =
-      web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom();
+  auto random_key = web_package::test::Ed25519KeyPair::CreateRandom();
   EXPECT_THAT(
       test::UpdateKeyDistributionInfo(base::Version("1.0.1"), kWebBundleId,
                                       random_key.public_key.bytes()),

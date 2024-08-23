@@ -156,7 +156,7 @@ TEST_F(SignedWebBundleMetadataTest, FailsWhenWebBundleIdNotTrusted) {
 TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
   IsolatedWebAppUrlInfo url_info = WriteBundleToDisk(
       TestSignedWebBundleBuilder::BuildOptions().SetErrorsForTesting(
-          {{web_package::WebBundleSigner::IntegrityBlockErrorForTesting::
+          {{web_package::test::WebBundleSigner::IntegrityBlockErrorForTesting::
                 kInvalidIntegrityBlockStructure},
            {}}));
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
