@@ -6,6 +6,7 @@
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
+#include "base/features.h"
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
@@ -74,6 +75,14 @@ API_AVAILABLE(macos(14.0))
 
 namespace content {
 
+// When enabled, this allows you to change the maximum number of streams you can
+// share with the native picker to kMaxContentShareCountValue.
+BASE_FEATURE(kMaxContentShareCount,
+             "MaxContentShareCount",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kMaxContentShareCountValue = {
+    &kMaxContentShareCount, "max_content_share_count", 50};
+
 class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
     : public NativeScreenCapturePicker {
  public:
@@ -136,8 +145,7 @@ void NativeScreenCapturePickerMac::Open(
     // content. The problem to solve is how this should interact with stream
     // restart.
     config.allowsChangingSelectedContent = false;
-    // Limits the maximum number of screen/window capture to 5.
-    NSNumber* max_stream_count = @5;
+    NSNumber* max_stream_count = @(kMaxContentShareCountValue.Get());
     if (type == DesktopMediaID::Type::TYPE_SCREEN) {
       config.allowedPickerModes = SCContentSharingPickerModeSingleDisplay;
       picker.defaultConfiguration = config;
