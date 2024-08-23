@@ -265,30 +265,34 @@ constexpr uint64_t kInvalidFenceId = 0;
 
 void GLContext::AddMetalSharedEventsForBackpressure(
     std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>> events) {
-  // Only enqueue events if fences are supported since they are only consumed
-  // along with fences.
-  if (gl::GLFence::IsSupported()) {
-    for (auto& e : events) {
-      next_backpressure_events_.push_back(std::move(e));
-    }
+  for (auto& e : events) {
+    next_backpressure_events_.push_back(std::move(e));
   }
 }
 
 uint64_t GLContext::BackpressureFenceCreate() {
   TRACE_EVENT0("gpu", "GLContext::BackpressureFenceCreate");
 
-  // This flush will trigger a crash if FlushForDriverCrashWorkaround is not
-  // called sufficiently frequently.
-  glFlush();
+  std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>>
+      backpressure_events = std::move(next_backpressure_events_);
 
-  if (gl::GLFence::IsSupported()) {
-    next_backpressure_fence_ += 1;
-    backpressure_fences_[next_backpressure_fence_] = {
-        GLFence::Create(), std::move(next_backpressure_events_)};
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+    // Don't use a GLFence here since we already have Metal shared events
+    // corresponding to each GL access and we can avoid any fence overhead.
+    backpressure_fences_[++next_backpressure_fence_] = {
+        nullptr, std::move(backpressure_events)};
     return next_backpressure_fence_;
+  } else if (gl::GLFence::IsSupported()) {
+    // This flush will trigger a crash if FlushForDriverCrashWorkaround is not
+    // called sufficiently frequently.
+    glFlush();
+    backpressure_fences_[++next_backpressure_fence_] = {
+        GLFence::Create(), std::move(backpressure_events)};
+    return next_backpressure_fence_;
+  } else {
+    glFinish();
+    return kInvalidFenceId;
   }
-  glFinish();
-  return kInvalidFenceId;
 }
 
 void GLContext::BackpressureFenceWait(uint64_t fence_id) {
@@ -298,11 +302,12 @@ void GLContext::BackpressureFenceWait(uint64_t fence_id) {
   }
 
   // If a fence is not found, then it has already been waited on.
-  auto found = backpressure_fences_.find(fence_id);
-  if (found == backpressure_fences_.end())
+  auto it = backpressure_fences_.find(fence_id);
+  if (it == backpressure_fences_.end()) {
     return;
-  auto [fence, events] = std::move(found->second);
-  backpressure_fences_.erase(found);
+  }
+  auto [fence, events] = std::move(it->second);
+  backpressure_fences_.erase(it);
 
   // Poll for all Metal shared events to be signaled with a 1ms delay.
   bool events_complete = false;
@@ -322,8 +327,10 @@ void GLContext::BackpressureFenceWait(uint64_t fence_id) {
     }
   }
 
-  fence->ClientWait();
-  fence.reset();
+  if (fence) {
+    fence->ClientWait();
+    fence.reset();
+  }
 
   // Waiting on |fence_id| has implicitly waited on all previous fences, so
   // remove them.
