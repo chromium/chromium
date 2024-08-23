@@ -310,8 +310,11 @@ ACTION_P(CheckDownloadUrlDone, threat_type) {
 class DownloadProtectionServiceTestBase
     : public ChromeRenderViewHostTestHarness {
  public:
-  DownloadProtectionServiceTestBase()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+  explicit DownloadProtectionServiceTestBase(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
+      : ChromeRenderViewHostTestHarness(time_source),
+        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -796,6 +799,14 @@ class DownloadProtectionServiceTestBase
 using DownloadProtectionServiceTest = DownloadProtectionServiceTestBase;
 
 using DeepScanningDownloadTest = DownloadProtectionServiceTestBase;
+
+class DownloadProtectionServiceMockTimeTest
+    : public DownloadProtectionServiceTestBase {
+ public:
+  DownloadProtectionServiceMockTimeTest()
+      : DownloadProtectionServiceTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
 
 // A test with the appropriate feature flags enabled to test the behavior for
 // Enhanced Protection users.
@@ -2432,13 +2443,7 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
 }
 
-// TODO(360416397): test is flaky on Win11.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_TestDownloadRequestTimeout DISABLED_TestDownloadRequestTimeout
-#else
-#define MAYBE_TestDownloadRequestTimeout TestDownloadRequestTimeout
-#endif
-TEST_F(DownloadProtectionServiceTest, MAYBE_TestDownloadRequestTimeout) {
+TEST_F(DownloadProtectionServiceMockTimeTest, TestDownloadRequestTimeout) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/bla.exe"},  // url_chain
                            "http://www.google.com/",                // referrer
@@ -2457,12 +2462,14 @@ TEST_F(DownloadProtectionServiceTest, MAYBE_TestDownloadRequestTimeout) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  download_service_->download_request_timeout_ms_ = 10;
   RunLoop run_loop;
   download_service_->CheckClientDownload(
       &item,
       base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
                           base::Unretained(this), run_loop.QuitClosure()));
+
+  task_environment()->FastForwardBy(
+      base::Milliseconds(download_service_->download_request_timeout_ms_));
 
   // The request should time out because the HTTP request hasn't returned
   // anything yet.
