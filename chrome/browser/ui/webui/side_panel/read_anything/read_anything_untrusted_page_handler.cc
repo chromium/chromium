@@ -59,7 +59,9 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "components/pdf/common/pdf_util.h"
+#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -663,38 +665,52 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
 #if BUILDFLAG(ENABLE_PDF)
   pdf_observer_.reset();
   content::WebContents* main_contents = main_observer_->web_contents();
-  // TODO(crbug.com/339864546): Make it compatible with OOPIF PDF Viewer.
-  std::vector<content::WebContents*> inner_contents =
-      main_contents ? main_contents->GetInnerWebContents()
-                    : std::vector<content::WebContents*>();
-  // Check if this is a pdf.
-  if (inner_contents.size() == 1 &&
-      IsPdfExtensionOrigin(
-          inner_contents[0]->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
-        weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
-    if (features::IsPdfOcrEnabled()) {
-      screen_ai::PdfOcrControllerFactory::GetForProfile(profile_)->Activate();
+  // TODO(crbug.com/340272378): When removing this feature flag, delete
+  // `pdf_observer_` and integrate ReadAnythingWebContentsObserver with
+  // ReadAnythingUntrustedPageHandler.
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    std::vector<content::WebContents*> inner_contents =
+        main_contents ? main_contents->GetInnerWebContents()
+                      : std::vector<content::WebContents*>();
+    // Check if this is a pdf.
+    if (inner_contents.size() == 1 &&
+        IsPdfExtensionOrigin(inner_contents[0]
+                                 ->GetPrimaryMainFrame()
+                                 ->GetLastCommittedOrigin())) {
+      pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
+          weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
     }
+  }
+  if (features::IsPdfOcrEnabled()) {
+    screen_ai::PdfOcrControllerFactory::GetForProfile(profile_)->Activate();
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 }
 
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
-  bool is_pdf = !!pdf_observer_;
   if (!active_) {
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
-                                   is_pdf);
+                                   /*is_pdf=*/false);
     return;
   }
 
-  content::WebContents* contents =
-      is_pdf ? pdf_observer_->web_contents() : main_observer_->web_contents();
+  content::WebContents* contents = !!pdf_observer_
+                                       ? pdf_observer_->web_contents()
+                                       : main_observer_->web_contents();
   if (!contents) {
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
-                                   is_pdf);
+                                   /*is_pdf=*/false);
     return;
   }
+
+#if BUILDFLAG(ENABLE_PDF)
+  bool is_pdf;
+  if (chrome_pdf::features::IsOopifPdfEnabled()) {
+    is_pdf = !!pdf::PdfViewerStreamManager::FromWebContents(contents);
+  } else {
+    is_pdf = !!pdf_observer_;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   // Observe the new contents so we can get the page language once it's
   // determined.
@@ -721,6 +737,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
     }
   }
 
+#if BUILDFLAG(ENABLE_PDF)
   if (is_pdf) {
     // What happens if there are multiple such `rfhs`?
     contents->ForEachRenderFrameHost([this](content::RenderFrameHost* rfh) {
@@ -732,10 +749,11 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
     });
     return;
   }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   if (!rfh) {
-    // THis case doesn't seem possible.
+    // This case doesn't seem possible.
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
                                    /*is_pdf=*/false);
     return;
