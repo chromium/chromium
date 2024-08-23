@@ -7340,6 +7340,7 @@ static_library("browser") {
       "profiles/batch_upload/batch_upload_controller.h",
       "profiles/batch_upload/batch_upload_data_provider.cc",
       "profiles/batch_upload/batch_upload_data_provider.h",
+      "profiles/batch_upload/batch_upload_delegate.h",
       "profiles/batch_upload/batch_upload_service.cc",
       "profiles/batch_upload/batch_upload_service.h",
       "profiles/batch_upload/batch_upload_service_factory.cc",

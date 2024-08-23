@@ -4,8 +4,10 @@
 
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/ui/browser.h"
 
 namespace {
@@ -14,6 +16,9 @@ namespace {
 // TODO(b/359146556): remove when actual providers are implemented.
 class DummyBatchUploadDataProvider : public BatchUploadDataProvider {
  public:
+  explicit DummyBatchUploadDataProvider(BatchUploadDataType type)
+      : BatchUploadDataProvider(type) {}
+
   bool HasLocalData() const override { return true; }
 
   BatchUploadDataContainer GetLocalData() const override {
@@ -34,8 +39,9 @@ class DummyBatchUploadDataProvider : public BatchUploadDataProvider {
 
 // Returns a dummy implementation.
 // TODO(b/359146556): remove when actual providers are implemented.
-std::unique_ptr<BatchUploadDataProvider> MakeDummyBatchUploadDataProvider() {
-  return std::make_unique<DummyBatchUploadDataProvider>();
+std::unique_ptr<BatchUploadDataProvider> MakeDummyBatchUploadDataProvider(
+    BatchUploadDataType type) {
+  return std::make_unique<DummyBatchUploadDataProvider>(type);
 }
 
 // Gets the `BatchUploadDataProvider` of a single data type. Can also be used in
@@ -49,7 +55,7 @@ std::unique_ptr<BatchUploadDataProvider> GetBatchUploadDataProvider(
     case BatchUploadDataType::kPasswords:
     case BatchUploadDataType::kAddresses:
       // TODO(b/359146556): real implementations to be added per data type.
-      return MakeDummyBatchUploadDataProvider();
+      return MakeDummyBatchUploadDataProvider(type);
   }
 }
 
@@ -71,13 +77,18 @@ GetBatchUploadDataProviderMap(Profile& profile) {
 
 }  // namespace
 
-BatchUploadService::BatchUploadService(Profile& profile) : profile_(profile) {}
+BatchUploadService::BatchUploadService(
+    Profile& profile,
+    std::unique_ptr<BatchUploadDelegate> delegate)
+    : profile_(profile), delegate_(std::move(delegate)) {}
 
 BatchUploadService::~BatchUploadService() = default;
 
 bool BatchUploadService::OpenBatchUpload(Browser* browser) {
   // Do not allow to have more than one controller/dialog shown at a time.
   if (controller_) {
+    // TODO(b/361330952): give focus to the browser that is showing the dialog
+    // currently.
     return false;
   }
 
@@ -86,14 +97,15 @@ bool BatchUploadService::OpenBatchUpload(Browser* browser) {
   controller_ = std::make_unique<BatchUploadController>(
       GetBatchUploadDataProviderMap(profile_.get()));
 
-  // TODO(b/359146413): pass in a callback to know when the dialog is closed to
-  // reset the `controller_`, using `OnBatchUplaodDialogClosed()`.
-  return controller_->ShowDialog();
+  return controller_->ShowDialog(
+      delegate_.get(), /*done_callback=*/base::BindOnce(
+          &BatchUploadService::OnBatchUplaodDialogClosed,
+          base::Unretained(this)));
 }
 
-void BatchUploadService::OnBatchUplaodDialogClosed(bool upload_requested) {
+void BatchUploadService::OnBatchUplaodDialogClosed(bool move_requested) {
   CHECK(controller_);
-  // TODO(b/361034858): Use `upload_requested` to determine whether we show the
+  // TODO(b/361034858): Use `move_requested` to determine whether we show the
   // expanded pill on the avatar button that displays "Saving to your account"
   // or not.
 
@@ -102,7 +114,7 @@ void BatchUploadService::OnBatchUplaodDialogClosed(bool upload_requested) {
 }
 
 void BatchUploadService::CloseDialogForTesting() {
-  OnBatchUplaodDialogClosed(/*upload_requested=*/false);
+  OnBatchUplaodDialogClosed(/*move_requested=*/false);
 }
 
 bool BatchUploadService::ShouldShowBatchUploadEntryPointForDataType(

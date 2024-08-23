@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
 #include "components/signin/public/base/signin_switches.h"
 
 namespace {
@@ -21,7 +22,6 @@ ProfileSelections CreateBatchUploadProfileSelections() {
 }
 
 }  // namespace
-
 BatchUploadServiceFactory::BatchUploadServiceFactory()
     : ProfileKeyedServiceFactory("BatchUpload",
                                  CreateBatchUploadProfileSelections()) {}
@@ -46,5 +46,6 @@ BatchUploadServiceFactory::BuildServiceInstanceForBrowserContext(
   // TODO(b/359146556): consider passing in the needed services instead of the
   // `profile` when the providers will be implemented.
   return std::make_unique<BatchUploadService>(
-      *Profile::FromBrowserContext(context));
+      *Profile::FromBrowserContext(context),
+      std::make_unique<BatchUploadUIDelegate>());
 }

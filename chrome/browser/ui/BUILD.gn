@@ -3543,6 +3543,8 @@ static_library("ui") {
         "autofill/autofill_bubble_signin_promo_controller.h",
         "autofill/autofill_signin_promo_tab_helper.cc",
         "autofill/autofill_signin_promo_tab_helper.h",
+        "profiles/batch_upload_ui_delegate.cc",
+        "profiles/batch_upload_ui_delegate.h",
         "profiles/signin_intercept_first_run_experience_dialog.cc",
         "profiles/signin_intercept_first_run_experience_dialog.h",
         "signin/bubble_signin_promo_delegate.h",

@@ -7,13 +7,16 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Browser;
 class Profile;
 enum class BatchUploadDataType;
 class BatchUploadController;
+class BatchUploadDelegate;
 
 // Service tied to a profile that allows the management of the Batch Upload
 // Dialog. It communicates with the different data type services that needs to
@@ -21,7 +24,8 @@ class BatchUploadController;
 // Used to open the dialog and manages the lifetime of the controller.
 class BatchUploadService : public KeyedService {
  public:
-  explicit BatchUploadService(Profile& profile);
+  explicit BatchUploadService(Profile& profile,
+                              std::unique_ptr<BatchUploadDelegate> delegate);
   BatchUploadService(const BatchUploadService&) = delete;
   BatchUploadService& operator=(const BatchUploadService&) = delete;
   ~BatchUploadService() override;
@@ -42,11 +46,15 @@ class BatchUploadService : public KeyedService {
   void CloseDialogForTesting();
 
  private:
-  // Callback on dialog closed. The `upload_requested` input determines whether
+  // Callback on dialog closed. The `move_requested` input determines whether
   // the dialog was closed with a Cancel/Upload request.
-  void OnBatchUplaodDialogClosed(bool upload_requested);
+  void OnBatchUplaodDialogClosed(bool move_requested);
 
   base::raw_ref<Profile> profile_;
+  std::unique_ptr<BatchUploadDelegate> delegate_;
+
+  // Controller lifetime is bind to when the dialog is currently showing. There
+  // can only be one controller/dialog existing at the same time per profile.
   std::unique_ptr<BatchUploadController> controller_;
 };
 
