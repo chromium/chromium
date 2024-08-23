@@ -820,6 +820,11 @@ inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
 // quickly.
 inline constexpr char kAccessibilityFaceGazeCursorUseAcceleration[] =
     "settings.a11y.face_gaze.cursor_use_acceleration";
+// A dictionary pref which maps facial gestures to key combinations defined by
+// the user. Facial gestures are strings like 'browDownLeft', and key
+// combinations are stringified JSON objects that define the key combination.
+inline constexpr char kAccessibilityFaceGazeGesturesToKeyCombos[] =
+    "settings.a11y.face_gaze.gestures_to_key_combos";
 // A dictionary pref which maps facial gestures to action macros. Facial
 // gestures are strings like 'browDownLeft', and actions are enums from
 // macro_names.

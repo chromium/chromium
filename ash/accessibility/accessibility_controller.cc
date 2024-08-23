@@ -1474,6 +1474,9 @@ void AccessibilityController::RegisterProfilePrefs(
         kDefaultFaceGazeCursorUseAcceleration,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterDictionaryPref(
+        prefs::kAccessibilityFaceGazeGesturesToKeyCombos,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterDictionaryPref(
         prefs::kAccessibilityFaceGazeGesturesToMacros,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterDictionaryPref(

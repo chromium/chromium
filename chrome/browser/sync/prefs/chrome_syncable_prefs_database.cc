@@ -358,6 +358,7 @@ enum {
   kAccessibilityFlashNotificationsEnabled = 100298,
   kAccessibilityFlashNotificationsColor = 100299,
   kPinnedChromeLabsMigrationComplete = 100300,
+  kAccessibilityFaceGazeGesturesToKeyCombos = 100301,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1145,6 +1146,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAccessibilityFaceGazeCursorUseAcceleration,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeGesturesToKeyCombos,
+     {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToKeyCombos,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableDict}},
     {ash::prefs::kAccessibilityFaceGazeGesturesToMacros,
      {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToMacros,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
