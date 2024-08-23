@@ -6,6 +6,7 @@
 //base/third_party/cityhash
 //base/third_party/cityhash_v103
 //base/third_party/double_conversion
+//base/third_party/superfasthash
 //build
 //build/android
 //build/config
