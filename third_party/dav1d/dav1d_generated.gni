@@ -90,6 +90,7 @@ arm64_asm_sources = [
   "libdav1d/src/arm/64/looprestoration_common.S",
   "libdav1d/src/arm/64/mc.S",
   "libdav1d/src/arm/64/mc16.S",
+  "libdav1d/src/arm/64/mc16_sve.S",
   "libdav1d/src/arm/64/mc_dotprod.S",
   "libdav1d/src/arm/64/msac.S",
   "libdav1d/src/arm/64/refmvs.S",
