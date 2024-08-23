@@ -3590,6 +3590,14 @@
     "expires": "Jan 1, 2025"
   },
   {
+    "prefix": "partitioned-popins-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/partitioned-popins/"],
+    "args": ["--disable-blink-features=PartitionedPopins"],
+    "owners": ["arichiv@chromium.org", "johannhof@chromium.org"],
+    "expires": "Sep 1, 2025"
+  },
+  {
     "prefix": "sanitizer-api",
     "platforms": ["Linux"],
     "bases": [ "external/wpt/sanitizer-api/" ],
