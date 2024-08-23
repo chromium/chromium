@@ -8,9 +8,11 @@
 #include "ash/ash_export.h"
 #include "ash/system/nearby_share/nearby_share_detailed_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace view {
+class Button;
 class View;
 }  // namespace view
 
@@ -32,6 +34,18 @@ class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
 
   // NearbyShareDetailedView:
   views::View* GetAsView() override;
+
+ private:
+  friend class NearbyShareDetailedViewImplTest;
+
+  // TrayDetailedView:
+  void CreateExtraTitleRowButtons() override;
+
+  void OnSettingsButtonClicked();
+
+  raw_ptr<views::Button> settings_button_ = nullptr;
+
+  base::WeakPtrFactory<NearbyShareDetailedViewImpl> weak_factory_{this};
 };
 
 }  // namespace ash

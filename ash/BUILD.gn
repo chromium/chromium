@@ -4163,6 +4163,7 @@ test("ash_unittests") {
     "system/model/fake_power_status_unittest.cc",
     "system/model/scoped_fake_power_status_unittest.cc",
     "system/model/scoped_fake_system_tray_model_unittest.cc",
+    "system/nearby_share/nearby_share_detailed_view_impl_unittest.cc",
     "system/nearby_share/nearby_share_feature_pod_controller_unittest.cc",
     "system/network/active_network_icon_unittest.cc",
     "system/network/auto_connect_notifier_unittest.cc",

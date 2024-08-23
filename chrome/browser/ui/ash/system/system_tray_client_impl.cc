@@ -851,6 +851,11 @@ void SystemTrayClientImpl::ShowPointingStickSettings() {
       chromeos::settings::mojom::kPerDevicePointingStickSubpagePath);
 }
 
+void SystemTrayClientImpl::ShowNearbyShareSettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kNearbyShareSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowRemapKeysSubpage(int device_id) {
   DCHECK(ash::features::IsInputDeviceSettingsSplitEnabled());
   base::RecordAction(base::UserMetricsAction("ShowRemapKeysSettingsSubpage"));

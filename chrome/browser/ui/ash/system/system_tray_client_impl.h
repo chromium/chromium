@@ -123,6 +123,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowYouTubeMusicPremiumPage() override;
   void ShowKeyboardSettings() override;
   void ShowPointingStickSettings() override;
+  void ShowNearbyShareSettings() override;
 
  protected:
   // Used by mocks in tests.

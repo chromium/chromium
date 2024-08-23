@@ -88,6 +88,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowYouTubeMusicPremiumPage() override;
   void ShowKeyboardSettings() override;
   void ShowPointingStickSettings() override;
+  void ShowNearbyShareSettings() override;
 
   int show_account_settings_count() const {
     return show_account_settings_count_;
@@ -235,6 +236,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_pointing_stick_settings_count_;
   }
 
+  int show_nearby_share_settings_count() const {
+    return show_nearby_share_settings_count_;
+  }
+
  private:
   int show_account_settings_count_ = 0;
   int show_network_settings_count_ = 0;
@@ -278,6 +283,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_youtube_music_premium_page_count_ = 0;
   int show_keyboard_settings_count_ = 0;
   int show_pointing_stick_settings_count_ = 0;
+  int show_nearby_share_settings_count_ = 0;
 };
 
 }  // namespace ash
