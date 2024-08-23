@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           // Ensure hidden elements are not present.
           EnsureNotPresent(
               PlusAddressCreationView::kPlusAddressErrorTextElementId),
-          EnsureNotPresent(views::BubbleFrameView::kProgressIndicatorElementId),
+          EnsureNotPresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           // Simulate confirming plus address.
           PressButton(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
@@ -373,10 +373,11 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           // Ensure hidden elements are not present.
           EnsureNotPresent(
               PlusAddressCreationView::kPlusAddressErrorTextElementId),
-          EnsureNotPresent(views::BubbleFrameView::kProgressIndicatorElementId),
+          EnsureNotPresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           // Simulate refresh.
           PressButton(
               PlusAddressCreationView::kPlusAddressRefreshButtonElementId),
+          EnsurePresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           WaitForViewProperty(
               PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
               views::Label, Text, kFakePlusAddressRefreshU16),
@@ -481,8 +482,7 @@ IN_PROC_BROWSER_TEST_F(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
           // Ensure that progress indicator is shown while waiting for response
           // to confirm request.
-          WaitForHide(views::BubbleFrameView::kProgressIndicatorElementId,
-                      true),
+          WaitForHide(PlusAddressCreationView::kPlusAddressProgressBarId, true),
           // UI should time out and eventually show error state.
           WaitForShow(PlusAddressCreationView::kPlusAddressErrorTextElementId),
           // Simulate canceling after confirm failure.
@@ -901,7 +901,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsTest,
           // Ensure hidden elements are not present.
           EnsureNotPresent(
               PlusAddressCreationView::kPlusAddressErrorTextElementId),
-          EnsureNotPresent(views::BubbleFrameView::kProgressIndicatorElementId),
+          EnsureNotPresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(PlusAddressCreationView::kTopViewId,

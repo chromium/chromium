@@ -46,6 +46,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/theme_tracking_image_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -108,6 +109,26 @@ void OpenErrorReportingLink(content::WebContents* web_contents) {
 // Opens a link to learn more about plus addresses.
 void OpenLearnMoreLink(content::WebContents* web_contents) {
   OpenLink(web_contents, GURL(features::kPlusAddressLearnMoreUrl.Get()));
+}
+
+// Returns a progress bar that has the width of the modal, is animated
+// continuously and is exempt from layout (and thus displayed at the top of the
+// dialog).
+std::unique_ptr<views::ProgressBar> CreateProgressBar() {
+  static constexpr int kProgressBarHeight = 4;
+  auto bar = std::make_unique<views::ProgressBar>();
+  bar->SetPreferredCornerRadii(std::nullopt);
+  bar->SetValue(-1);
+  bar->SetBackgroundColor(SK_ColorTRANSPARENT);
+  bar->SetPreferredSize(
+      gfx::Size(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                    views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH),
+                kProgressBarHeight));
+  bar->SizeToPreferredSize();
+  bar->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  bar->SetProperty(views::kElementIdentifierKey,
+                   PlusAddressCreationView::kPlusAddressProgressBarId);
+  return bar;
 }
 
 std::unique_ptr<views::View> CreateTitle(bool show_notice) {
@@ -264,23 +285,25 @@ std::unique_ptr<views::View> CreateNotice(
 
 }  // namespace
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressTitleElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressDescriptionTextElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressNoticeElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressErrorTextElementId);
+                                      kPlusAddressCancelButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressConfirmButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
-                                      kPlusAddressCancelButtonElementId);
+                                      kPlusAddressDescriptionTextElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressErrorTextElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressNoticeElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressProgressBarId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressRefreshButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressSuggestedEmailElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressTitleElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView, kTopViewId);
 
 PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     base::WeakPtr<PlusAddressCreationController> controller,
@@ -315,6 +338,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .Build();
+  progress_bar_ = wrapper_view->AddChildView(CreateProgressBar());
   std::unique_ptr<views::View> primary_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -387,6 +411,7 @@ void PlusAddressCreationDialogDelegate::ShowReserveResult(
     const PlusProfileOrError& maybe_plus_profile) {
   CHECK(plus_address_label_);
 
+  SetProgressBarVisibility(false);
   if (maybe_plus_profile.has_value()) {
     plus_address_label_->SetText(
         base::UTF8ToUTF16(*maybe_plus_profile->plus_address));
@@ -403,7 +428,7 @@ void PlusAddressCreationDialogDelegate::ShowConfirmResult(
   CHECK(GetBubbleFrameView());
 
   // Stop indicating loading now that we have the server response.
-  GetBubbleFrameView()->SetProgress(std::nullopt);
+  SetProgressBarVisibility(false);
 
   if (maybe_plus_profile.has_value()) {
     GetWidget()->CloseWithReason(
@@ -421,8 +446,7 @@ void PlusAddressCreationDialogDelegate::HandleButtonPress(
   switch (type) {
     case PlusAddressViewButtonType::kConfirm: {
       controller_->OnConfirmed();
-      // Show a progress bar that loops until the Confirm request is resolved.
-      GetBubbleFrameView()->SetProgress(-1);
+      SetProgressBarVisibility(true);
       return;
     }
     case PlusAddressViewButtonType::kCancel: {
@@ -511,6 +535,11 @@ PlusAddressCreationDialogDelegate::CreateButtons() {
       .Build();
 }
 
+void PlusAddressCreationDialogDelegate::SetProgressBarVisibility(
+    bool is_visible) {
+  progress_bar_->SetVisible(is_visible);
+}
+
 void PlusAddressCreationDialogDelegate::ShowErrorStateUI() {
   CHECK(GetWidget() && web_contents_);
   plus_address_label_container_->SetVisible(false);
@@ -528,6 +557,7 @@ void PlusAddressCreationDialogDelegate::OnRefreshClicked() {
   plus_address_label_->SetText(l10n_util::GetStringUTF16(
       IDS_PLUS_ADDRESS_MODAL_REFRESH_TEMPORARY_LABEL_CONTENT));
   confirm_button_->SetEnabled(false);
+  SetProgressBarVisibility(true);
   controller_->OnRefreshClicked();
 }
 

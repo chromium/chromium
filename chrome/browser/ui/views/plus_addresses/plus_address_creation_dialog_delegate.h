@@ -20,6 +20,7 @@ namespace views {
 class ImageButton;
 class Label;
 class MdTextButton;
+class ProgressBar;
 class TableLayoutView;
 class View;
 }  // namespace views
@@ -65,6 +66,9 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   // pointer to the confirm button to `confirm_button_`.
   std::unique_ptr<views::View> CreateButtons();
 
+  // Shows and hides the progress bar at the top of the dialog.
+  void SetProgressBarVisibility(bool is_visible);
+
   // Updates the modal dialog to show error messages.
   void ShowErrorStateUI();
 
@@ -74,6 +78,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
 
   base::WeakPtr<PlusAddressCreationController> controller_;
   raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
   raw_ptr<views::TableLayoutView> plus_address_label_container_ = nullptr;
   raw_ptr<views::Label> plus_address_label_ = nullptr;
   raw_ptr<views::ImageButton> refresh_button_ = nullptr;
