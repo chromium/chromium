@@ -855,6 +855,7 @@ WebAXObject WebAXObject::NextOnLine() const {
   if (IsDetached())
     return WebAXObject();
 
+  ScopedFreezeAXCache freeze(private_->AXObjectCache());
   return WebAXObject(private_.Get()->NextOnLine());
 }
 
@@ -862,6 +863,7 @@ WebAXObject WebAXObject::PreviousOnLine() const {
   if (IsDetached())
     return WebAXObject();
 
+  ScopedFreezeAXCache freeze(private_->AXObjectCache());
   return WebAXObject(private_.Get()->PreviousOnLine());
 }
 

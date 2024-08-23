@@ -7740,13 +7740,8 @@ void AXNodeObject::MaybeResetCache() const {
   if (!generational_cache_) {
     generational_cache_ = MakeGarbageCollected<GenerationalCache>();
   }
-  // In order to use the cached values, the tree must be frozen with the same
-  // generation ID. As the tree is frozen during tree update or snapshot
-  // serialization, we can limit how frequently we recompute cached values.
-  // The tree is not frozen when serialization is triggered via
-  // ui::AXNodeData WebAXObjectProxy::GetAXNodeData.
-  if (generation != generational_cache_->generation ||
-      !AXObjectCache().IsFrozen()) {
+  DCHECK(AXObjectCache().IsFrozen());
+  if (generation != generational_cache_->generation) {
     generational_cache_->generation = generation;
     generational_cache_->next_on_line = std::nullopt;
     generational_cache_->previous_on_line = std::nullopt;
