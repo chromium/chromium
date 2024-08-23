@@ -109,6 +109,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/bookmarks/ui_bundled/home",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
     "//third_party/ocmock:ocmock",
