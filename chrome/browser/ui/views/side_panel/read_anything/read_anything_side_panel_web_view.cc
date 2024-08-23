@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
+
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/context_menu_params.h"
@@ -33,13 +36,11 @@ content::WebContents* ReadAnythingSidePanelWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  BrowserWindow* window =
-      BrowserWindow::FindBrowserWindowWithWebContents(web_contents());
-  auto* browser_view = static_cast<BrowserView*>(window);
-  if (browser_view && browser_view->browser()) {
-    browser_view->browser()->OpenURL(params,
-                                     std::move(navigation_handle_callback));
-  }
+  ReadAnythingSidePanelController* controller =
+      ReadAnythingSidePanelControllerGlue::FromWebContents(web_contents())
+          ->controller();
+  controller->tab()->GetBrowserWindowInterface()->OpenURL(
+      params, std::move(navigation_handle_callback));
   return nullptr;
 }
 
@@ -47,6 +48,11 @@ bool ReadAnythingSidePanelWebView::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   return false;
+}
+
+base::WeakPtr<ReadAnythingSidePanelWebView>
+ReadAnythingSidePanelWebView::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 ReadAnythingSidePanelWebView::~ReadAnythingSidePanelWebView() = default;

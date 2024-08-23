@@ -10,6 +10,9 @@
 
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
@@ -100,6 +103,14 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
         content::WebContents::CreateParams(profile()));
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents_.get());
+
+    // Normally this would be done by ReadAnythingSidePanelControllerGlue as it
+    // creates the WebView, but this unit test skips that step.
+    ReadAnythingSidePanelControllerGlue::CreateForWebContents(
+        web_contents_.get(), browser()
+                                 ->GetActiveTabInterface()
+                                 ->GetTabFeatures()
+                                 ->read_anything_side_panel_controller());
   }
 
   void TearDown() override {

@@ -257,10 +257,9 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
-  auto* tab = chrome::FindLastActive()->GetActiveTabInterface();
-  CHECK(tab);
-  side_panel_controller_ =
-      tab->GetTabFeatures()->read_anything_side_panel_controller();
+  side_panel_controller_ = ReadAnythingSidePanelControllerGlue::FromWebContents(
+                               web_ui_->GetWebContents())
+                               ->controller();
   side_panel_controller_->AddPageHandlerAsObserver(weak_factory_.GetWeakPtr());
 
   PrefService* prefs = profile_->GetPrefs();
@@ -332,7 +331,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   // This causes AXTreeSerializer to reset and send accessibility events of
   // the AXTree when it is re-serialized.
   main_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
-      weak_factory_.GetSafeRef(), tab->GetContents(), kReadAnythingAXMode);
+      weak_factory_.GetSafeRef(), side_panel_controller_->tab()->GetContents(),
+      kReadAnythingAXMode);
   SetUpPdfObserver();
   OnActiveAXTreeIDChanged();
 

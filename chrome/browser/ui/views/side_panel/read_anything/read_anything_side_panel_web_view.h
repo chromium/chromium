@@ -33,6 +33,8 @@ class ReadAnythingSidePanelWebView
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
+  base::WeakPtr<ReadAnythingSidePanelWebView> GetWeakPtr();
+
  private:
   base::WeakPtrFactory<ReadAnythingSidePanelWebView> weak_factory_{this};
 };

@@ -37,6 +37,15 @@ using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
 DECLARE_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
                           SidePanelWebUIViewT);
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingSidePanelControllerGlue);
+
+ReadAnythingSidePanelControllerGlue::ReadAnythingSidePanelControllerGlue(
+    content::WebContents* contents,
+    ReadAnythingSidePanelController* controller)
+    : content::WebContentsUserData<ReadAnythingSidePanelControllerGlue>(
+          *contents),
+      controller_(controller) {}
+
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
     tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
@@ -66,6 +75,11 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
 }
 
 ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
+  if (web_view_) {
+    web_view_->contents_wrapper()->web_contents()->RemoveUserData(
+        ReadAnythingSidePanelControllerGlue::UserDataKey());
+  }
+
   // Inform observers when |this| is destroyed so they can do their own cleanup.
   for (ReadAnythingSidePanelController::Observer& obs : observers_) {
     obs.OnSidePanelControllerDestroyed();
@@ -124,9 +138,18 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
 
 std::unique_ptr<views::View>
 ReadAnythingSidePanelController::CreateContainerView() {
+  // If there was an old WebView, clear the reference.
+  if (web_view_) {
+    web_view_->contents_wrapper()->web_contents()->RemoveUserData(
+        ReadAnythingSidePanelControllerGlue::UserDataKey());
+  }
+
   auto web_view = std::make_unique<ReadAnythingSidePanelWebView>(
       tab_->GetBrowserWindowInterface()->GetProfile());
 
+  ReadAnythingSidePanelControllerGlue::CreateForWebContents(
+      web_view->contents_wrapper()->web_contents(), this);
+  web_view_ = web_view->GetWeakPtr();
   return std::move(web_view);
 }
 
