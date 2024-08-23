@@ -2066,7 +2066,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninPending.Resolution"
-    enum="SigninPendingResolution" expires_after="2025-02-16">
+    enum="PendingResolutionSource" expires_after="2025-02-16">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2377,6 +2377,21 @@ kept as long as profile signout is possible -->
     shown, matching what happens with the completion event. See
     crbug.com/1398463 for more info.
   </summary>
+</histogram>
+
+<histogram name="Signin.SyncPaused.ResolutionTime.{ResolutionType}" units="ms"
+    expires_after="2025-02-16">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the time spent from entering the Sync Paused state to
+    {ResolutionType}. The value is recorded when the resolution method is
+    applied.
+  </summary>
+  <token key="ResolutionType">
+    <variant name="Reauth" summary="signing back in (reauth)"/>
+    <variant name="Signout" summary="signing out"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.SyncPromo.{Action}.Count.{AccessPoint}"

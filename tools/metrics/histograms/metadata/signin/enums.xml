@@ -396,6 +396,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="[Error] Empty primary accountid, with sync consent"/>
 </enum>
 
+<enum name="PendingResolutionSource">
+  <int value="0" label="Sign in (reauth)"/>
+  <int value="1" label="Sign out"/>
+</enum>
+
 <enum name="ResumeBlockedRequestsTrigger">
   <int value="0" label="Cookie fresh notification"/>
   <int value="1"
@@ -633,11 +638,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Revoked by Dice migration"/>
   <int value="2" label="Revoked as secondary account"/>
   <int value="3" label="Revoked on load due to cookie settings"/>
-</enum>
-
-<enum name="SigninPendingResolution">
-  <int value="0" label="Sign in (reauth)"/>
-  <int value="1" label="Sign out"/>
 </enum>
 
 <enum name="SigninReauthResult">
