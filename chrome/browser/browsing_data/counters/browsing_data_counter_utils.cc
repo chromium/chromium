@@ -19,11 +19,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -161,9 +163,26 @@ std::u16string GetChromeCounterTextFromResult(
 
     // Determines whether or not to show the count with exception message.
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+    // Notes:
+    // * `ShouldShowCookieException()` returns true if the exception footer is
+    //   shown. This is a sufficient condition to use the exception string,
+    // * `AreGoogleCookiesRebuiltAfterClearingWhenSignedIn()` may return false
+    //   when the user is signed out and always return false if syncing. The
+    //   counter should only be shown if the user is signed in, non-syncing, and
+    //   has no error.
+    bool is_signed_in = false;
+    if (identity_manager) {
+      CoreAccountId account_id =
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+      if (!account_id.empty() &&
+          !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+              account_id)) {
+        is_signed_in = true;
+      }
+    }
     int del_cookie_counter_msg_id =
         ShouldShowCookieException(profile) ||
-                (identity_manager &&
+                (is_signed_in &&
                  signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
                      *identity_manager, *profile->GetPrefs()))
             ? IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_SIGNED_IN_EXCEPTION
