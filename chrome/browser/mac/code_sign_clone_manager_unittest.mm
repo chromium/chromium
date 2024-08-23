@@ -422,4 +422,62 @@ TEST(CodeSignCloneManagerTest, IsFileOpenMoreThanOnceBadFileDescriptor) {
             internal::FileOpenMoreThanOnce::kError);
 }
 
+TEST(CodeSignCloneManagerTest, IsFileOpenMoreThanOnceHardLink) {
+  base::ScopedTempFile temp_file;
+  ASSERT_TRUE(temp_file.Create());
+
+  // A small scoper class that creates a hard link of the provided `path`. The
+  // created hard link will reside in the same directory as `path`, and will
+  // have the file extension `.link`. For example:
+  //
+  // ScopedHardLink scoped_hard_link(base::FilePath("/tmp/foo"));
+  // scoped_hard_link.get(); // returns "/tmp/foo.link"
+  class ScopedHardLink {
+   public:
+    explicit ScopedHardLink(const base::FilePath& path) { Init(path); }
+    ScopedHardLink(const ScopedHardLink&) = delete;
+    ScopedHardLink& operator=(const ScopedHardLink&) = delete;
+    ~ScopedHardLink() { base::DeleteFile(path_); }
+    base::FilePath get() { return path_; }
+
+   private:
+    void Init(const base::FilePath& path) {
+      path_ = path.AddExtension("link");
+      ASSERT_NE(link(path.value().c_str(), path_.value().c_str()), -1)
+          << strerror(errno);
+    }
+    base::FilePath path_;
+  };
+
+  ScopedHardLink scoped_hard_link(temp_file.path());
+  ASSERT_NO_FATAL_FAILURE();
+
+  // Both `temp_file` and `scoped_link` point to the same inode, expect
+  // `IsFileOpenMoreThanOnce` behavior to be the same for both.
+  // See the excellent write up by mark@chromium.org on the topic:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/5793760/comment/9df14e62_3a24ccc0
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(temp_file.path()),
+            internal::FileOpenMoreThanOnce::kNo);
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(scoped_hard_link.get()),
+            internal::FileOpenMoreThanOnce::kNo);
+
+  // Open one of the paths.
+  base::ScopedFD temp_file_open_fd(
+      HANDLE_EINTR(open(temp_file.path().value().c_str(), O_RDONLY)));
+  ASSERT_NE(temp_file_open_fd, -1) << strerror(errno);
+
+  // Again, the `IsFileOpenMoreThanOnce` behavior should be the same for both.
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(temp_file.path()),
+            internal::FileOpenMoreThanOnce::kYes);
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(scoped_hard_link.get()),
+            internal::FileOpenMoreThanOnce::kYes);
+
+  // After closing, the behavior should also be the same.
+  temp_file_open_fd.reset();
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(temp_file.path()),
+            internal::FileOpenMoreThanOnce::kNo);
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(scoped_hard_link.get()),
+            internal::FileOpenMoreThanOnce::kNo);
+}
+
 }  // namespace code_sign_clone_manager
