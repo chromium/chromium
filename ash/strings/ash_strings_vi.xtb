@@ -661,6 +661,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3386978599540877378">tính năng phóng to toàn màn hình</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Bật tính năng Nhập bằng giọng nói?</translation>
+<translation id="3392702002175498061">Hiện tất cả nội dung trong nhật ký duyệt web</translation>
 <translation id="3394432020929931914">, đã mở rộng</translation>
 <translation id="3401474642070997151">Để tuỳ chỉnh đề xuất, hãy nhấp chuột phải hoặc nhấn và giữ đề xuất đó</translation>
 <translation id="3405101454990027959">Cho phép truy cập micrô</translation>
@@ -812,6 +813,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="385300504083504382">Phần đầu</translation>
 <translation id="3859364108019690">Không thể truyền trực tuyến các ứng dụng</translation>
 <translation id="3861651314799684201">Nhấn phím Enter để ghi toàn màn hình</translation>
+<translation id="3870197372373144624">Hãy thử tắt thiết bị.</translation>
 <translation id="3886872229787704059">Mở hôm nay</translation>
 <translation id="3891340733213178823">Nhấn Ctrl+Shift+Q hai lần để đăng xuất.</translation>
 <translation id="3893630138897523026">ChromeVox (phản hồi bằng giọng nói)</translation>
@@ -927,6 +929,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4264977415328155183">, đã thu gọn</translation>
 <translation id="4265259722091164182">Viết hoa tựa đề</translation>
 <translation id="4269883910223712419">Quản trị viên của thiết bị này có thể:</translation>
+<translation id="4271841440229266861">Hiện tất cả nội dung trong ứng dụng Files</translation>
 <translation id="4274537685965975248">Phím tắt Ctrl + Alt + Mũi tên xuống đã thay đổi. Để sử dụng phím End, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên phải.</translation>
 <translation id="4275283744500212192">Mở tuỳ chọn bố cục cửa sổ</translation>
 <translation id="4275663329226226506">Truyền thông</translation>
@@ -954,6 +957,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4327147325944669226">Ghi lại trò chơi</translation>
 <translation id="4333628967105022692">Trình duyệt Lacros chưa hỗ trợ chế độ đăng nhập nhiều người dùng.</translation>
 <translation id="4338109981321384717">Kính lúp</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, đã tắt tiếng</translation>
 <translation id="4351244548802238354">Đóng hộp thoại</translation>
 <translation id="4356872429719185452">Hiển thị thông tin chi tiết về điểm phát sóng. Điểm phát sóng sắp bật.</translation>
 <translation id="4364101114148522660">Đang ghi: <ph name="DURATION" /></translation>
@@ -1299,6 +1303,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5503884284981862082">Mở/đóng Trợ lý Google</translation>
 <translation id="550391772491508736">Tiếp tục truyền</translation>
 <translation id="5506975627792768506">Bật hoặc tắt kính lúp</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, nhấn Enter để tắt tiếng.</translation>
 <translation id="5512042095225963688">Xoá từ trước</translation>
 <translation id="5519005148254860683">Mở rộng Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@ Mới cài đặt</translation>
 <translation id="8239034820133090126">Kích hoạt không gian làm việc ở bên phải</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Pin điện thoại <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Ứng dụng</translation>
+<translation id="825129991941217170">Hiện tất cả nội dung trên Google Drive</translation>
 <translation id="8257510091797044096">Thiết lập thiết bị của bạn</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8262312463845990408">Phát hoặc dừng phát</translation>
@@ -2339,6 +2345,7 @@ Mới cài đặt</translation>
 <translation id="9098969848082897657">Tắt tiếng điện thoại</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> hoặc <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Huỷ thao tác thực hiện gần đây nhất</translation>
+<translation id="9126642911267312373">Không thể sử dụng Bluetooth</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 phút nữa}other{# phút nữa}}</translation>
 <translation id="9129245940793250979">Nút phía sau</translation>
 <translation id="9133335900048457298">Không thể ghi nội dung được bảo vệ</translation>

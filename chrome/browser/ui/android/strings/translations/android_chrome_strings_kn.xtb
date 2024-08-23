@@ -131,7 +131,6 @@
 <translation id="1549000191223877751">ಇತರ ವಿಂಡೋಗೆ ಸರಿಸಿ</translation>
 <translation id="1553358976309200471">Chrome ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
 <translation id="1554532453982918912">ನೀವು ಬಳಸುವ ರೀತಿಯಲ್ಲಿ Chrome ಅನ್ನು ಬಳಸುವ ಇತರ ಬಳಕೆದಾರರಿಗಾಗಿ ಅದನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
-<translation id="1558391695376153246">ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="1568636008098739136">ಈ ಪುಟವನ್ನು ಆಲಿಸಿ ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</translation>
 <translation id="1571304935088121812">ಬಳಕೆದಾರರಹೆಸರು ನಕಲಿಸಿ</translation>
 <translation id="1584648915421894279">ಸದ್ಯಕ್ಕೆ, ಈ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chrome ಚಾನಲ್‌ಗಳಾದ್ಯಂತ ಬಳಸಲಾಗುವುದಿಲ್ಲ. Chrome 125 ರ ನಂತರ, Chrome ಮತ್ತು <ph name="CHROME_CHANNEL" /> ಗಾಗಿ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲಾಗುತ್ತದೆ ಹಾಗೂ ಅವುಗಳನ್ನು ಎರಡೂ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಬಳಸಬಹುದು.</translation>
@@ -1018,6 +1017,7 @@
 <translation id="587735546353481577">ಸೈಟ್ ಅನ್ನು ಫಾಲೋ ಮಾಡಲು, ಸೈಟ್‌ಗೆ ಹೋಗಿ, Chrome ಮೆನುವನ್ನು ತೆರೆಯಿರಿ, ಹಾಗೂ ಫಾಲೋ ಮಾಡಿ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5879072387416556377">ಉತ್ತಮ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="5885378508678660271">ನೋಟಿಫಿಕೇಶನ್‌ಗಳು <ph name="SEPARATOR" /> ಈ ಸೈಟ್ ಅಪಾಯಕಾರಿಯಾದ ಕಾರಣ Chrome ಈ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ</translation>
+<translation id="5895834791314695851">ಈ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು, Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳ ಶೀಟ್ ಅನ್ನು ಮುಚ್ಚಿಲ್ಲ</translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="5919204609460789179">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು <ph name="PRODUCT_NAME" /> ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
@@ -1446,7 +1446,6 @@
 <translation id="7691043218961417207">ಫಾಲೋ ಮಾಡಲು ವಿಷಯವನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
 <translation id="7697383401610880082">ಹ್ಯಾಂಡಲ್ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> ನಲ್ಲಿ ಇಮೇಲ್ ರಚಿಸಿ</translation>
-<translation id="7702029078562412515">ಪ್ರಶ್ನೆ ಟೈಲ್‌ಗಳು</translation>
 <translation id="7707922173985738739">ಮೊಬೈಲ್‌ ಡೇಟಾ ಬಳಸಿ</translation>
 <translation id="7709918231054955894">ನಿಮ್ಮ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="7733878270780732638">ಸಾಧನದಲ್ಲಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ.</translation>
@@ -1558,6 +1557,7 @@
 <translation id="820568752112382238">ಹೆಚ್ಚು ಭೇಟಿ ನೀಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
 <translation id="8209050860603202033">ಚಿತ್ರವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8210770465353466621">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
+<translation id="8211101263765532799">ಕೆಲವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತವೆ</translation>
 <translation id="8215740705341534369">ಸೈಡ್ ಶೀಟ್</translation>
 <translation id="8218622182176210845">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8221401890884589479">ನಿಮಗೆ ಬೇಡವಾದ ಸೈಟ್‌ಗಳನ್ನು ನೀವು ನಿರ್ಬಂಧಿಸಬಹುದು. 30 ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಸೈಟ್‌ಗಳನ್ನು ಪಟ್ಟಿಯಿಂದ Chrome ಸ್ವಯಂ ಅಳಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -1658,6 +1658,7 @@
 <translation id="864544049772947936">ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">ನಿಮ್ಮದೇ ಆದ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="8664979001105139458">ಫೈಲ್ ಹೆಸರು ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
+<translation id="8672883760227492369">ಈ ಸಾಧನದಲ್ಲಿನ ಕೆಲವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತವೆ. ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google Password Manager ಗೆ ಸರಿಸಬಹುದು.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆಗೆ <ph name="SITE_ETLD_PLUS_ONE" /> ಗೆ ಸೈನ್ ಅಪ್ ಮಾಡಿ</translation>
 <translation id="8676789164135894283">ಸೈನ್ ಇನ್ ದೃಢೀಕರಣಗಳು</translation>
 <translation id="8683039184091909753">ಚಿತ್ರ</translation>

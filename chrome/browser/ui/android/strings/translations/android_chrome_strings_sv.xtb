@@ -131,7 +131,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1549000191223877751">Flytta till annat fönster</translation>
 <translation id="1553358976309200471">Uppdatera Chrome</translation>
 <translation id="1554532453982918912">Hjälp oss att göra Chrome bättre för den som använder programmet på samma sätt som du</translation>
-<translation id="1558391695376153246">Stäng inkognitoflikar</translation>
 <translation id="1568636008098739136">Lyssna på sidan. Tryck länge om du vill ändra det här kortkommandot.</translation>
 <translation id="1571304935088121812">Kopiera användarnamn</translation>
 <translation id="1584648915421894279">Lösenord som är sparade på den här enheten går för närvarande inte att använda i Chrome-kanaler. Efter Chrome 125 sammanfogas lösenord som är sparade på enheten för Chrome och <ph name="CHROME_CHANNEL" /> och kan användas i båda apparna.</translation>
@@ -199,6 +198,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1928618076168182477">Visar visuell vy</translation>
 <translation id="1928696683969751773">Uppdateringar</translation>
 <translation id="1933845786846280168">Vald flik</translation>
+<translation id="1939549834451474504">Lösenorden slutar snart att fungera eftersom Google Play-tjänster inte är tillgängliga. Du kan kopiera dina sparade lösenord innan de slutar fungera. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Spara lösenord</translation>
 <translation id="1944535645109964458">Inga nycklar är tillgängliga</translation>
 <translation id="1957557050935255529">Läser in PDF …</translation>
@@ -1386,6 +1386,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7454744349230173024">Organisationen har inaktiverat möjligheten att spara lösenord</translation>
 <translation id="7455988709578031708">Baserat på din webbhistorik. Inställningen är aktiverad.</translation>
 <translation id="7456774706094330779">Utökad förinläsning</translation>
+<translation id="7466328545712777810">Du får en avisering om priset sänks på en webbplats</translation>
 <translation id="7466431077154602932">Kompakt vy</translation>
 <translation id="7474822150871987353">Läs om olika ämnen på webbplatser utan att lämna sidan. Välj ett eller flera ord på sidan som du vill söka efter.</translation>
 <translation id="7475192538862203634">Om du ser detta ofta provar du de här <ph name="BEGIN_LINK" />förslagen<ph name="END_LINK" />.</translation>
@@ -1446,7 +1447,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7691043218961417207">Utforska innehåll att följa</translation>
 <translation id="7697383401610880082">Handtag</translation>
 <translation id="7698359219371678927">Skapa ett e-postmeddelande i <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Frågerutor</translation>
 <translation id="7707922173985738739">Mobildata används</translation>
 <translation id="7709918231054955894">Få alla dina flikar</translation>
 <translation id="7733878270780732638">Det finns inte tillräckligt med utrymme på enheten.</translation>

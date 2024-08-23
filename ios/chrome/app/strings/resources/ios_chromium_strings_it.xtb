@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Ciò significa che Chromium richiederà ogni volta il sito desktop.</translation>
 <translation id="2313870531055795960">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura.</translation>
 <translation id="231828342043114302">Accedi a Chromium per ricevere contenuti personalizzati in base ai tuoi interessi.</translation>
+<translation id="2326738825692478496">Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google.
+
+Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="2374627437126809292">Chromium utilizza Google Maps per fornirti indicazioni stradali e informazioni locali sugli indirizzi rilevati.</translation>
 <translation id="2386292341327187942">Nella casella Cerca nei widget, inserisci la parola Chromium</translation>
 <translation id="2426113998523353159">La tua organizzazione richiede l'accesso per usare Chromium.</translation>
@@ -292,6 +295,8 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 
 I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" />. Inseriscila per utilizzare e salvare i dati di Chromium nel tuo Account Google.</translation>
 <translation id="9022552996538154597">Accedi a Chromium</translation>
+<translation id="9031260906956926157">Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google.
+Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="9050790730841755540">Utilizza Chromium ogni volta che tocchi i link in altre app.</translation>
 <translation id="9057082013386654559">Usa Chromium per iPad per impostazione predefinita</translation>
 <translation id="9059693977935746710">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password per <ph name="EMAIL" /></translation>

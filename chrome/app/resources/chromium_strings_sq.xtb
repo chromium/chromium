@@ -429,6 +429,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7398989605938454041">Me profilet e Chromium mund t'i mbash veçmas të gjitha gjërat e tua të Chromium. Kjo e bën më të lehtë ta ndash punën nga argëtimi.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium ka nevojë për leje për t'u qasur te kamera jote për këtë sajt</translation>
+<translation id="7458892263350425044">Për të përdorur mikrofonin, jepi Chromium qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="7467949745582939695">Të niset sërish Chromium?</translation>
 <translation id="7483335560992089831">Nuk mund të instalohet i njëjti version i Chromium që po ekzekutohet aktualisht. Mbylle Chromium dhe provo përsëri.</translation>
@@ -470,6 +471,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="813913629614996137">Po fillon...</translation>
 <translation id="8166782796394721554">Aktivizo mbrojtjen shtesë në motorin e JavaScript dhe WebAssembly të Chromium</translation>
 <translation id="81770708095080097">Ky skedar është i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
+<translation id="8223363452568144035">Për të përdorur kamerën, jepi Chromium qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium nuk mund të verifikojë se nga vjen kjo shtesë dhe ajo mund të jetë e pasigurt. Hiqe atë nga Chromium që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet personale.</translation>
 <translation id="8248265253516264921">Nëse një imazh nuk ka një përshkrim të dobishëm, Chromium do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="8254601181414348851">Do të identifikohesh në Chromium në një profil të ri?</translation>
@@ -540,4 +542,5 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="983803489796659991">Instalimi dështoi sepse serveri i përditësimit nuk ka të dhëna të hash-it për aplikacionin.</translation>
 <translation id="985498048907240953">Përdor Chromium pa pasur llogari</translation>
 <translation id="985602178874221306">Autorët e Chromium</translation>
+<translation id="992780518932311116">Për të përdorur vendndodhjen tënde, jepi Chromium qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 </translationbundle>

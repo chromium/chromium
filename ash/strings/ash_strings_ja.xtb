@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">全画面拡大鏡</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">音声入力をオンにしますか？</translation>
+<translation id="3392702002175498061">閲覧履歴のすべてのコンテンツを表示</translation>
 <translation id="3394432020929931914">、開かれています</translation>
 <translation id="3401474642070997151">候補をカスタマイズするには、いずれかの候補を右クリックするか長押しします</translation>
 <translation id="3405101454990027959">マイクへのアクセスをオンにする</translation>
@@ -813,6 +814,7 @@
 <translation id="385300504083504382">先頭</translation>
 <translation id="3859364108019690">アプリをストリーミングできません</translation>
 <translation id="3861651314799684201">全画面を録画するには Enter キーを押してください</translation>
+<translation id="3870197372373144624">デバイスをシャットダウンしてみてください。</translation>
 <translation id="3886872229787704059">今日開いたファイル</translation>
 <translation id="3891340733213178823">ログアウトするには、Ctrl+Shift+Q を 2 回押します。</translation>
 <translation id="3893630138897523026">ChromeVox（音声フィードバック）</translation>
@@ -928,6 +930,7 @@
 <translation id="4264977415328155183">、閉じています</translation>
 <translation id="4265259722091164182">語頭を大文字</translation>
 <translation id="4269883910223712419">このデバイスの管理者は以下を行うことができます。</translation>
+<translation id="4271841440229266861">「ファイル」のすべてのコンテンツを表示</translation>
 <translation id="4274537685965975248">キーボード ショートカット「Ctrl+Alt+下矢印」が変更されました。End キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+右矢印キーを押してください。</translation>
 <translation id="4275283744500212192">ウィンドウ レイアウトのオプションを開く</translation>
 <translation id="4275663329226226506">メディア</translation>
@@ -955,6 +958,7 @@
 <translation id="4327147325944669226">ゲームを録画</translation>
 <translation id="4333628967105022692">複数のユーザーがログインしている場合、Lacros はサポートされません。</translation>
 <translation id="4338109981321384717">虫メガネ</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />、ミュートされています</translation>
 <translation id="4351244548802238354">ダイアログを閉じる</translation>
 <translation id="4356872429719185452">アクセス ポイントの詳細を表示します。アクセス ポイントはオンです。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> 録画中</translation>
@@ -1301,6 +1305,7 @@
 <translation id="5503884284981862082">Google アシスタントを起動または終了します</translation>
 <translation id="550391772491508736">キャストを再開</translation>
 <translation id="5506975627792768506">拡大鏡をオンまたはオフにします</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />、Enter キーを押すと音声がミュートされます。</translation>
 <translation id="5512042095225963688">前の単語を削除する</translation>
 <translation id="5519005148254860683">Google ToDo リストを展開</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2112,6 +2117,7 @@
 <translation id="8239034820133090126">右側のデスクを有効にする</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />、アプリ</translation>
+<translation id="825129991941217170">Google ドライブのすべてのコンテンツを表示</translation>
 <translation id="8257510091797044096">デバイスをセットアップする</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8262312463845990408">再生を切り替える</translation>
@@ -2341,6 +2347,7 @@
 <translation id="9098969848082897657">スマートフォンを消音する</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> または <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">直前の操作を元に戻す</translation>
+<translation id="9126642911267312373">Bluetooth はご利用いただけません</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 分後}other{# 分後}}</translation>
 <translation id="9129245940793250979">背面ボタン</translation>
 <translation id="9133335900048457298">保護されたコンテンツは録画できません</translation>

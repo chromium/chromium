@@ -76,6 +76,9 @@ Pethau i'w hystyried:
 <translation id="2703746758996815929">I gael awgrymiadau defnyddiol Chrome, trowch hysbysiadau ymlaen yn eich gosodiadau iOS.</translation>
 <translation id="2736805085127235148">Mae hysbysiadau Chrome wedi'u diffodd yng ngosodiadau eich dyfais ar hyn o bryd.</translation>
 <translation id="2750626042242931740">Gallwch ddiweddaru'ch dewisiadau unrhyw bryd yn y Gosodiadau Chrome.</translation>
+<translation id="2754428955276778271">Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto.
+
+Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
 <translation id="2767464022270041271">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="2869959624320573933">Mewngofnodi i Chrome</translation>
 <translation id="2876628302275096482">Dysgu rhagor am <ph name="BEGIN_LINK" />sut mae Chrome yn cadw eich data yn breifat<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Pethau i'w hystyried:
 <translation id="5190139289262548459">Mae eich sefydliad, <ph name="DOMAIN" />, yn rheoli'r cyfrif rydych wedi mewngofnodi iddo a sut mae Chrome yn cael ei ddefnyddio.</translation>
 <translation id="5256908199795498284">Bydd Chrome yn canfod rhifau olrhain pecyn ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar dudalen y Tab Newydd. Bydd eich data yn cael eu rhannu gyda Google i ddarparu'r nodwedd hon ac i wella Siopa i bawb.</translation>
 <translation id="5278862365980079760">Clowch eich tabiau anhysbys pan fyddwch yn gadael Chrome neu'n newid i ap gwahanol.</translation>
+<translation id="5310957470610282541">Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto.
+Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
 <translation id="5389212809648216794">Ni all Google Chrome ddefnyddio'ch camera oherwydd ei fod yn cael ei ddefnyddio gan ap arall</translation>
 <translation id="5395376160638294582">Gwnewch yn siŵr y gallwch bob amser ddefnyddio'r data Chrome yn eich Cyfrif Google</translation>
 <translation id="5439191312780166229">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chrome.</translation>

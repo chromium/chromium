@@ -546,7 +546,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1975457531113383421">Dulang Input</translation>
 <translation id="1975584088563498795">Peti mel 10</translation>
-<translation id="1976610264358655503">Sering anda lawati</translation>
 <translation id="1978555033938440688">Versi Perisian Tegar</translation>
 <translation id="1979156660928743046">Maklumat Media</translation>
 <translation id="1988881251331415125">Jika ejaan sudah betul, <ph name="BEGIN_LINK" />cuba jalankan Diagnostik Sambungan<ph name="END_LINK" />.</translation>
@@ -2822,6 +2821,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6240964651812394252">Untuk menggunakan Google Password Manager dengan sistem pengendalian anda, lancarkan semula Chrome dan benarkan akses kepada pengurus kata laluan komputer anda. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
 <translation id="6241121617266208201">Sembunyikan cadangan</translation>
 <translation id="624499991300733384">Perkhidmatan Pengatur Huruf Cetak</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> hari yang lalu</translation>
 <translation id="6246868321321344665">Organisasi anda dapat melihat data semakan imbas, seperti kata laluan dan sejarah, dalam tugasan dan profil peribadi</translation>
 <translation id="6250932670816326647">Produk Mandian &amp; Tubuh</translation>
 <translation id="6251906504834538140">{0,plural, =1{Fail disekat daripada dialihkan}other{<ph name="FILE_COUNT" /> fail disekat daripada dialihkan}}</translation>
@@ -3094,7 +3094,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Permainan Simulasi</translation>
-<translation id="6735783933931458444">Anda kerap melawat pada masa ini</translation>
 <translation id="6737708609449480586">Makanan Dibakar</translation>
 <translation id="6738516213925468394">Data anda disulitkan dengan <ph name="BEGIN_LINK" />ungkapan laluan segerak<ph name="END_LINK" /> anda pada <ph name="TIME" />. Masukkannya untuk memulakan penyegerakan.</translation>
 <translation id="6739943577740687354">Ciri ini menggunakan AI dan tidak sentiasa betul</translation>
@@ -3411,6 +3410,7 @@ Butiran tambahan:
 <translation id="7346081071264046066">"balas ya kepada undangan majlis perkahwinan ini dengan keterujaan"</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7353601530677266744">Baris Perintah</translation>
+<translation id="7356678400607112844">Terakhir Dilawati</translation>
 <translation id="7359588939039777303">Iklan disekat.</translation>
 <translation id="7360451453306104998">Apabila Google mendapati diskaun yang tersedia, diskaun itu akan dipaparkan semasa semak keluar</translation>
 <translation id="7363096869660964304">Walau bagaimanapun, anda tidak halimunan. Apabila anda menggunakan mod Inkognito, penyemakan imbas anda tidak akan disembunyikan daripada majikan anda, penyedia perkhidmatan Internet anda atau laman web yang anda lawati.</translation>

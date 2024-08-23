@@ -131,7 +131,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1549000191223877751">Mou a l'altra finestra</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
 <translation id="1554532453982918912">Ajuda a millorar Chrome per a les persones que el fan servir igual que tu</translation>
-<translation id="1558391695376153246">Tanca pestanyes d'incògnit</translation>
 <translation id="1568636008098739136">Escolta aquesta pàgina. Per editar aquesta drecera, mantén-la premuda.</translation>
 <translation id="1571304935088121812">Copia el nom d'usuari</translation>
 <translation id="1584648915421894279">Ara mateix, les contrasenyes desades en aquest dispositiu no es poden utilitzar en tots els canals de Chrome. Després de la versió 125 de Chrome, les contrasenyes desades al dispositiu per a Chrome i <ph name="CHROME_CHANNEL" /> es combinaran i es podran utilitzar en totes dues aplicacions.</translation>
@@ -199,6 +198,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1928618076168182477">S'està mostrant la visualització visual</translation>
 <translation id="1928696683969751773">Actualitzacions</translation>
 <translation id="1933845786846280168">Pestanya seleccionada</translation>
+<translation id="1939549834451474504">Les contrasenyes deixaran de funcionar aviat perquè Serveis de Google Play no està disponible. Pots fer una còpia de les contrasenyes desades abans que deixin de funcionar. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Desa les contrasenyes</translation>
 <translation id="1944535645109964458">No hi ha cap clau d'accés disponible</translation>
 <translation id="1957557050935255529">S'està carregant el PDF…</translation>
@@ -1385,6 +1385,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7454744349230173024">La teva organització ha desactivat l'opció de desar contrasenyes</translation>
 <translation id="7455988709578031708">Segons el teu historial de navegació. Aquesta opció de configuració està activada.</translation>
 <translation id="7456774706094330779">Precàrrega ampliada</translation>
+<translation id="7466328545712777810">Si baixa el preu en qualsevol lloc web, rebràs una notificació</translation>
 <translation id="7466431077154602932">Visualització compacta</translation>
 <translation id="7474822150871987353">Obtén informació sobre temes dels llocs web sense sortir de la pàgina. Selecciona una o més paraules de la pàgina per cercar-les.</translation>
 <translation id="7475192538862203634">Si això passa sovint, prova aquests <ph name="BEGIN_LINK" />suggeriments<ph name="END_LINK" />.</translation>
@@ -1445,7 +1446,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7691043218961417207">Explora contingut i segueix-lo</translation>
 <translation id="7697383401610880082">Ansa per arrossegar</translation>
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Mosaics de consultes</translation>
 <translation id="7707922173985738739">Utilitza dades mòbils</translation>
 <translation id="7709918231054955894">Obtén totes les teves pestanyes</translation>
 <translation id="7733878270780732638">No hi ha prou espai al dispositiu.</translation>

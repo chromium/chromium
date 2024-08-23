@@ -366,6 +366,7 @@
 <translation id="608006075545470555">এই ব্রাউজারে অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="6097822892606850415">AI-এর সাহায্যে আরও আত্মবিশ্বাসের সাথে লিখুন</translation>
 <translation id="6113794647360055231">Chrome আরও ভাল হয়ে উঠেছে</translation>
+<translation id="6134085236017727171">আপনার মাইক্রোফোন ব্যবহার করতে, Chrome-কে <ph name="BEGIN_LINK" />সিস্টেম সেটিংস<ph name="END_LINK" /> অ্যাক্সেস করতে দিন</translation>
 <translation id="6135456723633883042">এইসব ট্যাব অতিরিক্ত রিসোর্স ব্যবহার করছে। আপনার পারফর্ম্যান্স উন্নত করতে, Chrome-কে এগুলি বন্ধ করতে দিন।</translation>
 <translation id="6145313976051292476">Chrome-এ পিডিএফ ফাইল খুলুন</translation>
 <translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> ধরে ব্যবহার করা না হলে, আপনার সংস্থা Chrome ডেটা মুছে দেয়। এর মধ্যে ইতিহাস, অটোফিল এবং ডাউনলোড সংক্রান্ত ডেটা থাকতে পারে।</translation>
@@ -401,6 +402,7 @@
 <translation id="6497147134301593682">Chrome অটোমেটিক বন্ধ হয়ে গেছে</translation>
 <translation id="6506909944137591434">আপনার আশেপাশের জায়গার একটি 3D ম্যাপ তৈরি করার জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520670145826811516">আপনার লোকেশন ব্যবহার করতে, Chrome-কে <ph name="BEGIN_LINK" />সিস্টেম সেটিংস<ph name="END_LINK" /> অ্যাক্সেস করতে দিন</translation>
 <translation id="659498884637196217">এই ডিভাইসে Google পাসওয়ার্ড ম্যানেজারে</translation>
 <translation id="6632473616050862500">অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS Flex তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="6660596345553328257">Chrome-এ সাইন-ইন করবেন?</translation>
@@ -563,6 +565,7 @@
 <translation id="8718062187489036808">Chrome থেকে প্রস্থান করুন করুন</translation>
 <translation id="873133009373065397">Google Chrome ডিফল্ট ব্রাউজার নির্ধারণ বা সেট করতে পারছে না</translation>
 <translation id="8765470054473112089">আপনি যখন অ্যাড্রেস বার বা সার্চ বক্সে টাইপ করেন, তখন আরও ভালো পরামর্শ পেতে Chrome আপনি যা টাইপ করেন তা আপনার ডিফল্ট সার্চ ইঞ্জিনে পাঠায়। এটি ছদ্মবেশী মোডে বন্ধ আছে।</translation>
+<translation id="8781673607513845160">আপনার ক্যামেরা ব্যবহার করতে, Chrome-কে <ph name="BEGIN_LINK" />সিস্টেম সেটিংস<ph name="END_LINK" /> অ্যাক্সেস করতে দিন</translation>
 <translation id="878572486461146056">ইনস্টল সংক্রান্ত সমস্যা: আপনার নেটওয়ার্ক অ্যাডমিনিস্ট্রেটর একটি গ্রুপ নীতি প্রয়োগ করেছেন যা ইনস্টলেশনে বাধা তৈরি করছে: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome এটি ডাউনলোড করা বন্ধ করে দিয়েছে কারণ ফাইলটি <ph name="USER_EMAIL" /> সহ আপনার ব্যক্তিগত ও সোশ্যাল নেটওয়ার্ক অ্যাকাউন্টের ক্ষতি করতে পারে</translation>
 <translation id="8797423385604279835">AI-এর সাহায্যে আপনার ট্যাব গুছিয়ে রাখুন</translation>

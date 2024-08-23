@@ -362,6 +362,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="608006075545470555">Додати робочий профіль у цей веб-переглядач</translation>
 <translation id="6097822892606850415">Упевнено пишіть тексти за допомогою штучного інтелекту</translation>
 <translation id="6113794647360055231">Chrome став ще кращим</translation>
+<translation id="6134085236017727171">Щоб використовувати мікрофон, надайте Chrome відповідний доступ у <ph name="BEGIN_LINK" />системних налаштуваннях<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ці вкладки використовують додаткові ресурси. Щоб підвищити продуктивність, дозвольте Chrome зробити їх неактивними.</translation>
 <translation id="6145313976051292476">Відкривати файли PDF у Chrome</translation>
 <translation id="6157638032135951407">Ваша організація видаляє дані Chrome, якщо вони не використовуються протягом <ph name="TIMEOUT_DURATION" />. Це може включати історію, дані автозаповнення й завантаження.</translation>
@@ -397,6 +398,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6497147134301593682">Chrome закрито автоматично</translation>
 <translation id="6506909944137591434">Веб-переглядачу Chrome потрібен доступ до камери, щоб створити 3D-карту вашого оточення</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Версія Google Chrome для розробників</translation>
+<translation id="6520670145826811516">Щоб використовувати геодані, надайте Chrome відповідний доступ у <ph name="BEGIN_LINK" />системних налаштуваннях<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">У Менеджері паролів Google на цьому пристрої</translation>
 <translation id="6632473616050862500">ОС Chrome Flex працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Увійти в Chrome?</translation>
@@ -559,6 +561,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8718062187489036808">Вийти з облікового запису Chrome</translation>
 <translation id="873133009373065397">Google Chrome не може визначити чи встановити веб-переглядач за умовчанням</translation>
 <translation id="8765470054473112089">Коли ви вводите текст в адресному рядку або полі пошуку, Chrome надсилає цей запит у пошукову систему за умовчанням, щоб надати вам кращі підказки. В анонімному режимі цю функцію вимкнено.</translation>
+<translation id="8781673607513845160">Щоб використовувати камеру, надайте Chrome відповідний доступ у <ph name="BEGIN_LINK" />системних налаштуваннях<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Сталася помилка. Адміністратор мережі застосував правило для груп, яке забороняє встановлення: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796073561259064743">Вебпереглядач Chrome заблокував завантаження, оскільки цей файл може зашкодити вашим особистим обліковим записам і обліковим записам у соціальних мережах, зокрема <ph name="USER_EMAIL" /></translation>
 <translation id="8797423385604279835">Упорядковуйте вкладки за допомогою штучного інтелекту</translation>

@@ -131,7 +131,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1549000191223877751">Symud i ffenestr arall</translation>
 <translation id="1553358976309200471">Diweddarwch Chrome</translation>
 <translation id="1554532453982918912">Helpwch i wneud Chrome yn well i bobl sy'n ei ddefnyddio yn yr un ffordd â chi</translation>
-<translation id="1558391695376153246">Cau tabiau Anhysbys</translation>
 <translation id="1568636008098739136">Gwrando ar y dudalen hon. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
 <translation id="1571304935088121812">Copïo'r enw defnyddiwr</translation>
 <translation id="1584648915421894279">Ar hyn o bryd, ni ellir defnyddio cyfrineiriau sydd wedi'u cadw ar y ddyfais hon ar draws sianeli Chrome. Ar ôl Chrome 125, bydd cyfrineiriau sydd wedi'u cadw ar eich dyfais ar gyfer Chrome a <ph name="CHROME_CHANNEL" /> yn cael eu cyfuno a gellir eu defnyddio yn y ddau ap.</translation>
@@ -1447,7 +1446,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7691043218961417207">Archwilio cynnwys i ddilyn</translation>
 <translation id="7697383401610880082">Bachyn llusgo</translation>
 <translation id="7698359219371678927">Crëwch e-bost yn <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Teils ymholiadau</translation>
 <translation id="7707922173985738739">Defnyddio data symudol</translation>
 <translation id="7709918231054955894">Cael eich holl dabiau</translation>
 <translation id="7733878270780732638">Dim digon o le ar y ddyfais.</translation>

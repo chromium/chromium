@@ -1618,7 +1618,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2137128126782078222">Meldingen van <ph name="WEBSITE" /> niet toestaan</translation>
 <translation id="2139919072249842737">Knop Instellen</translation>
 <translation id="2140788884185208305">Batterijconditie</translation>
-<translation id="2140902257485550046">Selecteer dit om alle extensies op deze site te blokkeren</translation>
 <translation id="2142328300403846845">Link openen als</translation>
 <translation id="2142484069755256151">Maak een herstelpincode van 6 cijfers voor Google Wachtwoordmanager, pincodecijfer <ph name="NUM_DIGIT" /> van 6</translation>
 <translation id="2142582065325732898">Zet <ph name="LINK1_BEGIN" />Chrome-synchronisatie<ph name="LINK1_END" /> aan om recente Chrome-tabbladen te bekijken. <ph name="LINK2_BEGIN" />Meer informatie<ph name="LINK2_END" /></translation>
@@ -2297,7 +2296,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2610374175948698697">Kan bestanden of mappen op je apparaat bekijken</translation>
 <translation id="2610780100389066815">Microsoft-vertrouwenslijsthandtekening</translation>
 <translation id="261114180663074524">Log in op je Microsoft-account en probeer het opnieuw</translation>
-<translation id="2611765907167846862">Sereen</translation>
 <translation id="2611776654555141051">Tool Rechthoek</translation>
 <translation id="2612676031748830579">Kaartnummer</translation>
 <translation id="261305050785128654">Laat websites weten welke talen je spreekt. Waar mogelijk tonen ze content in die talen.</translation>
@@ -6960,7 +6958,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6022526133015258832">Openen in volledig scherm</translation>
 <translation id="6022659036123304283">Personaliseer Chrome voor jou</translation>
 <translation id="6023643151125006053">Dit apparaat (serienummer: <ph name="SERIAL_NUMBER" />) is vergrendeld door de beheerder van <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Extensies toestaan op deze site</translation>
 <translation id="6024317249717725918">Videoframe &amp;doorzoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stack-tracering</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: USB-apparaat verbonden</translation>
@@ -9216,7 +9213,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7685087414635069102">Pincode vereist</translation>
 <translation id="7685351732518564314">Druk op een knop op je <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Meer informatie over door de site voorgestelde advertenties</translation>
-<translation id="7686581688229391955">Selecteer dit om extensies op deze site toe te staan</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Selecteer een optie in de lijst</translation>
 <translation id="7690853182226561458">&amp;Map toevoegen...</translation>

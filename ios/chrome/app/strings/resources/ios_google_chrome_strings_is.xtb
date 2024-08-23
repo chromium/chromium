@@ -76,6 +76,9 @@ Hafðu í huga:
 <translation id="2703746758996815929">Til að fá gagnleg ráð um Chrome skaltu kveikja á tilkynningum í iOS-stillingum.</translation>
 <translation id="2736805085127235148">Slökkt er á Chrome-tilkynningum í stillingum tækisins.</translation>
 <translation id="2750626042242931740">Þú getur uppfært valið þitt hvenær sem er í stillingum Chrome.</translation>
+<translation id="2754428955276778271">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum.
+
+Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="2767464022270041271">Engin vistuð aðgangsorð. Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="2869959624320573933">Skráðu þig inn á Chrome</translation>
 <translation id="2876628302275096482">Nánar um <ph name="BEGIN_LINK" />hvernig Chrome heldur gögnunum þínum leyndum<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Hafðu í huga:
 <translation id="5190139289262548459">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert innskráð(ur) á og hvernig Chrome er notað.</translation>
 <translation id="5256908199795498284">Chrome mun greina pakkarakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Gögnunum verður deilt með Google til að veita þennan eiginleika og til að bæta Shopping hjá öllum.</translation>
 <translation id="5278862365980079760">Læstu huliðsflipum þegar þú lokar Chrome eða skiptir yfir í annað forrit.</translation>
+<translation id="5310957470610282541">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum.
+Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="5389212809648216794">Google Chrome getur ekki notað myndavélina því að annað forrit er að nota hana</translation>
 <translation id="5395376160638294582">Gakktu úr skugga um að þú getir alltaf notað Chrome-gögnin á Google-reikningnum þínum</translation>
 <translation id="5439191312780166229">Varar þig við hættulegum vefsvæðum, jafnvel þeim sem Google hafði enga vitneskju um, með því að greina fleiri gögn frá vefsvæðum en hefðbundin vörn. Þú getur valið að sleppa Chrome-viðvörunum.</translation>

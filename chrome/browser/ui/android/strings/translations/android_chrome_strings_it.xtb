@@ -131,7 +131,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1549000191223877751">Passa a un'altra finestra</translation>
 <translation id="1553358976309200471">Aggiorna Chrome</translation>
 <translation id="1554532453982918912">Contribuisci a migliorare Chrome per le persone che lo usano come fai tu</translation>
-<translation id="1558391695376153246">Chiudi schede in incognito</translation>
 <translation id="1568636008098739136">Ascolta questa pagina. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="1571304935088121812">Copia nome utente</translation>
 <translation id="1584648915421894279">Al momento, le password salvate su questo dispositivo non possono essere utilizzate su tutti i canali Chrome. Dopo la versione 125 di Chrome, le password salvate sul dispositivo per Chrome e <ph name="CHROME_CHANNEL" /> verranno unite e potranno essere utilizzate in entrambe le app.</translation>
@@ -199,6 +198,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1928618076168182477">Visualizzazione grafica selezionata</translation>
 <translation id="1928696683969751773">Aggiornamenti</translation>
 <translation id="1933845786846280168">Scheda selezionata</translation>
+<translation id="1939549834451474504">A breve le password non funzioneranno più perché Google Play Services non è disponibile. Puoi creare una copia delle password salvate prima che smettano di funzionare. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Salva password</translation>
 <translation id="1944535645109964458">Nessuna passkey disponibile</translation>
 <translation id="1957557050935255529">Caricamento PDF in corso…</translation>
@@ -1385,6 +1385,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7454744349230173024">La tua organizzazione ha disattivato il salvataggio delle password</translation>
 <translation id="7455988709578031708">In base alla tua cronologia di navigazione. Questa impostazione è attiva.</translation>
 <translation id="7456774706094330779">Precaricamento esteso</translation>
+<translation id="7466328545712777810">Riceverai una notifica se il prezzo calerà su qualsiasi sito</translation>
 <translation id="7466431077154602932">Visualizzazione compatta</translation>
 <translation id="7474822150871987353">Scopri gli argomenti dei siti web senza lasciare la pagina. Seleziona una o più parole nella pagina per cercarle.</translation>
 <translation id="7475192538862203634">Se il problema si verifica di frequente, prova questi <ph name="BEGIN_LINK" />suggerimenti<ph name="END_LINK" />.</translation>
@@ -1445,7 +1446,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7691043218961417207">Esplora i contenuti da seguire</translation>
 <translation id="7697383401610880082">Punto di trascinamento</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Riquadri query</translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7709918231054955894">Visualizza tutte le tue schede</translation>
 <translation id="7733878270780732638">Spazio sul dispositivo insufficiente.</translation>

@@ -687,6 +687,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3455468639467374593">Šablonas, „<ph name="TEMPLATE_NAME" />“</translation>
 <translation id="3456931972722214204">Vienas įrenginys prijungtas prie „<ph name="DEVICE_NAME" />“ viešosios interneto prieigos taško</translation>
 <translation id="346243998268439747">Iš naujo nustatyti mastelio keitimo lygį</translation>
+<translation id="3463151196028058330">Veido retušavimas</translation>
 <translation id="3465223694362104965">Nuo paskutinio jūsų prisijungimo su įrenginiu susieta kita klaviatūra. Prieš ją naudodami įsitikinkite, kad galite pasitikėti šia klaviatūra.</translation>
 <translation id="3465356146291925647">Tvarko administratorius</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /> <ph name="MODIFIER_TWO" /> <ph name="KEY_ONE" />, tada <ph name="KEY_TWO" /> arba <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@ Taip pat galite naudoti spartųjį klavišą. Pirmiausia paryškinkite tekstą, 
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5176318573511391780">Įrašyti dalinį ekrano vaizdą</translation>
 <translation id="5187627942836026988">Rodyti išsamią viešosios interneto prieigos taško informaciją. Viešosios interneto prieigos tašką užblokavo administratorius.</translation>
+<translation id="518847040357731612">Studijos išvaizdos nuostata</translation>
 <translation id="5197255632782567636">Internetas</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, įvykių: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">„<ph name="MOVED_APP_NAME" />“ derinama su „<ph name="IN_PLACE_APP" />“ kuriant naują aplanką.</translation>

@@ -1617,7 +1617,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2137128126782078222"><ph name="WEBSITE" /> bildirimlerine izin verme</translation>
 <translation id="2139919072249842737">Kurulum düğmesi</translation>
 <translation id="2140788884185208305">Pil Sağlığı</translation>
-<translation id="2140902257485550046">Bu sitede tüm uzantıları engellemek için seçin</translation>
 <translation id="2142328300403846845">Bağlantıyı Farklı Aç</translation>
 <translation id="2142484069755256151">Google Şifre Yöneticisi için 6 haneli kurtarma PIN'i oluşturun, PIN hanesi <ph name="NUM_DIGIT" />/6</translation>
 <translation id="2142582065325732898">Son açılan Chrome sekmelerini görmek için <ph name="LINK1_BEGIN" />Chrome Senkronizasyonu<ph name="LINK1_END" />'nu açın. <ph name="LINK2_BEGIN" />Daha Fazla Bilgi<ph name="LINK2_END" /></translation>
@@ -2295,7 +2294,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2610374175948698697">Cihazınızdaki dosyaları veya klasörleri görüntüleyebilir</translation>
 <translation id="2610780100389066815">Microsoft Güven Listesi İmzalama</translation>
 <translation id="261114180663074524">Microsoft hesabınızda oturum açıp tekrar deneyin</translation>
-<translation id="2611765907167846862">Sakin</translation>
 <translation id="2611776654555141051">Dikdörtgen Aracı</translation>
 <translation id="2612676031748830579">Kart numarası</translation>
 <translation id="261305050785128654">Konuştuğunuz dilleri web sitelerine bildirin. Mümkün olduğunda bu dillerde içerik gösterirler.</translation>
@@ -6963,7 +6961,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6022526133015258832">Tam Ekranı Aç</translation>
 <translation id="6022659036123304283">Chrome'u kendinize uyarlayın</translation>
 <translation id="6023643151125006053">Bu cihaz (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> yöneticisi tarafından kilitlendi.</translation>
-<translation id="6024072172641380781">Bu sitede uzantılara izin verin</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> ile Video Karesi &amp;Ara</translation>
 <translation id="6025215716629925253">Yığın İzleme</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB cihazı bağlandı</translation>
@@ -9218,7 +9215,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7685087414635069102">PIN gerekli</translation>
 <translation id="7685351732518564314"><ph name="DEVICE_NAME" /> cihazınızda bir düğmeye basın.</translation>
 <translation id="7686086654630106285">Site tarafından önerilen reklamlar hakkında daha fazla bilgi</translation>
-<translation id="7686581688229391955">Bu sitede uzantılara izin vermek için seçin</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Listeden seç</translation>
 <translation id="7690853182226561458">&amp;Klasör ekle...</translation>

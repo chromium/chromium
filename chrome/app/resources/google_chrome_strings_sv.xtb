@@ -370,6 +370,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="608006075545470555">Lägg till en jobbprofil i den här webbläsaren</translation>
 <translation id="6097822892606850415">Skriv med mer självsäkerhet med hjälp av AI</translation>
 <translation id="6113794647360055231">Vi har gjort Chrome ännu bättre</translation>
+<translation id="6134085236017727171">Ge Chrome åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda mikrofonen</translation>
 <translation id="6135456723633883042">Extra resurser används för dessa flikar. Du kan förbättra prestandan genom att låta Chrome inaktivera dem.</translation>
 <translation id="6145313976051292476">Öppna PDF-filer i Chrome</translation>
 <translation id="6157638032135951407">Organisationen raderar Chrome-data när den inte har använts på <ph name="TIMEOUT_DURATION" />. Detta kan innefatta historik, autofyll och nedladdningar.</translation>
@@ -405,6 +406,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6497147134301593682">Chrome avslutades automatiskt</translation>
 <translation id="6506909944137591434">Du behöver ge Chrome kamerabehörighet om du vill skapa en 3D-karta över dina omgivningar</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6520670145826811516">Ge Chrome åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda platsen</translation>
 <translation id="659498884637196217">I Google Lösenordshantering på den här enheten</translation>
 <translation id="6632473616050862500">ChromeOS Flex fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />,.</translation>
 <translation id="6660596345553328257">Vill du logga in i Chrome?</translation>
@@ -567,6 +569,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8718062187489036808">Logga ut från Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan inte fastställa eller ange standardwebbläsaren</translation>
 <translation id="8765470054473112089">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
+<translation id="8781673607513845160">Ge Chrome åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda kameran</translation>
 <translation id="878572486461146056">Installationsfel: Nätverksadministratören har tillämpat en grupprincip som förhindrar installation: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Den här nedladdningen blockerades av Chrome eftersom filen kan skada dina personliga konton och sociala nätverkskonton, bland annat <ph name="USER_EMAIL" /></translation>
 <translation id="8797423385604279835">Organisera dina flikar med hjälp av AI</translation>

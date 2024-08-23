@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Ini bermakna Chromium akan meminta laman desktop setiap masa.</translation>
 <translation id="2313870531055795960">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chromium. Jika laman cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chromium juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="231828342043114302">Untuk menerima kandungan diperibadikan berdasarkan minat anda, log masuk ke Chromium.</translation>
+<translation id="2326738825692478496">Sesetengah data Chromium anda belum disimpan dalam Google Account anda.
+
+Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="2374627437126809292">Chromium menggunakan Google Maps untuk memberi anda arah dan maklumat setempat pada alamat yang dikesan.</translation>
 <translation id="2386292341327187942">Masukkan Chromium dalam kotak Widget Carian</translation>
 <translation id="2426113998523353159">Organisasi anda menghendaki anda log masuk untuk menggunakan Chromium.</translation>
@@ -292,6 +295,8 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 
 Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masukkan ungkapan laluan tersebut untuk menggunakan dan menyimpan data Chromium pada Google Account anda.</translation>
 <translation id="9022552996538154597">Log masuk ke Chromium</translation>
+<translation id="9031260906956926157">Sesetengah data Chromium anda belum disimpan dalam Google Account anda.
+Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="9050790730841755540">Gunakan Chromium pada bila-bila masa anda mengetik pautan pada apl lain.</translation>
 <translation id="9057082013386654559">Gunakan Chromium untuk iPad secara Lalai</translation>
 <translation id="9059693977935746710">Anda tidak perlu mengingati kata laluan ini. Kata laluan ini akan disimpan pada Pengurus Kata Laluan untuk <ph name="EMAIL" /></translation>

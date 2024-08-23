@@ -687,6 +687,7 @@
 <translation id="3455468639467374593">模板“<ph name="TEMPLATE_NAME" />”</translation>
 <translation id="3456931972722214204">1 部设备已连接到 <ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="346243998268439747">重置缩放级别</translation>
+<translation id="3463151196028058330">美颜</translation>
 <translation id="3465223694362104965">这部设备当前连接的键盘已不同于您上次登录时所用的键盘。请确保您信任此键盘，然后再使用它。</translation>
 <translation id="3465356146291925647">由您的管理员管理</translation>
 <translation id="347117769229524881">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
@@ -1211,6 +1212,7 @@
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5176318573511391780">录制部分屏幕</translation>
 <translation id="5187627942836026988">显示热点详情。管理员已禁用热点。</translation>
+<translation id="518847040357731612">摄影棚视效偏好设置</translation>
 <translation id="5197255632782567636">互联网</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
 <translation id="5198715732953550718">将“<ph name="MOVED_APP_NAME" />”和“<ph name="IN_PLACE_APP" />”移到一起创建了一个新文件夹。</translation>

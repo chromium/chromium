@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">ఫుల్-స్క్రీన్‌ మాగ్నిఫైయర్</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">డిక్టేషన్‌ను ఆన్ చేయాలా?</translation>
+<translation id="3392702002175498061">బ్రౌజింగ్ హిస్టరీ కంటెంట్ అంతటినీ చూపండి</translation>
 <translation id="3394432020929931914">, విస్తరించబడింది</translation>
 <translation id="3401474642070997151">సూచనలను అనుకూలంగా మార్చడానికి, సూచనపై రైట్-క్లిక్ చేయండి లేదా నొక్కి, పట్టుకోండి</translation>
 <translation id="3405101454990027959">మైక్రోఫోన్ యాక్సెస్‌ను ఆన్ చేయండి</translation>
@@ -686,6 +687,7 @@
 <translation id="3455468639467374593">టెంప్లేట్, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 పరికరం <ph name="DEVICE_NAME" /> హాట్‌స్పాట్‌కు కనెక్ట్ చేయబడింది</translation>
 <translation id="346243998268439747">జూమ్ స్థాయిని రీసెట్ చేయండి</translation>
+<translation id="3463151196028058330">ముఖంపై మెరుగులు</translation>
 <translation id="3465223694362104965">మీరు చివరిగా సైన్ ఇన్ చేసిన తర్వాత ఈ పరికరానికి మరొక కీబోర్డ్ కనెక్ట్ చేయబడింది. మీరు ఈ కీబోర్డ్‌ను ఉపయోగించే ముందు దీనిని మీరు విశ్వసిస్తున్నట్లు నిర్ధారించుకోండి.</translation>
 <translation id="3465356146291925647">మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> తర్వాత <ph name="KEY_TWO" /> లేదా <ph name="KEY_THREE" /></translation>
@@ -813,6 +815,7 @@
 <translation id="385300504083504382">ప్రారంభం</translation>
 <translation id="3859364108019690">యాప్‌లను స్ట్రీమ్ చేయడం సాధ్యపడదు</translation>
 <translation id="3861651314799684201">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయడానికి enterను నొక్కండి</translation>
+<translation id="3870197372373144624">మీ పరికరాన్ని షట్ డౌన్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="3886872229787704059">ఈ రోజు తెరిచారు</translation>
 <translation id="3891340733213178823">సైన్ అవుట్ చేయడానికి Ctrl+Shift+Qని రెండుసార్లు నొక్కండి.</translation>
 <translation id="3893630138897523026">ChromeVox (చదవబడే అభిప్రాయం)</translation>
@@ -928,6 +931,7 @@
 <translation id="4264977415328155183">, కుదించబడింది</translation>
 <translation id="4265259722091164182">టైటిల్ కేస్</translation>
 <translation id="4269883910223712419">ఈ పరికర నిర్వాహకుడికి వీటిని చేయగల సామర్థ్యం ఉంది:</translation>
+<translation id="4271841440229266861">Files కంటెంట్ అంతటినీ చూపండి</translation>
 <translation id="4274537685965975248">Ctrl + Alt + కింది వైపు బాణం కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. ముగింపు కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ + కుడి వైపు బాణం కీను నొక్కండి.</translation>
 <translation id="4275283744500212192">విండో లేఅవుట్ ఆప్షన్‌లను తెరుస్తుంది</translation>
 <translation id="4275663329226226506">మీడియా</translation>
@@ -955,6 +959,7 @@
 <translation id="4327147325944669226">గేమ్‌ను రికార్డ్ చేయండి</translation>
 <translation id="4333628967105022692">పలు యూజర్‌లు సైన్ ఇన్ చేసి ఉన్నప్పుడు Lacros కు సపోర్ట్ లేదు .</translation>
 <translation id="4338109981321384717">భూతద్దం</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, మ్యూట్ చేయబడింది</translation>
 <translation id="4351244548802238354">డైలాగ్‌ను మూసివేయండి</translation>
 <translation id="4356872429719185452">హాట్‌స్పాట్ వివరాలను చూడండి. హాట్‌స్పాట్ ఆన్ చేయబడుతోంది.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  రికార్డింగ్</translation>
@@ -1209,6 +1214,7 @@
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5176318573511391780">పాక్షిక స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="5187627942836026988">హాట్‌స్పాట్ వివరాలను చూడండి. హాట్‌స్పాట్‌ను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు.</translation>
+<translation id="518847040357731612">స్టూడియో లుక్ ప్రాధాన్యత</translation>
 <translation id="5197255632782567636">ఇంటర్నెట్</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ఈవెంట్‌లు</translation>
 <translation id="5198715732953550718">కొత్త ఫోల్డర్‌ను క్రియేట్ చేయడం కోసం <ph name="MOVED_APP_NAME" /> అనేది <ph name="IN_PLACE_APP" />తో కలపబడింది.</translation>
@@ -1300,6 +1306,7 @@
 <translation id="5503884284981862082">Google assistantను తెరవండి/మూసివేయండి</translation>
 <translation id="550391772491508736">ప్రసారాన్ని కొనసాగించండి</translation>
 <translation id="5506975627792768506">మ్యాగ్నిఫైయర్‌ను ఆన్ లేదా ఆఫ్ చేయండి</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, enter నొక్కితే ఆడియో మ్యూట్ అవుతుంది.</translation>
 <translation id="5512042095225963688">మునుపటి పదాన్ని తొలగించండి</translation>
 <translation id="5519005148254860683">Google Tasksను విస్తరించండి</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2110,6 +2117,7 @@
 <translation id="8239034820133090126">కుడి వైపున ఉన్న డెస్క్‌ను యాక్టివేట్ చేయండి</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, యాప్</translation>
+<translation id="825129991941217170">Google Drive కంటెంట్ అంతటినీ చూపండి</translation>
 <translation id="8257510091797044096">మీ పరికరాన్ని సెటప్ చేయండి</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>
 <translation id="8262312463845990408">ప్లేబ్యాక్‌ను టోగుల్ చేయండి</translation>
@@ -2340,6 +2348,7 @@
 <translation id="9098969848082897657">ఫోన్‌ను సైలెంట్ చేయండి</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> లేదా <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">చివరి చర్యను రద్దు చేయండి</translation>
+<translation id="9126642911267312373">బ్లూటూత్ అందుబాటులో లేదు</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 నిమిషంలో}other{# నిమిషాల్లో}}</translation>
 <translation id="9129245940793250979">వెనుక వైపు బటన్</translation>
 <translation id="9133335900048457298">రక్షిత కంటెంట్‌ను రికార్డ్ చేయడం సాధ్యం కాదు</translation>

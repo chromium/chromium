@@ -426,6 +426,7 @@
 <translation id="7398989605938454041">‏باستخدام الملفات الشخصية على Chromium، يمكنك الفصل بين جميع بياناتك على Chromium، ما يسهِّل عليك الفصل بين العمل والترفيه.</translation>
 <translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Chromium</translation>
 <translation id="7451052299415159299">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
+<translation id="7458892263350425044">‏لاستخدام الميكروفون، يجب منح Chromium إذن الوصول في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل Windows 10 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل Windows 7.</translation>
 <translation id="7467949745582939695">‏هل تريد إعادة تشغيل Chromium؟</translation>
 <translation id="7483335560992089831">‏لا يمكن تثبيت إصدار Chromium ذاته الذي يتم تشغيله حاليًا. يُرجى إغلاق Chromium وإعادة المحاولة.</translation>
@@ -467,6 +468,7 @@
 <translation id="813913629614996137">تجري التهيئة...</translation>
 <translation id="8166782796394721554">‏يمكنك تفعيل ميزة "الحماية الإضافية" في محرك JavaScript وWebAssembly من Chromium.</translation>
 <translation id="81770708095080097">‏هذا الملف ضار، لذلك فقد حظره Chromium.</translation>
+<translation id="8223363452568144035">‏لاستخدام الكاميرا، يجب منح Chromium إذن الوصول في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">‏لا يمكن لمتصفّح Chromium معرفة مصدر هذه الإضافة، وقد تكون غير آمنة. يُرجى إزالة هذه الإضافة من Chromium كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>
 <translation id="8248265253516264921">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chromium توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google. ويمكنك إيقاف هذه الميزة في الإعدادات في أي وقت.</translation>
 <translation id="8254601181414348851">‏هل تريد تسجيل الدخول إلى Chromium في ملف شخصي جديد؟</translation>
@@ -537,4 +539,5 @@
 <translation id="983803489796659991">تعذَّر تثبيت التطبيق لعدم وجود أي بيانات تجزئة للتطبيق في خادم التحديث.</translation>
 <translation id="985498048907240953">‏استخدام Chromium بدون حساب</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="992780518932311116">‏لاستخدام الموقع الجغرافي، يجب منح Chromium إذن الوصول في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /></translation>
 </translationbundle>

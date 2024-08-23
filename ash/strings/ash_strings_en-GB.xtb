@@ -661,6 +661,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3386978599540877378">the full-screen magnifier</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Turn on dictation?</translation>
+<translation id="3392702002175498061">Show all browsing history content</translation>
 <translation id="3394432020929931914">, expanded</translation>
 <translation id="3401474642070997151">To customise suggestions, right-click or press and hold on a suggestion</translation>
 <translation id="3405101454990027959">Turn on microphone access</translation>
@@ -686,6 +687,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 device connected to <ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="346243998268439747">Reset zoom level</translation>
+<translation id="3463151196028058330">Face retouch</translation>
 <translation id="3465223694362104965">Another keyboard has connected to this device since you last signed in. Make sure that you trust this keyboard before you use it.</translation>
 <translation id="3465356146291925647">Managed by your administrator</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, then <ph name="KEY_TWO" /> or <ph name="KEY_THREE" /></translation>
@@ -812,6 +814,7 @@ Connect your device to power.</translation>
 <translation id="385300504083504382">Beginning</translation>
 <translation id="3859364108019690">Can't stream apps</translation>
 <translation id="3861651314799684201">Press enter to record full screen</translation>
+<translation id="3870197372373144624">Try shutting down your device.</translation>
 <translation id="3886872229787704059">Opened today</translation>
 <translation id="3891340733213178823">Press Ctrl+Shift+Q twice to sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
@@ -927,6 +930,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4264977415328155183">, collapsed</translation>
 <translation id="4265259722091164182">Title case</translation>
 <translation id="4269883910223712419">The admin of this device has the ability to:</translation>
+<translation id="4271841440229266861">Show all Files content</translation>
 <translation id="4274537685965975248">The Ctrl + Alt + Down Arrow keyboard shortcut has changed. To use the End key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Right Arrow.</translation>
 <translation id="4275283744500212192">Open window layout options</translation>
 <translation id="4275663329226226506">Media</translation>
@@ -954,6 +958,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4327147325944669226">Record game</translation>
 <translation id="4333628967105022692">Lacros is not supported while multiple users are signed in.</translation>
 <translation id="4338109981321384717">Magnifying glass</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, muted</translation>
 <translation id="4351244548802238354">Close dialogue</translation>
 <translation id="4356872429719185452">Show hotspot details. Hotspot is turning on.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Recording</translation>
@@ -1208,6 +1213,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5176318573511391780">Record partial screen</translation>
 <translation id="5187627942836026988">Show hotspot details. Hotspot is blocked by your administrator.</translation>
+<translation id="518847040357731612">Studio Look preference</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> events</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combined with <ph name="IN_PLACE_APP" /> to create new folder.</translation>
@@ -1299,6 +1305,7 @@ No devices connected.</translation>
 <translation id="5503884284981862082">Open/close Google Assistant</translation>
 <translation id="550391772491508736">Resume casting</translation>
 <translation id="5506975627792768506">Turn magnifier on or off</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, hitting Enter will mute audio.</translation>
 <translation id="5512042095225963688">Delete previous word</translation>
 <translation id="5519005148254860683">Expand Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2116,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8239034820133090126">Activate desk on right</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
+<translation id="825129991941217170">Show all Google Drive content</translation>
 <translation id="8257510091797044096">Set up your device</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8262312463845990408">Toggle -playback</translation>
@@ -2339,6 +2347,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9098969848082897657">Silence phone</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> or <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Undo last action</translation>
+<translation id="9126642911267312373">Bluetooth unavailable</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{In 1 min}other{In # mins}}</translation>
 <translation id="9129245940793250979">Rear button</translation>
 <translation id="9133335900048457298">Can't record protected content</translation>

@@ -131,7 +131,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1549000191223877751">Déplacer vers autre fenêtre</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1554532453982918912">Contribuez à améliorer Chrome pour les autres utilisateurs comme vous</translation>
-<translation id="1558391695376153246">Fermer onglets navig. privée</translation>
 <translation id="1568636008098739136">Écouter cette page. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
 <translation id="1571304935088121812">Copier le nom d'utilisateur</translation>
 <translation id="1584648915421894279">À l'heure actuelle, les mots de passe enregistrés sur cet appareil ne peuvent pas être utilisés sur l'ensemble des versions de Chrome. Après le lancement de Chrome 125, les mots de passe enregistrés sur votre appareil pour Chrome et <ph name="CHROME_CHANNEL" /> seront fusionnés et pourront être utilisés dans les deux applications.</translation>
@@ -1447,7 +1446,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7691043218961417207">Explorer le contenu à suivre</translation>
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un courriel dans <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Tuiles de requête</translation>
 <translation id="7707922173985738739">Utiliser les données mobiles</translation>
 <translation id="7709918231054955894">Afficher tous vos onglets</translation>
 <translation id="7733878270780732638">Espace insuffisant sur l'appareil</translation>

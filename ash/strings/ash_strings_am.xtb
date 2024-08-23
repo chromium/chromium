@@ -687,6 +687,7 @@
 <translation id="3455468639467374593">ቅንብር ደንብ፣ <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 መሣሪያ ከ<ph name="DEVICE_NAME" /> መገናኛ ነጥብ ጋር ተገናኝቷል</translation>
 <translation id="346243998268439747">የማጉላት ደረጃን ዳግም ያስጀምሩ</translation>
+<translation id="3463151196028058330">መልክ ዳግም ማሳመር</translation>
 <translation id="3465223694362104965">ባለፈው በመለያ ከገቡ ወዲህ ወደዚህ መሣሪያ ሌላ የቁልፍ ሰሌዳ ተገናኝቷል። ከመጠቀምዎ በፊት ይህን የቁልፍ ሰሌዳ እንደሚያምኑት ያረጋግጡ።</translation>
 <translation id="3465356146291925647">በእርስዎ አስተዳዳሪ የሚተዳደር</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> በመቀጠል <ph name="KEY_TWO" /> ወይም <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5176318573511391780">ከፊል የማያ ገጽን ቅረጽ</translation>
 <translation id="5187627942836026988">የመገናኛ ነጥብ ዝርዝሮችን አሳይ። መገናኛ ነጥብ በአስተዳዳሪዎ ታግዷል።</translation>
+<translation id="518847040357731612">የስቱዲዮ ዕይታ ምርጫ</translation>
 <translation id="5197255632782567636">በይነመረብ</translation>
 <translation id="5198413532174090167"><ph name="DATE" />፣ <ph name="NUMBER" /> ክስተቶች</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ከ<ph name="IN_PLACE_APP" /> ጋር አዲስ አቃፊ ለመፍጠር ተጣምሯል።</translation>

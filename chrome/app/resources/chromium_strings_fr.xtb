@@ -428,6 +428,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7398989605938454041">Utilisez les profils Chromium pour dissocier toutes vos données Chromium. Vous pouvez ainsi faire plus facilement la distinction entre vos contenus personnels et professionnels.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pour les développeurs</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
+<translation id="7458892263350425044">Pour que Chromium puisse utiliser votre micro, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Pour recevoir les futures mises à jour de Chromium, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 7.</translation>
 <translation id="7467949745582939695">Relancer Chromium ?</translation>
 <translation id="7483335560992089831">Impossible d'installer la même version de Chromium que celle qui est en cours d'exécution. Veuillez fermer Chromium, puis réessayer.</translation>
@@ -469,6 +470,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="813913629614996137">Initialisation…</translation>
 <translation id="8166782796394721554">Activer la protection supplémentaire dans le moteur JavaScript et WebAssembly de Chromium</translation>
 <translation id="81770708095080097">Chromium a bloqué ce fichier, car ce dernier est dangereux.</translation>
+<translation id="8223363452568144035">Pour que Chromium puisse utiliser votre caméra, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium ne peut pas déterminer l'origine de cette extension, et elle est peut-être dangereuse. Supprimez-la de Chromium pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
 <translation id="8248265253516264921">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver à tout moment cette option dans les paramètres.</translation>
 <translation id="8254601181414348851">Se connecter à Chromium avec un nouveau profil ?</translation>
@@ -539,4 +541,5 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="983803489796659991">Échec de l'installation, car le serveur de mise à jour ne dispose d'aucune donnée de hachage pour l'application.</translation>
 <translation id="985498048907240953">Utiliser Chromium sans compte</translation>
 <translation id="985602178874221306">Auteurs de Chromium</translation>
+<translation id="992780518932311116">Pour que Chromium puisse utiliser votre position, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 </translationbundle>

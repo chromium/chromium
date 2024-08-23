@@ -1616,7 +1616,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2137128126782078222">Ne dozvoljavajte obaveštenja sa <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Dugme za podešavanje</translation>
 <translation id="2140788884185208305">Stanje baterije</translation>
-<translation id="2140902257485550046">Izaberite da biste blokirali sve dodatke na ovom sajtu</translation>
 <translation id="2142328300403846845">Otvorite link kao</translation>
 <translation id="2142484069755256151">Napravite šestocifreni PIN za vraćanje pristupa Google menadžeru lozinki, <ph name="NUM_DIGIT" />. cifra PIN-a od ukupno 6</translation>
 <translation id="2142582065325732898">Uključite <ph name="LINK1_BEGIN" />Chrome sinhronizaciju<ph name="LINK1_END" /> da biste pregledali nedavne Chrome kartice. <ph name="LINK2_BEGIN" />Saznajte više<ph name="LINK2_END" /></translation>
@@ -2295,7 +2294,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2610374175948698697">Fajlovi koji mogu da pregledaju fajlove ili foldere na uređaju</translation>
 <translation id="2610780100389066815">Potpisivanje Microsoft liste pouzdanih</translation>
 <translation id="261114180663074524">Prijavite se na Microsoft nalog i probajte ponovo</translation>
-<translation id="2611765907167846862">Spokojno</translation>
 <translation id="2611776654555141051">Alatka za proavougaonike</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="261305050785128654">Omogućite veb-sajtovima da znaju koje jezike govorite. Prikazivaće sadržaj na tim jezicima kada je to moguće.</translation>
@@ -6965,7 +6963,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6022526133015258832">Otvori na celom ekranu</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
 <translation id="6023643151125006053">Ovaj uređaj (SB: <ph name="SERIAL_NUMBER" />) je zaključao administrator domena <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Dozvolite dodatke na ovom sajtu</translation>
 <translation id="6024317249717725918">&amp;Pretraži kadar videa uz <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stanje niza</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB uređaj je povezan</translation>
@@ -8136,6 +8133,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6876155724392614295">Bicikl</translation>
 <translation id="6876469544038980967">Nije korisno</translation>
 <translation id="6878422606530379992">Pristup senzorima je dozvoljen</translation>
+<translation id="6878862640969460273">Vodoravno</translation>
 <translation id="6880587130513028875">Slike su blokirane na ovoj stranici.</translation>
 <translation id="6881845890692344060">Administrator se odjavio. Sada imate kontrolu.</translation>
 <translation id="6882210908253838664">Ako sajt ne radi, možete da probate da mu date privremenu dozvolu za korišćenje kolačića treće strane. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -9226,7 +9224,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7685087414635069102">PIN je obavezan</translation>
 <translation id="7685351732518564314">Pritisnite dugme na uređaju <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Više o oglasima koje predlažu sajtovi</translation>
-<translation id="7686581688229391955">Izaberite da biste dozvolili dodatke na ovom sajtu</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Odaberite sa liste</translation>
 <translation id="7690853182226561458">Dodaj &amp;direktorijum...</translation>
@@ -9675,6 +9672,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 
 Čuvajte datoteku ključa na sigurnom mestu. Biće vam potrebna da napravite nove verzije dodatka.</translation>
 <translation id="8000020256436988724">Traka s alatkama</translation>
+<translation id="800117767980299235">Važni audio delovi</translation>
 <translation id="8002274832045662704">Napredna konfiguracija štampača</translation>
 <translation id="8002670234429879764">Štampač <ph name="PRINTER_NAME" /> više nije dostupan</translation>
 <translation id="8004092996156083991">Ako su vam lozinke ugrožene, obavestićemo vas o tome.</translation>

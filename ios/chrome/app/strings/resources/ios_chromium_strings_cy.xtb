@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Mae hyn yn golygu y bydd Chromium yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
 <translation id="2313870531055795960">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chromium. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chromium hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
 <translation id="231828342043114302">I dderbyn cynnwys personol yn seiliedig ar eich diddordebau, mewngofnodwch i Chromium.</translation>
+<translation id="2326738825692478496">Nid yw peth o'ch data Chromium wedi'u cadw yn eich Cyfrif Google eto.
+
+Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
 <translation id="2374627437126809292">Mae Chromium yn defnyddio Google Maps i roi cyfarwyddiadau a gwybodaeth leol i chi ar gyfeiriadau a ganfuwyd.</translation>
 <translation id="2386292341327187942">Yn y blwch Chwilio Celfi, ewch i Chromium</translation>
 <translation id="2426113998523353159">Mae eich sefydliad yn gofyn i chi fewngofnodi i ddefnyddio Chromium.</translation>
@@ -292,6 +295,8 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 
 Cafodd eich data eu hamgryptio gyda'ch cyfrinymadrodd ar <ph name="TIME" />. Rhowch ef i ddefnyddio a chadw data Chromium yn eich Cyfrif Google.</translation>
 <translation id="9022552996538154597">Mewngofnodi i Chromium</translation>
+<translation id="9031260906956926157">Nid yw peth o'ch data Chromium wedi'u cadw yn eich Cyfrif Google eto.
+Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
 <translation id="9050790730841755540">Defnyddio Chromium unrhyw bryd y byddwch yn tapio dolenni mewn apiau eraill.</translation>
 <translation id="9057082013386654559">Defnyddiwch Chromium ar gyfer iPad yn ddiofyn</translation>
 <translation id="9059693977935746710">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i'r Rheolwr Cyfrineiriau ar gyfer <ph name="EMAIL" /></translation>

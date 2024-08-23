@@ -546,7 +546,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1975457531113383421">Bac d'alimentation</translation>
 <translation id="1975584088563498795">Boîte aux lettres 10</translation>
-<translation id="1976610264358655503">Fréquemment consultés</translation>
 <translation id="1978555033938440688">Version du micrologiciel</translation>
 <translation id="1979156660928743046">Informations sur le contenu multimédia</translation>
 <translation id="1988881251331415125">S'il n'y a pas d'erreur, essayez de <ph name="BEGIN_LINK" />faire un diagnostic sur la connectivité<ph name="END_LINK" />.</translation>
@@ -3093,7 +3092,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">la caméra</translation>
 <translation id="6734506549556896534">Jeux de simulation</translation>
-<translation id="6735783933931458444">Fréquemment consulté à cette heure de la journée</translation>
 <translation id="6737708609449480586">Viennoiseries</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase secrète de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="6739943577740687354">Cette fonctionnalité utilise l'IA et n'est pas infaillible</translation>

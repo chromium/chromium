@@ -1618,7 +1618,6 @@
 <translation id="2137128126782078222">ไม่อนุญาตการแจ้งเตือนจาก <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">ปุ่มตั้งค่า</translation>
 <translation id="2140788884185208305">ประสิทธิภาพของแบตเตอรี่</translation>
-<translation id="2140902257485550046">เลือกเพื่อบล็อกส่วนขยายทั้งหมดในเว็บไซต์นี้</translation>
 <translation id="2142328300403846845">เปิดลิงก์ในฐานะ</translation>
 <translation id="2142484069755256151">สร้าง PIN การกู้คืน 6 หลักสำหรับเครื่องมือจัดการรหัสผ่านบน Google ตัวเลข PIN <ph name="NUM_DIGIT" /> จาก 6</translation>
 <translation id="2142582065325732898">เปิด<ph name="LINK1_BEGIN" />การซิงค์ของ Chrome<ph name="LINK1_END" /> เพื่อดูแท็บ Chrome ล่าสุด <ph name="LINK2_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK2_END" /></translation>
@@ -2297,7 +2296,6 @@
 <translation id="2610374175948698697">ดูไฟล์หรือโฟลเดอร์ในอุปกรณ์ได้</translation>
 <translation id="2610780100389066815">การรับรองรายการที่เชื่อถือของ Microsoft</translation>
 <translation id="261114180663074524">ลงชื่อเข้าใช้บัญชี Microsoft แล้วลองอีกครั้ง</translation>
-<translation id="2611765907167846862">เรียบๆ</translation>
 <translation id="2611776654555141051">เครื่องมือสี่เหลี่ยมผืนผ้า</translation>
 <translation id="2612676031748830579">หมายเลขบัตร</translation>
 <translation id="261305050785128654">แจ้งให้เว็บไซต์ทราบถึงภาษาที่คุณพูด แล้วเว็บไซต์จะแสดงเนื้อหาในภาษาเหล่านั้น หากเป็นไปได้</translation>
@@ -6961,7 +6959,6 @@
 <translation id="6022526133015258832">เปิดแบบเต็มหน้าจอ</translation>
 <translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="6023643151125006053">ผู้ดูแลระบบของ <ph name="SAML_DOMAIN" /> ล็อกอุปกรณ์นี้ไว้ (หมายเลขประจำเครื่อง: <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6024072172641380781">อนุญาตให้ใช้ส่วนขยายในเว็บไซต์นี้</translation>
 <translation id="6024317249717725918">ค้นหาเฟรมวิดีโอด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - เชื่อมต่ออุปกรณ์ USB อยู่</translation>
@@ -9217,7 +9214,6 @@
 <translation id="7685087414635069102">ต้องระบุ PIN</translation>
 <translation id="7685351732518564314">กดปุ่มบน <ph name="DEVICE_NAME" /></translation>
 <translation id="7686086654630106285">ข้อมูลเพิ่มเติมเกี่ยวกับโฆษณาที่เว็บไซต์แนะนำ</translation>
-<translation id="7686581688229391955">เลือกเพื่ออนุญาตส่วนขยายในเว็บไซต์นี้</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">เลือกจากรายการ</translation>
 <translation id="7690853182226561458">เพิ่ม&amp;โฟลเดอร์</translation>

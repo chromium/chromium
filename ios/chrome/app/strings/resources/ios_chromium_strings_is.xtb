@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Þetta þýðir að Chromium biður alltaf um skjáborðsútgáfu vefsvæðis.</translation>
 <translation id="2313870531055795960">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chromium. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chromium einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="231828342043114302">Til að fá sérsniðið innihald byggt á þínum áhugamálum skaltu skrá þig inn á Chromium.</translation>
+<translation id="2326738825692478496">Einhver Chromium-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum.
+
+Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="2374627437126809292">Chromium notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
 <translation id="2386292341327187942">Sláðu inn „Chromium“ í Leitargræjureitinn</translation>
 <translation id="2426113998523353159">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chromium.</translation>
@@ -292,6 +295,8 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 
 Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu það inn til að nota og vista Chromium-gögn á Google-reikningnum þínum.</translation>
 <translation id="9022552996538154597">Skráðu þig inn á Chromium</translation>
+<translation id="9031260906956926157">Einhver Chromium-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum.
+Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="9050790730841755540">Notaðu Chromium þegar þú ýtir á tengla í öðrum forritum.</translation>
 <translation id="9057082013386654559">Nota Chromium fyrir iPad sjálfgefið</translation>
 <translation id="9059693977935746710">Þú þarft ekki að muna þetta aðgangsorð. Það verður vistað í aðgangsorðastjórnun fyrir <ph name="EMAIL" /></translation>

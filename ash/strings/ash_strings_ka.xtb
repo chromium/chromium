@@ -687,6 +687,7 @@
 <translation id="3455468639467374593">შაბლონი, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" />-ის უსადენო ქსელთან დაკავშირებულია 1 მოწყობილობა</translation>
 <translation id="346243998268439747">მასშტაბის დონის გადაყენება</translation>
+<translation id="3463151196028058330">სახის რეტუშირება</translation>
 <translation id="3465223694362104965">სისტემაში თქვენი ბოლო შესვლის შემდეგ ამ მოწყობილობასთან დაკავშირდა სხვა კლავიატურა. აღნიშნული კლავიატურის გამოყენებამდე დარწმუნდით, რომ მას ენდობით.</translation>
 <translation id="3465356146291925647">მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, შემდეგ კი <ph name="KEY_TWO" /> ან <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="5176318573511391780">ეკრანის ნაწილის ჩაწერა</translation>
 <translation id="5187627942836026988">უსადენო ქსელის დეტალების ნახვა. უსადენო ქსელი დაბლოკილია თქვენი ადმინისტრატორის მიერ.</translation>
+<translation id="518847040357731612">სტუდიური გამოსახულების პრიორიტეტული პარამეტრები</translation>
 <translation id="5197255632782567636">ინტერნეტი</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> მოვლენა</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> დაჯგუფდა <ph name="IN_PLACE_APP" />-თან ახალი საქაღალდის შესაქმნელად.</translation>

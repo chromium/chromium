@@ -370,6 +370,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="608006075545470555">Додајте работен профил во овој прелистувач</translation>
 <translation id="6097822892606850415">Пишувајте посамоуверено со помош од AI</translation>
 <translation id="6113794647360055231">Chrome тукушто се подобри</translation>
+<translation id="6134085236017727171">За да го користи микрофонот, дајте му пристап на Chrome во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Картичкиве користат дополнителни ресурси. За да се подобри изведбата, дозволете Chrome да ги деактивира.</translation>
 <translation id="6145313976051292476">Отворај PDF-формат во Chrome</translation>
 <translation id="6157638032135951407">Вашата организација ги брише податоците на Chrome кога не се користи <ph name="TIMEOUT_DURATION" />. Тоа може да ги опфати историјата, автоматското пополнување и преземањата.</translation>
@@ -405,6 +406,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6497147134301593682">Chrome се затвори автоматски</translation>
 <translation id="6506909944137591434">На Chrome му треба дозвола за камерата за да создаде 3D-карта на опкружувањето</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520670145826811516">За да ја користи локацијата, дајте му пристап на Chrome во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Во „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="6632473616050862500">ChromeOS Flex е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Ќе се најавите на Chrome?</translation>
@@ -567,6 +569,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8718062187489036808">Одјави се од Chrome</translation>
 <translation id="873133009373065397">Google Chrome не може да го одреди или постави стандардниот прелистувач</translation>
 <translation id="8765470054473112089">Кога ќе напишете нешто во лентата за адреси или полето за пребарување, Chrome го испраќа напишаното до вашиот стандарден пребарувач за да добиете подобри предлози. Ова е исклучено во „Инкогнито“.</translation>
+<translation id="8781673607513845160">За да ја користи камерата, дајте му пристап на Chrome во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Грешка при инсталирање: вашиот мрежен администратор применил групно правило што спречува инсталирање: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome го блокираше преземањево бидејќи датотеката може да им наштети на вашите лични сметки и на вашите сметки на друштвените мрежи, меѓу кои и <ph name="USER_EMAIL" /></translation>
 <translation id="8797423385604279835">Организирајте ги вашите картички со помош од AI</translation>

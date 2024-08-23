@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Cela signifie que Chromium demandera la version pour ordinateur à chaque fois.</translation>
 <translation id="2313870531055795960">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chromium. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="231828342043114302">Pour recevoir des contenus personnalisés en fonction de vos centres d'intérêt, connectez-vous à Chromium.</translation>
+<translation id="2326738825692478496">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google.
+
+Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="2374627437126809292">Chromium utilise Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="2386292341327187942">Dans le champ "Rechercher des widgets", saisissez "Chromium".</translation>
 <translation id="2426113998523353159">Votre organisation exige que vous vous connectiez pour utiliser Chromium.</translation>
@@ -291,6 +294,8 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 
 Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" />. Saisissez-la pour utiliser et enregistrer les données Chromium dans votre compte Google.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
+<translation id="9031260906956926157">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google.
+Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="9050790730841755540">Utiliser Chromium chaque fois que vous appuyez sur un lien dans d'autres applis.</translation>
 <translation id="9057082013386654559">Utiliser Chromium pour iPad par défaut</translation>
 <translation id="9059693977935746710">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe pour <ph name="EMAIL" /></translation>

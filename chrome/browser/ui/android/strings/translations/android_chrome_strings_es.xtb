@@ -131,7 +131,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1549000191223877751">Mover a otra ventana</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1554532453982918912">Ayuda a mejorar Chrome para las personas que lo usan como tú</translation>
-<translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="1568636008098739136">Escuchar esta página. Para editar esta combinación de teclas, mantenlas pulsadas.</translation>
 <translation id="1571304935088121812">Copiar nombre de usuario</translation>
 <translation id="1584648915421894279">En este momento, las contraseñas guardadas en este dispositivo no se pueden usar en todos los canales de Chrome. Después de la versión 125 de Chrome, las contraseñas guardadas en tu dispositivo para Chrome y <ph name="CHROME_CHANNEL" /> se combinarán y se podrán usar en ambas aplicaciones.</translation>
@@ -199,6 +198,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1928618076168182477">Mostrando vista visual</translation>
 <translation id="1928696683969751773">Actualizaciones</translation>
 <translation id="1933845786846280168">Pestaña seleccionada</translation>
+<translation id="1939549834451474504">Las contraseñas dejarán de funcionar pronto porque Servicios de Google Play no está disponible. Puedes hacer una copia de tus contraseñas guardadas antes de que esto ocurra. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Guardar contraseñas</translation>
 <translation id="1944535645109964458">No hay llaves de acceso disponibles</translation>
 <translation id="1957557050935255529">Cargando PDF...</translation>
@@ -1385,6 +1385,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7454744349230173024">Tu organización ha desactivado la opción de guardar contraseñas</translation>
 <translation id="7455988709578031708">Se basa en tu historial de navegación. Esta opción está activada.</translation>
 <translation id="7456774706094330779">Precarga ampliada</translation>
+<translation id="7466328545712777810">Recibirás una notificación si el precio baja en algún sitio</translation>
 <translation id="7466431077154602932">Vista compacta</translation>
 <translation id="7474822150871987353">Aprende sobre los temas de un sitio web sin salir de la página. Selecciona una o más palabras de la página para buscarlas.</translation>
 <translation id="7475192538862203634">Si este mensaje aparece con frecuencia, prueba estas <ph name="BEGIN_LINK" />sugerencias<ph name="END_LINK" />.</translation>
@@ -1445,7 +1446,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7691043218961417207">Descubre contenido que puedes seguir</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Mosaicos de consultas</translation>
 <translation id="7707922173985738739">Se utilizarán datos móviles</translation>
 <translation id="7709918231054955894">Accede a todas tus pestañas</translation>
 <translation id="7733878270780732638">No hay espacio suficiente en el dispositivo.</translation>

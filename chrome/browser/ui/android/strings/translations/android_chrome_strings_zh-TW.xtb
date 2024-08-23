@@ -131,7 +131,6 @@
 <translation id="1549000191223877751">移至其他視窗</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1554532453982918912">可協助 Chrome 為使用者提供更優質的使用體驗</translation>
-<translation id="1558391695376153246">關閉無痕分頁</translation>
 <translation id="1568636008098739136">請讓系統朗讀這頁內容。按住這裡即可編輯這個捷徑。</translation>
 <translation id="1571304935088121812">複製使用者名稱</translation>
 <translation id="1584648915421894279">這部裝置儲存的密碼目前無法跨 Chrome 版本使用。自 Chrome 125 起，系統會合併裝置儲存的 Chrome 和 <ph name="CHROME_CHANNEL" />密碼，屆時這兩個應用程式將可使用彼此儲存的密碼。</translation>
@@ -1447,7 +1446,6 @@
 <translation id="7691043218961417207">探索值得追蹤的內容</translation>
 <translation id="7697383401610880082">拖曳控點</translation>
 <translation id="7698359219371678927">在「<ph name="APP_NAME" />」中建立電子郵件</translation>
-<translation id="7702029078562412515">查詢資訊方塊</translation>
 <translation id="7707922173985738739">使用行動數據</translation>
 <translation id="7709918231054955894">取得所有分頁</translation>
 <translation id="7733878270780732638">裝置的可用空間不足。</translation>

@@ -131,7 +131,6 @@
 <translation id="1549000191223877751">వేరే విండోకు తరలించు</translation>
 <translation id="1553358976309200471">Chromeని అప్‌డేట్ చేయండి</translation>
 <translation id="1554532453982918912">మీరు ఉపయోగించే విధంగా Chromeను ఉపయోగించే ఇతర యూజర్‌ల కోసం దాన్ని మెరుగుపరచడంలో సహాయపడండి</translation>
-<translation id="1558391695376153246">అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="1568636008098739136">ఈ పేజీ‌లోని కంటెంట్‌ను వినండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>
 <translation id="1571304935088121812">వినియోగదారు పేరును కాపీ చేస్తుంది</translation>
 <translation id="1584648915421894279">ప్రస్తుతం, ఈ పరికరంలో సేవ్ చేయబడిన పాస్‌వర్డ్‌లు Chrome ఛానెల్స్‌లో ఉపయోగించబడవు. Chrome 125 తర్వాత, Chrome, <ph name="CHROME_CHANNEL" /> కోసం మీ పరికరంలో సేవ్ చేయబడిన పాస్‌వర్డ్‌లు విలీనం చేయబడతాయి, రెండు యాప్‌లలో ఉపయోగించవచ్చు.</translation>
@@ -1019,6 +1018,7 @@
 <translation id="587735546353481577">సైట్‌ను ఫాలో చేయడానికి, సైట్‌కు వెళ్లి, Chrome మెనూను తెరిచి, 'ఫాలో చేయండి'ని ట్యాప్ చేయండి.</translation>
 <translation id="5879072387416556377">ఉత్తమ సూచనలను పొందండి</translation>
 <translation id="5885378508678660271">నోటిఫికేషన్‌లు <ph name="SEPARATOR" /> ఈ సైట్ ప్రమాదకరమైనది కాబట్టి Chrome ఈ అనుమతులను తీసివేసింది</translation>
+<translation id="5895834791314695851">ఈ పరికరంలో పాస్‌వర్డ్‌లు త్వరలో పని చేయడం ఆగిపోవచ్చు. మీ పాస్‌వర్డ్‌లను ఉపయోగించడం కొనసాగించడానికి, Google Play సర్వీసులను అప్‌డేట్ చేయండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">పాస్-కీల షీట్ ఏదీ మూసివేయబడలేదు</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5919204609460789179">సింక్‌ను ప్రారంభించడానికి <ph name="PRODUCT_NAME" />ని అప్‌డేట్ చేయండి</translation>
@@ -1447,7 +1447,6 @@
 <translation id="7691043218961417207">ఫాలో అవ్వాల్సిన కంటెంట్‌ను అన్వేషించండి</translation>
 <translation id="7697383401610880082">లాగే హ్యాండిల్</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />లో ఈమెయిల్‌ను క్రియేట్ చేయండి</translation>
-<translation id="7702029078562412515">క్వెరీ టైల్స్</translation>
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
 <translation id="7709918231054955894">మీ అన్ని ట్యాబ్‌లనూ పొందండి</translation>
 <translation id="7733878270780732638">పరికరంలో తగినంత స్పేస్ లేదు.</translation>
@@ -1559,6 +1558,7 @@
 <translation id="820568752112382238">అత్యంత ఎక్కువగా సందర్శించిన సైట్‌లు</translation>
 <translation id="8209050860603202033">చిత్రాన్ని తెరువు</translation>
 <translation id="8210770465353466621">మీ ట్యాబ్‌లను ఇక్కడ చూడవచ్చు</translation>
+<translation id="8211101263765532799">కొన్ని పాస్‌వర్డ్‌లు త్వరలో పని చేయడం ఆగిపోతాయి</translation>
 <translation id="8215740705341534369">సైడ్ షీట్</translation>
 <translation id="8218622182176210845">మీ ఖాతాను నిర్వహించండి</translation>
 <translation id="8221401890884589479">మీకు అవసరం లేని సైట్‌లను మీరు బ్లాక్ చేయవచ్చు. అంతే కాక, 30 రోజుల కంటే పాతవైన సైట్‌లను Chrome ఆటోమేటిక్‌గా లిస్ట్ నుండి తొలగిస్తుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -1659,6 +1659,7 @@
 <translation id="864544049772947936">విండోలను మేనేజ్ చేయండి (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">మీకు నచ్చినట్లు Chromeను ఉపయోగించండి</translation>
 <translation id="8664979001105139458">ఫైల్ పేరు ఇప్పటికే ఉంది</translation>
+<translation id="8672883760227492369">ఈ పరికరంలో కొన్ని పాస్‌వర్డ్‌లు త్వరలో పని చేయడం ఆగిపోతాయి. మీరు ఈ పాస్‌వర్డ్‌లను Google Password Managerకు తరలించవచ్చు.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌కు సైన్ అప్ చేయండి</translation>
 <translation id="8676789164135894283">సైన్ ఇన్ వెరిఫికేషన్‌లు</translation>
 <translation id="8683039184091909753">ఇమేజ్</translation>

@@ -76,6 +76,9 @@ Points à prendre en compte :
 <translation id="2703746758996815929">Pour recevoir des conseils pratiques sur Chrome, activez les notifications dans les réglages iOS.</translation>
 <translation id="2736805085127235148">Les notifications Chrome sont actuellement désactivées dans les paramètres de votre appareil.</translation>
 <translation id="2750626042242931740">Vous pouvez modifier vos sélections à tout moment dans les paramètres Chrome.</translation>
+<translation id="2754428955276778271">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google.
+
+Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2876628302275096482">Découvrez <ph name="BEGIN_LINK" />comment Chrome protège la confidentialité de vos données<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Points à prendre en compte :
 <translation id="5190139289262548459">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous êtes connecté et la manière dont Chrome est utilisé.</translation>
 <translation id="5256908199795498284">Chrome détectera le numéro de suivi des colis sur les sites que vous consultez et vous présentera les notifications de colis sur la page "Nouvel onglet". Vos données seront partagées avec Google afin d'assurer cette fonctionnalité et d'améliorer l'expérience d'achat pour tous les utilisateurs.</translation>
 <translation id="5278862365980079760">Verrouillez vos onglets de navigation privée lorsque vous quittez Chrome ou passez à une autre appli.</translation>
+<translation id="5310957470610282541">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google.
+Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="5389212809648216794">Google Chrome ne peut pas utiliser l'appareil photo, car celui-ci est utilisé par une autre application</translation>
 <translation id="5395376160638294582">Assurez-vous de toujours pouvoir utiliser les données Chrome de votre compte Google</translation>
 <translation id="5439191312780166229">Vous avertit en cas de sites dangereux, y compris pour ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chrome.</translation>

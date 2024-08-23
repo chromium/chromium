@@ -131,7 +131,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1549000191223877751">Di chuyển đến cửa sổ khác</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
 <translation id="1554532453982918912">Giúp Chrome trở nên hiệu quả hơn cho những ai đang dùng Chrome giống bạn</translation>
-<translation id="1558391695376153246">Đóng các thẻ Ẩn danh</translation>
 <translation id="1568636008098739136">Nghe trang này. Để chỉnh sửa lối tắt này, hãy chạm và giữ lối tắt.</translation>
 <translation id="1571304935088121812">Sao chép tên người dùng</translation>
 <translation id="1584648915421894279">Hiện tại, bạn không thể sử dụng mật khẩu đã lưu trên thiết bị này cho các kênh Chrome. Sau Chrome 125, mật khẩu bạn lưu trên thiết bị cho Chrome và <ph name="CHROME_CHANNEL" /> sẽ được hợp nhất và dùng được trong cả hai ứng dụng.</translation>
@@ -199,6 +198,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1928618076168182477">Đang hiển thị chế độ xem hình ảnh</translation>
 <translation id="1928696683969751773">Bản cập nhật</translation>
 <translation id="1933845786846280168">Thẻ được chọn</translation>
+<translation id="1939549834451474504">Các mật khẩu sắp ngừng hoạt động do không thể sử dụng Dịch vụ Google Play. Bạn có thể tạo bản sao cho các mật khẩu đã lưu trước khi các mật khẩu này ngừng hoạt động. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Lưu mật khẩu</translation>
 <translation id="1944535645109964458">Không có khoá đăng nhập nào</translation>
 <translation id="1957557050935255529">Đang tải tệp PDF…</translation>
@@ -1385,6 +1385,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7454744349230173024">Tổ chức của bạn đã tắt tính năng lưu mật khẩu</translation>
 <translation id="7455988709578031708">Dựa trên nhật ký duyệt web của bạn. Chế độ cài đặt này đang bật.</translation>
 <translation id="7456774706094330779">Tải trước mở rộng</translation>
+<translation id="7466328545712777810">Bạn sẽ nhận được thông báo nếu giá giảm trên bất cứ trang web nào</translation>
 <translation id="7466431077154602932">Chế độ xem thu gọn</translation>
 <translation id="7474822150871987353">Tìm hiểu về các chủ đề trên trang web mà không cần rời khỏi trang. Bạn có thể tìm kiếm bằng cách chọn một hoặc nhiều từ trên trang.</translation>
 <translation id="7475192538862203634">Nếu bạn thường xuyên thấy thông báo này, hãy thử các <ph name="BEGIN_LINK" />đề xuất<ph name="END_LINK" /> sau.</translation>
@@ -1445,7 +1446,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7691043218961417207">Khám phá nội dung mà bạn có thể theo dõi</translation>
 <translation id="7697383401610880082">Nút kéo</translation>
 <translation id="7698359219371678927">Tạo email trong <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Ô truy vấn</translation>
 <translation id="7707922173985738739">Sử dụng dữ liệu di động</translation>
 <translation id="7709918231054955894">Xem tất cả thẻ của bạn</translation>
 <translation id="7733878270780732638">Không đủ dung lượng trên thiết bị.</translation>

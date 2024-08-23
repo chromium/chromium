@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">Полноэкранная лупа</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Включить голосовой ввод?</translation>
+<translation id="3392702002175498061">Показать все результаты поиска в истории браузера</translation>
 <translation id="3394432020929931914">, развернуто</translation>
 <translation id="3401474642070997151">Чтобы настроить подсказку, нажмите на нее и удерживайте или откройте меню правой кнопкой мыши</translation>
 <translation id="3405101454990027959">Предоставить доступ к микрофону</translation>
@@ -686,6 +687,7 @@
 <translation id="3455468639467374593">Шаблон "<ph name="TEMPLATE_NAME" />"</translation>
 <translation id="3456931972722214204">К точке доступа <ph name="DEVICE_NAME" /> подключено 1 устройство</translation>
 <translation id="346243998268439747">Установить исходный масштаб</translation>
+<translation id="3463151196028058330">Ретушь лица</translation>
 <translation id="3465223694362104965">После того как вы вошли в систему, к устройству была подключена другая клавиатура. Убедитесь, что ее использование безопасно.</translation>
 <translation id="3465356146291925647">Под управлением администратора</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, затем <ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
@@ -812,6 +814,7 @@
 <translation id="385300504083504382">В начало</translation>
 <translation id="3859364108019690">Ошибка трансляции приложений</translation>
 <translation id="3861651314799684201">Нажмите Ввод, чтобы записать видео со всего экрана</translation>
+<translation id="3870197372373144624">Попробуйте выключить устройство.</translation>
 <translation id="3886872229787704059">Открыто сегодня</translation>
 <translation id="3891340733213178823">Чтобы выйти, дважды нажмите Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосовое сопровождение)</translation>
@@ -927,6 +930,7 @@
 <translation id="4264977415328155183">, свернуто</translation>
 <translation id="4265259722091164182">Каждое слово с заглавной буквы</translation>
 <translation id="4269883910223712419">Администратор этого устройства имеет возможность:</translation>
+<translation id="4271841440229266861">Показать все результаты поиска в Файлах</translation>
 <translation id="4274537685965975248">Функция сочетания клавиш Ctrl + Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши End, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вправо.</translation>
 <translation id="4275283744500212192">Открыть параметры макета страницы</translation>
 <translation id="4275663329226226506">Камера и микрофон </translation>
@@ -954,6 +958,7 @@
 <translation id="4327147325944669226">Записать игру</translation>
 <translation id="4333628967105022692">Lacros не поддерживается, если выполнен вход в несколько аккаунтов.</translation>
 <translation id="4338109981321384717">Лупа</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, звук отключен</translation>
 <translation id="4351244548802238354">Закрыть</translation>
 <translation id="4356872429719185452">Показать сведения о точке доступа. Точка доступа включается.</translation>
 <translation id="4364101114148522660">Идет запись (<ph name="DURATION" />)</translation>
@@ -1208,6 +1213,7 @@
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5176318573511391780">Запись видео с части экрана</translation>
 <translation id="5187627942836026988">Показать сведения о точке доступа. Точка доступа заблокирована администратором.</translation>
+<translation id="518847040357731612">Настройки функции "Студийное изображение"</translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, мероприятий: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Для создания папки были объединены приложения "<ph name="MOVED_APP_NAME" />" и "<ph name="IN_PLACE_APP" />".</translation>
@@ -1299,6 +1305,7 @@
 <translation id="5503884284981862082">Открыть или закрыть Google Ассистента</translation>
 <translation id="550391772491508736">Возобновить трансляцию</translation>
 <translation id="5506975627792768506">Включить или отключить лупу</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />. Чтобы отключить звук, нажмите клавишу "Ввод".</translation>
 <translation id="5512042095225963688">Удалить предыдущее слово</translation>
 <translation id="5519005148254860683">Показать информацию из Google Задач</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2116,7 @@
 <translation id="8239034820133090126">Включить рабочий стол справа</translation>
 <translation id="8247060538831475781">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, заряд батареи – <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, приложение</translation>
+<translation id="825129991941217170">Показать все результаты поиска на Google Диске</translation>
 <translation id="8257510091797044096">Настроить устройство</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8262312463845990408">Воспроизвести/приостановить</translation>
@@ -2339,6 +2347,7 @@
 <translation id="9098969848082897657">Отключить звук на телефоне</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Отменить последнее действие</translation>
+<translation id="9126642911267312373">Подключение по Bluetooth недоступно</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Через 1 минуту}one{Через # минуту}few{Через # минуты}many{Через # минут}other{Через # минуты}}</translation>
 <translation id="9129245940793250979">Задняя кнопка</translation>
 <translation id="9133335900048457298">Не удается записать видео с экрана из-за защищенного контента</translation>

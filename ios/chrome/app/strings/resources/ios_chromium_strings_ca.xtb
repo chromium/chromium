@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Això vol dir que Chromium sol·licitarà el lloc web per a ordinadors cada vegada.</translation>
 <translation id="2313870531055795960">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chromium. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="231828342043114302">Per rebre contingut personalitzat basat en els teus interessos, inicia la sessió a Chromium.</translation>
+<translation id="2326738825692478496">Algunes dades de Chromium encara no s'han desat al teu Compte de Google.
+
+Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="2374627437126809292">Chromium utilitza Google Maps per oferir-te indicacions i informació local sobre les adreces detectades.</translation>
 <translation id="2386292341327187942">Al quadre de widgets de la Cerca, escriu "Chromium"</translation>
 <translation id="2426113998523353159">La teva organització requereix que iniciïs la sessió per utilitzar Chromium.</translation>
@@ -292,6 +295,8 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 
 Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME" />. Per utilitzar i desar les dades de Chromium al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
+<translation id="9031260906956926157">Algunes dades de Chromium encara no s'han desat al teu Compte de Google.
+Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="9050790730841755540">Utilitza Chromium cada vegada que toquis enllaços en altres aplicacions.</translation>
 <translation id="9057082013386654559">Utilitza Chromium per a l'iPad de manera predeterminada</translation>
 <translation id="9059693977935746710">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes per a <ph name="EMAIL" /></translation>

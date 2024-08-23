@@ -1628,7 +1628,6 @@
 <translation id="2137128126782078222">កុំ​អនុញ្ញាត​ការ​ជូនដំណឹង​​ពី <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">ប៊ូតុង​រៀបចំ</translation>
 <translation id="2140788884185208305">គុណភាព​ថ្ម</translation>
-<translation id="2140902257485550046">ជ្រើសរើស​ទប់ស្កាត់​កម្មវិធីបន្ថែម​​​ទាំងអស់​នៅ​លើ​គេហទំព័រ​នេះ</translation>
 <translation id="2142328300403846845">បើកដំណជា</translation>
 <translation id="2142484069755256151">បង្កើត​កូដ PIN ស្ដារ​ឡើងវិញ 6 ខ្ទង់​សម្រាប់​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់, កូដ PIN ខ្ទង់ទី <ph name="NUM_DIGIT" /> នៃ 6</translation>
 <translation id="2142582065325732898">បើក <ph name="LINK1_BEGIN" />Chrome សមកាលកម្ម<ph name="LINK1_END" /> ដើម្បីមើល​ផ្ទាំង Chrome ថ្មីៗ។ <ph name="LINK2_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK2_END" /></translation>
@@ -2310,7 +2309,6 @@
 <translation id="2610374175948698697">អាចមើលឯកសារ ឬថតនៅលើឧបករណ៍របស់អ្នក</translation>
 <translation id="2610780100389066815">ការចុះហត្ថលេខាបញ្ជីទុកចិត្ត Microsoft</translation>
 <translation id="261114180663074524">ចូលគណនី Microsoft របស់អ្នក រួចព្យាយាមម្ដងទៀត</translation>
-<translation id="2611765907167846862">ស្ងប់ស្ងាត់</translation>
 <translation id="2611776654555141051">ឧបករណ៍បញ្ចូលរាងចតុកោណកែង</translation>
 <translation id="2612676031748830579">លេខកាត</translation>
 <translation id="261305050785128654">ប្រាប់ឱ្យគេហទំព័រ​ដឹងអំពីភាសា​ដែលអ្នក​និយាយ។ គេហទំព័រ​ទាំងនោះ​នឹងបង្ហាញ​ខ្លឹមសារ​ជាភាសា​ទាំងនោះ នៅពេល​ដែលអាច។</translation>
@@ -6978,7 +6976,6 @@
 <translation id="6022526133015258832">បើកពេញអេក្រង់</translation>
 <translation id="6022659036123304283">ធ្វើឱ្យ Chrome ក្លាយជា​របស់អ្នក</translation>
 <translation id="6023643151125006053">ឧបករណ៍​នេះ (SN៖ <ph name="SERIAL_NUMBER" />) ត្រូវបាន​ចាក់សោ​ដោយ​អ្នកគ្រប់គ្រង <ph name="SAML_DOMAIN" /> ។</translation>
-<translation id="6024072172641380781">អនុញ្ញាត​កម្មវិធីបន្ថែម​នៅលើ​គេហទំព័រនេះ</translation>
 <translation id="6024317249717725918">&amp;ស្វែងរក​ហ្វ្រេមវីដេអូ​តាមរយៈ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - បាន​ភ្ជាប់​ឧបករណ៍​ USB</translation>
@@ -8146,6 +8143,7 @@
 <translation id="6876155724392614295">កង់</translation>
 <translation id="6876469544038980967">គ្មាន​ប្រយោជន៍</translation>
 <translation id="6878422606530379992">បាន​អនុញ្ញាត​ឧបករណ៍​ចាប់សញ្ញា</translation>
+<translation id="6878862640969460273">ផ្ដេក</translation>
 <translation id="6880587130513028875">រូបភាពត្រូវបានរារាំងនៅលើទំព័រនេះ។</translation>
 <translation id="6881845890692344060">អ្នកគ្រប់គ្រង​របស់អ្នក​បានចេញ​ពីគណនី​ហើយ។ ឥឡូវនេះ ការគ្រប់គ្រង​ស្ថិតក្នុង​ដៃអ្នក។</translation>
 <translation id="6882210908253838664">ប្រសិនបើ​គេហទំព័រ​មិន​ដំណើរការ អ្នកអាច​សាកល្បង​ផ្ដល់​ការអនុញ្ញាត​ឱ្យ​វា​ប្រើ​ខូគី​ភាគីទីបី​ជា​បណ្ដោះអាសន្ន។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
@@ -9235,7 +9233,6 @@
 <translation id="7685087414635069102">តម្រូវឱ្យមានកូដ PIN</translation>
 <translation id="7685351732518564314">ចុចប៊ូតុងនៅលើ <ph name="DEVICE_NAME" /> របស់អ្នក។</translation>
 <translation id="7686086654630106285">ច្រើន​ទៀត​អំពី​កា​រផ្សាយពាណិជ្ជកម្ម​ដែល​បានណែនាំ​ដោយគេហទំព័រ</translation>
-<translation id="7686581688229391955">ជ្រើសរើស​អនុញ្ញាត​កម្មវិធីបន្ថែម​​នៅលើ​គេហទំព័រ​នេះ</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">ជ្រើសរើស​ពី​បញ្ជី</translation>
 <translation id="7690853182226561458">បន្ថែមថតឯកសារ...</translation>
@@ -9684,6 +9681,7 @@
 
 ដើម្បីរក្សាឯកសារសោរបស់អ្នកនៅកន្លែងសុវត្ថិភាព។អ្នកត្រូវបង្កើតកំណែផ្នែកបន្ថែមថ្មីរបស់អ្នក។</translation>
 <translation id="8000020256436988724">របារឧបករណ៍</translation>
+<translation id="800117767980299235">ចំណុច​សំខាន់​ជាសំឡេង</translation>
 <translation id="8002274832045662704">ការកំណត់រចនាសម្ព័ន្ធ​ម៉ាស៊ីនបោះពុម្ពកម្រិតខ្ពស់</translation>
 <translation id="8002670234429879764">មិនអាចប្រើ <ph name="PRINTER_NAME" /> បានទៀតទេ</translation>
 <translation id="8004092996156083991">ប្រសិនបើពាក្យសម្ងាត់របស់អ្នករងការលុកលុយ​ យើងនឹងប្រាប់ឱ្យអ្នកដឹង។</translation>

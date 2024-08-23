@@ -76,6 +76,9 @@ Megjegyzések:
 <translation id="2703746758996815929">Ha hasznos tippeket szeretne kapni a Chrome-ra vonatkozóan, kapcsolja be az értesítéseket az iOS beállításai között</translation>
 <translation id="2736805085127235148">A Chrome-értesítések jelenleg ki vannak kapcsolva az eszköz beállításaiban.</translation>
 <translation id="2750626042242931740">A kiválasztott értesítéseket bármikor módosíthatja a Chrome beállításaiban.</translation>
+<translation id="2754428955276778271">Az Ön bizonyos Chrome-adatait még nem mentette a rendszer a Google-fiókjába.
+
+A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="2767464022270041271">Nincsenek mentett jelszavak. A Google Jelszókezelő képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="2869959624320573933">Bejelentkezés a Chrome-ba</translation>
 <translation id="2876628302275096482">További információ arról, <ph name="BEGIN_LINK" />hogyan gondoskodik az Ön adatainak védelméről a Chrome<ph name="END_LINK" />.</translation>
@@ -145,6 +148,8 @@ Megjegyzések:
 <translation id="5190139289262548459">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe be van jelentkezve, és a Chrome használatának módját is.</translation>
 <translation id="5256908199795498284">A Chrome észleli a csomagkövetési számokat az Ön által felkeresett webhelyeken, és csomagokkal kapcsolatos friss információkat jelenít meg az Új lap oldalon. Adatait megosztjuk a Google-lal, hogy biztosítani tudjuk ezt a funkciót, és mindenki számára jobbá tehessük a Shopping szolgáltatást.</translation>
 <translation id="5278862365980079760">Zárolhatja az inkognitó lapokat, amikor kilép a Chrome-ból, vagy másik alkalmazásra vált.</translation>
+<translation id="5310957470610282541">Az Ön bizonyos Chrome-adatait még nem mentette a rendszer a Google-fiókjába.
+A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="5389212809648216794">A Google Chrome nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
 <translation id="5395376160638294582">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő Chrome-adatokat</translation>
 <translation id="5439191312780166229">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chrome figyelmeztetéseinek kihagyását.</translation>

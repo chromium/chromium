@@ -131,7 +131,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1549000191223877751">다른 창으로 이동</translation>
 <translation id="1553358976309200471">Chrome 업데이트</translation>
 <translation id="1554532453982918912">더 나은 사용자 환경을 위한 Chrome 개선에 동참할 수 있습니다.</translation>
-<translation id="1558391695376153246">시크릿 탭 닫기</translation>
 <translation id="1568636008098739136">이 페이지의 내용을 듣습니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="1571304935088121812">사용자 이름 복사</translation>
 <translation id="1584648915421894279">현재 이 기기에 저장된 비밀번호는 Chrome 채널 전반에서 사용할 수 없습니다. Chrome 125 이후에는 기기의 Chrome 및 <ph name="CHROME_CHANNEL" />에 저장된 비밀번호가 병합되어 두 앱 모두에서 사용할 수 있습니다</translation>
@@ -1447,7 +1446,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7691043218961417207">팔로우할 콘텐츠 살펴보기</translation>
 <translation id="7697383401610880082">드래그 핸들</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />에서 이메일 만들기</translation>
-<translation id="7702029078562412515">쿼리 타일</translation>
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
 <translation id="7709918231054955894">탭 모두 가져오기</translation>
 <translation id="7733878270780732638">기기에 공간이 부족합니다.</translation>

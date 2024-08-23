@@ -546,7 +546,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1974060860693918893">Zaawansowane</translation>
 <translation id="1975457531113383421">Taca wejściowa</translation>
 <translation id="1975584088563498795">Zestaw tac odbiorczych 10</translation>
-<translation id="1976610264358655503">Często odwiedzasz</translation>
 <translation id="1978555033938440688">Wersja oprogramowania</translation>
 <translation id="1979156660928743046">Informacje o multimediach</translation>
 <translation id="1988881251331415125">Jeśli pisownia jest poprawna, <ph name="BEGIN_LINK" />uruchom Diagnostykę problemów z łącznością<ph name="END_LINK" />.</translation>
@@ -2821,6 +2820,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6240964651812394252">Aby używać Menedżera haseł Google w swoim systemie operacyjnym, uruchom ponownie Chrome i zezwól na dostęp do menedżera haseł na komputerze. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="6241121617266208201">Ukryj sugestie</translation>
 <translation id="624499991300733384">Usługa Print Compositor</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> dni temu</translation>
 <translation id="6246868321321344665">Twoja organizacja może wyświetlać dane przeglądania, takie jak hasła i historia, zarówno w profilu służbowym, jak i osobistym</translation>
 <translation id="6250932670816326647">Kosmetyki do kąpieli i pielęgnacji ciała</translation>
 <translation id="6251906504834538140">{0,plural, =1{Przenoszenie pliku zostało zablokowane}few{Przenoszenie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przenoszenie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przenoszenie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
@@ -3093,7 +3093,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Gry symulacyjne</translation>
-<translation id="6735783933931458444">Często odwiedzasz o tej porze dnia</translation>
 <translation id="6737708609449480586">Wypieki</translation>
 <translation id="6738516213925468394">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem wielowyrazowym do synchronizacji<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
 <translation id="6739943577740687354">Ta funkcja korzysta z AI i nie zawsze działa prawidłowo</translation>
@@ -3410,6 +3409,7 @@ Dodatkowe informacje:
 <translation id="7346081071264046066">„zaakceptuj z entuzjazmem to zaproszenie na wesele"</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7353601530677266744">Wiersz poleceń</translation>
+<translation id="7356678400607112844">Ostatnia wizyta</translation>
 <translation id="7359588939039777303">Reklamy zostały zablokowane.</translation>
 <translation id="7360451453306104998">Gdy Google znajdzie dostępne rabaty, zostaną one wyświetlone podczas realizacji zamówienia</translation>
 <translation id="7363096869660964304">To jednak nie znaczy, że Cię nie widać. Nawet gdy przejdziesz w tryb incognito, Twój pracodawca, dostawca usług internetowych czy webmasterzy stron, na które wchodzisz, mogą dowiedzieć się, co przeglądasz.</translation>

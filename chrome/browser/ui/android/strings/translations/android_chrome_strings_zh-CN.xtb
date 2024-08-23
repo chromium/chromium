@@ -131,7 +131,6 @@
 <translation id="1549000191223877751">移至其他窗口</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1554532453982918912">可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能够获享更好的体验</translation>
-<translation id="1558391695376153246">关闭无痕式标签页</translation>
 <translation id="1568636008098739136">读出此网页的内容。如要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="1571304935088121812">复制用户名</translation>
 <translation id="1584648915421894279">目前，此设备上保存的密码无法跨 Chrome 渠道使用。Chrome 125 之后，您设备上分别为 Chrome 和 <ph name="CHROME_CHANNEL" />保存的密码将会合并，在这两个应用内均可使用。</translation>
@@ -1445,7 +1444,6 @@
 <translation id="7691043218961417207">探索值得关注的内容</translation>
 <translation id="7697383401610880082">拖动手柄</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
-<translation id="7702029078562412515">查询块</translation>
 <translation id="7707922173985738739">使用移动数据</translation>
 <translation id="7709918231054955894">同步显示您的所有标签页</translation>
 <translation id="7733878270780732638">设备上的存储空间不足。</translation>

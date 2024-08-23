@@ -131,7 +131,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1549000191223877751">Zhvendose te dritarja tjetër</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
 <translation id="1554532453982918912">Ndihmo në përmirësimin e Chrome për njerëzit që e përdorin si ti</translation>
-<translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="1568636008098739136">Dëgjoje këtë faqe. Për ta modifikuar këtë shkurtore, preke dhe mbaje shtypur.</translation>
 <translation id="1571304935088121812">Kopjo emrin e përdoruesit</translation>
 <translation id="1584648915421894279">Për momentin fjalëkalimet e ruajtura në këtë pajisje nuk mund të përdoren nëpër kanalet e Chrome. Pas Chrome 125, fjalëkalimet e ruajtura në pajisjen tënde për Chrome dhe <ph name="CHROME_CHANNEL" /> do të shkrihen dhe do të mund të përdoren në të dyja aplikacionet.</translation>
@@ -199,6 +198,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1928618076168182477">Po shfaqet pamja vizuale</translation>
 <translation id="1928696683969751773">Përditësimet</translation>
 <translation id="1933845786846280168">Skeda e zgjedhur</translation>
+<translation id="1939549834451474504">Fjalëkalimet nuk do të funksionojnë më së shpejti pasi shërbimet e Google Play nuk ofrohen. Mund të bësh një kopje të fjalëkalimeve të tua të ruajtura para se të mos funksionojnë më. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Ruaj fjalëkalimet</translation>
 <translation id="1944535645109964458">Nuk ofrohet asnjë çelës kalimi</translation>
 <translation id="1957557050935255529">PDF-ja po ngarkohet…</translation>
@@ -1385,6 +1385,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7454744349230173024">Organizata jote ka çaktivizuar ruajtjen e fjalëkalimeve</translation>
 <translation id="7455988709578031708">Bazuar në historikun tënd të shfletimit. Ky cilësim është aktiv.</translation>
 <translation id="7456774706094330779">Ngarkim paraprak i zgjatur</translation>
+<translation id="7466328545712777810">Do të njoftohesh nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="7466431077154602932">Pamja kompakte</translation>
 <translation id="7474822150871987353">Mëso për temat në uebsajtet pa u larguar nga faqja. Zgjidh një ose më shumë fjalë në faqe për të kërkuar për to.</translation>
 <translation id="7475192538862203634">Nëse e shikon shpesh këtë, provo këto <ph name="BEGIN_LINK" />sugjerime<ph name="END_LINK" />.</translation>
@@ -1445,7 +1446,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7691043218961417207">Eksploro përmbajtje për t'i ndjekur</translation>
 <translation id="7697383401610880082">Doreza e zvarritjes</translation>
 <translation id="7698359219371678927">Krijo mail në <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Pllakëzat e kërkesave</translation>
 <translation id="7707922173985738739">Përdor të dhënat celulare</translation>
 <translation id="7709918231054955894">Merr të gjitha skedat e tua</translation>
 <translation id="7733878270780732638">Nuk ka hapësirë të mjaftueshme në pajisje.</translation>

@@ -50,6 +50,9 @@
 <translation id="2236584955986023187">ይህ ማለት Chromium የዴስክቶፕ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 <translation id="2313870531055795960">በChromium ላይ በተከማቹ ደህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል። አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ሲያወርዱ Chromium እንዲሁም የገጽ ይዘት ቢትስንም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ ሊልክ ይችላል።</translation>
 <translation id="231828342043114302">በፍላጎቶችዎ ላይ የተመሠረተ ግላዊነት የተላበሰ ይዘትን ለመቀበል ወደ Chromium ይግቡ።</translation>
+<translation id="2326738825692478496">አንዳንድ የChromium ውሂብዎ በGoogle መለያዎ ውስጥ ገና አልተቀመጠም።
+
+ዘግተው ከመውጣትዎ በፊት ጥቂት ደቂቃዎች ለመጠበቅ ይሞክሩ። አሁን ዘግተው ከወጡ ይህ ውሂብ ይሰረዛል።</translation>
 <translation id="2374627437126809292">Chromium በታወቁ አድራሻዎች ላይ አቅጣጫዎችን እና አካባቢያዊ መረጃ ለእርስዎ ለመስጠት Google ካርታዎችን ይጠቀማል።</translation>
 <translation id="2386292341327187942">በምግብሮች ፈልግ ሳጥን ውስጥ Chromiumን ያስገቡ</translation>
 <translation id="2426113998523353159">Chromiumን ለመጠቀም የእርስዎ ድርጅት እርስዎ በመለያ እንዲገቡ ይጠይቃል።</translation>
@@ -291,6 +294,8 @@
 
 <ph name="TIME" /> ላይ ውሂብዎ በይለፍ ሐረግዎ የተመሰጠረ ሆኗል። የChromium ውሂብን በGoogle መለያዎ ውስጥ ለመጠቀም እና ለማስቀመጥ እሱን ያስገቡ።</translation>
 <translation id="9022552996538154597">Chromium ውስጥ ይግቡ</translation>
+<translation id="9031260906956926157">አንዳንድ የChromium ውሂብዎ በGoogle መለያዎ ውስጥ ገና አልተቀመጠም።
+ዘግተው ከመውጣትዎ በፊት ጥቂት ደቂቃዎች ለመጠበቅ ይሞክሩ። አሁን ዘግተው ከወጡ ይህ ውሂብ ይሰረዛል።</translation>
 <translation id="9050790730841755540">በሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞች ላይ መታ በሚያደርጉበት ማንኛውም ጊዜ Chromiumን ይጠቀሙ።</translation>
 <translation id="9057082013386654559">Chromiumን ለiPad በነባሪ ይጠቀሙ</translation>
 <translation id="9059693977935746710">ይህን የይለፍ ቃል ማስታወስ አያስፈልገዎትም። ለ<ph name="EMAIL" /> በይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል</translation>

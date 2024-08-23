@@ -1626,7 +1626,6 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" /> నుండి నోటిఫికేషన్‌లను అనుమతించవద్దు</translation>
 <translation id="2139919072249842737">సెటప్ బటన్</translation>
 <translation id="2140788884185208305">బ్యాటరీ సామర్థ్యం</translation>
-<translation id="2140902257485550046">ఈ సైట్‌లోని అన్ని ఎక్స్‌టెన్షన్‌లను బ్లాక్ చేయడానికి ఎంచుకోండి</translation>
 <translation id="2142328300403846845">లింక్‌ను దీని తరపున తెరువు</translation>
 <translation id="2142484069755256151">6లో <ph name="NUM_DIGIT" /> డిజిట్ PINను, Google Password Managerకు సంబంధించిన 6-డిజిట్ రికవరీ PINను క్రియేట్ చేయండి</translation>
 <translation id="2142582065325732898">ఇటీవలి Chrome ట్యాబ్‌లను చూడటానికి, <ph name="LINK1_BEGIN" />Chrome సింక్<ph name="LINK1_END" />ను ఆన్ చేయండి. <ph name="LINK2_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK2_END" /></translation>
@@ -2286,6 +2285,7 @@
 <translation id="2593499352046705383">ప్రారంభించడానికి ముందు, మీరు మీ డేటాను బ్యాకప్ చేశారని నిర్ధారించుకోండి. <ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేయడం వలన మీ హార్డ్ డ్రైవ్ ఓవర్‌రైట్ అవుతుంది. g.co/flex/InstallGuide లో మరింత తెలుసుకోండి.</translation>
 <translation id="2594832159966169099">V8 సెక్యూరిటీని మేనేజ్ చేయండి</translation>
 <translation id="2597073208962000830">సమీపంలోని పరికరాలను కనుగొనడానికి సమీప షేరింగ్, బ్లూటూత్ స్కానింగ్‌ను ఉపయోగిస్తుంది.</translation>
+<translation id="2598136842498757793">టూల్‌బార్ బటన్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="2598710988533271874">కొత్త Chrome అందుబాటులోకి వచ్చింది</translation>
 <translation id="2599048253926156421">యూజర్‌నేమ్ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="2602501489742255173">ప్రారంభించడానికి పైకి స్వైప్ చేయండి</translation>
@@ -2307,7 +2307,6 @@
 <translation id="2610374175948698697">మీ పరికరంలో ఫైళ్లు లేదా ఫోల్డర్‌లను చూడవచ్చు</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">మీ Microsoft ఖాతాకు సైన్ ఇన్ చేసి, ఆపై మళ్లీ ట్రై చేయండి</translation>
-<translation id="2611765907167846862">నిర్మలమైన</translation>
 <translation id="2611776654555141051">దీర్ఘచతురస్ర టూల్</translation>
 <translation id="2612676031748830579">కార్డ్ నంబర్</translation>
 <translation id="261305050785128654">మీరు మాట్లాడే భాషలను వెబ్‌సైట్‌లకు తెలియజేయండి. వీలైనప్పుడు అవి ఆ భాషల్లో కంటెంట్‌ను చూపిస్తాయి.</translation>
@@ -4059,6 +4058,7 @@
 <translation id="3866142613641074814">రిస్క్‌లో ఉన్న పాస్‌వర్డ్‌లను మీరు కలిగి ఉన్నాయి</translation>
 <translation id="3866249974567520381">వివరణ</translation>
 <translation id="3867134342671430205">డిస్‌ప్లేను జరపడానికి దాన్ని లాగండి లేదా బాణం కీలను ఉపయోగించండి</translation>
+<translation id="3867831579565057323">మీ టచ్‌స్క్రీన్‌ను మ్యాప్ చేయండి</translation>
 <translation id="3867944738977021751">సర్టిఫికెట్ ఫీల్డ్‌లు</translation>
 <translation id="3869917919960562512">తప్పు సూచిక.</translation>
 <translation id="3870626286046977643">సిస్టమ్ ఆడియోను కూడా షేర్ చేయండి</translation>
@@ -6001,6 +6001,7 @@
 <translation id="5301954838959518834">సరే, అర్థమైంది</translation>
 <translation id="5302032366299160685">మళ్లీ ట్రై చేసే ముందు ఫైల్ తెరవబడే వరకు వేచి ఉండండి</translation>
 <translation id="5302048478445481009">భాష</translation>
+<translation id="5302435492906794790">సమీపంలో కనిపించగల పరికరాల కోసం వెతకండి...</translation>
 <translation id="5302932258331363306">ప్రత్యామ్నాయాలను చూపు</translation>
 <translation id="5305145881844743843">ఈ ఖాతాను <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="5307030433605830021">మూలాధారానికి మద్దతు లేదు</translation>
@@ -6975,7 +6976,6 @@
 <translation id="6022526133015258832">ఫుల్-స్క్రీన్‌ను తెరువు</translation>
 <translation id="6022659036123304283">Chromeని మీకు నచ్చినట్లు తయారు చేసుకోండి</translation>
 <translation id="6023643151125006053">ఈ (SN: <ph name="SERIAL_NUMBER" />) పరికరం <ph name="SAML_DOMAIN" /> నిర్వాహకుడిచే లాక్ చేయబడింది.</translation>
-<translation id="6024072172641380781">ఈ సైట్‌లో ఎక్స్‌టెన్షన్‌లను అనుమతించండి</translation>
 <translation id="6024317249717725918">&amp;<ph name="VISUAL_SEARCH_PROVIDER" />‌తో వీడియో ఫ్రేమ్‌ను సెర్చ్ చేయండి</translation>
 <translation id="6025215716629925253">స్టాక్ ట్రేస్</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB పరికరం కనెక్ట్ చేయబడింది</translation>
@@ -7762,6 +7762,7 @@
 <translation id="661266467055912436">మీకు, వెబ్‌లోని ప్రతి ఒక్కరికీ సెక్యూరిటీని మెరుగుపరుస్తుంది.</translation>
 <translation id="6613267708691765962">మాల్‌వేర్ కోసం స్కాన్ చేస్తోంది...</translation>
 <translation id="6613668613087513143">ఈ అప్‌డేట్‌ను పూర్తి చేయడానికి ఈ పరికరంలో తగినంత స్పేస్ లేదు. మీ పరికరంలో <ph name="NECESSARY_SPACE" />ని క్లీన్ అప్ చేసి, మీ Chrome బ్రౌజర్ నుండి మళ్లీ ట్రై చేయండి.</translation>
+<translation id="6614172284067813496">పేజీ చదవాల్సిన లిస్ట్‌కు జోడించబడింది</translation>
 <translation id="6615455863669487791">నాకు చూపించు</translation>
 <translation id="6618744767048954150">రన్ అవుతున్నాయి</translation>
 <translation id="6619058681307408113">లైన్ ప్రింటర్ డెమాన్ (LPD)</translation>
@@ -8711,6 +8712,7 @@
 <translation id="7321545336522791733">సర్వర్ అందుబాటులో లేదు</translation>
 <translation id="7322515217754205362">సైట్ అనుమతులు</translation>
 <translation id="7323315405936922211">కర్సర్ ఏరియా సైజ్</translation>
+<translation id="7324020307732396723">భాషా సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="7324297612904500502">బీటా ఫోరమ్</translation>
 <translation id="7325209047678309347">పేపర్ జామ్ అయింది</translation>
 <translation id="7325953439504232954">ప్రొఫైల్‌ను మార్చాలా?</translation>
@@ -9231,7 +9233,6 @@
 <translation id="7685087414635069102">పిన్ అవసరం</translation>
 <translation id="7685351732518564314">మీ <ph name="DEVICE_NAME" />‌లో బటన్‌ను నొక్కండి.</translation>
 <translation id="7686086654630106285">సైట్ సూచించిన యాడ్‌ల గురించి మరింత సమాచారం</translation>
-<translation id="7686581688229391955">ఈ సైట్‌లో ఎక్స్‌టెన్షన్‌లను అనుమతించడానికి ఎంచుకోండి</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">లిస్ట్‌ నుండి ఎంచుకోండి</translation>
 <translation id="7690853182226561458">&amp;ఫోల్డర్‌ను జోడించండి...</translation>
@@ -9570,6 +9571,7 @@
 <translation id="79312157130859720"><ph name="APP_NAME" /> మీ స్క్రీన్ మరియు ఆడియోను షేర్ చేస్తోంది.</translation>
 <translation id="793293630927785390">కొత్త Wi-Fi నెట్‌వర్క్ డైలాగ్</translation>
 <translation id="7932969338829957666">Linuxలో <ph name="BASE_DIR" />లో షేర్ చేసిన ఫోల్డర్‌లు అందుబాటులో ఉన్నాయి.</translation>
+<translation id="7932992556896556665">మీ టచ్‌స్క్రీన్ పరికరాన్ని సరైన డిస్‌ప్లేకు సెటప్ చేసి, మ్యాప్ చేయండి</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{సైట్‌ను అన్‌మ్యూట్ చేయి}other{సైట్‌లను అన్‌మ్యూట్ చేయి}}</translation>
 <translation id="7933486544522242079">సేవ్ చేసి, షేర్ చేయండి</translation>
 <translation id="7933518760693751884">తర్వాతి అవసరాల కోసం పేజీని సేవ్ చేయడానికి, బుక్‌మార్క్ చిహ్నాన్ని క్లిక్ చేయండి</translation>
@@ -9822,6 +9824,7 @@
 <translation id="8097959162767603171">ముందుగా మీ అడ్మినిస్ట్రేటర్, అడ్మిన్ కన్సోల్‌కి చెందిన, Chrome పరికర లిస్ట్‌లో ఉన్న సర్వీస్ నియమాలను తప్పనిసరిగా అంగీకరించాలి.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేసి, హార్డ్ డ్రైవ్‌ను ఫ్యాక్టరీ రీసెట్ చేయాలా?</translation>
 <translation id="8098616321286360457">నెట్‌వర్క్ కనెక్షన్ అవసరం</translation>
+<translation id="8100057926383586173">భాషా సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="8100230553590752325">ఏ పరికరంలో అయినా సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించండి</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ఎంచుకోబడింది. ఎంపిక రద్దు చేయడానికి 'Search + Space'ను నొక్కండి.</translation>
 <translation id="8101409298456377967">మీ పాస్‌వర్డ్‌లను క్రియేట్ చేయండి, సేవ్ చేయండి, అలాగే మేనేజ్ చేయండి, తద్వారా మీరు సైట్‌లకు, యాప్‌లకు సులభంగా సైన్ ఇన్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -10302,7 +10305,7 @@
 <translation id="8447409163267621480">Ctrl లేదా Altను చేర్చండి</translation>
 <translation id="8448729345478502352">మీ స్క్రీన్‌లోని అంశాలను చిన్నవిగా లేదా పెద్దవిగా చేయండి</translation>
 <translation id="8449008133205184768">శైలిని పేస్ట్ చేసి, సరిపోల్చు</translation>
-<translation id="8449036207308062757">నిల్వను మేనేజ్ చేయండి</translation>
+<translation id="8449036207308062757">స్టోరేజ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="8449347986464073209">తొలగించి, సైన్ అవుట్ చేయండి</translation>
 <translation id="8449836157089738489">అన్నింటినీ కొత్త ట్యాబ్ గ్రూప్‌లో తెరవండి</translation>
 <translation id="8449869326050867919">పాస్‌వర్డ్ షేర్ చేయబడింది</translation>
@@ -10757,6 +10760,7 @@
 <translation id="876956356450740926">డెవలపర్ టూల్స్‌ను, IDEలను, ఎడిటర్‌లను రన్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">ఎక్స్‌టెన్ష‌న్‌ మూలం డైరెక్టరీ</translation>
 <translation id="8771300903067484968">ప్రారంభ పేజీ నేపథ్యం అన్నది డిఫాల్ట్ బ్యాక్‌గ్రౌండ్‌కు రీసెట్ చేయబడింది.</translation>
+<translation id="8773535891252326047">హైలైట్ చేయడానికి లింక్ కాపీ అయ్యింది</translation>
 <translation id="8774379074441005279">పునరుద్ధరణను నిర్ధారించండి</translation>
 <translation id="8774934320277480003">ఎగువ అంచు</translation>
 <translation id="8775144690796719618">URL చెల్లదు</translation>

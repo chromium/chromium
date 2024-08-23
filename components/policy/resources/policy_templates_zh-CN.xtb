@@ -242,7 +242,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1165923723751466821">允许浏览器访客模式登录和个人资料登录</translation>
 <translation id="117059611145966538">外部打印服务器</translation>
 <translation id="117080706484659953">允许在 <ph name="MAC_OS_NAME" /> 上检测政策范围</translation>
-<translation id="1171065405328282754">允许使用 AI 赋能的历史记录搜索功能并改进 AI 模型</translation>
 <translation id="1171106901454883937">启用设备版本信息报告功能</translation>
 <translation id="1173493742686115032">允许在所有网页上使用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="1177567780207290133">通过设置此政策，您可以控制 SafeSites 网址滤除机制，此机制使用 Google Safe Search API 来判断是否将网址归类为色情内容。
@@ -1695,7 +1694,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="224750967938323855">在登录期间不显示同步同意声明</translation>
 <translation id="2252400912879027343">不安全情境中的 WebSQL 在 M109 之前将一直可用，然后从 M110 起将不再可用。</translation>
 <translation id="225340736558643885">启用针对不安全表单的警告</translation>
-<translation id="225347142757323162">启用这些功能，但不发送数据来帮助训练 AI 模型</translation>
 <translation id="2258126710006312594">允许远程访问用户将文件传到主机或接收从主机传出的文件</translation>
 <translation id="225830954785359083">禁止页面在卸载期间显示弹出式窗口</translation>
 <translation id="2261648512244797294">停用已弃用的 Privet 本地打印</translation>
@@ -1963,7 +1961,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2439733504887695659">允许关闭针对所输入凭据的密码泄露警示</translation>
 <translation id="2446244536806499267">播放音频时不将用户视为空闲</translation>
 <translation id="2452225615952836461">始终大写请求方法</translation>
-<translation id="2453660971158808971">不允许使用 AI 赋能的历史记录搜索功能</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
 <translation id="2455033019778127130">使用默认浏览器行为，显示《服务条款》并等待用户接受。</translation>
 <translation id="2460127623195247744">此政策已被弃用，请改用“<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />”政策。
@@ -3159,17 +3156,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3423703250826790403">Android 应用</translation>
 <translation id="3426434797050451264">此政策也可用于将 Android 应用指定为默认文件处理程序。</translation>
 <translation id="3428247105888806363">启用网络预测功能</translation>
-<translation id="3430198032663063246">“帮我写”是一款基于 AI 的写作助手，适用于在网上创作简短内容。系统会根据用户输入的提示以及网页内容来提供建议的内容。
-
-0 = 为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。这些数据可能会被仅为改进 AI 模型而送交人工审核。
-
-除非下文有说明，否则 0 是默认值。
-
-1 = 为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于由 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> 管理的企业用户，1 是默认值。
-
-2 = 停用此功能。对于由 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，2 是默认值。
-
-如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="3432863169147125747">控制打印设置。</translation>
 <translation id="3434053014926283175">当用户在登录屏幕上操作时，鼠标主按钮将切换成右键。
 
@@ -3513,7 +3499,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
           </translation>
 <translation id="3677660004554019617">不允许使用生成式 AI VC 背景</translation>
 <translation id="3678069907945250643">允许通过个性化设置应用访问 Google 相册</translation>
-<translation id="3680529017993214255">启用此功能并发送数据来帮助训练 AI 模型</translation>
 <translation id="3685979383016152590">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
 
       * 如果您选择 <ph name="PRINTERS_BLOCKLIST" />（值为 0），系统会使用 <ph name="PRINTERS_BULK_BLOCKLIST" /> 来限制用户对指定打印机的访问权
@@ -3880,19 +3865,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3989829840000169163">屏蔽浏览器旧版扩展点</translation>
 <translation id="3990391739475801018">系统将停用省电模式。</translation>
 <translation id="3990834929384096140">不强制启用系统音频回声消除功能</translation>
-<translation id="3992185577030665825"><ph name="PRODUCT_NAME" /> 开发者工具中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集错误消息、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到归 Google 所有的服务器，该服务器会运行生成式 AI 模型。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
-
-0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。
-
-除非下文另有说明，否则默认值是 0。
-
-1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于由 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> 管理的企业用户，1 是默认值。
-
-2 表示停用此功能。对于由 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，2 是默认值。
-
-开发者工具的生成式 AI 功能包括：
-
-- 控制台数据分析：解释控制台消息，并建议如何修复控制台错误。</translation>
 <translation id="3994043824457743421">在“新标签页”页面上显示中间槽通知</translation>
 <translation id="399433537808390819">不为用户提供统一桌面模式选项</translation>
 <translation id="3995880046827722248">停用 Manifest V2</translation>
@@ -4858,7 +4830,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果未设置此政策，所有服务将启用。
 
 否则，只有所选服务会启用。</translation>
-<translation id="4757563299858487173">停用这些功能</translation>
 <translation id="4758335997982239449">启用 <ph name="PRIVACY_SANDBOX_NAME" /> IP 地址保护功能。</translation>
 <translation id="4767059955897420757">如果此政策未设置或已启用，系统可能会向用户显示弹出式提醒“Credential Provider 扩展程序”。
 如果此政策已停用，系统不会向用户显示弹出式提醒“Credential Provider 扩展程序”。</translation>
@@ -7015,17 +6986,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果您未为某个网站设置此政策，系统便会将 <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> 中的政策（若已设置）应用于该网站，或者让该网站遵循浏览器的默认权限设置并允许用户按网站选择这项权限。</translation>
 <translation id="6383774771168138899">为 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 和 <ph name="MICROSOFT_365_NAME" /> 配置<ph name="CLOUD_UPLOAD_NAME" />流程</translation>
 <translation id="6384542789059421431">允许在浏览器侧边栏中显示默认搜索引擎的搜索结果页面。</translation>
-<translation id="6385379259912525880">AI 历史记录搜索功能可让用户根据网页内容（而不仅仅是网页标题和网址）搜索其浏览记录。
-
-0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。工作人员可能会仅出于改进 AI 模型的目的而审核这些数据。
-
-1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。
-
-2 表示停用此功能。
-
-如果此政策未设置，普通消费者用户在 <ph name="PRODUCT_OS_NAME" /> 上的默认行为为 0，受管用户在该操作系统上的默认行为为 2。
-
-如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="6394350458541421998">此政策从 <ph name="PRODUCT_OS_NAME" />版本 29 起开始弃用。请改用 PresentationScreenDimDelayScale 政策。</translation>
 <translation id="6396956366662970339">指定是否允许启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命。
 
@@ -8464,7 +8424,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7469554574977894907">启用搜索建议</translation>
 <translation id="7472547030234093862">指定要使用 DNS-over-HTTPS 进行解析的网域</translation>
 <translation id="747275827471712187">将这些网站上的 Cookie 恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为</translation>
-<translation id="747517124419659622">允许使用 AI 赋能的历史记录搜索功能，但不改进 AI 模型</translation>
 <translation id="7476030153540156377">选择是否应启用 <ph name="PRIVACY_SANDBOX_NAME" /> IP 地址保护功能。</translation>
 <translation id="7476158778585368567">报告设备的打印任务。
 
@@ -9360,17 +9319,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="822055204938220476">可在不显示通知的情况下保持全屏模式的网址的列表</translation>
 <translation id="8225579382697740712">控制对 WebHID API 的使用</translation>
 <translation id="8229912067600517877">启用开发者工具</translation>
-<translation id="8234565689501421293">借助“利用 AI 创建主题”功能，用户可从一系列选项中预先选择来创建自定义主题/壁纸。
-
-0 = 为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。这些数据可能会被仅为改进 AI 模型而送交人工审核。
-
-除非下文有说明，否则 0 是默认值。
-
-1 = 为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于由 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> 管理的企业用户，1 是默认值。
-
-2 = 停用此功能。对于由 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，2 是默认值。
-
-如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="8238421250255592181">一个布尔值标记，用于表明屏幕键盘能否提供自动填充功能。</translation>
 <translation id="8239109177194627162">禁止使用“自动填充”功能填写信用卡信息</translation>
 <translation id="8239143983379015783">强制启用永久配额</translation>
@@ -10673,17 +10621,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="943865157632139008">可让您配置安装 <ph name="PRODUCT_FRAME_NAME" />时默认使用的 HTML 渲染程序。
       默认设置是允许托管浏览器执行渲染操作，不过您可以视情况替换此设置，并默认让 <ph name="PRODUCT_FRAME_NAME" />渲染 HTML 网页。</translation>
 <translation id="944817693306670849">设置磁盘缓存大小</translation>
-<translation id="946458935955389273">标签页整理工具是一款基于 AI 的工具，可根据用户打开的标签页自动创建标签页分组。系统会根据打开的标签页（而非网页内容）提供建议。
-
-0 = 为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。这些数据可能会被仅为改进 AI 模型而送交人工审核。
-
-除非下文有说明，否则 0 是默认值。
-
-1 = 为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于由 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> 管理的企业用户，1 是默认值。
-
-2 = 停用此功能。对于由 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，2 是默认值。
-
-如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="949192525372487705">禁止切换到第三方密码管理工具</translation>
 <translation id="957322141096206402">系统 DNS 解析可能在网络进程中运行，也可能在网络进程外运行，具体取决于系统配置和功能标志。</translation>
 <translation id="957778406002650056">可供下载相应 <ph name="PLUGIN_VM_NAME" /> 图片的网址。</translation>

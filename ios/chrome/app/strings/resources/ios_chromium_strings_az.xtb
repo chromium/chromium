@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Yəni, Chromium hər dəfə masaüstü saytını tələb edəcək.</translation>
 <translation id="2313870531055795960">URL'ləri Chromium'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chromium səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər.</translation>
 <translation id="231828342043114302">Maraqlarınıza əsasən fərdiləşdirilmiş kontent qəbul etmək üçün Chromium-a daxil olun.</translation>
+<translation id="2326738825692478496">Müəyyən Chromium datası Google Hesabında yadda saxlanılmayıb.
+
+Çıxmazdan əvvəl bir neçə dəqiqə gözləyin. İndi çıxsanız, bu data silinəcək.</translation>
 <translation id="2374627437126809292">Chromium aşkarlanan ünvanlar üzrə istiqamət və yerli məlumat təqdim etmək üçün Google Xəritədən istifadə edir.</translation>
 <translation id="2386292341327187942">Axtarış vidcetləri xanasında Chromium daxil edin</translation>
 <translation id="2426113998523353159">Təşkilatınız Chromium'dan istifadə etmək üçün daxil olmağınızı tələb edir.</translation>
@@ -292,6 +295,8 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 
 Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hesabında Chromium datasını istifadə etmək və yadda saxlamaq üçün onu daxil edin.</translation>
 <translation id="9022552996538154597">Chromium'a daxil olun</translation>
+<translation id="9031260906956926157">Müəyyən Chromium datası Google Hesabında yadda saxlanılmayıb.
+Çıxmazdan əvvəl bir neçə dəqiqə gözləyin. İndi çıxsanız, bu data silinəcək.</translation>
 <translation id="9050790730841755540">Digər tətbiqlərdə keçidləri Chromium ilə açın.</translation>
 <translation id="9057082013386654559">Defolt olaraq iPad üçün Chromium istifadə edin</translation>
 <translation id="9059693977935746710">Bu parolu yadda saxlamağa ehtiyac yoxdur. O, <ph name="EMAIL" /> üçün Parol Menecerində saxlanacaq</translation>

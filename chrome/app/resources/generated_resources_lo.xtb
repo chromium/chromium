@@ -1626,7 +1626,6 @@
 <translation id="2137128126782078222">ບໍ່ອະນຸຍາດການແຈ້ງເຕືອນຈາກ <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">ປຸ່ມຕັ້ງຄ່າ</translation>
 <translation id="2140788884185208305">ປະສິດທິພາບຂອງແບັດເຕີຣີ</translation>
-<translation id="2140902257485550046">ເລືອກເພື່ອບລັອກສ່ວນຂະຫຍາຍທັງໝົດຢູ່ເວັບໄຊນີ້</translation>
 <translation id="2142328300403846845">ເປີດ​ລິ້ງ​ເປັນ</translation>
 <translation id="2142484069755256151">ສ້າງ PIN ການກູ້ຄືນ 6 ຕົວເລກສຳລັບຕົວຈັດການລະຫັດຜ່ານ Google, PIN <ph name="NUM_DIGIT" /> ຕົວເລກຈາກທັງໝົດ 6 ຕົວ</translation>
 <translation id="2142582065325732898">ເປີດ <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> ເພື່ອເບິ່ງແຖບ Chrome ຫຼ້າສຸດ. <ph name="LINK2_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK2_END" /></translation>
@@ -2309,7 +2308,6 @@
 <translation id="2610374175948698697">ສາມາດເບິ່ງໄຟລ໌ ຫຼື ໂຟນເດີຢູ່ອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="2610780100389066815">ການລົງຊື່ເຂົ້າ​ໃຊ້ລາຍຊື່ເຊື່ອໝັ້ນຂອງ Microsoft</translation>
 <translation id="261114180663074524">ເຂົ້າສູ່ລະບົບບັນຊີ Microsoft ຂອງທ່ານ ແລ້ວລອງໃໝ່</translation>
-<translation id="2611765907167846862">ປອດໂປ່ງ</translation>
 <translation id="2611776654555141051">ເຄື່ອງມືສີ່ຫຼ່ຽມ</translation>
 <translation id="2612676031748830579">ເລກບັດ</translation>
 <translation id="261305050785128654">ແຈ້ງໃຫ້ເວັບໄຊຮູ້ພາສາທີ່ທ່ານເວົ້າ. ແລ້ວເວັບໄຊດັ່ງກ່າວຈະສະແດງເນື້ອຫາໃນພາສາເຫຼົ່ານັ້ນ, ເມື່ອເປັນໄປໄດ້.</translation>
@@ -6005,6 +6003,7 @@
 <translation id="5301954838959518834">ຕົກລົງ, ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="5302032366299160685">ລໍຖ້າໃຫ້ໄຟລ໌ເປີດຂຶ້ນກ່ອນທີ່ຈະລອງໃໝ່</translation>
 <translation id="5302048478445481009">ພາ​ສາ</translation>
+<translation id="5302435492906794790">ກຳລັງຊອກຫາອຸປະກອນທີ່ຖືກຄົນພົບໄດ້ຢູ່ໃກ້ຄຽງ...</translation>
 <translation id="5302932258331363306">ສະແດງການແທນທີ່</translation>
 <translation id="5305145881844743843">ບັນຊີນີ້ຖືກຈັດການໂດຍ <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">ບໍ່ຮອງຮັບແຫຼ່ງທີ່ມາ</translation>
@@ -6978,7 +6977,6 @@
 <translation id="6022526133015258832">ເປີດເຕັມໜ້າຈໍ</translation>
 <translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
 <translation id="6023643151125006053">ອຸປະກອນນີ້ (SN: <ph name="SERIAL_NUMBER" />) ຖືກລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">ອະນຸຍາດໃຫ້ໃຊ້ສ່ວນຂະຫຍາຍຢູ່ເວັບໄຊນີ້</translation>
 <translation id="6024317249717725918">ຊອກຫາເຟຣມວິດີໂອດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">ຮ່ອງຮອຍການກອງ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - ເຊື່ອມຕໍ່ກັບອຸປະກອນ USB ແລ້ວ</translation>
@@ -8713,6 +8711,7 @@
 <translation id="7321545336522791733">ບໍ່ສາມາດຕິດຕໍ່ຫາເຊີບເວີໄດ້</translation>
 <translation id="7322515217754205362">ການອະນຸຍາດເວັບໄຊ</translation>
 <translation id="7323315405936922211">ຂະໜາດພື້ນທີ່ເຄີເຊີ</translation>
+<translation id="7324020307732396723">ເປີດການຕັ້ງຄ່າພາສາ</translation>
 <translation id="7324297612904500502">ເວທີເບຕ້າ</translation>
 <translation id="7325209047678309347">ເຈ້ຍຕິດ</translation>
 <translation id="7325953439504232954">ສະຫຼັບໂປຣໄຟລ໌ບໍ?</translation>
@@ -9232,7 +9231,6 @@
 <translation id="7685087414635069102">ຈໍາເປັນຕ້ອງມີ PIN</translation>
 <translation id="7685351732518564314">ກົດປຸ່ມຢູ່ <ph name="DEVICE_NAME" /> ຂອງທ່ານ.</translation>
 <translation id="7686086654630106285">ເພີ່ມເຕີມກ່ຽວກັບການໂຄສະນາທີ່ແນະນໍາຈາກເວັບໄຊ</translation>
-<translation id="7686581688229391955">ເລືອກເພື່ອອະນຸຍາດສ່ວນຂະຫຍາຍຢູ່ເວັບໄຊນີ້</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">ເລືອກຈາກລາຍການ</translation>
 <translation id="7690853182226561458">ເພີ່ມ​ໂຟລເດີ</translation>
@@ -9826,6 +9824,7 @@
 <translation id="8097959162767603171">ກ່ອນອື່ນຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕ້ອງຍອມຮັບຂໍ້ກຳນົດການບໍລິການໃນລາຍຊື່ອຸປະກອນ Chrome ຂອງຄອນໂຊນຜູ້ເບິ່ງແຍງລະບົບ.</translation>
 <translation id="8098156986344908134">ຕິດຕັ້ງ <ph name="DEVICE_OS" /> ແລະ ລຶບຂໍ້ມູນໃນຮາດໄດຣຟ໌ອອກບໍ?</translation>
 <translation id="8098616321286360457">ຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
+<translation id="8100057926383586173">ເປີດການຕັ້ງຄ່າພາສາ</translation>
 <translation id="8100230553590752325">ໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນໃດກໍໄດ້</translation>
 <translation id="810068641062493918">ເລືອກ <ph name="LANGUAGE" /> ແລ້ວ ກົດປຸ່ມຊອກຫາພ້ອມກັບປຸ່ມຍະຫວ່າງເພື່ອຍົກເລີກການເລືອກ.</translation>
 <translation id="8101409298456377967">ສ້າງ, ບັນທຶກ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າສູ່ລະບົບຫາເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງງ່າຍດາຍ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>

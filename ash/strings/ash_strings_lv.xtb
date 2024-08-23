@@ -661,6 +661,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3386978599540877378">pilnekrāna režīma lupa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Vai ieslēgt diktēšanu?</translation>
+<translation id="3392702002175498061">Rādīt visu pārlūkošanas vēstures saturu</translation>
 <translation id="3394432020929931914">, izvērsts</translation>
 <translation id="3401474642070997151">Lai pielāgotu ieteikumus, noklikšķiniet ar peles labo pogu uz ieteikuma vai nospiediet un turiet ieteikumu.</translation>
 <translation id="3405101454990027959">Ieslēgt piekļuvi mikrofonam</translation>
@@ -812,6 +813,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="385300504083504382">Sākums</translation>
 <translation id="3859364108019690">Nevar straumēt lietotnes</translation>
 <translation id="3861651314799684201">Lai ierakstītu visu ekrānu, nospiediet taustiņu Enter</translation>
+<translation id="3870197372373144624">Izslēdziet ierīci.</translation>
 <translation id="3886872229787704059">Atvērts šodien</translation>
 <translation id="3891340733213178823">Lai izrakstītos, divas reizes nospiediet taustiņu kombināciju Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (balss komentāri)</translation>
@@ -927,6 +929,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4264977415328155183">, sakļauts</translation>
 <translation id="4265259722091164182">Virsrakstu reģistrs</translation>
 <translation id="4269883910223712419">Ierīces administrators var veikt šādas darbības:</translation>
+<translation id="4271841440229266861">Rādīt visu lietotnes Faili saturu</translation>
 <translation id="4274537685965975248">Šie īsinājumtaustiņi ir mainījušies: Ctrl + Alt + lejupvērstais bulttaustiņš. Lai izmantotu beigvietas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + labā bultiņa.</translation>
 <translation id="4275283744500212192">Atvērt logu izkārtojuma opcijas</translation>
 <translation id="4275663329226226506">Multivide</translation>
@@ -954,6 +957,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4327147325944669226">Ierakstīt spēli</translation>
 <translation id="4333628967105022692">Pārlūks Lacros netiek atbalstīts, ja ir pierakstījušies vairāki lietotāji.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, izslēgta skaņa</translation>
 <translation id="4351244548802238354">Aizvērt dialoglodziņu</translation>
 <translation id="4356872429719185452">Rādīt informāciju par tīklāju. Notiek tīklāja ieslēgšana.</translation>
 <translation id="4364101114148522660">Notiek ierakstīšana: <ph name="DURATION" /></translation>
@@ -1299,6 +1303,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5503884284981862082">Atvērt/aizvērt Google asistentu</translation>
 <translation id="550391772491508736">Atsākt apraidi</translation>
 <translation id="5506975627792768506">Ieslēgt vai izslēgt lupu</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />; nospiežot taustiņu Enter, tiks izslēgta skaņa.</translation>
 <translation id="5512042095225963688">Dzēst iepriekšējo vārdu</translation>
 <translation id="5519005148254860683">Izvērst pakalpojumu Google uzdevumi</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8239034820133090126">Aktivizēt darbvietu labajā pusē</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, lietotne</translation>
+<translation id="825129991941217170">Rādīt visu Google diska saturu</translation>
 <translation id="8257510091797044096">Ierīces iestatīšana</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8262312463845990408">Pārslēgt atskaņošanu</translation>
@@ -2339,6 +2345,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="9098969848082897657">Izslēgt tālruņa skaņu</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> vai <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Atsaukt pēdējo darbību</translation>
+<translation id="9126642911267312373">Bluetooth nav pieejams</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Pēc 1 min}zero{Pēc # min}one{Pēc # min}other{Pēc # min}}</translation>
 <translation id="9129245940793250979">Aizmugurējā poga</translation>
 <translation id="9133335900048457298">Aizsargātu saturu nevar ierakstīt</translation>

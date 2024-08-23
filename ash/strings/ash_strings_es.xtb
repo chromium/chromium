@@ -687,6 +687,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3455468639467374593">Plantilla, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 dispositivo conectado al punto de acceso de <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Restablecer nivel de zoom</translation>
+<translation id="3463151196028058330">Retoque facial</translation>
 <translation id="3465223694362104965">Se ha conectado otro teclado a este dispositivo desde la última vez que iniciaste sesión. Antes de usarlo, asegúrate de que sea de confianza.</translation>
 <translation id="3465356146291925647">Gestionada por el administrador</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> y, a continuación, <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
@@ -1213,6 +1214,7 @@ También puedes usar la combinación de teclas. Primero, selecciona el texto y, 
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5176318573511391780">Grabar una parte de la pantalla</translation>
 <translation id="5187627942836026988">Mostrar detalles del punto de acceso. Tu administrador ha bloqueado el punto de acceso.</translation>
+<translation id="518847040357731612">Preferencia de look de estudio</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, eventos: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Se ha combinado <ph name="MOVED_APP_NAME" /> con <ph name="IN_PLACE_APP" /> para crear una carpeta.</translation>

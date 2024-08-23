@@ -253,7 +253,6 @@ Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan hardware di per
 <translation id="1165923723751466821">Izinkan login browser tamu dan login profil</translation>
 <translation id="117059611145966538">Server cetak eksternal</translation>
 <translation id="117080706484659953">Mengizinkan deteksi cakupan kebijakan di <ph name="MAC_OS_NAME" /></translation>
-<translation id="1171065405328282754">Mengizinkan penelusuran histori yang didukung AI dan meningkatkan kualitas model AI</translation>
 <translation id="1171106901454883937">Aktifkan pelaporan info versi perangkat</translation>
 <translation id="1173493742686115032">Aktifkan <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> di semua halaman web</translation>
 <translation id="1177567780207290133">Menyetel kebijakan akan mengontrol filter URL SafeSites, yang menggunakan Google Safe Search API untuk mengklasifikasikan URL sebagai pornografi atau bukan.
@@ -1783,7 +1782,6 @@ Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, transfer file tidak a
 <translation id="224750967938323855">Jangan tampilkan Izin Sinkronisasi selama login</translation>
 <translation id="2252400912879027343">WebSQL dalam konteks yang tidak aman akan tetap tersedia hingga M109, lalu tidak tersedia mulai M110.</translation>
 <translation id="225340736558643885">Mengaktifkan peringatan untuk formulir tidak aman</translation>
-<translation id="225347142757323162">Aktifkan fitur, tetapi jangan kirim data untuk membantu melatih model AI</translation>
 <translation id="2258126710006312594">Izinkan pengguna dengan akses jarak jauh untuk mentransfer file ke/dari host</translation>
 <translation id="225830954785359083">Cegah halaman menampilkan pop-up selama penghapusan muatan</translation>
 <translation id="2261648512244797294">Nonaktifkan pencetakan privet yang tidak digunakan lagi</translation>
@@ -2066,7 +2064,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2439733504887695659">Mengaktifkan penutupan notifikasi sandi yang telah dibobol untuk kredensial yang dimasukkan</translation>
 <translation id="2446244536806499267">Jangan menganggap pengguna sebagai tidak ada aktivitas saat audio diputar</translation>
 <translation id="2452225615952836461">Selalu gunakan huruf kapital untuk metode permintaan</translation>
-<translation id="2453660971158808971">Tidak mengizinkan penelusuran histori yang didukung AI</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
 <translation id="2455033019778127130">Menggunakan perilaku browser default, menampilkan ToS, dan menunggu penerimaan dari pengguna.</translation>
 <translation id="2460127623195247744">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />'.
@@ -3304,17 +3301,6 @@ Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Sel
 <translation id="3423703250826790403">Aplikasi Android</translation>
 <translation id="3426434797050451264">Kebijakan ini juga dapat digunakan untuk menentukan aplikasi Android sebagai pengendali file default.</translation>
 <translation id="3428247105888806363">Aktifkan prediksi jaringan</translation>
-<translation id="3430198032663063246">Bantu Menulis adalah asisten menulis berbasis AI untuk konten berdurasi singkat di web. Konten yang disarankan didasarkan pada perintah yang dimasukkan oleh pengguna dan konten halaman web.
-
-Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan dapat mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini dapat ditinjau oleh manusia dengan tujuan meningkatkan kualitas model AI.
-
-Nilai 0 adalah nilai default, kecuali jika dinyatakan di bawah.
-
-Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-Nilai 2 = Menonaktifkan fitur. Nilai 2 adalah nilai default untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3432863169147125747">Mengontrol setelan pencetakan.</translation>
 <translation id="3434053014926283175">Mengalihkan tombol mouse utama ke kanan pada layar login.
 
@@ -3679,7 +3665,6 @@ Jika <ph name="PRODUCT_NAME" /> tidak ditutup dengan benar (misalnya, browser at
           </translation>
 <translation id="3677660004554019617">Jangan izinkan Latar Belakang VC AI Generatif</translation>
 <translation id="3678069907945250643">Izinkan akses Google Foto dari aplikasi personalisasi</translation>
-<translation id="3680529017993214255">Aktifkan fitur dan kirim data untuk membantu melatih model AI</translation>
 <translation id="3685979383016152590">Menyetel kebijakan akan menentukan kebijakan akses yang berlaku untuk konfigurasi printer massal sehingga akan mengontrol printer mana dari <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> yang akan tersedia bagi pengguna.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (nilai 0) menggunakan <ph name="PRINTERS_BULK_BLOCKLIST" /> untuk membatasi akses ke printer yang ditentukan
@@ -4056,19 +4041,6 @@ laporan perusahaan dikirim.
 <translation id="3989829840000169163">Memblokir Titik Ekstensi Lama Browser</translation>
 <translation id="3990391739475801018">Mode Penghemat Baterai akan dinonaktifkan.</translation>
 <translation id="3990834929384096140">Jangan terapkan pengurangan gema audio sistem</translation>
-<translation id="3992185577030665825">Fitur di DevTools <ph name="PRODUCT_NAME" /> ini menggunakan model AI generatif untuk memberikan informasi proses debug tambahan. Untuk menggunakan fitur ini, <ph name="PRODUCT_NAME" /> harus mengumpulkan data seperti pesan error, stack trace, cuplikan kode, dan permintaan jaringan, lalu mengirimkannya ke server milik Google, yang menjalankan model AI generatif. Isi respons atau autentikasi dan header cookie dalam permintaan jaringan tidak disertakan dalam data yang dikirim ke server.
-
-Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI.
-
-Nilai 0 adalah nilai default, kecuali jika dinyatakan di bawah.
-
-Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-Nilai 2 = Menonaktifkan fitur. Nilai 2 adalah nilai default untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Fitur AI Generatif DevTools mencakup:
-
-- Console Insights: menjelaskan pesan konsol dan menawarkan saran cara memperbaiki error konsol.</translation>
 <translation id="3994043824457743421">Menampilkan pengumuman slot tengah di Halaman Tab Baru</translation>
 <translation id="399433537808390819">Jangan menyediakan Mode Desktop Terpadu untuk pengguna</translation>
 <translation id="3995880046827722248">Manifes v2 dinonaktifkan</translation>
@@ -5101,7 +5073,6 @@ Jika <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_ENABLED" /> disetel ke Aktif atau 
 Jika kebijakan ini tidak disetel, semua layanan akan diaktifkan.
 
 Jika tidak, hanya layanan yang dipilih yang akan diaktifkan.</translation>
-<translation id="4757563299858487173">Nonaktifkan fitur</translation>
 <translation id="4758335997982239449">Aktifkan fitur Perlindungan IP <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="4767059955897420757">Jika kebijakan disetel ke Aktif atau tidak disetel, promo Ekstensi Penyedia Kredensial dapat ditampilkan kepada pengguna.
 Jika kebijakan disetel ke Nonaktif, promo Ekstensi Penyedia Kredensial tidak akan ditampilkan kepada pengguna.</translation>
@@ -7387,17 +7358,6 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan
       Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
 <translation id="6383774771168138899">Mengonfigurasi alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Izinkan halaman hasil penelusuran mesin telusur default ditampilkan di panel samping Browser.</translation>
-<translation id="6385379259912525880">Penelusuran Histori AI adalah fitur yang memungkinkan pengguna menelusuri histori penjelajahan mereka berdasarkan konten halaman dan bukan hanya judul halaman dan URL.
-
-Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan dapat mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini dapat ditinjau oleh manusia dengan tujuan meningkatkan kualitas model AI.
-
-Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI.
-
-Nilai 2 = Menonaktifkan fitur.
-
-Jika kebijakan ini tidak disetel, perilaku defaultnya adalah 0 untuk pengguna konsumen reguler dan 2 untuk pengguna terkelola di <ph name="PRODUCT_OS_NAME" />.
-
-Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Kebijakan ini tidak lagi digunakan sejak <ph name="PRODUCT_OS_NAME" /> versi 29. Gunakan kebijakan PresentationScreenDimDelayScale sebagai gantinya.</translation>
 <translation id="6396956366662970339">Menentukan apakah model pengisian daya adaptif akan diizinkan untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai.
 
@@ -8886,7 +8846,6 @@ baca lisan akan diaktifkan.</translation>
 <translation id="7469554574977894907">Aktifkan saran penelusuran</translation>
 <translation id="7472547030234093862">Menentukan domain yang akan di-resolve menggunakan DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Mengembalikan cookie di situs ini ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
-<translation id="747517124419659622">Mengizinkan penelusuran histori yang didukung AI tanpa meningkatkan kualitas model AI</translation>
 <translation id="7476030153540156377">Memilih apakah fitur Perlindungan IP <ph name="PRIVACY_SANDBOX_NAME" /> harus diaktifkan.</translation>
 <translation id="7476158778585368567">Melaporkan tugas pencetakan perangkat.
 
@@ -9810,17 +9769,6 @@ Kebijakan ini diterapkan dalam mode Samaran. Artinya, mode Samaran harus diaktif
 <translation id="822055204938220476">Daftar URL yang diizinkan tetap berada dalam mode layar penuh tanpa menampilkan notifikasi</translation>
 <translation id="8225579382697740712">Mengontrol penggunaan WebHID API</translation>
 <translation id="8229912067600517877">Aktifkan Developer Tools</translation>
-<translation id="8234565689501421293">Buat Tema dengan AI memungkinkan pengguna membuat tema/wallpaper kustom dengan memilih berbagai pilihan dari daftar opsi.
-
-Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan dapat mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini dapat ditinjau oleh manusia dengan tujuan meningkatkan kualitas model AI.
-
-Nilai 0 adalah nilai default, kecuali jika dinyatakan di bawah.
-
-Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-Nilai 2 = Menonaktifkan fitur. Nilai 2 adalah nilai default untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>
 <translation id="8239109177194627162">Nonaktifkan Isi Otomatis untuk kartu kredit</translation>
 <translation id="8239143983379015783">Memaksa pengaktifan kuota persisten</translation>
@@ -11190,17 +11138,6 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="942977875497446094">Luncurkan browser secara otomatis saat memulai</translation>
 <translation id="943865157632139008">Memungkinkan Anda mengonfigurasi perender HTML default jika <ph name="PRODUCT_FRAME_NAME" /> diinstal. Setelan defaultnya adalah mengizinkan browser host melakukan rendering, tetapi Anda dapat mengganti ini secara opsional dan memerintahkan <ph name="PRODUCT_FRAME_NAME" /> me-render halaman HTML secara default.</translation>
 <translation id="944817693306670849">Setel ukuran cache disk</translation>
-<translation id="946458935955389273">Pengelola Tab adalah alat berbasis AI yang otomatis membuat grup tab berdasarkan tab terbuka milik pengguna. Saran didasarkan pada tab terbuka (bukan konten halaman).
-
-Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan dapat mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini dapat ditinjau oleh manusia dengan tujuan meningkatkan kualitas model AI.
-
-Nilai 0 adalah nilai default, kecuali jika dinyatakan di bawah.
-
-Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-Nilai 2 = Menonaktifkan fitur. Nilai 2 adalah nilai default untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="949192525372487705">Blokir peralihan ke pengelola sandi pihak ketiga</translation>
 <translation id="957322141096206402">Resolusi DNS sistem dapat berjalan di dalam atau di luar proses jaringan, bergantung pada konfigurasi sistem dan tombol fitur.</translation>
 <translation id="957778406002650056">URL tempat gambar <ph name="PLUGIN_VM_NAME" /> dapat didownload.</translation>

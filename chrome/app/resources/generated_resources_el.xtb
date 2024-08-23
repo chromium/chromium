@@ -1628,7 +1628,6 @@
 <translation id="2137128126782078222">Να μην επιτρέπονται οι ειδοποιήσεις από <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Κουμπί ρύθμισης</translation>
 <translation id="2140788884185208305">Κατάσταση μπαταρίας</translation>
-<translation id="2140902257485550046">Επιλέξτε τον αποκλεισμό όλων των επεκτάσεων σε αυτόν τον ιστότοπο</translation>
 <translation id="2142328300403846845">Άνοιγμα συνδέσμου ως</translation>
 <translation id="2142484069755256151">Δημιουργήστε ένα εξαψήφιο PIN ανάκτησης για τη Διαχείριση κωδικών πρόσβασης Google. Ψηφίο <ph name="NUM_DIGIT" /> από 6 του PIN</translation>
 <translation id="2142582065325732898">Ενεργοποιήστε τον <ph name="LINK1_BEGIN" />Συγχρονισμό Chrome<ph name="LINK1_END" /> για να δείτε τις πρόσφατες καρτέλες του Chrome. <ph name="LINK2_BEGIN" />Μάθετε περισσότερα<ph name="LINK2_END" /></translation>
@@ -1773,7 +1772,7 @@
 <translation id="2244790431750694258"><ph name="APP_NAME" /> – <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Χρησιμοποιήστε τα πλήκτρα βέλους για να περιηγηθείτε στα στοιχεία κατά γράμμα</translation>
 <translation id="2246129643805925002">Η συσκευή σας <ph name="DEVICE_TYPE" /> ενημερώνεται αυτόματα στο παρασκήνιο για να σας προσφέρει τις πιο πρόσφατες λειτουργίες και βελτιώσεις ασφάλειας. Μπορείτε να ελέγξετε τις προτιμήσεις ενημερώσεων στις Ρυθμίσεις.</translation>
-<translation id="2246549592927364792">Να λαμβάνονται περιγραφές εικόνων από το Google;</translation>
+<translation id="2246549592927364792">Να λαμβάνονται περιγραφές εικόνων από την Google;</translation>
 <translation id="2247738527273549923">Η διαχείριση της συσκευής σας γίνεται από τον οργανισμό σας</translation>
 <translation id="2247870315273396641">Προεπισκόπηση φωνής</translation>
 <translation id="224835741840550119">Καθαρισμός της συσκευής σας</translation>
@@ -2310,7 +2309,6 @@
 <translation id="2610374175948698697">Μπορεί να βλέπει αρχεία ή φακέλους στη συσκευή σας</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Συνδεθείτε στον λογαριασμό σας Microsoft και δοκιμάστε ξανά</translation>
-<translation id="2611765907167846862">Γαλήνια</translation>
 <translation id="2611776654555141051">Εργαλείο ορθογώνιου παραλληλόγραμμου</translation>
 <translation id="2612676031748830579">Αριθμός κάρτας</translation>
 <translation id="261305050785128654">Επιτρέψτε στους ιστοτόπους να γνωρίζουν τις γλώσσες που μιλάτε. Όταν είναι δυνατό, θα εμφανίζουν περιεχόμενο σε αυτές τις γλώσσες.</translation>
@@ -6006,6 +6004,7 @@
 <translation id="5301954838959518834">OK, το κατάλαβα</translation>
 <translation id="5302032366299160685">Περιμένετε να ανοίξει το αρχείο προτού δοκιμάσετε ξανά</translation>
 <translation id="5302048478445481009">Γλώσσα</translation>
+<translation id="5302435492906794790">Αναζήτηση για ανιχνεύσιμες συσκευές σε κοντινή απόσταση…</translation>
 <translation id="5302932258331363306">Εμφάνιση αντικαταστάσεων</translation>
 <translation id="5305145881844743843">Η διαχείριση αυτού του λογαριασμού πραγματοποιείται από τον τομέα <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Η πηγή δεν υποστηρίζεται</translation>
@@ -6613,7 +6612,7 @@
 <translation id="5758631781033351321">Εδώ θα βρείτε τη λίστα ανάγνωσής σας</translation>
 <translation id="5759397201362801675">Επιλέξτε μια διάθεση</translation>
 <translation id="5759728514498647443">Είναι δυνατή η ανάγνωση των εγγράφων που στέλνετε για εκτύπωση μέσω <ph name="APP_NAME" /> με την εφαρμογή <ph name="APP_NAME" />.</translation>
-<translation id="5760318332127300368">Επίσης, διαγράψτε δεδομένα περιήγησης (<ph name="URL" />) τα οποία ενδέχεται να σας αποσυνδέσουν από το Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="5760318332127300368">Επίσης, διαγράψτε δεδομένα περιήγησης (<ph name="URL" />) τα οποία ενδέχεται να σας αποσυνδέσουν από την Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">Εισαγωγή στοιχείων Λογαριασμού Google</translation>
 <translation id="5763751966069581670">Δεν βρέθηκαν συσκευές USB</translation>
 <translation id="5764483294734785780">Αποθή&amp;κευση ήχου ως...</translation>
@@ -6981,7 +6980,6 @@
 <translation id="6022526133015258832">Άνοιγμα πλήρους οθόνης</translation>
 <translation id="6022659036123304283">Προσαρμόστε το Chrome για εσάς</translation>
 <translation id="6023643151125006053">Αυτή η συσκευή (σειριακός αριθμός: <ph name="SERIAL_NUMBER" />) κλειδώθηκε από τον διαχειριστή του τομέα <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Να επιτρέπονται οι επεκτάσεις σε αυτόν τον ιστότοπο</translation>
 <translation id="6024317249717725918">&amp;Αναζήτηση καρέ βίντεο με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Ανίχνευση στοίβας</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Συνδέθηκε συσκευή USB</translation>
@@ -8717,6 +8715,7 @@
 <translation id="7321545336522791733">Μη προσβάσιμος διακομιστής</translation>
 <translation id="7322515217754205362">Άδειες ιστοτόπου</translation>
 <translation id="7323315405936922211">Μέγεθος περιοχής δείκτη</translation>
+<translation id="7324020307732396723">Άνοιγμα ρυθμίσεων γλώσσας</translation>
 <translation id="7324297612904500502">Φόρουμ για την έκδοση beta</translation>
 <translation id="7325209047678309347">Το χαρτί έχει κολλήσει</translation>
 <translation id="7325953439504232954">Εναλλαγή προφίλ;</translation>
@@ -9237,7 +9236,6 @@
 <translation id="7685087414635069102">Απαιτείται PIN</translation>
 <translation id="7685351732518564314">Πατήστε ένα κουμπί στη συσκευή <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Περισσότερα σχετικά με τις διαφημίσεις που προτείνονται από ιστοτόπους</translation>
-<translation id="7686581688229391955">Επιλέξτε να επιτρέπονται οι επεκτάσεις σε αυτόν τον ιστότοπο</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Επιλογή από τη λίστα</translation>
 <translation id="7690853182226561458">Προσθήκη &amp;φακέλου...</translation>
@@ -9833,6 +9831,7 @@
 <translation id="8097959162767603171">Ο διαχειριστής σας θα πρέπει πρώτα να αποδεχτεί τους Όρους Παροχής Υπηρεσιών στη λίστα συσκευών Chrome της Κονσόλας διαχειριστή.</translation>
 <translation id="8098156986344908134">Θέλετε να εγκαταστήσετε το <ph name="DEVICE_OS" /> και να διαγράψετε τον σκληρό δίσκο;</translation>
 <translation id="8098616321286360457">Απαιτείται σύνδεση δικτύου</translation>
+<translation id="8100057926383586173">Άνοιγμα ρυθμίσεων γλώσσας</translation>
 <translation id="8100230553590752325">Χρήση αποθηκευμένων κωδικών πρόσβασης σε οποιαδήποτε συσκευή</translation>
 <translation id="810068641062493918">Η γλώσσα <ph name="LANGUAGE" /> είναι επιλεγμένη. Πατήστε το πλήκτρο αναζήτησης και το πλήκτρο διαστήματος για να την αποεπιλέξετε.</translation>
 <translation id="8101409298456377967">Δημιουργήστε, αποθηκεύστε και διαχειριστείτε τους κωδικούς πρόσβασής σας, ώστε να μπορείτε να συνδεθείτε εύκολα σε ιστοτόπους και εφαρμογές. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>

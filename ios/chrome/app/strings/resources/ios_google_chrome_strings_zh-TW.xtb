@@ -76,6 +76,9 @@
 <translation id="2703746758996815929">如要取得 Chrome 的實用提示，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="2736805085127235148">目前未在裝置設定中開啟 Chrome 通知。</translation>
 <translation id="2750626042242931740">你隨時可以在 Chrome 設定中更新所選項目。</translation>
+<translation id="2754428955276778271">部分 Chrome 資料尚未儲存到 Google 帳戶，
+
+請稍待幾分鐘後再嘗試登出。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="2767464022270041271">尚未儲存任何密碼。你必須先儲存密碼，才能使用 Google 密碼管理工具的檢查功能。</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何保護你的資料隱私<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@
 <translation id="5190139289262548459">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。</translation>
 <translation id="5256908199795498284">當你造訪網站時，Chrome 會在網站上偵測是否有包裹追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將你的資料分享給 Google，以改善所有使用者的購物體驗。</translation>
 <translation id="5278862365980079760">離開 Chrome 或切換到其他應用程式時，鎖定無痕分頁。</translation>
+<translation id="5310957470610282541">部分 Chrome 資料尚未儲存到 Google 帳戶，
+請稍待幾分鐘後再嘗試登出。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="5389212809648216794">另一個應用程式正在使用你的相機，因此 Google Chrome 無法使用</translation>
 <translation id="5395376160638294582">確保你隨時可以使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="5439191312780166229">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chrome 的警告。</translation>

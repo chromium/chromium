@@ -687,6 +687,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3455468639467374593">Templat, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 peranti disambung kepada tempat liputan <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Tetapkan semula paras zum</translation>
+<translation id="3463151196028058330">Edit semula wajah</translation>
 <translation id="3465223694362104965">Papan kekunci lain telah disambungkan ke peranti ini sejak kali terakhir anda log masuk. Pastikan anda mempercayai papan kekunci ini sebelum anda menggunakannya.</translation>
 <translation id="3465356146291925647">Diurus oleh Pentadbir anda</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> kemudian <ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@ Anda juga boleh menggunakan pintasan papan kekunci. Mula-mula, serlahkan teks, k
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
 <translation id="5176318573511391780">Rakam skrin separa</translation>
 <translation id="5187627942836026988">Tunjukkan butiran tempat liputan. Tempat liputan disekat oleh pentadbir anda.</translation>
+<translation id="518847040357731612">Keutamaan Rupa Studio</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> acara</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> digabungkan dengan <ph name="IN_PLACE_APP" /> untuk membuat folder baharu.</translation>

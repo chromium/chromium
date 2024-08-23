@@ -546,7 +546,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1975457531113383421">Ulazna ladica</translation>
 <translation id="1975584088563498795">Poštansko sanduče 10</translation>
-<translation id="1976610264358655503">Često posjećujete</translation>
 <translation id="1978555033938440688">Verzija firmvera</translation>
 <translation id="1979156660928743046">Informacije o medijima</translation>
 <translation id="1988881251331415125">Ako nema greške u pravopisu, <ph name="BEGIN_LINK" />pokušajte pokrenuti Dijagnostiku povezivosti<ph name="END_LINK" />.</translation>
@@ -2821,6 +2820,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6240964651812394252">Da koristite Google upravitelj lozinki sa svojim operativnim sistemom, ponovo pokrenite Chrome i dozvolite pristup upravitelju lozinki računara. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
 <translation id="6241121617266208201">Sakrij prijedloge</translation>
 <translation id="624499991300733384">Usluga slaganja za štampu</translation>
+<translation id="6246316216123107851">Prije <ph name="NUM_DAYS" /> dana</translation>
 <translation id="6246868321321344665">Vaša organizacija može vidjeti podatke o pregledanju, kao što su lozinke te historija i na radnom i na ličnom profilu</translation>
 <translation id="6250932670816326647">Proizvodi za kupanje i tijelo</translation>
 <translation id="6251906504834538140">{0,plural, =1{Blokirano je premještanje fajla}one{Blokirano je premještanje <ph name="FILE_COUNT" /> fajla}few{Blokirano je premještanje <ph name="FILE_COUNT" /> fajla}other{Blokirano je premještanje <ph name="FILE_COUNT" /> fajlova}}</translation>
@@ -3093,7 +3093,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulacijske igre</translation>
-<translation id="6735783933931458444">Često posjećujete u ovo doba dana</translation>
 <translation id="6737708609449480586">Pekarski proizvodi</translation>
 <translation id="6738516213925468394">Vaši podaci su šifrirani vašim <ph name="BEGIN_LINK" />izrazom za pristup sinhroniziranju<ph name="END_LINK" /> u <ph name="TIME" />. Unesite ga da započnete sinhronizaciju.</translation>
 <translation id="6739943577740687354">Ova funkcija koristi AI i neće uvijek pogoditi.</translation>
@@ -3410,6 +3409,7 @@ Dodatni detalji:
 <translation id="7346081071264046066">"odgovori potvrdno na ovaj poziv na vjenčanje i izrazi uzbuđenje"</translation>
 <translation id="7352651011704765696">Nešto nije uredu</translation>
 <translation id="7353601530677266744">Komandna linija</translation>
+<translation id="7356678400607112844">Posljednja posjeta</translation>
 <translation id="7359588939039777303">Oglasi su blokirani.</translation>
 <translation id="7360451453306104998">Kada Google pronađe dostupne popuste, prikazat će ih kada nastavite na plaćanje</translation>
 <translation id="7363096869660964304">Međutim, niste nevidljivi. Ako koristite anonimni način rada, time ne skrivate pregledani sadržaj od svog poslodavca, pružaoca internet usluga ili web lokacija koje posjetite.</translation>

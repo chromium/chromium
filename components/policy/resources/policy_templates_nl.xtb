@@ -242,7 +242,6 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
 <translation id="1165923723751466821">Toestaan dat gebruikers als gast of met een profiel inloggen bij de browser</translation>
 <translation id="117059611145966538">Externe afdrukservers</translation>
 <translation id="117080706484659953">Detectie van beleidsbereik toestaan op <ph name="MAC_OS_NAME" /></translation>
-<translation id="1171065405328282754">AI-gestuurd zoeken in geschiedenis toestaan en AI-modellen verbeteren</translation>
 <translation id="1171106901454883937">Rapportage voor versie-informatie van apparaat aanzetten</translation>
 <translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> aanzetten op alle webpagina's</translation>
 <translation id="1177567780207290133">Als je dit beleid instelt, wordt de toepassing van het SafeSites URL-filter beheerd. Dit filter gebruikt de Google Safe Search API om URL's al dan niet te classificeren als pornografisch.
@@ -1704,7 +1703,6 @@ Als je dit beleid niet instelt of niet toepast, is bestandsoverdracht niet toege
 <translation id="224750967938323855">Geen synchronisatietoestemming weergeven tijdens het inloggen</translation>
 <translation id="2252400912879027343">WebSQL in niet-beveiligde contexten blijft beschikbaar tot M109 en is niet meer beschikbaar vanaf M110.</translation>
 <translation id="225340736558643885">Waarschuwingen voor onveilige formulieren aanzetten</translation>
-<translation id="225347142757323162">De functies aanzetten, maar geen gegevens versturen om AI-modellen te trainen</translation>
 <translation id="2258126710006312594">Toestaan dat gebruikers met externe toegang bestanden overzetten van/naar de host</translation>
 <translation id="225830954785359083">Voorkomen dat pagina's pop-ups tonen tijdens het unloaden</translation>
 <translation id="2261648512244797294">Verouderde Privet-afdrukken uitzetten</translation>
@@ -1971,7 +1969,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2439733504887695659">Afwijzen van meldingen over gehackte wachtwoorden aanzetten voor de opgegeven inloggegevens</translation>
 <translation id="2446244536806499267">Gebruiker niet als inactief beschouwen tijdens afspelen van audio</translation>
 <translation id="2452225615952836461">Verzoekmethoden altijd in hoofdletters schrijven</translation>
-<translation id="2453660971158808971">AI-gestuurd zoeken in geschiedenis niet toestaan</translation>
 <translation id="2454228136871844693">Optimaliseren voor stabiliteit.</translation>
 <translation id="2455033019778127130">Gebruik het standaard browsergedrag. De servicevoorwaarden worden getoond en er wordt gewacht tot de gebruiker ze accepteert.</translation>
 <translation id="2460127623195247744">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
@@ -3169,17 +3166,6 @@ Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-
 <translation id="3423703250826790403">Android-apps</translation>
 <translation id="3426434797050451264">Dit beleid kan ook worden gebruikt om Android-apps op te geven als standaard bestandshandlers.</translation>
 <translation id="3428247105888806363">Netwerkvoorspelling aanzetten</translation>
-<translation id="3430198032663063246">Help me met schrijven is een op AI gebaseerde schrijfassistent voor korte content op het web. Voorgestelde content is gebaseerd op prompts die de gebruiker heeft ingevoerd en de content van de webpagina.
-
-0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren.
-
-0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = De functie uitzetten. 2 is de standaardwaarde voor Education-accounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="3432863169147125747">Beheert afdrukinstellingen.</translation>
 <translation id="3434053014926283175">Stel de rechtermuisknop in als de primaire muisknop op het inlogscherm.
 
@@ -3523,7 +3509,6 @@ Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als d
           </translation>
 <translation id="3677660004554019617">VC-achtergrond met generatieve AI niet toestaan</translation>
 <translation id="3678069907945250643">Toestaan dat Google Foto's toegang krijgt vanuit de personalisatie-app</translation>
-<translation id="3680529017993214255">De functies aanzetten en gegevens versturen om AI-modellen te trainen</translation>
 <translation id="3685979383016152590">Als je dit beleid instelt, kun je aangeven welk toegangsbeleid wordt toegepast op bulksgewijze printerconfiguratie en beheren welke printers van <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> beschikbaar zijn voor gebruikers.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (waarde 0) gebruikt <ph name="PRINTERS_BULK_BLOCKLIST" /> om de toegang tot de opgegeven printers te beperken,
@@ -3890,19 +3875,6 @@ Opmerking: Als de instelling resulteert in geen verificatiemethoden die wederzij
 <translation id="3989829840000169163">Verouderde extensiepunten van browser blokkeren</translation>
 <translation id="3990391739475801018">De batterijbesparingsmodus wordt uitgezet.</translation>
 <translation id="3990834929384096140">Opheffing van systeemaudio-echo niet afdwingen</translation>
-<translation id="3992185577030665825">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
-
-0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren.
-
-0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = De functie uitzetten. 2 is de standaardwaarde voor Education-accounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-De functies van DevTools van generatieve AI zijn onder andere:
-
-- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.</translation>
 <translation id="3994043824457743421">De aankondiging in de middelste ruimte op de pagina Nieuw tabblad tonen</translation>
 <translation id="399433537808390819">Samengestelde desktopmodus niet beschikbaar maken voor de gebruiker</translation>
 <translation id="3995880046827722248">Manifest v2 staat uit</translation>
@@ -4868,7 +4840,6 @@ Als je <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_ENABLED" /> toepast of niet inst
 Als je dit beleid niet instelt, worden alle services aangezet.
 
 Anders worden alleen geselecteerde services aangezet.</translation>
-<translation id="4757563299858487173">De functies uitzetten</translation>
 <translation id="4758335997982239449">Zet de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan.</translation>
 <translation id="4767059955897420757">Als je het beleid toepast of niet instelt, kan de promotie voor de extensie voor inloggegevensproviders aan de gebruiker worden getoond.
 Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggegevensproviders niet getoond aan de gebruiker.</translation>
@@ -7026,17 +6997,6 @@ Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standa
       Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld), anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
 <translation id="6383774771168138899">Hiermee stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces in voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Weergave van resultatenpagina's van standaard zoekmachine in een zijvenster van de browser aanzetten.</translation>
-<translation id="6385379259912525880">AI-gestuurd zoeken in geschiedenis is een functie waarmee gebruikers in hun browsegeschiedenis kunnen zoeken op basis van paginacontent, niet alleen op basis van de paginatitel en -URL.
-
-0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren.
-
-1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren.
-
-2 = De functie uitzetten.
-
-Als je het beleid niet instelt, is 0 het standaardgedrag voor gewone consumenten en 2 voor beheerde gebruikers op <ph name="PRODUCT_OS_NAME" />.
-
-Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6394350458541421998">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_OS_NAME" /> versie 29. Gebruik het beleid PresentationScreenDimDelayScale.</translation>
 <translation id="6396956366662970339">Geeft aan of een model voor aangepast opladen het oplaadproces mag onderbreken om de batterijduur te verlengen.
 
@@ -8475,7 +8435,6 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="7469554574977894907">Zoeksuggesties aanzetten</translation>
 <translation id="7472547030234093862">Vermeld domeinen die moeten worden omgezet via DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" /> voor cookies op deze sites terugzetten</translation>
-<translation id="747517124419659622">AI-gestuurd zoeken in geschiedenis toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="7476030153540156377">Kies of de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet.</translation>
 <translation id="7476158778585368567">De afdruktaken van een apparaat rapporteren.
 
@@ -9378,17 +9337,6 @@ Dit beleid wordt toegepast op de incognitomodus. Dit betekent dat de incognitomo
 <translation id="822055204938220476">Lijst met URL's die in de modus voor volledig scherm mogen blijven zonder een melding te tonen</translation>
 <translation id="8225579382697740712">Het gebruik van de WebHID API beheren</translation>
 <translation id="8229912067600517877">Developer Tools aanzetten</translation>
-<translation id="8234565689501421293">Met de functie Thema's maken met AI kunnen gebruikers aangepaste thema's of achtergronden maken door ze vooraf te selecteren in een lijst met opties.
-
-0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren.
-
-0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = De functie uitzetten. 2 is de standaardwaarde voor Education-accounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
 <translation id="8239109177194627162">Automatisch invullen uitzetten voor creditcards</translation>
 <translation id="8239143983379015783">Afdwingen dat permanent quotum wordt aangezet</translation>
@@ -10702,17 +10650,6 @@ De standaardinstelling is RollbackDisabled.</translation>
 <translation id="943865157632139008">Hiermee kun je het standaard HTML-weergaveprogramma configureren wanneer <ph name="PRODUCT_FRAME_NAME" /> is geïnstalleerd.
       De standaardinstelling is om de hostbrowser de weergave te laten regelen, maar je kunt dit aanpassen en <ph name="PRODUCT_FRAME_NAME" /> HTML-pagina's standaard tonen.</translation>
 <translation id="944817693306670849">Grootte voor schijfcache instellen</translation>
-<translation id="946458935955389273">Tabbladorganisator is een op AI gebaseerde tool die automatisch tabbladgroepen maakt op basis van de geopende tabbladen van een gebruiker. Suggesties zijn gebaseerd op geopende tabbladen (maar niet op paginacontent).
-
-0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren.
-
-0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = De functie uitzetten. 2 is de standaardwaarde voor Education-accounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="949192525372487705">Wisselen naar een wachtwoordmanager van derden blokkeren</translation>
 <translation id="957322141096206402">De DNS-omzetting van het systeem kan binnen of buiten het netwerkproces worden uitgevoerd, afhankelijk van de systeemconfiguratie en functievlaggen.</translation>
 <translation id="957778406002650056">De URL waar de <ph name="PLUGIN_VM_NAME" />-afbeelding kan worden gedownload.</translation>

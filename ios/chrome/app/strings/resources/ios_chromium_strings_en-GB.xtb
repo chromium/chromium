@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">This means that Chromium will request the desktop site every time.</translation>
 <translation id="2313870531055795960">Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="231828342043114302">To receive personalised content based on your interests, sign in to Chromium.</translation>
+<translation id="2326738825692478496">Some of your Chromium data hasn't been saved in your Google Account yet.
+
+Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="2374627437126809292">Chromium uses Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="2386292341327187942">In the Search widgets box, enter 'Chromium'</translation>
 <translation id="2426113998523353159">Your organisation requires you to sign in to use Chromium.</translation>
@@ -292,6 +295,8 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 
 Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to use and save Chromium data in your Google Account.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
+<translation id="9031260906956926157">Some of your Chromium data hasn't been saved in your Google Account yet.
+Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="9050790730841755540">Use Chrome anytime that you tap links in other apps.</translation>
 <translation id="9057082013386654559">Use Chromium for iPad by default</translation>
 <translation id="9059693977935746710">You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL" /></translation>

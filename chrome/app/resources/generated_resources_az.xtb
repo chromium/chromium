@@ -1614,7 +1614,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2137128126782078222"><ph name="WEBSITE" /> saytından bildirişlərə icazə verməyin</translation>
 <translation id="2139919072249842737">Ayarlayın düyməsi</translation>
 <translation id="2140788884185208305">Enerji Statusu</translation>
-<translation id="2140902257485550046">Bu saytda bütün artırmaları bloklamaq üçün seçin</translation>
 <translation id="2142328300403846845">Linki bu formada açın:</translation>
 <translation id="2142484069755256151">Google Parol Meneceri üçün 6 rəqəmli bərpa PIN-i yaradın, PIN rəqəmi <ph name="NUM_DIGIT" />/6</translation>
 <translation id="2142582065325732898">Son Chrome tablarına baxmaq üçün <ph name="LINK1_BEGIN" />Chrome Sinx<ph name="LINK1_END" /> funksiyasını aktiv edin. <ph name="LINK2_BEGIN" />Ətraflı Məlumat<ph name="LINK2_END" /></translation>
@@ -2296,7 +2295,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2610374175948698697">Cihazda fayl və ya qovluqlara baxa bilər</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Microsoft hesabına daxil olub, yenidən cəhd edin</translation>
-<translation id="2611765907167846862">Aydın</translation>
 <translation id="2611776654555141051">Düzbucaqlı Aləti</translation>
 <translation id="2612676031748830579">Kart nömrəsi</translation>
 <translation id="261305050785128654">Veb-saytlara danışdığınız dilləri bilmək imkanı verin. Onlar mümkün olduqda həmin dillərdə kontent göstərəcək.</translation>
@@ -5990,6 +5988,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5301954838959518834">Ok, anladım</translation>
 <translation id="5302032366299160685">Yenidən cəhd etməzdən əvvəl faylın açılmasını gözləyin</translation>
 <translation id="5302048478445481009">Dil</translation>
+<translation id="5302435492906794790">Yaxınlıqdakı kəşf edilə bilən cihazlar axtarılır...</translation>
 <translation id="5302932258331363306">Əvəzetmələri Göstərin</translation>
 <translation id="5305145881844743843">Bu hesab <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> tərəfindən idarə olunur</translation>
 <translation id="5307030433605830021">Mənbə dəstəklənmir</translation>
@@ -6962,7 +6961,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6022526133015258832">Tam ekran açın</translation>
 <translation id="6022659036123304283">Chrome'u özünüzküləşdirin</translation>
 <translation id="6023643151125006053">Bu cihaz (SN <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> administratoru tərəfindən kilidlənib.</translation>
-<translation id="6024072172641380781">Bu saytda artırmalara icazə verin</translation>
 <translation id="6024317249717725918">&amp;Videoçərçivəni <ph name="VISUAL_SEARCH_PROVIDER" /> ilə axtarın</translation>
 <translation id="6025215716629925253">İz Toplusu</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB cihaz qoşuldu</translation>
@@ -8697,6 +8695,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7321545336522791733">Server əlçatmazdır</translation>
 <translation id="7322515217754205362">Sayt icazələri</translation>
 <translation id="7323315405936922211">Kursor sahəsinin ölçüsü</translation>
+<translation id="7324020307732396723">Dil ayarlarını açın</translation>
 <translation id="7324297612904500502">Beta Forumu</translation>
 <translation id="7325209047678309347">Kağız ilişib</translation>
 <translation id="7325953439504232954">Profil dəyişilsin?</translation>
@@ -9217,7 +9216,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7685087414635069102">PIN tələb olunur</translation>
 <translation id="7685351732518564314"><ph name="DEVICE_NAME" /> cihazında düyməyə basın.</translation>
 <translation id="7686086654630106285">Saytın təklif etdiyi reklamlar haqqında ətraflı</translation>
-<translation id="7686581688229391955">Bu saytda bütün artırmalara icazə vermək üçün seçin</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Siyahıdan seçin</translation>
 <translation id="7690853182226561458">Qovluq əlavə edin...</translation>
@@ -9812,6 +9810,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8097959162767603171">Administratorunuz əvvəlcə Admin konsolu Chrome cihaz siyahısında xidmət şərtlərini qəbul etməlidir.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> quraşdırılsın və sərt disk silinsin?</translation>
 <translation id="8098616321286360457">Şəbəkə bağlantısı tələb olunur</translation>
+<translation id="8100057926383586173">Dil ayarlarını açın</translation>
 <translation id="8100230553590752325">İstənilən cihazda saxlanmış parolları istifadə edin</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seçilib. Seçimi ləğv etmək üçün Axtarış və Boşluq seçiminə basın.</translation>
 <translation id="8101409298456377967">Saytlara və tətbiqlərə asanlıqla daxil olmaq üçün parollarınızı yaradın, saxlayın və idarə edin/ <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>

@@ -687,6 +687,7 @@
 <translation id="3455468639467374593">Πρότυπο, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 συσκευή συνδέθηκε στο σημείο πρόσβασης Wi-Fi της συσκευής <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Επαναφορά επιπέδου εστίασης</translation>
+<translation id="3463151196028058330">Ρετουσάρισμα προσώπου</translation>
 <translation id="3465223694362104965">Ένα άλλο πληκτρολόγιο έχει συνδεθεί με αυτήν τη συσκευή από την τελευταία σύνδεσή σας. Βεβαιωθείτε ότι εμπιστεύεστε αυτό το πληκτρολόγιο πριν το χρησιμοποιήσετε.</translation>
 <translation id="3465356146291925647">Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> και έπειτα <ph name="KEY_TWO" /> ή <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5176318573511391780">Εγγραφή μέρους της οθόνης</translation>
 <translation id="5187627942836026988">Εμφάνιση λεπτομερειών σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi έχει αποκλειστεί από τον διαχειριστή σας.</translation>
+<translation id="518847040357731612">Προτίμηση επαγγελματικής ποιότητας</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> συμβάντα</translation>
 <translation id="5198715732953550718">Η εφαρμογή <ph name="MOVED_APP_NAME" /> συνδυάστηκε με την εφαρμογή <ph name="IN_PLACE_APP" /> για τη δημιουργία νέου φακέλου.</translation>

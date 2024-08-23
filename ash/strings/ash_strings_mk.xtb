@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">лупа за цел екран</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Да се вклучи „Диктирање“?</translation>
+<translation id="3392702002175498061">Прикажи ги сите содржини во историјата на прелистувањето</translation>
 <translation id="3394432020929931914">, проширено</translation>
 <translation id="3401474642070997151">За да ги приспособите предлозите, кликнете со десното копче или притиснете и задржете некој предлог.</translation>
 <translation id="3405101454990027959">Вклучете пристап до микрофонот</translation>
@@ -813,6 +814,7 @@
 <translation id="385300504083504382">Почеток</translation>
 <translation id="3859364108019690">Не може да се стримуваат апликации</translation>
 <translation id="3861651314799684201">Притиснете Enter за да го снимите целиот екран</translation>
+<translation id="3870197372373144624">Обидете се со исклучување на уредот.</translation>
 <translation id="3886872229787704059">Отворено денес</translation>
 <translation id="3891340733213178823">Притиснете Ctrl+Shift+Q двапати за да се одјавите.</translation>
 <translation id="3893630138897523026">ChromeVox (говорни повратни информации)</translation>
@@ -928,6 +930,7 @@
 <translation id="4264977415328155183">, собрано</translation>
 <translation id="4265259722091164182">Формат како наслов</translation>
 <translation id="4269883910223712419">Администраторот на уредов има способност да:</translation>
+<translation id="4271841440229266861">Прикажи ги сите содржини во „Датотеки“</translation>
 <translation id="4274537685965975248">Кратенката од тастатура Ctrl + Alt + Стрелка надолу се промени. За да го користите копчето End, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка надесно.</translation>
 <translation id="4275283744500212192">Отвори ги опциите за распоред на прозорецот</translation>
 <translation id="4275663329226226506">Аудиовизуелни содржини</translation>
@@ -955,6 +958,7 @@
 <translation id="4327147325944669226">Снимање игра</translation>
 <translation id="4333628967105022692">Lacros не е поддржан кога се најавени повеќе корисници.</translation>
 <translation id="4338109981321384717">Лупа</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, звукот е исклучен</translation>
 <translation id="4351244548802238354">Затвори дијалог</translation>
 <translation id="4356872429719185452">Прикажи детали за точката на пристап. Точката на пристап се вклучува.</translation>
 <translation id="4364101114148522660">Се снима: <ph name="DURATION" /></translation>
@@ -1300,6 +1304,7 @@
 <translation id="5503884284981862082">Отворете/затворете го „Помошникот на Google“</translation>
 <translation id="550391772491508736">Продолжи со емитување</translation>
 <translation id="5506975627792768506">Вклучете/исклучете ја лупата</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, звукот на аудиото ќе се исклучи со притискање Enter.</translation>
 <translation id="5512042095225963688">Го брише претходниот збор</translation>
 <translation id="5519005148254860683">Прошири го Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2110,6 +2115,7 @@
 <translation id="8239034820133090126">Активирајте работна површина оддесно</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
+<translation id="825129991941217170">Прикажи ги сите содржини во Google Drive</translation>
 <translation id="8257510091797044096">Поставете го уредот</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262312463845990408">Вклучете/исклучете ја репродукцијата</translation>
@@ -2340,6 +2346,7 @@
 <translation id="9098969848082897657">Исклучи го звукот на телефонот</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Го враќа последното дејство</translation>
+<translation id="9126642911267312373">Bluetooth е недостапен</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{За 1 мин.}one{За # мин.}other{За # мин.}}</translation>
 <translation id="9129245940793250979">Странично копче</translation>
 <translation id="9133335900048457298">Не може да се снимаат заштитени содржини</translation>

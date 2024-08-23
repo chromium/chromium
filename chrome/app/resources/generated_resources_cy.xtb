@@ -1631,7 +1631,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2137128126782078222">Peidio â chaniatáu hysbysiadau gan <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Botwm Gosod</translation>
 <translation id="2140788884185208305">Iechyd y Batri</translation>
-<translation id="2140902257485550046">Dewiswch i rwystro holl estyniadau ar y wefan hon</translation>
 <translation id="2142328300403846845">Agor Dolen fel</translation>
 <translation id="2142484069755256151">Creu PIN adfer 6 digid ar gyfer Rheolwr Cyfrineiriau Google, digid PIN <ph name="NUM_DIGIT" /> o 6</translation>
 <translation id="2142582065325732898">Trowch <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> ymlaen i weld tabiau Chrome diweddar. <ph name="LINK2_BEGIN" />Dysgu rhagor<ph name="LINK2_END" /></translation>
@@ -2313,7 +2312,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2610374175948698697">Yn gallu gweld ffeiliau neu ffolderi ar eich dyfais</translation>
 <translation id="2610780100389066815">Llofnodi Rhestr Ymddiried Microsoft</translation>
 <translation id="261114180663074524">Mewngofnodwch i'ch cyfrif Microsoft ac yna rhowch gynnig arall arni</translation>
-<translation id="2611765907167846862">Llonydd</translation>
 <translation id="2611776654555141051">Offeryn Petryal</translation>
 <translation id="2612676031748830579">Rhif y cerdyn</translation>
 <translation id="261305050785128654">Rhowch wybod i wefannau am yr ieithoedd rydych yn eu siarad. Byddant yn dangos cynnwys yn yr ieithoedd hynny, pan fo modd.</translation>
@@ -6008,6 +6006,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5301954838959518834">Iawn</translation>
 <translation id="5302032366299160685">Arhoswch i'r ffeil agor cyn rhoi cynnig arall arni</translation>
 <translation id="5302048478445481009">Iaith</translation>
+<translation id="5302435492906794790">Wrthi'n chwilio am ddyfeisiadau y gellir eu darganfod gerllaw...</translation>
 <translation id="5302932258331363306">Dangos Amnewidiadau</translation>
 <translation id="5305145881844743843">Rheolir y cyfrif hwn gan <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Ni chefnogir y ffynhonnell</translation>
@@ -6982,7 +6981,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6022526133015258832">Agor Sgrîn Lawn</translation>
 <translation id="6022659036123304283">Personoleiddio Chrome</translation>
 <translation id="6023643151125006053">Cafodd y ddyfais hon (SN: <ph name="SERIAL_NUMBER" />) ei chloi gan y gweinyddwr <ph name="SAML_DOMAIN" /></translation>
-<translation id="6024072172641380781">Caniatáu estyniadau ar y wefan hon</translation>
 <translation id="6024317249717725918">Chwilio Ffrâm Fideo gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Olrhain Pentwr</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Mae dyfais USB wedi'i chysylltu</translation>
@@ -8725,6 +8723,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7321545336522791733">Methu â chyrraedd y gweinydd</translation>
 <translation id="7322515217754205362">Caniatadau Gwefan</translation>
 <translation id="7323315405936922211">Maint ardal cyrchwr</translation>
+<translation id="7324020307732396723">Agor Gosodiadau Iaith</translation>
 <translation id="7324297612904500502">Fforwm Beta</translation>
 <translation id="7325209047678309347">Mae papur wedi'i rwystro</translation>
 <translation id="7325953439504232954">Newid proffil?</translation>
@@ -9245,7 +9244,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7685087414635069102">Mae angen PIN</translation>
 <translation id="7685351732518564314">Pwyswch botwm ar eich <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Rhagor am hysbysebion a awgrymir gan wefan</translation>
-<translation id="7686581688229391955">Dewiswch i ganiatáu estyniadau ar y wefan hon</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Dewis o'r rhestr</translation>
 <translation id="7690853182226561458">Ychwanegu &amp;ffolder...</translation>
@@ -9840,6 +9838,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8097959162767603171">Rhaid i'ch gweinyddwr dderbyn y telerau gwasanaeth yn rhestr dyfeisiau Panel Defnyddwyr Chrome yn gyntaf.</translation>
 <translation id="8098156986344908134">Gosod <ph name="DEVICE_OS" /> a dileu'r gyriant caled?</translation>
 <translation id="8098616321286360457">Mae angen cysylltiad rhwydwaith</translation>
+<translation id="8100057926383586173">Agor gosodiadau iaith</translation>
 <translation id="8100230553590752325">Defnyddiwch gyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais</translation>
 <translation id="810068641062493918">Mae <ph name="LANGUAGE" /> wedi'i dewis. Pwyswch Search a Space i ddad-ddewis.</translation>
 <translation id="8101409298456377967">Creu, cadw a rheoli eich cyfrineiriau fel y gallwch fewngofnodi'n hawdd i wefannau ac apiau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>

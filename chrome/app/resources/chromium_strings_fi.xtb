@@ -428,6 +428,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7398989605938454041">Kun käytät Chromium-profiileja, voit pitää kaiken Chromium-sisällön erillään. Näin työ ja hauskanpito on helpompi erottaa toisistaan.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium tarvitsee oikeuden käyttää kameraasi tällä sivustolla.</translation>
+<translation id="7458892263350425044">Jos haluat käyttää mikrofonia, anna Chromiumille pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Jotta saat tulevia Chromiumin päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 7.</translation>
 <translation id="7467949745582939695">Käynnistä Chromium uudelleen?</translation>
 <translation id="7483335560992089831">Chromiumista ei voi asentaa versiota, joka on tällä hetkellä käynnissä. Sulje Chromium ja yritä uudelleen.</translation>
@@ -469,6 +470,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="813913629614996137">Alustetaan…</translation>
 <translation id="8166782796394721554">Laita lisäsuojaus päälle Chromiumin JavaScript- ja WebAssembly-moottorissa</translation>
 <translation id="81770708095080097">Tämä tiedosto on vaarallinen, joten Chromium on estänyt sen.</translation>
+<translation id="8223363452568144035">Anna Chromiumille pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />, jotta voit käyttää kameraa</translation>
 <translation id="8232193495299001329">Chromium ei voi vahvistaa, mistä tämä laajennus on peräisin, ja se saattaa olla vaarallinen. Poista se Chromiumista, jotta se ei enää voi nähdä tai muuttaa dataasi (mukaan lukien henkilökohtaisia tietoja) avatuilla sivustoilla.</translation>
 <translation id="8248265253516264921">Jos kuvalla ei ole hyödyllistä kuvausta, Chromium yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten. Voit milloin tahansa poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="8254601181414348851">Haluatko kirjautua Chromiumiin uudella profiililla?</translation>
@@ -539,4 +541,5 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="983803489796659991">Asennus epäonnistui, koska päivityspalvelimella ei ole tiivistedataa sovelluksesta.</translation>
 <translation id="985498048907240953">Käytä Chromiumia ilman tiliä</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="992780518932311116">Anna Chromiumille pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />, jotta voit käyttää sijaintia</translation>
 </translationbundle>

@@ -131,7 +131,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1549000191223877751">Beweeg na 'n ander venster</translation>
 <translation id="1553358976309200471">Dateer Chrome op</translation>
 <translation id="1554532453982918912">Help om Chrome beter te maak vir mense wat dit op dieselfde manier as jy gebruik</translation>
-<translation id="1558391695376153246">Maak Incognito-oortjies toe</translation>
 <translation id="1568636008098739136">Luister na hierdie bladsy. Raak en hou om hierdie kortpad te wysig.</translation>
 <translation id="1571304935088121812">Kopieer gebruikernaam</translation>
 <translation id="1584648915421894279">Wagwoorde wat op hierdie toestel gestoor is, kan tans nie oor Chrome-kanale gebruik word nie. Ná Chrome 125 sal wagwoorde wat op jou toestel vir Chrome en <ph name="CHROME_CHANNEL" /> gestoor is, saamgevoeg word en in albei apps gebruik kan word.</translation>
@@ -199,6 +198,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1928618076168182477">Wys tans visuele aansig</translation>
 <translation id="1928696683969751773">Opdaterings</translation>
 <translation id="1933845786846280168">Gekose oortjie</translation>
+<translation id="1939549834451474504">Wagwoorde sal binnekort ophou werk omdat Google Play Dienste nie beskikbaar is nie. Jy kan ’n kopie van jou gestoorde wagwoorde maak voordat hulle ophou werk. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Stoor wagwoorde</translation>
 <translation id="1944535645109964458">Geen toegangsleutels beskikbaar nie</translation>
 <translation id="1957557050935255529">Laai tans PDF …</translation>
@@ -1385,6 +1385,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7454744349230173024">Jou organisasie het die stoor van wagwoorde afgeskakel</translation>
 <translation id="7455988709578031708">Gegrond op jou blaaigeskiedenis. Hierdie instelling is aan.</translation>
 <translation id="7456774706094330779">Uitgebreide vooraflaai</translation>
+<translation id="7466328545712777810">Jy sal in kennis gestel word as die prys op enige werf daal</translation>
 <translation id="7466431077154602932">Kompakte aansig</translation>
 <translation id="7474822150871987353">Kom meer te wete oor onderwerpe op webwerwe sonder om die bladsy te verlaat. Kies een of meer woorde op die bladsy om hulle te soek.</translation>
 <translation id="7475192538862203634">As jy dit gereeld sien, probeer hierdie <ph name="BEGIN_LINK" />voorstelle<ph name="END_LINK" />.</translation>
@@ -1445,7 +1446,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7691043218961417207">Verken inhoud om te volg</translation>
 <translation id="7697383401610880082">Sleephandvatsel</translation>
 <translation id="7698359219371678927">Skep e-pos in <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Navraagteëls</translation>
 <translation id="7707922173985738739">Gebruik mobiele data</translation>
 <translation id="7709918231054955894">Kry al jou oortjies</translation>
 <translation id="7733878270780732638">Nie genoeg spasie op toestel nie.</translation>

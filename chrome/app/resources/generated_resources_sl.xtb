@@ -1631,7 +1631,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2137128126782078222">Ne dovoli obvestil s spletnega mesta <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Gumb za nastavitev</translation>
 <translation id="2140788884185208305">Stanje baterije</translation>
-<translation id="2140902257485550046">Izberite, če želite blokirati vse razširitve na tem spletnem mestu</translation>
 <translation id="2142328300403846845">Odpiranje povezave kot</translation>
 <translation id="2142484069755256151">Ustvarite 6-mestno kodo PIN za obnovitev za Googlovega upravitelja gesel, števko kode PIN <ph name="NUM_DIGIT" /> od 6</translation>
 <translation id="2142582065325732898">Vklopite <ph name="LINK1_BEGIN" />sinhronizacijo za Chrome<ph name="LINK1_END" />, če si želite ogledati nedavne Chromove zavihke. <ph name="LINK2_BEGIN" />Več o tem<ph name="LINK2_END" /></translation>
@@ -2313,7 +2312,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2610374175948698697">Omogočen je ogled datotek ali map v napravi</translation>
 <translation id="2610780100389066815">Podpisovanje Microsoftovega seznama zaupanja</translation>
 <translation id="261114180663074524">Prijavite se v račun Microsoft in poskusite znova</translation>
-<translation id="2611765907167846862">Spokojen</translation>
 <translation id="2611776654555141051">Orodje za pravokotnike</translation>
 <translation id="2612676031748830579">Številka kartice</translation>
 <translation id="261305050785128654">Dovolite, da spletna mesta zaznajo, katere jezike govorite. Ko bo mogoče, bo vsebina prikazana v teh jezikih.</translation>
@@ -6986,7 +6984,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6022526133015258832">Odpri v celozaslonskem načinu</translation>
 <translation id="6022659036123304283">Prilagodite si Chrome</translation>
 <translation id="6023643151125006053">To napravo (serijska številka: <ph name="SERIAL_NUMBER" />) je zaklenil skrbnik domene <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Dovoli razširitve na tem spletnem mestu</translation>
 <translation id="6024317249717725918">&amp;Iskanje videosličice s ponudnikom <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Sledenje sklada</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – naprava USB povezana</translation>
@@ -9249,7 +9246,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7685087414635069102">Zahtevana je koda PIN</translation>
 <translation id="7685351732518564314">Pritisnite gumb na napravi <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Več o oglasih, ki jih predlaga spletno mesto</translation>
-<translation id="7686581688229391955">Izberite, če želite dovoliti razširitve na tem spletnem mestu</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Izbira s seznama</translation>
 <translation id="7690853182226561458">Dodaj &amp;mapo...</translation>

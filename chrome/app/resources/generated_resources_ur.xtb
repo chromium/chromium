@@ -1619,7 +1619,6 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" /> سے اطلاعات کی اجازت نہ دیں</translation>
 <translation id="2139919072249842737">بٹن سیٹ اپ کریں</translation>
 <translation id="2140788884185208305">بیٹری کی صحت</translation>
-<translation id="2140902257485550046">اس سائٹ پر تمام ایکسٹینشنز کو مسدود کرنے کے لیے منتخب کریں</translation>
 <translation id="2142328300403846845">لنک کو اس کے بطور کھولیں</translation>
 <translation id="2142484069755256151">‏‫Google پاس ورڈ مینیجر کے لیے ایک 6 ہندسی بازیابی PIN تخلیق کریں، 6 میں سے PIN ہندسہ <ph name="NUM_DIGIT" /></translation>
 <translation id="2142582065325732898">‏حالیہ Chrome ٹیبز کو دیکھنے کے لیے <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> کو آن کریں۔ <ph name="LINK2_BEGIN" />مزید جانيں<ph name="LINK2_END" /></translation>
@@ -2299,7 +2298,6 @@
 <translation id="2610374175948698697">آپ کے آلے پر فائلز یا فولڈر دیکھ سکتے ہیں</translation>
 <translation id="2610780100389066815">‏Microsoft ٹرسٹ لسٹ سائننگ</translation>
 <translation id="261114180663074524">‏اپنے Microsoft اکاؤنٹ میں سائن ان کریں اور پھر دوبارہ کوشش کریں</translation>
-<translation id="2611765907167846862">خاموش</translation>
 <translation id="2611776654555141051">ٹول کا مستطیل</translation>
 <translation id="2612676031748830579">کارڈ نمبر</translation>
 <translation id="261305050785128654">جو زبانیں آپ بولتے ہیں ویب سائٹس کو انہیں جاننے کی اجازت دیں۔ ممکن ہونے پر وہ ان زبانوں میں مواد دکھائیں گے۔</translation>
@@ -6964,7 +6962,6 @@
 <translation id="6022526133015258832">پوری اسکرین کھولیں</translation>
 <translation id="6022659036123304283">‏Chrome کو اپنا ڈیفالٹ براؤزر بنائيں</translation>
 <translation id="6023643151125006053">‏اس آلہ (SN: <ph name="SERIAL_NUMBER" />‎) کو <ph name="SAML_DOMAIN" /> منتظم نے مقفل کیا تھا۔</translation>
-<translation id="6024072172641380781">اس سائٹ پر ایکسٹینشنز کی اجازت دیں</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ ویڈیو فریم تلاش کریں</translation>
 <translation id="6025215716629925253">انبار کا ٹریس</translation>
 <translation id="6026819612896463875">‏<ph name="WINDOW_TITLE" /> - USB آلہ منسلک ہے</translation>
@@ -9219,7 +9216,6 @@
 <translation id="7685087414635069102">‏PIN درکار ہے</translation>
 <translation id="7685351732518564314">اپنے <ph name="DEVICE_NAME" /> پر ایک بٹن دبائیں۔</translation>
 <translation id="7686086654630106285">سائٹ کے تجویز کردہ اشتہارات کے بارے میں مزید</translation>
-<translation id="7686581688229391955">اس سائٹ پر ایکسٹینشنز کی اجازت دینے کے لیے منتخب کریں</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">فہرست سے منتخب کریں</translation>
 <translation id="7690853182226561458">&amp;فولڈر شامل کریں…</translation>

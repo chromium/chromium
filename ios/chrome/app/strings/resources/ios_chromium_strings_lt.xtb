@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Tai reiškia, kad kiekvieną kartą „Chromium“ teiks staliniams kompiuteriams skirtos svetainės užklausą.</translation>
 <translation id="2313870531055795960">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chromium“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chromium“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
 <translation id="231828342043114302">Jei norite gauti pagal pomėgius suasmeninto turinio, prisijunkite prie „Chromium“.</translation>
+<translation id="2326738825692478496">Kai kurie „Chromium“ duomenys dar neišsaugoti „Google“ paskyroje.
+
+Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="2374627437126809292">„Chromium“ naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos apie aptiktus adresus.</translation>
 <translation id="2386292341327187942">Laukelyje „Paieškos valdikliai“ įveskite „Chromium“</translation>
 <translation id="2426113998523353159">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chromium“.</translation>
@@ -292,6 +295,8 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 
 Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, kad galėtumėte naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje.</translation>
 <translation id="9022552996538154597">Prisijungti prie „Chromium“</translation>
+<translation id="9031260906956926157">Kai kurie „Chromium“ duomenys dar neišsaugoti „Google“ paskyroje.
+Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="9050790730841755540">Naudokite „Chromium“ bet kada palietę nuorodas kitose programose.</translation>
 <translation id="9057082013386654559">„Chromium“, skirtos „iPad“, naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="9059693977935746710">Jums nereikia prisiminti šio slaptažodžio. Jis bus išsaugotas Slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>

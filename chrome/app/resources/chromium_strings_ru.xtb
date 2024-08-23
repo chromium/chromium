@@ -423,6 +423,7 @@
 <translation id="7398989605938454041">Профили Chromium позволяют хранить личные и рабочие данные в браузере раздельно.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium для разработчиков</translation>
 <translation id="7451052299415159299">Для этого сайта Chromium запрашивает доступ к камере.</translation>
+<translation id="7458892263350425044">Чтобы использовать микрофон, предоставьте Chromium доступ к нему в <ph name="BEGIN_LINK" />системных настройках<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">На вашем компьютере используется Windows 7. Чтобы получать обновления Chromium, установите на устройство Windows 10 или более поздней версии.</translation>
 <translation id="7467949745582939695">Перезапустить Chromium?</translation>
 <translation id="7483335560992089831">Невозможно установить ту же версию Chromium, которая уже присутствует в системе. Закройте Chromium и повторите попытку.</translation>
@@ -464,6 +465,7 @@
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8166782796394721554">Включить дополнительную защиту движка JavaScript и WebAssembly в Chromium</translation>
 <translation id="81770708095080097">Chromium заблокировал этот файл как опасный.</translation>
+<translation id="8223363452568144035">Чтобы использовать камеру, предоставьте Chromium доступ к ней в <ph name="BEGIN_LINK" />системных настройках<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium не может проверить происхождение этого расширения, поэтому оно может быть опасным. Удалите расширение из Chromium, чтобы оно больше не могло читать и менять ваши данные с посещаемых сайтов, в том числе личную информацию.</translation>
 <translation id="8248265253516264921">Если у изображения нет понятного описания, Chromium попытается его найти. Для создания описаний изображения отправляются в Google. Эту функцию можно отключить в настройках в любое время.</translation>
 <translation id="8254601181414348851">Создать свой профиль Chromium?</translation>
@@ -534,4 +536,5 @@
 <translation id="983803489796659991">Выполнить установку не удалось, так как на сервере нет никаких хешированных данных для приложения.</translation>
 <translation id="985498048907240953">Использовать Chromium без входа в аккаунт</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
+<translation id="992780518932311116">Чтобы использовать свои геоданные, предоставьте Chromium доступ к ним в <ph name="BEGIN_LINK" />системных настройках<ph name="END_LINK" /></translation>
 </translationbundle>

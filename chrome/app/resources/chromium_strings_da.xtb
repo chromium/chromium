@@ -428,6 +428,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7398989605938454041">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Når du har flere profiler, kan du nemmere adskille arbejde og fornøjelse.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for udviklere</translation>
 <translation id="7451052299415159299">Chromium skal have tilladelse til at bruge dit kamera på dette website</translation>
+<translation id="7458892263350425044">Giv Chromium adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge din mikrofon</translation>
 <translation id="7461356015007898716">Hvis du vil have fremtidige Chromium-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 7.</translation>
 <translation id="7467949745582939695">Vil du genstarte Chromium?</translation>
 <translation id="7483335560992089831">Kan ikke installere den samme version af Chromium som den, der kører i øjeblikket. Luk Chromium, og prøv igen.</translation>
@@ -469,6 +470,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8166782796394721554">Aktivér yderligere beskyttelse i JavaScript- og WebAssembly-maskinen i Chromium</translation>
 <translation id="81770708095080097">Denne fil er farlig, så Chromium har blokeret den.</translation>
+<translation id="8223363452568144035">Giv Chromium adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge dit kamera</translation>
 <translation id="8232193495299001329">Chromium kan ikke verificere, hvor denne udvidelse kommer fra, og den kan derfor være skadelig. Du bør fjerne udvidelsen fra Chromium, så den ikke længere kan se og ændre dine data på de websites, du besøger, bl.a. dine personlige oplysninger.</translation>
 <translation id="8248265253516264921">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chromium at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser. Du kan til enhver tid deaktivere denne funktion i indstillingerne.</translation>
 <translation id="8254601181414348851">Vil du logge ind i Chromium med en ny profil?</translation>
@@ -539,4 +541,5 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="983803489796659991">Installationen mislykkedes, fordi opdateringsserveren ikke har nogen hash-data for appen.</translation>
 <translation id="985498048907240953">Brug Chromium uden en konto</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
+<translation id="992780518932311116">Giv Chromium adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge din lokation</translation>
 </translationbundle>

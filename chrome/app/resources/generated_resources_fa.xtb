@@ -1625,7 +1625,6 @@
 <translation id="2137128126782078222">اعلان‌های <ph name="WEBSITE" /> مجاز نباشد</translation>
 <translation id="2139919072249842737">دکمه راه‌اندازی</translation>
 <translation id="2140788884185208305">سلامت باتری</translation>
-<translation id="2140902257485550046">برای مسدود کردن همه افزونه‌های این سایت، انتخاب کنید</translation>
 <translation id="2142328300403846845">بازکردن پیوند به‌عنوان</translation>
 <translation id="2142484069755256151">‏پین بازیابی ۶ رقمی برای «مدیر گذرواژه Google» ایجاد کنید، رقم <ph name="NUM_DIGIT" /> از ۶ رقم پین را وارد کنید</translation>
 <translation id="2142582065325732898">‏برای مشاهده برگه‌های Chrome، <ph name="LINK1_BEGIN" />همگام‌سازی Chrome<ph name="LINK1_END" /> را روشن کنید. <ph name="LINK2_BEGIN" />بیشتر بدانید<ph name="LINK2_END" /></translation>
@@ -2307,7 +2306,6 @@
 <translation id="2610374175948698697">می‌تواند فایل‌ها یا پوشه‌های درون دستگاه را مشاهده کند</translation>
 <translation id="2610780100389066815">‏امضای فهرست اطمینان Microsoft</translation>
 <translation id="261114180663074524">‏به سیستم حساب Microsoft وارد شوید و دوباره امتحان کنید</translation>
-<translation id="2611765907167846862">با متانت</translation>
 <translation id="2611776654555141051">ابزار مستطیل</translation>
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="261305050785128654">به وب‌سایت‌ها اجازه دهید زبان‌هایی را که صحبت می‌کنید بدانند. این وب‌سایت‌ها درصورت امکان محتوا را به آن زبان‌ها نشان می‌دهند.</translation>
@@ -6003,6 +6001,7 @@
 <translation id="5301954838959518834">بله، متوجه شدم</translation>
 <translation id="5302032366299160685">قبل‌از تلاش مجدد صبر کنید تا فایل باز شود</translation>
 <translation id="5302048478445481009">زبان</translation>
+<translation id="5302435492906794790">درجستجوی دستگاه‌های یافتنی اطراف…</translation>
 <translation id="5302932258331363306">نمایش جایگزین‌ها</translation>
 <translation id="5305145881844743843">این حساب تحت‌مدیریت <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> است</translation>
 <translation id="5307030433605830021">منبع پشتیبانی نمی‌شود</translation>
@@ -6977,7 +6976,6 @@
 <translation id="6022526133015258832">بازکردن تمام صفحه</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
 <translation id="6023643151125006053">سرپرست دامنه <ph name="SAML_DOMAIN" /> این دستگاه (شماره سریال: <ph name="SERIAL_NUMBER" />) را قفل کرده است.</translation>
-<translation id="6024072172641380781">مجاز کردن افزونه‌ها در این سایت</translation>
 <translation id="6024317249717725918">جستجوی فریم ویدیو با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">ردیابی پشته‌ای</translation>
 <translation id="6026819612896463875">‏<ph name="WINDOW_TITLE" /> - دستگاه USB متصل است</translation>
@@ -8715,6 +8713,7 @@
 <translation id="7321545336522791733">سرور غیرقابل دسترسی است</translation>
 <translation id="7322515217754205362">اجازه‌های سایت</translation>
 <translation id="7323315405936922211">اندازه ناحیه مکان‌نما</translation>
+<translation id="7324020307732396723">باز کردن تنظیمات زبان</translation>
 <translation id="7324297612904500502">تالار گفتمان بتا</translation>
 <translation id="7325209047678309347">کاغذ گیر کرده است</translation>
 <translation id="7325953439504232954">نمایه عوض شود؟</translation>
@@ -9235,7 +9234,6 @@
 <translation id="7685087414635069102">پین موردنیاز است</translation>
 <translation id="7685351732518564314">دکمه‌ای را روی <ph name="DEVICE_NAME" /> فشار دهید.</translation>
 <translation id="7686086654630106285">اطلاعات بیشتر درباره آگهی‌های پیشنهادی سایت</translation>
-<translation id="7686581688229391955">برای مجاز کردن افزونه‌های این سایت، انتخاب کنید</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> <ph name="DEVICE_PATH" /></translation>
 <translation id="7690378713476594306">انتخاب از فهرست</translation>
 <translation id="7690853182226561458">افزودن &amp;پوشه...</translation>
@@ -9830,6 +9828,7 @@
 <translation id="8097959162767603171">‏سرپرستتان ابتدا باید شرایط خدمات را در فهرست دستگاه Chrome در «کنسول سرپرست» قبول کند.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> نصب و دیسک سخت پاک شود؟</translation>
 <translation id="8098616321286360457">اتصال به شبکه لازم است</translation>
+<translation id="8100057926383586173">باز کردن تنظیمات زبان</translation>
 <translation id="8100230553590752325">استفاده از گذرواژه‌های ذخیره‌شده در هر دستگاهی</translation>
 <translation id="810068641062493918">‏<ph name="LANGUAGE" /> انتخاب شد. برای لغو انتخاب، Search (جستجو) را به‌همراه Space فشار دهید.</translation>
 <translation id="8101409298456377967">گذرواژه‌هایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>

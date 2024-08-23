@@ -1615,7 +1615,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2137128126782078222">No permitir notificaciones de <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Botón de configuración</translation>
 <translation id="2140788884185208305">Estado de la batería</translation>
-<translation id="2140902257485550046">Seleccionar para bloquear todas las extensiones en este sitio</translation>
 <translation id="2142328300403846845">Abrir vínculo como</translation>
 <translation id="2142484069755256151">Crea un PIN de recuperación de 6 dígitos para el Administrador de contraseñas de Google, dígito del PIN <ph name="NUM_DIGIT" /> de 6</translation>
 <translation id="2142582065325732898">Activa la <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para ver las pestañas recientes de Chrome. <ph name="LINK2_BEGIN" />Más información<ph name="LINK2_END" /></translation>
@@ -2294,7 +2293,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2610374175948698697">Pueden ver archivos o carpetas del dispositivo</translation>
 <translation id="2610780100389066815">Firma de lista de confianza de Microsoft</translation>
 <translation id="261114180663074524">Accede a tu cuenta de Microsoft y vuelve a intentarlo</translation>
-<translation id="2611765907167846862">Sereno</translation>
 <translation id="2611776654555141051">Herramienta de rectángulo</translation>
 <translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="261305050785128654">Permite que los sitios web sepan los idiomas en los que hablas. De ser posible, los sitios mostrarán contenido en esos idiomas.</translation>
@@ -5990,6 +5988,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5302032366299160685">Espera a que se abra el archivo antes de volver a intentarlo</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5302435492906794790">Buscando dispositivos detectables cercanos…</translation>
 <translation id="5302932258331363306">Mostrar sustituciones</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> administra esta cuenta</translation>
 <translation id="5307030433605830021">No se admite la fuente</translation>
@@ -6964,7 +6963,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6022526133015258832">Abrir en pantalla completa</translation>
 <translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
 <translation id="6023643151125006053">El administrador de <ph name="SAML_DOMAIN" /> bloqueó este dispositivo (NS: <ph name="SERIAL_NUMBER" />).</translation>
-<translation id="6024072172641380781">Permitir extensiones en este sitio</translation>
 <translation id="6024317249717725918">&amp;Buscar fotograma con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Seguimiento de la pila</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: Se conectó el dispositivo USB</translation>
@@ -8700,6 +8698,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7321545336522791733">No se puede acceder al servidor</translation>
 <translation id="7322515217754205362">Permisos de sitios</translation>
 <translation id="7323315405936922211">Tamaño del área del cursor</translation>
+<translation id="7324020307732396723">Abrir configuración de idioma</translation>
 <translation id="7324297612904500502">Foro de la versión Beta</translation>
 <translation id="7325209047678309347">El papel está atorado</translation>
 <translation id="7325953439504232954">¿Quieres cambiar de perfil?</translation>
@@ -9220,7 +9219,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7685087414635069102">Se requiere el PIN</translation>
 <translation id="7685351732518564314">Presiona un botón en tu <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Obtén más información sobre los anuncios sugeridos por sitios</translation>
-<translation id="7686581688229391955">Seleccionar para permitir extensiones en este sitio</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Elegir de la lista</translation>
 <translation id="7690853182226561458">Agregar &amp;carpeta...</translation>
@@ -9816,6 +9814,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8097959162767603171">Tu administrador primero debe aceptar las condiciones del servicio de la lista de dispositivos de Chrome que se muestran en la Consola del administrador.</translation>
 <translation id="8098156986344908134">¿Deseas instalar <ph name="DEVICE_OS" /> y borrar el disco duro?</translation>
 <translation id="8098616321286360457">Se requiere una conexión de red</translation>
+<translation id="8100057926383586173">Abrir configuración de idioma</translation>
 <translation id="8100230553590752325">Usa las contraseñas guardadas en cualquier dispositivo</translation>
 <translation id="810068641062493918">Se seleccionó <ph name="LANGUAGE" />. Presiona la tecla de búsqueda+barra espaciadora para anular la selección del idioma.</translation>
 <translation id="8101409298456377967">Crea, guarda y administra tus contraseñas para acceder fácilmente a sitios y apps. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

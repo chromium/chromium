@@ -1631,7 +1631,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2137128126782078222">Neleisti pranešimų iš <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Nustatymo mygtukas</translation>
 <translation id="2140788884185208305">Akumuliatoriaus būsena</translation>
-<translation id="2140902257485550046">Pasirinkti blokuoti visus plėtinius šioje svetainėje</translation>
 <translation id="2142328300403846845">Atidaryti nuorodą kaip</translation>
 <translation id="2142484069755256151">Sukurkite šešių skaitmenų „Google“ slaptažodžių tvarkyklės atkūrimo PIN kodą; PIN kodo skaitmenys: <ph name="NUM_DIGIT" /> iš 6</translation>
 <translation id="2142582065325732898">Įjunkite <ph name="LINK1_BEGIN" />„Chrome“ sinchronizavimo funkciją<ph name="LINK1_END" />, kad peržiūrėtumėte pastaruosius „Chrome“ skirtukus. <ph name="LINK2_BEGIN" />Sužinokite daugiau<ph name="LINK2_END" /></translation>
@@ -2313,7 +2312,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2610374175948698697">Gali peržiūrėti failus ar aplankus jūsų įrenginyje</translation>
 <translation id="2610780100389066815">„Microsoft“ patikimo sąrašo pasirašymas</translation>
 <translation id="261114180663074524">Prisijunkite prie „Microsoft“ paskyros ir bandykite dar kartą</translation>
-<translation id="2611765907167846862">Tylus</translation>
 <translation id="2611776654555141051">Stačiakampio įrankis</translation>
 <translation id="2612676031748830579">Kortelės numeris</translation>
 <translation id="261305050785128654">Leiskite svetainėms žinoti kalbas, kuriomis kalbate. Kai bus įmanoma, jos rodys turinį tomis kalbomis.</translation>
@@ -6009,6 +6007,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5301954838959518834">Gerai, supratau</translation>
 <translation id="5302032366299160685">Prieš bandydami dar kartą palaukite, kol failas bus atidarytas</translation>
 <translation id="5302048478445481009">Kalba</translation>
+<translation id="5302435492906794790">Ieškoma netoliese esančių aptinkamų įrenginių...</translation>
 <translation id="5302932258331363306">Rodyti pakaitalus</translation>
 <translation id="5305145881844743843">Šią paskyrą tvarko <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Šaltinis nepalaikomas</translation>
@@ -6984,7 +6983,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6022526133015258832">Atidaryti viso ekrano režimu</translation>
 <translation id="6022659036123304283">Suasmeninkite „Chrome“</translation>
 <translation id="6023643151125006053">Šį įrenginį (serijos Nr. <ph name="SERIAL_NUMBER" />) užrakino <ph name="SAML_DOMAIN" /> administratorius.</translation>
-<translation id="6024072172641380781">Leisti plėtinius šioje svetainėje</translation>
 <translation id="6024317249717725918">&amp;Ieškoti vaizdo įrašo rėmelio naudojant „<ph name="VISUAL_SEARCH_PROVIDER" />“</translation>
 <translation id="6025215716629925253">Dėklo pėdsakas</translation>
 <translation id="6026819612896463875">„<ph name="WINDOW_TITLE" />“ – USB įrenginys prijungtas</translation>
@@ -8157,6 +8155,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6876155724392614295">Dviratis</translation>
 <translation id="6876469544038980967">Nenaudinga</translation>
 <translation id="6878422606530379992">Jutikliai leidžiami</translation>
+<translation id="6878862640969460273">Gulsčias</translation>
 <translation id="6880587130513028875">Šiame puslapyje vaizdai buvo užblokuoti.</translation>
 <translation id="6881845890692344060">Administratorius atsijungė. Dabar jūs viską valdote.</translation>
 <translation id="6882210908253838664">Jei svetainė neveikia, galite pabandyti suteikti jai laikiną leidimą naudoti trečiųjų šalių slapukus. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -8726,6 +8725,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7321545336522791733">Serveris nepasiekiamas</translation>
 <translation id="7322515217754205362">Svetainių leidimai</translation>
 <translation id="7323315405936922211">Žymeklio srities dydis</translation>
+<translation id="7324020307732396723">Atidaryti kalbos nustatymus</translation>
 <translation id="7324297612904500502">Beta forumas</translation>
 <translation id="7325209047678309347">Popierius užstrigo</translation>
 <translation id="7325953439504232954">Perjungti profilį?</translation>
@@ -9246,7 +9246,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7685087414635069102">Reikia PIN kodo</translation>
 <translation id="7685351732518564314">Paspauskite „<ph name="DEVICE_NAME" />“ mygtuką.</translation>
 <translation id="7686086654630106285">Daugiau apie svetainių siūlomus skelbimus</translation>
-<translation id="7686581688229391955">Pasirinkti leisti plėtinius šioje svetainėje</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Pasirinkti iš sąrašo</translation>
 <translation id="7690853182226561458">Pridėti aplanką...</translation>
@@ -9695,6 +9694,7 @@ Rakto failas: ￼<ph name="KEY_FILE" />
 
 Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti naujas plėtinio versijas.</translation>
 <translation id="8000020256436988724">Įrankių juosta</translation>
+<translation id="800117767980299235">Svarbiausia informacija balsu</translation>
 <translation id="8002274832045662704">Išplėstinė spausdintuvo konfigūracija</translation>
 <translation id="8002670234429879764">Spausdintuvas „<ph name="PRINTER_NAME" />“ nebepasiekiamas.</translation>
 <translation id="8004092996156083991">Jei jūsų slaptažodžiai bus pažeisti, informuosime jus apie tai.</translation>
@@ -9842,6 +9842,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8097959162767603171">Jūsų administratorius pirmiausia turi sutikti su paslaugų teikimo sąlygomis administratoriaus pulto „Chrome“ įrenginių sąraše.</translation>
 <translation id="8098156986344908134">Įdiegti „<ph name="DEVICE_OS" />“ ir ištrinti standųjį diską?</translation>
 <translation id="8098616321286360457">Būtina prisijungti prie tinklo</translation>
+<translation id="8100057926383586173">Atidaryti kalbos nustatymus</translation>
 <translation id="8100230553590752325">Išsaugotų slaptažodžių naudojimas bet kuriame įrenginyje</translation>
 <translation id="810068641062493918">Pasirinkta: <ph name="LANGUAGE" />. Paspauskite paieškos ir tarpo klavišus, kad atšauktumėte pasirinkimą.</translation>
 <translation id="8101409298456377967">Kurkite, saugokite ir tvarkykite slaptažodžius, kad galėtumėte lengvai prisijungti prie svetainių ir programų. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>

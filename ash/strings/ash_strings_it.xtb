@@ -661,6 +661,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3386978599540877378">la lente d'ingrandimento a schermo intero</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Vuoi attivare la dettatura?</translation>
+<translation id="3392702002175498061">Mostra tutti i contenuti della cronologia di navigazione</translation>
 <translation id="3394432020929931914">, espanso</translation>
 <translation id="3401474642070997151">Per personalizzare i suggerimenti, fai clic con il tasto destro del mouse su un suggerimento o tienilo premuto</translation>
 <translation id="3405101454990027959">Attiva accesso al microfono</translation>
@@ -686,6 +687,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3455468639467374593">Modello, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 dispositivo connesso all'hotspot di <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Reimposta il livello di zoom</translation>
+<translation id="3463151196028058330">Ritocco viso</translation>
 <translation id="3465223694362104965">Dal tuo ultimo accesso, un'altra tastiera si è connessa a questo dispositivo. Prima di usarla, assicurati che sia attendibile.</translation>
 <translation id="3465356146291925647">Gestita dall'amministratore</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> poi <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
@@ -809,6 +811,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="385300504083504382">Inizio</translation>
 <translation id="3859364108019690">Impossibile trasmettere app in streaming</translation>
 <translation id="3861651314799684201">Premi invio per registrare a schermo intero</translation>
+<translation id="3870197372373144624">Prova a spegnere il dispositivo.</translation>
 <translation id="3886872229787704059">Aperto oggi</translation>
 <translation id="3891340733213178823">Premi due volte Ctrl+Maiusc+Q per uscire.</translation>
 <translation id="3893630138897523026">ChromeVox (lettura vocale)</translation>
@@ -924,6 +927,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4264977415328155183">, compresso</translation>
 <translation id="4265259722091164182">Iniziali Maiuscole</translation>
 <translation id="4269883910223712419">L'amministratore di questo dispositivo ha la possibilità di:</translation>
+<translation id="4271841440229266861">Mostra tutti i contenuti di File</translation>
 <translation id="4274537685965975248">La scorciatoia da tastiera Ctrl + Alt + Freccia giù è cambiata. Per usare il tasto Fine, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia destra.</translation>
 <translation id="4275283744500212192">Apri le opzioni di layout delle finestre</translation>
 <translation id="4275663329226226506">Multimediali</translation>
@@ -951,6 +955,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4327147325944669226">Registra partita</translation>
 <translation id="4333628967105022692">Lacros non è supportato quando più utenti hanno effettuato l'accesso.</translation>
 <translation id="4338109981321384717">Lente d'ingrandimento</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, disattivato</translation>
 <translation id="4351244548802238354">Chiudi finestra di dialogo</translation>
 <translation id="4356872429719185452">Mostra i dettagli relativi all'hotspot. È in corso l'attivazione dell'hotspot.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />: registrazione in corso</translation>
@@ -1205,6 +1210,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
 <translation id="5187627942836026988">Mostra i dettagli relativi all'hotspot. L'hotspot è stato bloccato dall'amministratore.</translation>
+<translation id="518847040357731612">Preferenza di Look professionale</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventi</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinata con <ph name="IN_PLACE_APP" /> per creare una nuova cartella.</translation>
@@ -1296,6 +1302,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5503884284981862082">Apri/chiudi l'Assistente Google</translation>
 <translation id="550391772491508736">Riprendi la trasmissione</translation>
 <translation id="5506975627792768506">Attiva o disattiva la lente d'ingrandimento</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, premendo Invio verrà disattivato l'audio.</translation>
 <translation id="5512042095225963688">Elimina parola precedente</translation>
 <translation id="5519005148254860683">Espandi Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2106,6 +2113,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8239034820133090126">Attiva scrivania a destra</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />, batteria del telefono <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
+<translation id="825129991941217170">Mostra tutti i contenuti di Google Drive</translation>
 <translation id="8257510091797044096">Configura il tuo dispositivo</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
@@ -2335,6 +2343,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9098969848082897657">Disattiva audio</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> oppure <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Annulla ultima azione</translation>
+<translation id="9126642911267312373">Bluetooth non disponibile</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Tra 1 min}other{Tra # min}}</translation>
 <translation id="9129245940793250979">Pulsante posteriore</translation>
 <translation id="9133335900048457298">Impossibile registrare contenuti protetti</translation>

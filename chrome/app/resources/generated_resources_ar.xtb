@@ -265,6 +265,7 @@
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1178601482396475810">إدارة مزامنة الأجهزة</translation>
 <translation id="117916940443676133">مفتاح الأمان غير محمي برقم تعريف شخصي. لإدارة بيانات تسجيل الدخول، عليك أولاً إنشاء رقم تعريف شخصي.</translation>
+<translation id="1179400851034021914">‏رقم الحساب بصيغة IBAN غير صالح</translation>
 <translation id="1179902906564467236">اتّبِع التعليمات التي تظهر على هاتفك أو استخدِم تطبيق "الكاميرا"</translation>
 <translation id="118057123461613219">تم إخلاء جزء كبير جدًا من مساحة التخزين</translation>
 <translation id="1181037720776840403">إزالة</translation>
@@ -1435,6 +1436,7 @@
 <translation id="2002109485265116295">الوقت الفعلي</translation>
 <translation id="2002160221914907025">الذكاء الاصطناعي التجريبي</translation>
 <translation id="2003130567827682533">‏لتفعيل بيانات "<ph name="NAME" />"، يمكنك أولاً الاتصال بشبكة Wi-Fi.</translation>
+<translation id="2003596238737586336">تم ضبط الجدول الزمني الحالي على الفترة من <ph name="SUNRISE" /> إلى <ph name="SUNSET" />. ويدير المشرف هذا الإعداد.</translation>
 <translation id="2004413981947727241">استخدام كلمات المرور على أي جهاز</translation>
 <translation id="2004697686368036666">قد لا تعمل ميزات بعض المواقع الإلكترونية</translation>
 <translation id="2005199804247617997">الملفات الشخصية الأخرى</translation>
@@ -1621,7 +1623,6 @@
 <translation id="2137128126782078222">عدم السماح بالإشعارات من الموقع الإلكتروني <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">زر الإعداد</translation>
 <translation id="2140788884185208305">حالة البطارية</translation>
-<translation id="2140902257485550046">حرِّك زر الإيقاف/التفعيل لحظر جميع الإضافات على هذا الموقع الإلكتروني.</translation>
 <translation id="2142328300403846845">فتح الرابط كـ</translation>
 <translation id="2142484069755256151">‏إنشاء رقم تعريف شخصي مكوّن من 6 أرقام لاسترداد بياناتك في "مدير كلمات المرور في Google"، رقم التعريف الشخصي <ph name="NUM_DIGIT" /> من 6</translation>
 <translation id="2142582065325732898">‏عليك تفعيل ميزة <ph name="LINK1_BEGIN" />مزامنة Chrome<ph name="LINK1_END" /> لعرض علامات التبويب الأخيرة في Chrome. <ph name="LINK2_BEGIN" />مزيد من المعلومات<ph name="LINK2_END" /></translation>
@@ -1700,6 +1701,7 @@
 <translation id="2191754378957563929">مفعّل</translation>
 <translation id="2192505247865591433">من:</translation>
 <translation id="219283042927675668">علامات التبويب في المجموعة</translation>
+<translation id="2192881772486983655">تتم حاليًا إدارة صفحة علامة التبويب الجديدة من قِبل <ph name="THIRD_PARTY_NTP_MANAGER" />. ويتم فتح الصفحة في علامة تبويب جديدة</translation>
 <translation id="2193365732679659387">إعدادات الثقة</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
 <translation id="2195331105963583686">سيظل بإمكانك استخدام هذا الجهاز <ph name="DEVICE_TYPE" /> بعد تلك الفترة، ولكن لن يتلقى الجهاز تحديثات تلقائية للبرامج والأمان بعد ذلك.</translation>
@@ -2277,6 +2279,7 @@
 <translation id="2593499352046705383">‏احرص قبل البدء على الاحتفاظ بنسخة احتياطية من بياناتك. سيؤدي تثبيت نظام التشغيل <ph name="DEVICE_OS" /> إلى استبدال جميع البيانات على محرّك الأقراص الثابتة. تعرّف على مزيد من المعلومات على الرابط g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">‏إدارة أمان V8</translation>
 <translation id="2597073208962000830">تستخدم ميزة "المشاركة عن قرب" تقنية البلوتوث للعثور على الأجهزة القريبة.</translation>
+<translation id="2598136842498757793">تخصيص أزرار شريط الأدوات</translation>
 <translation id="2598710988533271874">‏يتوفّر تحديث جديد لمتصفِّح Chrome</translation>
 <translation id="2599048253926156421">تم نسخ اسم المستخدم إلى الحافظة.</translation>
 <translation id="2602501489742255173">مرِّر سريعًا للأعلى للبدء.</translation>
@@ -2298,7 +2301,6 @@
 <translation id="2610374175948698697">يمكنها قراءة الملفات أو المجلدات على جهازك</translation>
 <translation id="2610780100389066815">‏توقيع قائمة الثقة لـ Microsoft</translation>
 <translation id="261114180663074524">‏سجِّل الدخول إلى حسابك على Microsoft ثم أعِد المحاولة.</translation>
-<translation id="2611765907167846862">صافٍ</translation>
 <translation id="2611776654555141051">أداة رسم المستطيل</translation>
 <translation id="2612676031748830579">رقم البطاقة</translation>
 <translation id="261305050785128654">يمكنك السماح للمواقع الإلكترونية بمعرفة اللغات التي تتحدّث بها. وستعرض لك المحتوى بتلك اللغات إن أمكن ذلك.</translation>
@@ -2506,6 +2508,7 @@
 <translation id="2749881179542288782">تحقق من التدقيق النحوي مع التدقيق الإملائي</translation>
 <translation id="2750020734439919571">‏المزيد من إعدادات وأذونات تطبيق Chrome</translation>
 <translation id="2750602041558385535">تم حظر عملية تنزيل لم يتم التحقّق منها.</translation>
+<translation id="275213133112113418">تم حفظ بطاقتك</translation>
 <translation id="2753623023919742414">انقر للبحث</translation>
 <translation id="2754226775788136540">جارٍ البحث عن أجهزة تستخدم ميزة "الإقران السريع" ومحفوظة في <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">‏يمكنك العثور على التطبيقات التي تحتاجها، بدايةً من التطبيقات المخصَّصة للإنتاجية إلى التطبيقات الترفيهية، وذلك من خلال "متجر Google Play". ويمكنك تثبيت أي تطبيقات متى تشاء.</translation>
@@ -3601,6 +3604,7 @@
 <translation id="3568431410312984116">السماح بفتح ميزة "ساعدني في الكتابة" تلقائيًا</translation>
 <translation id="3569382839528428029">هل تريد من <ph name="APP_NAME" /> مشاركة شاشتك؟</translation>
 <translation id="3569614820047645079">‏تتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت.</translation>
+<translation id="3569617221227793022">‏تم ضبط المنطقة الزمنية حاليًا على ‎<ph name="TIME_ZONE_ENTRY" />. ويدير المشرف هذا الإعداد.</translation>
 <translation id="3569682580018832495">بإمكان <ph name="ORIGIN" /> عرض الملفات والمجلدات التالية:</translation>
 <translation id="3571734092741541777">إعداد</translation>
 <translation id="3572031449439748861">تم إيقاف <ph name="NUM_EXTENSIONS" /> إضافة</translation>
@@ -4049,6 +4053,7 @@
 <translation id="3866142613641074814">هناك كلمات مرور معرّضة لخطر الاختراق.</translation>
 <translation id="3866249974567520381">الوصف</translation>
 <translation id="3867134342671430205">يمكنك السحب أو استخدام مفاتيح الأسهم لتحريك الشاشة.</translation>
+<translation id="3867831579565057323">ربط الشاشة التي تعمل باللمس</translation>
 <translation id="3867944738977021751">حقول الشهادة</translation>
 <translation id="3869917919960562512">فهرس خاطئ.</translation>
 <translation id="3870626286046977643">مشاركة صوت النظام أيضًا</translation>
@@ -4349,6 +4354,7 @@
 <translation id="4085298594534903246">‏تم منع تشغيل JavaScript في هذه الصفحة.</translation>
 <translation id="4085566053793776107">تخصيص المظاهر</translation>
 <translation id="4085620044235559093">اختَر تطبيقًا لفتح ملفات <ph name="FILE_TYPE" />.</translation>
+<translation id="4086565736678483233">يمكنك الوصول إليها من خلال "طرق الدفع"</translation>
 <translation id="4087089424473531098">تم إنشاء الإضافة:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5823,6 +5829,7 @@
 <translation id="5187641678926990264">&amp;تثبيت الصفحة كتطبيق...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">‏استخدام الموقع الجغرافي: يمكنك أن تمنح إذن استخدام الموقع الجغرافي لجهازك لكلّ من تطبيقات ChromeOS وAndroid والمواقع الإلكترونية والخدمات المسموح لها بتحديد الموقع الجغرافي. يتيح الإعداد "دقة الموقع الجغرافي" تزويد تطبيقات وخدمات Android ببيانات موقعك الجغرافي بشكل أكثر دقة. ولإجراء ذلك، تعالج Google بشكل دوري معلومات أدوات الاستشعار والإشارات اللاسلكية التي يرسلها جهازك لجمع بيانات المواقع الجغرافية للإشارات اللاسلكية. وتُستخدَم هذه المعلومات بدون الكشف عن هويتك لتحسين دقة الموقع الجغرافي والخدمات المستنِدة إليه، وتحسين خدمات Google وتقديمها وصيانتها استنادًا إلى المصالح المشروعة للجهات الخارجية وGoogle من أجل تلبية احتياجات المستخدمين. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول استخدام الموقع الجغرافي<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">يتطلب إيقاف مشاركة العمليات إعادة تشغيل هذا المتصفّح. ستتم إعادة تشغيله الآن.</translation>
 <translation id="5189404424758444348">خيال علمي عن الآلات البخارية</translation>
 <translation id="5190577235024772869">مساحة التخزين المستخدَمة: <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">تفعيل المنفذ</translation>
@@ -5987,6 +5994,7 @@
 <translation id="5301954838959518834">حسنًا</translation>
 <translation id="5302032366299160685">يُرجى الانتظار إلى أن يتم فتحه قبل إعادة المحاولة</translation>
 <translation id="5302048478445481009">اللغة</translation>
+<translation id="5302435492906794790">جارٍ البحث عن الأجهزة القريبة القابلة للاكتشاف...</translation>
 <translation id="5302932258331363306">عرض الاستبدالات</translation>
 <translation id="5305145881844743843">تتم إدارة هذا الحساب من خلال <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />.</translation>
 <translation id="5307030433605830021">المصدر غير متاح</translation>
@@ -6961,7 +6969,6 @@
 <translation id="6022526133015258832">فتح في وضع ملء الشاشة</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم.</translation>
 <translation id="6023643151125006053">تم إقفال هذا الجهاز (الرقم التسلسلي: <ph name="SERIAL_NUMBER" />) من خلال مشرف <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">السماح بالإضافات على هذا الموقع الإلكتروني</translation>
 <translation id="6024317249717725918">الب&amp;حث في إطار الفيديو باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="6025215716629925253">تتبع التكديس</translation>
 <translation id="6026819612896463875">‏<ph name="WINDOW_TITLE" /> - تم توصيل جهاز USB</translation>
@@ -7061,6 +7068,7 @@
 <translation id="6097480669505687979">إذا لم تفرّغ مساحة، فقد تتم إزالة المستخدمين والبيانات تلقائيا.</translation>
 <translation id="6097600385983390082">ميزة البحث الصوتي مغلقة</translation>
 <translation id="6098793583803863900">يجري فحص ملف غير معروف بحثًا عن محتوى خطير.</translation>
+<translation id="609892108553214365">‏استخدام هذه البطاقة على هاتف iPhone</translation>
 <translation id="609942571968311933">تم نسخ النص من <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">‏السماح للموقع الإلكتروني <ph name="HOST" /> دائمًا بالتحكُّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="6100736666660498114">قائمة بدء التشغيل</translation>
@@ -8705,6 +8713,7 @@
 <translation id="7321545336522791733">خادم يتعذر الوصول إليه</translation>
 <translation id="7322515217754205362">أذونات الوصول إلى المواقع الإلكترونية</translation>
 <translation id="7323315405936922211">حجم منطقة المؤشر</translation>
+<translation id="7324020307732396723">فتح إعدادات اللغة</translation>
 <translation id="7324297612904500502">منتدى الإصدار التجريبي</translation>
 <translation id="7325209047678309347">الورقة عالقة</translation>
 <translation id="7325953439504232954">هل تريد تبديل الملف الشخصي؟</translation>
@@ -9180,6 +9189,7 @@
 <translation id="7663774460282684730">اختصارات لوحة المفاتيح المتوفّرة</translation>
 <translation id="7663859337051362114">‏إضافة الملف الشخصي لشريحة eSIM</translation>
 <translation id="76641554187607347">ما مِن لوحة مفاتيح متصلة.</translation>
+<translation id="7664442418269614729">‏استخدام هذه البطاقة على هاتف iPhone</translation>
 <translation id="7665082356120621510">حجز الحجم</translation>
 <translation id="7665369617277396874">إضافة حساب</translation>
 <translation id="7665445336029073980">سجلّ التنزيل بالكامل</translation>
@@ -9223,7 +9233,6 @@
 <translation id="7685087414635069102">رقم التعريف الشخصي مطلوب</translation>
 <translation id="7685351732518564314">يُرجى الضغط على أي زر على "<ph name="DEVICE_NAME" />".</translation>
 <translation id="7686086654630106285">مزيد من المعلومات عن الإعلانات التي تقترحها المواقع الإلكترونية</translation>
-<translation id="7686581688229391955">حرِّك زر الإيقاف/التفعيل لتفعيل الإضافات على هذا الموقع الإلكتروني.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">اختيار من القائمة</translation>
 <translation id="7690853182226561458">إضافة &amp;مجلد...</translation>
@@ -9563,6 +9572,7 @@
 <translation id="79312157130859720">يشارك <ph name="APP_NAME" /> الشاشة والصوت.</translation>
 <translation id="793293630927785390">‏مربع الحوار "شبكة Wi-Fi جديدة"</translation>
 <translation id="7932969338829957666">‏تتوفَّر المجلدات المشتركة في Linux على <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">يمكنك إعداد الجهاز المزوّد بشاشة تعمل باللمس وربطه بشاشة العرض الصحيحة</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{إعادة صوت موقع إلكتروني واحد}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت موقعيِّ الويب}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
 <translation id="7933486544522242079">&amp;حفظ ومشاركة</translation>
 <translation id="7933518760693751884">لحفظ إحدى الصفحات والاطّلاع عليها لاحقًا، انقر على رمز الإشارة المرجعية.</translation>
@@ -9787,6 +9797,7 @@
 <translation id="8081623398548615289">تتم إدارة جلستك من خلال <ph name="MANAGER_NAME" />. ويمكن للمشرفين حذف ملفك الشخصي وتتبّع حركة بيانات الشبكة أيضًا.</translation>
 <translation id="8081989000209387414">‏هل تريد إيقاف خيار "تصحيح الأخطاء عبر ADB"؟</translation>
 <translation id="8082106343289440791">هل تريد الإقران مع جهاز "<ph name="DEVICE_NAME" />"؟</translation>
+<translation id="8082132721957920509">تم حفظ بطاقتك</translation>
 <translation id="8082390128630131497">‏سيؤدي إيقاف خيار "تصحيح الأخطاء عبر ADB" إلى إعادة ضبط جهاز <ph name="DEVICE_TYPE" /> هذا على الإعدادات الأصلية. وسيتم محو جميع حسابات المستخدمين والبيانات المحلّية.</translation>
 <translation id="8084114998886531721">كلمة مرور محفوظة</translation>
 <translation id="8084429490152575036">‏إعدادات اسم نقطة الوصول (APN) لشبكات الجوّال</translation>
@@ -9817,6 +9828,7 @@
 <translation id="8097959162767603171">‏يجب على المشرف أولاً قبول بنود الخدمة في قائمة أجهزة Chrome داخل وحدة تحكُّم المشرف.</translation>
 <translation id="8098156986344908134">هل تريد تثبيت نظام التشغيل <ph name="DEVICE_OS" /> ومحو بيانات محرّك الأقراص الثابتة؟</translation>
 <translation id="8098616321286360457">يجب أن يتوفّر اتصال بالشبكة</translation>
+<translation id="8100057926383586173">فتح إعدادات اللغة</translation>
 <translation id="8100230553590752325">استخدام كلمات المرور المحفوظة على أي جهاز</translation>
 <translation id="810068641062493918">تم اختيار <ph name="LANGUAGE" />. يُرجى الضغط على مفتاح "البحث" ومفتاح "المسافة" لإلغاء الاختيار.</translation>
 <translation id="8101409298456377967">يمكنك إنشاء كلمات المرور لحساباتك وحفظها وإدارتها لتسجيل الدخول إلى المواقع الإلكترونية والتطبيقات بسهولة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

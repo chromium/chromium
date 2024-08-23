@@ -76,6 +76,9 @@ Aspectos que debes tener en cuenta:
 <translation id="2703746758996815929">Para obtener sugerencias útiles de Chrome, activa las notificaciones en la configuración de iOS.</translation>
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="2750626042242931740">Puedes actualizar tus selecciones en cualquier momento en la configuración de Chrome.</translation>
+<translation id="2754428955276778271">Aún no se guardaron algunos de tus datos de Chrome en tu Cuenta de Google.
+
+Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
 <translation id="2869959624320573933">Acceder a Chrome</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo Chrome mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Aspectos que debes tener en cuenta:
 <translation id="5190139289262548459">Tu organización, <ph name="DOMAIN" />, administra la cuenta con la que accediste y la forma en que se usa Chrome.</translation>
 <translation id="5256908199795498284">Chrome detectará los números de seguimiento del paquete en los sitios que visites y te mostrará actualizaciones de tus paquetes en la página Nueva pestaña. Tus datos se compartirán con Google para proporcionar esta función y mejorar Shopping para todos los usuarios.</translation>
 <translation id="5278862365980079760">Bloquea tus pestañas de incógnito cuando abandonas Chrome o cambias de app.</translation>
+<translation id="5310957470610282541">Aún no se guardaron algunos de tus datos de Chrome en tu Cuenta de Google.
+Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="5389212809648216794">Google Chrome no puede utilizar tu cámara porque la está usando otra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu Cuenta de Google</translation>
 <translation id="5439191312780166229">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chrome.</translation>

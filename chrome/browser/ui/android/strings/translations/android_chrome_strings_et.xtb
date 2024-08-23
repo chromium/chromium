@@ -131,7 +131,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1549000191223877751">Teisalda teise aknasse</translation>
 <translation id="1553358976309200471">Värskenda Chrome'i</translation>
 <translation id="1554532453982918912">Aidake täiustada Chrome'i inimeste jaoks, kes kasutavad seda nagu teie</translation>
-<translation id="1558391695376153246">Sule inkognito vahelehed</translation>
 <translation id="1568636008098739136">Kuulake seda lehte. Selle otsetee muutmiseks puudutage pikalt.</translation>
 <translation id="1571304935088121812">Kasutajanime kopeerimine</translation>
 <translation id="1584648915421894279">Praegu ei saa sellesse seadmesse salvestatud paroole Chrome'i kanalites kasutada. Pärast versiooni Chrome 125 liidetakse teie seadmesse Chrome'i ja kanali <ph name="CHROME_CHANNEL" /> jaoks salvestatud paroolid ning neid saab kasutada mõlemas rakenduses.</translation>
@@ -1447,7 +1446,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7691043218961417207">Avastage sisu, mida jälgida</translation>
 <translation id="7697383401610880082">Lohistamispide</translation>
 <translation id="7698359219371678927">Looge meil rakenduses <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Päringute paanid</translation>
 <translation id="7707922173985738739">Kasuta mobiilset andmesidet</translation>
 <translation id="7709918231054955894">Hankige kõik oma vahelehed</translation>
 <translation id="7733878270780732638">Seadmes ei ole piisavalt ruumi</translation>

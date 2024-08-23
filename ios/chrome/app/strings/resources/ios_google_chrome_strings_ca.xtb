@@ -76,6 +76,9 @@ Aspectes que cal tenir en compte:
 <translation id="2703746758996815929">Per rebre consells útils sobre Chrome, activa les notificacions a la configuració d'iOS.</translation>
 <translation id="2736805085127235148">En aquests moments, les notificacions de Chrome estan desactivades a la configuració del dispositiu.</translation>
 <translation id="2750626042242931740">Pots actualitzar les teves seleccions en qualsevol moment a Configuració de Chrome.</translation>
+<translation id="2754428955276778271">Algunes dades de Chrome encara no s'han desat al teu Compte de Google.
+
+Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="2767464022270041271">No hi ha cap contrasenya desada. El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="2869959624320573933">Inicia la sessió a Chrome</translation>
 <translation id="2876628302275096482">Més informació sobre <ph name="BEGIN_LINK" />com Chrome manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Aspectes que cal tenir en compte:
 <translation id="5190139289262548459">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què tens la sessió iniciada i com s'utilitza Chrome.</translation>
 <translation id="5256908199795498284">Chrome detectarà els números de seguiment dels enviaments als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. Les teves dades es compartiran amb Google per proporcionar aquesta funció i millorar Shopping per a tothom.</translation>
 <translation id="5278862365980079760">Bloqueja les pestanyes d'incògnit quan surtis de Chrome o quan canviïs d'aplicació.</translation>
+<translation id="5310957470610282541">Algunes dades de Chrome encara no s'han desat al teu Compte de Google.
+Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="5389212809648216794">Google Chrome no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
 <translation id="5395376160638294582">Assegura't de poder utilitzar sempre les dades de Chrome al teu Compte de Google</translation>
 <translation id="5439191312780166229">T'avisa de llocs web perillosos, fins i tot dels que Google no coneixia abans, ja que analitza més dades dels llocs web que la protecció estàndard. Pots optar per ometre els advertiments de Chrome.</translation>

@@ -687,6 +687,7 @@
 <translation id="3455468639467374593">Шаблон, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 прылада падключана да хот-спота прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Скінуць каэфіцыент маштабавання</translation>
+<translation id="3463151196028058330">Рэтуш твару</translation>
 <translation id="3465223694362104965">З моманту вашага апошняга ўваходу ў сістэму да прылады была падключана іншая клавіятура. Выкарыстоўвайце гэту клавіятуру, толькі калі вы ёй давяраеце.</translation>
 <translation id="3465356146291925647">Знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, затым <ph name="KEY_TWO" /> або <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5176318573511391780">Запіс часткі экрана</translation>
 <translation id="5187627942836026988">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот заблакіраваны адміністратарам.</translation>
+<translation id="518847040357731612">Параметры студыйнага выгляду</translation>
 <translation id="5197255632782567636">Інтэрнэт</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, падзей: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Праграма <ph name="MOVED_APP_NAME" /> была выкарыстана з праграмай <ph name="IN_PLACE_APP" /> для стварэння новай папкі.</translation>

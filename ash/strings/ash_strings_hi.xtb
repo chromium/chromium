@@ -686,6 +686,7 @@
 <translation id="3455468639467374593">टेंप्लेट, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" /> के हॉटस्पॉट से एक डिवाइस कनेक्ट है</translation>
 <translation id="346243998268439747">ज़ूम स्‍तर रीसेट करें</translation>
+<translation id="3463151196028058330">चेहरे की फ़ोटो क्वालिटी में सुधार</translation>
 <translation id="3465223694362104965">आपके अंतिम बार साइन इन किए जाने के समय से इस डिवाइस से कोई और कीबोर्ड कनेक्ट किया गया है. इस कीबोर्ड का इस्तेमाल करने से पहले पक्का करें कि यह भरोसेमंद है.</translation>
 <translation id="3465356146291925647">आपका एडमिन मैनेज करता है</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> फिर <ph name="KEY_TWO" /> या <ph name="KEY_THREE" /></translation>
@@ -1209,6 +1210,7 @@
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5176318573511391780">स्क्रीन के कुछ हिस्से को रिकॉर्ड करें</translation>
 <translation id="5187627942836026988">हॉटस्पॉट की जानकारी दिखाएं. आपके एडमिन ने हॉटस्पॉट को ब्लॉक किया है.</translation>
+<translation id="518847040357731612">स्टूडियो लुक की प्राथमिकता</translation>
 <translation id="5197255632782567636">इंटरनेट</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> इवेंट</translation>
 <translation id="5198715732953550718">नया फ़ोल्डर बनाने के लिए <ph name="MOVED_APP_NAME" /> को <ph name="IN_PLACE_APP" /> में जोड़ा गया.</translation>

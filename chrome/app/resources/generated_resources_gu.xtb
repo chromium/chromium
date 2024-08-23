@@ -1615,7 +1615,6 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" />માંથી નોટિફિકેશનની મંજૂરી આપશો નહીં</translation>
 <translation id="2139919072249842737">સેટઅપ કરો બટન</translation>
 <translation id="2140788884185208305">બૅટરીની ક્ષમતા</translation>
-<translation id="2140902257485550046">આ સાઇટ પર તમામ એક્સ્ટેન્શનને બ્લૉક કરવાનું પસંદ કરો</translation>
 <translation id="2142328300403846845">આ રીતે લિંક ખોલો</translation>
 <translation id="2142484069755256151">Google Password Manager માટે, કોઈ 6-અંકનો રિકવરી પિન બનાવો, પિનનો અંક 6માંથી <ph name="NUM_DIGIT" /></translation>
 <translation id="2142582065325732898">તાજેતરની Chrome ટૅબ જોવા માટે, <ph name="LINK1_BEGIN" />Chrome સિંક<ph name="LINK1_END" />ની સુવિધા ચાલુ કરો. <ph name="LINK2_BEGIN" />વધુ જાણો<ph name="LINK2_END" /></translation>
@@ -2295,7 +2294,6 @@
 <translation id="2610374175948698697">તમારા ડિવાઇસમાંની ફાઇલો અથવા ફોલ્ડરો જોઈ શકે છે</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">તમારા Microsoft એકાઉન્ટમાં સાઇન ઇન કરો અને પછી ફરી પ્રયાસ કરો</translation>
-<translation id="2611765907167846862">ગંભીર</translation>
 <translation id="2611776654555141051">લંબચોરસ ટૂલ</translation>
 <translation id="2612676031748830579">કાર્ડ નંબર</translation>
 <translation id="261305050785128654">તમે જે ભાષાઓ બોલો છો તે વેબસાઇટને જણાવો. જ્યારે શક્ય હશે ત્યારે તેઓ તે ભાષાઓમાં કન્ટેન્ટ બતાવશે.</translation>
@@ -6967,7 +6965,6 @@ USB ડિવાઇસ</translation>
 <translation id="6022526133015258832">પૂર્ણ સ્ક્રીન ખોલો</translation>
 <translation id="6022659036123304283">Chromeને તમારી જરૂરિયાત અનુરૂપ બનાવો</translation>
 <translation id="6023643151125006053">આ ઉપકરણ (SN: <ph name="SERIAL_NUMBER" />)ને <ph name="SAML_DOMAIN" /> વ્યવસ્થાપક દ્વારા લૉક કરવામાં આવ્યું હતું.</translation>
-<translation id="6024072172641380781">આ સાઇટ પર એક્સ્ટેન્શનને મંજૂરી આપો</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે વીડિયો ફ્રેમ શોધો</translation>
 <translation id="6025215716629925253">સ્ટેક ટ્રેસ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB ઉપકરણ કનેક્ટ કર્યું</translation>
@@ -9225,7 +9222,6 @@ USB ડિવાઇસ</translation>
 <translation id="7685087414635069102">પિન જરૂરી છે</translation>
 <translation id="7685351732518564314">તમારા <ph name="DEVICE_NAME" /> પર બટન દબાવો.</translation>
 <translation id="7686086654630106285">સાઇટ દ્વારા સૂચિત જાહેરાતો વિશે વધુ વિગતો</translation>
-<translation id="7686581688229391955">આ સાઇટ પર એક્સ્ટેન્શનને મંજૂરી આપવાનું પસંદ કરો</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">સૂચિમાંથી પસંદ કરો</translation>
 <translation id="7690853182226561458">&amp;ફોલ્ડર ઉમેરો...</translation>
@@ -9987,7 +9983,7 @@ USB ડિવાઇસ</translation>
 <translation id="8230446983261649357">સાઇટને છબીઓ બતાવવાની મંજૂરી આપશો નહીં</translation>
 <translation id="823226567613548870">તમારો <ph name="BRAND" />નો ડેટા ડિલીટ કરો</translation>
 <translation id="8233028084277069927">હવે ખોલો</translation>
-<translation id="8234795456569844941">કૃપા કરી અમારા એન્જિનિયરોને આ સમસ્યા ઠીક કરવામાં સહાય કરો. તમને પ્રોફાઇલમાં ભૂલ આવ્યાનો સંદેશ મળ્યો બિલકુલ તે પહેલા શું થયું હતું તે અમને જણાવો:</translation>
+<translation id="8234795456569844941">કૃપા કરી અમારા એન્જિનિયરોને આ સમસ્યા ઠીક કરવામાં સહાય કરો. તમને પ્રોફાઇલમાં ભૂલ આવ્યાનો મેસેજ મળ્યો બિલકુલ તે પહેલા શું થયું હતું તે અમને જણાવો:</translation>
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" /> પરથી પેજ શેર કરવામાં આવ્યું</translation>
 <translation id="8236802542508794819">આ ટૅબ અન્ય ટૅબ સાથે સંસાધનો શેર કરે છે, જે ડિબગીંગમાં અવરોધ ઊભો કરી શકે છે.</translation>
 <translation id="8236911020904880539">બહાર નીકળો</translation>

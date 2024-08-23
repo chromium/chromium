@@ -425,6 +425,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7398989605938454041">Chromium profillari brauzerdan alohida foydalanish uchun kerak. Bunda ish va hordiqni ajratish osonlashadi.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Bu sayt kamerangizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
+<translation id="7458892263350425044">Mikrofondan foydalanish uchun <ph name="BEGIN_LINK" />tizim sozlamalari<ph name="END_LINK" /> orqali Chromiumga ruxsat bering</translation>
 <translation id="7461356015007898716">Chromium yangilanishlari Windows 10 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: Windows 7.</translation>
 <translation id="7467949745582939695">Chromium qayta ishga tushirilsinmi?</translation>
 <translation id="7483335560992089831">Tizimdagi joriy versiyadagi Chromium‘ni o‘rnatib bo‘lmaydi. Chromium‘ni yoping va qaytadan urinib ko‘ring.</translation>
@@ -466,6 +467,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>
 <translation id="8166782796394721554">Chromiumda JavaScript va WebAssembly tizimi uchun qoʻshimcha himoyasini yoqish</translation>
 <translation id="81770708095080097">Bu fayl xavfli edi va u Chromium tomonidan bloklandi.</translation>
+<translation id="8223363452568144035">Kameradan foydalanish uchun <ph name="BEGIN_LINK" />tizim sozlamalari<ph name="END_LINK" /> orqali Chromiumga ruxsat bering</translation>
 <translation id="8232193495299001329">Chromium bu kengaytma manbasini tekshira olmadi va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromiumdan olib tashlang.</translation>
 <translation id="8248265253516264921">Agar rasmga foydali tavsif berilmagan boʻlsa, Chromium uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi. Bu sozlamani istalgan vaqtda faolsizlantirish mumkin.</translation>
 <translation id="8254601181414348851">Chromiumga yangi profil orqali kirasizmi?</translation>
@@ -536,4 +538,5 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="983803489796659991">Yangilanish serverida ilova uchun hech qanday hesh axboroti mavjud emasligi sababli oʻrnatilmadi.</translation>
 <translation id="985498048907240953">Chromium brauzeridan hisobsiz foydalanish</translation>
 <translation id="985602178874221306">Chromium mualliflari</translation>
+<translation id="992780518932311116">Joylashuvdan foydalanish uchun <ph name="BEGIN_LINK" />tizim sozlamalari<ph name="END_LINK" /> orqali Chromiumga ruxsat bering</translation>
 </translationbundle>

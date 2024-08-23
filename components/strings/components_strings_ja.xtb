@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1975457531113383421">給紙トレイ</translation>
 <translation id="1975584088563498795">用紙受け 10</translation>
-<translation id="1976610264358655503">頻繁にアクセス</translation>
 <translation id="1978555033938440688">ファームウェアのバージョン</translation>
 <translation id="1979156660928743046">メディア情報</translation>
 <translation id="1988881251331415125">タイプミスでない場合は、<ph name="BEGIN_LINK" />接続診断をお試しください<ph name="END_LINK" />。</translation>
@@ -1077,7 +1076,7 @@
 <translation id="2991174974383378012">ウェブサイトとの共有</translation>
 <translation id="299122504639061328">デフォルトの検索エンジンとサイト内検索を管理します</translation>
 <translation id="2991571918955627853"><ph name="SITE" /> では HSTS が使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
-<translation id="2991865971341174470">Chrome でお支払い情報を入力できるよう、本人確認を行ってください。</translation>
+<translation id="2991865971341174470">Chrome がお支払い情報を入力できるよう、本人確認を行ってください。</translation>
 <translation id="2995517112308048736">ファイルサイズ:</translation>
 <translation id="299990983510665749">ハッチバック</translation>
 <translation id="3002501248619246229">給紙トレイのメディアを確認してください</translation>
@@ -3093,7 +3092,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">カメラ</translation>
 <translation id="6734506549556896534">シミュレーション ゲーム</translation>
-<translation id="6735783933931458444">この時間帯に頻繁にアクセス</translation>
 <translation id="6737708609449480586">パン、焼菓子</translation>
 <translation id="6738516213925468394">データは <ph name="TIME" />に<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="6739943577740687354">この機能は AI を使用しており、常に正しく動作するとは限りません</translation>

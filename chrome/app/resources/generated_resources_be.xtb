@@ -1619,7 +1619,6 @@
 <translation id="2137128126782078222">Не дазваляць сайту <ph name="WEBSITE" /> адпраўляць апавяшчэнні</translation>
 <translation id="2139919072249842737">Кнопка наладкі</translation>
 <translation id="2140788884185208305">Стан акумулятара</translation>
-<translation id="2140902257485550046">Націсніце, каб заблакіраваць усе пашырэнні на гэтым сайце</translation>
 <translation id="2142328300403846845">Адкрыць спасылку як</translation>
 <translation id="2142484069755256151">Вы ствараеце 6-значны рэзервовы PIN-код для Менеджара пароляў Google, увядзіце лічбу <ph name="NUM_DIGIT" /> з 6</translation>
 <translation id="2142582065325732898">Каб праглядаць нядаўна адкрытыя ўкладкі Chrome, уключыце <ph name="LINK1_BEGIN" />Сінхранізацыю Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Даведацца больш<ph name="LINK2_END" /></translation>
@@ -2298,7 +2297,6 @@
 <translation id="2610374175948698697">Файлы, якім дазволена праглядаць файлы і папкі на прыладзе</translation>
 <translation id="2610780100389066815">Падпісванне даверанага спіса Microsoft</translation>
 <translation id="261114180663074524">Увайдзіце ва ўліковы запіс Microsoft і паўтарыце спробу</translation>
-<translation id="2611765907167846862">Ціхамірны</translation>
 <translation id="2611776654555141051">Інструмент "Прамавугольнік"</translation>
 <translation id="2612676031748830579">Нумар карткі</translation>
 <translation id="261305050785128654">Укажыце для вэб-сайтаў, якімі мовамі вы валодаеце. Вэб-сайты будуць па магчымасці паказваць змесціва на гэтых мовах.</translation>
@@ -5991,6 +5989,7 @@
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302032366299160685">Дачакайцеся заканчэння гэтага працэсу, перш чым паўтарыць спробу</translation>
 <translation id="5302048478445481009">Мова</translation>
+<translation id="5302435492906794790">Ідзе пошук бачных прылад паблізу...</translation>
 <translation id="5302932258331363306">Паказваць варыянты замены</translation>
 <translation id="5305145881844743843">Гэтым уліковым запісам кіруе <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />.</translation>
 <translation id="5307030433605830021">Крыніца не падтрымліваецца</translation>
@@ -6965,7 +6964,6 @@
 <translation id="6022526133015258832">Адкрыць у поўнаэкранным рэжыме</translation>
 <translation id="6022659036123304283">Наладзьце Chrome пад сябе</translation>
 <translation id="6023643151125006053">Гэта прылада (серыйны нумар: <ph name="SERIAL_NUMBER" />) заблакіравана адміністратарам дамена <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Дазволіць пашырэнні для гэтага сайта</translation>
 <translation id="6024317249717725918">&amp;Знайсці кадр відэа (<ph name="VISUAL_SEARCH_PROVIDER" />)</translation>
 <translation id="6025215716629925253">Аналіз стэка</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – падключана прылада USB</translation>
@@ -8706,6 +8704,7 @@
 <translation id="7321545336522791733">Сервер недаступны</translation>
 <translation id="7322515217754205362">Дазволы на доступ да сайтаў</translation>
 <translation id="7323315405936922211">Памер вобласці нязначнага перамяшчэння курсора</translation>
+<translation id="7324020307732396723">Адкрыць налады мовы</translation>
 <translation id="7324297612904500502">Форум бэта-версіі</translation>
 <translation id="7325209047678309347">Папера захрасла</translation>
 <translation id="7325953439504232954">Пераключыць профіль?</translation>
@@ -9226,7 +9225,6 @@
 <translation id="7685087414635069102">Патрабуецца PIN-код</translation>
 <translation id="7685351732518564314">Націсніце на прыладзе "<ph name="DEVICE_NAME" />" любую кнопку.</translation>
 <translation id="7686086654630106285">Падрабязней пра рэкламу, якая прапануецца сайтамі</translation>
-<translation id="7686581688229391955">Націсніце, каб разблакіраваць пашырэнні на гэтым сайце</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Выбраць са спіса</translation>
 <translation id="7690853182226561458">Дадаць &amp;папку...</translation>
@@ -9821,6 +9819,7 @@
 <translation id="8097959162767603171">Спачатку адміністратар павінен прыняць умовы выкарыстання ў спісе прылад Chrome на кансолі адміністратара.</translation>
 <translation id="8098156986344908134">Усталяваць <ph name="DEVICE_OS" /> і сцерці даныя на цвёрдым дыску?</translation>
 <translation id="8098616321286360457">Патрабуецца падключэнне да сеткі</translation>
+<translation id="8100057926383586173">Адкрыць налады мовы</translation>
 <translation id="8100230553590752325">Выкарыстоўвайце захаваныя паролі на любой прыладзе</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" />, выбрана. Каб скасаваць выбар, націсніце "Пошук" і клавішу прабелу.</translation>
 <translation id="8101409298456377967">Стварайце паролі, захоўвайце іх і кіруйце імі, каб мець магчымасць з лёгкасцю ўваходзіць ва ўліковыя запісы на сайтах і ў праграмах. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>

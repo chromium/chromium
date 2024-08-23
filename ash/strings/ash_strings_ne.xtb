@@ -687,6 +687,7 @@
 <translation id="3455468639467374593">टेम्प्लेट, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" /> को हटस्पटमा एउटा डिभाइस कनेक्ट गरिएको छ</translation>
 <translation id="346243998268439747">जुमको स्तर रिसेट गर्नुहोस्</translation>
+<translation id="3463151196028058330">अनुहार परिष्कार गर्ने सुविधा</translation>
 <translation id="3465223694362104965">तपाईंले पछिल्लो पटक साइन इन गरेयता यो डिभाइसमा अर्को किबोर्ड जडान गरिएको छ। यो किबोर्डको प्रयोग थाल्नुअघि तपाईं यसमाथि भरोसा गर्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3465356146291925647">तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> थिच्नुहोस् अनि <ph name="KEY_TWO" /> वा <ph name="KEY_THREE" /> थिच्नुहोस्</translation>
@@ -1212,6 +1213,7 @@
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5176318573511391780">स्क्रिनको केही भागको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="5187627942836026988">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। तपाईंको एड्मिनले हटस्पट ब्लक गर्नुभएको छ।</translation>
+<translation id="518847040357731612">स्टुडियो लुकसम्बन्धी प्राथमिकता</translation>
 <translation id="5197255632782567636">इन्टरनेट</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> वटा कार्यक्रम</translation>
 <translation id="5198715732953550718">नयाँ फोल्डर सिर्जना गर्न <ph name="MOVED_APP_NAME" /> <ph name="IN_PLACE_APP" /> सँग समायोजन गरियो</translation>

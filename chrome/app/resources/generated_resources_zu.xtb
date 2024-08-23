@@ -1628,7 +1628,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2137128126782078222">Ungavumeli izaziso ezivela ku-<ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Setha inkinobho</translation>
 <translation id="2140788884185208305">Impilo yebhethri</translation>
-<translation id="2140902257485550046">Khetha ukuvimba zonke izandiso kuleli sayithi</translation>
 <translation id="2142328300403846845">Vula isixhumanisi njenge</translation>
 <translation id="2142484069755256151">Dala iPHINIKHODI yokuthola enamadijithi angu-6 Yomphathi Wephasiwedi YeGoogle, iPHINIKHOWUDI yamadijithi angu-<ph name="NUM_DIGIT" /> kwangu-6</translation>
 <translation id="2142582065325732898">Vula <ph name="LINK1_BEGIN" />Ukuvumelanisa kwe-Chrome<ph name="LINK1_END" /> ukuze ubuke amathebhu we-Chrome wakamuva. <ph name="LINK2_BEGIN" />Funda kabanzi<ph name="LINK2_END" /></translation>
@@ -2311,7 +2310,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2610374175948698697">Ingakwazi ukubuka amafayela noma amafolda kudivayisi yakho</translation>
 <translation id="2610780100389066815">Ukusayina kohlu lokuthemba le-Microsoft</translation>
 <translation id="261114180663074524">Ngena ngemvume ku-akhawunti yakho ye-Microsoft bese uzama futhi</translation>
-<translation id="2611765907167846862">Okuzolile</translation>
 <translation id="2611776654555141051">Ithuluzi Elingunxande</translation>
 <translation id="2612676031748830579">Inombolo yekhadi</translation>
 <translation id="261305050785128654">Yazisa amawebhusayithi ngezilimi ozikhulumayo. Azobonisa okuqukethwe ngalezo zilimi, uma kungenzeka.</translation>
@@ -6981,7 +6979,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6022526133015258832">Vula isikrini esigcwele</translation>
 <translation id="6022659036123304283">Yenza i-Chrome kube eyakho</translation>
 <translation id="6023643151125006053">Le divayisi (SN: <ph name="SERIAL_NUMBER" />) ikhiywe ngomlawuli we-<ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Vumela izandiso kuleli sayithi</translation>
 <translation id="6024317249717725918">&amp;Sesha Uhlaka Lwevidiyo nge-<ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Ukulandelela ukustaka</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Idivayisi ye-USB ixhunyiwe</translation>
@@ -9238,7 +9235,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7685087414635069102">I-PIN iyadingeka</translation>
 <translation id="7685351732518564314">Cindezela inkinobho ku-<ph name="DEVICE_NAME" /> yakho.</translation>
 <translation id="7686086654630106285">Okuningi mayelana nezikhangiso eziphakanyiswe yisayithi</translation>
-<translation id="7686581688229391955">Khetha ukuvumela izandiso kuleli sayithi</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Khetha kusuka kuhlu</translation>
 <translation id="7690853182226561458">Engeza i&amp;folda...</translation>

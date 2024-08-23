@@ -76,6 +76,9 @@ Du bør tenke på følgende:
 <translation id="2703746758996815929">For å få nyttige Chrome-tips, slå på varsler i iOS-innstillingene.</translation>
 <translation id="2736805085127235148">Chrome-varsler er nå slått av i enhetsinnstillingene.</translation>
 <translation id="2750626042242931740">Du kan når som helst oppdatere valgene dine i Chrome-innstillingene.</translation>
+<translation id="2754428955276778271">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
+
+Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="2869959624320573933">Logg på Chrome</translation>
 <translation id="2876628302275096482">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chrome holder dataene dine private<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Du bør tenke på følgende:
 <translation id="5190139289262548459">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du er logget på, og hvordan Chrome brukes.</translation>
 <translation id="5256908199795498284">Chrome registrerer pakkesporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle.</translation>
 <translation id="5278862365980079760">Lås inkognitofanene dine når du går ut av Chrome eller bytter til en annen app.</translation>
+<translation id="5310957470610282541">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
+Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="5389212809648216794">Google Chrome kan ikke bruke kameraet fordi det brukes av en annen app</translation>
 <translation id="5395376160638294582">Sørg for at du alltid kan bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="5439191312780166229">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chrome-advarsler.</translation>

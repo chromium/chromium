@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Detta betyder att datorversionen av webbplatsen begärs varje gång i Chromium.</translation>
 <translation id="2313870531055795960">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chromium. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="231828342043114302">Logga in i Chromium om du vill få anpassat innehåll utifrån dina intressen.</translation>
+<translation id="2326738825692478496">Viss Chromium-data har inte sparats i ditt Google-konto ännu.
+
+Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="2374627437126809292">Google Maps används i Chromium för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>
 <translation id="2386292341327187942">Skriv ”Chromium” i sökwidgetrutan</translation>
 <translation id="2426113998523353159">Organisationen kräver att du loggar in för att använda Chromium.</translation>
@@ -292,6 +295,8 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 
 Din data krypterades med lösenfrasen <ph name="TIME" />. Ange den om du vill använda och spara Chromium-data i ditt Google-konto.</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>
+<translation id="9031260906956926157">Viss Chromium-data har inte sparats i ditt Google-konto ännu.
+Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="9050790730841755540">Använd Chromium varje gång du trycker på länkar i andra appar.</translation>
 <translation id="9057082013386654559">Använda Chromium för iPad som standard</translation>
 <translation id="9059693977935746710">Du behöver inte komma ihåg det här lösenordet. Det sparas med Lösenordshantering för <ph name="EMAIL" /></translation>

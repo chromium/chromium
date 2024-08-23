@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">要開啟語音輸入功能嗎？</translation>
+<translation id="3392702002175498061">顯示所有瀏覽記錄內容</translation>
 <translation id="3394432020929931914">，已展開</translation>
 <translation id="3401474642070997151">如要自訂建議，請在建議上按一下滑鼠右鍵，或按住該建議</translation>
 <translation id="3405101454990027959">允許存取麥克風</translation>
@@ -686,6 +687,7 @@
 <translation id="3455468639467374593">範本，「<ph name="TEMPLATE_NAME" />」</translation>
 <translation id="3456931972722214204">1 部裝置已連線至「<ph name="DEVICE_NAME" />」無線基地台</translation>
 <translation id="346243998268439747">重設縮放比例</translation>
+<translation id="3463151196028058330">修容</translation>
 <translation id="3465223694362104965">這個裝置自你上次登入後接上了另外一組鍵盤。使用前請確認你信任該組鍵盤。</translation>
 <translation id="3465356146291925647">由系統管理員管理</translation>
 <translation id="347117769229524881">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 鍵，然後按 <ph name="KEY_TWO" /> 鍵或<ph name="KEY_THREE" />鍵</translation>
@@ -810,6 +812,7 @@
 <translation id="385300504083504382">開頭</translation>
 <translation id="3859364108019690">無法以串流方式使用應用程式</translation>
 <translation id="3861651314799684201">按下 Enter 鍵以錄製全螢幕畫面</translation>
+<translation id="3870197372373144624">請嘗試將裝置關機。</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -924,6 +927,7 @@
 <translation id="4264977415328155183">，已收合</translation>
 <translation id="4265259722091164182">字首大寫</translation>
 <translation id="4269883910223712419">這部裝置的管理員擁有下列權限：</translation>
+<translation id="4271841440229266861">顯示所有檔案內容</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下鍵」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右鍵。</translation>
 <translation id="4275283744500212192">開啟視窗版面配置選項</translation>
 <translation id="4275663329226226506">媒體</translation>
@@ -951,6 +955,7 @@
 <translation id="4327147325944669226">錄製遊戲</translation>
 <translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />，已設為靜音</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
 <translation id="4356872429719185452">顯示無線基地台詳細資料。無線基地台正在啟用。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  錄製中</translation>
@@ -1205,6 +1210,7 @@
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄製部分螢幕畫面</translation>
 <translation id="5187627942836026988">顯示無線基地台詳細資料。系統管理員已封鎖無線基地台。</translation>
+<translation id="518847040357731612">攝影棚效果偏好設定</translation>
 <translation id="5197255632782567636">網際網路</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="5198715732953550718">已將「<ph name="MOVED_APP_NAME" />」與「<ph name="IN_PLACE_APP" />」合併，並建立新資料夾。</translation>
@@ -1296,6 +1302,7 @@
 <translation id="5503884284981862082">開啟/關閉 Google 助理</translation>
 <translation id="550391772491508736">繼續投放</translation>
 <translation id="5506975627792768506">開啟或關閉放大鏡</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />，按下 Enter 鍵即可設為靜音。</translation>
 <translation id="5512042095225963688">刪除上一個字詞</translation>
 <translation id="5519005148254860683">展開 Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2105,6 +2112,7 @@
 <translation id="8239034820133090126">啟動右側桌面</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，應用程式</translation>
+<translation id="825129991941217170">顯示所有 Google 雲端硬碟內容</translation>
 <translation id="8257510091797044096">設定裝置</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262312463845990408">切換播放</translation>
@@ -2334,6 +2342,7 @@
 <translation id="9098969848082897657">將手機設為靜音</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">復原上一個動作</translation>
+<translation id="9126642911267312373">無法使用藍牙</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 分鐘後}other{# 分鐘後}}</translation>
 <translation id="9129245940793250979">背面按鈕</translation>
 <translation id="9133335900048457298">無法錄製受保護的內容</translation>

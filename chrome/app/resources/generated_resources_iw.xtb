@@ -1627,7 +1627,6 @@
 <translation id="2137128126782078222">אין לאפשר התראות מהאתר <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">לחצן ההגדרה</translation>
 <translation id="2140788884185208305">תקינות הסוללה</translation>
-<translation id="2140902257485550046">יש לבחור באפשרות הזו כדי לחסום את כל התוספים באתר הזה</translation>
 <translation id="2142328300403846845">פתיחת קישור בתור</translation>
 <translation id="2142484069755256151">‏יצירת קוד אימות בן 6 ספרות למנהל הסיסמאות של Google, ספרה <ph name="NUM_DIGIT" /> מתוך 6</translation>
 <translation id="2142582065325732898">‏יש להפעיל את <ph name="LINK1_BEGIN" />סנכרון Chrome<ph name="LINK1_END" /> כדי לצפות בכרטיסיות האחרונות ב-Chrome. <ph name="LINK2_BEGIN" />מידע נוסף<ph name="LINK2_END" /></translation>
@@ -2309,7 +2308,6 @@
 <translation id="2610374175948698697">ניתן להציג קבצים או תיקיות במכשיר</translation>
 <translation id="2610780100389066815">‏חתימת רשימת יחסי אמון של Microsoft</translation>
 <translation id="261114180663074524">‏צריך להיכנס לחשבון Microsoft ולנסות שוב</translation>
-<translation id="2611765907167846862">שלֵו</translation>
 <translation id="2611776654555141051">כלי המלבן</translation>
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="261305050785128654">יש אפשרות להגדיר את השפות שדוברים כך שהן יהיו ידועות לאתרים. יוצג בהם תוכן בשפות האלה, כשהדבר יתאפשר.</translation>
@@ -6980,7 +6978,6 @@
 <translation id="6022526133015258832">פתיחה במסך מלא</translation>
 <translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
 <translation id="6023643151125006053">מכשיר זה (מספר סידורי: <ph name="SERIAL_NUMBER" />) ננעל על-ידי מנהל המערכת של <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">מתן הרשאה לתוספים באתר הזה</translation>
 <translation id="6024317249717725918">חיפוש פריים באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">התחקות אחר ערימה</translation>
 <translation id="6026819612896463875">‏<ph name="WINDOW_TITLE" /> - USB מחובר</translation>
@@ -9240,7 +9237,6 @@
 <translation id="7685087414635069102">נדרש קוד אימות</translation>
 <translation id="7685351732518564314">צריך ללחוץ על לחצן כלשהו במכשיר <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">מידע נוסף על הצעות למודעות באתרים</translation>
-<translation id="7686581688229391955">יש לבחור באפשרות הזו כדי להתיר תוספים באתר הזה</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">בחירה מתוך רשימה</translation>
 <translation id="7690853182226561458">הוספת &amp;תיקייה...</translation>

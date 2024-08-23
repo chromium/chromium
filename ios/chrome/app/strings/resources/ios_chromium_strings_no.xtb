@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Dette betyr at Chromium kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>
 <translation id="2313870531055795960">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="231828342043114302">For å få personlig tilpasset innhold basert på interessene dine, logg på Chromium.</translation>
+<translation id="2326738825692478496">Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå.
+
+Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="2374627437126809292">Chromium bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon om registrerte adresser.</translation>
 <translation id="2386292341327187942">I feltet Søkemoduler skriver du inn Chromium</translation>
 <translation id="2426113998523353159">Organisasjonen din krever at du logger på for å bruke Chromium.</translation>
@@ -292,6 +295,8 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 
 Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den inn for å bruke og lagre Chromium-data i Google-kontoen din.</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>
+<translation id="9031260906956926157">Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå.
+Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="9050790730841755540">Bruk Chromium hver gang du trykker på linker i andre apper.</translation>
 <translation id="9057082013386654559">Bruk Chromium for iPad som standard</translation>
 <translation id="9059693977935746710">Du trenger ikke å huske dette passordet. Det blir lagret i Passordlagring for <ph name="EMAIL" /></translation>

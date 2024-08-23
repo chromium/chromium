@@ -1624,7 +1624,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2137128126782078222">Zuia arifa za <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Kitufe cha kuweka mipangilio</translation>
 <translation id="2140788884185208305">Muda wa Kudumu wa Betri</translation>
-<translation id="2140902257485550046">Chagua kuzuia viendelezi vyote kwenye tovuti hii</translation>
 <translation id="2142328300403846845">Fungua Kiungo ukitumia</translation>
 <translation id="2142484069755256151">Tunga PIN ya kurejesha yenye tarakimu 6 ya Kidhibiti cha Manenosiri cha Google, tarakimu <ph name="NUM_DIGIT" /> kati ya 6 ya PIN</translation>
 <translation id="2142582065325732898">Washa <ph name="LINK1_BEGIN" />Usawazishaji wa Chrome<ph name="LINK1_END" /> ili uone vichupo vya Chrome vya hivi majuzi. <ph name="LINK2_BEGIN" />Pata Maelezo Zaidi<ph name="LINK2_END" /></translation>
@@ -2285,6 +2284,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2593499352046705383">Kabla hujaanza, hakikisha kwamba una nakala ya data yako. Hatua ya kusakinisha <ph name="DEVICE_OS" /> itafuta data yote iliyo kwenye diski kuu yako. Pata maelezo zaidi kwenye g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Dhibiti usalama wa V8</translation>
 <translation id="2597073208962000830">Kipengele cha Uhamishaji wa Karibu hutumia utafutaji wa Bluetooth ili kupata vifaa vilivyo karibu.</translation>
+<translation id="2598136842498757793">Badilisha upendavyo vitufe vya upau wa vidhibiti</translation>
 <translation id="2598710988533271874">Chrome mpya inapatikana</translation>
 <translation id="2599048253926156421">Jina la mtumiaji limenakiliwa kwenye ubao wa kunakili</translation>
 <translation id="2602501489742255173">Telezesha kidole kuelekea juu ili uanze</translation>
@@ -2306,7 +2306,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2610374175948698697">Zinaweza kuangalia faili au folda kwenye kifaa chako</translation>
 <translation id="2610780100389066815">Uwekaji Sahihi wa Orodha ya Zinazoaminiwa kutoka Microsoft</translation>
 <translation id="261114180663074524">Ingia kwenye akaunti yako ya Microsoft kisha ujaribu tena</translation>
-<translation id="2611765907167846862">Toni tulivu</translation>
 <translation id="2611776654555141051">Zana ya kuhariri picha za Mstatiili</translation>
 <translation id="2612676031748830579">Nambari ya kadi</translation>
 <translation id="261305050785128654">Ruhusu tovuti zifahamu lugha unazozungumza. Zitaonyesha maudhui katika lugha hizo inapowezekana.</translation>
@@ -4058,6 +4057,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="3866142613641074814">Una manenosiri ambayo yanaweza kuathiriwa</translation>
 <translation id="3866249974567520381">Maelezo</translation>
 <translation id="3867134342671430205">Buruta au utumie vitufe vya vishale kusogeza skrini</translation>
+<translation id="3867831579565057323">Ambatisha skrini yako ya kugusa</translation>
 <translation id="3867944738977021751">Uga za Cheti</translation>
 <translation id="3869917919960562512">Orodha isiyosahihi.</translation>
 <translation id="3870626286046977643">Pia shiriki sauti ya mfumo</translation>
@@ -5999,6 +5999,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5301954838959518834">Sawa, nimeelewa</translation>
 <translation id="5302032366299160685">Subiri faili ifunguliwe kabla ujaribu tena</translation>
 <translation id="5302048478445481009">Lugha</translation>
+<translation id="5302435492906794790">Inatafuta vifaa vya karibu nawe vinavyoweza kutambuliwa...</translation>
 <translation id="5302932258331363306">Onyesha Vibadala</translation>
 <translation id="5305145881844743843">Akaunti hii inadhibitiwa na <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Chanzo hakitumiki</translation>
@@ -6973,7 +6974,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6022526133015258832">Fungua Skrini Nzima</translation>
 <translation id="6022659036123304283">Weka mapendeleo kwenye Chrome iwe unavyopenda</translation>
 <translation id="6023643151125006053">Kifaa hiki (SN: <ph name="SERIAL_NUMBER" />) kimefungwa na msimamizi wa <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Ruhusu viendelezi kwenye tovuti hii</translation>
 <translation id="6024317249717725918">Tafuta Fremu ya Video ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Alama ya Bunda</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Kifaa cha USB kimeunganishwa</translation>
@@ -8709,6 +8709,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7321545336522791733">Seva haifikiki</translation>
 <translation id="7322515217754205362">Ruhusa za Tovuti</translation>
 <translation id="7323315405936922211">Ukubwa wa sehemu ya kiteuzi</translation>
+<translation id="7324020307732396723">Fungua Mipangilio ya Lugha</translation>
 <translation id="7324297612904500502">Mfumo wa Beta</translation>
 <translation id="7325209047678309347">Karatasi imekwama</translation>
 <translation id="7325953439504232954">Ungependa kubadilisha wasifu?</translation>
@@ -9229,7 +9230,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7685087414635069102">PIN inahitajika</translation>
 <translation id="7685351732518564314">Bonyeza kitufe kwenye <ph name="DEVICE_NAME" /> yako.</translation>
 <translation id="7686086654630106285">Maelezo zaidi kuhusu matangazo yanayopendekezwa na tovuti</translation>
-<translation id="7686581688229391955">Chagua kuruhusu viendelezi kwenye tovuti hii</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Chagua kutoka kwenye orodha</translation>
 <translation id="7690853182226561458">Ongeza &amp;folda...</translation>
@@ -9570,6 +9570,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="79312157130859720"><ph name="APP_NAME" /> inashiriki skrini na sauti yako.</translation>
 <translation id="793293630927785390">Kidirisha Kipya cha Mtandao wa Wi-Fi</translation>
 <translation id="7932969338829957666">Folda zinazoshirikiwa zinapatikana kwenye Linux katika <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Weka mipangilio na uambatishe kifaa chako chenye skrini ya kugusa na skrini sahihi</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Washa Sauti ya Tovuti}other{Washa Sauti za Tovuti}}</translation>
 <translation id="7933486544522242079">Hifadhi na ushiriki</translation>
 <translation id="7933518760693751884">Bofya aikoni ya Alamisho ili uhifadhi ukurasa na uusome baadaye</translation>
@@ -9825,6 +9826,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8097959162767603171">Ni lazima msimamizi wako akubali kwanza sheria na masharti kwenye orodha ya vifaa vya Chrome katika dashibodi ya Wasimamizi.</translation>
 <translation id="8098156986344908134">Ungependa kusakinisha <ph name="DEVICE_OS" /> na kufuta data yote iliyo kwenye diski kuu?</translation>
 <translation id="8098616321286360457">Unahitaji muunganisho wa mtandao</translation>
+<translation id="8100057926383586173">Fungua mipangilio ya lugha</translation>
 <translation id="8100230553590752325">Tumia manenosiri yaliyohifadhiwa kwenye kifaa chochote</translation>
 <translation id="810068641062493918">Umechagua <ph name="LANGUAGE" />. Bonyeza vitufe vya 'Search' na 'Space' ili uache kuchagua.</translation>
 <translation id="8101409298456377967">Tunga, hifadhi na udhibiti manenosiri yako ili uweze kuingia katika akaunti kwenye tovuti na programu kwa urahisi. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>

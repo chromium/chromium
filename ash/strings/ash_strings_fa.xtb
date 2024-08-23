@@ -687,6 +687,7 @@
 <translation id="3455468639467374593">الگو، <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">یک دستگاه به نقطه اتصال <ph name="DEVICE_NAME" /> متصل است</translation>
 <translation id="346243998268439747">بازنشانی سطح بزرگ‌نمایی</translation>
+<translation id="3463151196028058330">رتوش چهره</translation>
 <translation id="3465223694362104965">از آخرین باری که به سیستم وارد شدید، صفحه‌کلید دیگری به این دستگاه متصل شده است. قبل از استفاده از این صفحه‌کلید، مطمئن شوید به آن اعتماد دارید.</translation>
 <translation id="3465356146291925647">تحت‌مدیریت سرپرست</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> سپس <ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@
 <translation id="5170568018924773124">نمایش در پوشه</translation>
 <translation id="5176318573511391780">ضبط کردن نیم‌صفحه</translation>
 <translation id="5187627942836026988">نمایش جزئیات نقطه اتصال. سرپرست نقطه اتصال را مسدود کرده است.</translation>
+<translation id="518847040357731612">اولویت «ظاهر استودیویی»</translation>
 <translation id="5197255632782567636">اینترنت</translation>
 <translation id="5198413532174090167"><ph name="DATE" />، <ph name="NUMBER" /> رویداد</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> با <ph name="IN_PLACE_APP" /> ترکیب شد تا پوشه جدیدی ایجاد شود.</translation>

@@ -661,7 +661,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="3386978599540877378">povećalo preko cijelog ekrana</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Uključiti Diktiranje?</translation>
-<translation id="3392702002175498061">Prikaži sav sadržaj povijesti pregledavanja</translation>
+<translation id="3392702002175498061">Prikaz svog sadržaja historije pregledanja</translation>
 <translation id="3394432020929931914">, prošireno</translation>
 <translation id="3401474642070997151">Da prilagodite prijedlog, kliknite na njega desnim klikom ili ga pritisnite i zadržite</translation>
 <translation id="3405101454990027959">Uključi pristup mikrofonu</translation>
@@ -930,7 +930,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4264977415328155183">, suženo</translation>
 <translation id="4265259722091164182">Velika početna slova</translation>
 <translation id="4269883910223712419">Administrator ovog uređaja može:</translation>
-<translation id="4271841440229266861">Prikaži sav sadržaj datoteka</translation>
+<translation id="4271841440229266861">Prikaz svog sadržaja iz Fajlova</translation>
 <translation id="4274537685965975248">Prečica na tastaturi Ctrl + Alt + strelica nadolje je promijenjena. Da koristite tipku End, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu udesno.</translation>
 <translation id="4275283744500212192">Otvori opcije rasporeda prozora</translation>
 <translation id="4275663329226226506">Mediji</translation>
@@ -958,7 +958,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4327147325944669226">Snimajte igru</translation>
 <translation id="4333628967105022692">Preglednik Lacros nije podržan dok je istovremeno prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Lupa</translation>
-<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ton je isključen</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, isključen zvuk</translation>
 <translation id="4351244548802238354">Zatvori dijaloški okvir</translation>
 <translation id="4356872429719185452">Pogledajte detalje pristupne tačke. Pristupna tačka se uključuje.</translation>
 <translation id="4364101114148522660">Snimak u trajanju od <ph name="DURATION" /></translation>
@@ -1213,7 +1213,7 @@ Također možete upotrijebiti prečicu na tastaturi. Prvo istaknite tekst, a zat
 <translation id="5170568018924773124">Prikaži u folderu</translation>
 <translation id="5176318573511391780">Snimanje dijela ekrana</translation>
 <translation id="5187627942836026988">Pogledajte detalje pristupne tačke. Administrator je blokirao pristupnu tačku.</translation>
-<translation id="518847040357731612">Preferencija studijske slike</translation>
+<translation id="518847040357731612">Postavka studijskog izgleda</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> događaj(a)</translation>
 <translation id="5198715732953550718">Aplikacija <ph name="MOVED_APP_NAME" /> je kombinirana s aplikacijom <ph name="IN_PLACE_APP" /> za kreiranje novog foldera.</translation>
@@ -1305,7 +1305,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5503884284981862082">Otvorite/zatvorite Google Asistenta</translation>
 <translation id="550391772491508736">Nastavi s emitiranjem</translation>
 <translation id="5506975627792768506">Uključite ili isključite povećalo</translation>
-<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, pritiskom na Enter isključuje se zvuk.</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, isključivanje zvuka pritiskom na Enter.</translation>
 <translation id="5512042095225963688">Brisanje prethodne riječi</translation>
 <translation id="5519005148254860683">Proširivanje Google Zadataka</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2116,7 +2116,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8239034820133090126">Aktiviraj desnu radnu površinu</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikacija</translation>
-<translation id="825129991941217170">Prikaži sav sadržaj Google diska</translation>
+<translation id="825129991941217170">Prikaz svog sadržaja s Google Diska</translation>
 <translation id="8257510091797044096">Postavite uređaj</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262312463845990408">Uključi/isključi reprodukciju</translation>

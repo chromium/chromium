@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">这意味着 Chromium 每次都会对桌面版网站发出请求。</translation>
 <translation id="2313870531055795960">将网址与存储在 Chromium 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="231828342043114302">如要根据您的兴趣接收个性化内容，请登录 Chromium。</translation>
+<translation id="2326738825692478496">部分 Chromium 数据尚未保存到您的 Google 账号。
+
+请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="2374627437126809292">Chromium 会使用 Google 地图针对检测到的地址为您提供路线和当地信息。</translation>
 <translation id="2386292341327187942">在“搜索微件”框中，输入“Chromium”</translation>
 <translation id="2426113998523353159">根据贵单位的要求，您必须登录才能使用 Chromium。</translation>
@@ -292,6 +295,8 @@
 
 您的数据已于 <ph name="TIME" />使用您的口令加密。请输入该口令，以便将 Chromium 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
+<translation id="9031260906956926157">部分 Chromium 数据尚未保存到您的 Google 账号。
+请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="9050790730841755540">每次点按其他应用中的链接时，都使用 Chromium 打开。</translation>
 <translation id="9057082013386654559">默认使用 iPad 版 Chromium</translation>
 <translation id="9059693977935746710">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的密码管理工具中</translation>

@@ -76,6 +76,9 @@ Wichtige Hinweise:
 <translation id="2703746758996815929">Wenn du hilfreiche Tipps zu Chrome erhalten möchtest, aktiviere die Benachrichtigungen in den iOS-Einstellungen.</translation>
 <translation id="2736805085127235148">Chrome-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
 <translation id="2750626042242931740">Du kannst deine Auswahl jederzeit in den Chrome-Einstellungen ändern.</translation>
+<translation id="2754428955276778271">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.
+
+Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="2767464022270041271">Keine gespeicherten Passwörter. Der Google Passwortmanager kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="2869959624320573933">In Chrome anmelden</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chrome<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Wichtige Hinweise:
 <translation id="5190139289262548459">Deine Organisation, <ph name="DOMAIN" />, verwaltet das Konto, in dem du angemeldet bist, und die Nutzung von Chrome.</translation>
 <translation id="5256908199795498284">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Deine Daten werden mit Google geteilt, um diese Funktion bereitzustellen und das Onlineshopping für alle zu verbessern.</translation>
 <translation id="5278862365980079760">Du kannst Inkognitotabs sperren lassen, wenn du Chrome verlässt oder zu einer anderen App wechselst.</translation>
+<translation id="5310957470610282541">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.
+Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="5389212809648216794">Google Chrome kann nicht auf die Kamera zugreifen, da diese gerade von einer anderen App verwendet wird</translation>
 <translation id="5395376160638294582">Achte darauf, dass du die Chrome-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="5439191312780166229">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst Warnungen von Chrome überspringen.</translation>

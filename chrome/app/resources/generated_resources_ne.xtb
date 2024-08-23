@@ -1615,7 +1615,6 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" /> का सूचनाहरू ब्लक गर्नुहोस्</translation>
 <translation id="2139919072249842737">सेटअप गर्ने बटन</translation>
 <translation id="2140788884185208305">ब्याट्रीको अवस्था</translation>
-<translation id="2140902257485550046">यो साइटमा सबै एक्स्टेन्सनहरू ब्लक गर्न चयन गर्नुहोस्</translation>
 <translation id="2142328300403846845">यस रूपमा खोल्नुहोस्</translation>
 <translation id="2142484069755256151">Google पासवर्ड म्यानेजरको आफ्नो ६ अङ्कको रिकभरी PIN बनाउनुहोस्। PIN का ६ अङ्कमध्ये <ph name="NUM_DIGIT" /> औँ अङ्क</translation>
 <translation id="2142582065325732898">Chrome मा हालसालै खोलिएका ट्याबहरू हेर्न <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> अन गर्नुहोस्। <ph name="LINK2_BEGIN" />थप जान्नुहोस्<ph name="LINK2_END" /></translation>
@@ -2294,7 +2293,6 @@
 <translation id="2610374175948698697">यसले तपाईंको डिभाइसमा भएका फाइल वा फोल्डरहरू हेर्न सक्छ</translation>
 <translation id="2610780100389066815">Microsoft विश्वास सूची साइनिङ</translation>
 <translation id="261114180663074524">आफ्नो Microsoft खातामा साइन इन गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
-<translation id="2611765907167846862">स्थिर</translation>
 <translation id="2611776654555141051">आयात बनाउने टुल</translation>
 <translation id="2612676031748830579">कार्ड नम्बर</translation>
 <translation id="261305050785128654">वेबसाइटहरूलाई तपाईंले बोल्ने भाषाहरूका बारेमा जानकारी दिनुहोस्। ती वेबसाइटहरूले सम्भव भएसम्म त्यस्ता भाषाहरूमा सामग्री देखाउने छन्।</translation>
@@ -5988,6 +5986,7 @@
 <translation id="5301954838959518834">ठिक छ, बुझेँ</translation>
 <translation id="5302032366299160685">फेरि प्रयास गर्नुअघि फाइल नखुलुन्जेल कुर्नुहोस्</translation>
 <translation id="5302048478445481009">भाषा</translation>
+<translation id="5302435492906794790">ब्लुटुथ अन गरिएका नजिकैका डिभाइसहरू खोजिँदै छ...</translation>
 <translation id="5302932258331363306">प्रतिस्थापनहरू देखाउनुहोस्</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ले यो खाता व्यवस्थापन गर्छ</translation>
 <translation id="5307030433605830021">स्रोत समर्थित छैन</translation>
@@ -6961,7 +6960,6 @@
 <translation id="6022526133015258832">पूर्ण स्क्रीन खोल्नुहोस्</translation>
 <translation id="6022659036123304283">Chrome लाई आफ्नै बनाउनुहोस्</translation>
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> को प्रबन्धकले यो डिभाइस (SN: <ph name="SERIAL_NUMBER" /> ) लक गर्नुभएको हो।</translation>
-<translation id="6024072172641380781">यो साइटमा एक्स्टेन्सन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी भिडियो फ्रेम खोज्नुहोस्</translation>
 <translation id="6025215716629925253">स्ट्याक ट्रेस</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB यन्त्र जडान गरिएको छ</translation>
@@ -8696,6 +8694,7 @@
 <translation id="7321545336522791733">सर्भर पहुँचयोग्य छैन</translation>
 <translation id="7322515217754205362">साइटसम्बन्धी अनुमतिहरू</translation>
 <translation id="7323315405936922211">कर्सरको क्षेत्रको आकार</translation>
+<translation id="7324020307732396723">भाषासम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="7324297612904500502">बिटा फोरम</translation>
 <translation id="7325209047678309347">पाना अड्किएको छ</translation>
 <translation id="7325953439504232954">प्रोफाइल बदल्ने हो?</translation>
@@ -9216,7 +9215,6 @@
 <translation id="7685087414635069102">पिन चाहिन्छ</translation>
 <translation id="7685351732518564314"><ph name="DEVICE_NAME" /> मा भएको कुनै बटन थिच्नुहोस्।</translation>
 <translation id="7686086654630106285">साइटले सिफारिस गरेका विज्ञापनका बारेमा थप जानकारी</translation>
-<translation id="7686581688229391955">यो साइटमा सबै एक्स्टेन्सनहरूलाई अनुमति दिन चयन गर्नुहोस्</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">सूचीबाट छान्नुहोस्</translation>
 <translation id="7690853182226561458">&amp;फोल्डर थप्नुहोस्...</translation>
@@ -9811,6 +9809,7 @@
 <translation id="8097959162767603171">तपाईंका एड्मिनले सर्वप्रथम एड्मिन कन्सोलमा रहेको Chrome यन्त्रको सूचीमा गई सेवाका सर्तहरू स्वीकार्नु पर्ने हुन्छ।</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> इन्स्टल गरी हार्ड ड्राइभमा भएका सबै डेटा मेटाउने हो?</translation>
 <translation id="8098616321286360457">इन्टरनेट चाहिन्छ</translation>
+<translation id="8100057926383586173">भाषासम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="8100230553590752325">कुनै पनि डिभाइसमा सेभ गरिएका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> चयन गरियो। चयन गरिएको भाषा नचलाउन 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>
 <translation id="8101409298456377967">तपाईं साइट र एपहरूमा सजिलै साइन इन गर्न चाहनुहुन्छ भने पासवर्ड सिर्जना गर्नुहोस्, सेभ गर्नुहोस् र व्यवस्थापन गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>

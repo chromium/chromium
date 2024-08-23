@@ -1620,7 +1620,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2137128126782078222">Nemoj dopustiti obavijesti s web-lokacije <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Gumb za postavljanje</translation>
 <translation id="2140788884185208305">Status baterije</translation>
-<translation id="2140902257485550046">Odaberite da biste blokirali sva proširenja na ovoj web-lokaciji</translation>
 <translation id="2142328300403846845">Otvori vezu kao</translation>
 <translation id="2142484069755256151">Izradite šesteroznamenkasti PIN za oporavak za Google upravitelj zaporki. Znamenka PIN-a <ph name="NUM_DIGIT" /> od 6</translation>
 <translation id="2142582065325732898">Uključite <ph name="LINK1_BEGIN" />Chrome sinkronizaciju<ph name="LINK1_END" /> da biste vidjeli nedavne Chromeove kartice. <ph name="LINK2_BEGIN" />Saznajte više<ph name="LINK2_END" /></translation>
@@ -2300,7 +2299,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2610374175948698697">Može pregledavati datoteke ili mape na vašem uređaju</translation>
 <translation id="2610780100389066815">Microsoftovo potpisivanje pouzdanog popisa</translation>
 <translation id="261114180663074524">Prijavite se na Microsoft račun i pokušajte ponovno</translation>
-<translation id="2611765907167846862">Spokojan</translation>
 <translation id="2611776654555141051">Alat za pravokutnike</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="261305050785128654">Neka web-lokacije znaju koje jezike govorite. Prikazivat će sadržaj na tim jezicima kad je to moguće.</translation>
@@ -6965,7 +6963,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6022526133015258832">Otvori na cijelom zaslonu</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
 <translation id="6023643151125006053">Taj uređaj (serijski broj: <ph name="SERIAL_NUMBER" />) zaključao je administrator domene <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Dopusti proširenja na ovoj web-lokaciji</translation>
 <translation id="6024317249717725918">&amp;Pretraži kadar videozapisa pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Trag stoga</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB uređaj povezan</translation>
@@ -7756,6 +7753,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="661266467055912436">Poboljšava sigurnost za vas i sve ostale na webu.</translation>
 <translation id="6613267708691765962">Traženje zlonamjernog softvera...</translation>
 <translation id="6613668613087513143">Na uređaju nema dovoljno prostora za dovršetak ažuriranja. Očistite <ph name="NECESSARY_SPACE" /> na uređaju i pokušajte ponovo putem preglednika Chrome.</translation>
+<translation id="6614172284067813496">Stranica je dodana na popis za čitanje</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6618744767048954150">U tijeku</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -9226,7 +9224,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7685087414635069102">Potreban je PIN</translation>
 <translation id="7685351732518564314">Pritisnite gumb na uređaju <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Više o oglasima koje predlaže web-lokacija</translation>
-<translation id="7686581688229391955">Odaberite da biste dopustili proširenja na ovoj web-lokaciji</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Odaberi s popisa</translation>
 <translation id="7690853182226561458">Dodavanje &amp;mape...</translation>
@@ -10758,6 +10755,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="876956356450740926">Pokrenite alate za razvojne programere, IDE-jeve i uređivače. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Korijenski direktorij proširirenja</translation>
 <translation id="8771300903067484968">Pozadina početne stranice vraćena je na zadanu pozadinu.</translation>
+<translation id="8773535891252326047">Kopirana je veza na istaknuti tekst</translation>
 <translation id="8774379074441005279">Potvrđivanje vraćanja</translation>
 <translation id="8774934320277480003">Gornja margina</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>

@@ -131,7 +131,6 @@
 <translation id="1549000191223877751">മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക</translation>
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
 <translation id="1554532453982918912">നിങ്ങളെപ്പോലെ Chrome ഉപയോഗിക്കുന്ന ആളുകൾക്കായി Chrome മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നു</translation>
-<translation id="1558391695376153246">അദൃശ്യ ടാബുകൾ അടയ്‌ക്കുക</translation>
 <translation id="1568636008098739136">ഈ പേജ് കേൾക്കുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="1571304935088121812">ഉപയോക്തൃനാമം പകർത്തുക</translation>
 <translation id="1584648915421894279">ഇപ്പോൾ ഈ ഉപകരണത്തിൽ സംരക്ഷിച്ചിരിക്കുന്ന പാസ്‌വേഡുകൾ Chrome ചാനലുകളിൽ ഉടനീളം ഉപയോഗിക്കാനാകില്ല. Chrome 125-ന് ശേഷമുള്ള പതിപ്പുകളിൽ, Chrome-നും <ph name="CHROME_CHANNEL" /> എന്നതിനും സംരക്ഷിച്ചിരിക്കുന്ന പാസ്‌വേഡുകൾ ലയിപ്പിക്കും, അവ രണ്ട് ആപ്പുകളിലും ഉപയോഗിക്കാം.</translation>
@@ -1019,6 +1018,7 @@
 <translation id="587735546353481577">ഒരു സൈറ്റ് പിന്തുടരാൻ, സൈറ്റിലേക്ക് പോയി Chrome മെനു തുറന്ന് 'ഫോളോ ചെയ്യുക' ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5879072387416556377">മെച്ചപ്പെട്ട നിർദ്ദേശങ്ങൾ നേടുക</translation>
 <translation id="5885378508678660271">അറിയിപ്പുകൾ <ph name="SEPARATOR" /> ഈ സൈറ്റ് അപകടകരമായതിനാൽ Chrome ഈ അനുമതികൾ നീക്കം ചെയ്‌തു</translation>
+<translation id="5895834791314695851">ഈ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തിയേക്കാം. നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഉപയോഗിക്കുന്നത് തുടരാൻ, Google Play സേവനങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">പാസ്‌കീ ഷീറ്റുകളൊന്നും അടച്ചിട്ടില്ല</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5919204609460789179">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, <ph name="PRODUCT_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
@@ -1447,7 +1447,6 @@
 <translation id="7691043218961417207">പിന്തുടരാൻ ഉള്ളടക്കം അടുത്തറിയുക</translation>
 <translation id="7697383401610880082">വലിച്ചിടുന്നതിനുള്ള ഹാൻഡിൽ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> ആപ്പിൽ ഇമെയിൽ സൃഷ്‌ടിക്കുക</translation>
-<translation id="7702029078562412515">ചോദ്യ ടൈലുകൾ</translation>
 <translation id="7707922173985738739">മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കുക</translation>
 <translation id="7709918231054955894">നിങ്ങളുടെ എല്ലാ ടാബുകളും നേടുക</translation>
 <translation id="7733878270780732638">ഉപകരണത്തിൽ ആവശ്യത്തിന് ഇടമില്ല.</translation>
@@ -1559,6 +1558,7 @@
 <translation id="820568752112382238">ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച സൈറ്റുകൾ</translation>
 <translation id="8209050860603202033">ചിത്രം തുറക്കുക</translation>
 <translation id="8210770465353466621">നിങ്ങളുടെ ടാബുകൾ ഇവിടെ കാണാം</translation>
+<translation id="8211101263765532799">ചില പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തും</translation>
 <translation id="8215740705341534369">സൈഡ് ഷീറ്റ്</translation>
 <translation id="8218622182176210845">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുക</translation>
 <translation id="8221401890884589479">ആവശ്യമില്ലാത്ത സൈറ്റുകൾ നിങ്ങൾക്ക് ബ്ലോക്ക് ചെയ്യാം. 30 ദിവസത്തിലധികം പഴക്കമുള്ള സൈറ്റുകൾ ലിസ്റ്റിൽ നിന്ന് Chrome സ്വയമേവ ഇല്ലാതാക്കുന്നു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -1659,6 +1659,7 @@
 <translation id="864544049772947936">വിൻഡോകൾ മാനേജ് ചെയ്യുക (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">നിങ്ങൾക്ക് ഇഷ്ടമുള്ള രീതിയിൽ Chrome ഉപയോഗിക്കുക</translation>
 <translation id="8664979001105139458">ഫയലിന്റെ പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
+<translation id="8672883760227492369">ഈ ഉപകരണത്തിൽ ചില പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തും. നിങ്ങൾക്ക് ഈ പാസ്‌വേഡുകൾ Google Password Manager-ലേക്ക് നീക്കാനാകും.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ സൈനപ്പ് ചെയ്യുക</translation>
 <translation id="8676789164135894283">സൈൻ ഇൻ പരിശോധിച്ചുറപ്പിക്കലുകൾ</translation>
 <translation id="8683039184091909753">ചിത്രം</translation>

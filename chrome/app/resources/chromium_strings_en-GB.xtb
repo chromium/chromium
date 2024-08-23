@@ -430,6 +430,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7398989605938454041">With Chromium profiles, you can separate all of your Chromium things. This makes it easier to split between work and fun.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium needs permission to access your camera for this site</translation>
+<translation id="7458892263350425044">To use your microphone, give Chromium access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 7.</translation>
 <translation id="7467949745582939695">Relaunch Chromium?</translation>
 <translation id="7483335560992089831">Cannot install the same Chromium version that is currently running. Please close Chromium and try again.</translation>
@@ -471,6 +472,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8166782796394721554">Turn on additional protection in Chromium’s JavaScript and WebAssembly engine</translation>
 <translation id="81770708095080097">This file is dangerous, so Chromium has blocked it.</translation>
+<translation id="8223363452568144035">To use your camera, give Chromium access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium can't verify where this extension comes from, and it might be unsafe. Remove it from Chromium so that it can no longer see and change your data on sites that you visit, including personal info.</translation>
 <translation id="8248265253516264921">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="8254601181414348851">Sign in to Chromium in a new profile?</translation>
@@ -541,4 +543,5 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="983803489796659991">Installation failed because the update server does not have any hash data for the application.</translation>
 <translation id="985498048907240953">Use Chromium without an account</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="992780518932311116">To use your location, give Chromium access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 </translationbundle>

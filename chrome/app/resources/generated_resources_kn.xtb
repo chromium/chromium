@@ -1621,7 +1621,6 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" /> ನಿಂದ ಬರುವ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="2139919072249842737">ಸೆಟಪ್ ಬಟನ್</translation>
 <translation id="2140788884185208305">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆ</translation>
-<translation id="2140902257485550046">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಎಲ್ಲಾ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2142328300403846845">ಲಿಂಕ್ ಅನ್ನು ಹೀಗೆ ತೆರೆಯಿರಿ</translation>
 <translation id="2142484069755256151">Google Password Manager ಗಾಗಿ 6-ಅಂಕಿಯ ರಿಕವರಿ ಪಿನ್ ಅನ್ನು ರಚಿಸಿ, ಪಿನ್ ಅಂಕಿ 6 ರಲ್ಲಿ <ph name="NUM_DIGIT" /></translation>
 <translation id="2142582065325732898">ಇತ್ತೀಚಿನ Chrome ಟ್ಯಾಬ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು <ph name="LINK1_BEGIN" />Chrome ಸಿಂಕ್<ph name="LINK1_END" /> ಅನ್ನು ಆನ್ ಮಾಡಿ. <ph name="LINK2_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK2_END" /></translation>
@@ -2303,7 +2302,6 @@
 <translation id="2610374175948698697">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಫೈಲ್‌ಗಳು ಅಥವಾ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">ನಿಮ್ಮ Microsoft ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="2611765907167846862">ಪ್ರಶಾಂತತೆ ಟೋನ್‌</translation>
 <translation id="2611776654555141051">ಆಯತ ಟೂಲ್</translation>
 <translation id="2612676031748830579">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
 <translation id="261305050785128654">ನೀವು ಮಾತನಾಡುವ ಭಾಷೆಗಳನ್ನು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ತಿಳಿಸಿ. ಸಾಧ್ಯವಾದಾಗ, ವೆಬ್‌ಸೈಟ್‌ಗಳು ಆ ಭಾಷೆಗಳಲ್ಲಿ ಕಂಟೆಂಟ್‌ ಅನ್ನು ತೋರಿಸುತ್ತವೆ.</translation>
@@ -5997,6 +5995,7 @@
 <translation id="5301954838959518834">ಸರಿ, ಅರ್ಥವಾಯಿತು</translation>
 <translation id="5302032366299160685">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು ಫೈಲ್ ತೆರೆಯುವವರೆಗೆ ನಿರೀಕ್ಷಿಸಿ</translation>
 <translation id="5302048478445481009">ಭಾಷೆ</translation>
+<translation id="5302435492906794790">ಸಮೀಪದಲ್ಲಿ ಅನ್ವೇಷಿಸಬಹುದಾದ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5302932258331363306">ಬದಲಿಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5305145881844743843">ಈ ಖಾತೆಯನ್ನು <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="5307030433605830021">ಬಿತ್ತರಿಸುವಿಕೆ ಮೂಲಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ</translation>
@@ -6972,7 +6971,6 @@
 <translation id="6022526133015258832">ಪೂರ್ಣ ಪರದೆಯನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="6022659036123304283">Chrome ಅನ್ನು ನಿಮ್ಮದಾಗಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6023643151125006053">ಈ ಸಾಧನವು (SN: <ph name="SERIAL_NUMBER" />), <ph name="SAML_DOMAIN" /> ನ ನಿರ್ವಾಹಕರಿಂದ ಲಾಕ್ ಮಾಡಲ್ಪಟ್ಟಿದೆ.</translation>
-<translation id="6024072172641380781">ಈ ಸೈಟ್‌ನಲ್ಲಿ ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ವೀಡಿಯೊ ಫ್ರೇಮ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6025215716629925253">ಸ್ಟ್ಯಾಕ್ ಪತ್ತೆ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB ಸಾಧನ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
@@ -7761,6 +7759,7 @@
 <translation id="661266467055912436">ನಿಮಗಾಗಿ ಹಾಗೂ ವೆಬ್‌ನಲ್ಲಿರುವ ಎಲ್ಲರಿಗಾಗಿ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ.</translation>
 <translation id="6613267708691765962">ಮಾಲ್‌ವೇರ್‌ಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6613668613087513143">ಈ ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಈ ಸಾಧನದಲ್ಲಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ <ph name="NECESSARY_SPACE" /> ಅನ್ನು ತೆರವುಗೊಳಿಸಿ ಮತ್ತು ನಿಮ್ಮ Chrome ಬ್ರೌಸರ್‌ನಿಂದ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="6614172284067813496">ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟವನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="6615455863669487791">ನನಗೆ ತೋರಿಸಿ</translation>
 <translation id="6618744767048954150">ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="6619058681307408113">ಲೈನ್ ಪ್ರಿಂಟರ್ ಡೇಮನ್ (LPD)</translation>
@@ -8711,6 +8710,7 @@
 <translation id="7321545336522791733">ಸರ್ವರ್ ತಲುಪಲಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="7322515217754205362">ಸೈಟ್ ಅನುಮತಿಗಳು</translation>
 <translation id="7323315405936922211">ಕರ್ಸರ್ ಪ್ರದೇಶದ ಗಾತ್ರ</translation>
+<translation id="7324020307732396723">ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7324297612904500502">ಬೀಟಾ ಫೋರಮ್‌</translation>
 <translation id="7325209047678309347">ಪೇಪರ್ ಜಾಮ್ ಆಗಿದೆ</translation>
 <translation id="7325953439504232954">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಬದಲಿಸಬೇಕೆ?</translation>
@@ -9230,7 +9230,6 @@
 <translation id="7685087414635069102">ಪಿನ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7685351732518564314">ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ನಲ್ಲಿ ಬಟನ್ ಒಂದನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="7686086654630106285">ಸೈಟ್ ಸೂಚಿಸಿದ ಜಾಹೀರಾತುಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು</translation>
-<translation id="7686581688229391955">ಈ ಸೈಟ್‌ನಲ್ಲಿ ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಲು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">ಪಟ್ಟಿಯಿಂದ ಆರಿಸಿ</translation>
 <translation id="7690853182226561458">&amp;ಫೋಲ್ಡರ್ ಅನ್ನು ಸೇರಿಸಿ...</translation>
@@ -9822,6 +9821,7 @@
 <translation id="8097959162767603171">ನಿರ್ವಾಹಕ ಕನ್ಸೋಲ್‌ನಲ್ಲಿನ Chrome ಸಾಧನ ಪಟ್ಟಿಯಲ್ಲಿನ ಸೇವಾ ನಿಯಮಗಳನ್ನು ಮೊದಲು ನಿರ್ವಾಹಕರು ಒಪ್ಪಿಕೊಳ್ಳಬೇಕು.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ ಹಾಗೂ ಹಾರ್ಡ್ ಡ್ರೈವ್‌ನಲ್ಲಿರುವುದನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="8098616321286360457">ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
+<translation id="8100057926383586173">ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8100230553590752325">ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. ಆಯ್ಕೆ ರದ್ದುಮಾಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8101409298456377967">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ, ಸೇವ್ ಮಾಡಿ ಹಾಗೂ ನಿರ್ವಹಿಸಿ ಇದರಿಂದ ನೀವು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -10757,6 +10757,7 @@
 <translation id="876956356450740926">ಡೆವಲಪರ್ ಟೂಲ್‌ಗಳು, IDE ಗಳು ಮತ್ತು ಎಡಿಟರ್‌ಗಳನ್ನು ರನ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">ವಿಸ್ತರಣೆ ಮೂಲ ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="8771300903067484968">ಆರಂಭಿಕ ಪುಟದ ಹಿನ್ನೆಲೆಯನ್ನು ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
+<translation id="8773535891252326047">ಹೈಲೈಟ್ ಮಾಡಲು ಲಿಂಕ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8774379074441005279">ಮರುಸ್ಥಾಪನೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8774934320277480003">ಮೇಲಿನ ಅಂಚು</translation>
 <translation id="8775144690796719618">ಅಮಾನ್ಯ URL</translation>

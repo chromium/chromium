@@ -131,7 +131,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1549000191223877751">Premesti u drugi prozor</translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
 <translation id="1554532453982918912">Pomozite da Chrome postane bolji za ljude koji ga koriste poput vas</translation>
-<translation id="1558391695376153246">Zatvori kartice bez arhiv.</translation>
 <translation id="1568636008098739136">Slušajte ovu stranicu. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
 <translation id="1584648915421894279">Lozinke sačuvane na ovom uređaju trenutno ne mogu da se koriste na svim Chrome kanalima. Kada koristite Chrome 125, lozinke sačuvane na uređaju za Chrome i <ph name="CHROME_CHANNEL" /> će biti objedinjene i mogu da se koriste u obe aplikacije.</translation>
@@ -1447,7 +1446,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7691043218961417207">Istražite sadržaj za praćenje</translation>
 <translation id="7697383401610880082">Identifikator za prevlačenje</translation>
 <translation id="7698359219371678927">Napišite imejl u aplikaciji <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Pločice upita</translation>
 <translation id="7707922173985738739">Koristi mobilne podatke</translation>
 <translation id="7709918231054955894">Preuzmite sve kartice</translation>
 <translation id="7733878270780732638">Nema dovoljno prostora na uređaju.</translation>

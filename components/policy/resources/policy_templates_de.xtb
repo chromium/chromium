@@ -242,7 +242,6 @@ Wenn diese Richtlinie aktiviert ist, ist die Remote Attestation der Identität g
 <translation id="1165923723751466821">Profilanmeldungen und Browseranmeldungen durch Gäste zulassen</translation>
 <translation id="117059611145966538">Externe Druckserver</translation>
 <translation id="117080706484659953">Lässt die Erkennung des Anwendungsbereichs von Richtlinien unter <ph name="MAC_OS_NAME" /> zu</translation>
-<translation id="1171065405328282754">KI‑basierte Verlaufssuche zulassen und KI‑Modelle verbessern</translation>
 <translation id="1171106901454883937">Melden der Versionsinformationen auf Geräten aktivieren</translation>
 <translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> auf allen Webseiten aktivieren</translation>
 <translation id="1177567780207290133">Mit dieser Richtlinie wird die Anwendung des URL-Filters "SafeSites" konfiguriert. Der Filter greift auf die Google Safe Search API zurück, um URLs als pornografisch oder nicht pornografisch einzustufen.
@@ -456,6 +455,27 @@ Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verw
 <translation id="1348603614848418219">Migration der von <ph name="MS_AD_NAME" /> verwalteten Geräten zur Cloud-Verwaltung deaktivieren.</translation>
 <translation id="1352799151662469739">Zeitraum ohne Nutzereingabe im Netzbetrieb, nach dem der Bildschirm gesperrt wird, angegeben in Millisekunden.</translation>
 <translation id="1353416417709895349">DNS-Abfangprüfungen und „Meintest du: http://intranetsite/“-Infoleisten deaktivieren.</translation>
+<translation id="1353910503649343481">Durch Festlegen der Richtlinie werden die Proxyeinstellungen für Chrome- und ARC-Apps so konfiguriert, dass alle Proxyoptionen, die über die Befehlszeile eingegeben werden, ignoriert werden.
+
+       Wird die Richtlinie nicht festgelegt, können Nutzer die Proxyeinstellungen auswählen.
+
+       Durch Festlegen der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ werden die folgenden Felder übernommen:
+         * „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ legt fest, welcher Proxyserver von Chrome verwendet werden soll, und verhindert, dass Nutzer die Proxyeinstellungen ändern
+         * „<ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />“, eine URL zu einer .pac-Proxydatei oder ein PAC-Script, das als Daten-URL mit dem MIME-Typ „application/x-ns-proxy-autoconfig“ codiert ist
+         * „<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />“ sorgt dafür, dass der Netzwerkstapel auch bei ungültigem oder nicht verfügbarem PAC-Script keine direkten Verbindungen nutzt
+         * „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“, eine URL des Proxyservers
+         * „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“, eine Liste mit Hosts, für die der Proxy umgangen wird
+
+       Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zugunsten des Felds „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ eingestellt.
+
+        Für „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ können folgende Werte festgelegt werden:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" /> – kein Proxy wird verwendet und alle anderen Felder werden ignoriert.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> – der Proxy des Systems wird verwendet und alle anderen Felder werden ignoriert.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> – alle anderen Felder werden ignoriert.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> – die Felder „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> – die Felder „<ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />“, „<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
+
+      Hinweis: Ausführliche Beispiele findest du in den Chromium-Projekten unter https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="1354280967938151061">ARC deaktivieren</translation>
 <translation id="1354424209129232709">Maximum:</translation>
 <translation id="1355050231181289439"> Mit dieser Richtlinie wird festgelegt, ob die verbesserte Zuordnung internationaler Tastenkürzel aktiviert werden soll.
@@ -1684,7 +1704,6 @@ Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist eine Dateiüber
 <translation id="224750967938323855">Einwilligung zur Synchronisierung während der Anmeldung nicht anzeigen</translation>
 <translation id="2252400912879027343">WebSQL bleibt in nicht sicheren Kontexten bis M109 verfügbar und ist dann ab M110 nicht mehr verfügbar.</translation>
 <translation id="225340736558643885">Warnmeldungen für nicht sichere Formulare aktivieren</translation>
-<translation id="225347142757323162">Funktionen aktivieren, aber keine Daten zum Trainieren von KI-Modellen senden</translation>
 <translation id="2258126710006312594">Nutzern mit Remote-Zugriff die Übertragung von Dateien vom/zum Host gestatten</translation>
 <translation id="225830954785359083">Verhindern, dass Seiten beim Entfernen Pop-ups anzeigen</translation>
 <translation id="2261648512244797294">Veraltetes Drucken über Privet deaktivieren</translation>
@@ -1952,7 +1971,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2439733504887695659">Schließen von Warnungen zu gehackten Passwörtern für eingegebene Anmeldedaten aktivieren</translation>
 <translation id="2446244536806499267">Nutzer wird während der Audiowiedergabe nicht als inaktiv angesehen</translation>
 <translation id="2452225615952836461">Anfragemethoden immer groß schreiben</translation>
-<translation id="2453660971158808971">KI‑basierte Verlaufssuche nicht zulassen</translation>
 <translation id="2454228136871844693">Für eine optimale Stabilität.</translation>
 <translation id="2455033019778127130">Verwendet das Standard-Browserverhalten, zeigt die Nutzungsbedingungen an und wartet auf die Zustimmung des Nutzers.</translation>
 <translation id="2460127623195247744">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
@@ -3153,17 +3171,6 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhinder
 <translation id="3423703250826790403">Android-Apps</translation>
 <translation id="3426434797050451264">Mit dieser Richtlinie können auch Android-Apps als Standard-Handler für Dateien festgelegt werden.</translation>
 <translation id="3428247105888806363">Netzwerkvorhersage aktivieren</translation>
-<translation id="3430198032663063246">„Formuliere für mich“ ist ein KI-basierter Schreibassistent für Kurzinhalte im Web. Vorgeschlagene Inhalte basieren auf den vom Nutzer eingegebenen Prompts und dem Inhalt auf der Webseite.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI-Modelle zu verbessern.
-
-„0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion wird deaktiviert. „2“ ist der Standardwert für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3432863169147125747">Legt die Druckeinstellungen fest.</translation>
 <translation id="3434053014926283175">Mit dieser Richtlinie kann die rechte Maustaste auf dem Anmeldebildschirm als primäre Maustaste festgelegt werden.
 
@@ -3510,7 +3517,6 @@ Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim 
           </translation>
 <translation id="3677660004554019617">VC‑Hintergrund basierend auf generativer KI nicht zulassen</translation>
 <translation id="3678069907945250643">Google Fotos den Zugriff über die Personalisierungs-App erlauben</translation>
-<translation id="3680529017993214255">Funktionen aktivieren und Daten zum Trainieren von KI-Modellen senden</translation>
 <translation id="3685979383016152590">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> für Nutzer verfügbar sind.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (Wert 0) verwendet <ph name="PRINTERS_BULK_BLOCKLIST" />, um den Zugriff auf die angegebenen Drucker einzuschränken
@@ -3878,19 +3884,6 @@ Hinweis: Wenn in den Einstellungen keine gegenseitig unterstützten Authentifizi
 <translation id="3989829840000169163">Alte Erweiterungspunkte des Browsers blockieren</translation>
 <translation id="3990391739475801018">Der Energiesparmodus wird deaktiviert.</translation>
 <translation id="3990834929384096140">Echounterdrückung des Systems nicht erzwingen</translation>
-<translation id="3992185577030665825">Bei diesen Funktionen in den Entwicklertools von <ph name="PRODUCT_NAME" /> werden Modelle basierend auf generativer KI eingesetzt, um zusätzliche Debugging-Informationen bereitzustellen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie Fehlermeldungen, Stacktraces, Code-Snippets und Netzwerkanfragen erheben und an einen Google-Server senden, auf dem ein Modell basierend auf generativer KI ausgeführt wird. Antworttext oder Authentifizierungs- und Cookie-Header in Netzwerkanfragen sind nicht in den Daten enthalten, die an den Server gesendet werden.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern.
-
-„0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Konten von Unternehmensnutzern, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion wird deaktiviert. „2“ ist der Standardwert für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-Zu den Funktionen basierend auf generativer KI der Entwicklertools gehören folgende:
-
-– Console Insights: erklärt Konsolenmeldungen und bietet Vorschläge zum Beheben von Konsolenfehlern.</translation>
 <translation id="3994043824457743421">Information im mittleren Slot auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="399433537808390819">Nutzern keinen Zugriff auf den Unified Desktop-Modus gewähren</translation>
 <translation id="3995880046827722248">Manifest V2 ist deaktiviert</translation>
@@ -4390,6 +4383,25 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird die alte, eingestellte Syntax
           Wenn diese Richtlinie auf „true“ gesetzt ist, ist WebSQL in unsicheren Kontexten verfügbar.
           Ist sie auf „false“ gesetzt oder nicht konfiguriert, bleibt WebSQL in unsicheren Kontexten bis M109 verfügbar. Ab M110 ist sie dann nicht mehr verfügbar.
 WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
+<translation id="4401357095119743747">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Datei über <ph name="PRODUCT_OS_NAME" /> übertragen wird.
+
+      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei zur Analyse senden soll, wenn sie zwischen einer Quelle und einem Ziel übertragen wird, und welche Tags in der Analyseanfrage für diese Datei enthalten sein sollen. Ein Tag, das einer „enable“-Regel entspricht, wird der Analyseanfrage hinzugefügt, wenn die Quelle und das Ziel mit der Regel für dieses Tag übereinstimmen – jedoch nur, wenn keine „disable“-Regel mit demselben Tag mit der Übertragung übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält. Eine „<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />“-Regel wird durch eine Paarliste definiert, wobei jedes Paar eine Liste mit Quellen und eine Liste mit Zielen enthält. Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" />“ wird definiert, auf welches Dateisystem eine Regel angewendet werden soll.
+
+      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
+
+      Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />“ auf 1 gesetzt ist, wartet <ph name="PRODUCT_OS_NAME" /> auf eine Antwort des Analyseanbieters, bevor die Übertragung zugelassen wird. Wenn es auf einen anderen Ganzzahlwert gesetzt ist, ermöglicht <ph name="PRODUCT_OS_NAME" /> die sofortige Übertragung.
+
+      Falls das Feld „<ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" />“ auf „block“ gesetzt ist, können Nutzer die Datei mit <ph name="PRODUCT_OS_NAME" /> nicht übertragen, wenn bei der Kommunikation mit dem Analysedienst ein Fehler auftritt. Bei einem anderen Wert ermöglicht <ph name="PRODUCT_OS_NAME" /> die Übertragung der Datei, wenn bei der Kommunikation mit dem Analysedienst ein Fehler auftritt.
+
+      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" />“ wird festgelegt, ob <ph name="PRODUCT_OS_NAME" /> den Zugriff auf Dateien, die durch ein Passwort geschützt sind, blockiert oder erlaubt.
+
+      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />“ wird festgelegt, ob <ph name="PRODUCT_OS_NAME" /> den Zugriff auf Dateien, die zu groß für die Analyse sind, blockiert oder erlaubt.
+
+      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />“ wird festgelegt, für welche Tags der Connector vom Nutzer eine Begründung für das Umgehen eines Scans anfordern soll, die zu einer Genehmigung für die Umgehung führt. Wenn das Feld nicht festgelegt ist, wird angenommen, dass keine Begründung erforderlich ist.
+
+      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />“ wird festgelegt, welche Meldung der Nutzer sieht, wenn eine Warnung angezeigt wird, nachdem beim Scan ein potenzielles Problem gefunden wurde. Das Nachrichtenfeld enthält den Text, den der Nutzer sieht (maximal 200 Zeichen). Das Feld „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“ enthält eine vom Administrator festgelegte URL, die der Nutzer anklicken kann, um weitere benutzerdefinierte Informationen darüber zu erhalten, warum die Aktion blockiert wurde. Das Feld „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ ist optional und enthält die Sprache der Nachricht. Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ leer oder auf „default“ festgelegt ist, wird die entsprechende Nachricht angezeigt, wenn es für die Sprache des Nutzers keine eigene Nachricht gibt. Das Tag-Feld gibt an, für welche Arten von Scans die Meldung angezeigt wird. Die Liste „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“ kann keine oder mehrere Einträge haben – das Nachrichten- und das Tag-Feld der einzelnen Einträge dürfen dabei nicht leer sein.
+
+      Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="4402887080007986374">Die gültige Version der Nutzungsbedingungen von Edu Coexistence</translation>
 <translation id="4408428864159735559">Liste der vorkonfigurierten Netzwerkfreigaben.</translation>
 <translation id="4410236409016356088">Begrenzung der Netzwerkbandbreite erlauben</translation>
@@ -4837,7 +4849,6 @@ Wenn <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_ENABLED" /> aktiviert oder nicht k
 Ist die Richtlinie nicht konfiguriert, werden alle Dienste aktiviert.
 
 Andernfalls werden nur ausgewählte Dienste aktiviert.</translation>
-<translation id="4757563299858487173">Funktionen deaktivieren</translation>
 <translation id="4758335997982239449">Die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „IP-Schutz“ aktivieren.</translation>
 <translation id="4767059955897420757">Wenn die Richtlinie nicht konfiguriert ist oder wenn sie aktiviert ist, wird dem Nutzer möglicherweise Werbung zur Erweiterung für Anmeldeinformationsanbieter angezeigt.
 Ist sie deaktiviert, sieht der Nutzer keine Werbung zur Erweiterung für Anmeldeinformationsanbieter.</translation>
@@ -6998,17 +7009,6 @@ Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME"
       Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="6383774771168138899">Konfiguration des <ph name="CLOUD_UPLOAD_NAME" />-Ablaufs für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Dadurch werden die Suchergebnisseiten der Standardsuchmaschine in der Seitenleiste des Browsers angezeigt.</translation>
-<translation id="6385379259912525880">Die KI‑basierte Verlaufssuche ist eine Funktion, mit der Nutzer ihren Browserverlauf auch anhand von Seiteninhalten durchsuchen können statt nur anhand von Seitentitel und URL.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion beispielsweise Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern.
-
-„2“ = Die Funktion wird deaktiviert.
-
-Wenn die Richtlinie nicht konfiguriert ist, ist die Standardeinstellung bei <ph name="PRODUCT_OS_NAME" /> für normale Nutzer „0“ und für verwaltete Nutzer „2“.
-
-Weitere Informationen zur Datenverarbeitung bei Funktionen basierend auf generativer KI findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Diese Richtlinie ist ab <ph name="PRODUCT_OS_NAME" />-Version 29 nicht mehr vorhanden. Verwende stattdessen die Richtlinie "PresentationScreenDimDelayScale".</translation>
 <translation id="6396956366662970339">Gibt an, ob der Ladevorgang durch ein adaptives Lademodell angehalten werden kann, um die Akkulaufzeit zu verlängern.
 
@@ -8448,7 +8448,6 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="7469554574977894907">Suchvorschläge aktivieren</translation>
 <translation id="7472547030234093862">Domains angeben, die mit DNS‑over‑HTTPS aufgelöst werden sollen</translation>
 <translation id="747275827471712187">Auf diesen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
-<translation id="747517124419659622">KI‑basierte Verlaufssuche zulassen, ohne KI‑Modelle zu verbessern</translation>
 <translation id="7476030153540156377">Auswählen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „IP-Schutz“ aktiviert werden soll.</translation>
 <translation id="7476158778585368567">Durch diese Richtlinie können die Druckaufträge eines Geräts ausgegeben werden.
 
@@ -9345,17 +9344,6 @@ Diese Richtlinie wird auf den Inkognitomodus angewendet. Das bedeutet, dass der 
 <translation id="822055204938220476">Liste mit URLs, die im Vollbildmodus bleiben dürfen, ohne dass eine Benachrichtigung angezeigt werden muss</translation>
 <translation id="8225579382697740712">Verwendung der WebHID API verwalten</translation>
 <translation id="8229912067600517877">Entwicklertools aktivieren</translation>
-<translation id="8234565689501421293">Mit der Funktion „Design mit KI erstellen“ können Nutzer individuelle Designs und Hintergründe erstellen, indem sie aus einer Liste von Optionen eine Vorauswahl treffen.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI-Modelle zu verbessern.
-
-„0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion wird deaktiviert. „2“ ist der Standardwert für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8238421250255592181">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die automatische Vervollständigung aktiviert ist.</translation>
 <translation id="8239109177194627162">Autofill für Kreditkarten deaktivieren</translation>
 <translation id="8239143983379015783">Aktivierung des persistenten Kontingents erzwingen</translation>
@@ -10691,17 +10679,6 @@ Standardwert ist RollbackDisabled.</translation>
 <translation id="943865157632139008">Mit dieser Richtlinie kannst du den standardmäßigen HTML-Renderer konfigurieren, wenn <ph name="PRODUCT_FRAME_NAME" /> installiert ist.
       Bei der Standardeinstellung übernimmt der Host-Browser das Rendering. Du kannst dies jedoch wahlweise überschreiben und festlegen, dass HTML-Seiten standardmäßig mithilfe von <ph name="PRODUCT_FRAME_NAME" /> gerendert werden sollen.</translation>
 <translation id="944817693306670849">Datenträger-Cache-Größe festlegen</translation>
-<translation id="946458935955389273">„Tabs organisieren“ ist ein KI-basiertes Tool, das auf Grundlage der geöffneten Tabs eines Nutzers automatisch Tabgruppen erstellt. Die Vorschläge basieren auf geöffneten Tabs, aber nicht auf Seiteninhalten.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI-Modelle zu verbessern.
-
-„0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion wird deaktiviert. „2“ ist der Standardwert für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="949192525372487705">Wechsel zu einem Drittanbieter-Passwortmanager blockieren</translation>
 <translation id="957322141096206402">Die DNS-Auflösung des Systems kann je nach Systemkonfiguration und Funktions-Flags innerhalb oder außerhalb des Netzwerkprozesses ausgeführt werden.</translation>
 <translation id="957778406002650056">URL, über die das <ph name="PLUGIN_VM_NAME" />-Image heruntergeladen werden kann.</translation>

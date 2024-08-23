@@ -50,6 +50,9 @@
 <translation id="2236584955986023187">Das bedeutet, dass Chromium immer die Desktopversion der Website anfordert.</translation>
 <translation id="2313870531055795960">Prüft URLs anhand einer Liste unsicherer Websites, die in Chromium gespeichert ist. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chromium auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="231828342043114302">Melde dich in Chromium an, um personalisierte Inhalte zu erhalten, die auf deinen Interessen basieren.</translation>
+<translation id="2326738825692478496">Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert.
+
+Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="2374627437126809292">Chromium nutzt Google Maps, um dir Wegbeschreibungen und lokale Informationen zu erkannten Adressen bereitzustellen.</translation>
 <translation id="2386292341327187942">„Chromium“ in das Feld des Such-Widgets eingeben</translation>
 <translation id="2426113998523353159">Deine Organisation verlangt, dass du dich für die Verwendung von Chromium anmeldest.</translation>
@@ -291,6 +294,8 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 
 Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. Gib sie ein, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="9022552996538154597">In Chromium anmelden</translation>
+<translation id="9031260906956926157">Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert.
+Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="9050790730841755540">Du kannst Chromium jederzeit nutzen, wenn du in anderen Apps auf Links tippst.</translation>
 <translation id="9057082013386654559">Standardmäßig Chromium für iPad verwenden</translation>
 <translation id="9059693977935746710">Du musst dir dieses Passwort nicht merken. Es wird im Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>

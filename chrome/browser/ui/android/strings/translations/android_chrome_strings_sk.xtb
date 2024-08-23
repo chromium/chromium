@@ -131,7 +131,6 @@
 <translation id="1549000191223877751">Prejsť do druhého okna</translation>
 <translation id="1553358976309200471">Aktualizovať Chrome</translation>
 <translation id="1554532453982918912">Pomôžte zlepšiť Chrome pre ľudí, ktorí ho používajú podobným spôsobom ako vy</translation>
-<translation id="1558391695376153246">Zavrieť karty inkognito</translation>
 <translation id="1568636008098739136">Vypočuť obsah tejto stránky. Ak chcete túto skratku upraviť, pridržte ju.</translation>
 <translation id="1571304935088121812">Kopírovať používateľské meno</translation>
 <translation id="1584648915421894279">Momentálne nemôžete používať heslá uložené v tomto zariadení v kanáloch Chromu. Od Chromu verzie 125 budú heslá pre Chrome a <ph name="CHROME_CHANNEL" /> uložené vo vašom zariadení zlúčené a budú sa dať používať v oboch aplikáciách.</translation>
@@ -1447,7 +1446,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7691043218961417207">Pozrite si obsah na sledovanie</translation>
 <translation id="7697383401610880082">Presúvadlo</translation>
 <translation id="7698359219371678927">Vytvorte správu v aplikácii <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Dlaždice dopytov</translation>
 <translation id="7707922173985738739">Používať mobilné dáta</translation>
 <translation id="7709918231054955894">Majte k dispozícii všetky svoje karty</translation>
 <translation id="7733878270780732638">V zariadení nie je dostatok priestoru.</translation>

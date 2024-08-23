@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Aceasta înseamnă că Chromium va solicita de fiecare dată versiunea pentru desktop a site-urilor.</translation>
 <translation id="2313870531055795960">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chromium. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chromium poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="231828342043114302">Pentru a primi conținut personalizat în funcție de interesele tale, conectează-te la Chromium.</translation>
+<translation id="2326738825692478496">Unele date Chromium nu au fost salvate încă în Contul Google.
+
+Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="2374627437126809292">Chromium folosește Google Maps pentru a-ți oferi indicații de orientare și informații locale despre adresele detectate.</translation>
 <translation id="2386292341327187942">În caseta Caută widgeturi, introdu Chromium</translation>
 <translation id="2426113998523353159">Organizația îți solicită să te conectezi pentru a folosi Chromium.</translation>
@@ -292,6 +295,8 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 
 Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-o pentru a folosi și a salva datele Chromium în Contul Google.</translation>
 <translation id="9022552996538154597">Conectați-vă la Chromium</translation>
+<translation id="9031260906956926157">Unele date Chromium nu au fost salvate încă în Contul Google.
+Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="9050790730841755540">Folosește Chromium de fiecare dată când atingi linkuri în alte aplicații.</translation>
 <translation id="9057082013386654559">Folosește Chromium pentru iPad în mod prestabilit</translation>
 <translation id="9059693977935746710">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole pentru <ph name="EMAIL" /></translation>

@@ -1627,7 +1627,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2137128126782078222">Nemoj dozvoliti obavještenja s <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Dugme za postavljanje</translation>
 <translation id="2140788884185208305">Stanje baterije</translation>
-<translation id="2140902257485550046">Odaberi blokiranje svih ekstenzija na ovoj web lokaciji</translation>
 <translation id="2142328300403846845">Otvori link kao</translation>
 <translation id="2142484069755256151">Kreiranje 6-cifrenog PIN-a za oporavak za Google upravitelj lozinki; cifra PIN-a <ph name="NUM_DIGIT" /> od 6</translation>
 <translation id="2142582065325732898">Uključite <ph name="LINK1_BEGIN" />Sinhronizaciju Chromea<ph name="LINK1_END" /> da prikažete nedavne kartice Chromea. <ph name="LINK2_BEGIN" />Saznajte više<ph name="LINK2_END" /></translation>
@@ -2287,7 +2286,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2593499352046705383">Prije nego što počnete, provjerite jeste li napravili sigurnosnu kopiju podataka. Ako instalirate <ph name="DEVICE_OS" />, zamijenit će se svi podaci na tvrdom disku. Saznajte više na g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Upravljajte sigurnošću V8 pokretača</translation>
 <translation id="2597073208962000830">Dijeljenje u blizini koristi skeniranje putem Bluetootha da pronađe uređaje u blizini.</translation>
-<translation id="2598136842498757793">Prilagodite gumbe na alatnoj traci</translation>
+<translation id="2598136842498757793">Prilagođavanje dugmadi na alatnoj traci</translation>
 <translation id="2598710988533271874">Dostupan je novi Chrome</translation>
 <translation id="2599048253926156421">Korisničko ime kopirano u međumemoriju</translation>
 <translation id="2602501489742255173">Prevucite prema gore da počnete</translation>
@@ -2309,7 +2308,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2610374175948698697">Može pregledati fajlove ili foldere na uređaju</translation>
 <translation id="2610780100389066815">Potpisivanje Microsoftove liste pouzdanih stavki</translation>
 <translation id="261114180663074524">Prijavite se na Microsoft račun, a zatim pokušajte ponovo</translation>
-<translation id="2611765907167846862">Spokojno</translation>
 <translation id="2611776654555141051">Alat za crtanje pravougaonika</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="261305050785128654">Omogućite web lokacijama da znaju koje jezike govorite. Prikazivat će vam sadržaj na tim jezicima, kada je to moguće.</translation>
@@ -4061,7 +4059,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="3866142613641074814">Imate lozinke koje su izložene riziku</translation>
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3867134342671430205">Prevucite ili koristite tipke sa strelicama da pomjerite ekran</translation>
-<translation id="3867831579565057323">Mapiranje dodirnog zaslona</translation>
+<translation id="3867831579565057323">Mapirajte ekran na dodir</translation>
 <translation id="3867944738977021751">Polja potvrda</translation>
 <translation id="3869917919960562512">Pogrešan indeks.</translation>
 <translation id="3870626286046977643">Dijeli i zvuk sistema</translation>
@@ -6005,7 +6003,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5301954838959518834">Uredu, razumijem</translation>
 <translation id="5302032366299160685">Prije ponovnog pokušaja pričekajte dok se fajl ne otvori</translation>
 <translation id="5302048478445481009">Jezik</translation>
-<translation id="5302435492906794790">Traženje uređaja koji se mogu otkriti u blizini...</translation>
+<translation id="5302435492906794790">Traženje vidljivih uređaja u blizini…</translation>
 <translation id="5302932258331363306">Prikaži Zamjene</translation>
 <translation id="5305145881844743843">Ovim računom upravlja <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Izvor nije podržan</translation>
@@ -6980,7 +6978,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6022526133015258832">Otvori preko cijelog ekrana</translation>
 <translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
 <translation id="6023643151125006053">Ovaj uređaj (SN: <ph name="SERIAL_NUMBER" />) je zaključao administrator domene <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Dozvoljavanje ekstenzija na ovoj web lokaciji</translation>
 <translation id="6024317249717725918">&amp;Pretraži kadar videozapisa putem usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stanje stoga</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB uređaj je povezan</translation>
@@ -7771,6 +7768,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="661266467055912436">Poboljšava vašu i svačiju sigurnost na webu.</translation>
 <translation id="6613267708691765962">Skeniranje radi provjere prisustva zlonamjernog softvera…</translation>
 <translation id="6613668613087513143">Nema dovoljno prostora na uređaju za završetak ažuriranja. Obrišite <ph name="NECESSARY_SPACE" /> na uređaju i pokušajte ponovo iz preglednika Chrome.</translation>
+<translation id="6614172284067813496">Stranica je dodana na listu za čitanje</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6618744767048954150">Pokrenuto</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -9241,7 +9239,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7685087414635069102">Potreban je PIN</translation>
 <translation id="7685351732518564314">Pritisnite dugme na uređaju <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Više o oglasima koje predlažu web lokacije</translation>
-<translation id="7686581688229391955">Odaberi dozvoljavanje ekstenzija na ovoj web lokaciji</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Odaberite s liste</translation>
 <translation id="7690853182226561458">Dodaj &amp;folder...</translation>
@@ -9581,7 +9578,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="79312157130859720">Aplikacija <ph name="APP_NAME" /> dijeli vaš ekran i zvuk.</translation>
 <translation id="793293630927785390">Dijaloški okvir "Nova WiFi mreža"</translation>
 <translation id="7932969338829957666">Dijeljeni folderi su dostupni u Linuxu na <ph name="BASE_DIR" />.</translation>
-<translation id="7932992556896556665">Postavite i mapirajte uređaj s dodirnim zaslonom na ispravan prikaz</translation>
+<translation id="7932992556896556665">Postavite i mapirajte uređaj s ekranom na dodir na odgovarajući prikaz</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Omogući zvuk na web lokaciji}one{Omogući zvuk na web lokacijama}few{Omogući zvuk na web lokacijama}other{Omogući zvuk na web lokacijama}}</translation>
 <translation id="7933486544522242079">&amp;Sačuvaj i dijeli</translation>
 <translation id="7933518760693751884">Da sačuvate stranicu za kasnije, kliknite na ikonu oznake</translation>
@@ -10773,6 +10770,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="876956356450740926">Koristite programerske alate, IDE-ove i uređivače. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Temeljni direktorij ekstenzije</translation>
 <translation id="8771300903067484968">Pozadina početne stranice je vraćena na zadanu pozadinu.</translation>
+<translation id="8773535891252326047">Link je kopiran u istaknutu stavku</translation>
 <translation id="8774379074441005279">Potvrda vraćanja</translation>
 <translation id="8774934320277480003">Gornja margina</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>

@@ -131,7 +131,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1549000191223877751">Premjesti u drugi prozor</translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
 <translation id="1554532453982918912">Pomozite poboljšati Chrome za korisnike koji ga upotrebljavaju na isti način kao vi</translation>
-<translation id="1558391695376153246">Zatvori anonimne kartice</translation>
 <translation id="1568636008098739136">Poslušajte ovu stranicu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
 <translation id="1584648915421894279">Zaporke spremljene na ovom uređaju trenutačno se ne mogu upotrebljavati na Chromeovim kanalima. Nakon Chromea 125 zaporke spremljene na vašem uređaju za Chrome i <ph name="CHROME_CHANNEL" /> spojit će se i moći će se upotrebljavati u obje aplikacije.</translation>
@@ -1019,6 +1018,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="587735546353481577">Da biste pratili web-lokaciju, otvorite je, otvorite izbornik preglednika Chrome i dodirnite Prati.</translation>
 <translation id="5879072387416556377">Bolji prijedlozi</translation>
 <translation id="5885378508678660271">Obavijesti <ph name="SEPARATOR" /> Chrome je uklonio ta dopuštenja jer je ova web-lokacija opasna</translation>
+<translation id="5895834791314695851">Zaporke mogu uskoro prestati funkcionirati na ovom uređaju. Da biste nastavili upotrebljavati svoje zaporke, ažurirajte usluge za Google Play. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Nije zatvoren nijedan list pristupnih ključeva</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5919204609460789179">Ažurirajte <ph name="PRODUCT_NAME" /> za pokretanje sinkronizacije</translation>
@@ -1447,7 +1447,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7691043218961417207">Istražite sadržaj za praćenje</translation>
 <translation id="7697383401610880082">Marker za povlačenje</translation>
 <translation id="7698359219371678927">Izradite e-poruku u aplikaciji <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Kartice s upitima</translation>
 <translation id="7707922173985738739">Upotreba mobilnih podataka</translation>
 <translation id="7709918231054955894">Pristupajte svim svojim karticama</translation>
 <translation id="7733878270780732638">Nema dovoljno prostora na uređaju.</translation>
@@ -1559,6 +1558,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="820568752112382238">Najposjećenije web-lokacije</translation>
 <translation id="8209050860603202033">Otvori sliku</translation>
 <translation id="8210770465353466621">Ovdje ćete pronaći svoje kartice</translation>
+<translation id="8211101263765532799">Neke će zaporke uskoro prestati funkcionirati</translation>
 <translation id="8215740705341534369">Bočni list</translation>
 <translation id="8218622182176210845">Upravljanje računom</translation>
 <translation id="8221401890884589479">Možete blokirati web-lokacije koje ne želite. Chrome također automatski briše web-lokacije koje su na popisu više od 30 dana. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -1659,6 +1659,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="864544049772947936">Upravljanje prozorima (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Upotrijebite Chrome na svoj način</translation>
 <translation id="8664979001105139458">Već postoji datoteka s tim nazivom</translation>
+<translation id="8672883760227492369">Neke zaporke na ovom uređaju uskoro će prestati funkcionirati. Te zaporke možete premjestiti u Google upravitelj zaporki.</translation>
 <translation id="8676276370198826499">Registrirajte se za <ph name="SITE_ETLD_PLUS_ONE" /> pomoću davatelja identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Potvrde prijave</translation>
 <translation id="8683039184091909753">slika</translation>

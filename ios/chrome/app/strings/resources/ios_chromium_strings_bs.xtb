@@ -51,9 +51,9 @@
 <translation id="2236584955986023187">Ovo znači da će Chromium svaki put zatražiti web lokaciju za računar.</translation>
 <translation id="2313870531055795960">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromiumu. Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
 <translation id="231828342043114302">Da primate personaliziran sadržaj na osnovu svojih interesovanja, prijavite se u Chromium.</translation>
-<translation id="2326738825692478496">Neki vaši podaci iz Chromiuma još nisu spremljeni na vaš Google račun.
+<translation id="2326738825692478496">Određeni podaci Chromiuma još uvijek nisu sačuvani na Google račun.
 
-Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
+Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će se izbrisati.</translation>
 <translation id="2374627437126809292">Chromium koristi Google Mape da vam dâ upute i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="2386292341327187942">U polju Vidžeti za pretraživanje unesite Chromium</translation>
 <translation id="2426113998523353159">Vaša organizacija zahtijeva da se prijavite da koristite Chromium.</translation>
@@ -295,8 +295,8 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 
 Vaši podaci su šifrirani pristupnim izrazom <ph name="TIME" /> Unesite ga da koristite i sačuvate podatke Chromiuma na Google računu.</translation>
 <translation id="9022552996538154597">Prijavite se u Chromium</translation>
-<translation id="9031260906956926157">Neki vaši podaci iz Chromiuma još nisu spremljeni na vaš Google račun.
-Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
+<translation id="9031260906956926157">Određeni podaci Chromiuma još uvijek nisu sačuvani na Google račun.
+Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će se izbrisati.</translation>
 <translation id="9050790730841755540">Koristite Chromium svaki put kada dodirnete linkove u drugim aplikacijama.</translation>
 <translation id="9057082013386654559">Koristite Chromium za iPad prema zadanim postavkama</translation>
 <translation id="9059693977935746710">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Upravitelju lozinki za račun <ph name="EMAIL" /></translation>

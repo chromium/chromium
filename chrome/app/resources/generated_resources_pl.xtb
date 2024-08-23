@@ -1615,7 +1615,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2137128126782078222">Nie zezwalaj na powiadomienia z <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Przycisk konfiguracji</translation>
 <translation id="2140788884185208305">Kondycja baterii</translation>
-<translation id="2140902257485550046">Wybierz, aby zablokować wszystkie rozszerzenia w tej witrynie</translation>
 <translation id="2142328300403846845">Otwórz link jako</translation>
 <translation id="2142484069755256151">Utwórz 6-cyfrowy kod PIN przywracania do Menedżera haseł Google, cyfra <ph name="NUM_DIGIT" /> z 6</translation>
 <translation id="2142582065325732898">Aby zobaczyć ostatnio otwarte karty, włącz <ph name="LINK1_BEGIN" />Synchronizację Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Więcej informacji<ph name="LINK2_END" /></translation>
@@ -2281,7 +2280,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2610374175948698697">Możliwość wyświetlania plików i folderów na urządzeniu</translation>
 <translation id="2610780100389066815">Podpisywanie listy zaufania firmy Microsoft</translation>
 <translation id="261114180663074524">Zaloguj się na konto Microsoft i spróbuj jeszcze raz</translation>
-<translation id="2611765907167846862">Zrelaksowany</translation>
 <translation id="2611776654555141051">Narzędzie Prostokąt</translation>
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="261305050785128654">Informuj witryny o językach, którymi się posługujesz. Witryny w miarę możliwości będą wyświetlać treści w tych językach.</translation>
@@ -6945,7 +6943,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6022526133015258832">Otwórz na pełnym ekranie</translation>
 <translation id="6022659036123304283">Dostosuj Chrome do swoich potrzeb</translation>
 <translation id="6023643151125006053">To urządzenie (nr seryjny: <ph name="SERIAL_NUMBER" />) zostało zablokowane przez administratora domeny <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Zezwalaj na rozszerzenia w tej witrynie</translation>
 <translation id="6024317249717725918">&amp;Wyszukaj klatkę wideo za pomocą: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Zrzut stosu</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – połączono z urządzeniem USB</translation>
@@ -7736,6 +7733,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="661266467055912436">Zwiększa bezpieczeństwo Twoje i pozostałych użytkowników internetu.</translation>
 <translation id="6613267708691765962">Skanuję w poszukiwaniu złośliwego oprogramowania…</translation>
 <translation id="6613668613087513143">Na tym urządzeniu jest za mało miejsca, aby dokończyć tę aktualizację. Zwolnij <ph name="NECESSARY_SPACE" /> i spróbuj ponownie, zaczynając w przeglądarce Chrome.</translation>
+<translation id="6614172284067813496">Strona została dodana do listy Do przeczytania</translation>
 <translation id="6615455863669487791">Pokaż mi</translation>
 <translation id="6618744767048954150">W toku</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8114,6 +8112,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6876155724392614295">Rower</translation>
 <translation id="6876469544038980967">Nieprzydatne</translation>
 <translation id="6878422606530379992">Zezwolono na dostęp do czujników</translation>
+<translation id="6878862640969460273">Pozioma</translation>
 <translation id="6880587130513028875">Pokazywanie grafik na tej stronie zostało zablokowane.</translation>
 <translation id="6881845890692344060">Administrator się wylogował. Teraz Ty masz wszystko pod kontrolą.</translation>
 <translation id="6882210908253838664">Jeśli strona nie działa, możesz tymczasowo zezwolić jej na używanie plików cookie innych firm. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -9203,7 +9202,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7685087414635069102">Wymagany kod PIN</translation>
 <translation id="7685351732518564314">Naciśnij przycisk na urządzeniu <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Więcej informacji o reklamach sugerowanych przez witrynę</translation>
-<translation id="7686581688229391955">Wybierz, aby zezwolić na rozszerzenia w tej witrynie</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Wybierz z listy</translation>
 <translation id="7690853182226561458">Dodaj &amp;folder</translation>
@@ -9652,6 +9650,7 @@ Plik klucza: <ph name="KEY_FILE" />
 
 Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia nowych wersji rozszerzenia.</translation>
 <translation id="8000020256436988724">Pasek narzędzi</translation>
+<translation id="800117767980299235">Notatka głosowa</translation>
 <translation id="8002274832045662704">Zaawansowana konfiguracja drukarki</translation>
 <translation id="8002670234429879764">Drukarka <ph name="PRINTER_NAME" /> nie jest już dostępna</translation>
 <translation id="8004092996156083991">Jeśli Twoje hasła zostaną przejęte, damy Ci znać.</translation>
@@ -10733,6 +10732,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="876956356450740926">Korzystaj z narzędzi dla programistów, IDE i edytorów. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Główny katalog rozszerzenia</translation>
 <translation id="8771300903067484968">Na stronie startowej zostało przywrócone domyślne tło.</translation>
+<translation id="8773535891252326047">Link został skopiowany do podświetlenia</translation>
 <translation id="8774379074441005279">Potwierdzenie przywrócenia danych</translation>
 <translation id="8774934320277480003">Górny margines</translation>
 <translation id="8775144690796719618">Nieprawidłowy URL</translation>

@@ -1628,7 +1628,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2137128126782078222">Jangan benarkan pemberitahuan daripada <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Butang penyediaan</translation>
 <translation id="2140788884185208305">Kesihatan Bateri</translation>
-<translation id="2140902257485550046">Pilih untuk menyekat semua sambungan pada laman ini</translation>
 <translation id="2142328300403846845">Buka Pautan sebagai</translation>
 <translation id="2142484069755256151">Buat PIN pemulihan 6 digit untuk Google Password Manager, digit <ph name="NUM_DIGIT" /> daripada PIN 6 digit</translation>
 <translation id="2142582065325732898">Hidupkan <ph name="LINK1_BEGIN" />Penyegerakan Chrome<ph name="LINK1_END" /> untuk melihat tab Chrome baru-baru ini. <ph name="LINK2_BEGIN" />Ketahui Lebih Lanjut<ph name="LINK2_END" /></translation>
@@ -2310,7 +2309,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2610374175948698697">Boleh melihat fail atau folder pada peranti anda</translation>
 <translation id="2610780100389066815">Menandatangani Senarai Kepercayaan Microsoft</translation>
 <translation id="261114180663074524">Log masuk ke akaun Microsoft anda dan cuba lagi</translation>
-<translation id="2611765907167846862">Tenang</translation>
 <translation id="2611776654555141051">Alat Segi Empat Tepat</translation>
 <translation id="2612676031748830579">Nombor kad</translation>
 <translation id="261305050785128654">Benarkan laman web mengetahui bahasa tuturan anda. Laman web ini akan menunjukkan kandungan dalam bahasa tersebut, jika boleh.</translation>
@@ -6006,6 +6004,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5301954838959518834">OK, faham</translation>
 <translation id="5302032366299160685">Tunggu fail dibuka sebelum mencuba lagi</translation>
 <translation id="5302048478445481009">Bahasa</translation>
+<translation id="5302435492906794790">Mencari peranti boleh ditemukan yang berdekatan...</translation>
 <translation id="5302932258331363306">Tunjukkan Penggantian</translation>
 <translation id="5305145881844743843">Akaun ini diurus oleh <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Sumber tidak disokong</translation>
@@ -6980,7 +6979,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6022526133015258832">Buka Skrin Penuh</translation>
 <translation id="6022659036123304283">Peribadikan Chrome anda</translation>
 <translation id="6023643151125006053">Peranti ini (SN: <ph name="SERIAL_NUMBER" />) telah dikunci oleh pentadbir <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Benarkan sambungan pada laman ini</translation>
 <translation id="6024317249717725918">&amp;Cari Bingkai Video dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Pengesanan Susunan</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Peranti USB disambungkan</translation>
@@ -7767,6 +7765,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="661266467055912436">Meningkatkan keselamatan untuk anda dan semua orang yang melayari web.</translation>
 <translation id="6613267708691765962">Mengimbas untuk mengesan perisian hasad...</translation>
 <translation id="6613668613087513143">Ruang pada peranti ini tidak mencukupi untuk menyelesaikan kemaskinian ini. Bersihkan <ph name="NECESSARY_SPACE" /> pada peranti anda dan cuba lagi daripada penyemak imbas Chrome anda.</translation>
+<translation id="6614172284067813496">Halaman ditambahkan pada senarai bacaan</translation>
 <translation id="6615455863669487791">Tunjukkan kepada saya</translation>
 <translation id="6618744767048954150">Berjalan</translation>
 <translation id="6619058681307408113">Daemon Pencetak Talian (LPD)</translation>
@@ -8147,6 +8146,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6876155724392614295">Basikal</translation>
 <translation id="6876469544038980967">Tidak Membantu</translation>
 <translation id="6878422606530379992">Penderia dibenarkan</translation>
+<translation id="6878862640969460273">Landskap</translation>
 <translation id="6880587130513028875">Imej disekat pada halaman ini.</translation>
 <translation id="6881845890692344060">Pentadbir anda telah log keluar. Kini anda yang mengawal.</translation>
 <translation id="6882210908253838664">Jika laman tidak berfungsi, anda boleh cuba memberikan kebenaran sementara untuk menggunakan kuki pihak ketiga. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -8716,6 +8716,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7321545336522791733">Pelayan tidak dapat dihubungi</translation>
 <translation id="7322515217754205362">Kebenaran Laman</translation>
 <translation id="7323315405936922211">Saiz kawasan kursor</translation>
+<translation id="7324020307732396723">Buka Tetapan Bahasa</translation>
 <translation id="7324297612904500502">Forum Beta</translation>
 <translation id="7325209047678309347">Kertas tersekat</translation>
 <translation id="7325953439504232954">Tukar profil?</translation>
@@ -9236,7 +9237,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7685087414635069102">PIN diperlukan</translation>
 <translation id="7685351732518564314">Tekan butang pada <ph name="DEVICE_NAME" /> anda.</translation>
 <translation id="7686086654630106285">Lagi tentang iklan laman yang dicadangkan</translation>
-<translation id="7686581688229391955">Pilih untuk membenarkan sambungan pada laman ini</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Pilih daripada senarai</translation>
 <translation id="7690853182226561458">Tambah &amp;folder...</translation>
@@ -9685,6 +9685,7 @@ Fail Kunci: <ph name="KEY_FILE" />
 
 Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta versi baharu sambungan anda.</translation>
 <translation id="8000020256436988724">Bar alat</translation>
+<translation id="800117767980299235">Sorotan suara</translation>
 <translation id="8002274832045662704">Konfigurasi terperinci pencetak</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" />tidak lagi tersedia.</translation>
 <translation id="8004092996156083991">Jika kata laluan anda terjejas, kami akan memberitahu anda.</translation>
@@ -9832,6 +9833,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8097959162767603171">Pentadbir anda mesti menerima syarat perkhidmatan dalam senarai peranti Chrome Konsol pentadbiran terlebih dahulu.</translation>
 <translation id="8098156986344908134">Pasang <ph name="DEVICE_OS" /> dan padamkan pemacu keras?</translation>
 <translation id="8098616321286360457">Sambungan rangkaian diperlukan</translation>
+<translation id="8100057926383586173">Buka tetapan bahasa</translation>
 <translation id="8100230553590752325">Gunakan kata laluan yang disimpan pada mana-mana peranti</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> dipilih. Tekan Cari dan Ruang untuk menyahpilih.</translation>
 <translation id="8101409298456377967">Buat, simpan dan urus kata laluan anda supaya anda dapat log masuk ke laman dan apl dengan mudah. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -10768,6 +10770,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="876956356450740926">Jalankan alatan pembangun, IDE dan editor. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Direktori akar sambungan</translation>
 <translation id="8771300903067484968">Latar belakang halaman mula telah ditetapkan semula kepada latar belakang lalai.</translation>
+<translation id="8773535891252326047">Pautan disalin kepada sorotan</translation>
 <translation id="8774379074441005279">Sahkan Pemulihan</translation>
 <translation id="8774934320277480003">Jidar atas</translation>
 <translation id="8775144690796719618">URL tidak sah</translation>

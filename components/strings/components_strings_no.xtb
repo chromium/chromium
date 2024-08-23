@@ -546,7 +546,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1974060860693918893">Avanserte</translation>
 <translation id="1975457531113383421">Innmatingsskuff</translation>
 <translation id="1975584088563498795">Postkasse 10</translation>
-<translation id="1976610264358655503">Du besøker denne siden ofte</translation>
 <translation id="1978555033938440688">Fastvareversjon</translation>
 <translation id="1979156660928743046">Medieinformasjon</translation>
 <translation id="1988881251331415125">Hvis stavemåten er korrekt, kan du <ph name="BEGIN_LINK" />prøve å kjøre Tilkoblingsdiagnostikk<ph name="END_LINK" />.</translation>
@@ -3093,7 +3092,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulatorspill</translation>
-<translation id="6735783933931458444">Du besøker ofte denne siden på denne tiden av døgnet</translation>
 <translation id="6737708609449480586">Bakst</translation>
 <translation id="6738516213925468394">Dataene dine ble kryptert med <ph name="BEGIN_LINK" />passordfrasen for synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="6739943577740687354">Denne funksjonen bruker AI og kan gjøre feil</translation>

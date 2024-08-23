@@ -76,6 +76,9 @@ Tänk på detta:
 <translation id="2703746758996815929">Om du vill få användbara tips om Chrome kan du aktivera aviseringar i iOS-inställningarna.</translation>
 <translation id="2736805085127235148">Chrome-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
 <translation id="2750626042242931740">Du kan uppdatera dina val när som helst i inställningarna för Chrome.</translation>
+<translation id="2754428955276778271">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
+
+Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2869959624320573933">Logga in i Chrome</translation>
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Tänk på detta:
 <translation id="5190139289262548459">Din organisation, <ph name="DOMAIN" />, hanterar kontot du är inloggad på och hur Chrome används.</translation>
 <translation id="5256908199795498284">Chrome identifierar försändelsens spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelsen på sidan Ny flik. Din data delas med Google för att tillhandahålla den här funktionen och förbättra Shopping för alla.</translation>
 <translation id="5278862365980079760">Lås inkognitoflikarna när du lämnar Chrome eller byter till en annan app.</translation>
+<translation id="5310957470610282541">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
+Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="5389212809648216794">Google Chrome kan inte använda kameran eftersom den används av en annan app</translation>
 <translation id="5395376160638294582">Se till att du alltid kan använda Chrome-data i Google-kontot</translation>
 <translation id="5439191312780166229">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>

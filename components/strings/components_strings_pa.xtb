@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">ਉੱਨਤ</translation>
 <translation id="1975457531113383421">ਇਨਪੁੱਟ ਟ੍ਰੇਅ</translation>
 <translation id="1975584088563498795">ਮੇਲਬਾਕਸ 10</translation>
-<translation id="1976610264358655503">ਤੁਹਾਡੇ ਅਕਸਰ ਖੋਲ੍ਹੇ ਗਏ ਟੈਬ</translation>
 <translation id="1978555033938440688">ਫ਼ਰਮਵੇਅਰ ਵਰਜਨ</translation>
 <translation id="1979156660928743046">ਮੀਡੀਆ ਜਾਣਕਾਰੀ</translation>
 <translation id="1988881251331415125">ਜੇ ਸ਼ਬਦ-ਜੋੜ ਸਹੀ ਹੈ, ਤਾਂ <ph name="BEGIN_LINK" />ਕਨੈਕਟੀਵਿਟੀ ਤਸ਼ਖੀਸਾਂ ਨੂੰ ਚਲਾ ਕੇ ਦੇਖੋ<ph name="END_LINK" />।</translation>
@@ -2817,6 +2816,7 @@
 <translation id="6240964651812394252">ਤੁਹਾਡੇ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਨਾਲ Google Password Manager ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ ਅਤੇ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੇ Password Manager ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ। ਮੁੜ-ਲਾਂਚ ਕਰਨ ਤੋਂ ਬਾਅਦ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਮੁੜ ਖੁੱਲ੍ਹ ਜਾਣਗੀਆਂ।</translation>
 <translation id="6241121617266208201">ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="624499991300733384">ਕੰਪੋਜੀਟਰ ਸੇਵਾ ਪ੍ਰਿੰਟ ਕਰੋ</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> ਦਿਨ ਪਹਿਲਾਂ</translation>
 <translation id="6246868321321344665">ਤੁਹਾਡੀ ਸੰਸਥਾ ਕੰਮ ਅਤੇ ਨਿੱਜੀ ਪ੍ਰੋਫਾਈਲਾਂ ਦੋਨਾਂ ਵਿੱਚ ਪਾਸਵਰਡ ਅਤੇ ਇਤਿਹਾਸ ਵਰਗੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ</translation>
 <translation id="6250932670816326647">ਨਹਾਉਣ ਲਈ ਅਤੇ ਸਰੀਰ 'ਤੇ ਵਰਤੇ ਜਾਣ ਵਾਲੇ ਉਤਪਾਦ</translation>
 <translation id="6251906504834538140">{0,plural, =1{ਫ਼ਾਈਲ ਨੂੰ ਲਿਜਾਉਣ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{<ph name="FILE_COUNT" /> ਫ਼ਾਈਲ ਨੂੰ ਲਿਜਾਉਣ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{<ph name="FILE_COUNT" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਲਿਜਾਉਣ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
@@ -3089,7 +3089,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ਕੈਮਰਾ</translation>
 <translation id="6734506549556896534">ਸਿਮੂਲੇਸ਼ਨ ਗੇਮਾਂ</translation>
-<translation id="6735783933931458444">ਤੁਸੀਂ ਅਕਸਰ ਦਿਨ ਦੇ ਇਸ ਸਮੇਂ ਟੈਬ ਨੂੰ ਖੋਲ੍ਹਦੇ ਹੋ</translation>
 <translation id="6737708609449480586">ਬੇਕ ਕੀਤੀਆਂ ਚੀਜ਼ਾਂ</translation>
 <translation id="6738516213925468394">ਤੁਹਾਡਾ ਡਾਟਾ ਤੁਹਾਡੇ <ph name="BEGIN_LINK" />ਸਿੰਕ ਪਾਸਫਰੇਜ਼<ph name="END_LINK" /> ਨਾਲ <ph name="TIME" /> ਵਜੇ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ। ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇਸਨੂੰ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="6739943577740687354">ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ AI ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ ਅਤੇ ਇਹ ਜ਼ਰੂਰੀ ਨਹੀਂ ਕਿ ਇਹ ਹਮੇਸ਼ਾਂ ਸਹੀ ਹੋਵੇ</translation>
@@ -3405,6 +3404,7 @@
 <translation id="7346081071264046066">"ਉਤਸ਼ਾਹ ਨਾਲ ਵਿਆਹ ਦੇ ਇਸ ਸੱਦੇ ਦਾ 'ਹਾਂ' ਵਿੱਚ ਜਵਾਬ ਦਿਓ"</translation>
 <translation id="7352651011704765696">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="7353601530677266744">ਕਮਾਂਡ ਲਾਈਨ</translation>
+<translation id="7356678400607112844">ਪਿਛਲੀ ਵਾਰ ਦੇਖਣ ਦਾ ਸਮਾਂ</translation>
 <translation id="7359588939039777303">ਵਿਗਿਆਪਨ ਬਲੌਕ ਕੀਤੇ ਗਏ।</translation>
 <translation id="7360451453306104998">ਜਦੋਂ Google ਨੂੰ ਉਪਲਬਧ ਛੋਟਾਂ ਮਿਲਦੀਆਂ ਹਨ, ਤਾਂ ਉਹ ਚੈੱਕ-ਆਊਟ ਦੌਰਾਨ ਦਿਸਣਗੀਆਂ</translation>
 <translation id="7363096869660964304">ਹਾਲਾਂਕਿ, ਤੁਸੀਂ ਅਦਿੱਖ ਨਹੀਂ ਹੁੰਦੇ ਹੋ। ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਰਤਣ 'ਤੇ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਤੁਹਾਡੇ ਰੁਜ਼ਗਾਰਦਾਤਾ, ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਜਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਤੋਂ ਨਹੀਂ ਲੁਕੀ ਰਹਿੰਦੀ ਹੈ।</translation>

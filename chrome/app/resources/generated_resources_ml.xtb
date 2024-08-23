@@ -1615,7 +1615,6 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" /> എന്നതിൽ നിന്നുള്ള അറിയിപ്പുകൾ അനുവദിക്കരുത്</translation>
 <translation id="2139919072249842737">സജ്ജീകരണ ബട്ടൺ</translation>
 <translation id="2140788884185208305">ബാറ്ററിയുടെ പ്രവർത്തനക്ഷമത</translation>
-<translation id="2140902257485550046">ഈ സൈറ്റിലെ എല്ലാ വിപുലീകരണങ്ങളും ബ്ലോക്ക് ചെയ്യാൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2142328300403846845">ലിങ്ക്  ഇനിപ്പറയുന്നതായി തുറക്കുക</translation>
 <translation id="2142484069755256151">Google Password Manager-നായി ഒരു 6 അക്ക വീണ്ടെടുക്കൽ പിൻ സൃഷ്ടിക്കുക, 6-ൽ <ph name="NUM_DIGIT" />-ാമത്തെ പിൻ അക്കം</translation>
 <translation id="2142582065325732898">അടുത്തിടെ തുറന്ന Chrome ടാബുകൾ കാണാൻ <ph name="LINK1_BEGIN" />Chrome സമന്വയം<ph name="LINK1_END" /> ഓണാക്കുക. <ph name="LINK2_BEGIN" />കൂടുതലറിയുക<ph name="LINK2_END" /></translation>
@@ -2294,7 +2293,6 @@
 <translation id="2610374175948698697">നിങ്ങളുടെ ഉപകരണത്തിലെ ഫയലുകളോ ഫോൾഡറുകളോ കാണാനാകും</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">നിങ്ങളുടെ Microsoft അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക</translation>
-<translation id="2611765907167846862">ശാന്തമായത്</translation>
 <translation id="2611776654555141051">ദീർഘചതുര ടൂൾ</translation>
 <translation id="2612676031748830579">കാർഡ് നമ്പർ</translation>
 <translation id="261305050785128654">നിങ്ങൾ സംസാരിക്കുന്ന ഭാഷകൾ വെബ്സൈറ്റുകളെ അറിയിക്കുക. സാധ്യമാകുമ്പോൾ അവ ആ ഭാഷകളിൽ ഉള്ളടക്കം കാണിക്കും.</translation>
@@ -6964,7 +6962,6 @@
 <translation id="6022526133015258832">പൂര്‍ണ്ണ സ്‌ക്രീനില്‍ തുറക്കുക</translation>
 <translation id="6022659036123304283">Chrome-നെ നിങ്ങളുടേതാക്കുക</translation>
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> അഡ്‌മിൻ ഈ ഉപകരണം (SN: <ph name="SERIAL_NUMBER" />) ലോക്ക് ചെയ്‌തു.</translation>
-<translation id="6024072172641380781">ഈ സൈറ്റിൽ വിപുലീകരണങ്ങൾ അനുവദിക്കുക</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> ഉപയോഗിച്ച് വീഡിയോ ഫ്രെയിം തിരയുക</translation>
 <translation id="6025215716629925253">സ്റ്റാക്ക് ട്രെയ്സ്</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB ഉപകരണം കണക്‌റ്റ് ചെയ്‌തു</translation>
@@ -7751,6 +7748,7 @@
 <translation id="661266467055912436">നിങ്ങൾക്കും വെബിലെ എല്ലാവർക്കും സുരക്ഷ മെച്ചപ്പെടുത്തുന്നു.</translation>
 <translation id="6613267708691765962">മാൽവെയർ കണ്ടെത്താൻ സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="6613668613087513143">ഈ അപ്ഡേറ്റ് പൂർത്തിയാക്കാൻ ആവശ്യമായ ഇടം ഈ ഉപകരണത്തിലില്ല. നിങ്ങളുടെ ഉപകരണത്തിൽ <ph name="NECESSARY_SPACE" /> ഇടം സൃഷ്‌ടിച്ച് Chrome ബ്രൗസറിൽ നിന്ന് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="6614172284067813496">വായിക്കാനുള്ളവയുടെ ലിസ്റ്റിലേക്ക് പേജ് ചേർത്തു</translation>
 <translation id="6615455863669487791">എന്നെ കാണിക്കുക</translation>
 <translation id="6618744767048954150">റൺ ചെയ്യുന്നു</translation>
 <translation id="6619058681307408113">ലൈൻ പ്രിന്റർ ഡെമൺ (LPD)</translation>
@@ -9219,7 +9217,6 @@
 <translation id="7685087414635069102">പിൻ ആവശ്യമാണ്</translation>
 <translation id="7685351732518564314">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> എന്നതിൽ ഒരു ബട്ടൺ അമർത്തുക.</translation>
 <translation id="7686086654630106285">സൈറ്റുകൾ നിർദ്ദേശിക്കുന്ന പരസ്യങ്ങളെ കുറിച്ചുള്ള കൂടുതൽ വിവരങ്ങൾ</translation>
-<translation id="7686581688229391955">ഈ സൈറ്റിൽ വിപുലീകരണങ്ങൾ അനുവദിക്കാൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7690853182226561458">&amp;ഫോൾഡർ ചേർക്കൂ...</translation>
@@ -10749,6 +10746,7 @@
 <translation id="876956356450740926">ഡെവലപ്പർ ടൂളുകൾ, IDE-കൾ, എഡിറ്റർമാർ എന്നിവ റൺ ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">വിപുലീകരണ റൂട്ട് ഡയറക്റ്ററി</translation>
 <translation id="8771300903067484968">ആരംഭ പേജിൻ്റെ പശ്‌ചാത്തലം ഡിഫോൾട്ട് പശ്ചാത്തലമാക്കി പുനഃക്രമീകരിച്ചു.</translation>
+<translation id="8773535891252326047">ഹൈലൈറ്റിലേക്ക് ലിങ്ക് പകർത്തി</translation>
 <translation id="8774379074441005279">പുനഃസ്ഥാപിക്കൽ സ്ഥിരീകരിക്കുക</translation>
 <translation id="8774934320277480003">മുകൾഭാഗത്തെ മാർജിൻ</translation>
 <translation id="8775144690796719618">URL അസാധുവാണ്</translation>

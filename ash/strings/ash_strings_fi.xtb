@@ -661,6 +661,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3386978599540877378">koko näytön suurentaja</translation>
 <translation id="3387527074123400161">Chromium-käyttöjärjestelmä</translation>
 <translation id="3389599499324569679">Laitetaanko sanelu päälle?</translation>
+<translation id="3392702002175498061">Näytä selaushistorian koko sisältö</translation>
 <translation id="3394432020929931914">, laajennettu</translation>
 <translation id="3401474642070997151">Muokkaa ehdotuksia klikkaamalla kakkospainikkeella tai painamalla ehdotusta pitkään</translation>
 <translation id="3405101454990027959">Laita mikrofonin käyttölupa päälle</translation>
@@ -812,6 +813,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="385300504083504382">Alku</translation>
 <translation id="3859364108019690">Sovelluksia ei voi striimata</translation>
 <translation id="3861651314799684201">Tallenna koko näytön sisältö painamalla Enter</translation>
+<translation id="3870197372373144624">Kokeile sammuttaa laite.</translation>
 <translation id="3886872229787704059">Avattu tänään</translation>
 <translation id="3891340733213178823">Kirjaudu ulos painamalla Ctrl+Shift+Q kahdesti.</translation>
 <translation id="3893630138897523026">ChromeVox (äänipalaute)</translation>
@@ -927,6 +929,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4264977415328155183">, tiivistetty</translation>
 <translation id="4265259722091164182">Otsikon kirjainkoko</translation>
 <translation id="4269883910223712419">Tämän laitteen ylläpitäjä voi</translation>
+<translation id="4271841440229266861">Näytä Tiedostojen koko sisältö</translation>
 <translation id="4274537685965975248">Pikanäppäinyhdistelmä Ctrl + Alt + alanuoli on muuttunut. Jos haluat käyttää End-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + oikea nuoli.</translation>
 <translation id="4275283744500212192">Avaa ikkunoiden asetteluasetukset</translation>
 <translation id="4275663329226226506">Media</translation>
@@ -954,6 +957,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4327147325944669226">Kuvaa peliä</translation>
 <translation id="4333628967105022692">Lacrosia ei tueta, kun useita käyttäjiä on sisään kirjautuneena.</translation>
 <translation id="4338109981321384717">Suurennuslasi</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, mykistetty</translation>
 <translation id="4351244548802238354">Sulje ikkuna</translation>
 <translation id="4356872429719185452">Näytä hotspotin tiedot. Hotspot laitetaan päälle.</translation>
 <translation id="4364101114148522660">Tallenne: <ph name="DURATION" /></translation>
@@ -1299,6 +1303,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5503884284981862082">Avaa/sulje Google Assistant</translation>
 <translation id="550391772491508736">Jatka striimausta</translation>
 <translation id="5506975627792768506">Laita suurennus päälle tai pois päältä</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, audio mykistetään painamalla Enter.</translation>
 <translation id="5512042095225963688">Poista edellinen sana</translation>
 <translation id="5519005148254860683">Laajenna Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8239034820133090126">Aktivoi oikealla oleva työpöytä</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, puhelimen akun varaus <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, sovellus</translation>
+<translation id="825129991941217170">Näytä kaikki Google Driven sisältö</translation>
 <translation id="8257510091797044096">Ota laite käyttöön</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8262312463845990408">Käynnistä tai keskeytä toisto</translation>
@@ -2338,6 +2344,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9098969848082897657">Mykistä puhelin</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> tai <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Kumoa edellinen toiminto</translation>
+<translation id="9126642911267312373">Bluetooth ei käytettävissä</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 min päästä}other{# min päästä}}</translation>
 <translation id="9129245940793250979">Takapainike</translation>
 <translation id="9133335900048457298">Suojattua sisältöä ei voi kuvata</translation>

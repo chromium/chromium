@@ -50,6 +50,9 @@
 <translation id="2236584955986023187">Bunda Chromium har safar saytning kompyuter versiyasini talab qiladi.</translation>
 <translation id="2313870531055795960">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="231828342043114302">Qiziqishlar asosida moslangan kontent olish uchun Chromium hisobiga kiring.</translation>
+<translation id="2326738825692478496">Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan.
+
+Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
 <translation id="2374627437126809292">Manzillar aniqlanganda Chromium marshrut va mahalliy axborotlarni Google Xaritalar orqali ochadi.</translation>
 <translation id="2386292341327187942">Qidiruv vidjetlari maydonida Chromium kiriting</translation>
 <translation id="2426113998523353159">Chromium brauzeridan foydalanishingiz uchun tashkilotingiz hisobingizga kirishni talab qiladi.</translation>
@@ -291,6 +294,8 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 
 Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chromium maʼlumotlarini Google hisobingizda saqlash va ulardan foydalanish uchun uni kiriting.</translation>
 <translation id="9022552996538154597">Chromium‘ga kirish</translation>
+<translation id="9031260906956926157">Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan.
+Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
 <translation id="9050790730841755540">Har qanday ilovada havola bosilganda Chromium ochilsin</translation>
 <translation id="9057082013386654559">iPadda Chromium birlamchi brauzer boʻlsin</translation>
 <translation id="9059693977935746710">Bu parolni eslab qolishingiz shart emas. U Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>

@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">teljes képernyős nagyító</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Bekapcsolja a Diktálás funkciót?</translation>
+<translation id="3392702002175498061">A böngészési előzményekből származó összes tartalom megjelenítése</translation>
 <translation id="3394432020929931914">, kibontva</translation>
 <translation id="3401474642070997151">A javaslatok személyre szabásához kattintson jobb egérgombbal, vagy tartsa nyomva valamelyik javaslatot</translation>
 <translation id="3405101454990027959">Mikrofon-hozzáférés aktiválása</translation>
@@ -686,6 +687,7 @@
 <translation id="3455468639467374593">Sablon, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 eszköz van csatlakoztatva a következő hotspothoz: <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">A nagyítási szint alaphelyzetbe állítása</translation>
+<translation id="3463151196028058330">Arcretusálás</translation>
 <translation id="3465223694362104965">Az utolsó bejelentkezése óta másik billentyűzetet csatlakoztattak ehhez az eszközhöz. Mielőtt elkezdené használni, győződjön meg róla, hogy biztonságos.</translation>
 <translation id="3465356146291925647">A rendszergazdája kezeli</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, majd <ph name="KEY_TWO" /> vagy <ph name="KEY_THREE" /></translation>
@@ -813,6 +815,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="385300504083504382">A legelejére</translation>
 <translation id="3859364108019690">Az alkalmazástreamelés nem sikerült</translation>
 <translation id="3861651314799684201">Nyomja le az Entert a teljes képernyő tartalmának rögzítéséhez</translation>
+<translation id="3870197372373144624">Próbálja meg kikapcsolni az eszközt.</translation>
 <translation id="3886872229787704059">Ma nyitotta meg</translation>
 <translation id="3891340733213178823">Nyomja meg a Ctrl+Shift+Q billentyűkombinációt kétszer a kijelentkezéshez.</translation>
 <translation id="3893630138897523026">ChromeVox (beszélt visszajelzés)</translation>
@@ -928,6 +931,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4264977415328155183">, összecsukva</translation>
 <translation id="4265259722091164182">Szókezdő Nagybetűk</translation>
 <translation id="4269883910223712419">Az eszköz rendszergazdája a következőket végezheti el:</translation>
+<translation id="4271841440229266861">Az összes fájltartalom megjelenítése</translation>
 <translation id="4274537685965975248">A Ctrl + Alt + Lefelé nyíl billentyűparancs módosult. Az End billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Jobbra nyíl.</translation>
 <translation id="4275283744500212192">Ablakelrendezési beállítások megnyitása</translation>
 <translation id="4275663329226226506">Média</translation>
@@ -955,6 +959,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4327147325944669226">Játék felvétele</translation>
 <translation id="4333628967105022692">A Lacros nem támogatott akkor, ha több felhasználó van bejelentkezve.</translation>
 <translation id="4338109981321384717">Nagyító</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, némítva</translation>
 <translation id="4351244548802238354">Párbeszédablak bezárása</translation>
 <translation id="4356872429719185452">Hotspotadatok megjelenítése. A hotspot bekapcsolása folyamatban van.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Felvétel…</translation>
@@ -1209,6 +1214,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5176318573511391780">Részleges képernyő rögzítése</translation>
 <translation id="5187627942836026988">Hotspotadatok megjelenítése. A rendszergazda letiltotta a hotspotot.</translation>
+<translation id="518847040357731612">Stúdiószintű látvány beállítása</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
 <translation id="5198715732953550718">A következő alkalmazások össze lettek vonva egy új mappába: <ph name="MOVED_APP_NAME" /> és <ph name="IN_PLACE_APP" />.</translation>
@@ -1300,6 +1306,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5503884284981862082">A Google Segéd megnyitása vagy bezárása</translation>
 <translation id="550391772491508736">Átküldés újraindítása</translation>
 <translation id="5506975627792768506">Nagyító be- vagy kikapcsolása</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />. Az Enter billentyű lenyomása némítja a hangot.</translation>
 <translation id="5512042095225963688">Előző szó törlése</translation>
 <translation id="5519005148254860683">A Google Tasks kibontása</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2110,6 +2117,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8239034820133090126">Asztal aktiválása a jobb oldalon</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a telefon akkumulátora: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, alkalmazás</translation>
+<translation id="825129991941217170">Az összes Google Drive-tartalom megjelenítése</translation>
 <translation id="8257510091797044096">Az eszköz beállítása</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8262312463845990408">Lejátszás vagy szüneteltetés</translation>
@@ -2340,6 +2348,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9098969848082897657">Telefon némítása</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> vagy <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Utolsó művelet visszavonása</translation>
+<translation id="9126642911267312373">A Bluetooth nem áll rendelkezésre</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 perc múlva}other{# perc múlva}}</translation>
 <translation id="9129245940793250979">Hátsó gomb</translation>
 <translation id="9133335900048457298">Nem lehet rögzíteni védett tartalmakat</translation>

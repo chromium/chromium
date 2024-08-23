@@ -430,6 +430,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="7398989605938454041">Chromiumৰ প্ৰ’ফাইলৰ জৰিয়তে আপুনি নিজৰ আটাইবোৰ Chromiumৰ বস্তু পৃথক কৰিব পাৰে। এইটোৱে কৰ্মস্থান আৰু মনোৰঞ্জনৰ মাজত বিভাজন কৰাটো অধিক সহজ কৰি তোলে।</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">এই ছাইটটোৰ বাবে আপোনাৰ কেমেৰালৈ এক্সেছ পাবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>
+<translation id="7458892263350425044">আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিবলৈ, <ph name="BEGIN_LINK" />ছিষ্টেমৰ ছেটিঙ<ph name="END_LINK" />ত Chromiumক এক্সেছ দিয়ক</translation>
 <translation id="7461356015007898716">Chromiumৰ ভৱিষ্যতৰ আপডে’টসমূহ পাবলৈ আপোনাক Windows 10 অথবা তাৰ পাছৰ সংস্কৰণৰ আৱশ্যক হ’ব। এই কম্পিউটাৰটোৱে Windows 7 ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="7467949745582939695">Chromium পুনৰ লঞ্চ কৰিবনে?</translation>
 <translation id="7483335560992089831">বর্তমান চলি থকা Chromiumৰ একেই সংস্কৰণটো ইনষ্টল কৰিব নোৱাৰি। অনুগ্ৰহ কৰি Chromium বন্ধ কৰি পুনৰ চেষ্টা কৰক।</translation>
@@ -471,6 +472,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="813913629614996137">আৰম্ভ কৰা হৈছে…</translation>
 <translation id="8166782796394721554">Chromiumৰ JavaScript আৰু WebAssembly ইঞ্জিনত অতিৰিক্ত সুৰক্ষা অন কৰক</translation>
 <translation id="81770708095080097">এই ফাইলটো বিপজ্জনক, সেয়েহে Chromiumএ সেইটো অৱৰোধ কৰিছে।</translation>
+<translation id="8223363452568144035">আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ, <ph name="BEGIN_LINK" />ছিষ্টেমৰ ছেটিঙ<ph name="END_LINK" />ত Chromiumক এক্সেছ দিয়ক</translation>
 <translation id="8232193495299001329">এই এক্সটেনশ্বনটো ক’ৰ পৰা আহিছে সেয়া Chromiumএ সত্যাপন কৰিব নোৱাৰে আৰু ই অসুৰক্ষিত হ’ব পাৰে। এইটো Chromiumৰ পৰা আঁতৰাই পেলাওক যাতে ই আপুনি চোৱা ছাইটসমূহত ব্যক্তিগত তথ্যকে ধৰি আপোনাৰ ডেটা আৰু চাব আৰু সলনি কৰিব নোৱাৰে।</translation>
 <translation id="8248265253516264921">যদি কোনো প্ৰতিচ্ছবিত উপযোগী বিৱৰণ নাই তেন্তে Chromiumএ আপোনাক সেয়া প্ৰদান কৰিবলৈ চেষ্টা কৰিব। বিৱৰণ সৃষ্টি কৰিবলৈ প্ৰতিচ্ছবি Googleলৈ প্ৰেৰণ কৰা হয়। আপুনি যিকোনো সময়তে ছেটিঙলৈ গৈ ইয়াক অফ কৰিব পাৰে।</translation>
 <translation id="8254601181414348851">এটা নতুন প্ৰ’ফাইলত Chromiumত ছাইন ইন কৰক?</translation>
@@ -541,4 +543,5 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="983803489796659991">এপ্লিকেশ্বনটোৰ বাবে আপডে’ট ছাৰ্ভাৰৰ কোনো হেশ্ব ডেটা নথকাৰ বাবে ইনষ্টলেশ্বন কৰিব পৰা নগ’ল।</translation>
 <translation id="985498048907240953">কোনো একাউণ্টৰ অবিহনে Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="992780518932311116">আপোনাৰ অৱস্থান ব্যৱহাৰ কৰিবলৈ, <ph name="BEGIN_LINK" />ছিষ্টেমৰ ছেটিঙ<ph name="END_LINK" />ত Chromiumক এক্সেছ দিয়ক</translation>
 </translationbundle>

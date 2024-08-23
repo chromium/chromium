@@ -131,7 +131,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1549000191223877751">Přejít do jiného okna</translation>
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
 <translation id="1554532453982918912">Pomozte s vylepšováním Chromu pro lidi, kteří jej používají stejně jako vy</translation>
-<translation id="1558391695376153246">Zavřít anonymní karty</translation>
 <translation id="1568636008098739136">Poslechnout si tuto stránku. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
 <translation id="1571304935088121812">Kopírovat uživatelské jméno</translation>
 <translation id="1584648915421894279">Hesla uložená na tomto zařízení v současné době nelze používat v různých kanálech Chromu. Po verzi Chromu 125 budou hesla uložená ve vašem zařízení pro Chrome a pro <ph name="CHROME_CHANNEL" /> sloučena a bude je možné používat v obou těchto aplikacích.</translation>
@@ -199,6 +198,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1928618076168182477">Je zobrazeno vizuální zobrazení</translation>
 <translation id="1928696683969751773">Aktualizace</translation>
 <translation id="1933845786846280168">Vybraná karta</translation>
+<translation id="1939549834451474504">Hesla brzy přestanou fungovat, protože služby Google Play nejsou k dispozici. Můžete si vytvořit kopii uložených hesel, než přestanou fungovat. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Ukládání hesel</translation>
 <translation id="1944535645109964458">Nejsou k dispozici žádné přístupové klíče</translation>
 <translation id="1957557050935255529">Načítání PDF…</translation>
@@ -1385,6 +1385,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7454744349230173024">Vaše organizace ukládání hesel vypnula</translation>
 <translation id="7455988709578031708">Na základě vaší historie prohlížení. Toto nastavení je zapnuté.</translation>
 <translation id="7456774706094330779">Rozšířené předběžné načítání</translation>
+<translation id="7466328545712777810">Pokud cena na některém webu klesne, obdržíte oznámení</translation>
 <translation id="7466431077154602932">Kompaktní zobrazení</translation>
 <translation id="7474822150871987353">Vyhledávejte informace o tématech zmíněných na stránce, aniž byste stránku museli opustit. Slova na stránce můžete vyhledat jednoduše tím, že je vyberete.</translation>
 <translation id="7475192538862203634">Pokud se vám tato stránka zobrazuje často, vyzkoušejte tyto <ph name="BEGIN_LINK" />návrhy<ph name="END_LINK" />.</translation>
@@ -1445,7 +1446,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7691043218961417207">Objevte obsah ke sledování</translation>
 <translation id="7697383401610880082">Úchyt pro přetažení</translation>
 <translation id="7698359219371678927">Vytvořit e-mail v aplikaci <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Dlaždice dotazů</translation>
 <translation id="7707922173985738739">Bude používat mobilní data</translation>
 <translation id="7709918231054955894">Načtěte všechny své karty</translation>
 <translation id="7733878270780732638">V zařízení není dost místa</translation>

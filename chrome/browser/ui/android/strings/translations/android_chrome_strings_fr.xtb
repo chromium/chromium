@@ -131,7 +131,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1549000191223877751">Déplacer vers autre fenêtre</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1554532453982918912">Aider à améliorer Chrome pour les personnes qui l'utilisent comme vous</translation>
-<translation id="1558391695376153246">Fermer onglets nav. privée</translation>
 <translation id="1568636008098739136">Écoutez cette page. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="1571304935088121812">Copier le nom d'utilisateur</translation>
 <translation id="1584648915421894279">Pour le moment, les mots de passe enregistrés sur cet appareil ne peuvent pas être utilisés sur les différentes versions de Chrome. Après Chrome 125, les mots de passe enregistrés sur votre appareil pour Chrome et <ph name="CHROME_CHANNEL" /> seront fusionnés et pourront être utilisés dans les deux applis.</translation>
@@ -199,6 +198,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1928618076168182477">Affichage de la vue étendue</translation>
 <translation id="1928696683969751773">Mises à jour</translation>
 <translation id="1933845786846280168">Onglet sélectionné</translation>
+<translation id="1939549834451474504">Les mots de passe ne fonctionneront bientôt plus, car les services Google Play ne sont pas disponibles. Vous pouvez faire une copie de vos mots de passe enregistrés avant qu'ils cessent de fonctionner. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Enregistrer les mots de passe</translation>
 <translation id="1944535645109964458">Aucune clé d'accès disponible</translation>
 <translation id="1957557050935255529">Chargement du PDF…</translation>
@@ -1385,6 +1385,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7454744349230173024">Votre organisation a désactivé l'enregistrement des mots de passe</translation>
 <translation id="7455988709578031708">D'après votre historique de navigation. Ce paramètre est activé.</translation>
 <translation id="7456774706094330779">Préchargement avancé</translation>
+<translation id="7466328545712777810">Vous recevrez une notification si le prix baisse sur un site</translation>
 <translation id="7466431077154602932">Vue compacte</translation>
 <translation id="7474822150871987353">Découvrez les thèmes abordés sur les sites Web sans quitter la page. Sélectionnez au moins un mot sur celle-ci pour le rechercher.</translation>
 <translation id="7475192538862203634">Si vous rencontrez souvent ce problème, essayez les <ph name="BEGIN_LINK" />suggestions<ph name="END_LINK" /> suivantes.</translation>
@@ -1445,7 +1446,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7691043218961417207">Explorez des contenus et suivez-les</translation>
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un e-mail dans <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Vignettes de requête</translation>
 <translation id="7707922173985738739">Utilisera les données mobiles</translation>
 <translation id="7709918231054955894">Accédez à tous vos onglets</translation>
 <translation id="7733878270780732638">Espace insuffisant sur l'appareil.</translation>

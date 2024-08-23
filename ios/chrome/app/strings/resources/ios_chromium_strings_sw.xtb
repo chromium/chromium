@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Hii inamaanisha kwamba Chromium itahitaji tovuti ya kompyuta kila wakati.</translation>
 <translation id="2313870531055795960">Hukagua URL ili kuona iwapo zipo kwenye orodha ya tovuti zisizo salama zilizohifadhiwa katika Chromium. Ikiwa tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chromium inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwa kipengele cha Kuvinjari Salama.</translation>
 <translation id="231828342043114302">Ili upokee maudhui yaliyowekewa mapendeleo kulingana na mambo yanayokuvutia, ingia katika akaunti kwenye Chromium.</translation>
+<translation id="2326738825692478496">Baadhi ya data yako ya Chromium bado haijahifadhiwa kwenye Akaunti yako ya Google.
+
+Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
 <translation id="2374627437126809292">Chromium hutumia Ramani za Google kukupatia maelekezo na maelezo ya eneo husika kwenye anwani zilizotambuliwa.</translation>
 <translation id="2386292341327187942">Kwenye kisanduku cha Wijeti za Utafutaji, weka Chromium</translation>
 <translation id="2426113998523353159">Shirika lako linahitaji uingie katika akaunti ili uweze kutumia Chromium.</translation>
@@ -292,6 +295,8 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 
 Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />. Iweke ili utumie na kuhifadhi data ya Chromium kwenye Akaunti yako ya Google.</translation>
 <translation id="9022552996538154597">Ingia kwenye Chromium</translation>
+<translation id="9031260906956926157">Baadhi ya data yako ya Chromium bado haijahifadhiwa kwenye Akaunti yako ya Google.
+Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
 <translation id="9050790730841755540">Tumia Chromium wakati wowote unapogusa viungo kwenye programu nyingine.</translation>
 <translation id="9057082013386654559">Tumia Chromium kwa Chaguomsingi kwenye iPad</translation>
 <translation id="9059693977935746710">Hutahitaji kukumbuka nenosiri hili. Litahifadhiwa kwenye Kidhibiti cha Manenosiri kwa ajili ya <ph name="EMAIL" /></translation>

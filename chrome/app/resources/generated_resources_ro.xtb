@@ -1619,7 +1619,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2137128126782078222">Nu permite notificările de la <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Butonul Configurează</translation>
 <translation id="2140788884185208305">Buna funcționare a bateriei</translation>
-<translation id="2140902257485550046">Selectează pentru a bloca toate extensiile pe acest site</translation>
 <translation id="2142328300403846845">Deschide linkul ca</translation>
 <translation id="2142484069755256151">Creează un PIN de recuperare din 6 cifre pentru Managerul de parole Google, cifra <ph name="NUM_DIGIT" /> din 6</translation>
 <translation id="2142582065325732898">Activează <ph name="LINK1_BEGIN" />Sincronizarea Chrome<ph name="LINK1_END" /> pentru a vedea filele Chrome recente. <ph name="LINK2_BEGIN" />Află mai multe<ph name="LINK2_END" /></translation>
@@ -2298,7 +2297,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2610374175948698697">Poate să vadă fișierele sau dosarele de pe dispozitiv</translation>
 <translation id="2610780100389066815">Semnarea listei de încredere Microsoft</translation>
 <translation id="261114180663074524">Conectează-te la contul Microsoft și încearcă din nou</translation>
-<translation id="2611765907167846862">Calmă</translation>
 <translation id="2611776654555141051">Instrument pentru dreptunghiuri</translation>
 <translation id="2612676031748830579">Număr card</translation>
 <translation id="261305050785128654">Permite site-urilor să afle limbile pe care le vorbești. Acestea vor afișa conținutul în limbile respective, dacă este posibil.</translation>
@@ -5991,6 +5989,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5301954838959518834">OK, am înțeles</translation>
 <translation id="5302032366299160685">Așteaptă să se deschidă fișierul înainte să încerci din nou</translation>
 <translation id="5302048478445481009">Limbă</translation>
+<translation id="5302435492906794790">Se caută dispozitive detectabile în apropiere...</translation>
 <translation id="5302932258331363306">Afișează înlocuirile</translation>
 <translation id="5305145881844743843">Acest cont este gestionat de <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Sursa nu este acceptată</translation>
@@ -6965,7 +6964,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6022526133015258832">Deschideți în ecran complet</translation>
 <translation id="6022659036123304283">Personalizează Chrome</translation>
 <translation id="6023643151125006053">Dispozitivul (NS: <ph name="SERIAL_NUMBER" />) a fost blocat de administratorul <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Permite extensiile pe acest site</translation>
 <translation id="6024317249717725918">&amp;Caută cadrul video cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Urmărire stivă</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – dispozitivul USB a fost conectat</translation>
@@ -8703,6 +8701,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7321545336522791733">Serverul nu poate fi accesat</translation>
 <translation id="7322515217754205362">Permisiuni la nivel de site</translation>
 <translation id="7323315405936922211">Mărimea zonei cursorului</translation>
+<translation id="7324020307732396723">Deschide setările de limbă</translation>
 <translation id="7324297612904500502">Forumul pentru versiunea beta</translation>
 <translation id="7325209047678309347">Hârtia s-a blocat</translation>
 <translation id="7325953439504232954">Schimbi profilul?</translation>
@@ -9223,7 +9222,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7685087414635069102">PIN necesar</translation>
 <translation id="7685351732518564314">Apasă un buton de pe <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Mai multe despre anunțurile sugerate de site-uri</translation>
-<translation id="7686581688229391955">Selectează pentru a permite extensii pe acest site</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Alege din listă</translation>
 <translation id="7690853182226561458">Adăugați un &amp;dosar...</translation>
@@ -9819,6 +9817,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8097959162767603171">Mai întâi, administratorul trebuie să accepte Termenii și condițiile din lista de dispozitive Chrome din Consola de administrare.</translation>
 <translation id="8098156986344908134">Instalezi <ph name="DEVICE_OS" /> și ștergi datele de pe hard disk?</translation>
 <translation id="8098616321286360457">Este necesară o conexiune la rețea</translation>
+<translation id="8100057926383586173">Deschide setările de limbă</translation>
 <translation id="8100230553590752325">Folosește parolele salvate pe orice dispozitiv</translation>
 <translation id="810068641062493918">S-a selectat <ph name="LANGUAGE" />. Apasă tasta de căutare + bara de spațiu pentru a deselecta.</translation>
 <translation id="8101409298456377967">Creează, salvează și gestionează parolele ca să te poți conecta cu ușurință la site-uri și aplicații. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>

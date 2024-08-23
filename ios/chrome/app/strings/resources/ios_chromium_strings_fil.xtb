@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Nangangahulugan itong hihilingin ng Chromium ang pang-desktop na site sa lahat ng pagkakataon.</translation>
 <translation id="2313870531055795960">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page.</translation>
 <translation id="231828342043114302">Para makatanggap ng naka-personalize na content batay sa iyong mga interes, mag-sign in sa Chromium.</translation>
+<translation id="2326738825692478496">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium.
+
+Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="2374627437126809292">Gumagamit ang Chromium ng Google Maps para mabigyan ka ng mga direksyon at lokal na impormasyon tungkol sa mga na-detect na address.</translation>
 <translation id="2386292341327187942">Sa box na Mga Search Widget, ilagay ang salitang Chromium</translation>
 <translation id="2426113998523353159">Hinihiling sa iyo ng organisasyon mo na mag-sign in para magamit ang Chromium.</translation>
@@ -292,6 +295,8 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 
 Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilagay ito para magamit at ma-save ang data sa Chromium sa iyong Google Account.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
+<translation id="9031260906956926157">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium.
+Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="9050790730841755540">Gamitin ang Chromium sa tuwing magta-tap ka ng mga link sa iba pang app.</translation>
 <translation id="9057082013386654559">Gamitin ang Chromium para sa iPad bilang Default</translation>
 <translation id="9059693977935746710">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Password Manager para sa <ph name="EMAIL" /></translation>

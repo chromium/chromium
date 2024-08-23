@@ -76,6 +76,9 @@
 <translation id="2703746758996815929">유용한 Chrome 도움말을 확인하려면 iOS 설정에서 알림을 사용 설정하세요</translation>
 <translation id="2736805085127235148">현재 기기 설정에서 Chrome 알림이 사용 중지되어 있습니다.</translation>
 <translation id="2750626042242931740">Chrome 설정에서 언제든지 선택사항을 업데이트할 수 있습니다</translation>
+<translation id="2754428955276778271">Chrome 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다.
+
+잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="2767464022270041271">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Google 비밀번호 관리자에서 확인할 수 있습니다.</translation>
 <translation id="2869959624320573933">Chrome에 로그인</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
@@ -145,6 +148,8 @@
 <translation id="5190139289262548459">내가 로그인한 계정 및 Chrome이 사용되는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다</translation>
 <translation id="5256908199795498284">Chrome은 사용자가 방문하는 사이트에서 배송 추적 번호를 감지하고 새 탭 페이지에 배송 현황을 표시합니다. 이 기능을 제공하고 Google 쇼핑을 개선하기 위해 내 데이터가 Google과 공유됩니다.</translation>
 <translation id="5278862365980079760">Chrome을 종료하거나 다른 앱으로 전환할 때 시크릿 탭을 잠급니다</translation>
+<translation id="5310957470610282541">Chrome 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다.
+잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="5389212809648216794">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chrome에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="5395376160638294582">Google 계정의 Chrome 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="5439191312780166229">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chrome 경고를 건너뛸 수 있습니다.</translation>

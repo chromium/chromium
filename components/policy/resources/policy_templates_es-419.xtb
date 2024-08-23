@@ -253,7 +253,6 @@ Si habilitas la política, los usuarios podrán usar el hardware de los disposit
 <translation id="1165923723751466821">Permitir los accesos con el modo de invitado del navegador y con perfiles</translation>
 <translation id="117059611145966538">Servidores de impresión externos</translation>
 <translation id="117080706484659953">Permitir la detección del alcance de la política en <ph name="MAC_OS_NAME" /></translation>
-<translation id="1171065405328282754">Permitir AI-powered history search y mejorar los modelos de IA</translation>
 <translation id="1171106901454883937">Habilitar los informes de la versión del dispositivo</translation>
 <translation id="1173493742686115032">Habilitar el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
 <translation id="1177567780207290133">Si estableces la política, esta controlará el filtro de URL de SafeSites, el cual utiliza la API de Google Safe Search para clasificar las URL como pornográficas o no.
@@ -1780,7 +1779,6 @@ Si no estableces esta política o la inhabilitas, no se permitirá la transferen
 <translation id="224750967938323855">No mostrar el consentimiento de sincronización durante el acceso</translation>
 <translation id="2252400912879027343">WebSQL en contextos no seguros permanecerá disponible hasta M109 y, luego, no estará disponible a partir de M110.</translation>
 <translation id="225340736558643885">Habilita las advertencias si se detectan formularios no seguros</translation>
-<translation id="225347142757323162">Habilitar las funciones, pero no enviar datos para entrenar modelos de IA</translation>
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos hacia y desde el host</translation>
 <translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante las descargas</translation>
 <translation id="2261648512244797294">Inhabilita la impresión Privet obsoleta</translation>
@@ -2063,7 +2061,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2439733504887695659">Habilitar la opción de descartar las alertas de contraseña hackeada para las credenciales que hayas ingresado</translation>
 <translation id="2446244536806499267">No considerar al usuario como inactivo mientras se reproduce un audio</translation>
 <translation id="2452225615952836461">Usar mayúsculas siempre en los métodos de solicitud</translation>
-<translation id="2453660971158808971">No permitir AI-powered history search</translation>
 <translation id="2454228136871844693">Optimiza la estabilidad.</translation>
 <translation id="2455033019778127130">Utiliza el comportamiento predeterminado del navegador, muestra las Condiciones del Servicio y espera a que el usuario las acepte</translation>
 <translation id="2460127623195247744">Esta política dejó de estar disponible. En su lugar, utiliza la política "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
@@ -3297,17 +3294,6 @@ Si no estableces la política, se impedirá la navegación en el navegador cuand
 <translation id="3423703250826790403">Aplicaciones para Android</translation>
 <translation id="3426434797050451264">Esta política también se puede usar para especificar apps para Android como controladores de archivos estándar.</translation>
 <translation id="3428247105888806363">Habilitar la predicción de red</translation>
-<translation id="3430198032663063246">Ayúdame a escribir es un asistente de escritura basado en IA para contenido de formato corto en la Web. El contenido sugerido se basa en las instrucciones que ingresa el usuario y en el contenido de la página web.
-
-0 = Habilita la función para los usuarios y envía datos relevantes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos relevantes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA.
-
-0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Inhabilita la función 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Para obtener más información sobre el manejo de datos de las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3432863169147125747">Controla la configuración de impresión.</translation>
 <translation id="3434053014926283175">Cambia el botón principal del mouse al botón derecho en la pantalla de acceso.
 
@@ -3669,7 +3655,6 @@ Si se produce un error al salir de <ph name="PRODUCT_NAME" /> (por ejemplo, si f
           </translation>
 <translation id="3677660004554019617">No permitir Generative AI VC Background</translation>
 <translation id="3678069907945250643">Permitir el acceso a Google Fotos desde la app de personalización</translation>
-<translation id="3680529017993214255">Habilitar las funciones y enviar datos para entrenar modelos de IA</translation>
 <translation id="3685979383016152590">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> que estarán disponibles para los usuarios.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) utiliza <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir el acceso a las impresoras especificadas.
@@ -4044,19 +4029,6 @@ se pueden enviar informes de la empresa.
 <translation id="3989829840000169163">Bloquear los puntos de extensiones heredados del navegador</translation>
 <translation id="3990391739475801018">Inhabilitar el modo de Ahorro de batería</translation>
 <translation id="3990834929384096140">No aplicar de manera forzosa la cancelación del eco de audio del sistema</translation>
-<translation id="3992185577030665825">Estas funciones de las Herramientas para desarrolladores de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recopilar datos como mensajes de error, seguimientos de pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor de Google que ejecuta un modelo de IA generativa. Los datos que se envían al servidor no incluyen el cuerpo de la respuesta ni los encabezados de autenticación y de cookies.
-
-0 = Habilita la función para los usuarios y envía datos relevantes a Google para ayudar a entrenar o mejorar los modelos de IA.
-
-0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Inhabilita la función. 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Las funciones de la IA generativa de Herramientas para desarrolladores incluyen:
-
-- Console Insights: Explica los mensajes de la consola y ofrece sugerencias para corregir errores.</translation>
 <translation id="3994043824457743421">Mostrar la notificación del espacio del medio en la página Nueva pestaña</translation>
 <translation id="399433537808390819">Hacer que el Modo de escritorio unificado no esté disponible para el usuario</translation>
 <translation id="3995880046827722248">Inhabilitar Manifest v2</translation>
@@ -5091,7 +5063,6 @@ Si habilitas <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_ENABLED" /> o no la establ
 Si no estableces esta política, se habilitarán todos los servicios.
 
 De lo contrario, solo se habilitarán los servicios seleccionados.</translation>
-<translation id="4757563299858487173">Inhabilitar las funciones</translation>
 <translation id="4758335997982239449">Activar la función IP Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="4767059955897420757">Si no estableces la política o la habilitas, es posible que la promoción para la extensión del Proveedor de credenciales se muestre al usuario.
 Si la inhabilitas, no se le mostrará la promoción para la extensión del Proveedor de credenciales al usuario.</translation>
@@ -7373,17 +7344,6 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
       Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, el permiso seguirá la configuración predeterminada del navegador y permitirá a los usuarios elegir este permiso para cada sitio.</translation>
 <translation id="6383774771168138899">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren las páginas de resultados del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
-<translation id="6385379259912525880">AI History Search es una función que permite a los usuarios buscar en su historial de navegación en función del contenido de las páginas, no solo del título y la URL.
-
-0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA.
-
-2 = Inhabilita la función.
-
-Si no estableces la política, el comportamiento predeterminado es 0 para los usuarios regulares y 2 para los usuarios administrados en <ph name="PRODUCT_OS_NAME" />.
-
-Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Esta política se eliminó a partir de la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
 <translation id="6396956366662970339">Especifica si se permite que un modelo de carga adaptable detenga el proceso de carga para extender la duración de la batería.
 
@@ -8873,7 +8833,6 @@ la lectura en voz alta estará habilitada.</translation>
 <translation id="7469554574977894907">Habilitar sugerencias de búsqueda</translation>
 <translation id="7472547030234093862">Especificar los dominios que se resolverán con DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Revierte el comportamiento de las cookies en estos sitios conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
-<translation id="747517124419659622">Permitir AI-powered history search sin mejorar los modelos de IA</translation>
 <translation id="7476030153540156377">Elegir si se debe activar la función IP Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="7476158778585368567">Informa los trabajos de impresión de un dispositivo.
 
@@ -9801,17 +9760,6 @@ Esta política se aplica al modo Incógnito. Esto significa que debes habilitar 
 <translation id="822055204938220476">Lista de direcciones URL que pueden permanecer en modo pantalla completa sin mostrar una notificación</translation>
 <translation id="8225579382697740712">Controlar el uso de la API de WebHID</translation>
 <translation id="8229912067600517877">Habilitar las Herramientas para desarrolladores</translation>
-<translation id="8234565689501421293">Crear temas con IA les permite a los usuarios crear temas y fondos de pantalla personalizados con una selección previa de una lista de opciones.
-
-0 = Habilita la función para los usuarios y envía datos relevantes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos relevantes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA.
-
-0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Inhabilita la función 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Para obtener más información sobre el manejo de datos de las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8238421250255592181">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la función de autocompletar.</translation>
 <translation id="8239109177194627162">Inhabilitar Autocompletar para las tarjetas de crédito</translation>
 <translation id="8239143983379015783">Forzar la habilitación de la cuota persistente</translation>
@@ -11204,17 +11152,6 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="943865157632139008">Te permite configurar el procesador de HTML predeterminado cuando <ph name="PRODUCT_FRAME_NAME" /> está instalado.
       La configuración predeterminada permite al navegador del host realizar el procesamiento, pero puedes anularlo de manera opcional y tener las páginas HTML del procesador de <ph name="PRODUCT_FRAME_NAME" /> de forma predeterminada.</translation>
 <translation id="944817693306670849">Configurar el tamaño de caché de disco</translation>
-<translation id="946458935955389273">El Organizador de pestañas es una herramienta basada en IA que crea automáticamente grupos de pestañas en función de las pestañas abiertas de un usuario. Las sugerencias se basan en pestañas abiertas (pero no en el contenido de la página).
-
-0 = Habilita la función para los usuarios y envía datos relevantes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos relevantes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA.
-
-0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Inhabilita la función 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Para obtener más información sobre el manejo de datos de las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="949192525372487705">Bloquear el cambio a un administrador de contraseñas de terceros</translation>
 <translation id="957322141096206402">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red según la configuración del sistema y las marcas de función</translation>
 <translation id="957778406002650056">La URL desde la cual se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>

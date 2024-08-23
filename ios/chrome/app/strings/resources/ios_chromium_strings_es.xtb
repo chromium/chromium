@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Esto significa que Chromium siempre solicitará la vista del sitio web como ordenador.</translation>
 <translation id="2313870531055795960">Comprueba las URLs guardadas en Chromium con una lista de sitios que no son seguros. Si un sitio intenta robarte tu contraseña o si te descargas un archivo dañino, puede que Chromium también envíe URLs, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="231828342043114302">Para recibir contenido personalizado según tus intereses, inicia sesión en Chromium.</translation>
+<translation id="2326738825692478496">Algunos de tus datos de Chromium aún no se han guardado en tu cuenta de Google.
+
+Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="2374627437126809292">Chromium usa Google Maps para ofrecerte indicaciones e información local sobre direcciones detectadas.</translation>
 <translation id="2386292341327187942">En el cuadro de búsqueda de widgets, escribe Chromium</translation>
 <translation id="2426113998523353159">Tu organización requiere que inicies sesión para usar Chromium.</translation>
@@ -292,6 +295,8 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 
 Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Introdúcela para usar y guardar datos de Chromium en tu cuenta de Google.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
+<translation id="9031260906956926157">Algunos de tus datos de Chromium aún no se han guardado en tu cuenta de Google.
+Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="9050790730841755540">Usa Chromium siempre que toques enlaces de otras aplicaciones.</translation>
 <translation id="9057082013386654559">Usar Chromium para iPad de forma predeterminada</translation>
 <translation id="9059693977935746710">No tendrás que recordar esta contraseña. Se guardará en el gestor de contraseñas de <ph name="EMAIL" />.</translation>

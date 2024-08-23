@@ -1627,7 +1627,6 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" /> वरील सूचनांना अनुमती देऊ नका</translation>
 <translation id="2139919072249842737">बटण सेट करा</translation>
 <translation id="2140788884185208305">बॅटरीची स्थिती</translation>
-<translation id="2140902257485550046">या साइटवर सर्व एक्स्टेंशन ब्लॉक करण्यासाठी निवडा</translation>
 <translation id="2142328300403846845">लिंक या फॉरमॅटमध्ये उघडा</translation>
 <translation id="2142484069755256151">Google Password Manager साठी ६ अंकी रिकव्‍हरी पिन तयार करा, ६ पैकी <ph name="NUM_DIGIT" /> पिन अंक</translation>
 <translation id="2142582065325732898">अलीकडील Chrome टॅब पाहण्यासाठी <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> सुरू करा. <ph name="LINK2_BEGIN" />अधिक जाणून घ्या<ph name="LINK2_END" /></translation>
@@ -2309,7 +2308,6 @@
 <translation id="2610374175948698697">तुमच्या डिव्हाइसवरील फाइल किंवा फोल्डर पाहू शकते</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">तुमच्या Microsoft खात्यामध्ये साइन इन करून पुन्हा प्रयत्न करा</translation>
-<translation id="2611765907167846862">प्रसन्न</translation>
 <translation id="2611776654555141051">आयत टूल</translation>
 <translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="261305050785128654">तुम्ही बोलता त्या भाषा वेबसाइटना कळवा. शक्य असेल, तेव्हा ते त्या भाषांमध्ये आशय दाखवतील.</translation>
@@ -6980,7 +6978,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6022526133015258832">फुल स्क्रीन उघडा</translation>
 <translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
 <translation id="6023643151125006053">हे डिव्हाइस (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> ॲडमिनिस्ट्रेटरने लॉक केले होते.</translation>
-<translation id="6024072172641380781">या साइटवर एक्स्टेंशनना अनुमती द्या</translation>
 <translation id="6024317249717725918"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून व्हिडिओ फ्रेम शोधा</translation>
 <translation id="6025215716629925253">स्टॅक ट्रेस</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB डिव्हाइस कनेक्ट केले</translation>
@@ -9236,7 +9233,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7685087414635069102">पिन आवश्यक</translation>
 <translation id="7685351732518564314">तुमच्या <ph name="DEVICE_NAME" /> वरील बटण प्रेस करा.</translation>
 <translation id="7686086654630106285">साइटने सुचवलेल्या जाहिरातींबद्दल आणखी</translation>
-<translation id="7686581688229391955">या साइटवर एक्स्टेंशनना अनुमती देण्यासाठी निवडा</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">सूचीतून निवडा</translation>
 <translation id="7690853182226561458">&amp;फोल्डर जोडा...</translation>

@@ -1619,7 +1619,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2137128126782078222">Ne pas autoriser les notifications provenant de <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Bouton de configuration</translation>
 <translation id="2140788884185208305">État de la pile</translation>
-<translation id="2140902257485550046">Sélectionner pour bloquer toutes les extensions sur ce site</translation>
 <translation id="2142328300403846845">Ouvrir le lien en tant que</translation>
 <translation id="2142484069755256151">Créer un NIP de récupération à 6 chiffres pour le gestionnaire de mots de passe Google; chiffre <ph name="NUM_DIGIT" /> sur 6 du NIP</translation>
 <translation id="2142582065325732898">Activez la <ph name="LINK1_BEGIN" />synchronisation Chrome<ph name="LINK1_END" /> pour afficher les onglets Chrome récents. <ph name="LINK2_BEGIN" />En savoir plus<ph name="LINK2_END" /></translation>
@@ -2277,6 +2276,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2593499352046705383">Avant de commencer, assurez-vous d'avoir une sauvegarde de vos données. L'installation de <ph name="DEVICE_OS" /> écrasera les données présentes sur votre disque dur. Apprenez-en plus à la page g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Gérer la sécurité V8</translation>
 <translation id="2597073208962000830">La fonctionnalité Partage à proximité utilise le Bluetooth pour détecter les appareils à proximité.</translation>
+<translation id="2598136842498757793">Personnaliser les boutons de la barre d'outils</translation>
 <translation id="2598710988533271874">Nouveau Chrome disponible</translation>
 <translation id="2599048253926156421">Nom d'utilisateur copié dans le presse-papiers</translation>
 <translation id="2602501489742255173">Glissez votre doigt vers le haut pour commencer</translation>
@@ -2298,7 +2298,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2610374175948698697">Peut afficher des fichiers ou des dossiers sur votre appareil</translation>
 <translation id="2610780100389066815">Signature de liste d'approbation Microsoft</translation>
 <translation id="261114180663074524">Connectez-vous à votre compte Microsoft, puis réessayez</translation>
-<translation id="2611765907167846862">Serein</translation>
 <translation id="2611776654555141051">Rectangle</translation>
 <translation id="2612676031748830579">Numéro de la carte</translation>
 <translation id="261305050785128654">Indiquez aux sites Web les langues que vous parlez. Le contenu s'affichera dans ces langues, lorsque c'est possible.</translation>
@@ -4051,6 +4050,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="3866142613641074814">Vous avez des mots de passe à risque</translation>
 <translation id="3866249974567520381">Description</translation>
 <translation id="3867134342671430205">Faites glisser l'écran ou utilisez les touches fléchées pour le déplacer à l'endroit voulu</translation>
+<translation id="3867831579565057323">Mapper votre écran tactile</translation>
 <translation id="3867944738977021751">Champs de certificat</translation>
 <translation id="3869917919960562512">Index erroné.</translation>
 <translation id="3870626286046977643">Partager également l'audio du système</translation>
@@ -5997,7 +5997,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5307030433605830021">Source non prise en charge</translation>
 <translation id="5307386115243749078">Associer un commutateur Bluetooth</translation>
 <translation id="5308380583665731573">Connecter</translation>
-<translation id="5308989548591363504">Rechercher la présence de logiciel malveillant</translation>
+<translation id="5308989548591363504">Vérifier la présence de logiciels malveillants</translation>
 <translation id="5309418307557605830">L'Assistant Google fonctionne aussi ici</translation>
 <translation id="5309641450810523897">Identifiant de demande d'assistance</translation>
 <translation id="5311304534597152726">Se connecter en tant que</translation>
@@ -6966,7 +6966,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6022526133015258832">Ouvrir en mode plein écran</translation>
 <translation id="6022659036123304283">Appropriez-vous Chrome</translation>
 <translation id="6023643151125006053">Cet appareil (numéro de série : <ph name="SERIAL_NUMBER" />) a été verrouillé par l'administrateur de <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Autoriser les extensions sur ce site</translation>
 <translation id="6024317249717725918">&amp;amp;Rechercher l'image vidéo avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Trace de la pile</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Appareil USB connecté</translation>
@@ -9223,7 +9222,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7685087414635069102">NIP requis</translation>
 <translation id="7685351732518564314">Appuyez sur un bouton de votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">En savoir plus sur les annonces suggérées par les sites</translation>
-<translation id="7686581688229391955">Sélectionner pour autoriser les extensions sur ce site</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Choisir dans la liste</translation>
 <translation id="7690853182226561458">Ajouter un &amp;dossier...</translation>
@@ -9563,6 +9561,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="79312157130859720"><ph name="APP_NAME" /> partage votre écran et le son.</translation>
 <translation id="793293630927785390">Nouvelle fenêtre de réseau Wi-Fi</translation>
 <translation id="7932969338829957666">Sur Linux, les dossiers partagés sont accessibles ici : <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Configurez et mappez votre appareil à écran tactile sur l'écran approprié</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Réactiver le son sur le site}one{Réactiver le son sur le site}other{Réactiver le son sur les sites}}</translation>
 <translation id="7933486544522242079">Sauvegarder et partager</translation>
 <translation id="7933518760693751884">Pour enregistrer une page à lire plus tard, cliquez sur l'icône de favori</translation>

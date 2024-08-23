@@ -76,6 +76,9 @@ Things to consider:
 <translation id="2703746758996815929">To get helpful Chrome tips, turn on notifications in your iOS settings.</translation>
 <translation id="2736805085127235148">Chrome notifications are currently turned off in your device settings.</translation>
 <translation id="2750626042242931740">You can update your selections at any time in Chrome settings.</translation>
+<translation id="2754428955276778271">Some of your Chrome data hasn't been saved in your Google Account yet.
+
+Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="2767464022270041271">No saved passwords. Google Password Manager can check your passwords when you save them.</translation>
 <translation id="2869959624320573933">Sign In to Chrome</translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Things to consider:
 <translation id="5190139289262548459">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chrome is used.</translation>
 <translation id="5256908199795498284">Chrome will detect package tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone.</translation>
 <translation id="5278862365980079760">Lock your Incognito tabs when you leave Chrome or switch to a different app.</translation>
+<translation id="5310957470610282541">Some of your Chrome data hasn't been saved in your Google Account yet.
+Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="5389212809648216794">Google Chrome can't use your camera because it's in use by another application</translation>
 <translation id="5395376160638294582">Make sure that you can always use the Chrome data in your Google Account</translation>
 <translation id="5439191312780166229">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chrome warnings.</translation>

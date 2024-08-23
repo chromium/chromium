@@ -661,6 +661,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3386978599540877378">a lupa de tela cheia</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Ativar o Ditado?</translation>
+<translation id="3392702002175498061">Mostrar todo o conteúdo do histórico de navegação</translation>
 <translation id="3394432020929931914">, expandido</translation>
 <translation id="3401474642070997151">Para personalizar as sugestões, clique com o botão direito do mouse ou toque e pressione uma sugestão</translation>
 <translation id="3405101454990027959">Ativar o acesso ao microfone</translation>
@@ -812,6 +813,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="385300504083504382">Começo</translation>
 <translation id="3859364108019690">Não é possível fazer streaming de apps</translation>
 <translation id="3861651314799684201">Pressione "Enter" para gravar em tela cheia</translation>
+<translation id="3870197372373144624">Tente desligar o dispositivo.</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Pressione Ctrl+Shift+Q duas vezes para sair.</translation>
 <translation id="3893630138897523026">ChromeVox (resposta falada)</translation>
@@ -927,6 +929,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4264977415328155183">, recolhido</translation>
 <translation id="4265259722091164182">Primeira Letra Maiúscula</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode:</translation>
+<translation id="4271841440229266861">Mostrar todo o conteúdo do app Arquivos</translation>
 <translation id="4274537685965975248">O atalho de teclado Ctrl + Alt + seta para baixo mudou. Para usar a tecla End, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para a direita.</translation>
 <translation id="4275283744500212192">Abrir opções de layout da janela</translation>
 <translation id="4275663329226226506">Mídia</translation>
@@ -954,6 +957,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4327147325944669226">Gravar jogo</translation>
 <translation id="4333628967105022692">O Lacros não é compatível com o login de vários usuários.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, som desativado</translation>
 <translation id="4351244548802238354">Fechar caixa de diálogo</translation>
 <translation id="4356872429719185452">Consulte detalhes do ponto de acesso. Ele está sendo ativado.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> (gravando)</translation>
@@ -1299,6 +1303,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5503884284981862082">Abrir/fechar o Google Assistente</translation>
 <translation id="550391772491508736">Retomar transmissão</translation>
 <translation id="5506975627792768506">Ativar ou desativar a lupa</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, pressione Enter para desativar o áudio.</translation>
 <translation id="5512042095225963688">Excluir palavra anterior</translation>
 <translation id="5519005148254860683">Abrir o Google Tarefas</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2109,6 +2114,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8239034820133090126">Ativar o espaço de trabalho à direita</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, bateria do smartphone em <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
+<translation id="825129991941217170">Mostrar todo o conteúdo do Google Drive</translation>
 <translation id="8257510091797044096">Configurar o dispositivo</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8262312463845990408">Pausar/continuar a reprodução</translation>
@@ -2339,6 +2345,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9098969848082897657">Silenciar smartphone</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desfazer a última ação</translation>
+<translation id="9126642911267312373">Bluetooth indisponível</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Em 1min}one{Em #min}other{Em #min}}</translation>
 <translation id="9129245940793250979">Botão traseiro</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>

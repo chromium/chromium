@@ -1622,7 +1622,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2137128126782078222">Ikke tillat varsler fra <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Konfigurer-knappen</translation>
 <translation id="2140788884185208305">Batterihelse</translation>
-<translation id="2140902257485550046">Velg å blokkere alle utvidelser på dette nettstedet</translation>
 <translation id="2142328300403846845">Åpne linken som</translation>
 <translation id="2142484069755256151">Opprett en sekssifret PIN-kode for gjenoppretting for Google Passordlagring. Siffer <ph name="NUM_DIGIT" /> av 6</translation>
 <translation id="2142582065325732898">Slå på <ph name="LINK1_BEGIN" />Chrome-synkronisering<ph name="LINK1_END" /> for å se nylige Chrome-faner. <ph name="LINK2_BEGIN" />Finn ut mer<ph name="LINK2_END" /></translation>
@@ -2304,7 +2303,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2610374175948698697">Kan se filer og mapper på enheten</translation>
 <translation id="2610780100389066815">Signering med Microsoft-klareringsliste</translation>
 <translation id="261114180663074524">Logg på Microsoft-kontoen, og prøv igjen</translation>
-<translation id="2611765907167846862">Rolig</translation>
 <translation id="2611776654555141051">Rektangelverktøy</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="261305050785128654">Gi nettsteder beskjed om hvilke språk du snakker. Nettsteder viser innhold på disse språkene når det er mulig.</translation>
@@ -5996,6 +5994,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5301954838959518834">Greit</translation>
 <translation id="5302032366299160685">Vent til filen er åpnet, før du prøver igjen</translation>
 <translation id="5302048478445481009">Språk</translation>
+<translation id="5302435492906794790">Ser etter synlige enheter i nærheten …</translation>
 <translation id="5302932258331363306">Vis erstatninger</translation>
 <translation id="5305145881844743843">Denne kontoen administreres av <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Kilden støttes ikke</translation>
@@ -6969,7 +6968,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6022526133015258832">Åpne i fullskjerm</translation>
 <translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
 <translation id="6023643151125006053">Denne enheten (SN: <ph name="SERIAL_NUMBER" />) ble låst av <ph name="SAML_DOMAIN" />-administratoren.</translation>
-<translation id="6024072172641380781">Tillat utvidelser på dette nettstedet</translation>
 <translation id="6024317249717725918">&amp;Søk i videorammen med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stabelsporing</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – en USB-enhet er koblet til</translation>
@@ -8705,6 +8703,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7321545336522791733">Tjeneren er ikke tilgjengelig</translation>
 <translation id="7322515217754205362">Nettstedstillatelser</translation>
 <translation id="7323315405936922211">Størrelse på markørområdet</translation>
+<translation id="7324020307732396723">Åpne språkinnstillingene</translation>
 <translation id="7324297612904500502">Forumet for betaversjoner</translation>
 <translation id="7325209047678309347">Papiret sitter fast</translation>
 <translation id="7325953439504232954">Vil du bytte profil?</translation>
@@ -9225,7 +9224,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7685087414635069102">PIN-kode kreves</translation>
 <translation id="7685351732518564314">Trykk på en knapp på <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Mer om annonser som foreslås på nettstedet</translation>
-<translation id="7686581688229391955">Velg for å tillate utvidelser på dette nettstedet</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Velg fra listen</translation>
 <translation id="7690853182226561458">Legg til &amp;mappe</translation>
@@ -9821,6 +9819,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8097959162767603171">Administratoren din må først godta vilkårene for bruk i Chrome-enhetslisten i administrasjonskonsollen.</translation>
 <translation id="8098156986344908134">Vil du installere <ph name="DEVICE_OS" /> og tømme harddisken?</translation>
 <translation id="8098616321286360457">Nettverkstilkobling kreves</translation>
+<translation id="8100057926383586173">Åpne språkinnstillingene</translation>
 <translation id="8100230553590752325">Bruk lagrede passord på alle enheter</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> er valgt. Trykk på Søk + mellomrom for å fjerne valget.</translation>
 <translation id="8101409298456377967">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på nettsteder og apper. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>

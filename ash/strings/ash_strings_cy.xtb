@@ -687,6 +687,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="3455468639467374593">Templed, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Mae 1 ddyfais wedi'i chysylltu â phoethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Ailosod lefel chwyddo</translation>
+<translation id="3463151196028058330">Ailwampio wyneb</translation>
 <translation id="3465223694362104965">Mae bysellfwrdd arall wedi cysylltu â'r ddyfais hon ers i chi fewngofnodi ddiwethaf. Sicrhewch eich bod yn ymddiried yn y bysellfwrdd hwn cyn i chi ei ddefnyddio.</translation>
 <translation id="3465356146291925647">Rheolir gan eich Gweinyddwr</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> yna <ph name="KEY_TWO" /> neu <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@ Gallwch hefyd ddefnyddio'r llwybr byr bysellfwrdd. Yn gyntaf, amlygwch y testun,
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
 <translation id="5176318573511391780">Recordio sgrîn rannol</translation>
 <translation id="5187627942836026988">Dangos manylion y boethfan. Ma'r boethfan yn cael ei rhwystro gan eich gweinyddwr.</translation>
+<translation id="518847040357731612">Dewis Effaith Stiwdio</translation>
 <translation id="5197255632782567636">Rhyngrwyd</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> o ddigwyddiadau</translation>
 <translation id="5198715732953550718">Mae <ph name="MOVED_APP_NAME" /> wedi'i gyfuno â <ph name="IN_PLACE_APP" /> i greu ffolder newydd.</translation>

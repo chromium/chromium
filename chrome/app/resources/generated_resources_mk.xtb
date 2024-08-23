@@ -265,6 +265,7 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178601482396475810">Управување со синхронизацијата на уредот</translation>
 <translation id="117916940443676133">Вашиот безбедносен клуч не е заштитен со PIN. За да управувате со податоците за најавување, прво создајте PIN.</translation>
+<translation id="1179400851034021914">IBAN е неважечки</translation>
 <translation id="1179902906564467236">Следете ги упатствата на телефонот или користете ја апликацијата за камера</translation>
 <translation id="118057123461613219">Огромни заштеди</translation>
 <translation id="1181037720776840403">Отстрани</translation>
@@ -1441,6 +1442,7 @@
 <translation id="2002109485265116295">Реално време</translation>
 <translation id="2002160221914907025">Експериментална AI</translation>
 <translation id="2003130567827682533">За да ја активирате мобилната мрежа <ph name="NAME" />, најпрво поврзете се на Wi-Fi мрежа</translation>
+<translation id="2003596238737586336">Тековниот распоред е поставен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. Администраторот управува со поставкава.</translation>
 <translation id="2004413981947727241">Користете ги вашите лозинки на кој било уред</translation>
 <translation id="2004697686368036666">Функциите на некои сајтови може да не функционираат</translation>
 <translation id="2005199804247617997">Други профили</translation>
@@ -1627,7 +1629,6 @@
 <translation id="2137128126782078222">Не дозволувај известувања од <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Копче за поставување</translation>
 <translation id="2140788884185208305">Состојба на батеријата</translation>
-<translation id="2140902257485550046">Изберете за да ги блокирате сите екстензии на овој сајт</translation>
 <translation id="2142328300403846845">Отвори ја врската како</translation>
 <translation id="2142484069755256151">Создајте 6-цифрен PIN за враќање за Google Password Manager, цифра за PIN-кодот: <ph name="NUM_DIGIT" /> од 6</translation>
 <translation id="2142582065325732898">Вклучете <ph name="LINK1_BEGIN" />Синхронизација на Chrome<ph name="LINK1_END" /> за да ги прегледате неодамнешните картички на Chrome. <ph name="LINK2_BEGIN" />Дознајте повеќе<ph name="LINK2_END" /></translation>
@@ -1706,6 +1707,7 @@
 <translation id="2191754378957563929">Вклучен</translation>
 <translation id="2192505247865591433">Од:</translation>
 <translation id="219283042927675668">Картички во група</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> управува со вашата страницата во нова картичка (се отвора во нова картичка)</translation>
 <translation id="2193365732679659387">Поставки на довербата</translation>
 <translation id="2194856509914051091">Нешта што треба да се земат предвид</translation>
 <translation id="2195331105963583686">Сѐ уште ќе може да го користите овој <ph name="DEVICE_TYPE" /> после тој период, но веќе нема да добива автоматски софтверски и безбедносни ажурирања</translation>
@@ -2286,6 +2288,7 @@
 <translation id="2593499352046705383">Пред да започнете, уверете се дека имате направено бекап на вашите податоци. Инсталирањето на <ph name="DEVICE_OS" /> ќе го презапише вашиот хард диск. Дознајте повеќе на g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Управувајте со безбедноста на V8</translation>
 <translation id="2597073208962000830">„Споделување во близина“ користи скенирање со Bluetooth за да најде уреди во близина.</translation>
+<translation id="2598136842498757793">Приспособете ги копчињата на алатникот</translation>
 <translation id="2598710988533271874">Достапна е нова верзија на Chrome</translation>
 <translation id="2599048253926156421">Корисничкото име е копирано во привремена меморија</translation>
 <translation id="2602501489742255173">Повлечете нагоре за да започнете</translation>
@@ -2307,7 +2310,6 @@
 <translation id="2610374175948698697">Може да ги гледаат датотеките или папките на уредот</translation>
 <translation id="2610780100389066815">Запишување во список за доверба на Microsoft</translation>
 <translation id="261114180663074524">Најавете се на вашата сметка на Microsoft, па обидете се повторно</translation>
-<translation id="2611765907167846862">Смирен</translation>
 <translation id="2611776654555141051">Алатка за правоаголник</translation>
 <translation id="2612676031748830579">Број на картичка</translation>
 <translation id="261305050785128654">Дозволете веб-сајтовите да знаат кои јазици ги зборувате. Кога е возможно, ќе ви прикажуваат содржини на тие јазици.</translation>
@@ -2515,6 +2517,7 @@
 <translation id="2749881179542288782">Провери граматика со правопис</translation>
 <translation id="2750020734439919571">Повеќе поставки и дозволи за апликацијата Chrome</translation>
 <translation id="2750602041558385535">Непотврденото преземање е блокирано</translation>
+<translation id="275213133112113418">Вашата картичка е зачувана</translation>
 <translation id="2753623023919742414">Кликнете за да пребарате</translation>
 <translation id="2754226775788136540">Се бараат уреди со „Брзо спарување“ зачувани на <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Најдете ги потребните апликации на Google Play Store, од апликации за продуктивност до апликации за забава. Можете да инсталирате апликации во секое време.</translation>
@@ -3610,6 +3613,7 @@
 <translation id="3568431410312984116">Дозволи „Помош при пишување“ да се отвора автоматски</translation>
 <translation id="3569382839528428029">Дали сакате <ph name="APP_NAME" /> да го сподели вашиот екран?</translation>
 <translation id="3569614820047645079">Вашите датотеки во „Мој Drive“ се синхронизираат автоматски на вашиот Chromebook за да може да пристапувате до нив без интернет-врска.</translation>
+<translation id="3569617221227793022">Во моментов, временската зона е поставена на <ph name="TIME_ZONE_ENTRY" />. Администраторот управува со поставкава.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да ги прегледува следниве датотеки и папки</translation>
 <translation id="3571734092741541777">Постави</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> екстензии се исклучени</translation>
@@ -4057,6 +4061,7 @@
 <translation id="3866142613641074814">Имате лозинки што се ризични</translation>
 <translation id="3866249974567520381">Опис</translation>
 <translation id="3867134342671430205">Влечете или користете ги копчињата со стрелки за да го преместите екранот</translation>
+<translation id="3867831579565057323">Мапирајте го допирниот екран</translation>
 <translation id="3867944738977021751">Полиња на сертификат</translation>
 <translation id="3869917919960562512">Погрешен индекс.</translation>
 <translation id="3870626286046977643">Сподели го и аудиото на системот</translation>
@@ -4360,6 +4365,7 @@
 <translation id="4085298594534903246">JavaScript беше блокирана на оваа страница.</translation>
 <translation id="4085566053793776107">Приспособете ги темите</translation>
 <translation id="4085620044235559093">Изберете апликација за отворање датотеки <ph name="FILE_TYPE" /></translation>
+<translation id="4086565736678483233">Може да пристапите до неа во „Начини на плаќање“</translation>
 <translation id="4087089424473531098">Ја креираше наставката:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -5834,6 +5840,7 @@
 <translation id="5187641678926990264">&amp;Инсталирај страница како апликација…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Користење на локацијата. Дозволете апликациите, веб-сајтовите и услугите за ChromeOS и Android со дозвола за локација да ја користат локацијата на уредот. „Прецизност на локација“ обезбедува попрецизна локација за апликациите и услугите за Android. За таа цел, Google повремено обработува податоци за сензорите на уредот и безжичните сигнали од вашиот уред за да ги прибира локациите од безжичните сигнали со колективна соработка. Овие се користат без да ве идентификуваат за да се подобруваат прецизноста на локацијата и локациските услуги, а и да се подобруваат, обезбедуваат и одржуваат услугите на Google според легитимните интереси на Google и трети страни за да се задоволат потребите на корисниците. <ph name="BEGIN_LINK1" />Дознајте повеќе за користењето локација<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">За да се откажете од споделувањето процеси, потребно е да го рестартирате прелистувачот. Прелистувачов ќе се рестартира сега.</translation>
 <translation id="5189404424758444348">Стимпанк</translation>
 <translation id="5190577235024772869">Се користи <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Активирај ја портата</translation>
@@ -6972,7 +6979,6 @@
 <translation id="6022526133015258832">Отвори на цел екран</translation>
 <translation id="6022659036123304283">Направете го Chrome свој</translation>
 <translation id="6023643151125006053">Администраторот на <ph name="SAML_DOMAIN" /> го заклучил овој уред (СБ: <ph name="SERIAL_NUMBER" />).</translation>
-<translation id="6024072172641380781">Дозволи екстензии на сајтов</translation>
 <translation id="6024317249717725918">„Пребарај видеокадар“ со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Следи стог</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - поврзан е USB-уред</translation>
@@ -7072,6 +7078,7 @@
 <translation id="6097480669505687979">Ако не ослободите простор, автоматски може да се отстранат корисници и податоци.</translation>
 <translation id="6097600385983390082">Гласовното пребарување е затворено</translation>
 <translation id="6098793583803863900">Непозната датотека се скенира за опасни содржини.</translation>
+<translation id="609892108553214365">Користете ја картичкава на вашиот iPhone</translation>
 <translation id="609942571968311933">Текстот е копиран од <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Секогаш дозволувај <ph name="HOST" /> да ги контролира и репрограмира MIDI-уредите</translation>
 <translation id="6100736666660498114">Почетно мени</translation>
@@ -9184,6 +9191,7 @@
 <translation id="7663774460282684730">Достапна е кратенка од тастатура</translation>
 <translation id="7663859337051362114">Додајте профил на eSIM</translation>
 <translation id="76641554187607347">Не е поврзана тастатура</translation>
+<translation id="7664442418269614729">Користете ја картичкава на вашиот iPhone</translation>
 <translation id="7665082356120621510">Резервирај големина</translation>
 <translation id="7665369617277396874">Додајте сметка</translation>
 <translation id="7665445336029073980">Целосна историја на преземања</translation>
@@ -9227,7 +9235,6 @@
 <translation id="7685087414635069102">Потребен е PIN</translation>
 <translation id="7685351732518564314">Притиснете некое копче на уредот <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Повеќе за реклами предложени од сајтови</translation>
-<translation id="7686581688229391955">Изберете за да ги дозволите сите екстензии на овој сајт</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Изберете од списокот</translation>
 <translation id="7690853182226561458">Додај &amp;папка</translation>
@@ -9567,6 +9574,7 @@
 <translation id="79312157130859720"><ph name="APP_NAME" /> ги споделува вашиот екран и аудио.</translation>
 <translation id="793293630927785390">Нов дијалог за Wi-Fi мрежа</translation>
 <translation id="7932969338829957666">Споделените папки се достапни во Linux на <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Поставете и мапирајте го уредот со допирен екран на точниот екран</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Вклучи звук на сајтот}one{Вклучи звук на сајтовите}other{Вклучи звук на сајтовите}}</translation>
 <translation id="7933486544522242079">Зачувајте и споделете</translation>
 <translation id="7933518760693751884">За да зачувате страница за подоцна, кликнете на иконата „Обележувач“</translation>
@@ -9790,6 +9798,7 @@
 <translation id="8081623398548615289">Со вашата сесија управува <ph name="MANAGER_NAME" />. Администраторите може да го избришат вашиот профил и да го надгледуваат мрежниот сообраќај.</translation>
 <translation id="8081989000209387414">Да се оневозможи отстранување грешки на ADB?</translation>
 <translation id="8082106343289440791">Да се спари со „<ph name="DEVICE_NAME" />“?</translation>
+<translation id="8082132721957920509">Вашата картичка е зачувана</translation>
 <translation id="8082390128630131497">Оневозможувањето на ADB ќе го ресетира <ph name="DEVICE_TYPE" /> на фабричките поставки. Сите кориснички сметки и локални податоци ќе бидат избришани.</translation>
 <translation id="8084114998886531721">Зачувана лозинка</translation>
 <translation id="8084429490152575036">Поставки за APN за мобилна мрежа</translation>

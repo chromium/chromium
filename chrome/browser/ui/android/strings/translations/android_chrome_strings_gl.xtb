@@ -131,7 +131,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1549000191223877751">Mover a outra ventá</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1554532453982918912">Axuda a mellorar Chrome para as persoas que o usan igual ca ti</translation>
-<translation id="1558391695376153246">Pechar pestanas incógnito</translation>
 <translation id="1568636008098739136">Escoitar esta páxina. Mantén premido este atallo para editalo.</translation>
 <translation id="1571304935088121812">Copia o nome de usuario</translation>
 <translation id="1584648915421894279">De momento, os contrasinais gardados neste dispositivo non se poden usar en todas as canles de Chrome. Despois da versión 125 de Chrome, os contrasinais que teñas almacenados no dispositivo para Chrome e <ph name="CHROME_CHANNEL" /> combinaranse e poderanse usar en ambas as aplicacións.</translation>
@@ -199,6 +198,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1928618076168182477">Mostrando vista visual</translation>
 <translation id="1928696683969751773">Actualizacións</translation>
 <translation id="1933845786846280168">Pestana seleccionada</translation>
+<translation id="1939549834451474504">Os contrasinais deixarán de funcionar en breve porque os servizos de Google Play non están dispoñibles. Podes facer unha copia dos contrasinais gardados antes de que deixen de funcionar. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Gardar contrasinais</translation>
 <translation id="1944535645109964458">Non hai claves de acceso dispoñibles</translation>
 <translation id="1957557050935255529">Cargando PDF…</translation>
@@ -1385,6 +1385,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7454744349230173024">A túa organización desactivou a opción de gardar contrasinais</translation>
 <translation id="7455988709578031708">En función do teu historial de navegación. Esta opción de configuración está activada.</translation>
 <translation id="7456774706094330779">Precarga ampliada</translation>
+<translation id="7466328545712777810">Recibirás unha notificación se baixa o prezo en calquera sitio</translation>
 <translation id="7466431077154602932">Vista compacta</translation>
 <translation id="7474822150871987353">Obtén información sobre os temas en sitios web sen saír da páxina. Selecciona unha ou varias palabras na páxina para buscalas.</translation>
 <translation id="7475192538862203634">Se esta mensaxe aparece frecuentemente, proba estas <ph name="BEGIN_LINK" />suxestións<ph name="END_LINK" />.</translation>
@@ -1445,7 +1446,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7691043218961417207">Descubre contido para seguir</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Bloques de consultas</translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7709918231054955894">Accede a todas as túas pestanas</translation>
 <translation id="7733878270780732638">Non hai suficiente espazo no dispositivo.</translation>

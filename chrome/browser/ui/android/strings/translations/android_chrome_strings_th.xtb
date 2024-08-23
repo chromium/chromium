@@ -131,7 +131,6 @@
 <translation id="1549000191223877751">ย้ายไปยังหน้าต่างอื่น</translation>
 <translation id="1553358976309200471">อัปเดต Chrome</translation>
 <translation id="1554532453982918912">ช่วยปรับปรุง Chrome ให้ดีขึ้นสำหรับคนที่ใช้งานในลักษณะเดียวกับคุณ</translation>
-<translation id="1558391695376153246">ปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="1568636008098739136">ฟังหน้านี้ หากต้องการแก้ไขแป้นพิมพ์ลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="1571304935088121812">คัดลอกชื่อผู้ใช้</translation>
 <translation id="1584648915421894279">ขณะนี้ รหัสผ่านที่บันทึกไว้ในอุปกรณ์นี้จะนำไปใช้ใน Chrome เวอร์ชันอื่นๆ ไม่ได้ หลังจาก Chrome 125 รหัสผ่านที่คุณบันทึกไว้ใน Chrome และ <ph name="CHROME_CHANNEL" /> บนอุปกรณ์จะรวมกัน และใช้ได้ในทั้ง 2 แอป</translation>
@@ -1447,7 +1446,6 @@
 <translation id="7691043218961417207">สำรวจเนื้อหาที่น่าติดตาม</translation>
 <translation id="7697383401610880082">แฮนเดิลการลาก</translation>
 <translation id="7698359219371678927">สร้างอีเมลใน <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">การ์ดการค้นหา</translation>
 <translation id="7707922173985738739">ใช้เน็ตมือถือ</translation>
 <translation id="7709918231054955894">ดูแท็บทั้งหมด</translation>
 <translation id="7733878270780732638">มีพื้นที่ในอุปกรณ์ไม่เพียงพอ</translation>

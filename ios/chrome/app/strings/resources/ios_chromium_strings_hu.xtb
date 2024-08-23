@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Ez azt jelenti, hogy a Chromium mindig az asztali webhelyet kéri majd.</translation>
 <translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="231828342043114302">Ha személyre szabott tartalmakat szeretne kapni az érdeklődési körei alapján, jelentkezzen be a Chromiumba.</translation>
+<translation id="2326738825692478496">Az Ön bizonyos Chromium-adatait még nem mentette a rendszer a Google-fiókjába.
+
+A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="2374627437126809292">A Chromium a Google Térkép segítségével útvonalterveket és helyi információkat jeleníthessen meg az észlelt címekkel kapcsolatban.</translation>
 <translation id="2386292341327187942">Írja be a Modulok keresése mezőbe azt, hogy Chromium.</translation>
 <translation id="2426113998523353159">Szervezete megköveteli a bejelentkezést a Chromium használatához.</translation>
@@ -292,6 +295,8 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 
 Adatai az összetett jelszavával lettek titkosítva a következő időpontban: <ph name="TIME" />. Adja meg, ha Google-fiókjában Chromium-adatokat szeretne használni és menteni.</translation>
 <translation id="9022552996538154597">Bejelentkezés a Chromiumba</translation>
+<translation id="9031260906956926157">Az Ön bizonyos Chromium-adatait még nem mentette a rendszer a Google-fiókjába.
+A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="9050790730841755540">Bármikor használhatja a Chromiumot, amikor más alkalmazásokban linkekre kattint.</translation>
 <translation id="9057082013386654559">A Chromium használata iPaden alapértelmezés szerint</translation>
 <translation id="9059693977935746710">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Jelszókezelőbe.</translation>

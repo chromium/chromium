@@ -1616,7 +1616,6 @@
 <translation id="2137128126782078222">Не дозвољавајте обавештења са <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Дугме за подешавање</translation>
 <translation id="2140788884185208305">Стање батерије</translation>
-<translation id="2140902257485550046">Изаберите да бисте блокирали све додатке на овом сајту</translation>
 <translation id="2142328300403846845">Отворите линк као</translation>
 <translation id="2142484069755256151">Направите шестоцифрени PIN за враћање приступа Google менаџеру лозинки, <ph name="NUM_DIGIT" />. цифра PIN-а од укупно 6</translation>
 <translation id="2142582065325732898">Укључите <ph name="LINK1_BEGIN" />Chrome синхронизацију<ph name="LINK1_END" /> да бисте прегледали недавне Chrome картице. <ph name="LINK2_BEGIN" />Сазнајте више<ph name="LINK2_END" /></translation>
@@ -2295,7 +2294,6 @@
 <translation id="2610374175948698697">Фајлови који могу да прегледају фајлове или фолдере на уређају</translation>
 <translation id="2610780100389066815">Потписивање Microsoft листе поузданих</translation>
 <translation id="261114180663074524">Пријавите се на Microsoft налог и пробајте поново</translation>
-<translation id="2611765907167846862">Спокојно</translation>
 <translation id="2611776654555141051">Алатка за проавоугаонике</translation>
 <translation id="2612676031748830579">Број картице</translation>
 <translation id="261305050785128654">Омогућите веб-сајтовима да знају које језике говорите. Приказиваће садржај на тим језицима када је то могуће.</translation>
@@ -6965,7 +6963,6 @@
 <translation id="6022526133015258832">Отвори на целом екрану</translation>
 <translation id="6022659036123304283">Прилагодите Chrome себи</translation>
 <translation id="6023643151125006053">Овај уређај (СБ: <ph name="SERIAL_NUMBER" />) је закључао администратор домена <ph name="SAML_DOMAIN" />.</translation>
-<translation id="6024072172641380781">Дозволите додатке на овом сајту</translation>
 <translation id="6024317249717725918">&amp;Претражи кадар видеа уз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Стање низа</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB уређај је повезан</translation>
@@ -8136,6 +8133,7 @@
 <translation id="6876155724392614295">Бицикл</translation>
 <translation id="6876469544038980967">Није корисно</translation>
 <translation id="6878422606530379992">Приступ сензорима је дозвољен</translation>
+<translation id="6878862640969460273">Водоравно</translation>
 <translation id="6880587130513028875">Слике су блокиране на овој страници.</translation>
 <translation id="6881845890692344060">Администратор се одјавио. Сада имате контролу.</translation>
 <translation id="6882210908253838664">Ако сајт не ради, можете да пробате да му дате привремену дозволу за коришћење колачића треће стране. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -9226,7 +9224,6 @@
 <translation id="7685087414635069102">PIN је обавезан</translation>
 <translation id="7685351732518564314">Притисните дугме на уређају <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Више о огласима које предлажу сајтови</translation>
-<translation id="7686581688229391955">Изаберите да бисте дозволили додатке на овом сајту</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Одаберите са листе</translation>
 <translation id="7690853182226561458">Додај &amp;директоријум...</translation>
@@ -9675,6 +9672,7 @@
 
 Чувајте датотеку кључа на сигурном месту. Биће вам потребна да направите нове верзије додатка.</translation>
 <translation id="8000020256436988724">Трака с алаткама</translation>
+<translation id="800117767980299235">Важни аудио делови</translation>
 <translation id="8002274832045662704">Напредна конфигурација штампача</translation>
 <translation id="8002670234429879764">Штампач <ph name="PRINTER_NAME" /> више није доступан</translation>
 <translation id="8004092996156083991">Ако су вам лозинке угрожене, обавестићемо вас о томе.</translation>

@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">這代表 Chromium 每次都會要求取得桌面版網站。</translation>
 <translation id="2313870531055795960">使用儲存在 Chromium 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
 <translation id="231828342043114302">如要根據個人興趣接收個人化內容，請登入 Chromium。</translation>
+<translation id="2326738825692478496">部分 Chromium 資料尚未儲存至 Google 帳戶。
+
+請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="2374627437126809292">偵測到地址後，Chromium 會使用「Google 地圖」規劃路線及提供當地資訊。</translation>
 <translation id="2386292341327187942">在「搜尋小工具」框中輸入「Chromium」</translation>
 <translation id="2426113998523353159">您的機構要求您登入才能使用 Chromium。</translation>
@@ -292,6 +295,8 @@
 
 你已在 <ph name="TIME" />使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chromium 資料，請輸入密碼短語。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
+<translation id="9031260906956926157">部分 Chromium 資料尚未儲存至 Google 帳戶。
+請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="9050790730841755540">隨時使用 Chromium 開啟其他應用程式中的連結。</translation>
 <translation id="9057082013386654559">預設使用 iPad 版 Chromium</translation>
 <translation id="9059693977935746710">您不需記住此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的「密碼管理工具」</translation>

@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Esto significa que Chromium solicitará la versión de escritorio del sitio cada vez.</translation>
 <translation id="2313870531055795960">Revisa las URL con una lista de sitios no seguros almacenados en Chromium. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chromium también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="231828342043114302">Para recibir contenido personalizado en función de tus intereses, accede a Chromium.</translation>
+<translation id="2326738825692478496">Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google.
+
+Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="2374627437126809292">Chromium usa Google Maps para brindarte instrucciones sobre cómo llegar, así como información local sobre las direcciones detectadas.</translation>
 <translation id="2386292341327187942">En el cuadro Widgets de la Búsqueda, ingresa "Chromium".</translation>
 <translation id="2426113998523353159">Tu organización requiere que accedas para usar Chromium.</translation>
@@ -292,6 +295,8 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 
 Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingrésala para usar y guardar datos de Chromium en tu Cuenta de Google.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
+<translation id="9031260906956926157">Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google.
+Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="9050790730841755540">Usa Chromium cada vez que presiones vínculos en otras apps.</translation>
 <translation id="9057082013386654559">Usa Chromium para iPad de forma predeterminada</translation>
 <translation id="9059693977935746710">No es necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de <ph name="EMAIL" />.</translation>

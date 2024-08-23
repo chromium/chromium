@@ -243,7 +243,6 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
 <translation id="1165923723751466821">Consenti gli accessi come ospite al browser e gli accessi ai profili</translation>
 <translation id="117059611145966538">Server di stampa esterni</translation>
 <translation id="117080706484659953">Consenti il rilevamento dell'ambito dei criteri su <ph name="MAC_OS_NAME" /></translation>
-<translation id="1171065405328282754">Consenti la ricerca nella cronologia basata sull'AI e migliora i modelli di AI</translation>
 <translation id="1171106901454883937">Attiva i report sulle informazioni relative alla versione del dispositivo</translation>
 <translation id="1173493742686115032">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
 <translation id="1177567780207290133">La configurazione del criterio consente di controllare il filtro di URL di SafeSites, che utilizza l'API Google Safe Search per classificare gli URL come pornografici o meno.
@@ -458,6 +457,27 @@ dall'upgrade ad HTTPS da parte di questa funzionalità.</translation>
 <translation id="1348603614848418219">Disattiva la migrazione dei dispositivi gestiti da <ph name="MS_AD_NAME" /> nella gestione del cloud.</translation>
 <translation id="1352799151662469739">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene bloccato quando viene usata l'alimentazione CA.</translation>
 <translation id="1353416417709895349">Disattiva controlli dell'intercettazione DNS e barre di informazioni "http://intranetsite/" alternative</translation>
+<translation id="1353910503649343481">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
+
+       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
+
+       L'impostazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e impedisce agli utenti di modificare le impostazioni del proxy
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, un URL a un file proxy .pac o uno script PAC codificato come URL di dati con tipo MIME application/x-ns-proxy-autoconfig
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, che impedisce allo stack di rete di eseguire il fallback alle connessioni dirette con script PAC non valido o non disponibile
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, un URL del server proxy
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, un elenco di host per i quali il proxy verrà bypassato
+
+       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+      Nota: per esempi più dettagliati, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1354280967938151061">Disattiva ARC</translation>
 <translation id="1354424209129232709">Massimo:</translation>
 <translation id="1355050231181289439"> Questo criterio consente di stabilire se la mappatura migliorata delle scorciatoie da tastiera internazionali è attivata.
@@ -1733,7 +1753,6 @@ Se questo criterio non viene configurato o se viene disattivato, il trasferiment
 <translation id="224750967938323855">Non mostrare il consenso alla sincronizzazione durante l'accesso</translation>
 <translation id="2252400912879027343">WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.</translation>
 <translation id="225340736558643885">Attiva avvisi per moduli non sicuri</translation>
-<translation id="225347142757323162">Attiva le funzionalità, ma non invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="2258126710006312594">Consenti l'accesso remoto agli utenti per trasferire file da/verso l'host</translation>
 <translation id="225830954785359083">Impedisci alle pagine di mostrare popup durante l'unload</translation>
 <translation id="2261648512244797294">Disattiva stampa Privet deprecata</translation>
@@ -2004,7 +2023,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2439733504887695659">Attiva la possibilità di ignorare gli avvisi relativi alle password compromesse per le credenziali inserite</translation>
 <translation id="2446244536806499267">Non considerare l'utente inattivo durante la riproduzione di audio</translation>
 <translation id="2452225615952836461">Metodi di richiesta sempre in maiuscolo</translation>
-<translation id="2453660971158808971">Non consentire la ricerca nella cronologia basata sull'AI</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
 <translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
 <translation id="2460127623195247744">Questo criterio è deprecato. Utilizza il criterio "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
@@ -3213,17 +3231,6 @@ Se il criterio non viene impostato, non è possibile navigare nel browser se è 
 <translation id="3423703250826790403">App per Android</translation>
 <translation id="3426434797050451264">Questo criterio può essere utilizzato anche per specificare le app Android come gestori di file predefiniti.</translation>
 <translation id="3428247105888806363">Attiva previsione di rete</translation>
-<translation id="3430198032663063246">Aiutami a scrivere è un assistente di scrittura basato sull'IA per creare contenuti brevi sul web. I contenuti suggeriti si basano sui prompt inseriti dall'utente e sui contenuti della pagina web.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di IA. A seconda della funzionalità, i dati pertinenti possono includere prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di IA.
-
-0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di IA. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Disattiva la funzionalità. 2 è il valore predefinito per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Per ulteriori informazioni sulla gestione dei dati per le funzionalità di IA generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3432863169147125747">Consente di gestire le impostazioni di stampa.</translation>
 <translation id="3434053014926283175">Imposta il pulsante destro come pulsante principale del mouse.
 
@@ -3569,7 +3576,6 @@ Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso d
           </translation>
 <translation id="3677660004554019617">Non consentire lo Sfondo AI generativa per videoconferenze</translation>
 <translation id="3678069907945250643">Consenti l'accesso a Google Foto dall'app di personalizzazione</translation>
-<translation id="3680529017993214255">Attiva le funzionalità e invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="3685979383016152590">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> mettere a disposizione degli utenti.
 
       * Per l'opzione <ph name="PRINTERS_BLOCKLIST" /> (valore 0) viene usato il valore <ph name="PRINTERS_BULK_BLOCKLIST" /> per limitare l'accesso alle stampanti specificate.
@@ -3937,19 +3943,6 @@ possono essere inviati i report aziendali.
 <translation id="3989829840000169163">Blocca punti di estensioni precedenti nel browser</translation>
 <translation id="3990391739475801018">La modalità Risparmio energetico viene disattivata.</translation>
 <translation id="3990834929384096140">Non forzare l'applicazione della cancellazione dell'eco per l'audio di sistema</translation>
-<translation id="3992185577030665825">Queste funzionalità in DevTools di <ph name="PRODUCT_NAME" /> utilizzano modelli di AI generativa per fornire maggiori informazioni di debug. Per utilizzare queste funzionalità, <ph name="PRODUCT_NAME" /> deve raccogliere dati come messaggi di errore, analisi dello stack, snippet di codice e richieste di rete e inviarli a un server di proprietà di Google, che esegue un modello di AI generativa. Il corpo della risposta o le intestazioni dei cookie e dell'autenticazione nelle richieste di rete non sono inclusi nei dati inviati al server.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI.
-
-0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli utenti Enterprise gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Disattiva la funzionalità. 2 è il valore predefinito per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Le funzionalità di AI generativa di DevTools includono quanto segue.
-
-- Approfondimenti sulla console: spiega i messaggi della console e offre suggerimenti su come correggere gli errori.</translation>
 <translation id="3994043824457743421">Mostra la comunicazione dell'area centrale nella pagina Nuova scheda</translation>
 <translation id="399433537808390819">Non rendere la modalità Desktop unificato disponibile per l'utente</translation>
 <translation id="3995880046827722248">Manifest v2 disabilitato</translation>
@@ -4462,6 +4455,25 @@ Se questo criterio non viene configurato, la sintassi deprecata precedente verr�
           Se questo criterio viene impostato su true, WebSQL in contesti non sicuri sarà disponibile.
           Se il criterio viene impostato su false o se non viene configurato, WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.
 Questo criterio è stato rimosso nella versione M112.</translation>
+<translation id="4401357095119743747">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene trasferito all'interno di <ph name="PRODUCT_OS_NAME" />.
+
+      I campi <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene trasferito tra un'origine e una destinazione e quali tag includere nella richiesta di analisi di quel file. Un tag che corrisponde a una regola "enable" verrà incluso nella richiesta di analisi se l'origine e la destinazione corrispondono alla regola associata a questo tag, purché nessuna regola "disable" con lo stesso tag corrisponda al trasferimento. L'analisi viene eseguita se almeno un tag deve essere incluso nella richiesta. Una regola <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> è definita da un elenco di coppie, dove ogni coppia contiene un elenco di origini e un elenco di destinazioni. Il campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> definisce il file system a cui deve essere applicata una regola.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
+
+      Se il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> viene impostato su 1, <ph name="PRODUCT_OS_NAME" /> attende di ricevere una risposta dal servizio di analisi prima di consentire il trasferimento. Con qualsiasi altro valore intero, <ph name="PRODUCT_OS_NAME" /> consente immediatamente il trasferimento.
+
+      Se il campo <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" /> viene bloccato, <ph name="PRODUCT_OS_NAME" /> non consente agli utenti di trasferire il file se si verifica un errore durante la comunicazione con il servizio di analisi. Con qualsiasi altro valore, <ph name="PRODUCT_OS_NAME" /> consente il trasferimento del file se si verifica un errore durante la comunicazione con il servizio di analisi.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> consente di stabilire se <ph name="PRODUCT_OS_NAME" /> blocca o autorizza i file protetti tramite password.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> consente di controllare se <ph name="PRODUCT_OS_NAME" /> blocca o autorizza i file troppo grandi per essere analizzati.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> viene utilizzato per determinare per quali tag il connettore deve richiedere all'utente di inserire una giustificazione per ignorare una scansione che risulti in un avviso ignorabile. Se il campo non viene configurato, si presume che non sia richiesta alcuna giustificazione.
+
+      I campi <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> vengono utilizzati per configurare un messaggio da mostrare all'utente quando viene visualizzato un avviso dopo una scansione che ha rilevato dei problemi. Il campo del messaggio contiene il testo da mostrare all'utente e può includere al massimo 200 caratteri. Il campo <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> contiene un URL fornito dall'amministratore su cui l'utente potrà fare clic per ricevere maggiori informazioni fornite dal cliente sul motivo per cui l'azione è stata bloccata. Il campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> è facoltativo e contiene la lingua del messaggio. Un campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> vuoto o con il valore "default" indica il messaggio da utilizzare se non è disponibile alcun messaggio nella lingua dell'utente. Il campo dei tag consente di specificare per quale tipo di scansioni viene visualizzato il messaggio. L'elenco <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> può avere alcune voci o nessuna, e per ciascuna voce i campi del messaggio e dei tag non devono essere vuoti.
+
+      Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="4402887080007986374">La versione valida dei Termini di servizio dell'account della scuola</translation>
 <translation id="4408428864159735559">Elenco di condivisioni di file di rete preconfigurate.</translation>
 <translation id="4410236409016356088">Attiva la limitazione della larghezza di banda della rete</translation>
@@ -4918,7 +4930,6 @@ Se il criterio <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_ENABLED" /> viene attiva
 Se questo criterio non viene configurato, verranno attivati tutti i servizi.
 
 In caso contrario, verranno attivati solo i servizi selezionati.</translation>
-<translation id="4757563299858487173">Disattiva le funzionalità</translation>
 <translation id="4758335997982239449">Attiva la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="4767059955897420757">Se il criterio non viene configurato o se viene attivato, all'utente potrebbe essere mostrata la promozione dell'estensione fornitore di credenziali.
 Se viene disattivato, all'utente non viene mostrata la promozione dell'estensione fornitore di credenziali.</translation>
@@ -7128,17 +7139,6 @@ Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /
       Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="6383774771168138899">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Attiva la visualizzazione delle pagine di risultati del motore di ricerca predefinito in un riquadro laterale del browser.</translation>
-<translation id="6385379259912525880">La funzionalità di ricerca nella cronologia basata sull'AI consente agli utenti di effettuare ricerche nella loro cronologia di navigazione in base ai contenuti della pagina, non solo al titolo e all'URL.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI.
-
-2 = Disattiva la funzionalità.
-
-Se il criterio non viene configurato, il comportamento predefinito è 0 per gli utenti regolari e 2 per gli utenti gestiti su <ph name="PRODUCT_OS_NAME" />.
-
-Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">La norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_OS_NAME" />. Utilizza la norma PresentationScreenDimDelayScale.</translation>
 <translation id="6396956366662970339">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
 
@@ -8607,7 +8607,6 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="7469554574977894907">Attiva suggerimenti di ricerca</translation>
 <translation id="7472547030234093862">Specifica i domini da risolvere tramite DNS over HTTPS</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
-<translation id="747517124419659622">Consenti la ricerca nella cronologia basata sull'AI senza migliorare i modelli di AI</translation>
 <translation id="7476030153540156377">Scegli se attivare o meno la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="7476158778585368567">Consente di segnalare i processi di stampa di un dispositivo.
 
@@ -9514,17 +9513,6 @@ Questo criterio viene applicato alla modalità di navigazione in incognito. Ciò
 <translation id="822055204938220476">Elenco di URL che possono rimanere in modalità a schermo intero senza mostrare una notifica</translation>
 <translation id="8225579382697740712">Controlla l'utilizzo dell'API WebHID</translation>
 <translation id="8229912067600517877">Attiva Strumenti per sviluppatori</translation>
-<translation id="8234565689501421293">Crea temi con l'IA consente agli utenti di creare temi/sfondi personalizzati scegliendo tra un elenco di opzioni.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di IA. A seconda della funzionalità, i dati pertinenti possono includere prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di IA.
-
-0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di IA. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Disattiva la funzionalità. 2 è il valore predefinito per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Per ulteriori informazioni sulla gestione dei dati per le funzionalità di IA generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
 <translation id="8239109177194627162">Disattiva la compilazione automatica per le carte di credito</translation>
 <translation id="8239143983379015783">Forza l'attivazione della quota permanente</translation>
@@ -10841,17 +10829,6 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="943865157632139008">Consente di configurare il renderer HTML predefinito quando è installato <ph name="PRODUCT_FRAME_NAME" />.
       Per impostazione predefinita, l'host browser esegue il rendering, ma in alternativa è possibile sostituire questa impostazione e far sì che <ph name="PRODUCT_FRAME_NAME" /> esegua il rendering delle pagine HTML per impostazione predefinita.</translation>
 <translation id="944817693306670849">Imposta dimensioni cache su disco</translation>
-<translation id="946458935955389273">Organizza schede è uno strumento basato sull'AI che crea automaticamente gruppi di schede in base alle schede aperte di un utente. I suggerimenti si basano sulle schede aperte, non sui contenuti delle pagine.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, i dati pertinenti possono includere prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI.
-
-0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-2 = Disattiva la funzionalità. 2 è il valore predefinito per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="949192525372487705">Blocca il passaggio a un gestore delle password di terze parti</translation>
 <translation id="957322141096206402">La risoluzione DNS di sistema può essere eseguita all'interno o all'esterno del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.</translation>
 <translation id="957778406002650056">L'URL da cui è possibile scaricare l'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
