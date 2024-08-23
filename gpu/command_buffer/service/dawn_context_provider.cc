@@ -190,10 +190,10 @@ bool DawnContextProvider::DefaultForceFallbackAdapter() {
 
 // Owns the dawn instance/adapter/device so that it's lifetime is not linked to
 // a specific DawnContextProvider.
-class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
-                        public base::trace_event::MemoryDumpProvider {
+class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
+                          public base::trace_event::MemoryDumpProvider {
  public:
-  DawnSharedState() = default;
+  DawnSharedContext() = default;
 
   bool Initialize(wgpu::BackendType backend_type,
                   bool force_fallback_adapter,
@@ -222,7 +222,7 @@ class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
   std::optional<error::ContextLostReason> GetResetStatus() const;
 
  private:
-  friend class base::RefCountedThreadSafe<DawnSharedState>;
+  friend class base::RefCountedThreadSafe<DawnSharedContext>;
 
   // Provided to wgpu::Device as caching callback.
   static size_t LoadCachedData(const void* key,
@@ -231,7 +231,7 @@ class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
                                size_t value_size,
                                void* userdata) {
     if (auto& caching_interface =
-            static_cast<DawnSharedState*>(userdata)->caching_interface_) {
+            static_cast<DawnSharedContext*>(userdata)->caching_interface_) {
       return caching_interface->LoadData(key, key_size, value, value_size);
     }
     return 0;
@@ -244,7 +244,7 @@ class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
                               size_t value_size,
                               void* userdata) {
     if (auto& caching_interface =
-            static_cast<DawnSharedState*>(userdata)->caching_interface_) {
+            static_cast<DawnSharedContext*>(userdata)->caching_interface_) {
       caching_interface->StoreData(key, key_size, value, value_size);
     }
   }
@@ -267,7 +267,7 @@ class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
     }
   }
 
-  ~DawnSharedState() override;
+  ~DawnSharedContext() override;
 
   void OnError(wgpu::ErrorType error_type, const char* message);
 
@@ -292,7 +292,7 @@ class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
       GUARDED_BY(context_lost_lock_);
 };
 
-DawnSharedState::~DawnSharedState() {
+DawnSharedContext::~DawnSharedContext() {
   if (device_) {
     if (registered_memory_dump_provider_) {
       base::trace_event::MemoryDumpManager::GetInstance()
@@ -308,7 +308,7 @@ DawnSharedState::~DawnSharedState() {
   }
 }
 
-bool DawnSharedState::Initialize(
+bool DawnSharedContext::Initialize(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
@@ -317,9 +317,9 @@ bool DawnSharedState::Initialize(
   // instance doesn't exit the GPU process.
   // LogInfo will be used to receive instance level errors. For example failures
   // of loading libraries, initializing backend, etc
-  instance_ = webgpu::DawnInstance::Create(&platform_, gpu_preferences,
-                                           webgpu::SafetyLevel::kUnsafe,
-                                           &DawnSharedState::LogInfo, nullptr);
+  instance_ = webgpu::DawnInstance::Create(
+      &platform_, gpu_preferences, webgpu::SafetyLevel::kUnsafe,
+      &DawnSharedContext::LogInfo, nullptr);
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
@@ -375,8 +375,8 @@ bool DawnSharedState::Initialize(
   toggles_desc.disabledToggleCount = disabled_toggles.size();
 
   wgpu::DawnCacheDeviceDescriptor cache_desc;
-  cache_desc.loadDataFunction = &DawnSharedState::LoadCachedData;
-  cache_desc.storeDataFunction = &DawnSharedState::StoreCachedData;
+  cache_desc.loadDataFunction = &DawnSharedContext::LoadCachedData;
+  cache_desc.storeDataFunction = &DawnSharedContext::StoreCachedData;
   // The dawn device is owned by this so a pointer back here is safe.
   cache_desc.functionUserdata = this;
   cache_desc.nextInChain = &toggles_desc;
@@ -384,7 +384,7 @@ bool DawnSharedState::Initialize(
   wgpu::DeviceDescriptor descriptor;
   descriptor.SetUncapturedErrorCallback(
       [](const wgpu::Device&, wgpu::ErrorType type, const char* message,
-         DawnSharedState* state) {
+         DawnSharedContext* state) {
         if (type != wgpu::ErrorType::NoError) {
           state->OnError(type, message);
         }
@@ -393,7 +393,7 @@ bool DawnSharedState::Initialize(
   descriptor.SetDeviceLostCallback(
       wgpu::CallbackMode::AllowSpontaneous,
       [](const wgpu::Device&, wgpu::DeviceLostReason reason,
-         const char* message, DawnSharedState* state) {
+         const char* message, DawnSharedContext* state) {
         if (reason != wgpu::DeviceLostReason::Destroyed) {
           state->OnError(wgpu::ErrorType::DeviceLost, message);
         }
@@ -572,7 +572,7 @@ bool DawnSharedState::Initialize(
   }
 
   if (base::FeatureList::IsEnabled(kForceDawnInitializeFailure)) {
-    LOG(ERROR) << "DawnSharedState creation failed for testing";
+    LOG(ERROR) << "DawnSharedContext creation failed for testing";
     return false;
   }
 
@@ -593,7 +593,7 @@ bool DawnSharedState::Initialize(
     return false;
   }
 
-  device.SetLoggingCallback(&DawnSharedState::LogInfo, nullptr);
+  device.SetLoggingCallback(&DawnSharedContext::LogInfo, nullptr);
 
   adapter_ = std::move(adapter);
   device_ = std::move(device);
@@ -621,19 +621,20 @@ bool DawnSharedState::Initialize(
   return true;
 }
 
-void DawnSharedState::SetCachingInterface(
+void DawnSharedContext::SetCachingInterface(
     std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
   CHECK(!caching_interface_);
   caching_interface_ = std::move(caching_interface);
 }
 
-std::optional<error::ContextLostReason> DawnSharedState::GetResetStatus()
+std::optional<error::ContextLostReason> DawnSharedContext::GetResetStatus()
     const {
   base::AutoLock auto_lock(context_lost_lock_);
   return context_lost_reason_;
 }
 
-void DawnSharedState::OnError(wgpu::ErrorType error_type, const char* message) {
+void DawnSharedContext::OnError(wgpu::ErrorType error_type,
+                                const char* message) {
   LOG(ERROR) << message;
   SetDawnErrorCrashKey(message);
 
@@ -717,7 +718,7 @@ class DawnMemoryDump : public dawn::native::MemoryDump {
 };
 }  // namespace
 
-bool DawnSharedState::OnMemoryDump(
+bool DawnSharedContext::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   if (args.level_of_detail ==
@@ -747,51 +748,52 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
-  auto dawn_shared_state = base::MakeRefCounted<DawnSharedState>();
-  if (!dawn_shared_state->Initialize(backend_type, force_fallback_adapter,
-                                     gpu_preferences, gpu_driver_workarounds)) {
+  auto dawn_shared_context = base::MakeRefCounted<DawnSharedContext>();
+  if (!dawn_shared_context->Initialize(backend_type, force_fallback_adapter,
+                                       gpu_preferences,
+                                       gpu_driver_workarounds)) {
     return nullptr;
   }
 
   return base::WrapUnique(
-      new DawnContextProvider(std::move(dawn_shared_state)));
+      new DawnContextProvider(std::move(dawn_shared_context)));
 }
 
 std::unique_ptr<DawnContextProvider>
 DawnContextProvider::CreateWithSharedDevice(
     const DawnContextProvider* existing) {
   CHECK(existing);
-  CHECK(existing->dawn_shared_state_);
+  CHECK(existing->dawn_shared_context_);
   return base::WrapUnique(
-      new DawnContextProvider(existing->dawn_shared_state_));
+      new DawnContextProvider(existing->dawn_shared_context_));
 }
 
 DawnContextProvider::DawnContextProvider(
-    scoped_refptr<DawnSharedState> dawn_shared_state)
-    : dawn_shared_state_(std::move(dawn_shared_state)) {
-  CHECK(dawn_shared_state_);
+    scoped_refptr<DawnSharedContext> dawn_shared_context)
+    : dawn_shared_context_(std::move(dawn_shared_context)) {
+  CHECK(dawn_shared_context_);
 }
 
 DawnContextProvider::~DawnContextProvider() = default;
 
 wgpu::Device DawnContextProvider::GetDevice() const {
-  return dawn_shared_state_->GetDevice();
+  return dawn_shared_context_->GetDevice();
 }
 
 wgpu::BackendType DawnContextProvider::backend_type() const {
-  return dawn_shared_state_->backend_type();
+  return dawn_shared_context_->backend_type();
 }
 
 bool DawnContextProvider::is_vulkan_swiftshader_adapter() const {
-  return dawn_shared_state_->is_vulkan_swiftshader_adapter();
+  return dawn_shared_context_->is_vulkan_swiftshader_adapter();
 }
 
 wgpu::Adapter DawnContextProvider::GetAdapter() const {
-  return dawn_shared_state_->GetAdapter();
+  return dawn_shared_context_->GetAdapter();
 }
 
 wgpu::Instance DawnContextProvider::GetInstance() const {
-  return dawn_shared_state_->GetInstance();
+  return dawn_shared_context_->GetInstance();
 }
 
 bool DawnContextProvider::InitializeGraphiteContext(
@@ -813,25 +815,25 @@ bool DawnContextProvider::InitializeGraphiteContext(
 
 void DawnContextProvider::SetCachingInterface(
     std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
-  CHECK(dawn_shared_state_->HasOneRef());
+  CHECK(dawn_shared_context_->HasOneRef());
   CHECK(!graphite_context_);
-  dawn_shared_state_->SetCachingInterface(std::move(caching_interface));
+  dawn_shared_context_->SetCachingInterface(std::move(caching_interface));
 }
 
 #if BUILDFLAG(IS_WIN)
 Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
     const {
-  return dawn_shared_state_->GetD3D11Device();
+  return dawn_shared_context_->GetD3D11Device();
 }
 #endif
 
 bool DawnContextProvider::SupportsFeature(wgpu::FeatureName feature) {
-  return dawn_shared_state_->GetDevice().HasFeature(feature);
+  return dawn_shared_context_->GetDevice().HasFeature(feature);
 }
 
 std::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
     const {
-  return dawn_shared_state_->GetResetStatus();
+  return dawn_shared_context_->GetResetStatus();
 }
 
 }  // namespace gpu
