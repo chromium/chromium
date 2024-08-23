@@ -139,6 +139,10 @@ export class SodaEventTransformer {
     ev: SpeakerLabelCorrectionEvent,
     offsetMs: number,
   ) {
+    if (!this.speakerLabelEnabled) {
+      // Don't handle speaker label correction event when it's not enabled.
+      return;
+    }
     const {hypothesisParts} = ev;
     for (const correctionPart of hypothesisParts) {
       const speakerLabel = correctionPart.speakerLabel ?? null;
