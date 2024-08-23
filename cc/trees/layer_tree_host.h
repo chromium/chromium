@@ -606,6 +606,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void SetPrimaryMainFrameItemSequenceNumber(
       int64_t primary_main_frame_item_sequence_number);
 
+  int64_t primary_main_frame_item_sequence_number_for_testing() const {
+    return pending_commit_state()->primary_main_frame_item_sequence_number;
+  }
+
   // Returns the current state of the new LocalSurfaceId request and resets
   // the state.
   bool new_local_surface_id_request_for_testing() const {
