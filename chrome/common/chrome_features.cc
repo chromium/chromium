@@ -517,14 +517,6 @@ constexpr base::FeatureParam<int>
     kHappinessTrackingSurveysForDesktopWhatsNewJpActivationPercentage{
         &kHappinessTrackingSurveysForDesktopWhatsNew,
         "jp_activation_percentage", 80};
-// Enables or disables the Happiness Tracking System for Chrome What's New v2.
-BASE_FEATURE(kHappinessTrackingSurveysForDesktopWhatsNewV2,
-             "HappinessTrackingSurveysForDesktopWhatsNewV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopWhatsNewV2Time{
-        &kHappinessTrackingSurveysForDesktopWhatsNewV2, "whats-new-v2-time",
-        base::Seconds(20)};
 
 // Happiness tracking surveys for the M1 Privacy Sandbox settings.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopM1AdPrivacyPage,
