@@ -111,6 +111,7 @@ ts_modules = [
   "common/command_store.ts",
   "common/earcon_id.ts",
   "common/event_source_type.ts",
+  "common/gesture.ts",
   "common/gesture_command_data.ts",
   "common/keyboard_handler.ts",
   "common/key_map.ts",
