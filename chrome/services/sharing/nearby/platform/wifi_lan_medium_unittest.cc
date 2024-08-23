@@ -356,10 +356,10 @@ class WifiLanMediumTest : public ::testing::Test {
     }
   }
 
-  void StartMdnsDiscovery(std::string service_type) {
+  void StartMdnsDiscovery(const std::string& service_type) {
     api::WifiLanMedium::DiscoveredServiceCallback discovery_callback = {
         .service_discovered_cb =
-            [&](const NsdServiceInfo& service_info) {
+            [this, service_type](const NsdServiceInfo& service_info) {
               LOG(INFO) << "Service found for discovery session: "
                         << service_type;
               found_service_info_.push_back(service_info);
@@ -368,7 +368,7 @@ class WifiLanMediumTest : public ::testing::Test {
               }
             },
         .service_lost_cb =
-            [&](const NsdServiceInfo& service_info) {
+            [this, service_type](const NsdServiceInfo& service_info) {
               LOG(INFO) << "Service lost for discovery session: "
                         << service_type;
               lost_service_info_.push_back(service_info);
