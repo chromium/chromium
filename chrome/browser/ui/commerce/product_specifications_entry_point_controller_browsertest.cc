@@ -62,7 +62,9 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   ProductSpecificationsEntryPointControllerBrowserTest()
       : prefs_(std::make_unique<TestingPrefServiceSimple>()),
         account_checker_(std::make_unique<commerce::MockAccountChecker>()) {
-    test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
+    test_features_.InitAndEnableFeatureWithParameters(
+        commerce::kProductSpecifications,
+        {{commerce::kProductSpecificationsUseServerClusteringParam, "false"}});
     account_checker_->SetCountry("us");
     account_checker_->SetLocale("en-us");
     account_checker_->SetSignedIn(true);

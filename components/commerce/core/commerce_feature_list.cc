@@ -483,7 +483,7 @@ const char kProductSpecificationsUseServerClusteringParam[] =
     "use-server-clustering";
 const base::FeatureParam<bool> kProductSpecificationsUseServerClustering{
     &commerce::kProductSpecifications,
-    kProductSpecificationsUseServerClusteringParam, false};
+    kProductSpecificationsUseServerClusteringParam, true};
 const char kProductSpecificationsEnableQualityLoggingParam[] =
     "enable-quality-logging";
 const base::FeatureParam<bool> kProductSpecificationsEnableQualityLogging{
