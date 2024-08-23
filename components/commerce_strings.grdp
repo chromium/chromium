@@ -465,7 +465,7 @@
     Price Insights
   </message>
   <message name="IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE" desc="The snackbar button title for Price Insights when the user has notification enabled.">
-    VIEW
+    View
   </message>
   <message name="IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED" desc="The snackbar title for Price Insights when the user has notification disabled.">
     You can view price drops for products you track anytime.
