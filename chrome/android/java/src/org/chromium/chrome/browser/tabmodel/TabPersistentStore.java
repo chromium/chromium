@@ -49,6 +49,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -1208,8 +1209,10 @@ public class TabPersistentStore {
                 int numTabsTotal = incognitoCount + standardCount;
                 Log.d(TAG, "Persisting tab lists; " + standardCount + ", " + incognitoCount);
 
-                // Save the index file containing the list of tabs to restore.
-                DataOutputStream stream = new DataOutputStream(output);
+                // Save the index file containing the list of tabs to restore. Wrap a
+                // BufferedOutputStream to batch/buffer actual writes. Most urls are far smaller
+                // than the 8K buffer.
+                DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(output));
                 stream.writeInt(SAVED_STATE_VERSION);
                 stream.writeInt(numTabsTotal);
                 stream.writeInt(incognitoCount);
