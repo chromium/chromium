@@ -265,9 +265,10 @@ if (enable_vr) {
           "openxr/android/openxr_unbounded_space_provider_android.h",
         ]
 
-        configs += [ "//third_party/khronos:khronos_headers" ]
-
-        deps += [ "//device/vr/android:vr_android" ]
+        deps += [
+          "//device/vr/android:vr_android",
+          "//third_party/angle:includes",
+        ]
       }
 
       deps += [

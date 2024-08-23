@@ -35,12 +35,11 @@ source_set("display") {
     "//base",
     "//remoting/base",
     "//remoting/client/ui:ui_manipulation",
+    "//third_party/angle:includes",
     "//third_party/libyuv",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
-
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
 
   if (is_android) {
     libs = [ "GLESv2" ]
