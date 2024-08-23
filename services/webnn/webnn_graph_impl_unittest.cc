@@ -5235,7 +5235,7 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
                      .expected = false}
         .Test();
   }
-  // Test the invalid graph when the dimensions of the input tensor to which
+  // Test when the dimensions of the input tensor to which
   // the interpolation algorithm applies are not two consecutive dimensions.
   {
     // With axes = [1, 3].
@@ -5244,7 +5244,7 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
                      .attributes = {.axes = {1, 3}},
                      .output = {.type = OperandDataType::kFloat32,
                                 .dimensions = {1, 2, 2, 8}},
-                     .expected = false}
+                     .expected = true}
         .Test();
   }
   {

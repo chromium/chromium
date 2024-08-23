@@ -628,7 +628,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   return ContextProperties(
-      InputOperandLayout::kNchw,
+      InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       {/*input=*/kFloatsAndInt32,
        /*constant=*/kFloatsAndInt32,
        /*arg_min_max_input=*/kFloatsAndInt32,
@@ -2529,10 +2529,7 @@ GraphBuilderCoreml::AddOperationForResample2d(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   const std::array<size_t, 2> supported_axes = {2, 3};
-  if (!base::ranges::equal(operation.axes, supported_axes)) {
-    // TODO: crbug.com/334914468 - Support axes of {0, 1} and {1, 2}.
-    return NewNotSupportedError("Unsupported axes.");
-  }
+  CHECK(base::ranges::equal(operation.axes, supported_axes));
 
   static constexpr char kParamScaleFactorHeight[] = "scale_factor_height";
   static constexpr char kParamScaleFactorWidth[] = "scale_factor_width";

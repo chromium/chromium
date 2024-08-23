@@ -24,6 +24,7 @@
 #include "services/webnn/dml/graph_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
@@ -80,7 +81,7 @@ ContextProperties ContextImplDml::GetProperties(
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
-      /*input_operand_layout=*/InputOperandLayout::kNchw,
+      /*input_operand_layout=*/InputOperandLayout::kNchw, Resample2DAxes::kAny,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
 

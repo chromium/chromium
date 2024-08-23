@@ -340,7 +340,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
       OperandDataType::kInt8,    OperandDataType::kUint8};
 
   return ContextProperties(
-      InputOperandLayout::kNhwc,
+      InputOperandLayout::kNhwc, Resample2DAxes::kChannelsLast,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
        /*arg_min_max_input=*/kFloat32AndInt8To32AndUint8,
@@ -3668,11 +3668,7 @@ auto GraphBuilderTflite::SerializeResample2d(
       input_operand.descriptor.data_type()));
 
   const std::array<uint32_t, 2> supported_axes = {1, 2};
-  if (!base::ranges::equal(resample2d.axes, supported_axes)) {
-    // TODO: crbug.com/329658123: Support axes of {0, 1} and {2, 3}.
-    return base::unexpected(
-        "Resample2d only supports axes = {1, 2} in tflite schema.");
-  }
+  CHECK(base::ranges::equal(resample2d.axes, supported_axes));
 
   // Create tflite builtin options for resize mode that is align_corner = false
   // and half_pixel_center = true by default. WebNN will support coordinate

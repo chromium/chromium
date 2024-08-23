@@ -5,6 +5,7 @@
 #include "services/webnn/webnn_test_utils.h"
 
 #include "base/check_is_test.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn {
@@ -440,7 +441,7 @@ mojom::GraphInfoPtr GraphInfoBuilder::TakeGraphInfo() {
 
 ContextProperties GetContextPropertiesForTesting() {
   return WebNNContextImpl::IntersectWithBaseProperties(
-      ContextProperties(InputOperandLayout::kNchw,
+      ContextProperties(InputOperandLayout::kNchw, Resample2DAxes::kAny,
                         {/*input=*/SupportedDataTypes::All(),
                          /*constant=*/SupportedDataTypes::All(),
                          /*arg_min_max_input=*/SupportedDataTypes::All(),

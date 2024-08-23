@@ -12,7 +12,7 @@
 
 TEST(ContextPropertiesMojomTraitsTest, Basic) {
   webnn::ContextProperties input(
-      webnn::InputOperandLayout::kNchw,
+      webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kChannelsFirst,
       {webnn::SupportedDataTypes::All(),
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
@@ -89,7 +89,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32}});
 
   webnn::ContextProperties output(
-      webnn::InputOperandLayout::kNhwc,
+      webnn::InputOperandLayout::kNhwc, webnn::Resample2DAxes::kChannelsFirst,
       {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},

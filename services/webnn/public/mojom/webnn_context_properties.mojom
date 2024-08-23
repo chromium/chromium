@@ -14,6 +14,15 @@ enum InputOperandLayout {
   kChannelsLast,
 };
 
+// Represents supported resample2d axes for this context.
+// kChannelsFirst means axes = [2,3], kChannelsLast means axes = [1,2],
+// kAny means any arbitrary axes.
+enum Resample2DAxes {
+  kAny,
+  kChannelsFirst,
+  kChannelsLast,
+};
+
 struct SupportedDataTypes {
   bool float32;
   bool float16;
@@ -131,5 +140,6 @@ struct DataTypeLimits {
 // provided.
 struct ContextProperties {
   InputOperandLayout input_operand_layout;
+  Resample2DAxes resample_2d_axes;
   DataTypeLimits data_type_limits;
 };

@@ -1660,14 +1660,30 @@ bool ValidateResample2d(const ContextProperties& context_properties,
       scales_or_sizes;
   const auto& axes = resample2d.axes;
   std::vector<uint32_t> sizes;
+  const auto& output_dimensions = output->descriptor.shape();
+  if (axes.size() != 2 || axes[0] >= output_dimensions.size() ||
+      axes[1] >= output_dimensions.size()) {
+    return false;
+  }
+  const std::array<uint32_t, 2> kResample2dChannelFirstAxes{2u, 3u};
+  const std::array<uint32_t, 2> kResample2dChannelLastAxes{1u, 2u};
+  switch (context_properties.resample_2d_axes) {
+    case Resample2DAxes::kAny:
+      break;
+    case Resample2DAxes::kChannelsFirst:
+      if (!std::ranges::equal(axes, kResample2dChannelFirstAxes)) {
+        return false;
+      }
+      break;
+    case Resample2DAxes::kChannelsLast:
+      if (!std::ranges::equal(axes, kResample2dChannelLastAxes)) {
+        return false;
+      }
+      break;
+  }
   if (resample2d.scales) {
     scales_or_sizes = resample2d.scales.value();
   } else {
-    const auto& output_dimensions = output->descriptor.shape();
-    if (axes.size() != 2 || axes[0] >= output_dimensions.size() ||
-        axes[1] >= output_dimensions.size()) {
-      return false;
-    }
     sizes = {output_dimensions[axes[0]], output_dimensions[axes[1]]};
     scales_or_sizes = sizes;
   }

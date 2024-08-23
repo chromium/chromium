@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
@@ -597,7 +598,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         blink_remote.InitWithNewPipeAndPassReceiver());
 
     webnn::ContextProperties context_properties(
-        webnn::InputOperandLayout::kNchw,
+        webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kAny,
         {/*input=*/webnn::SupportedDataTypes::All(),
          /*constant=*/webnn::SupportedDataTypes::All(),
          /*arg_min_max_input=*/

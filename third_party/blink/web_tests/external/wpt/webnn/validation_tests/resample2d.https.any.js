@@ -57,6 +57,16 @@ const tests = [
   },
   {
     name:
+        '[resample2d] Test building resample2d with non consecutive axes=[0,2]',
+    input: {dataType: 'float32', dimensions: [1, 1, 2, 4]},
+    options: {
+      axes: [0, 2],
+      label: label,
+    },
+    output: {dataType: 'float32', dimensions: [1, 1, 2, 4]},
+  },
+  {
+    name:
         '[resample2d] Throw if the dataType of input is not float32 or float16',
     input: {dataType: 'int32', dimensions: [2, 4]},
     options: {label},
@@ -174,15 +184,6 @@ const tests = [
     input: {dataType: 'float32', dimensions: [1, 1, 2, 4]},
     options: {
       axes: [3, 4],
-      label: label,
-    },
-  },
-  {
-    // The valid values in the axes sequence are [0, 1], [1, 2] or [2, 3]
-    name: '[resample2d] Throw if the values of axes are inconsecutive',
-    input: {dataType: 'float32', dimensions: [1, 1, 2, 4]},
-    options: {
-      axes: [0, 2],
       label: label,
     },
   },

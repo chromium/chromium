@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink-forward.h"
@@ -496,6 +497,53 @@ std::optional<base::span<const uint32_t>> GetConvTranspose2DFilterPermutation(
       }
       break;
   }
+}
+
+constexpr std::array<uint32_t, 2> kResample2dChannelFirstAxes{2u, 3u};
+constexpr std::array<uint32_t, 2> kResample2dChannelLastAxes{1u, 2u};
+std::optional<std::vector<uint32_t>> GetResample2DPermutation(
+    const Vector<uint32_t>& from_axes,
+    const webnn::ContextProperties& context_properties) {
+  if (context_properties.resample_2d_axes == webnn::Resample2DAxes::kAny) {
+    return std::nullopt;
+  }
+
+  base::span<const uint32_t> to_axes =
+      context_properties.resample_2d_axes ==
+              webnn::Resample2DAxes::kChannelsFirst
+          ? kResample2dChannelFirstAxes
+          : kResample2dChannelLastAxes;
+
+  CHECK_EQ(from_axes.size(), 2u);
+  CHECK(base::ranges::is_sorted(from_axes));
+  if (from_axes == to_axes) {
+    return std::nullopt;
+  }
+
+  std::vector<uint32_t> permutation{0u, 1u, 2u, 3u};
+
+  // Move each axis from from_axes to to_axes.
+  for (size_t i = 0; i < from_axes.size(); ++i) {
+    uint32_t from_axis = from_axes[static_cast<wtf_size_t>(i)];
+    uint32_t to_axis = to_axes[i];
+    // Find the current index of the from_axis as it could have been moved from
+    // previous iteration.
+    auto it = base::ranges::find(permutation, from_axis);
+    CHECK(it != permutation.end());
+    size_t from_axis_index = std::distance(permutation.begin(), it);
+    std::swap(permutation[to_axis], permutation[from_axis_index]);
+  }
+  return permutation;
+}
+
+std::vector<uint32_t> GetInversePermutation(
+    base::span<const uint32_t> permutation) {
+  std::vector<uint32_t> inverse_perm(permutation.size());
+  for (size_t i = 0; i < permutation.size(); ++i) {
+    CHECK(permutation[i] < inverse_perm.size());
+    inverse_perm[permutation[i]] = base::checked_cast<uint32_t>(i);
+  }
+  return inverse_perm;
 }
 
 OperationPtr CreateArgMinMaxOperation(const OperandToIdMap& operand_to_id_map,
@@ -1291,54 +1339,57 @@ void SerializeResample2dOperation(
       break;
   }
 
+  // If axes are not present, the values are assumed to be channels first [2,
+  // 3].
+  auto axes = options->getAxesOr(
+      {kResample2dChannelFirstAxes[0], kResample2dChannelFirstAxes[1]});
+  CHECK_EQ(axes.size(), 2u);
+
   // When the target sizes are specified, the scales argument is ignored.
   if (!options->hasSizes()) {
     // If scales are not present, the values are assumed to be [1.0, 1.0].
     auto scales = options->getScalesOr({1.0, 1.0});
     CHECK_EQ(scales.size(), 2u);
-    resample2d_mojo->scales = {scales[0], scales[1]};
+    // If axes are not sorted, and backends are expecting sorted axes, sort the
+    // corresponding scales too.
+    if (context_properties.resample_2d_axes != webnn::Resample2DAxes::kAny &&
+        axes[0] > axes[1]) {
+      std::swap(scales[0], scales[1]);
+    }
+    resample2d_mojo->scales = scales;
   }
 
-  const Vector<uint32_t> channel_first_axes{2, 3};
-  const Vector<uint32_t> channel_last_axes{1, 2};
-  // If axes are not present, the values are assumed to be [2, 3].
-  auto axes = options->getAxesOr(channel_first_axes);
-  CHECK_EQ(axes.size(), 2u);
 
   const MLOperand* input_operand = resample2d->Inputs()[0];
   const MLOperand* output_operand = resample2d->Outputs()[0];
   uint64_t input_operand_id = operand_to_id_map.at(input_operand);
   uint64_t output_operand_id = operand_to_id_map.at(output_operand);
 
-  // TODO: crbug.com/329658123 - Support other axes or pass input_layout
-  // instead.
-  std::optional<blink::V8MLInputOperandLayout::Enum> input_layout;
-  if (axes == channel_first_axes) {
-    input_layout = blink::V8MLInputOperandLayout::Enum::kNchw;
-  } else if (axes == channel_last_axes) {
-    input_layout = blink::V8MLInputOperandLayout::Enum::kNhwc;
-  }
-
-  if (input_layout) {
-    const std::optional<base::span<const uint32_t>> input_permutation =
-        GetInputOperandPermutation(*input_layout, context_properties);
-    if (input_permutation.has_value()) {
-      if (axes == channel_first_axes) {
-        axes = channel_last_axes;
-      } else {
-        axes = channel_first_axes;
-      }
-      input_operand_id = InsertInputTranspose(operand_to_id_map, input_operand,
-                                              *input_permutation, graph_info,
-                                              options->label());
-
-      output_operand_id = InsertTemporaryOperand(
-          operand_to_id_map,
-          *webnn::OperandDescriptor::Create(
-              output_operand->DataType(),
-              PermuteShape(output_operand->Shape(), *input_permutation)),
-          graph_info);
+  base::ranges::sort(axes);
+  const std::optional<std::vector<uint32_t>> input_permutation =
+      GetResample2DPermutation(axes, context_properties);
+  if (input_permutation.has_value()) {
+    switch (context_properties.resample_2d_axes) {
+      case webnn::Resample2DAxes::kChannelsFirst:
+        axes = {kResample2dChannelFirstAxes[0], kResample2dChannelFirstAxes[1]};
+        break;
+      case webnn::Resample2DAxes::kChannelsLast:
+        axes = {kResample2dChannelLastAxes[0], kResample2dChannelLastAxes[1]};
+        break;
+      case webnn::Resample2DAxes::kAny:
+        NOTREACHED();
     }
+
+    input_operand_id =
+        InsertInputTranspose(operand_to_id_map, input_operand,
+                             *input_permutation, graph_info, options->label());
+
+    output_operand_id = InsertTemporaryOperand(
+        operand_to_id_map,
+        *webnn::OperandDescriptor::Create(
+            output_operand->DataType(),
+            PermuteShape(output_operand->Shape(), *input_permutation)),
+        graph_info);
   }
 
   resample2d_mojo->input_operand_id = input_operand_id;
@@ -1350,9 +1401,9 @@ void SerializeResample2dOperation(
   graph_info->operations.push_back(
       blink_mojom::Operation::NewResample2d(std::move(resample2d_mojo)));
 
-  if (input_layout) {
-    const std::optional<base::span<const uint32_t>> output_permutation =
-        GetOutputOperandPermutation(*input_layout, context_properties);
+  if (input_permutation) {
+    const std::optional<std::vector<uint32_t>> output_permutation =
+        GetInversePermutation(*input_permutation);
     if (output_permutation) {
       auto output_transpose = blink_mojom::Transpose::New();
       output_transpose->input_operand_id = output_operand_id;

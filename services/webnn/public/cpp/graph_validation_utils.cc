@@ -1154,19 +1154,11 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
                    context_properties.data_type_limits.resample2d_input)));
   }
 
-  // Validate axes.
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d,
-  // the valid values in the sequence are [0, 1], [1, 2] or [2, 3].
   if (axes.size() != 2) {
     return base::unexpected(
         ErrorWithLabel(label, "The length of axes should be 2."));
   }
-  if (!((axes[0] == 0 && axes[1] == 1) || (axes[0] == 1 && axes[1] == 2) ||
-        (axes[0] == 2 && axes[1] == 3))) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The values of axes are invalid."));
-  }
+  RETURN_IF_ERROR(ValidateAxes(axes, input.Rank(), label));
 
   // Validate scales or sizes and infer the output.
   std::vector<uint32_t> output_shape(input.shape());
@@ -1181,23 +1173,23 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
           ErrorWithLabel(label, "All scales should be greater than 0."));
     }
 
-    auto output_height =
+    auto output_first_axis =
         CalculateResample2dOutputSize(input.shape()[axes[0]], scales[0], label);
-    if (!output_height.has_value()) {
+    if (!output_first_axis.has_value()) {
       return base::unexpected(ErrorWithLabel(
-          label,
-          "Failed to calculate the output height: " + output_height.error()));
+          label, "Failed to calculate the output shape for first axis : " +
+                     output_first_axis.error()));
     }
-    output_shape[axes[0]] = output_height.value();
+    output_shape[axes[0]] = output_first_axis.value();
 
-    auto output_width =
+    auto output_second_axis =
         CalculateResample2dOutputSize(input.shape()[axes[1]], scales[1], label);
-    if (!output_width.has_value()) {
+    if (!output_second_axis.has_value()) {
       return base::unexpected(ErrorWithLabel(
-          label,
-          "Failed to calculate the output width: " + output_width.error()));
+          label, "Failed to calculate the output shape for second axis: " +
+                     output_second_axis.error()));
     }
-    output_shape[axes[1]] = output_width.value();
+    output_shape[axes[1]] = output_second_axis.value();
   } else if (absl::holds_alternative<base::span<const uint32_t>>(
                  scales_or_sizes)) {
     const auto& sizes = absl::get<base::span<const uint32_t>>(scales_or_sizes);
