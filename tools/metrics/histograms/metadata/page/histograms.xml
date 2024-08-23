@@ -2276,7 +2276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage2.TimeToAbandonFromNavigationStart.{NavigationMilestone}.{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.TimeToAbandonFromNavigationStart.{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
