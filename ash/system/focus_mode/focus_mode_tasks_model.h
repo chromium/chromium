@@ -101,6 +101,10 @@ class ASH_EXPORT FocusModeTasksModel final {
   // if appropriate.
   void ClearSelectedTask();
 
+  // Clears all the cached tasks data immediately. Will also notify observers of
+  // this change.
+  void Reset();
+
   // Set the current task list as `tasks`. This will trigger an
   // `OnTasksUpdated()` event. If this causes a change to the selected task, may
   // cause an `OnSelectedTaskChanged()` event.

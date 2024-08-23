@@ -68,7 +68,7 @@ struct ASH_EXPORT FocusModeTask {
 };
 
 // A specialized interface that Focus Mode can use to fetch a filtered list of
-// tasks to display. Currently only provides dummy data.
+// tasks to display.
 class ASH_EXPORT FocusModeTasksProvider {
  public:
   // Done callback for `AddTask` and `UpdateTaskTitle`. If the request completes
@@ -119,6 +119,11 @@ class ASH_EXPORT FocusModeTasksProvider {
 
   // This kicks off a fetch of tasks from the backend.
   void ScheduleTaskListUpdate();
+
+  // Clears all the cached tasks data.
+  void Reset();
+
+  const std::vector<FocusModeTask> TasksForTesting() const;
 
  private:
   void OnTasksFetched();

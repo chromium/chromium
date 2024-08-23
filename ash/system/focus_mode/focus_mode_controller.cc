@@ -228,7 +228,17 @@ void FocusModeController::ToggleFocusMode(
 void FocusModeController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   ResetFocusSession();
-  UpdateFromUserPrefs();
+  tasks_model_.Reset();
+  tasks_provider_.Reset();
+
+  // Since we cannot guarantee that `TasksClientImpl::InvalidateCache()` has
+  // been called before this when the active user session changes, we should
+  // just call `FocusModeController::UpdateFromUserPrefs()` as a PostTask to
+  // prevent the `TasksClientImpl::GetTasks()` callback from potentially being
+  // failed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&FocusModeController::UpdateFromUserPrefs,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void FocusModeController::OnSelectedPlaylistChanged() {
@@ -519,6 +529,10 @@ const base::UnguessableToken& FocusModeController::GetMediaSessionRequestId() {
 
 void FocusModeController::RequestTasksUpdateForTesting() {
   tasks_model_.RequestUpdate();
+}
+
+bool FocusModeController::TasksProviderHasCachedTasksForTesting() const {
+  return !tasks_provider_.TasksForTesting().empty();  // IN-TEST
 }
 
 media_session::mojom::MediaSessionInfoPtr

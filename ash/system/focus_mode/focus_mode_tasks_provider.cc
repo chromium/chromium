@@ -351,6 +351,19 @@ void FocusModeTasksProvider::ScheduleTaskListUpdate() {
   }
 }
 
+void FocusModeTasksProvider::Reset() {
+  task_fetcher_ = nullptr;
+  task_fetch_time_ = {};
+  task_list_for_new_task_ = {};
+  tasks_.clear();
+  deleted_task_ids_.clear();
+}
+
+const std::vector<FocusModeTask> FocusModeTasksProvider::TasksForTesting()
+    const {
+  return tasks_;
+}
+
 void FocusModeTasksProvider::GetSortedTaskList(OnGetTasksCallback callback) {
   if ((base::Time::Now() - task_fetch_time_) < kCacheLifetime) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -421,6 +434,10 @@ void FocusModeTasksProvider::OnTasksFetched() {
     task_list_for_new_task_ = {};
   }
   task_fetcher_ = nullptr;
+
+  // Make sure to clear this in case there are tasks completed through Focus
+  // mode that the user then un-completed outside of Focus mode.
+  deleted_task_ids_ = {};
 
   auto pending = std::move(get_tasks_requests_);
   auto tasks = GetSortedTasksImpl();

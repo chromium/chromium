@@ -186,6 +186,15 @@ void FocusModeTasksModel::ClearSelectedTask() {
   }
 }
 
+void FocusModeTasksModel::Reset() {
+  NotifySelectedTask(observers_, nullptr);
+  NotifyTaskListChanged(observers_, {});
+  selected_task_ = nullptr;
+  pending_task_ = nullptr;
+  pref_task_id_.reset();
+  tasks_.clear();
+}
+
 void FocusModeTasksModel::SetSelectedTaskFromPrefs(const TaskId& task_id) {
   if (selected_task_) {
     // Never override a selected task with pref data.
