@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/windows_version.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -99,7 +100,13 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
     base::FilePath dolby_dec_mft_path =
         base::PathService::CheckedGet(base::DIR_SYSTEM);
     dolby_dec_mft_path = dolby_dec_mft_path.AppendASCII("DolbyDecMFT.dll");
-    bool has_legacy_dolby_ac3_eac3_mft = base::PathExists(dolby_dec_mft_path);
+    bool has_legacy_dolby_ac3_eac3_mft = false;
+    {
+      // AC3/EAC3 decoder check needs to access file system, so allow scoped
+      // blocking here.
+      base::ScopedAllowBlocking allow_blocking;
+      has_legacy_dolby_ac3_eac3_mft = base::PathExists(dolby_dec_mft_path);
+    }
     if (has_legacy_dolby_ac3_eac3_mft ||
         FindMediaFoundationPackageDecoder(AudioCodec::kEAC3)) {
       audio_configs.emplace_back(AudioCodec::kAC3, AudioCodecProfile::kUnknown);
