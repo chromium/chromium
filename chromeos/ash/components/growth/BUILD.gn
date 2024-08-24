@@ -11,6 +11,8 @@ component("growth") {
     "action_performer.h",
     "campaigns_constants.cc",
     "campaigns_constants.h",
+    "campaigns_logger.cc",
+    "campaigns_logger.h",
     "campaigns_manager.cc",
     "campaigns_manager.h",
     "campaigns_manager_client.h",

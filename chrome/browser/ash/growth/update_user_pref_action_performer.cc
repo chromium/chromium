@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/prefs/pref_service.h"
 
@@ -39,7 +40,7 @@ PrefService* GetPrefServiceAndCheckUserPrefType(
   if (!pref_service) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kUserPrefServiceNotAvailable);
-    LOG(ERROR) << "User pref service not available.";
+    CAMPAIGNS_LOG(ERROR) << "User pref service not available.";
     return nullptr;
   }
 
@@ -47,7 +48,7 @@ PrefService* GetPrefServiceAndCheckUserPrefType(
   if (!pref) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kUserPrefNotFound);
-    LOG(ERROR) << "User pref action: " << pref_name << " not found";
+    CAMPAIGNS_LOG(ERROR) << "User pref action: " << pref_name << " not found";
     return nullptr;
   }
 
@@ -56,7 +57,8 @@ PrefService* GetPrefServiceAndCheckUserPrefType(
       pref->GetType() != target_type) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kUserPrefValueTypeMismatch);
-    LOG(ERROR) << "User pref action: " << pref_name << " type mismatched";
+    CAMPAIGNS_LOG(ERROR) << "User pref action: " << pref_name
+                         << " type mismatched";
     return nullptr;
   }
   return pref_service;
@@ -92,7 +94,7 @@ bool AppendValueToUserPref(const std::string& pref_name,
   }
 
   if (base::Contains(pref_service->GetList(pref_name), *value)) {
-    LOG(ERROR) << "Pref value is already in the list.";
+    CAMPAIGNS_LOG(ERROR) << "Pref value is already in the list.";
     return false;
   }
 
@@ -112,7 +114,8 @@ bool RemoveValueFromUserPref(const std::string& pref_name,
   }
 
   if (!base::Contains(pref_service->GetList(pref_name), *value)) {
-    LOG(ERROR) << "Unable to remove: Pref value not in user preference.";
+    CAMPAIGNS_LOG(ERROR)
+        << "Unable to remove: Pref value not in user preference.";
     return false;
   }
 
@@ -151,7 +154,7 @@ void UpdateUserPrefActionPerformer::Run(
   if (!params) {
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
-    LOG(ERROR) << "Update User Pref params not found.";
+    CAMPAIGNS_LOG(ERROR) << "Update User Pref params not found.";
     return;
   }
 
@@ -159,7 +162,7 @@ void UpdateUserPrefActionPerformer::Run(
   if (!pref_name) {
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
-    LOG(ERROR) << kName << " parameter not found.";
+    CAMPAIGNS_LOG(ERROR) << kName << " parameter not found.";
     return;
   }
 
@@ -167,7 +170,7 @@ void UpdateUserPrefActionPerformer::Run(
   if (!type) {
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
-    LOG(ERROR) << kType << " parameter not found.";
+    CAMPAIGNS_LOG(ERROR) << kType << " parameter not found.";
     return;
   }
 
@@ -175,7 +178,7 @@ void UpdateUserPrefActionPerformer::Run(
       type.value() > static_cast<int>(UpdateType::kMaxUpdateType)) {
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
-    LOG(ERROR) << kType << " invalid value: " << type.value();
+    CAMPAIGNS_LOG(ERROR) << kType << " invalid value: " << type.value();
     return;
   }
 
@@ -186,7 +189,7 @@ void UpdateUserPrefActionPerformer::Run(
   if (update_type != UpdateType::kClear && !value) {
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
-    LOG(ERROR) << kValue << " parameter not found.";
+    CAMPAIGNS_LOG(ERROR) << kValue << " parameter not found.";
     return;
   }
 

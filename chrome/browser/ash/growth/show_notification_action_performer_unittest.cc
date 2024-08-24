@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/growth/mock_ui_performer_observer.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
@@ -105,6 +106,7 @@ class ShowNotificationActionPerformerTest : public ash::AshTestBase {
       action_failed_run_loop_.QuitClosure();
 
   std::unique_ptr<ShowNotificationActionPerformer> action_;
+  growth::CampaignsLogger logger_;
   base::ScopedObservation<UiActionPerformer, UiActionPerformer::Observer>
       scoped_observation_{&mock_observer_};
 };

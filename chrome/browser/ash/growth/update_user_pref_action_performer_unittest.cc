@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -154,6 +155,7 @@ class UpdateUserPrefActionPerformerTest : public testing::Test {
       action_failed_run_loop_.QuitClosure();
 
   std::unique_ptr<UpdateUserPrefActionPerformer> action_;
+  growth::CampaignsLogger logger_;
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;

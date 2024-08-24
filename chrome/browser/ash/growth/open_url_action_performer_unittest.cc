@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -96,6 +97,7 @@ class OpenUrlActionPerformerTest : public testing::Test {
       action_failed_run_loop_.QuitClosure();
 
   std::unique_ptr<OpenUrlActionPerformer> action_;
+  growth::CampaignsLogger logger_;
 };
 
 TEST_F(OpenUrlActionPerformerTest, TestValidOpenUrlParams) {

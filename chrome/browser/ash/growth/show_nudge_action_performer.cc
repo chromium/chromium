@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
@@ -165,7 +166,7 @@ views::Widget* GetTriggeringWindowWidget() {
   if (!window) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kNoOpendedWindowToAnchor);
-    LOG(ERROR) << "Error: No app window";
+    CAMPAIGNS_LOG(ERROR) << "Error: No app window";
     return nullptr;
   }
 
@@ -174,7 +175,7 @@ views::Widget* GetTriggeringWindowWidget() {
   if (!widget) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kNoOpendedWindowWidgetToAnchor);
-    LOG(ERROR) << "Error: widget not found";
+    CAMPAIGNS_LOG(ERROR) << "Error: widget not found";
     return nullptr;
   }
 
@@ -194,7 +195,7 @@ views::View* GetWindowCaptionButtonContainer() {
   if (!root_view) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kNoRootViewToGetAnchorView);
-    LOG(ERROR) << "Error: root view not found";
+    CAMPAIGNS_LOG(ERROR) << "Error: root view not found";
     return nullptr;
   }
 
@@ -342,7 +343,8 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
       // No targeted anchor widget found. Skip showing nudge.
       growth::RecordCampaignsManagerError(
           growth::CampaignsManagerError::kNudgeAnchorWidgetNotFound);
-      LOG(ERROR) << "Targeted anchor widget is not found. Skip showing nudge.";
+      CAMPAIGNS_LOG(ERROR)
+          << "Targeted anchor widget is not found. Skip showing nudge.";
       return false;
     }
 
@@ -358,7 +360,8 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
         // Other arrows are not supported. Skip showing nudge.
         growth::RecordCampaignsManagerError(
             growth::CampaignsManagerError::kNudgeAnchorPositionNotSupported);
-        LOG(ERROR) << "Position is not supported. Skip showing nudge.";
+        CAMPAIGNS_LOG(ERROR)
+            << "Position is not supported. Skip showing nudge.";
         return false;
     }
 
@@ -369,7 +372,8 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
       // No targeted anchor view found. Skip showing nudge.
       growth::RecordCampaignsManagerError(
           growth::CampaignsManagerError::kNudgeAnchorViewNotFound);
-      LOG(ERROR) << "Targeted anchor view is not found. Skip showing nudge.";
+      CAMPAIGNS_LOG(ERROR)
+          << "Targeted anchor view is not found. Skip showing nudge.";
       return false;
     }
 

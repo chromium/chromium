@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "url/gurl.h"
 
@@ -50,13 +51,13 @@ ash::NewWindowDelegate::Disposition ConvertDisposition(
 std::unique_ptr<OpenUrlParam> ParseOpenUrlActionPerformerParams(
     const base::Value::Dict* params) {
   if (!params) {
-    LOG(ERROR) << "Empty parameter to OpenUrlActionPerformer.";
+    CAMPAIGNS_LOG(ERROR) << "Empty parameter to OpenUrlActionPerformer.";
     return nullptr;
   }
 
   auto* url = params->FindString(kUrl);
   if (!url) {
-    LOG(ERROR) << kUrl << " parameter not found.";
+    CAMPAIGNS_LOG(ERROR) << kUrl << " parameter not found.";
     return nullptr;
   }
 

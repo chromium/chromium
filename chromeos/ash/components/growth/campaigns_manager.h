@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -157,6 +158,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   CampaignsPerSlot campaigns_;
   // Campaigns matcher for selecting campaigns based on criteria.
   CampaignsMatcher matcher_;
+
+  CampaignsLogger logger_;
 
   // Maps action type to the action.
   ActionMap actions_map_;

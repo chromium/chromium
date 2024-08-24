@@ -21,6 +21,7 @@
 #include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
@@ -84,7 +85,7 @@ bool MatchPref(const base::Value::List* criterias,
                std::string_view pref_path,
                const PrefService* pref_service) {
   if (!pref_service) {
-    LOG(ERROR) << "Matching pref before pref service is available";
+    CAMPAIGNS_LOG(ERROR) << "Matching pref before pref service is available";
     RecordCampaignsManagerError(
         CampaignsManagerError::kUserPrefUnavailableAtMatching);
     return false;
@@ -200,14 +201,14 @@ bool MatchUserPref(const PrefService& pref_service,
   if (!pref_name || pref_name->empty()) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTargetingUserPrefParsingFail);
-    LOG(ERROR) << "Targeting user pref name missing.";
+    CAMPAIGNS_LOG(ERROR) << "Targeting user pref name missing.";
     return false;
   }
 
   if (!target_values || target_values->empty()) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTargetingUserPrefParsingFail);
-    LOG(ERROR) << "Targeting user pref value missing.";
+    CAMPAIGNS_LOG(ERROR) << "Targeting user pref value missing.";
     return false;
   }
 
@@ -215,7 +216,7 @@ bool MatchUserPref(const PrefService& pref_service,
   if (!pref) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTargetingUserPrefNotFound);
-    LOG(ERROR) << "Targeting user pref not found: " << pref_name;
+    CAMPAIGNS_LOG(ERROR) << "Targeting user pref not found: " << pref_name;
     return false;
   }
 
@@ -223,7 +224,7 @@ bool MatchUserPref(const PrefService& pref_service,
   CHECK(pref_value);
 
   if (pref_value->is_none() || pref_value->is_dict()) {
-    LOG(ERROR) << "User pref type is not supported: " << pref_name;
+    CAMPAIGNS_LOG(ERROR) << "User pref type is not supported: " << pref_name;
     return false;
   }
 
@@ -251,7 +252,7 @@ bool MatchUserPrefCriteria(const PrefService& pref_service,
     if (!criterion.is_dict()) {
       growth::RecordCampaignsManagerError(
           growth::CampaignsManagerError::kTargetingUserPrefParsingFail);
-      LOG(ERROR) << "Fail to parse user pref targeting.";
+      CAMPAIGNS_LOG(ERROR) << "Fail to parse user pref targeting.";
       continue;
     }
 
@@ -284,7 +285,8 @@ bool MatchUserPrefs(const PrefService* pref_service,
   if (!pref_service) {
     RecordCampaignsManagerError(
         CampaignsManagerError::kUserPrefUnavailableAtMatching);
-    LOG(ERROR) << "Matching user pref before user pref service is available";
+    CAMPAIGNS_LOG(ERROR)
+        << "Matching user pref before user pref service is available";
     return false;
   }
 
@@ -293,7 +295,7 @@ bool MatchUserPrefs(const PrefService* pref_service,
     if (!targeting.is_list()) {
       growth::RecordCampaignsManagerError(
           growth::CampaignsManagerError::kTargetingUserPrefParsingFail);
-      LOG(ERROR) << "Invalid user pref targeting set.";
+      CAMPAIGNS_LOG(ERROR) << "Invalid user pref targeting set.";
       return false;
     }
     if (!MatchUserPrefCriteria(*pref_service, targeting.GetList())) {
@@ -324,7 +326,7 @@ bool MatchVersion(const base::Version& current_version,
 
 bool IsCampaignValid(const Campaign* campaign) {
   if (!GetCampaignId(campaign)) {
-    LOG(ERROR) << "Invalid campaign: missing campaign ID.";
+    CAMPAIGNS_LOG(ERROR) << "Invalid campaign: missing campaign ID.";
     RecordCampaignsManagerError(CampaignsManagerError::kMissingCampaignId);
     return false;
   }
@@ -415,7 +417,7 @@ const Campaign* CampaignsMatcher::GetCampaignBySlot(Slot slot) const {
 bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
                                          bool is_prematch) const {
   if (!campaign || !IsCampaignValid(campaign)) {
-    LOG(ERROR) << "Invalid campaign.";
+    CAMPAIGNS_LOG(ERROR) << "Invalid campaign.";
     RecordCampaignsManagerError(CampaignsManagerError::kInvalidCampaign);
     return false;
   }
@@ -649,7 +651,8 @@ bool CampaignsMatcher::MatchTriggerTargeting(
       // does not match.
       // TODO: b/341164013 - Add new specific error type for this case.
       RecordCampaignsManagerError(CampaignsManagerError::kInvalidTrigger);
-      LOG(ERROR) << "Invalid trigger events, requires a list of strings.";
+      CAMPAIGNS_LOG(ERROR)
+          << "Invalid trigger events, requires a list of strings.";
       continue;
     }
 
@@ -766,7 +769,7 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
     if (!condition.is_list()) {
       RecordCampaignsManagerError(
           CampaignsManagerError::kInvalidEventTargetingCondition);
-      LOG(ERROR) << "Invalid events targeting conditions.";
+      CAMPAIGNS_LOG(ERROR) << "Invalid events targeting conditions.";
       return false;
     }
 
@@ -775,7 +778,7 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
       if (!param.is_string()) {
         RecordCampaignsManagerError(
             CampaignsManagerError::kInvalidEventTargetingConditionParam);
-        LOG(ERROR) << "Invalid events targeting condition.";
+        CAMPAIGNS_LOG(ERROR) << "Invalid events targeting condition.";
         return false;
       }
 
@@ -872,7 +875,7 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
                                bool is_prematch) const {
   if (!targeting) {
     // Targeting is invalid. Skip the current campaign.
-    LOG(ERROR) << "Invalid targeting.";
+    CAMPAIGNS_LOG(ERROR) << "Invalid targeting.";
     RecordCampaignsManagerError(CampaignsManagerError::kInvalidTargeting);
     return false;
   }

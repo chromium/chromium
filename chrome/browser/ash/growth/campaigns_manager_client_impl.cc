@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/component_updater/ash/component_manager_ash.h"
@@ -88,7 +89,7 @@ void CampaignsManagerClientImpl::AddOnTrackerInitializedCallback(
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     std::move(callback).Run(false);
   }
 
@@ -179,7 +180,7 @@ void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name) {
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return;
@@ -193,7 +194,7 @@ void CampaignsManagerClientImpl::ClearConfig(
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return;
@@ -208,7 +209,7 @@ bool CampaignsManagerClientImpl::WouldTriggerHelpUI(
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return false;
@@ -298,7 +299,7 @@ void CampaignsManagerClientImpl::UpdateConfig(
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return;

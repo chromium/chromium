@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
@@ -57,7 +58,8 @@ struct ShowNotificationParams {
 std::unique_ptr<ShowNotificationParams>
 ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
   if (!params) {
-    LOG(ERROR) << "Empty parameter to ShowNotificationActionPerformer.";
+    CAMPAIGNS_LOG(ERROR)
+        << "Empty parameter to ShowNotificationActionPerformer.";
     return nullptr;
   }
 
@@ -80,7 +82,7 @@ ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
     // TODO: b/331633771 - Consider adding default icon for notification.
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kNotificationPayloadMissingIcon);
-    LOG(ERROR) << "icon is required for notification.";
+    CAMPAIGNS_LOG(ERROR) << "icon is required for notification.";
     return nullptr;
   }
 
@@ -268,7 +270,7 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
 
   const auto& button_value = (*buttons_value)[button_index_value];
   if (!button_value.is_dict()) {
-    LOG(ERROR) << "Invalid button payload.";
+    CAMPAIGNS_LOG(ERROR) << "Invalid button payload.";
   }
 
   const auto should_mark_dismissed =
@@ -280,7 +282,7 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
   if (!action_value) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kNotificationPayloadMissingButtonAction);
-    LOG(ERROR) << "Missing action.";
+    CAMPAIGNS_LOG(ERROR) << "Missing action.";
     return;
   }
   auto action = growth::Action(action_value);

@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
@@ -55,8 +56,8 @@ std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
   std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
   if (!value || !value->is_dict()) {
-    LOG(ERROR) << "Failed to parse campaigns file.";
-    VLOG(2) << "Malformed campaigns file: " << campaigns_data;
+    CAMPAIGNS_LOG(ERROR) << "Failed to parse campaigns file.";
+    CAMPAIGNS_LOG(VLOG) << "Malformed campaigns file: " << campaigns_data;
     RecordCampaignsManagerError(CampaignsManagerError::kCampaignsParsingFail);
     return std::nullopt;
   }
@@ -72,7 +73,7 @@ std::optional<base::Value::Dict> ReadCampaignsFile(
   if (!base::ReadFileToString(
           campaigns_component_path.Append(kCampaignFileName),
           &campaigns_data)) {
-    LOG(ERROR) << "Failed to read campaigns file from disk.";
+    CAMPAIGNS_LOG(ERROR) << "Failed to read campaigns file from disk.";
     RecordCampaignsManagerError(CampaignsManagerError::kCampaignsFileLoadFail);
     RecordCampaignsComponentReadDuration(base::TimeTicks::Now() -
                                          campaigns_load_start_time);
@@ -94,12 +95,13 @@ void LogCampaignInSystemLog(const Campaign* campaign, Slot slot) {
   std::optional<int> id = growth::GetCampaignId(campaign);
   if (!id) {
     // TODO(b/308684443): Add error metrics in a follow up CL.
-    LOG(ERROR) << "Growth campaign id not found";
+    CAMPAIGNS_LOG(ERROR) << "Growth campaign id not found";
     return;
   }
 
-  SYSLOG(INFO) << "Growth Campaign " << *id
-               << " is selected for slot: " << base::NumberToString(int(slot));
+  CAMPAIGNS_LOG(SYSLOG) << "Growth Campaign " << *id
+                        << " is selected for slot: "
+                        << base::NumberToString(int(slot));
 }
 
 // Gets the Oobe timestamp on a sequence that allows file-access.
@@ -170,7 +172,7 @@ void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
                         ParseCampaignsFile(decoded_str));
       return;
     } else {
-      LOG(ERROR) << "Failed decode base64 encoded campaigns string.";
+      CAMPAIGNS_LOG(ERROR) << "Failed decode base64 encoded campaigns string.";
     }
   }
 
@@ -235,7 +237,7 @@ void CampaignsManager::PerformAction(int campaign_id,
   // In rare case when the caller fails to check action, log
   // an error metric if the action is not defined.
   if (!action) {
-    LOG(ERROR) << "Missing action when performing action.";
+    CAMPAIGNS_LOG(ERROR) << "Missing action when performing action.";
     RecordCampaignsManagerError(
         CampaignsManagerError::kMissingActionPerformerAction);
     return;
@@ -244,7 +246,7 @@ void CampaignsManager::PerformAction(int campaign_id,
   auto* params = action->GetParams();
   auto action_type = action->GetActionType();
   if (!action_type || !params) {
-    LOG(ERROR) << "Invalid action when performing action.";
+    CAMPAIGNS_LOG(ERROR) << "Invalid action when performing action.";
     RecordCampaignsManagerError(CampaignsManagerError::kInvalidAction);
     return;
   }
@@ -271,10 +273,11 @@ void CampaignsManager::PerformAction(int campaign_id,
               return;
             }
 
-            LOG(ERROR) << "Error running action. Action type: "
-                       << int(action_type) << ". Error code:"
-                       << static_cast<int>(reason.value_or(
-                              growth::ActionResultReason::kUnknown));
+            CAMPAIGNS_LOG(ERROR)
+                << "Error running action. Action type: " << int(action_type)
+                << ". Error code:"
+                << static_cast<int>(
+                       reason.value_or(growth::ActionResultReason::kUnknown));
             RecordCampaignsManagerError(
                 CampaignsManagerError::kPerformActionFailed);
           },
@@ -306,7 +309,7 @@ void CampaignsManager::OnCampaignsComponentLoaded(
   RecordCampaignsComponentDownloadDuration(
       base::TimeTicks::Now() - campaigns_download_start_time_, in_oobe);
   if (!path.has_value()) {
-    LOG(ERROR) << "Failed to load campaign component.";
+    CAMPAIGNS_LOG(ERROR) << "Failed to load campaign component.";
     RecordCampaignsManagerError(
         CampaignsManagerError::kCampaignsComponentLoadFail);
     OnCampaignsLoaded(std::move(load_callback), /*campaigns=*/std::nullopt);
@@ -335,7 +338,7 @@ void CampaignsManager::OnCampaignsLoaded(
     // Update campaigns store.
     campaigns_ = std::move(campaigns_dict.value());
   } else {
-    LOG(ERROR) << "No campaign is loaded.";
+    CAMPAIGNS_LOG(ERROR) << "No campaign is loaded.";
   }
 
   // Load campaigns into `CampaignMatcher` for selecting campaigns.
@@ -369,8 +372,8 @@ void CampaignsManager::OnTrackerInitialized(
     const std::optional<const base::FilePath>& path,
     bool init_success) {
   if (!init_success) {
-    // Only log error, but will continue loading compaigns.
-    LOG(ERROR) << "Failed to initialize feature_engagement::Tracker.";
+    // Only log error, but will continue loading campaigns.
+    CAMPAIGNS_LOG(ERROR) << "Failed to initialize feature_engagement::Tracker.";
     RecordCampaignsManagerError(
         CampaignsManagerError::kTrackerInitializationFail);
   }
@@ -429,7 +432,7 @@ void CampaignsManager::RegisterTrialForCampaign(
   std::optional<int> campaign_id = growth::GetCampaignId(campaign);
   if (!campaign_id) {
     // TODO(b/308684443): Add error metrics in a second CL.
-    LOG(ERROR) << "Growth campaign id not found";
+    CAMPAIGNS_LOG(ERROR) << "Growth campaign id not found";
     return;
   }
 
