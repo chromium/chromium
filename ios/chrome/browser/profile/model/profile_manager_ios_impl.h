@@ -77,8 +77,8 @@ class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
   // default browser state.
   std::string GetLastUsedBrowserStateName() const;
 
-  // Returns whether a ChromeBrowserState with `name` exists on disk.
-  bool BrowserStateWithNameExists(std::string_view name);
+  // Returns whether a Profile with `name` exists on disk.
+  bool ProfileWithNameExists(std::string_view name);
 
   // Returns if creating a ChromeBrowserState with `name` is allowed.
   bool CanCreateBrowserStateWithName(std::string_view name);

@@ -71,15 +71,13 @@ TEST_F(ProfileAttributesStorageIOSTest, AddProfile) {
   ProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
-    EXPECT_EQ(storage.GetIndexOfProfileWithName(account.name),
-              std::string::npos);
+    EXPECT_FALSE(storage.HasProfileWithName(account.name));
 
     storage.AddProfile(account.name);
+    ASSERT_TRUE(storage.HasProfileWithName(account.name));
 
-    const size_t index = storage.GetIndexOfProfileWithName(account.name);
-    EXPECT_NE(index, std::string::npos);
-
-    ProfileAttributesIOS attr = storage.GetAttributesForProfileAtIndex(index);
+    ProfileAttributesIOS attr =
+        storage.GetAttributesForProfileWithName(account.name);
     EXPECT_EQ(attr.GetProfileName(), account.name);
     EXPECT_EQ(std::move(attr).GetStorage(), base::Value::Dict());
   }
@@ -102,13 +100,11 @@ TEST_F(ProfileAttributesStorageIOSTest, RemoveProfile) {
   EXPECT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
 
   for (const TestAccount& account : kTestAccounts) {
-    EXPECT_NE(storage.GetIndexOfProfileWithName(account.name),
-              std::string::npos);
+    EXPECT_TRUE(storage.HasProfileWithName(account.name));
 
     storage.RemoveProfile(account.name);
 
-    EXPECT_EQ(storage.GetIndexOfProfileWithName(account.name),
-              std::string::npos);
+    EXPECT_FALSE(storage.HasProfileWithName(account.name));
   }
 }
 
@@ -121,6 +117,7 @@ TEST_F(ProfileAttributesStorageIOSTest, MapBrowserStateAndSceneID) {
   ASSERT_EQ(storage.GetBrowserStateNameForSceneID(sceneID), std::string());
 
   for (const TestAccount& account : kTestAccounts) {
+    storage.AddProfile(account.name);
     EXPECT_NE(storage.GetBrowserStateNameForSceneID(sceneID), account.name);
     storage.SetBrowserStateForSceneID(sceneID, account.name);
     EXPECT_EQ(storage.GetBrowserStateNameForSceneID(sceneID), account.name);
@@ -155,10 +152,10 @@ TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
 
   ProfileAttributesStorageIOS storage(pref_service());
   for (const TestAccount& account : kTestAccounts) {
-    const size_t index = storage.GetIndexOfProfileWithName(account.name);
-    ASSERT_NE(index, std::string::npos);
+    ASSERT_TRUE(storage.HasProfileWithName(account.name));
 
-    ProfileAttributesIOS attr = storage.GetAttributesForProfileAtIndex(index);
+    ProfileAttributesIOS attr =
+        storage.GetAttributesForProfileWithName(account.name);
     EXPECT_EQ(attr.GetProfileName(), account.name);
     EXPECT_EQ(attr.GetGaiaId(), account.gaia);
     EXPECT_EQ(attr.GetUserName(), account.email);

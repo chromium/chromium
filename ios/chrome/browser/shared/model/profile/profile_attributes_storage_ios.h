@@ -48,6 +48,9 @@ class ProfileAttributesStorageIOS {
   // Returns the count of known profiles.
   size_t GetNumberOfProfiles() const;
 
+  // Returns whether a profile with `name` exists.
+  bool HasProfileWithName(std::string_view name) const;
+
   // Retrieves the information for profile at `index`.
   ProfileAttributesIOS GetAttributesForProfileAtIndex(size_t index) const;
 
@@ -69,6 +72,8 @@ class ProfileAttributesStorageIOS {
 
   // Returns the index of the profile with `name` or std::string::npos if
   // not found.
+  // TODO(crbug.com/331783685): make private once ChromeAccountManagerService
+  // no longer uses indices to refer to profile to use.
   size_t GetIndexOfProfileWithName(std::string_view name) const;
 
   // Register the given browser state with the given scene. Browser state name

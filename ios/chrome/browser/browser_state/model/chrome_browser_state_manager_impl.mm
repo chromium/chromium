@@ -271,7 +271,7 @@ bool ChromeBrowserStateManagerImpl::LoadBrowserStateAsync(
     ChromeBrowserStateLoadedCallback initialized_callback,
     ChromeBrowserStateLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!BrowserStateWithNameExists(name)) {
+  if (!ProfileWithNameExists(name)) {
     // Must not create the ChromeBrowserState if it does not already
     // exist, so fail.
     if (!initialized_callback.is_null()) {
@@ -297,7 +297,7 @@ bool ChromeBrowserStateManagerImpl::CreateBrowserStateAsync(
 ChromeBrowserState* ChromeBrowserStateManagerImpl::LoadBrowserState(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!BrowserStateWithNameExists(name)) {
+  if (!ProfileWithNameExists(name)) {
     // Must not create the ChromeBrowserState if it does not already
     // exist, so fail.
     return nullptr;
@@ -370,7 +370,7 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
       // deleted.
       const std::string& name = browser_state->GetBrowserStateName();
       profile_attributes_storage_.RemoveProfile(name);
-      DCHECK(!BrowserStateWithNameExists(name));
+      DCHECK(!ProfileWithNameExists(name));
     }
 
     browser_state = nullptr;
@@ -402,11 +402,10 @@ std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
   return last_used_browser_state_name;
 }
 
-bool ChromeBrowserStateManagerImpl::BrowserStateWithNameExists(
+bool ChromeBrowserStateManagerImpl::ProfileWithNameExists(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return profile_attributes_storage_.GetIndexOfProfileWithName(name) !=
-         std::string::npos;
+  return profile_attributes_storage_.HasProfileWithName(name);
 }
 
 bool ChromeBrowserStateManagerImpl::CanCreateBrowserStateWithName(
@@ -425,7 +424,7 @@ bool ChromeBrowserStateManagerImpl::CreateBrowserStateWithMode(
     ChromeBrowserStateLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool inserted = false;
-  bool existing = BrowserStateWithNameExists(name);
+  bool existing = ProfileWithNameExists(name);
 
   auto iter = browser_states_.find(name);
   if (iter == browser_states_.end()) {
@@ -438,7 +437,7 @@ bool ChromeBrowserStateManagerImpl::CreateBrowserStateWithMode(
 
     if (!existing) {
       profile_attributes_storage_.AddProfile(name);
-      DCHECK(BrowserStateWithNameExists(name));
+      DCHECK(ProfileWithNameExists(name));
     }
 
     std::tie(iter, inserted) = browser_states_.insert(std::make_pair(

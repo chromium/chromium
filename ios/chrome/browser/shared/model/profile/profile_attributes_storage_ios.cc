@@ -77,6 +77,11 @@ size_t ProfileAttributesStorageIOS::GetNumberOfProfiles() const {
   return sorted_keys_.size();
 }
 
+bool ProfileAttributesStorageIOS::HasProfileWithName(
+    std::string_view name) const {
+  return GetIndexOfProfileWithName(name) != std::string::npos;
+}
+
 ProfileAttributesIOS
 ProfileAttributesStorageIOS::GetAttributesForProfileAtIndex(
     size_t index) const {
@@ -130,6 +135,7 @@ void ProfileAttributesStorageIOS::SetBrowserStateForSceneID(
     std::string_view scene_id,
     std::string_view browser_state_name) {
   DCHECK(!browser_state_name.empty());
+  DCHECK(HasProfileWithName(browser_state_name));
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateForScene);
   base::Value::Dict& cache = update.Get();
   cache.Set(scene_id, browser_state_name);
@@ -144,9 +150,13 @@ void ProfileAttributesStorageIOS::ClearBrowserStateForSceneID(
 
 const std::string& ProfileAttributesStorageIOS::GetBrowserStateNameForSceneID(
     std::string_view scene_id) {
-  const std::string* browser_state_name =
-      prefs_->GetDict(prefs::kBrowserStateForScene).FindString(scene_id);
-  return browser_state_name ? *browser_state_name : base::EmptyString();
+  if (const std::string* browser_state_name =
+          prefs_->GetDict(prefs::kBrowserStateForScene).FindString(scene_id)) {
+    DCHECK(HasProfileWithName(*browser_state_name));
+    return *browser_state_name;
+  }
+
+  return base::EmptyString();
 }
 
 // static
