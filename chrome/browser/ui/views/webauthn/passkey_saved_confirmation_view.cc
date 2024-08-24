@@ -17,8 +17,6 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 
-// TODO(rgod): Clean up leftover code for passing username from
-// PasswordsModelDelegate once it's confirmed it's not needed anymore.
 PasskeySavedConfirmationView::PasskeySavedConfirmationView(
     content::WebContents* web_contents,
     views::View* anchor_view)

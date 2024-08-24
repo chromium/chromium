@@ -1328,7 +1328,6 @@ void GPMEnclaveController::OnPasskeyCreated(
       bool gpm_pin_created_in_this_request =
           gpm_pin_creation_confirmed_ && enclave_manager_->has_wrapped_pin();
       manage_passwords_ui_controller->OnPasskeySaved(
-          base::UTF8ToUTF16(model_->user_entity.name.value_or("")),
           gpm_pin_created_in_this_request);
     }
   }

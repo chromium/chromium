@@ -101,10 +101,6 @@ class PasswordsModelDelegate {
   // flow, applicable for PASSKEY_SAVED_CONFIRMATION_STATE only.
   virtual bool GpmPinCreatedDuringRecentPasskeyCreation() const = 0;
 
-  // Returns username of a passkey that has just been saved, applicable for
-  // PASSKEY_SAVED_CONFIRMATION_STATE only.
-  virtual std::u16string GetRecentlySavedPasskeyUsername() const = 0;
-
   // Called from the model when the bubble is displayed.
   virtual void OnBubbleShown() = 0;
 

@@ -98,9 +98,9 @@ class ManagePasswordsState {
   // Move to KEYCHAIN_ERROR_STATE.
   void OnKeychainError();
 
-  // Move to PASSKEY_SAVED_CONFIRMATION_STATE. Stores `username` of the saved
-  // passkey and whether GPM pin was created in the same flow.
-  void OnPasskeySaved(const std::u16string& username, bool gpm_pin_created);
+  // Move to PASSKEY_SAVED_CONFIRMATION_STATE. Stores whether GPM pin was
+  // created in the same flow.
+  void OnPasskeySaved(bool gpm_pin_created);
 
   // Move to PASSKEY_DELETED_CONFIRMATION_STATE.
   void OnPasskeyDeleted();
@@ -173,9 +173,6 @@ class ManagePasswordsState {
     auth_for_account_storage_opt_in_failed_ = failed;
   }
 
-  std::u16string recently_saved_passkey_username() const {
-    return recently_saved_passkey_username_;
-  }
   bool gpm_pin_created_during_recent_passkey_creation() const {
     return gpm_pin_created_during_recent_passkey_creation_;
   }
@@ -233,9 +230,6 @@ class ManagePasswordsState {
   // Whether the last attempt to authenticate to opt-in using password account
   // storage failed.
   bool auth_for_account_storage_opt_in_failed_ = false;
-
-  // Username of a recently saved passkey.
-  std::u16string recently_saved_passkey_username_;
 
   // Whether GPM pin was created in the same flow as recent passkey creation.
   bool gpm_pin_created_during_recent_passkey_creation_ = false;

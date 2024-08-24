@@ -123,11 +123,10 @@ class PasswordsClientUIDelegate {
   // available.
   virtual void OnKeychainError() = 0;
 
-  // Called when a passkey with `username` has just been saved to display a
-  // confirmation of that to the user. If GPM pin was created in the same flow,
-  // then the confirmation of that is also displayed in the title.
-  virtual void OnPasskeySaved(const std::u16string& username,
-                              bool gpm_pin_created) = 0;
+  // Called when a passkey has just been saved to display a confirmation of that
+  // to the user. If GPM pin was created in the same flow, then the confirmation
+  // of that is also displayed in the title.
+  virtual void OnPasskeySaved(bool gpm_pin_created) = 0;
 
   // Called when a passkey has just been deleted to display a confirmation of
   // that to the user.
