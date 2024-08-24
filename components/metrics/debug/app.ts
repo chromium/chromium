@@ -78,11 +78,27 @@ export class MetricsInternalsAppElement extends CustomElement {
     const umaTableCaption = this.getRequiredElement('#uma-table-caption');
     const isUsingMetricsServiceObserver =
         await this.browserProxy_.isUsingMetricsServiceObserver();
-    umaTableCaption.textContent = isUsingMetricsServiceObserver ?
+    let firstPartOfCaption = isUsingMetricsServiceObserver ?
         'List of all UMA logs closed since browser startup.' :
         'List of UMA logs closed since opening this page. Starting the browser \
         with the --export-uma-logs-to-file command line flag will instead show \
         all logs closed since browser startup.';
+    firstPartOfCaption += ' See ';
+    const linkInCaptionNode = document.createElement('a');
+    linkInCaptionNode.appendChild(document.createTextNode('documentation'));
+    linkInCaptionNode.href =
+        'https://chromium.googlesource.com/chromium/src/components/metrics/+/HEAD/debug/README.md';
+    // Don't clobber the current page.  The current page (in release builds)
+    // shows only the logs since the page was opened.  We don't want to allow
+    // the current page to be navigated away from lest useful logs be lost.
+    linkInCaptionNode.target = '_blank';
+    const secondPartOfCaption =
+        ' for more information about this debug page and tools for working \
+         with the exported logs.';
+    umaTableCaption.appendChild(document.createTextNode(firstPartOfCaption));
+    umaTableCaption.appendChild(linkInCaptionNode);
+    umaTableCaption.appendChild(document.createTextNode(secondPartOfCaption));
+
 
     // Set up a listener for UMA logs. Also update UMA log data immediately in
     // case there are logs that we already have data on.
