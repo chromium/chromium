@@ -2665,7 +2665,6 @@ Il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> h
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tieni presente, tuttavia, che il pattern "*", che corrisponde a qualsiasi URL, non è supportato da questo criterio.</translation>
 <translation id="2979696534869541158">Forza implementazione precedente</translation>
-<translation id="2983209019593449150">A seconda della procedura di avvio della funzionalità, è possibile utilizzare firme di codice ad hoc per shim di app web progressive.</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
@@ -3527,7 +3526,6 @@ Se il criterio viene impostato su False, le informazioni sulla versione non veng
 Questo criterio viene applicato soltanto se la macchina viene registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
 Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3644735978203799620">Consente di attivare la selezione automatica per le acquisizioni multischermo</translation>
-<translation id="3645639974927907813">Firma del codice ad hoc per shim di app web progressive</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
 <translation id="3647212518036289905">La configurazione del criterio consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta il criterio sul nome di una libreria o su un percorso completo.
 
@@ -4781,7 +4779,6 @@ Se questo criterio non viene configurato, tutte le origini richiederanno un gest
 <translation id="4615892138881859957">Controlla la scorciatoia usata per attivare il tasto Inserisci del "pacchetto da sei"</translation>
 <translation id="4617338332148204752">Salta il controllo dei metatag in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Funzionalità NewBaseUrlInheritanceBehavior disponibile</translation>
-<translation id="4623516906510429751">Usa firme di codice ad hoc per shim di app web progressive.</translation>
 <translation id="4624417808625504735">Impedisci a JavaScript di utilizzare JIT su questi siti</translation>
 <translation id="46321462262887935">Imposta i tasti della fila superiore come tasti funzione, ma consenti la modifica da parte degli utenti</translation>
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
@@ -6830,7 +6827,6 @@ Se il criterio non viene configurato, viene utilizzato il valore predefinito glo
 <translation id="6207607210601267301">Disattiva l'autenticazione senza PIN per l'host di accesso remoto</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>
-<translation id="6213560283141495655">Non utilizzare firme di codice ad hoc per shim di app web progressive.</translation>
 <translation id="6220835555850906733">Se il criterio viene attivato o se non viene configurato, tutti gli output audio supportati sono consentiti sui dispositivi degli utenti.
 
       Se il criterio viene disattivato, nessun output audio è consentito se gli utenti hanno effettuato l'accesso.
@@ -8742,11 +8738,6 @@ Se questo criterio viene impostato su true, <ph name="PRODUCT_OS_NAME" /> tenter
 <translation id="7519218194072744342">L'URL del gestore di protocollo.</translation>
 <translation id="7519251620064708155">Consenti la generazione di chiavi su questi siti</translation>
 <translation id="7521864460386999758">Impedisci l'inserimento di codici di terze parti in Chrome</translation>
-<translation id="7522636035703637613">Se il criterio viene attivato o se non viene configurato, è possibile utilizzare firme ad hoc per le applicazioni create durante l'installazione di un'applicazione web progressiva (PWA). In questo modo, ogni applicazione installata ha un'identità univoca per i componenti di sistema di <ph name="MAC_OS_NAME" />.
-
-Se il criterio viene disattivato, tutte le applicazioni create durante l'installazione di un'applicazione web progressiva (PWA) avranno la stessa identità. Questo può interferire con la funzionalità di <ph name="MAC_OS_NAME" />.
-
-Disattiva il criterio solo se utilizzi una soluzione di sicurezza degli endpoint che blocca le applicazioni con una firma ad hoc.</translation>
 <translation id="7524983116584990314">Cancella i suggerimenti di compilazione automatica</translation>
 <translation id="7529144158022474049">Fattore di dispersione aggiornamento automatico</translation>
 <translation id="7529332889403151669">Specifica se mostrare l'avviso di schermo intero quando il dispositivo disattiva la sospensione o lo schermo scuro.

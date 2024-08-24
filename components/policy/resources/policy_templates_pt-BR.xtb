@@ -2728,7 +2728,6 @@ A política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> t
 
       Para ver informações detalhadas sobre os padrões de <ph name="URL_LABEL" /> válidos, acesse https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. No entanto, o padrão "*", que corresponde a qualquer URL, não é compatível com esta política.</translation>
 <translation id="2979696534869541158">Forçar implementação antiga</translation>
-<translation id="2983209019593449150">As assinaturas de código ad-hoc para shims de Apps Web Progressivos podem ser usadas dependendo do processo de inicialização do recurso.</translation>
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
 <translation id="2987155890997901449">Ativar ARC</translation>
 <translation id="2987227569419001736">Controla o uso da API Web Bluetooth</translation>
@@ -3587,7 +3586,6 @@ Quando ela for definida como falsa, as informações da versão não serão cole
 Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
 Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="3644735978203799620">Permite a seleção automática de várias capturas de tela</translation>
-<translation id="3645639974927907813">Assinatura de código ad-hoc para shims de Apps Web Progressivos</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
 
@@ -4916,7 +4914,6 @@ essas APIs.</translation>
 <translation id="4615892138881859957">Controla o atalho usado para acionar a tecla "Insert"</translation>
 <translation id="4617338332148204752">Ignorar a verificação de metatags em <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Recurso NewBaseUrlInheritanceBehavior disponível</translation>
-<translation id="4623516906510429751">Usar assinaturas de código ad-hoc para shims de Apps Web Progressivos.</translation>
 <translation id="4624417808625504735">Bloquear o uso de JIT pelo JavaScript nestes sites</translation>
 <translation id="46321462262887935">Tratar teclas da linha superior como teclas de função, mas permitir que os usuários façam mudanças</translation>
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
@@ -6993,7 +6990,6 @@ Se a política não for definida, o valor padrão global será usado para todos 
 <translation id="6207607210601267301">Desativar a autenticação sem PIN para o host de acesso remoto</translation>
 <translation id="6208896993204286313">Reportar informações da política do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Reportar informações sobre a versão do SO e do <ph name="PRODUCT_NAME" /></translation>
-<translation id="6213560283141495655">Não usar assinaturas de código ad-hoc para shims de Apps Web Progressivos.</translation>
 <translation id="6220835555850906733">Se a política for definida como ativada ou não for definida, todas as saídas de áudio compatíveis nos dispositivos dos usuários terão permissão.
 
       Se a política for definida como desativada, nenhuma saída de áudio terá permissão enquanto as contas dos usuários estiverem conectadas.
@@ -8956,11 +8952,6 @@ Se essa política for definida como verdadeira, o <ph name="PRODUCT_OS_NAME" /> 
 <translation id="7519218194072744342">O URL do gerenciador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir a geração de chaves nesses sites</translation>
 <translation id="7521864460386999758">Impedir que código de terceiros seja injetado no Chrome</translation>
-<translation id="7522636035703637613">Se a política for ativada ou deixada sem definição, será possível usar assinaturas ad-hoc em aplicativos criados ao instalar um App Web Progressivo (PWA). Isso garante que cada aplicativo instalado tenha uma identidade exclusiva para os componentes do sistema <ph name="MAC_OS_NAME" />.
-
-Se a política for desativada, todos os aplicativos criados na instalação de um App Web Progressivo (PWA) vão ter a mesma identidade. Isso pode interferir na funcionalidade do <ph name="MAC_OS_NAME" />.
-
-Desative a política somente se você estiver usando uma solução de segurança de endpoint que bloqueie aplicativos com uma assinatura ad-hoc.</translation>
 <translation id="7524983116584990314">Limpar preenchimento automático</translation>
 <translation id="7529144158022474049">Fator de dispersão de atualizações automáticas</translation>
 <translation id="7529332889403151669">Especifica se alertas de tela cheia serão exibidos quando o dispositivo retornar de uma tela desligada ou do modo de Suspensão.

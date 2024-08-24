@@ -2733,7 +2733,6 @@ Kebijakan <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> leb
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Namun, perlu diperhatikan bahwa pola "*", yang cocok dengan URL apa pun, tidak didukung oleh kebijakan ini.</translation>
 <translation id="2979696534869541158">Paksa implementasi lama</translation>
-<translation id="2983209019593449150">Tanda tangan kode ad-hoc untuk shim Progressive Web App dapat digunakan bergantung pada proses peluncuran fitur.</translation>
 <translation id="2985927503455169394">Gunakan mode default pengalaman aktivasi Asisten</translation>
 <translation id="2987155890997901449">Aktifkan ARC</translation>
 <translation id="2987227569419001736">Mengontrol penggunaan API Bluetooth Web</translation>
@@ -3597,7 +3596,6 @@ Jika kebijakan ini disetel ke Salah (False), informasi versi tidak akan dikumpul
 Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
 Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3644735978203799620">Mengaktifkan pemilihan otomatis untuk multi-screenshot</translation>
-<translation id="3645639974927907813">Penandatanganan kode ad-hoc untuk shim Progressive Web App</translation>
 <translation id="3646859102161347133">Menyetel jenis lup</translation>
 <translation id="3647212518036289905">Menyetel kebijakan akan menentukan library GSSAPI mana yang akan digunakan untuk autentikasi HTTP. Setel kebijakan ke nama library atau jalur lengkap.
 
@@ -4925,7 +4923,6 @@ API ini.</translation>
 <translation id="4615892138881859957">Mengontrol pintasan yang digunakan untuk memicu tombol "six pack" Insert</translation>
 <translation id="4617338332148204752">Lewati pemeriksaan tag meta pada <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fitur NewBaseUrlInheritanceBehavior tersedia</translation>
-<translation id="4623516906510429751">Menggunakan tanda tangan kode ad-hoc untuk shim Progressive Web App.</translation>
 <translation id="4624417808625504735">Memblokir JavaScript agar tidak menggunakan JIT di situs ini</translation>
 <translation id="46321462262887935">Perlakukan tombol baris atas sebagai tombol fungsi, tetapi izinkan pengguna mengubahnya</translation>
 <translation id="4632343302005518762">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten yang tercantum</translation>
@@ -7009,7 +7006,6 @@ Jika kebijakan tidak disetel, nilai default global akan digunakan untuk semua si
 <translation id="6207607210601267301">Nonaktifkan autentikasi tanpa PIN untuk host akses jarak jauh</translation>
 <translation id="6208896993204286313">Melaporkan Informasi Kebijakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Laporkan OS dan Informasi Versi <ph name="PRODUCT_NAME" /></translation>
-<translation id="6213560283141495655">Tidak menggunakan tanda tangan kode ad-hoc untuk shim Progressive Web App.</translation>
 <translation id="6220835555850906733">Jika kebijakan disetel ke Aktif atau tidak disetel, semua output audio yang didukung di perangkat pengguna akan diizinkan.
 
       Jika kebijakan disetel ke Nonaktif, output audio pengguna tidak akan diizinkan saat pengguna login.
@@ -8981,11 +8977,6 @@ Jika kebijakan ini disetel ke benar (true), <ph name="PRODUCT_OS_NAME" /> akan b
 <translation id="7519218194072744342">URL pengendali protokol.</translation>
 <translation id="7519251620064708155">Izinkan pembuatan kunci di situs ini</translation>
 <translation id="7521864460386999758">Cegah kode pihak ketiga dimasukkan ke Chrome</translation>
-<translation id="7522636035703637613">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan tanda tangan ad-hoc akan diaktifkan untuk aplikasi yang dibuat saat menginstal Progressive Web Application (PWA). Hal ini memastikan bahwa setiap aplikasi yang diinstal memiliki identitas unik untuk komponen sistem <ph name="MAC_OS_NAME" />.
-
-Jika kebijakan disetel ke Nonaktif, setiap aplikasi yang dibuat saat menginstal Progressive Web Application (PWA) akan memiliki identitas yang sama. Hal ini dapat mengganggu fungsi <ph name="MAC_OS_NAME" />.
-
-Nonaktifkan kebijakan ini hanya jika Anda menggunakan solusi keamanan endpoint yang memblokir aplikasi dengan tanda tangan ad-hoc.</translation>
 <translation id="7524983116584990314">Hapus Isi Otomatis</translation>
 <translation id="7529144158022474049">Faktor penyebaran pembaruan otomatis</translation>
 <translation id="7529332889403151669">Menentukan apakah peringatan layar penuh harus ditampilkan saat perangkat kembali dari mode tidur atau layar gelap.

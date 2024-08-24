@@ -2607,7 +2607,6 @@ Die Richtlinie „<ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Das Muster „*“, das bei jeder URL zu einer Übereinstimmung führt, wird von dieser Richtlinie jedoch nicht unterstützt.</translation>
 <translation id="2979696534869541158">Alte Implementierung erzwingen</translation>
-<translation id="2983209019593449150">Ad‑hoc-Codesignaturen für Shims von progressiven Web-Apps können abhängig vom Funktionseinführungsprozess verwendet werden.</translation>
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
 <translation id="2987155890997901449">ARC aktivieren</translation>
 <translation id="2987227569419001736">Verwendung der Web Bluetooth API steuern</translation>
@@ -3468,7 +3467,6 @@ Wenn diese Richtlinie auf „False“ gesetzt ist, werden keine Versionsinformat
 Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="3644735978203799620">Aktiviert die automatische Auswahl für Aufnahmen auf mehreren Bildschirmen</translation>
-<translation id="3645639974927907813">Ad‑hoc-Codesignaturen für Shims von progressiven Web-Apps</translation>
 <translation id="3646859102161347133">Lupentyp festlegen</translation>
 <translation id="3647212518036289905">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche GSSAPI-Bibliothek für die HTTP-Authentifizierung verwendet werden soll. Gib entweder nur den Namen einer Bibliothek oder einen vollständigen Pfad an.
 
@@ -4701,7 +4699,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufruf dieser APIs un
 <translation id="4615892138881859957">Tastenkombination zum Auslösen der Taste „Einfügen“ im Sechserblock verwalten</translation>
 <translation id="4617338332148204752">Meta-Tag-Überprüfung in <ph name="PRODUCT_FRAME_NAME" /> überspringen</translation>
 <translation id="461901491675418689">Funktion „NewBaseUrlInheritanceBehavior“ verfügbar</translation>
-<translation id="4623516906510429751">Ad‑hoc-Codesignaturen für Shims von progressiven Web-Apps verwenden.</translation>
 <translation id="4624417808625504735">Verwendung von JIT durch JavaScript auf diesen Websites blockieren</translation>
 <translation id="46321462262887935">Tasten der obersten Reihe als Funktionstasten nutzen (Nutzer kann dies ändern)</translation>
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
@@ -6720,7 +6717,6 @@ Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Sta
 <translation id="6207607210601267301">Authentifizierung ohne PIN für den Host für den Remote-Zugriff deaktivieren</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" />-Richtliniendaten erfassen</translation>
 <translation id="6210259502936598222">Informationen zu Betriebssystem und <ph name="PRODUCT_NAME" />-Version erfassen</translation>
-<translation id="6213560283141495655">Keine Ad‑hoc-Codesignaturen für Shims von progressiven Web-Apps verwenden.</translation>
 <translation id="6220835555850906733">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist jede unterstützte Audioausgabe auf den Geräten der Nutzer zulässig.
 
       Ist die Richtlinie deaktiviert, ist keine Audioausgabe zulässig, während Nutzer angemeldet sind.
@@ -8583,11 +8579,6 @@ Ist diese Richtlinie auf „true“ gesetzt, versucht <ph name="PRODUCT_OS_NAME"
 <translation id="7519218194072744342">URL des Protokoll-Handlers.</translation>
 <translation id="7519251620064708155">Schlüsselgenerierung auf diesen Websites zulassen</translation>
 <translation id="7521864460386999758">Einschleusen von Drittanbieter-Code in Chrome verhindern</translation>
-<translation id="7522636035703637613">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die Verwendung von Ad‑hoc-Signaturen für Apps erlaubt, die bei der Installation einer progressiven Web-App (PWA) erstellt werden. So wird sichergestellt, dass jede installierte App eine eindeutige Identität für <ph name="MAC_OS_NAME" />-Systemkomponenten hat.
-
-Wenn die Richtlinie deaktiviert ist, hat jede App, die bei der Installation einer progressiven Web-App (PWA) erstellt wird, dieselbe Identität. Dies kann die Funktionalität von <ph name="MAC_OS_NAME" /> beeinträchtigen.
-
-Deaktiviere die Richtlinie nur, wenn du eine Endpunkt-Sicherheitslösung verwendest, die Apps mit einer Ad‑hoc-Signatur blockiert.</translation>
 <translation id="7524983116584990314">Autofill-Daten löschen</translation>
 <translation id="7529144158022474049">Streufaktor automatisch aktualisieren</translation>
 <translation id="7529332889403151669">Gibt an, ob die Vollbild-Warnung angezeigt werden soll, wenn das Gerät nach dem Ruhemodus oder dunklem Bildschirm aktiviert wird.

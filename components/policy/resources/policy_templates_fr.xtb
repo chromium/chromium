@@ -2607,7 +2607,6 @@ La règle <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> est
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, consultez la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Notez toutefois que le format "*", qui correspond à n'importe quelle URL, n'est pas pris en charge par cette règle.</translation>
 <translation id="2979696534869541158">Forcer l'ancienne implémentation</translation>
-<translation id="2983209019593449150">Il se peut que des signatures de code ponctuelles pour les shims de progressive web app soient utilisées selon le processus de lancement de la fonctionnalité.</translation>
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
 <translation id="2987227569419001736">Contrôler l'utilisation de l'API Web Bluetooth</translation>
@@ -3465,7 +3464,6 @@ Si cette règle est définie sur "False", aucune information de version n'est co
 Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
 Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3644735978203799620">Activer la sélection automatique de captures d'écran multiples</translation>
-<translation id="3645639974927907813">Signature de code ponctuelle pour les shims de progressive web app</translation>
 <translation id="3646859102161347133">Définir le type de loupe</translation>
 <translation id="3647212518036289905">Permet de spécifier la bibliothèque GSSAPI à utiliser pour l'authentification HTTP. Vous pouvez indiquer le nom de la bibliothèque ou son chemin d'accès complet.
 
@@ -4710,7 +4708,6 @@ Si cette règle n'est pas configurée, toutes les origines nécessitent un geste
 <translation id="4615892138881859957">Contrôle le raccourci utilisé pour déclencher la touche Insérer du groupe de six touches</translation>
 <translation id="4617338332148204752">Ignorer la vérification des balises Meta dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fonctionnalité NewBaseUrlInheritanceBehavior disponible</translation>
-<translation id="4623516906510429751">Utiliser des signatures de code ponctuelles pour les shims de progressive web app.</translation>
 <translation id="4624417808625504735">Empêcher JavaScript d'utiliser le JIT sur ces sites</translation>
 <translation id="46321462262887935">Considérer les touches supérieures comme des touches de fonction, mais autoriser l'utilisateur à modifier ce paramètre</translation>
 <translation id="4632343302005518762">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu répertoriés</translation>
@@ -6740,7 +6737,6 @@ Si cette règle n'est pas configurée, la valeur globale par défaut est utilis�
 <translation id="6207607210601267301">Désactiver l'authentification sans code PIN pour l'hôte d'accès à distance</translation>
 <translation id="6208896993204286313">Enregistrer les informations sur les règles concernant <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enregistrer les informations sur la version de <ph name="PRODUCT_NAME" /> et l'OS</translation>
-<translation id="6213560283141495655">Ne pas utiliser de signatures de code ponctuelles pour les shims de progressive web app.</translation>
 <translation id="6220835555850906733">Si cette règle est activée ou si elle n'est pas configurée, toutes les sorties audio compatibles sur les appareils des utilisateurs sont autorisées.
 
       Si cette règle est désactivée, aucune sortie audio n'est autorisée lorsque les utilisateurs sont connectés.
@@ -8603,11 +8599,6 @@ Si cette règle est définie sur "True", le téléchargement des charges utiles 
 <translation id="7519218194072744342">URL du gestionnaire de protocoles.</translation>
 <translation id="7519251620064708155">Autoriser la génération de clé sur ces sites</translation>
 <translation id="7521864460386999758">Empêcher l'injection de code tiers dans Chrome</translation>
-<translation id="7522636035703637613">Si cette règle est activée ou n'est pas configurée, les signatures ponctuelles sont autorisées pour les applis créées lors de l'installation d'une progressive web app (PWA). Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
-
-Si cette règle est désactivée, toutes les applis créées lors de l'installation d'une PWA auront la même identité. Cela peut interférer avec la fonctionnalité <ph name="MAC_OS_NAME" />.
-
-Désactivez cette règle uniquement si vous utilisez une solution de sécurité des points de terminaison qui bloque les applis avec une signature ponctuelle.</translation>
 <translation id="7524983116584990314">Effacer la saisie automatique</translation>
 <translation id="7529144158022474049">Facteur de dispersion des mises à jour automatiques</translation>
 <translation id="7529332889403151669">Cette règle permet de déterminer si l'alerte plein écran doit être affichée lorsque l'appareil est réactivé après avoir été en mode veille ou que l'écran n'est plus sombre.

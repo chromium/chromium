@@ -2725,7 +2725,6 @@ La política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 
 
       Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, ten en cuenta que esta política no admite el patrón "*", que coincide con cualquier URL.</translation>
 <translation id="2979696534869541158">Forzar la implementación anterior</translation>
-<translation id="2983209019593449150">Las firmas de código ad-hoc para las correcciones de compatibilidad de apps web progresivas se pueden usar según el proceso de lanzamiento de la función.</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de integración del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
 <translation id="2987227569419001736">Controlar el uso de la API de Bluetooth web</translation>
@@ -3587,7 +3586,6 @@ Si la estableces como falsa, no se recopilarán los datos sobre la versión.
 Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
 Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3644735978203799620">Habilitar la selección automática para capturas de pantallas múltiples</translation>
-<translation id="3645639974927907813">Firma de código ad-hoc para las correcciones de compatibilidad de apps web progresivas</translation>
 <translation id="3646859102161347133">Establece el tipo de lupa.</translation>
 <translation id="3647212518036289905">Si estableces la política, esta especificará qué biblioteca GSSAPI se debe usar para la autenticación HTTP. Puedes establecerla asignándole un nombre de biblioteca o una ruta completa.
 
@@ -4915,7 +4913,6 @@ a estas APIs.</translation>
 <translation id="4615892138881859957">Controlar la combinación de teclas utilizada para activar la tecla Insertar del "paquete de seis"</translation>
 <translation id="4617338332148204752">Omitir la comprobación de metaetiquetas en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Hacer que la función NewBaseUrlInheritanceBehavior esté disponible</translation>
-<translation id="4623516906510429751">Usar firmas de código ad-hoc para las correcciones de compatibilidad de apps web progresivas.</translation>
 <translation id="4624417808625504735">Impedir que JavaScript utilice JIT en estos sitios</translation>
 <translation id="46321462262887935">Tratar las teclas de la fila superior como teclas de función, pero permitir que el usuario las modifique</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
@@ -6996,7 +6993,6 @@ Si no estableces la política, se usará el valor predeterminado global para tod
 <translation id="6207607210601267301">Inhabilitar la autenticación sin PIN para el host de acceso remoto</translation>
 <translation id="6208896993204286313">Enviar la información de la política de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enviar la información del SO y de la versión de <ph name="PRODUCT_NAME" /></translation>
-<translation id="6213560283141495655">No usar firmas de código ad-hoc para las correcciones de compatibilidad de apps web progresivas.</translation>
 <translation id="6220835555850906733">Si habilitas la política o no la estableces, se permitirán todas las salidas de audio compatibles en los dispositivos de los usuarios.
 
       Si la inhabilitas, no se permitirá ninguna salida de audio cuando los usuarios acceden a su cuenta.
@@ -8968,11 +8964,6 @@ Si estableces esta política como verdadera, <ph name="PRODUCT_OS_NAME" /> inten
 <translation id="7519218194072744342">La URL del controlador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir la generación de claves en estos sitios</translation>
 <translation id="7521864460386999758">Impedir que se inserte código de terceros en Chrome</translation>
-<translation id="7522636035703637613">Si habilitas la política o no la estableces, se habilitará el uso de firmas de ad-hoc para las aplicaciones que se crean cuando se instala una aplicación web progresiva (AWP). Esto garantiza que cada aplicación instalada tenga una identidad única para los componentes del sistema <ph name="MAC_OS_NAME" />.
-
-Si inhabilitas la política, todas las aplicaciones que se creen cuando se instale una aplicación web progresiva (AWP) tendrán la misma identidad. Esto puede interferir con la funcionalidad de <ph name="MAC_OS_NAME" />.
-
-Solo desactiva la política si usas una solución de seguridad de endpoint que bloquea las aplicaciones con una firma de ad-hoc.</translation>
 <translation id="7524983116584990314">Borrar los datos de Autocompletar</translation>
 <translation id="7529144158022474049">Actualizar de forma automática el factor de escalonamiento</translation>
 <translation id="7529332889403151669">Especifica si debe mostrarse la alerta de pantalla completa cuando el dispositivo salga de un modo de suspensión o pantalla oscura.

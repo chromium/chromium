@@ -2658,7 +2658,6 @@ Sağlanan filtrelerden biriyle eşleşen alan adları için ayarlanan çerezler,
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için lütfen https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakın. Ancak her URL'ye uyan "*" kalıbının bu politika tarafından desteklenmediğini unutmayın.</translation>
 <translation id="2979696534869541158">Eski uygulamayı zorunlu kıl</translation>
-<translation id="2983209019593449150">Özellik kullanıma sunma sürecine bağlı olarak progresif web uygulaması (pwa) dolguları için geçici kod imzaları kullanılabilir.</translation>
 <translation id="2985927503455169394">Asistan ilk katılım deneyiminin varsayılan modunu kullanma</translation>
 <translation id="2987155890997901449">ARC'yi etkinleştir</translation>
 <translation id="2987227569419001736">Web Bluetooth API'sının kullanımını kontrol et</translation>
@@ -3522,7 +3521,6 @@ Bu politika Yanlış değerine ayarlandığında sürüm bilgileri toplanmaz.
 Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> kaydı yapıldığında geçerli olur.
 <ph name="PRODUCT_OS_NAME" /> için bu politika her zaman geçerlidir.</translation>
 <translation id="3644735978203799620">Çoklu ekran görüntüleri için otomatik seçimi etkinleştirir</translation>
-<translation id="3645639974927907813">Progresif web uygulaması (pwa) dolguları için geçici kod imzalama</translation>
 <translation id="3646859102161347133">Ekran büyüteci türünü ayarla</translation>
 <translation id="3647212518036289905">Politikanın ayarlanması, HTTP kimlik doğrulaması için hangi GSSAPI kitaplığının kullanılacağını belirtir. Politikayı bir kitaplık adı veya tam yol olarak ayarlayın.
 
@@ -4810,7 +4808,6 @@ zorunlu kılar.</translation>
 <translation id="4615892138881859957">Insert "altılı paket" tuşunu tetiklemek için kullanılan kısayolu kontrol et</translation>
 <translation id="4617338332148204752"><ph name="PRODUCT_FRAME_NAME" /> cihazında meta etiket kontrolünü atla</translation>
 <translation id="461901491675418689">NewBaseUrlInheritanceBehavior özelliği kullanılabilir</translation>
-<translation id="4623516906510429751">Progresif web uygulaması (pwa) dolguları için geçici kod imzaları kullan.</translation>
 <translation id="4624417808625504735">Bu sitelerde JavaScript'in JIT kullanmasını engelle</translation>
 <translation id="46321462262887935">Üst sıradaki tuşlara işlev tuşu olarak davran, ancak kullanıcının değişiklik yapmasına izin ver</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> için listelenen içerik türlerini işlemeye izin ver</translation>
@@ -6853,7 +6850,6 @@ Politika ayarlanmadan bırakılırsa genel varsayılan değer tüm siteler için
 <translation id="6207607210601267301">Uzaktan erişim ana makinesi için PIN'siz kimlik doğrulamayı devre dışı bırak</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> Politika Bilgilerini bildir</translation>
 <translation id="6210259502936598222">OS ve <ph name="PRODUCT_NAME" /> Sürümü Bilgilerini bildir</translation>
-<translation id="6213560283141495655">Progresif web uygulaması (pwa) dolguları için geçici kod imzaları kullanma.</translation>
 <translation id="6220835555850906733">Politikayı Etkin değerine ayarlamak veya ayarlamadan bırakmak, kullanıcıların cihazlarında tüm desteklenen ses çıkışlarına izin verir.
 
       Politikayı Devre dışı değerine ayarlamak, kullanıcılar oturum açmış durumdayken hiçbir ses çıkışına izin vermez.
@@ -8767,11 +8763,6 @@ Bu politika Doğru seçeneğine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> otoma
 <translation id="7519218194072744342">Protokol işleyicinin URL'si.</translation>
 <translation id="7519251620064708155">Bu sitelerde anahtar oluşturmaya izin ver</translation>
 <translation id="7521864460386999758">Chrome'a üçüncü taraf kodunun yerleştirilmesini engelle</translation>
-<translation id="7522636035703637613">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa progresif web uygulamasını (pwa) yüklerken oluşturulan geçici uygulama imzalarının kullanılmasına izin verilir. Bu sayede, yüklü her uygulamanın <ph name="MAC_OS_NAME" /> sistem bileşenleri için benzersiz bir kimliği olur.
-
-Politika, Devre Dışı değerine ayarlanırsa progresif web uygulamasını (pwa) yüklerken oluşturulan her uygulamanın kimliği aynı olur. Bu durum, <ph name="MAC_OS_NAME" /> işlevlerini etkileyebilir.
-
-Politikayı yalnızca geçici imza içeren uygulamaların engellendiği bir uç nokta güvenlik çözümü kullanıyorsanız devre dışı bırakın.</translation>
 <translation id="7524983116584990314">Otomatik Doldurma Bilgilerini Temizle</translation>
 <translation id="7529144158022474049">Dağılım faktörünü otomatik güncelle</translation>
 <translation id="7529332889403151669">Cihaz uyku modundan veya koyu ekrandan çıktığında tam ekran uyarısının gösterilip gösterilmeyeceğini belirtir.

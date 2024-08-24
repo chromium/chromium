@@ -2307,7 +2307,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2610374175948698697">Zinaweza kuangalia faili au folda kwenye kifaa chako</translation>
 <translation id="2610780100389066815">Uwekaji Sahihi wa Orodha ya Zinazoaminiwa kutoka Microsoft</translation>
 <translation id="261114180663074524">Ingia kwenye akaunti yako ya Microsoft kisha ujaribu tena</translation>
-<translation id="2611765907167846862">Toni tulivu</translation>
 <translation id="2611776654555141051">Zana ya kuhariri picha za Mstatiili</translation>
 <translation id="2612676031748830579">Nambari ya kadi</translation>
 <translation id="261305050785128654">Ruhusu tovuti zifahamu lugha unazozungumza. Zitaonyesha maudhui katika lugha hizo inapowezekana.</translation>
@@ -8142,6 +8141,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6876155724392614295">Baiskeli</translation>
 <translation id="6876469544038980967">Haijanifaa</translation>
 <translation id="6878422606530379992">Imeruhusu vitambuzi</translation>
+<translation id="6878862640969460273">Mlalo</translation>
 <translation id="6880587130513028875">Picha zimezuiwa kwenye ukurasa huu.</translation>
 <translation id="6881845890692344060">Msimamizi wako ameondoka katika akaunti. Sasa ni wewe unayesimamia kifaa.</translation>
 <translation id="6882210908253838664">Iwapo tovuti haifanyi kazi, unaweza kujaribu kuiruhusu itumie vidakuzi vya washirika wengine kwa muda. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
@@ -8964,7 +8964,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Programu ya Android</translation>
 <translation id="7495217365392072364">Panga Vichupo Vilivyo Sawa</translation>
-<translation id="7497322070873193353">Akiliunde ya Google</translation>
+<translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Huna kumbukumbu za maandishi ya WebRTC uliyorekodi hivi majuzi.</translation>
 <translation id="7501957181231305652">au</translation>
 <translation id="7502220299952823578">Weka katika orodha ya "tovuti hizi zitumike kila wakati"</translation>

@@ -179,7 +179,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1119447706177454957">Barneko errorea</translation>
 <translation id="1122068467107743258">Lanekoa</translation>
 <translation id="1122198203221319518">&amp;Tresnak</translation>
-<translation id="1122242684574577509">Ezin izan da autentifikatu. Erabiltzen ari zaren Wi-Fi sarean (<ph name="NETWORK_ID" />) saioa hasteko orrira joateko, egin klik hemen.</translation>
+<translation id="1122242684574577509">Ezin izan da autentifikatu. Erabiltzen ari zaren wifi-sarean (<ph name="NETWORK_ID" />) saioa hasteko orrira joateko, egin klik hemen.</translation>
 <translation id="1122587596907914265">Atondu horma-paper esklusiboak</translation>
 <translation id="1122913801042512795">Kontuan saioa hasteko xehetasunak zaharkituta daude. Amaitu saioa eta has ezazu berriro.</translation>
 <translation id="1122960773616686544">Laster-markaren izena</translation>
@@ -2297,7 +2297,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2610374175948698697">Gailuko fitxategiak edo karpetak ikus ditzakete</translation>
 <translation id="2610780100389066815">Microsoft-en fidagarrien zerrendaren sinatzea</translation>
 <translation id="261114180663074524">Hasi saioa Microsoft-eko kontuan eta saiatu berriro</translation>
-<translation id="2611765907167846862">Barea</translation>
 <translation id="2611776654555141051">Laukizuzenaren tresna</translation>
 <translation id="2612676031748830579">Txartelaren zenbakia</translation>
 <translation id="261305050785128654">Jakinarazi webguneei zer hizkuntza ezagutzen dituzun. Ahal dutenean, hizkuntza horietan erakutsiko dute edukia.</translation>

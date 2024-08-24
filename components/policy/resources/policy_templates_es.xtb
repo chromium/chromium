@@ -2610,7 +2610,6 @@ La política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, ten en cuenta que esta política no admite el patrón "*", que coincide con cualquier URL.</translation>
 <translation id="2979696534869541158">Forzar la implementación antigua</translation>
-<translation id="2983209019593449150">Las firmas de código específicas de los correctores de aplicaciones web progresivas se podrán usar en función del proceso de lanzamiento de la función.</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de incorporación del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
 <translation id="2987227569419001736">Controlar el uso de la API Bluetooth web</translation>
@@ -3475,7 +3474,6 @@ Si se le asigna el valor False, no se recogerá información de las versiones.
 En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
 <translation id="3644735978203799620">Habilita la selección automática para capturas de multipantalla</translation>
-<translation id="3645639974927907813">Firma de código específica para los correctores de aplicaciones web progresivas</translation>
 <translation id="3646859102161347133">Establecer el tipo de lupa</translation>
 <translation id="3647212518036289905">Si se define esta política, especificará qué biblioteca GSSAPI se debe usar para la autenticación HTTP. Puedes definirla como un nombre de biblioteca o una ruta completa.
 
@@ -4724,7 +4722,6 @@ Si no se define esta política, se requerirá un gesto previo del usuario para l
 <translation id="4615892138881859957">Controlar la combinación de teclas que se usa para activar el paquete de seis teclas de Insert</translation>
 <translation id="4617338332148204752">Saltarla comprobación de etiquetas meta en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Función NewBaseUrlInheritanceBehavior disponible</translation>
-<translation id="4623516906510429751">Usa firmas de código específicas para los correctores de aplicaciones web progresivas.</translation>
 <translation id="4624417808625504735">Impedir que JavaScript use JIT en estos sitios</translation>
 <translation id="46321462262887935">Tratar las teclas de la fila superior como teclas de función, pero permitir que el usuario cambie este ajuste</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> procese los tipos de contenido mostrados</translation>
@@ -6760,7 +6757,6 @@ Si no se define esta política, se usará el valor predeterminado global para to
 <translation id="6207607210601267301">Inhabilitar la autenticación sin PIN para el host de acceso remoto</translation>
 <translation id="6208896993204286313">Proporcionar información de políticas de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Proporcionar información de versiones del SO y de <ph name="PRODUCT_NAME" /></translation>
-<translation id="6213560283141495655">No uses firmas de código específicas para los correctores de aplicaciones web progresivas.</translation>
 <translation id="6220835555850906733">Si se asigna el valor "Habilitada" a esta política o no se le asigna ninguno, se permitirán todas las salidas de audio compatibles en los dispositivos de los usuarios.
 
       Si se le asigna el valor "Inhabilitada", no se permitirá ninguna salida de audio mientras los usuarios hayan iniciado sesión.
@@ -8642,11 +8638,6 @@ Si a esta política se le asigna el valor true, <ph name="PRODUCT_OS_NAME" /> in
 <translation id="7519218194072744342">La URL del controlador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir la generación de claves en estos sitios web</translation>
 <translation id="7521864460386999758">Impedir que se inyecte código de terceros en Chrome</translation>
-<translation id="7522636035703637613">Si se habilita esta política o no se establece, se permitirá que se usen firmas específicas para las aplicaciones que se creen al instalar una aplicación web progresiva (PWA). De esta forma, cada aplicación instalada tiene una identidad única para los componentes del sistema de <ph name="MAC_OS_NAME" />.
-
-Si se inhabilita esta política, todas las aplicaciones creadas al instalar una aplicación web progresiva (PWA) tendrán la misma identidad. Esto puede interferir con la funcionalidad de <ph name="MAC_OS_NAME" />.
-
-Por ello, esta política solo debe inhabilitarse si usas una solución de seguridad de endpoints que bloquea las aplicaciones con una firma específica.</translation>
 <translation id="7524983116584990314">Borrar datos de Autocompletar</translation>
 <translation id="7529144158022474049">Actualizar de forma automática el factor de dispersión</translation>
 <translation id="7529332889403151669">Especifica si se debe mostrar la alerta en pantalla completa cuando el dispositivo salga del modo de suspensión o de pantalla oscura.

@@ -2605,7 +2605,6 @@ Het beleid <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> kr
 
 Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Houd er wel rekening mee dat het patroon *, dat overeenkomt met elke URL, niet wordt ondersteund door dit beleid.</translation>
 <translation id="2979696534869541158">Oude implementatie afdwingen</translation>
-<translation id="2983209019593449150">Ad-hoc-handtekeningen bij programmacode voor shims voor progressive web-apps kunnen misschien worden gebruikt, afhankelijk van het lanceerproces voor de functie.</translation>
 <translation id="2985927503455169394">De standaard modus voor introductie van de Assistent gebruiken</translation>
 <translation id="2987155890997901449">ARC aanzetten</translation>
 <translation id="2987227569419001736">Gebruik van de Web Bluetooth API beheren</translation>
@@ -3460,7 +3459,6 @@ Als je dit beleid instelt op False, worden er geen versiegegevens verzameld.
 Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
 Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3644735978203799620">Zet automatisch selecteren aan voor opnamen van meerdere schermen</translation>
-<translation id="3645639974927907813">Ad-hoc-handtekening bij programmacode voor shims voor progressive web-apps</translation>
 <translation id="3646859102161347133">Het type vergrootglas instellen</translation>
 <translation id="3647212518036289905">Als je het beleid instelt, geef je aan welke GSSAPI-bibliotheek moet worden gebruikt voor HTTP-verificatie. Stel het beleid in op een bibliotheeknaam of een volledig pad.
 
@@ -4692,7 +4690,6 @@ Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersge
 <translation id="4615892138881859957">De sneltoets beheren die wordt gebruikt om de 'six pack'-toets voor Invoegen te activeren</translation>
 <translation id="4617338332148204752">De metatagcontrole in <ph name="PRODUCT_FRAME_NAME" /> overslaan</translation>
 <translation id="461901491675418689">De functie NewBaseUrlInheritanceBehavior is beschikbaar</translation>
-<translation id="4623516906510429751">Ad-hoc-handtekeningen bij programmacode gebruiken voor shims voor progressive web-apps</translation>
 <translation id="4624417808625504735">Voorkomen dat JavaScript op deze sites JIT kan gebruiken</translation>
 <translation id="46321462262887935">Toetsen op de bovenste rij gebruiken als functietoetsen, maar de gebruiker toestaan dit te wijzigen</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
@@ -6710,7 +6707,6 @@ Als je het beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor 
 <translation id="6207607210601267301">Verificatie zonder pincode uitzetten voor de host voor externe toegang</translation>
 <translation id="6208896993204286313">Beleidsgegevens van <ph name="PRODUCT_NAME" /> rapporteren</translation>
 <translation id="6210259502936598222">OS- en <ph name="PRODUCT_NAME" />-versiegegevens rapporteren</translation>
-<translation id="6213560283141495655">Gebruik geen ad-hoc-handtekeningen bij programmacode voor shims voor progressive web-apps.</translation>
 <translation id="6220835555850906733">Als je het beleid toepast of niet instelt, is alle ondersteunde audio-uitvoer op de apparaten van gebruikers toegestaan.
 
       Als je het beleid niet toepast, is er geen audio-uitvoer toegestaan terwijl gebruikers zijn ingelogd.
@@ -8570,11 +8566,6 @@ Als je dit beleid instelt op True, probeert <ph name="PRODUCT_OS_NAME" /> payloa
 <translation id="7519218194072744342">De URL van de protocolhandler.</translation>
 <translation id="7519251620064708155">Het genereren van sleutels toestaan op deze sites</translation>
 <translation id="7521864460386999758">Niet toestaan dat code van derden wordt geïnjecteerd in Chrome</translation>
-<translation id="7522636035703637613">Als je het beleid aanzet of niet instelt, wordt het gebruik van ad-hoc-handtekeningen aangezet voor apps die worden gemaakt bij de installatie van een progressive web-app (PWA). Hierdoor heeft elke geïnstalleerde app een unieke identiteit voor <ph name="MAC_OS_NAME" />-systeemcomponenten.
-
-Als je het beleid uitzet, heeft elke app die wordt gemaakt bij de installatie van een progressive web-app (PWA) dezelfde identiteit. Dit kan de <ph name="MAC_OS_NAME" />-functionaliteit verstoren.
-
-Zet het beleid alleen uit als je een oplossing voor beveiliging van eindpunten gebruikt die apps met een ad-hoc-handtekening blokkeert.</translation>
 <translation id="7524983116584990314">Automatisch invullen wissen</translation>
 <translation id="7529144158022474049">Spreidingsfactor voor automatische update</translation>
 <translation id="7529332889403151669">Geeft aan of de melding voor volledig scherm moet worden getoond als het apparaat uit de slaapstand wordt gehaald of het donkere scherm wordt uitgezet.

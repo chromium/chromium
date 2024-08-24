@@ -2311,7 +2311,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2610374175948698697">Mega skoðað skrár eða möppur í tækinu</translation>
 <translation id="2610780100389066815">Undirritun Microsoft-traustlista</translation>
 <translation id="261114180663074524">Skráðu þig inn á Microsoft-reikninginn þinn og reyndu síðan aftur</translation>
-<translation id="2611765907167846862">Róleg</translation>
 <translation id="2611776654555141051">Rétthyrningsverkfæri</translation>
 <translation id="2612676031748830579">Kortanúmer</translation>
 <translation id="261305050785128654">Láttu vefsvæði vita hvaða tungumál þú talar. Þau munu þá birta þér efni á þeim tungumálum þegar það er í boði.</translation>
@@ -8150,6 +8149,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6876155724392614295">Hjól</translation>
 <translation id="6876469544038980967">Ekki gagnlegt</translation>
 <translation id="6878422606530379992">Skynjarar eru leyfðir</translation>
+<translation id="6878862640969460273">Langsnið</translation>
 <translation id="6880587130513028875">Myndir á þessari síðu voru útilokaðar.</translation>
 <translation id="6881845890692344060">Stjórnandinn var skráður út. Nú ert þú við stjórnvölinn.</translation>
 <translation id="6882210908253838664">Ef vefsvæði virkar ekki geturðu prófað að veita því tímabundna heimild til að nota fótspor þriðju aðila. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>

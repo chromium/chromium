@@ -2596,7 +2596,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。但请注意，此政策不支持与任何网址匹配的“*”格式。</translation>
 <translation id="2979696534869541158">强制使用旧实现</translation>
-<translation id="2983209019593449150">也许能为渐进式 Web 应用 shim 使用临时代码签名，具体取决于功能启动流程。</translation>
 <translation id="2985927503455169394">使用 Google 助理新手入门体验的默认模式</translation>
 <translation id="2987155890997901449">启用 ARC</translation>
 <translation id="2987227569419001736">控制对 Web Bluetooth API 的使用</translation>
@@ -3450,7 +3449,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 对于 <ph name="PRODUCT_NAME" />，此政策仅在已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后才有效。
 对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="3644735978203799620">允许自动选择多个屏幕截图</translation>
-<translation id="3645639974927907813">为渐进式 Web 应用 shim 进行临时代码签名</translation>
 <translation id="3646859102161347133">设置放大镜类型</translation>
 <translation id="3647212518036289905">通过设置此政策，您可以指定要用于 HTTP 身份验证的 GSSAPI 库。您可以将此政策设为库名称或完整路径。
 
@@ -4682,7 +4680,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4615892138881859957">控制用于触发 Insert 等六个按键的快捷键</translation>
 <translation id="4617338332148204752">跳过“<ph name="PRODUCT_FRAME_NAME" />”中的元标记检查</translation>
 <translation id="461901491675418689">可使用 NewBaseUrlInheritanceBehavior 功能</translation>
-<translation id="4623516906510429751">为渐进式 Web 应用 shim 使用临时代码签名。</translation>
 <translation id="4624417808625504735">禁止 JavaScript 在这些网站上使用 JIT</translation>
 <translation id="46321462262887935">将顶行中的按键用作功能键，但允许用户更改此设置</translation>
 <translation id="4632343302005518762">允许 <ph name="PRODUCT_FRAME_NAME" />处理列出的内容类型</translation>
@@ -6697,7 +6694,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="6207607210601267301">针对远程访问主机停用无 PIN 码身份验证</translation>
 <translation id="6208896993204286313">报告 <ph name="PRODUCT_NAME" /> 政策信息</translation>
 <translation id="6210259502936598222">报告操作系统和 <ph name="PRODUCT_NAME" /> 版本信息</translation>
-<translation id="6213560283141495655">请勿为渐进式 Web 应用 shim 使用临时代码签名。</translation>
 <translation id="6220835555850906733">如果此政策已启用或未设置，用户将能在其设备上使用所有受支持的音频输出。
 
       如果此政策已停用，用户在登录后将无法使用任何音频输出。
@@ -8559,11 +8555,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7519218194072744342">协议处理程序的网址。</translation>
 <translation id="7519251620064708155">允许在这些网站上使用密钥生成功能</translation>
 <translation id="7521864460386999758">禁止在 Chrome 中注入第三方代码</translation>
-<translation id="7522636035703637613">如果已启用或未设置此政策，系统会允许在安装渐进式 Web 应用 (PWA) 时为创建的应用使用临时签名。这可确保每个已安装的应用都有一个对于 <ph name="MAC_OS_NAME" /> 系统组件唯一的身份。
-
-如果此政策已停用，安装渐进式 Web 应用 (PWA) 时创建的每个应用都将具有相同的身份。这可能会干扰 <ph name="MAC_OS_NAME" /> 功能。
-
-仅当使用的端点安全解决方案会阻止使用临时签名的应用时，才应停用此政策。</translation>
 <translation id="7524983116584990314">清除自动填充数据</translation>
 <translation id="7529144158022474049">自动更新分配因素</translation>
 <translation id="7529332889403151669">指定当设备从睡眠状态或暗屏幕恢复时是否应显示全屏提醒。
