@@ -88,7 +88,7 @@ class RequestHandler:
             "is_test_image": True,
             "os_version": "local-dev",
             "textdirection": "ltr",
-            "video_capture_disallowed": False,
+            "cca_disallowed": False,
             "timeLapse": True,
             "auto_qr": True,
             "digital_zoom": True,
