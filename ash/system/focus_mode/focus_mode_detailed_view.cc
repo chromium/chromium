@@ -330,10 +330,10 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
 
   const base::flat_set<focus_mode_util::SoundType>& sound_sections =
       focus_mode_controller->focus_mode_sounds_controller()->sound_sections();
-  views::View* sound_view =
+  focus_mode_sounds_view_ =
       scroll_content()->AddChildView(std::make_unique<FocusModeSoundsView>(
           sound_sections, is_network_connected));
-  sound_view->SetID(ViewId::kSoundView);
+  focus_mode_sounds_view_->SetID(ViewId::kSoundView);
 
   const bool in_focus_session = focus_mode_controller->in_focus_session();
 
@@ -765,8 +765,12 @@ void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {
 void FocusModeDetailedView::OnTaskViewAnimate(const int shift_height) {
   std::vector<views::View*> animatable_views;
 
-  // Currently, we only have the `do_not_disturb_view_` below the task view
-  // container. We only need to insert a new added view into this map in future.
+  // Add the views that show up below the tasks view container into
+  // `animatable_views`.
+  if (focus_mode_sounds_view_->GetVisible()) {
+    animatable_views.push_back(focus_mode_sounds_view_);
+  }
+
   if (do_not_disturb_view_->GetVisible()) {
     animatable_views.push_back(do_not_disturb_view_);
   }
