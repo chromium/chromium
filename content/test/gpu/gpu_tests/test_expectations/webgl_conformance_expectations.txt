@@ -730,6 +730,7 @@ crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] co
 crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
 crbug.com/332587536 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/332587536 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
+crbug.com/361782093 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/more/functions/copyTexSubImage2DBadArgs.html [ Failure ]
 
 ############
 # ChromeOS #
