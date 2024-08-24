@@ -11325,6 +11325,7 @@ if (!is_android && !is_chromeos_device) {
           "../browser/signin/mirror_interactive_uitest.cc",
           "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc",
         ]
+        deps += [ "//chrome/browser/ui/chromeos" ]
       } else {
         deps += [ "//chrome/browser/ui/views/shortcuts:interactive_ui_tests" ]
       }
