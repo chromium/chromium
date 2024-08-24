@@ -57,6 +57,20 @@ void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
   CHECK(iterator != sorted_keys_.end() && *iterator == name);
   sorted_keys_.erase(iterator);
 
+  // Detach any scene that may still be referencing this profile.
+  {
+    ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateForScene);
+
+    base::Value::Dict dict;
+    for (auto [key, value] : update.Get()) {
+      if (value.GetString() != name) {
+        dict.Set(key, std::move(value));
+      }
+    }
+
+    *update = std::move(dict);
+  }
+
   // Remove the profile from the list of last active profiles (if present).
   {
     ScopedListPrefUpdate update(prefs_, prefs::kBrowserStatesLastActive);

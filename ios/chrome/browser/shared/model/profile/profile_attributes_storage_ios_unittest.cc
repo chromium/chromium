@@ -51,6 +51,11 @@ constexpr TestAccount kTestAccounts[] = {
     },
 };
 
+constexpr char kTestProfile1[] = "Profile1";
+constexpr char kTestProfile2[] = "Profile2";
+constexpr char kTestSceneId1[] = "scene-id1";
+constexpr char kTestSceneId2[] = "scene-id2";
+
 }  // namespace
 
 class ProfileAttributesStorageIOSTest : public PlatformTest {
@@ -112,19 +117,50 @@ TEST_F(ProfileAttributesStorageIOSTest, RemoveProfile) {
 TEST_F(ProfileAttributesStorageIOSTest, MapBrowserStateAndSceneID) {
   ProfileAttributesStorageIOS storage(pref_service());
 
-  std::string sceneID = "Test Scene ID";
+  storage.AddProfile(kTestProfile1);
+  ASSERT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId1),
+            std::string());
+  ASSERT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId2),
+            std::string());
 
-  ASSERT_EQ(storage.GetBrowserStateNameForSceneID(sceneID), std::string());
+  storage.SetBrowserStateForSceneID(kTestSceneId1, kTestProfile1);
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId1),
+            kTestProfile1);
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId2),
+            std::string());
 
-  for (const TestAccount& account : kTestAccounts) {
-    storage.AddProfile(account.name);
-    EXPECT_NE(storage.GetBrowserStateNameForSceneID(sceneID), account.name);
-    storage.SetBrowserStateForSceneID(sceneID, account.name);
-    EXPECT_EQ(storage.GetBrowserStateNameForSceneID(sceneID), account.name);
-  }
+  storage.SetBrowserStateForSceneID(kTestSceneId2, kTestProfile1);
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId1),
+            kTestProfile1);
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId2),
+            kTestProfile1);
 
-  storage.ClearBrowserStateForSceneID(sceneID);
-  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(sceneID), std::string());
+  storage.ClearBrowserStateForSceneID(kTestSceneId1);
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId1),
+            std::string());
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId2),
+            kTestProfile1);
+}
+
+// Tests that removing a profile orphans all attached scenes.
+TEST_F(ProfileAttributesStorageIOSTest, RemoveBrowserStateDisconnectScenes) {
+  ProfileAttributesStorageIOS storage(pref_service());
+
+  storage.AddProfile(kTestProfile1);
+  storage.AddProfile(kTestProfile2);
+  storage.SetBrowserStateForSceneID(kTestSceneId1, kTestProfile1);
+  storage.SetBrowserStateForSceneID(kTestSceneId2, kTestProfile2);
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId1),
+            kTestProfile1);
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId2),
+            kTestProfile2);
+
+  storage.RemoveProfile(kTestProfile1);
+  EXPECT_FALSE(storage.HasProfileWithName(kTestProfile1));
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId1),
+            std::string());
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(kTestSceneId2),
+            kTestProfile2);
 }
 
 // Tests that settings and getting the attributes using ProfileAttributesIOS
