@@ -27,3 +27,7 @@ const ToastSpecification* ToastRegistry::GetToastSpecification(
   CHECK(iter != toast_specifications_.end());
   return iter->second.get();
 }
+
+bool ToastRegistry::IsEmpty() const {
+  return toast_specifications_.empty();
+}

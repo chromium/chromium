@@ -4,14 +4,18 @@
 
 #include "chrome/browser/ui/toasts/toast_controller.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 
 ToastParams::ToastParams(ToastId id) : toast_id_(id) {}
 ToastParams::~ToastParams() = default;
 
-ToastController::ToastController(BrowserView* browser_view)
-    : browser_view_(browser_view) {}
+ToastController::ToastController(
+    BrowserWindowInterface* browser_window_interface,
+    const ToastRegistry* toast_registry)
+    : browser_window_interface_(browser_window_interface),
+      toast_registry_(toast_registry) {}
 ToastController::~ToastController() = default;
 
 bool ToastController::CanShowToast(ToastId id) {

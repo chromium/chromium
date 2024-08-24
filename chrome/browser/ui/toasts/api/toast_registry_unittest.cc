@@ -19,7 +19,7 @@ class ToastRegistryTest : public testing::Test {};
 
 // By default, the toast specification must have an icon and body string.
 TEST_F(ToastRegistryTest, DefaultToast) {
-  const int string_id = IDS_MEMORY_SAVER_DIALOG_TITLE;
+  const int string_id = 0;
   std::unique_ptr<ToastSpecification> spec =
       ToastSpecification::Builder(vector_icons::kEmailIcon, string_id).Build();
 
@@ -32,7 +32,7 @@ TEST_F(ToastRegistryTest, DefaultToast) {
 }
 
 TEST_F(ToastRegistryTest, ToastWithCloseButton) {
-  const int string_id = IDS_MEMORY_SAVER_DIALOG_TITLE;
+  const int string_id = 0;
   std::unique_ptr<ToastSpecification> spec =
       ToastSpecification::Builder(vector_icons::kEmailIcon, string_id)
           .AddCloseButton()
@@ -47,9 +47,8 @@ TEST_F(ToastRegistryTest, ToastWithCloseButton) {
 }
 
 TEST_F(ToastRegistryTest, ToastWithActionButton) {
-  const int body_string_id = IDS_MEMORY_SAVER_DIALOG_TITLE;
-  const int action_button_string_id =
-      IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1;
+  const int body_string_id = 0;
+  const int action_button_string_id = 1;
   std::unique_ptr<ToastSpecification> spec =
       ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
           .AddActionButton(action_button_string_id, base::DoNothing())
@@ -81,7 +80,7 @@ TEST_F(ToastRegistryTest, ToastWithActionButton) {
 }
 
 TEST_F(ToastRegistryTest, ToastWithMenu) {
-  const int body_string_id = IDS_MEMORY_SAVER_DIALOG_TITLE;
+  const int body_string_id = 0;
   std::unique_ptr<ToastSpecification> spec =
       ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
           .AddMenu(std::make_unique<ui::SimpleMenuModel>(nullptr))
@@ -95,7 +94,7 @@ TEST_F(ToastRegistryTest, ToastWithMenu) {
 }
 
 TEST_F(ToastRegistryTest, PersistentToast) {
-  const int body_string_id = IDS_MEMORY_SAVER_DIALOG_TITLE;
+  const int body_string_id = 0;
   std::unique_ptr<ToastSpecification> spec =
       ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
           .AddPersistance()
@@ -123,13 +122,14 @@ TEST_F(ToastRegistryTest, RegisterSpecification) {
   toast_registry->RegisterToast(ToastId::kImageCopied, std::move(unique_spec));
   EXPECT_EQ(toast_specification,
             toast_registry->GetToastSpecification(ToastId::kImageCopied));
+  EXPECT_FALSE(toast_registry->IsEmpty());
 }
 
 TEST_F(ToastRegistryTest, RegisterNullSpecification) {
   std::unique_ptr<ToastRegistry> toast_registry =
       std::make_unique<ToastRegistry>();
 
-  // ToastRegistry should hit a check when we try to register a null
+  // ToastRegistry should hit a CHECK when we try to register a null
   // ToastSpecification.
   EXPECT_DEATH(toast_registry->RegisterToast(ToastId::kImageCopied, nullptr),
                "");
@@ -159,8 +159,9 @@ TEST_F(ToastRegistryTest, RegisterDuplicateToastId) {
 TEST_F(ToastRegistryTest, RetrieveUnregisteredToastId) {
   std::unique_ptr<ToastRegistry> toast_registry =
       std::make_unique<ToastRegistry>();
+  ASSERT_TRUE(toast_registry->IsEmpty());
 
-  // The ToastRegistry should check when we try to retrieve the
+  // The ToastRegistry should hit a CHECK when we try to retrieve the
   // ToastSpecification for an id that was not registered.
   EXPECT_DEATH(toast_registry->GetToastSpecification(ToastId::kLinkCopied), "");
 }

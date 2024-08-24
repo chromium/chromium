@@ -10,7 +10,8 @@
 
 #include "base/memory/raw_ptr.h"
 
-class BrowserView;
+class BrowserWindowInterface;
+class ToastRegistry;
 enum class ToastId;
 
 struct ToastParams {
@@ -24,7 +25,8 @@ struct ToastParams {
 
 class ToastController {
  public:
-  explicit ToastController(BrowserView* browser_view);
+  explicit ToastController(BrowserWindowInterface* browser_window_interface,
+                           const ToastRegistry* toast_registry);
   ~ToastController();
 
   bool CanShowToast(ToastId id);
@@ -32,7 +34,8 @@ class ToastController {
   void ClosePersistentToast(ToastId id);
 
  private:
-  const raw_ptr<BrowserView> browser_view_;
+  const raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  const raw_ptr<const ToastRegistry> toast_registry_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_

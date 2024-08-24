@@ -22,6 +22,9 @@ class ToastRegistry {
   void RegisterToast(ToastId id,
                      std::unique_ptr<ToastSpecification> specification);
 
+  // Returns whether there are ids currently registered with the registry.
+  bool IsEmpty() const;
+
   // Returns the corresponding ToastSpecification to `id`.
   const ToastSpecification* GetToastSpecification(ToastId id) const;
 

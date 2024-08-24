@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -128,6 +129,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       mv2_disabled_dialog_controller_ =
           std::make_unique<extensions::Mv2DisabledDialogController>(browser);
     }
+
+    toast_service_ = std::make_unique<ToastService>(browser);
   }
 
   read_anything_coordinator_->Initialize();
@@ -144,8 +147,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // unified_side_panel_.
   side_panel_coordinator_ =
       std::make_unique<SidePanelCoordinator>(browser_view);
-
-  toast_controller_ = std::make_unique<ToastController>(browser_view);
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
@@ -162,6 +163,10 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
   return side_panel_coordinator_.get();
+}
+
+ToastController* BrowserWindowFeatures::toast_controller() {
+  return toast_service_->toast_controller();
 }
 
 BrowserWindowFeatures::BrowserWindowFeatures() = default;

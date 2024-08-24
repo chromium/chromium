@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 
 class Browser;
@@ -14,6 +16,7 @@ class ReadAnythingCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
 class ToastController;
+class ToastService;
 
 namespace extensions {
 class Mv2DisabledDialogController;
@@ -106,7 +109,9 @@ class BrowserWindowFeatures {
     return tab_declutter_controller_.get();
   }
 
-  ToastController* toast_controller() { return toast_controller_.get(); }
+  ToastController* toast_controller();
+
+  ToastService* toast_service() { return toast_service_.get(); }
 
  protected:
   BrowserWindowFeatures();
@@ -139,7 +144,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<tab_groups::SessionServiceTabGroupSyncObserver>
       session_service_tab_group_sync_observer_;
 
-  std::unique_ptr<ToastController> toast_controller_;
+  std::unique_ptr<ToastService> toast_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
