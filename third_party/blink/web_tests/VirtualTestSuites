@@ -3258,9 +3258,9 @@
     "prefix": "import-assertions-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/html/semantics/scripting-1/the-script-element/css-module-assertions",
-      "external/wpt/html/semantics/scripting-1/the-script-element/import-assertions",
-      "external/wpt/html/semantics/scripting-1/the-script-element/json-module-assertions",
+      "external/wpt/html/semantics/scripting-1/the-script-element/css-module",
+      "external/wpt/html/semantics/scripting-1/the-script-element/import-attributes",
+      "external/wpt/html/semantics/scripting-1/the-script-element/json-module",
       "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/css-import-in-worker.any.js",
       "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/with-import-assertions.any.js",
       "http/tests/inspector-protocol/css/constructed-stylesheet-source-url.js"

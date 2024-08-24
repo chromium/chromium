@@ -1,0 +1,57 @@
+This is a testharness.js-based test.
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, line to 20px 30px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, line to 20px 30px )" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 0 0, line to 100% 100%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, line by 20px 30px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, hline to 100px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, hline by 100%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, vline to 100px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, vline by 100%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, curve by 20px 20px using 10px 30px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, curve by 20px 20px using 10px 30px 12px 32px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, smooth by 20px 20px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, smooth by 20px 20px using 12px 32px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 0)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 0)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% rotate 0deg)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% large)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of -10% -20% large)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% rotate 1deg)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 12deg)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 0.52rad)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% large cw)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg large)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

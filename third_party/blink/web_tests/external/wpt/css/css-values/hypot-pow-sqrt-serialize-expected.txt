@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] 'hypot(2px, 40%)' as a specified value should serialize as 'hypot(2px, 40%)'.
+  assert_not_equals: 'hypot(2px, 40%)' should be valid in letter-spacing. got disallowed value ""
+Harness: the test ran to completion.
+

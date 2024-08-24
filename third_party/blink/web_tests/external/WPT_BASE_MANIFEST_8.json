@@ -5327,6 +5327,13 @@
        {}
       ]
      ],
+     "insertRule-import-trailing-garbage-crash.html": [
+      "3acd607ca3c245dd47f4a4ddc225d8cb4e7af7b9",
+      [
+       null,
+       {}
+      ]
+     ],
      "removerule-invalidation-crash.html": [
       "a83f43d5faf62338cfb442468a6e9e0e011c79f2",
       [
@@ -74204,6 +74211,116 @@
       ]
      ],
      "background-clip": {
+      "clip-border-area-background-geometry.html": [
+       "7d448469b31628547c524e8dafb893495391e36e",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-border-area-background-geometry-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-border-area-border-image.html": [
+       "ee1ebe6df0441a2215425dde5f7a26235b0050a6",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-border-area-border-image-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-border-area-border-on-top.html": [
+       "05109e4a7f5ddcc56466cf1dc4a9d5a7e4808b4b",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-border-area-border-on-top-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-border-area-box-decoration-break.html": [
+       "dfbf39580af2e477716652ea2484b26667953c98",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-border-area-box-decoration-break-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             150
+            ],
+            [
+             0,
+             200
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "clip-border-area-multiple-backgrounds.html": [
+       "4c871fc3d0a79b06a1c8c624e6df0932cc945cd5",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-border-area-multiple-backgrounds-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-border-area.html": [
+       "cdbb096c701aaccdedb09f96769130154079b0b1",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-border-area-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             130
+            ],
+            [
+             0,
+             1100
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "clip-rounded-corner.html": [
        "3453c5bc8f5e45667ba20a1e6276a08e4b1be714",
        [
@@ -74243,6 +74360,35 @@
         {}
        ]
       ],
+      "clip-text-ellipsis.html": [
+       "d2a73b9fb6eb88ef391defa8fde3f73a6f030fad",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-text-ellipsis-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             45
+            ],
+            [
+             0,
+             1350
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "clip-text-flex.html": [
        "618c8c1dbc5bd1a017b50c850b54263cf0828b68",
        [
@@ -74278,6 +74424,48 @@
             [
              0,
              5846
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "clip-text-text-decorations.html": [
+       "3a15fad5cef236ee978b536e3d209810aa3e66cb",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-rounded-corner-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-text-text-emphasis.html": [
+       "c34ddba99f99454e24542c3d222d52c97e21ab68",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-text-text-emphasis-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             45
+            ],
+            [
+             0,
+             5100
             ]
            ]
           ]
@@ -152073,6 +152261,64 @@
         }
        ]
       ],
+      "clip-path-circle-closest-corner.html": [
+       "79e57b1cb6a32dfc455d69d5fee6e69a5aa9ef93",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-circle-4-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             40
+            ],
+            [
+             0,
+             2000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "clip-path-circle-farthest-corner.html": [
+       "9d4eeaecc71f6f7a93ec8f074cf79a199f7db4c5",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-circle-4-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             40
+            ],
+            [
+             0,
+             2000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "clip-path-columns-shape-001.html": [
        "de13607ad83c9f06382c8584613883bb8e93639d",
        [
@@ -152551,6 +152797,35 @@
         }
        ]
       ],
+      "clip-path-ellipse-closest-farthest-corner.html": [
+       "aba7f6e0b554f7294b6965c11729607729e3a1bb",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-ellipse-2-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             300
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "clip-path-fillBox-1a.html": [
        "c14890e9673b012e0fc2937c2093abec8e12532d",
        [
@@ -152979,7 +153254,7 @@
        ]
       ],
       "clip-path-marginBox-1d.html": [
-       "39d3c9db5afb39eb20f1ed0260111dfff85468ca",
+       "7917f6e4a39ab19637ad2558c179ef07bf8df6a5",
        [
         null,
         [
@@ -152995,7 +153270,7 @@
            [
             [
              0,
-             146
+             224
             ],
             [
              0,
@@ -153611,7 +153886,7 @@
        ]
       ],
       "clip-path-shape-003.html": [
-       "ef03f85b28c5661744069214c53187db667f1c60",
+       "8f8ac9e07ee2b5a8911ce67dd207ad908d732ac8",
        [
         null,
         [
@@ -154054,7 +154329,7 @@
        ]
       ],
       "clip-path-xywh-003.html": [
-       "370e1af9757cb6cc067d911ec58bda41aff5bcff",
+       "a8faef658a988d914e38f24c5761272db75f5b5b",
        [
         null,
         [
@@ -154070,11 +154345,11 @@
            [
             [
              0,
-             2
+             62
             ],
             [
              0,
-             32
+             250
             ]
            ]
           ]
@@ -260980,7 +261255,7 @@
       ]
      ],
      "css-filters-animation-grayscale.html": [
-      "c258718f69df1575f536c00ebfef0af08bbea986",
+      "c96488dc1b317df03aac8b183ce2e97c677b33c5",
       [
        null,
        [
@@ -260989,7 +261264,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            10000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "css-filters-animation-hue-rotate.html": [
@@ -261045,7 +261336,7 @@
       ]
      ],
      "css-filters-animation-sepia.html": [
-      "223970111080d999bcceb6f3c258301c77c0f382",
+      "90ffbb783f0434ec1b107566d15fe540b8a89213",
       [
        null,
        [
@@ -261054,7 +261345,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            10001
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "css-reference-large-svg-filter.html": [
@@ -262126,7 +262433,7 @@
       ]
      ],
      "filters-grayscale-001-test.html": [
-      "40e49b60bea249d54280ea9e74a5cd5cbf5e31a5",
+      "efde7b4ffe47f747f40c11e9a67aba6779e6c9f4",
       [
        null,
        [
@@ -262135,7 +262442,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "filters-opacity-001-test.html": [
@@ -265906,6 +266229,71 @@
          ]
         ]
        }
+      ]
+     ],
+     "featureless-001.html": [
+      "b248b65a4f48e3a8cbc2fbde475bf7addca55eda",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "featureless-002.html": [
+      "0904e3098c57728eef81f991d1c2d4f076fb80e2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "featureless-003.html": [
+      "3700b241951f06db2b082d9f89dced1022ade525",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "featureless-004.html": [
+      "d0ea23e560f2e7697f4727f3145c9b4af035f042",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "featureless-005.html": [
+      "2ffe9d2488c91129ef7f644f24d2b15a1db2cc9f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
       ]
      ],
      "first-letter-flag-001.html": [
@@ -283097,6 +283485,19 @@
          [
           [
            "/html/semantics/interactive-elements/the-dialog-element/removed-element-is-removed-from-top-layer-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-backdrop-remove-add-ordering.html": [
+        "fbfe2e1fd17a4a357b62504332bc66844d3c4d76",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/top-layer-backdrop-remove-add-ordering-ref.html",
            "=="
           ]
          ],
@@ -312639,6 +313040,30 @@
        "5258340ceeba8489d3c75a62b6199908640bd591",
        []
       ],
+      "clip-border-area-background-geometry-ref.html": [
+       "ce4c0996f5fca7216585f73bfbbc868e8449864b",
+       []
+      ],
+      "clip-border-area-border-image-ref.html": [
+       "3ef871ef03212099a4a0fca12c374c826e8bec1b",
+       []
+      ],
+      "clip-border-area-border-on-top-ref.html": [
+       "7ec9f70ad523d278b712380ac8757998e7f8ab11",
+       []
+      ],
+      "clip-border-area-box-decoration-break-ref.html": [
+       "d3e84ff89e815aaa5b5422e83a66e3902686013d",
+       []
+      ],
+      "clip-border-area-multiple-backgrounds-ref.html": [
+       "1db39c33f62aa9001b68f1a50eea2db86caa3887",
+       []
+      ],
+      "clip-border-area-ref.html": [
+       "1df7f6416db78d1149a8c66f3639b752945ceca9",
+       []
+      ],
       "clip-rounded-corner-ref.html": [
        "379ad36992a92384444bd0db12cb7b90531fcd1c",
        []
@@ -312651,12 +313076,24 @@
        "2619a196d77f615cdee81bfdfe8d8cf3449bedef",
        []
       ],
+      "clip-text-ellipsis-ref.html": [
+       "8ee44e858972e71963b990acea63af1b03d405ed",
+       []
+      ],
       "clip-text-flex-ref.html": [
        "0bcbc0bc13f6bb8a13adc256a728a7860f3e2d69",
        []
       ],
       "clip-text-multi-line-ref.html": [
        "455daa7aeabc3fba876eda3d1807b4ddca98c4f9",
+       []
+      ],
+      "clip-text-text-decorations-ref.html": [
+       "de819e4678e9c26c81bba94b7662d0fb55e4aa9a",
+       []
+      ],
+      "clip-text-text-emphasis-ref.html": [
+       "8d7c54f3f7ec0176d55ce9bc6eb89ce108be9b18",
        []
       ]
      },
@@ -333636,6 +334073,10 @@
         "4cffe8837d34b54ccff3524a01b5eb162662349d",
         []
        ],
+       "clip-path-circle-4-ref.html": [
+        "50cd08f458f38a644c02c27ea842570d34e05f97",
+        []
+       ],
        "clip-path-circle-ref.html": [
         "c427e696bfd64a7fb550d777ce8a8c3d28598245",
         []
@@ -333654,6 +334095,10 @@
        ],
        "clip-path-document-element-ref.html": [
         "4608e54b2082aef805dce8b5bbff2c2cc82c41e9",
+        []
+       ],
+       "clip-path-ellipse-2-ref.html": [
+        "150f440f725f9b5c58ac4338e3fdb9b566ae6178",
         []
        ],
        "clip-path-ellipse-ref.html": [
@@ -339721,6 +340166,14 @@
       ],
       "path-function-computed-expected.txt": [
        "be136977b717590263a7824e2941905c16aee595",
+       []
+      ],
+      "shape-function-computed.tentative-expected.txt": [
+       "bee27411a957f3db505c8a6eadc655e0e7577e50",
+       []
+      ],
+      "shape-function-valid.tentative-expected.txt": [
+       "3af41187d4181424234444ca3dd962148ccf0ebc",
        []
       ],
       "xywh-function-computed-expected.txt": [
@@ -350532,6 +350985,10 @@
       "53dde2026fafee87f268f6b7d9207829d52f3f61",
       []
      ],
+     "hypot-pow-sqrt-serialize-expected.txt": [
+      "cdc2180e17ea741cee5baad0ade5a92e6e8b004e",
+      []
+     ],
      "minmax-length-percent-serialize-expected.txt": [
       "d0f5e33eeda2dea30e4cd400f04eeeeebeef8f7c",
       []
@@ -356260,7 +356717,7 @@
      ],
      "animation": {
       "offset-path-interpolation-008-expected.txt": [
-       "e754fee53e8177bf8f4137568b20540ef9e5b3b6",
+       "5310210ef50d55fec42c65f3fa10c294a3f4ddfa",
        []
       ],
       "reftests": {
@@ -362429,7 +362886,7 @@
       []
      ],
      "lfedcm-identity.provider-create.sub.html": [
-      "4b60c7866f03cde9bd047264112f48f60995a856",
+      "7cec8bdf97f19a6f2a9f02e9224fae67fe347ec0",
       []
      ],
      "lfedcm-identity.provider-delete.sub.html": [
@@ -381684,6 +382141,10 @@
          []
         ]
        },
+       "top-layer-backdrop-remove-add-ordering-ref.html": [
+        "7bc302861e336cb74f64e5592a3c1393c2ea5127",
+        []
+       ],
        "top-layer-containing-block-ref.html": [
         "40b72cf5ef7c4b11d677d334778726042b33e11f",
         []
@@ -381966,10 +382427,6 @@
        []
       ],
       "the-script-element": {
-       "README.md": [
-        "ab4a4820afa955e02c03019246226f2e3891e57e",
-        []
-       ],
        "cacheable-script-throw.py": [
         "b315afed5639302a099376576cafe07e0b40fc3c",
         []
@@ -382074,110 +382531,6 @@
          ],
          "worker.sub.js": [
           "dc85c13ed91cce92d1cacd6a129855a3366d8d7b",
-          []
-         ]
-        }
-       },
-       "css-module-assertions": {
-        "resources": {
-         "atImported.css": [
-          "8629a846d14e60a3596e809b911622f6aecb5a04",
-          []
-         ],
-         "bad-import.css": [
-          "a6e1a0f395d910a604e4b6d6a0afd8a43b94e5f2",
-          []
-         ],
-         "basic-large.css": [
-          "555ab70d2ed80cdb7d528ea6be65755634885e57",
-          []
-         ],
-         "basic.css": [
-          "e034ed9ac7c0a1cde5f0ef9857a639557e1e05fa",
-          []
-         ],
-         "bom-utf-16be.css": [
-          "9e17902a1d3d69e0ebebd039553d2b50ab489d81",
-          []
-         ],
-         "bom-utf-16le.css": [
-          "ef90843d8eda44a5cc3bb82e3ad2f1d862ad2b24",
-          []
-         ],
-         "bom-utf-8.css": [
-          "5cf81232b7aacafc82b1799306cfae0b166df580",
-          []
-         ],
-         "credentials-iframe.sub.html": [
-          "cf1d621ce3a550228ac4e7b50f3f7a18d92fe0b5",
-          []
-         ],
-         "cross-origin.py": [
-          "d744fc9514d397af248c0b1b2d215f452d17ffd5",
-          []
-         ],
-         "crossorigin-import-parse-error-with-cors.sub.html": [
-          "3afb8edeb1421c08ff7113e8aef3a47222678e9e",
-          []
-         ],
-         "crossorigin-import-with-cors.sub.html": [
-          "f8754c2a569b27dd0cabff251b3d3522d9d8de99",
-          []
-         ],
-         "crossorigin-import-without-cors.sub.html": [
-          "ab70b735732dc76f9e8438c578da82f8aa04561c",
-          []
-         ],
-         "css-module-without-assertion-iframe.html": [
-          "3d1be841cee24e90d10be47fb821f9f55937fbfe",
-          []
-         ],
-         "integrity-matches.js": [
-          "95be445311be7b3af57fdcc006b5dfc1ee1616cd",
-          []
-         ],
-         "integrity-mismatches.js": [
-          "af6fc24de4949e94d9d1bcb2471bb775c203a8b8",
-          []
-         ],
-         "load-error-events.py": [
-          "b61b1ca834e53dd4966115743278815565355fad",
-          []
-         ],
-         "load-relative-url.css": [
-          "27f298761048b73a6c7229b083a4711434200424",
-          []
-         ],
-         "malformed.css": [
-          "28819bfdf55bff3dd2ab9bd204271bc4114f8c49",
-          []
-         ],
-         "parse-error.css": [
-          "2bee3ff9966cb5a84afba6e3f4fb843d5ad7394b",
-          []
-         ],
-         "record-fetch.py": [
-          "4928cb4acb9eb591a2e1ac80cf8a81982a353313",
-          []
-         ],
-         "referrer-checker.py": [
-          "c1eaed8e468b6e50a8a49d9e2a0cdccf4479c65d",
-          []
-         ],
-         "utf-8.css": [
-          "0a8b46656f1684410692862ae625202b1566cc7f",
-          []
-         ],
-         "windows-1250.css": [
-          "9beac4d618040083435e2a4077cc8c668f1bc00b",
-          []
-         ],
-         "worker-dynamic-import.sub.js": [
-          "791bd7d3f949940e91eee181095d61db725c7eb7",
-          []
-         ],
-         "worker.sub.js": [
-          "ffee312d21e094e9c3ff2627bd74c77b9700717e",
           []
          ]
         }
@@ -382318,40 +382671,6 @@
          []
         ]
        },
-       "import-assertions": {
-        "empty-assertion-clause.js": [
-         "6913dd61dffe682063eb887a08c90242ca1b5f42",
-         []
-        ],
-        "empty-type-assertion.js": [
-         "5bb9b1ddb8e648c7165a3b29ab425fc97cb81037",
-         []
-        ],
-        "export-hello.js": [
-         "34b58e6e126c27f840c2ebd092e3b82b095fb374",
-         []
-        ],
-        "hello.js": [
-         "2f348444606435700656725dbcd9a08e8e10775f",
-         []
-        ],
-        "invalid-type-assertion.js": [
-         "e28c0176d5c3e444051f7b21070ac62a86f0ff0f",
-         []
-        ],
-        "javascript-type-assertion.js": [
-         "cc0f531026eda4d8eb66c5b11efbf7c5dda83018",
-         []
-        ],
-        "js-type-assertion.js": [
-         "c649c95ffeaa9cb132aab9b182b1032605c0f685",
-         []
-        ],
-        "unsupported-assertion.js": [
-         "45f6d60c9dae25f26640d6b79b08fc9a009fc06b",
-         []
-        ]
-       },
        "import-attributes": {
         "empty-attributes-clause.js": [
          "98c45731796fba43ce1425ff165b14e80b9534aa",
@@ -382477,112 +382796,6 @@
         ],
         "serviceworker.js": [
          "65210fe3e7fee3aa67179dea5a9f9706fa27a08e",
-         []
-        ],
-        "string.json": [
-         "ace2d72d9d3d24dbfaa1462949b0688ff326fc9b",
-         []
-        ],
-        "true.json": [
-         "27ba77ddaf61532f217964734769a42cdabc17dc",
-         []
-        ],
-        "utf-8.json": [
-         "088d98235873d4dd5107ef2f00b10625773fe8db",
-         []
-        ],
-        "valid-content-type-expected.txt": [
-         "48d67bd8cbd595e46245742b527de765dcada013",
-         []
-        ],
-        "windows-1250.json": [
-         "490e752ce93c75afad150e65af9737b7f4d9b3c9",
-         []
-        ]
-       },
-       "json-module-assertions": {
-        "array.json": [
-         "e77e32d3382e0a40e9682d11664a3c0d9f354523",
-         []
-        ],
-        "bom-utf-16be.json": [
-         "d22a45a591079d6caea71404eb0190e7094f321c",
-         []
-        ],
-        "bom-utf-16le.json": [
-         "4d1aa264a697b224eadbfe993cafeaac810acdd2",
-         []
-        ],
-        "bom-utf-8.json": [
-         "07ba933e8608da70bb40645066226b8e95fb2267",
-         []
-        ],
-        "credentials-iframe.sub.html": [
-         "44e6402faa56897075ef298b9079b2f5ddcb1b7c",
-         []
-        ],
-        "cross-origin.py": [
-         "cd56c3628a087d9c8221720f3ceca385117f1c4a",
-         []
-        ],
-        "crossorigin-import-parse-error-with-cors.sub.html": [
-         "7d044f8579b5daf53b000f28a4938b44105a91da",
-         []
-        ],
-        "crossorigin-import-with-cors.sub.html": [
-         "d71938dae4ef688a3c559cc42d54b955b7673182",
-         []
-        ],
-        "crossorigin-import-without-cors.sub.html": [
-         "9d07d6c727c407ee6f301528d4b9f00c5bed0dff",
-         []
-        ],
-        "data.json": [
-         "14a0526ebb23f65992fa3558613e32df34421136",
-         []
-        ],
-        "false.json": [
-         "c508d5366f70bba37fcc09d128b6537c4adb2c79",
-         []
-        ],
-        "integrity-matches.js": [
-         "969c90c2907cc83abc2b828285b0badfd673723c",
-         []
-        ],
-        "integrity-mismatches.js": [
-         "3c88a98dbc5512f966cc937ac4c671da51e0b601",
-         []
-        ],
-        "load-error-events.py": [
-         "4018adcdf7cd8d6b1fbc9e25e2ff34bf0b495f26",
-         []
-        ],
-        "module.json": [
-         "f834b2a4e8fab045a4b224caa485e0ee666f04c6",
-         []
-        ],
-        "null.json": [
-         "19765bd501b636fce433540d9e6735f51d66151d",
-         []
-        ],
-        "parse-error-expected.txt": [
-         "608893a86505c1f7efdb318e52bab16f8051928f",
-         []
-        ],
-        "parse-error.json": [
-         "98232c64fce9360c79f119cf6de8f670f69f1c44",
-         []
-        ],
-        "referrer-checker.py": [
-         "e9f0f1789ba18a73e49bae06fcaa5b0f8447350f",
-         []
-        ],
-        "serviceworker-dynamic-import.js": [
-         "9466c6fbe409a790ee3eab5405b98b86b7842a40",
-         []
-        ],
-        "serviceworker.js": [
-         "3f0a4d1664020f6d041ad77bccf956e2be22ce0f",
          []
         ],
         "string.json": [
@@ -396576,7 +396789,7 @@
      []
     ],
     "testdriver.js": [
-     "985dbb0e4030aaaeb9e912367262d8cee3de3806",
+     "e737a6ee659f0502fbf4137094d237b08ca54fb8",
      []
     ],
     "testdriver.js.headers": [
@@ -417207,67 +417420,83 @@
       }
      ]
     ],
-    "idbcursor_update_objectstore.htm": [
-     "e1fdff6047b6008d856f1f1a323fc0a9399c9a1e",
+    "idbcursor_update_objectstore.any.js": [
+     "ca3fd870eb76369efd500f973817cca5be2a0da5",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_update_objectstore2.htm": [
-     "73dcd34f5bed6d4643e94535491bb5aefd4975e0",
+      "IndexedDB/idbcursor_update_objectstore.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.update() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_update_objectstore3.htm": [
-     "3582f0967ca3fc346c0bb253f1f97524f761701e",
+      "IndexedDB/idbcursor_update_objectstore.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.update() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_update_objectstore4.htm": [
-     "b467c296edc1f603e41ef1c21bc28075b4e81bcc",
+      "IndexedDB/idbcursor_update_objectstore.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.update() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_update_objectstore5.htm": [
-     "e358caa3929afedafc55142f4d54ca3f0810b482",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_update_objectstore6.htm": [
-     "26d42c116d914a7a27b9f4727a6c52d01ea7ef37",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_update_objectstore7.htm": [
-     "fc850bbcf1f40fa22945aaac642c7addb29d6f83",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_update_objectstore8.htm": [
-     "4d3439794eb945c24c880321e5a2833be3016c6f",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_update_objectstore9.htm": [
-     "39220f67be0b579e87c7813a64670d9ead9f8e7b",
-     [
-      null,
-      {}
+      "IndexedDB/idbcursor_update_objectstore.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.update() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbdatabase-createObjectStore-exception-order.htm": [
@@ -459836,7 +460065,7 @@
       ]
      ],
      "linear-timing-functions-syntax.html": [
-      "2d1baea4ebb311cd9710469189926b5a95beab47",
+      "3b8e106b6aae0b67728fa516313d7ded2be47d15",
       [
        null,
        {}
@@ -468816,7 +469045,7 @@
        ]
       ],
       "clip-path-interpolation-shape.html": [
-       "638e133c26bf007c1b642a989f36430e26bf4dd3",
+       "c9d9bf756fc237cda2b0cc22642befe2a06dcb78",
        [
         null,
         {}
@@ -474733,7 +474962,7 @@
      },
      "shape-functions": {
       "circle-function-computed.html": [
-       "cdfbbb5aa0357d04b23ae0e493f32638a2e76baf",
+       "70f17c53f6e300026cccbca9129babeee7d8031b",
        [
         null,
         {}
@@ -474747,7 +474976,7 @@
        ]
       ],
       "circle-function-valid.html": [
-       "417e397de9ec689a67e69524243fd56ce3844606",
+       "7b64a82125d3be42dd6d3244ab21baa722b89e10",
        [
         null,
         {}
@@ -474853,6 +475082,27 @@
       ],
       "rect-function-valid.html": [
        "6489f4e82adaf452824e54f772eb160bb190353b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "shape-function-computed.tentative.html": [
+       "28f622f03bdd5205395234ff6d30c1f6dbea4272",
+       [
+        null,
+        {}
+       ]
+      ],
+      "shape-function-invalid.tentative.html": [
+       "76f0fcc94d6d2fb55bb32590cd6f960bbd7f0371",
+       [
+        null,
+        {}
+       ]
+      ],
+      "shape-function-valid.tentative.html": [
+       "16656a668f4af23419060e1d8e80214a47e497f7",
        [
         null,
         {}
@@ -485380,14 +485630,14 @@
       ]
      ],
      "hypot-pow-sqrt-invalid.html": [
-      "4b04e5358ed1b0ee7beb06700eff0bf8f5b0b29b",
+      "edecfceb13afe79ad0b13b6b5d29a9924f5fad9b",
       [
        null,
        {}
       ]
      ],
      "hypot-pow-sqrt-serialize.html": [
-      "ffaaaf4531d7d3ecc2c90d92ff60c10f3c1f6928",
+      "378f334555c4f3bc3e547945f30f3547634794cf",
       [
        null,
        {}
@@ -490605,7 +490855,7 @@
        ]
       ],
       "offset-path-interpolation-008.html": [
-       "30d789f4eb84daf9e4400c82558d1db3c479cf51",
+       "ffdd773d91ddc795ef0ba77ab5889eb008557d74",
        [
         null,
         {}
@@ -518508,7 +518758,7 @@
      ]
     ],
     "lfedcm-identity.create-store-collect.tentative.sub.https.html": [
-     "9cc7278d375e38d6c176192174d9becfbce459c6",
+     "909735ed0f0eb2d0f712e7118e1bc276749871cf",
      [
       null,
       {
@@ -518517,7 +518767,7 @@
      ]
     ],
     "lfedcm-identity.discovery.tentative.sub.https.html": [
-     "2d5e8e8db476e226722da1f5b041165e9b560e3e",
+     "92625284eee14c6bb0234e20d50433734a2dd75e",
      [
       null,
       {
@@ -547074,7 +547324,7 @@
       ]
      ],
      "document-exit-fullscreen-nested-in-iframe.html": [
-      "893814dec3a1472cd10321ecd8d22ede0d74cf84",
+      "a735fc70e4a14b17f2a876ba5a630f71ccc1f5da",
       [
        null,
        {
@@ -583159,7 +583409,7 @@
         ]
        ],
        "dir-slots-directionality.html": [
-        "b7935cf1f3a062c63fadab1261d9a5fa63a31636",
+        "f4ac84259d7ba0a91ea0f33fd1c3c4248f0b4e35",
         [
          null,
          {}
@@ -598312,106 +598562,6 @@
          ]
         ]
        },
-       "css-module-assertions": {
-        "charset-2.html": [
-         "aaa2960aafe36b477abaad5d284fcf3bae536cf7",
-         [
-          null,
-          {}
-         ]
-        ],
-        "charset-bom.html": [
-         "e26ee08d31d74414d4c147f92a9e6e94e48b59a8",
-         [
-          null,
-          {}
-         ]
-        ],
-        "charset.html": [
-         "2127ec7280440c8cb08e3fa38b64bb52edda0573",
-         [
-          null,
-          {}
-         ]
-        ],
-        "content-type-checking.html": [
-         "3ade8633058443d2a830a7ac3e87401a976fa54b",
-         [
-          null,
-          {}
-         ]
-        ],
-        "cors-crossorigin-requests.html": [
-         "b9de562b723287c3e84b3499fec99bfd0a04caf0",
-         [
-          null,
-          {}
-         ]
-        ],
-        "credentials.sub.html": [
-         "8c2f0f8073d8249f9505193d1114c89ffa45955a",
-         [
-          null,
-          {}
-         ]
-        ],
-        "css-module-worker-test.html": [
-         "7ff672da6a9274ba7fb6d08c70b81406eeb795d6",
-         [
-          null,
-          {}
-         ]
-        ],
-        "import-css-module-basic.html": [
-         "4ea1790aabdf2bf420d05eb0c902770b5cef7139",
-         [
-          null,
-          {}
-         ]
-        ],
-        "import-css-module-dynamic.html": [
-         "13967858cb35d29233d9a46d8114c15d84ec8d25",
-         [
-          null,
-          {}
-         ]
-        ],
-        "integrity.html": [
-         "1dd0dad470a319d1fe11e74e997441a7b6e6d0d8",
-         [
-          null,
-          {}
-         ]
-        ],
-        "load-error-events.html": [
-         "3457452c93654e4e0187cb4cbaf0f547802ba03d",
-         [
-          null,
-          {}
-         ]
-        ],
-        "referrer-policies.sub.html": [
-         "f078437e09cc7599ab4427cbed4fe011e23fdc7d",
-         [
-          null,
-          {}
-         ]
-        ],
-        "relative-urls.html": [
-         "22971d28d9bd259caa1088ec86761eba650b95da",
-         [
-          null,
-          {}
-         ]
-        ],
-        "script-element-css-src.html": [
-         "231d02db477bde9e33a570e9aa8670b322acf634",
-         [
-          null,
-          {}
-         ]
-        ]
-       },
        "data-url.html": [
         "6fad50527177e756db35842e054bf19d6e4dfbe4",
         [
@@ -599613,72 +599763,6 @@
          {}
         ]
        ],
-       "import-assertions": {
-        "dynamic-import-with-assertion-argument.any.js": [
-         "7efb2050b72664197f1a2b5dc9efb1a67b7f0b8c",
-         [
-          "html/semantics/scripting-1/the-script-element/import-assertions/dynamic-import-with-assertion-argument.any.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/import-assertions/dynamic-import-with-assertion-argument.any.sharedworker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/import-assertions/dynamic-import-with-assertion-argument.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ]
-           ]
-          }
-         ]
-        ],
-        "empty-assertion-clause.html": [
-         "3a7c371189c9e847327ac14f49d4ee5153f35295",
-         [
-          null,
-          {}
-         ]
-        ],
-        "invalid-import-errors-order.html": [
-         "17c95faea0f80ae089e2fb84d075e174ae954450",
-         [
-          null,
-          {}
-         ]
-        ],
-        "invalid-type-assertion-error.html": [
-         "0adcc475693e27cebceef5e0f28212ffe2fb73a1",
-         [
-          null,
-          {}
-         ]
-        ],
-        "unsupported-assertion.html": [
-         "72977347a78c352ef0269d02542b362f4c631f48",
-         [
-          null,
-          {}
-         ]
-        ]
-       },
        "import-attributes": {
         "dynamic-import-with-attributes-argument.any.js": [
          "2addb0fcb91e7ce2388c4bc2162b1c19fced9074",
@@ -599993,260 +600077,6 @@
         ],
         "valid-content-type.html": [
          "3232b84d271e0faa49fd600eac9f4394db7f5630",
-         [
-          null,
-          {}
-         ]
-        ]
-       },
-       "json-module-assertions": {
-        "charset-2.html": [
-         "686178bfe1000a61769eeed525362f9a6282ee03",
-         [
-          null,
-          {}
-         ]
-        ],
-        "charset-bom.any.js": [
-         "d2dbe3e468f19017f2d400b059215718f56ce975",
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/charset-bom.any.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ],
-            [
-             "script",
-             "/common/utils.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/charset-bom.any.sharedworker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ],
-            [
-             "script",
-             "/common/utils.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/charset-bom.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ],
-            [
-             "script",
-             "/common/utils.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "charset.html": [
-         "7c74b9bf6c4bafb61f54805f223857e44c0c5043",
-         [
-          null,
-          {}
-         ]
-        ],
-        "cors-crossorigin-requests.html": [
-         "757af2901c321d414ec6dc0db36a9ae3f238933e",
-         [
-          null,
-          {}
-         ]
-        ],
-        "credentials.sub.html": [
-         "d11d2f9589044d19a15e6d3c787189e7c79f7175",
-         [
-          null,
-          {}
-         ]
-        ],
-        "integrity.html": [
-         "68a794b973359132e8e803bd75f115ffb872d3b5",
-         [
-          null,
-          {}
-         ]
-        ],
-        "invalid-content-type.any.js": [
-         "cbccbd48429bf608fa9dd9eaac0f1fe4a38ddcbb",
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/invalid-content-type.any.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/invalid-content-type.any.sharedworker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/invalid-content-type.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ]
-           ]
-          }
-         ]
-        ],
-        "json-module-service-worker-test.https.html": [
-         "cc47da1499f13a1233ab71e461b77e7a7b53be26",
-         [
-          null,
-          {}
-         ]
-        ],
-        "load-error-events.html": [
-         "a9dfc1e6917830eb67761d34edb86cf15ca4ae64",
-         [
-          null,
-          {}
-         ]
-        ],
-        "module.html": [
-         "a495d4ac186260b6705c56b75d2b1ff1de7722a1",
-         [
-          null,
-          {}
-         ]
-        ],
-        "non-object.any.js": [
-         "37fbcae9fabb6d0fe89ff486fae4e896d5d21db5",
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/non-object.any.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/non-object.any.sharedworker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/non-object.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ]
-           ]
-          }
-         ]
-        ],
-        "parse-error.html": [
-         "9d0e3284fec6e69476162c67f2aec81d2f5a3577",
-         [
-          null,
-          {}
-         ]
-        ],
-        "referrer-policies.sub.html": [
-         "655c962ab781fa104fb3be8f9e6998d575cfb375",
-         [
-          null,
-          {}
-         ]
-        ],
-        "repeated-imports.any.js": [
-         "5cc3ee5b7c4c9fd98ad394a6571172fea9ad506d",
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/repeated-imports.any.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ],
-            [
-             "script",
-             "/common/utils.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/repeated-imports.any.sharedworker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ],
-            [
-             "script",
-             "/common/utils.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/json-module-assertions/repeated-imports.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "global",
-             "window,dedicatedworker,sharedworker"
-            ],
-            [
-             "script",
-             "/common/utils.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "script-element-json-src.html": [
-         "c6d7c9a76e83b5d110aaa9d93a8fc49d4d714b94",
-         [
-          null,
-          {}
-         ]
-        ],
-        "valid-content-type.html": [
-         "162f2d6afcaf6fb4a23f4736286fe97e8ab05b28",
          [
           null,
           {}
@@ -600856,7 +600686,7 @@
            ]
           ],
           "css-import-in-worker.any.js": [
-           "bd6f5d092f3a6af3d405a86254dde9f7fc608ce2",
+           "3eae3fd3847c2413683c78a1e5e37ff271c9a31c",
            [
             "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/css-import-in-worker.any.sharedworker.html",
             {
@@ -600907,7 +600737,7 @@
            ]
           ],
           "with-import-assertions.any.js": [
-           "f67ba9a1ae4fcedba1a7254c7b930e93d1ac66c6",
+           "078696ed3720adfa8a03a3fde89483d83b5a78e8",
            [
             "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/with-import-assertions.any.html",
             {
@@ -661281,7 +661111,7 @@
       ]
      ],
      "tee.any.js": [
-      "7dd5ba3f3fb013964b738d50d0c76a05d7c9d583",
+      "60d82b9cf6a1fdfb9ff89d7bbd7d304982026844",
       [
        "streams/readable-byte-streams/tee.any.html",
        {
@@ -697235,7 +697065,7 @@
       ]
      ],
      "gru.https.any.js": [
-      "d14fd2eec49668dbd13e33320d09e57b35c39f73",
+      "15f585ba9144f42f348f1da5c39b3da299d57246",
       [
        "webnn/conformance_tests/gru.https.any.html?cpu",
        {
@@ -697454,7 +697284,7 @@
       ]
      ],
      "gru_cell.https.any.js": [
-      "f8aa3ac9cf78fead8fdb741b7135b421a860d452",
+      "3d7e69fb9fb302a3db43b7b06bc90a052363a7d2",
       [
        "webnn/conformance_tests/gru_cell.https.any.html?cpu",
        {
@@ -709878,7 +709708,7 @@
       ]
      ],
      "clamp.https.any.js": [
-      "8302961e2c481413e0a6e39e44fc4424562e030a",
+      "10cf0028e5248425574132b45bff8781cf80088c",
       [
        "webnn/validation_tests/clamp.https.any.html?cpu",
        {
@@ -712536,7 +712366,7 @@
       ]
      ],
      "expand.https.any.js": [
-      "12349a33f8cfb160b191ce9186c969963455f2f9",
+      "4edc9a718a4ff14daf9aa41d2be7b97b0c682734",
       [
        "webnn/validation_tests/expand.https.any.html?cpu",
        {
@@ -716370,7 +716200,7 @@
       ]
      ],
      "prelu.https.any.js": [
-      "5b1b95c70f110e5668696f63c96764c911261835",
+      "9c01d6edae3a9ae960e1eefa4ff120176c04da25",
       [
        "webnn/validation_tests/prelu.https.any.html?cpu",
        {
@@ -760376,10 +760206,12 @@
        },
        "realm_created": {
         "realm_created.py": [
-         "f4dc681a3a2edf4aaa7b513137acb09bd0c2e65f",
+         "9adc36483ab69028c464868894208dc9d0588bb8",
          [
           null,
-          {}
+          {
+           "timeout": "long"
+          }
          ]
         ]
        },
