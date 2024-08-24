@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_SUMMARIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_SUMMARIZER_H_
 
+#include "third_party/blink/public/mojom/ai/ai_summarizer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -20,8 +21,8 @@ class AISummarizer final : public ScriptWrappable,
 
  public:
   AISummarizer(ExecutionContext* context,
-               AITextSession* text_session,
-               scoped_refptr<base::SequencedTaskRunner> task_runner);
+               scoped_refptr<base::SequencedTaskRunner> task_runner,
+               mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote);
   ~AISummarizer() override = default;
 
   void Trace(Visitor* visitor) const override;
@@ -36,8 +37,10 @@ class AISummarizer final : public ScriptWrappable,
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
  private:
-  Member<AITextSession> text_session_;
+  bool is_destroyed_ = false;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  HeapMojoRemote<blink::mojom::blink::AISummarizer> summarizer_remote_;
 };
 
 }  // namespace blink

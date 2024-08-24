@@ -228,6 +228,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API = 49;
   // Target for metrics based segmentation clustering.
   OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING = 50;
+  // Target for Summarize API feature config.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SUMMARIZE = 51;
 }
 
 // The model engine versions that can be used to do model inference.

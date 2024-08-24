@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
+#include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_text_session.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -44,6 +45,8 @@ class AIManagerKeyedService : public KeyedService,
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
                            NoUAFWithInvalidOnDeviceModelPath);
+  FRIEND_TEST_ALL_PREFIXES(AISummarizerUnitTest,
+                           CreateSummarizerWithoutService);
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
@@ -57,6 +60,10 @@ class AIManagerKeyedService : public KeyedService,
       const std::optional<std::string>& shared_context,
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client)
       override;
+  void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
+  void CreateSummarizer(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client)
+      override;
   void CreateRewriter(
       const std::optional<std::string>& shared_context,
       blink::mojom::AIRewriterTone tone,
@@ -67,7 +74,11 @@ class AIManagerKeyedService : public KeyedService,
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);
 
+  void CheckModelPathOverrideCanCreateSession(
+      const std::string& model_path,
+      optimization_guide::ModelBasedCapabilityKey capability);
   void CanOptimizationGuideKeyedServiceCreateGenericSession(
+      optimization_guide::ModelBasedCapabilityKey capability,
       CanCreateTextSessionCallback callback);
 
   // Creates an `AITextSession`, either as a new session, or as a clone of

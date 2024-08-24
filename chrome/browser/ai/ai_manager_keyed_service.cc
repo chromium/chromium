@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_rewriter.h"
+#include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_text_session.h"
 #include "chrome/browser/ai/ai_writer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace {
@@ -136,17 +138,14 @@ void AIManagerKeyedService::CanCreateTextSession(
   auto model_path =
       optimization_guide::switches::GetOnDeviceModelExecutionOverride();
   if (model_path) {
-    // If the model path is provided, we do this additional check and post a
-    // warning message to dev tools if it's invalid.
-    // This needs to be done in a task runner with `MayBlock` trait.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(IsModelPathValid, model_path.value()),
-        base::BindOnce(&AIManagerKeyedService::OnModelPathValidationComplete,
-                       weak_factory_.GetWeakPtr(), model_path.value()));
+    CheckModelPathOverrideCanCreateSession(
+        model_path.value(),
+        optimization_guide::ModelBasedCapabilityKey::kPromptApi);
   }
   // If the model path is not provided, we skip the model path check.
-  CanOptimizationGuideKeyedServiceCreateGenericSession(std::move(callback));
+  CanOptimizationGuideKeyedServiceCreateGenericSession(
+      optimization_guide::ModelBasedCapabilityKey::kPromptApi,
+      std::move(callback));
 }
 
 std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
@@ -209,6 +208,53 @@ void AIManagerKeyedService::CreateTextSession(
   }
 
   context_bound_object_set->AddContextBoundObject(std::move(session));
+}
+
+void AIManagerKeyedService::CanCreateSummarizer(
+    CanCreateSummarizerCallback callback) {
+  auto model_path =
+      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
+  if (model_path) {
+    CheckModelPathOverrideCanCreateSession(
+        model_path.value(),
+        optimization_guide::ModelBasedCapabilityKey::kSummarize);
+  }
+  // If the model path is not provided, we skip the model path check.
+  CanOptimizationGuideKeyedServiceCreateGenericSession(
+      optimization_guide::ModelBasedCapabilityKey::kSummarize,
+      std::move(callback));
+}
+
+void AIManagerKeyedService::CreateSummarizer(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client) {
+  mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
+      std::move(client));
+  CHECK(browser_context_);
+  OptimizationGuideKeyedService* service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context_.get()));
+  if (!service) {
+    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AISummarizer>());
+    return;
+  }
+  optimization_guide::SessionConfigParams config_params =
+      optimization_guide::SessionConfigParams{.disable_server_fallback = true};
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      session = service->StartSession(
+          optimization_guide::ModelBasedCapabilityKey::kSummarize,
+          config_params);
+
+  if (!session) {
+    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AISummarizer>());
+    return;
+  }
+
+  mojo::PendingRemote<blink::mojom::AISummarizer> remote_summarzier;
+  auto summarizer = std::make_unique<AISummarizer>(
+      std::move(session), remote_summarzier.InitWithNewPipeAndPassReceiver());
+  AIContextBoundObjectSet::GetFromContext(receivers_.current_context())
+      ->AddContextBoundObject(std::move(summarizer));
+  client_remote->OnResult(std::move(remote_summarzier));
 }
 
 void AIManagerKeyedService::GetTextModelInfo(
@@ -276,8 +322,22 @@ void AIManagerKeyedService::CreateRewriter(
   client_remote->OnResult(std::move(pending_remote));
 }
 
+void AIManagerKeyedService::CheckModelPathOverrideCanCreateSession(
+    const std::string& model_path,
+    optimization_guide::ModelBasedCapabilityKey capability_) {
+  // If the model path is provided, we do this additional check and post a
+  // warning message to dev tools if it's invalid.
+  // This needs to be done in a task runner with `MayBlock` trait.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(IsModelPathValid, model_path),
+      base::BindOnce(&AIManagerKeyedService::OnModelPathValidationComplete,
+                     weak_factory_.GetWeakPtr(), model_path));
+}
+
 void AIManagerKeyedService::
     CanOptimizationGuideKeyedServiceCreateGenericSession(
+        optimization_guide::ModelBasedCapabilityKey capability,
         CanCreateTextSessionCallback callback) {
   CHECK(browser_context_);
   OptimizationGuideKeyedService* service =
@@ -296,9 +356,8 @@ void AIManagerKeyedService::
   // false.
   optimization_guide::OnDeviceModelEligibilityReason
       on_device_model_eligibility_reason;
-  if (!service->CanCreateOnDeviceSession(
-          optimization_guide::ModelBasedCapabilityKey::kPromptApi,
-          &on_device_model_eligibility_reason)) {
+  if (!service->CanCreateOnDeviceSession(capability,
+                                         &on_device_model_eligibility_reason)) {
     std::move(callback).Run(
         /*result=*/
         ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(

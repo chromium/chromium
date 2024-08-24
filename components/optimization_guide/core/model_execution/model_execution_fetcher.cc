@@ -146,6 +146,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kPromptApi:
+    case ModelBasedCapabilityKey::kSummarize:
       // On-device only feature.
       NOTREACHED_IN_MIGRATION();
       return MISSING_TRAFFIC_ANNOTATION;

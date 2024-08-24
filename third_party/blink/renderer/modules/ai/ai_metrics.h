@@ -43,8 +43,12 @@ class AIMetrics {
     kWriterWriteStreaming = 11,
     kRewriterRewrite = 12,
     kRewriterRewriteStreaming = 13,
+    kSummarizerSummarize = 14,
+    kSummarizerSummarizeStreaming = 15,
+    kSummarizerCreate = 16,
+    kSummarizerDestroy = 17,
 
-    kMaxValue = kRewriterRewriteStreaming,
+    kMaxValue = kSummarizerDestroy,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 

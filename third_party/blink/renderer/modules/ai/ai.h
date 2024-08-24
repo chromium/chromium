@@ -42,6 +42,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   AIWriterFactory* writer();
 
   HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
+
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
  private:

@@ -12,35 +12,22 @@
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-namespace {
-
-// TODO(crbug.com/351745455): Support length options
-constexpr char kSummarizePrompt[] = R"(
-You are an assistant that summarizes text. The summary must be accurate and fit within one short paragraph.
-TEXT: %s
-SUMMARY: )";
-
-}  // namespace
-
 namespace blink {
 
-WTF::String BuildPromptInput(const WTF::String& summarize_input) {
-  WTF::StringBuilder builder;
-  builder.AppendFormat(kSummarizePrompt, summarize_input.Utf8().c_str());
-  return builder.ReleaseString();
-}
-
-AISummarizer::AISummarizer(ExecutionContext* context,
-                           AITextSession* text_session,
-                           scoped_refptr<base::SequencedTaskRunner> task_runner)
+AISummarizer::AISummarizer(
+    ExecutionContext* context,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote)
     : ExecutionContextClient(context),
-      text_session_(text_session),
-      task_runner_(task_runner) {}
+      task_runner_(task_runner),
+      summarizer_remote_(context) {
+  summarizer_remote_.Bind(std::move(pending_remote), task_runner_);
+}
 
 void AISummarizer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
-  visitor->Trace(text_session_);
+  visitor->Trace(summarizer_remote_);
 }
 
 ScriptPromise<IDLString> AISummarizer::summarize(
@@ -61,7 +48,7 @@ ScriptPromise<IDLString> AISummarizer::summarize(
                                  AIMetrics::AISessionType::kSummarizer),
                              int(input.CharactersSizeInBytes()));
 
-  if (!text_session_) {
+  if (is_destroyed_) {
     ThrowSessionDestroyedException(exception_state);
     return ScriptPromise<IDLString>();
   }
@@ -70,8 +57,7 @@ ScriptPromise<IDLString> AISummarizer::summarize(
       script_state, /*signal=*/nullptr, task_runner_,
       AIMetrics::AISessionType::kSummarizer,
       /*complete_callback=*/base::DoNothing());
-  text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
-                                                std::move(pending_remote));
+  summarizer_remote_->Summarize(input, std::move(pending_remote));
   return promise;
 }
 
@@ -94,7 +80,7 @@ ReadableStream* AISummarizer::summarizeStreaming(
                                  AIMetrics::AISessionType::kSummarizer),
                              int(input.CharactersSizeInBytes()));
 
-  if (!text_session_) {
+  if (is_destroyed_) {
     ThrowSessionDestroyedException(exception_state);
     return nullptr;
   }
@@ -104,8 +90,7 @@ ReadableStream* AISummarizer::summarizeStreaming(
           script_state, /*signal=*/nullptr, task_runner_,
           AIMetrics::AISessionType::kSummarizer,
           /*complete_callback=*/base::DoNothing());
-  text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
-                                                std::move(pending_remote));
+  summarizer_remote_->Summarize(input, std::move(pending_remote));
   return readable_stream;
 }
 
@@ -121,9 +106,9 @@ void AISummarizer::destroy(ScriptState* script_state,
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kSummarizer),
       AIMetrics::AIAPI::kSessionDestroy);
 
-  if (text_session_) {
-    text_session_->GetRemoteTextSession()->Destroy();
-    text_session_ = nullptr;
+  if (!is_destroyed_) {
+    is_destroyed_ = true;
+    summarizer_remote_.reset();
   }
 }
 

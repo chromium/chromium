@@ -27,13 +27,14 @@ enum class ModelBasedCapabilityKey {
   kPromptApi = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API,
   kHistorySearch =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH,
+  kSummarize = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SUMMARIZE,
   kFormsPredictions =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS,
   kFormsAnnotations =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_FORMS_ANNOTATIONS,
 };
 
-inline constexpr std::array<ModelBasedCapabilityKey, 9>
+inline constexpr std::array<ModelBasedCapabilityKey, 10>
     kAllModelBasedCapabilityKeys = {
         ModelBasedCapabilityKey::kCompose,
         ModelBasedCapabilityKey::kTabOrganization,
@@ -42,6 +43,7 @@ inline constexpr std::array<ModelBasedCapabilityKey, 9>
         ModelBasedCapabilityKey::kTextSafety,
         ModelBasedCapabilityKey::kPromptApi,
         ModelBasedCapabilityKey::kHistorySearch,
+        ModelBasedCapabilityKey::kSummarize,
         ModelBasedCapabilityKey::kFormsPredictions,
         ModelBasedCapabilityKey::kFormsAnnotations,
 };
@@ -102,6 +104,8 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_FORMS_ANNOTATIONS:
       return ModelBasedCapabilityKey::kFormsAnnotations;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SUMMARIZE:
+      return ModelBasedCapabilityKey::kSummarize;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED() << "Invalid feature";
   }
@@ -124,6 +128,8 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY;
     case ModelBasedCapabilityKey::kPromptApi:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API;
+    case ModelBasedCapabilityKey::kSummarize:
+      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SUMMARIZE;
     case ModelBasedCapabilityKey::kHistorySearch:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_HISTORY_SEARCH;

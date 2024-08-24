@@ -29,6 +29,7 @@ mojom("mojom_platform") {
     "aggregation_service/aggregatable_report.mojom",
     "ai/ai_manager.mojom",
     "ai/ai_rewriter.mojom",
+    "ai/ai_summarizer.mojom",
     "ai/ai_text_session.mojom",
     "ai/ai_text_session_info.mojom",
     "ai/ai_writer.mojom",

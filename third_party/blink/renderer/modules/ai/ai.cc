@@ -70,7 +70,7 @@ AIAssistantFactory* AI::assistant() {
 AISummarizerFactory* AI::summarizer() {
   if (!ai_summarizer_factory_) {
     ai_summarizer_factory_ = MakeGarbageCollected<AISummarizerFactory>(
-        GetExecutionContext(), task_runner_);
+        this, GetExecutionContext(), task_runner_);
   }
   return ai_summarizer_factory_.Get();
 }

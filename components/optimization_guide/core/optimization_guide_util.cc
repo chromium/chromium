@@ -77,6 +77,8 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "TextSafety";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API:
       return "PromptApi";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SUMMARIZE:
+      return "Summarize";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
       return "HistorySearch";
     case proto::ModelExecutionFeature::

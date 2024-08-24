@@ -15,6 +15,8 @@
 
 namespace blink {
 
+class AI;
+
 class AISummarizer;
 
 class AISummarizerFactory final : public ScriptWrappable,
@@ -22,7 +24,8 @@ class AISummarizerFactory final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  AISummarizerFactory(ExecutionContext* context,
+  AISummarizerFactory(AI* ai,
+                      ExecutionContext* context,
                       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   void Trace(Visitor* visitor) const override;
@@ -37,7 +40,7 @@ class AISummarizerFactory final : public ScriptWrappable,
   ~AISummarizerFactory() override = default;
 
  private:
-  Member<AITextSessionFactory> text_session_factory_;
+  Member<AI> ai_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

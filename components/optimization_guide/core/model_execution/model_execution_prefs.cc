@@ -56,6 +56,9 @@ const char kLastTimePromptApiWasUsed[] =
     "optimization_guide.model_execution.last_time_prompt_api_"
     "used";
 
+const char kLastTimeSummarizeApiWasUsed[] =
+    "optimization_guide.model_execution.last_time_summarize_api_used";
+
 const char kLastTimeTestFeatureWasUsed[] =
     "optimization_guide.model_execution.last_time_test_used";
 
@@ -87,6 +90,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                              base::Time::Min());
   registry->RegisterTimePref(localstate::kLastTimePromptApiWasUsed,
                              base::Time::Min());
+  registry->RegisterTimePref(localstate::kLastTimeSummarizeApiWasUsed,
+                             base::Time::Min());
   registry->RegisterTimePref(localstate::kLastTimeTestFeatureWasUsed,
                              base::Time::Min());
   registry->RegisterTimePref(localstate::kLastTimeHistorySearchWasUsed,
@@ -108,6 +113,8 @@ const char* GetOnDeviceFeatureRecentlyUsedPref(
       return prefs::localstate::kLastTimeComposeWasUsed;
     case ModelBasedCapabilityKey::kPromptApi:
       return prefs::localstate::kLastTimePromptApiWasUsed;
+    case ModelBasedCapabilityKey::kSummarize:
+      return prefs::localstate::kLastTimeSummarizeApiWasUsed;
     case ModelBasedCapabilityKey::kTest:
       return prefs::localstate::kLastTimeTestFeatureWasUsed;
     case ModelBasedCapabilityKey::kHistorySearch:
@@ -121,6 +128,6 @@ const char* GetOnDeviceFeatureRecentlyUsedPref(
       NOTREACHED();
   }
 }
-// LINT.ThenChange(IsOnDeviceModelEnabled)
+// LINT.ThenChange(//components/optimization_guide/core/model_execution/model_execution_features.cc:IsOnDeviceModelEnabled)
 
 }  // namespace optimization_guide::model_execution::prefs

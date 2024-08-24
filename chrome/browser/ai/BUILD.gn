@@ -13,6 +13,8 @@ source_set("ai") {
     "ai_manager_keyed_service_factory.h",
     "ai_rewriter.cc",
     "ai_rewriter.h",
+    "ai_summarizer.cc",
+    "ai_summarizer.h",
     "ai_text_session.cc",
     "ai_text_session.h",
     "ai_utils.cc",

@@ -59,26 +59,9 @@ void AITextSessionFactory::CanCreateTextSession(
       [](AITextSessionFactory* factory, AIMetrics::AISessionType session_type,
          CanCreateTextSessionCallback callback,
          mojom::blink::ModelAvailabilityCheckResult result) {
-        AICapabilityAvailability availability;
-        if (result == mojom::blink::ModelAvailabilityCheckResult::kReadily) {
-          availability = AICapabilityAvailability::kReadily;
-        } else if (result ==
-                   mojom::blink::ModelAvailabilityCheckResult::kAfterDownload) {
-          // TODO(crbug.com/345357441): Implement the
-          // `ontextmodeldownloadprogress` event.
-          availability = AICapabilityAvailability::kAfterDownload;
-        } else {
-          // If the text session cannot be created, logs the error message to
-          // the console.
-          availability = AICapabilityAvailability::kNo;
-          factory->GetExecutionContext()->AddConsoleMessage(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              ConvertModelAvailabilityCheckResultToDebugString(result));
-        }
-        base::UmaHistogramEnumeration(
-            AIMetrics::GetAICapabilityAvailabilityMetricName(session_type),
-            availability);
+        AICapabilityAvailability availability =
+            HandleModelAvailabilityCheckResult(factory->GetExecutionContext(),
+                                               session_type, result);
         std::move(callback).Run(availability, result);
       },
       WrapWeakPersistent(this), session_type, std::move(callback)));

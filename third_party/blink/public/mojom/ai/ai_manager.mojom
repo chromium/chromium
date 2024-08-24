@@ -8,6 +8,7 @@ import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_text_session.mojom";
 import "third_party/blink/public/mojom/ai/ai_text_session_info.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
+import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
 
 // LINT.IfChange(ModelAvailabilityCheckResult)
 enum ModelAvailabilityCheckResult {
@@ -72,13 +73,20 @@ interface AIManagerCreateWriterClient {
   OnResult(pending_remote<blink.mojom.AIWriter>? writer);
 };
 
-
 // The client interface that receives an AIRewriter from an AIManager.
 interface AIManagerCreateRewriterClient {
   // Called with a created rewriter's mojo interface as a result for the
   // CreateRewriter() method of the AIManager. When failed to create a
   // AIRewriter, this method is called with a null pending remote.
   OnResult(pending_remote<blink.mojom.AIRewriter>? rewriter);
+};
+
+// The client interface that receives an AISummarizer from an AIManager.
+interface AIManagerCreateSummarizerClient {
+  // Called with a created writer's mojo interface as a result for the
+  // CreateSummarizer() method of the AIManager. When failed to create a
+  // AISummarizer, this method is called with a null pending remote.
+  OnResult(pending_remote<blink.mojom.AISummarizer>? summarizer);
 };
 
 // The manager that could create a new session for the model.
@@ -99,6 +107,12 @@ interface AIManager {
     AITextSessionSamplingParams? sampling_params,
     string? system_prompt
   ) => (AITextSessionInfo? info);
+  // Returns if it is possible to create a summarizer. For example, when
+  // the service in charge of model loading and session creation is not
+  // available, this should return false.
+  CanCreateSummarizer() => (ModelAvailabilityCheckResult result);
+  // Creates a summarizer.
+  CreateSummarizer(pending_remote<AIManagerCreateSummarizerClient> client);
   // Returns the default configuration for the text model information.
   GetTextModelInfo() => (
     AITextModelInfo text_model_info

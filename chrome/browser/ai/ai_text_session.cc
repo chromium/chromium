@@ -115,36 +115,6 @@ void AITextSession::SetDeletionCallback(base::OnceClosure deletion_callback) {
   receiver_.set_disconnect_handler(std::move(deletion_callback));
 }
 
-blink::mojom::ModelStreamingResponseStatus ConvertModelExecutionError(
-    ModelExecutionError error) {
-  switch (error) {
-    case ModelExecutionError::kUnknown:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorUnknown;
-    case ModelExecutionError::kInvalidRequest:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest;
-    case ModelExecutionError::kRequestThrottled:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorRequestThrottled;
-    case ModelExecutionError::kPermissionDenied:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied;
-    case ModelExecutionError::kGenericFailure:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure;
-    case ModelExecutionError::kRetryableError:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorRetryableError;
-    case ModelExecutionError::kNonRetryableError:
-      return blink::mojom::ModelStreamingResponseStatus::
-          kErrorNonRetryableError;
-    case ModelExecutionError::kUnsupportedLanguage:
-      return blink::mojom::ModelStreamingResponseStatus::
-          kErrorUnsupportedLanguage;
-    case ModelExecutionError::kFiltered:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorFiltered;
-    case ModelExecutionError::kDisabled:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorDisabled;
-    case ModelExecutionError::kCancelled:
-      return blink::mojom::ModelStreamingResponseStatus::kErrorCancelled;
-  }
-}
-
 void AITextSession::InitializeContextWithSystemPrompt(
     const std::string& text,
     CreateTextSessionCallback callback,
@@ -196,7 +166,7 @@ void AITextSession::ModelExecutionCallback(
 
   if (!result.response.has_value()) {
     responder->OnResponse(
-        ConvertModelExecutionError(result.response.error().error()),
+        AIUtils::ConvertModelExecutionError(result.response.error().error()),
         /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
     return;
   }

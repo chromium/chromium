@@ -8,6 +8,7 @@
 #include "base/supports_user_data.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
+#include "content/browser/ai/echo_ai_summarizer.h"
 #include "content/browser/ai/echo_ai_text_session.h"
 #include "content/browser/ai/echo_ai_writer.h"
 #include "content/public/browser/browser_context.h"
@@ -49,6 +50,22 @@ void EchoAIManagerImpl::CreateTextSession(
       blink::mojom::AITextSessionSamplingParams::New(
           optimization_guide::features::GetOnDeviceModelDefaultTopK(),
           optimization_guide::features::GetOnDeviceModelDefaultTemperature())));
+}
+
+void EchoAIManagerImpl::CanCreateSummarizer(
+    CanCreateSummarizerCallback callback) {
+  std::move(callback).Run(
+      /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
+}
+
+void EchoAIManagerImpl::CreateSummarizer(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client) {
+  mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
+      std::move(client));
+  mojo::PendingRemote<blink::mojom::AISummarizer> summarzier;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAISummarizer>(),
+                              summarzier.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(summarzier));
 }
 
 void EchoAIManagerImpl::GetTextModelInfo(GetTextModelInfoCallback callback) {

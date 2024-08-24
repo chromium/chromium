@@ -47,6 +47,12 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       const std::optional<std::string>& system_prompt,
       CreateTextSessionCallback callback) override;
 
+  void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
+
+  void CreateSummarizer(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client)
+      override;
+
   void GetTextModelInfo(GetTextModelInfoCallback callback) override;
   void CreateWriter(
       const std::optional<std::string>& shared_context,
