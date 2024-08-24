@@ -826,6 +826,10 @@ public class TabPersistentStore {
                 mTabsToMigrate.add(tab);
             }
 
+            if (tab != null) {
+                RecordHistogram.recordBooleanHistogram(
+                        "Tabs.TabRestoreUrlMatch", tabToRestore.url.equals(tab.getUrl().getSpec()));
+            }
         } else {
             Log.w(TAG, "Failed to restore TabState; creating Tab with last known URL.");
             Tab fallbackTab =
@@ -1724,9 +1728,15 @@ public class TabPersistentStore {
     private void recordRestoreDuration() {
         if (mTabRestoreStartTime == INVALID_TIME) return;
 
+        long duration = SystemClock.elapsedRealtime() - mTabRestoreStartTime;
         RecordHistogram.recordMediumTimesHistogram(
-                "Tabs.Startup.RestoreDuration." + mClientTag,
-                SystemClock.elapsedRealtime() - mTabRestoreStartTime);
+                "Tabs.Startup.RestoreDuration." + mClientTag, duration);
+        int tabCount = mTabModelSelector.getTotalTabCount();
+        if (tabCount != 0) {
+            RecordHistogram.recordTimesHistogram(
+                    "Tabs.Startup.RestoreDurationPerTab." + mClientTag,
+                    Math.round((float) duration / tabCount));
+        }
         mTabRestoreStartTime = INVALID_TIME;
     }
 

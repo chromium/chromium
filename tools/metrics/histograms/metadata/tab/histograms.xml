@@ -2202,6 +2202,18 @@ chromium-metrics-reviews@google.com.
   <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
 </histogram>
 
+<histogram name="Tabs.Startup.RestoreDurationPerTab.{TabModelSelectorType}"
+    units="ms" expires_after="2025-01-26">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the average realtime duration it took per-tab to restore all the tab
+    states. Bucketed by {TabModelSelectorType}. Recorded after tab model
+    selector restoration completes successfully. Android-only.
+  </summary>
+  <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
+</histogram>
+
 <histogram name="Tabs.Startup.TabCount.{TabType}" units="count"
     expires_after="2025-01-26">
   <owner>davidjm@chromium.org</owner>
@@ -2401,6 +2413,16 @@ chromium-metrics-reviews@google.com.
     imperative we can compare the success rate of each system vs. how many Tabs
     are re-created or failed to be restored. This metric is emitted once for
     each Tab restoration on startup.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabRestoreUrlMatch" enum="Boolean"
+    expires_after="2025-07-08">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records whether the URL in the tab state file and the tab state metadata
+    list match when each tab is restored. Android-only.
   </summary>
 </histogram>
 
