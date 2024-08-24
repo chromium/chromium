@@ -379656,7 +379656,7 @@
     },
     "resources": {
      "common.js": [
-      "fd4529e80aa45cf5aa260ac376f1289a3e2e93fe",
+      "6f8ae7b3436d16908313b65356edd657c45907ac",
       []
      ]
     },
@@ -405751,6 +405751,40 @@
       "f1c2a17f287945caa185475f439de706f11d56b7",
       []
      ],
+     "js-string": {
+      "basic.tentative.any-expected.txt": [
+       "a3671656a6af32bc56b95689734920db86954fda",
+       []
+      ],
+      "basic.tentative.any.shadowrealm-expected.txt": [
+       "f1c2a17f287945caa185475f439de706f11d56b7",
+       []
+      ],
+      "basic.tentative.any.worker-expected.txt": [
+       "a3671656a6af32bc56b95689734920db86954fda",
+       []
+      ],
+      "constants.tentative.any-expected.txt": [
+       "b5a93e30948b5b6ee159ec623d7bd937b38569fc",
+       []
+      ],
+      "constants.tentative.any.shadowrealm-expected.txt": [
+       "f1c2a17f287945caa185475f439de706f11d56b7",
+       []
+      ],
+      "constants.tentative.any.worker-expected.txt": [
+       "b5a93e30948b5b6ee159ec623d7bd937b38569fc",
+       []
+      ],
+      "imports.tentative.any.shadowrealm-expected.txt": [
+       "f1c2a17f287945caa185475f439de706f11d56b7",
+       []
+      ],
+      "polyfill.js": [
+       "e18236899df896b8606de7a6acd109d21f7b86d4",
+       []
+      ]
+     },
      "memory": {
       "assertions.js": [
        "b539513adcab7d84e67d65fcf97453e9bc22de43",
@@ -405868,7 +405902,7 @@
       ]
      },
      "wasm-module-builder.js": [
-      "1d8db0a6e6fd71059963e4a1b767d796fa1a5eff",
+      "90ccc954a5dba362f9ea2c57560bbe8d64002800",
       []
      ]
     },
@@ -407404,10 +407438,6 @@
     ],
     "helpers.js": [
      "5b30749bf377ca03aaa791b3a815033f9460cbda",
-     []
-    ],
-    "idlharness.https.window-expected.txt": [
-     "b148e99c7aaf1e765ed2b537bc5ec509855c7415",
      []
     ],
     "remote-desktop-client-override.tentative.https-expected.txt": [
@@ -611881,24 +611911,6 @@
       {}
      ]
     ],
-    "mouseover-heuristics-background.tentative.html": [
-     "ddd4f9672e78e5e0ede5ec94fbdbd352081e670d",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "mouseover-heuristics-element.tentative.html": [
-     "afc4b2a50d6bdbe63039b2bec42225dd873f1355",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "multiple-image-same-src.html": [
      "192a7a1dec0d9ff084147bf0ddac4af4aac0c689",
      [
@@ -652934,7 +652946,7 @@
        ]
       ],
       "property-reflection.html": [
-       "078eb28665d2114b22fa5f0fa2f0e75448415155",
+       "b182087aaedbb8fe5aaca4a107ebf06ed11df30e",
        [
         null,
         {
@@ -676320,6 +676332,232 @@
        }
       ]
      ],
+     "js-string": {
+      "basic.tentative.any.js": [
+       "6275aacd5f6d4716063fbc877f9ab3f8a70d7453",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/assertions.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/js-string/polyfill.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/js-string/basic.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/assertions.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/js-string/polyfill.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/js-string/basic.tentative.any.shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/assertions.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/js-string/polyfill.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/js-string/basic.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/assertions.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/js-string/polyfill.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "constants.tentative.any.js": [
+       "ef391a90b7ae7c646a03eb67ef13bfcd5100befa",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/js-string/constants.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/js-string/constants.tentative.any.shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/js-string/constants.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "imports.tentative.any.js": [
+       "c357760befb6c386ef2fb7a7e972a0e55f72faf0",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/js-string/imports.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/js-string/imports.tentative.any.shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/js-string/imports.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ]
+      ]
+     },
      "memory": {
       "buffer.any.js": [
        "fb1d1200b892be1eb7aea66db343db491e921a8d",
@@ -705387,7 +705625,7 @@
       ]
      ],
      "resample2d.https.any.js": [
-      "bedd348fe58961048a6d23b0d82ac2b2701ef630",
+      "65faca22abdddb36e3938e3e4f45cd2ddf0c0aec",
       [
        "webnn/conformance_tests/resample2d.https.any.html?cpu",
        {
@@ -716767,7 +717005,7 @@
       ]
      ],
      "resample2d.https.any.js": [
-      "a07a9b4ca583351289894bf6286c905f35fb1538",
+      "dd9916aefe099c625ff0170bb90ad126f0d5ab42",
       [
        "webnn/validation_tests/resample2d.https.any.html?cpu",
        {
