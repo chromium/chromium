@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -20,8 +21,8 @@
 
 namespace gfx {
 
-// Returns a vector containing all buffer formats.
-GFX_EXPORT std::vector<BufferFormat> GetBufferFormatsForTesting();
+// Returns a span containing all buffer formats.
+GFX_EXPORT base::span<const BufferFormat> GetBufferFormatsForTesting();
 
 // Returns the number of bits of alpha for the specified format.
 GFX_EXPORT size_t AlphaBitsForBufferFormat(BufferFormat format);

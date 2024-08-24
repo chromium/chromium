@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/buffer_format_util.h"
 
 #include "base/check_op.h"
@@ -18,16 +13,14 @@
 namespace gfx {
 namespace {
 
-const BufferFormat kBufferFormats[] = {
-    BufferFormat::R_8,          BufferFormat::R_16,
-    BufferFormat::RG_88,        BufferFormat::RG_1616,
-    BufferFormat::BGR_565,      BufferFormat::RGBA_4444,
-    BufferFormat::RGBX_8888,    BufferFormat::RGBA_8888,
-    BufferFormat::BGRX_8888,    BufferFormat::BGRA_1010102,
-    BufferFormat::RGBA_1010102, BufferFormat::BGRA_8888,
-    BufferFormat::RGBA_F16,     BufferFormat::YUV_420_BIPLANAR,
-    BufferFormat::YVU_420,      BufferFormat::YUVA_420_TRIPLANAR,
-    BufferFormat::P010};
+constexpr auto kBufferFormats = std::to_array<BufferFormat>(
+    {BufferFormat::R_8, BufferFormat::R_16, BufferFormat::RG_88,
+     BufferFormat::RG_1616, BufferFormat::BGR_565, BufferFormat::RGBA_4444,
+     BufferFormat::RGBX_8888, BufferFormat::RGBA_8888, BufferFormat::BGRX_8888,
+     BufferFormat::BGRA_1010102, BufferFormat::RGBA_1010102,
+     BufferFormat::BGRA_8888, BufferFormat::RGBA_F16,
+     BufferFormat::YUV_420_BIPLANAR, BufferFormat::YVU_420,
+     BufferFormat::YUVA_420_TRIPLANAR, BufferFormat::P010});
 
 static_assert(std::size(kBufferFormats) ==
                   (static_cast<int>(BufferFormat::LAST) + 1),
@@ -35,9 +28,8 @@ static_assert(std::size(kBufferFormats) ==
 
 }  // namespace
 
-std::vector<BufferFormat> GetBufferFormatsForTesting() {
-  return std::vector<BufferFormat>(kBufferFormats,
-                                   kBufferFormats + std::size(kBufferFormats));
+base::span<const BufferFormat> GetBufferFormatsForTesting() {
+  return kBufferFormats;
 }
 
 size_t AlphaBitsForBufferFormat(BufferFormat format) {
@@ -118,18 +110,18 @@ size_t SubsamplingFactorForBufferFormat(BufferFormat format, size_t plane) {
     case BufferFormat::RGBA_F16:
       return 1;
     case BufferFormat::YVU_420: {
-      constexpr size_t factor[] = {1, 2, 2};
+      constexpr auto factor = std::to_array<size_t>({1, 2, 2});
       DCHECK_LT(plane, std::size(factor));
       return factor[plane];
     }
     case BufferFormat::YUV_420_BIPLANAR:
     case BufferFormat::P010: {
-      constexpr size_t factor[] = {1, 2};
+      constexpr auto factor = std::to_array<size_t>({1, 2});
       DCHECK_LT(plane, std::size(factor));
       return factor[plane];
     }
     case BufferFormat::YUVA_420_TRIPLANAR: {
-      constexpr size_t factor[] = {1, 2, 1};
+      constexpr auto factor = std::to_array<size_t>({1, 2, 1});
       DCHECK_LT(plane, std::size(factor));
       return factor[plane];
     }
