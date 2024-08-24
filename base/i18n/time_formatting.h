@@ -167,6 +167,18 @@ BASE_I18N_EXPORT std::string TimeFormatHTTP(const Time& time);
     DurationFormatWidth width,
     std::u16string* out);
 
+// Formats a time duration of hours, minutes and seconds into various formats,
+// without the leading 0 time measurement units. e.g., "7m 30s" or
+// "30 seconds", and returns true on success.
+// Since the numeric format of time duration with the leading 0 omitted
+// can produces ambiguous outputs such as "7:30", the "hh:mm:ss" format
+// will always be used.
+// See DurationFormatWidth for details.
+[[nodiscard]] BASE_I18N_EXPORT bool TimeDurationCompactFormatWithSeconds(
+    TimeDelta time,
+    DurationFormatWidth width,
+    std::u16string* out);
+
 // Formats a date interval into various formats, e.g. "2 December - 4 December"
 // or "March 2016 - December 2016". See DateFormat for details.
 BASE_I18N_EXPORT std::u16string DateIntervalFormat(const Time& begin_time,

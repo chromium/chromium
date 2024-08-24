@@ -343,6 +343,43 @@ bool TimeDurationFormatWithSeconds(TimeDelta time,
   return U_SUCCESS(status);
 }
 
+bool TimeDurationCompactFormatWithSeconds(TimeDelta time,
+                                          DurationFormatWidth width,
+                                          std::u16string* out) {
+  DCHECK(out);
+  UErrorCode status = U_ZERO_ERROR;
+  const int64_t total_seconds = ClampRound<int64_t>(time.InSecondsF());
+  const int64_t hours = total_seconds / base::Time::kSecondsPerHour;
+  const int64_t minutes =
+      (total_seconds - hours * base::Time::kSecondsPerHour) /
+      base::Time::kSecondsPerMinute;
+  const int64_t seconds = total_seconds % base::Time::kSecondsPerMinute;
+  UMeasureFormatWidth u_width = DurationWidthToMeasureWidth(width);
+  const icu::Measure hours_measure =
+      icu::Measure(hours, icu::MeasureUnit::createHour(status), status);
+  const icu::Measure minutes_measure =
+      icu::Measure(minutes, icu::MeasureUnit::createMinute(status), status);
+  const icu::Measure seconds_measure =
+      icu::Measure(seconds, icu::MeasureUnit::createSecond(status), status);
+  icu::MeasureFormat measure_format(icu::Locale::getDefault(), u_width, status);
+  icu::UnicodeString formatted;
+  icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
+  if (hours != 0 || width == DurationFormatWidth::DURATION_WIDTH_NUMERIC) {
+    measure_format.formatMeasures(
+        (icu::Measure[3]){hours_measure, minutes_measure, seconds_measure}, 3,
+        formatted, ignore, status);
+  } else if (minutes != 0) {
+    measure_format.formatMeasures(
+        (icu::Measure[2]){minutes_measure, seconds_measure}, 2, formatted,
+        ignore, status);
+  } else {
+    measure_format.formatMeasures((icu::Measure[1]){seconds_measure}, 1,
+                                  formatted, ignore, status);
+  }
+  *out = i18n::UnicodeStringToString16(formatted);
+  return U_SUCCESS(status);
+}
+
 std::u16string DateIntervalFormat(const Time& begin_time,
                                   const Time& end_time,
                                   DateFormat format) {
