@@ -85,6 +85,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                        ErrorCallback error_callback) override;
   void DisableTethering(StringCallback callback,
                         ErrorCallback error_callback) override;
+  void OnDisableTetheringSuccess(const std::string& result);
   void CheckTetheringReadiness(StringCallback callback,
                                ErrorCallback error_callback) override;
   void SetLOHSEnabled(bool enabled,
@@ -136,6 +137,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void AddManagerService(const std::string& service_path,
                          bool notify_observers) override;
   void RemoveManagerService(const std::string& service_path) override;
+  void RestartTethering() override;
   void ClearManagerServices() override;
   void ServiceStateChanged(const std::string& service_path,
                            const std::string& state) override;

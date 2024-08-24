@@ -453,6 +453,11 @@ WebContentsInteractionTestUtil::DeepQuery HotspotConfigureButton() {
          "cr-button#configureButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery HotspotClientCountItem() {
+  return InternetPage() + "settings-hotspot-subpage" +
+         "div#connectedDeviceCountRow";
+}
+
 WebContentsInteractionTestUtil::DeepQuery HotspotConfigDialog() {
   return InternetPage() + "hotspot-config-dialog";
 }

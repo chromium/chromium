@@ -308,6 +308,9 @@ WebContentsInteractionTestUtil::DeepQuery HotspotSSID();
 // Hotspot SSID input in the hotspot config dialog.
 WebContentsInteractionTestUtil::DeepQuery HotspotSSIDInput();
 
+// Hotspot client count item in the hotspot detail page.
+WebContentsInteractionTestUtil::DeepQuery HotspotClientCountItem();
+
 }  // namespace hotspot
 
 namespace wifi {

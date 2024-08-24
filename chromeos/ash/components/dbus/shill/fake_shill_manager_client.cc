@@ -942,6 +942,30 @@ void FakeShillManagerClient::RemoveManagerService(
   CallNotifyObserversPropertyChanged(shill::kServiceCompleteListProperty);
 }
 
+void FakeShillManagerClient::RestartTethering() {
+  auto my_error_callback = [](const std::string& error_name,
+                              const std::string& error_message) {
+    LOG(ERROR) << "Unexpected error occurred: " << error_name << " "
+               << error_message;
+    NOTREACHED();
+  };
+  DisableTethering(
+      base::BindOnce(&FakeShillManagerClient::OnDisableTetheringSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(my_error_callback));
+}
+
+void FakeShillManagerClient::OnDisableTetheringSuccess(
+    const std::string& result) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeShillManagerClient::EnableTethering,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     shill::WiFiInterfacePriority::OS_REQUEST,
+                     base::DoNothing(), base::DoNothing()),
+      interactive_delay_);
+}
+
 void FakeShillManagerClient::ClearManagerServices() {
   VLOG(1) << "ClearManagerServices";
   GetListProperty(shill::kServiceCompleteListProperty).clear();
