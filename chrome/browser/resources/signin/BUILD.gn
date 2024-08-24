@@ -109,6 +109,7 @@ build_webui("build") {
 
   if (!is_chromeos_ash) {
     css_files += [
+      "managed_user_profile_notice/managed_user_profile_notice_app.css",
       "managed_user_profile_notice/managed_user_profile_notice_disclosure.css",
       "managed_user_profile_notice/managed_user_profile_notice_state.css",
       "profile_customization/profile_customization_app.css",
