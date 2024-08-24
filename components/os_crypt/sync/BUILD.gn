@@ -65,7 +65,7 @@ component("os_crypt") {
       "os_crypt_linux.cc",
     ]
 
-    if (use_glib) {
+    if (use_glib && use_dbus) {
       sources += [
         "key_storage_libsecret.cc",
         "key_storage_libsecret.h",

@@ -9,6 +9,10 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "dbus/bus.h"
+#include "dbus/message.h"
+#include "dbus/object_path.h"
+#include "dbus/object_proxy.h"
 
 //
 // LibsecretLoader
@@ -22,6 +26,82 @@ const char kExplanationMessage[] =
     "Because of quirks in the gnome libsecret API, Chrome needs to store a "
     "dummy entry to guarantee that this keyring was properly unlocked. More "
     "details at http://crbug.com/660005.";
+
+// gnome-keyring-daemon has a bug that causes libsecret to deadlock on startup.
+// This function checks for the deadlock condition.  See [1] for a more detailed
+// explanation of the issue.
+// [1] https://chromium-review.googlesource.com/c/chromium/src/+/5787619
+bool CanUseLibsecret() {
+  constexpr char kSecretsName[] = "org.freedesktop.secrets";
+  constexpr char kSecretsPath[] = "/org/freedesktop/secrets";
+  constexpr char kSecretServiceInterface[] = "org.freedesktop.Secret.Service";
+  constexpr char kSecretCollectionInterface[] =
+      "org.freedesktop.Secret.Collection";
+  constexpr char kReadAliasMethod[] = "ReadAlias";
+
+  dbus::Bus::Options bus_options;
+  bus_options.bus_type = dbus::Bus::SESSION;
+  bus_options.connection_type = dbus::Bus::PRIVATE;
+  auto bus = base::MakeRefCounted<dbus::Bus>(bus_options);
+
+  dbus::ObjectProxy* bus_proxy =
+      bus->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  dbus::MethodCall name_has_owner_call(DBUS_INTERFACE_DBUS, "NameHasOwner");
+  dbus::MessageWriter name_has_owner_writer(&name_has_owner_call);
+  name_has_owner_writer.AppendString(kSecretsName);
+  auto name_has_owner_response = bus_proxy->CallMethodAndBlock(
+      &name_has_owner_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+
+  if (!name_has_owner_response.has_value()) {
+    // gnome-keyring-daemon is not running.
+    return true;
+  }
+  dbus::MessageReader name_has_owner_reader(
+      name_has_owner_response.value().get());
+  bool owned = false;
+  if (!name_has_owner_reader.PopBool(&owned) || !owned) {
+    // gnome-keyring-daemon is not running.
+    return true;
+  }
+
+  auto* secrets_proxy =
+      bus->GetObjectProxy(kSecretsName, dbus::ObjectPath(kSecretsPath));
+  dbus::MethodCall read_alias_call(kSecretServiceInterface, kReadAliasMethod);
+  dbus::MessageWriter read_alias_writer(&read_alias_call);
+  read_alias_writer.AppendString("default");
+  auto read_alias_response = secrets_proxy->CallMethodAndBlock(
+      &read_alias_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+  if (!read_alias_response.has_value()) {
+    // libsecret will create the default keyring.
+    return true;
+  }
+  dbus::MessageReader read_alias_reader(read_alias_response->get());
+  dbus::ObjectPath default_object_path;
+  if (!read_alias_reader.PopObjectPath(&default_object_path) ||
+      default_object_path == dbus::ObjectPath("/")) {
+    // libsecret will create the default keyring.
+    return true;
+  }
+
+  auto* default_proxy = bus->GetObjectProxy(kSecretsName, default_object_path);
+  dbus::MethodCall get_property_call(DBUS_INTERFACE_PROPERTIES, "Get");
+  dbus::MessageWriter get_property_writer(&get_property_call);
+  get_property_writer.AppendString(kSecretCollectionInterface);
+  get_property_writer.AppendString("Label");
+  auto get_property_response = default_proxy->CallMethodAndBlock(
+      &get_property_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+
+  // If the default keyring doesn't have an object path, then libsecret will
+  // deadlock trying to create it and prevent startup.
+  const bool can_use_libsecret = get_property_response.has_value();
+  if (!can_use_libsecret) {
+    LOG(ERROR) << "Not using libsecret to avoid deadlock.  Please restart "
+                  "gnome-keyring-daemon or reboot.  The next time you launch, "
+                  "any keys stored in the plaintext backend will be migrated "
+                  "to the libsecret backend.";
+  }
+  return can_use_libsecret;
+}
 
 }  // namespace
 
@@ -91,7 +171,7 @@ void LibsecretLoader::SearchHelper::Search(const SecretSchema* schema,
 
 // static
 bool LibsecretLoader::EnsureLibsecretLoaded() {
-  return LoadLibsecret() && LibsecretIsAvailable();
+  return CanUseLibsecret() && LoadLibsecret() && LibsecretIsAvailable();
 }
 
 // static
