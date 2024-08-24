@@ -340,6 +340,8 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdNotReset) {
               ElementsAre(base::Bucket(0, 1)));
   EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset"),
               ElementsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset2"),
+              ElementsAre(base::Bucket(0, 1)));
 
   // Verify that `kOobeMetricsClientIdAtOobeStart` preference was cleared.
   EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
@@ -377,6 +379,8 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdReset) {
                   "OOBE.StatsReportingControllerReportedReset"),
               ElementsAre(base::Bucket(1, 1)));
   EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset"),
+              ElementsAre(base::Bucket(1, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset2"),
               ElementsAre(base::Bucket(1, 1)));
 
   // Verify that `kOobeMetricsClientIdAtOobeStart` preference was cleared.

@@ -158,6 +158,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="User declined update over cellular"/>
 </enum>
 
+<enum name="OobeMetricsClientIdResetState">
+  <int value="0" label="No reset during OOBE"/>
+  <int value="1" label="Reset during OOBE"/>
+  <int value="2" label="Failed to retrieve initial ID"/>
+  <int value="3" label="Failed to retrieve OOBE completion ID"/>
+</enum>
+
 <enum name="OobeMultideviceScreenSkippedReason">
   <int value="0" label="Public session or ephermeral login"/>
   <int value="1" label="Host phone already set"/>

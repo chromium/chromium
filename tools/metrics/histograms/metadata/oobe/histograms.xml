@@ -953,6 +953,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.MetricsClientIdReset2"
+    enum="OobeMetricsClientIdResetState" expires_after="2025-08-01">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    State of the metrics client ID during OOBE. Recorded at the end of OOBE flow
+    before the first session starts.
+
+    This histogram should be recorded as `Reset during OOBE` in very rare
+    occasions (e.g. the device is managed and the admin switched the metrics
+    policy from false to true at the time the user was going through OOBE).
+
+    If the device is unmanaged, then this histogram should never be recorded as
+    `Reset during OOBE`.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.NetworkErrorShown.{OOBEScreenShownBeforeNetworkError}"
     enum="NetworkErrorType" expires_after="2025-01-05">
   <owner>achuith@google.com</owner>
@@ -1222,6 +1239,10 @@ chromium-metrics-reviews@google.com.
     the device is managed, this should report true in very rare occasions (e.g.
     the admin switched the metrics policy from false to true at the time the
     user was going through OOBE).
+
+    Starting from M-130, this histogram is updated to include all users going
+    through OOBE instead of only those who had the client ID available at both
+    the start and end of OOBE.
   </summary>
 </histogram>
 
