@@ -3515,7 +3515,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3497560059572256875">Споделяне на драскулката</translation>
 <translation id="3497915391670770295">Изпращане до &amp;устройствата ви</translation>
 <translation id="3498138244916757538">Промяната в настройката за микрофона изисква изключване на <ph name="SPECIFIC_NAME" />. Изключете <ph name="SPECIFIC_NAME" />, за да продължите.</translation>
-<translation id="3499091376302796297">Докато сърфирате в сайтовете, съдържанието на страниците им се запазва в шифрован вид на устройството ви.</translation>
 <translation id="3500417806337761827">Грешка при свързването с мрежовия дял. Вече са свързани твърде много мрежови дялове през SMB.</translation>
 <translation id="3500764001796099683">Активиране на изолираните уеб приложения</translation>
 <translation id="350397915809787283">Ако нямате профил, изберете първата опция, за да си създадете такъв.</translation>
@@ -4986,7 +4985,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4562155214028662640">Добавяне на отпечатък</translation>
 <translation id="4562155266774382038">Отхвърляне на предложението</translation>
 <translation id="4562364000855074606">Блокиране на приложенията, инсталирани на това устройство <ph name="DEVICE_TYPE" />. За да ограничите изтеглянето на приложения или съдържание, отворете настройките за Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Използвайте общ език, за да търсите в историята си на сърфиране и да намирате сайтове, които сте посетили.</translation>
 <translation id="4563210852471260509">Първоначалният език за въвеждане да бъде китайски</translation>
 <translation id="4563382028841851106">Премахване от профила</translation>
 <translation id="4563880231729913339">Пръст 3</translation>

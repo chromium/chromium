@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1192844206376121885">Esta acción borrará todos los datos y cookies que almacenó <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Siguiente</translation>
+<translation id="1240190568154816272">Sugerencias de Chrome</translation>
 <translation id="1242008676835033345">Incorporado en <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Interrumpir</translation>
 <translation id="1289742167380433257">Para ahorrar datos, Google optimizó las imágenes de esta página.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Preguntar antes de permitir que los sitios se conecten a un dispositivo (recomendado)</translation>
 <translation id="1779089405699405702">Decodificador de imágenes</translation>
 <translation id="1785415724048343560">Recomendado para obtener la mejor experiencia</translation>
+<translation id="1799920918471566157">Sugerencias de Chrome</translation>
 <translation id="1818308510395330587">Para permitir el uso de la RA en <ph name="APP_NAME" />, también debes activar la cámara en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">En este dispositivo, el acceso a la ubicación está desactivado. Actívalo en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Colgar</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Recientes</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5591840828808741583">Se bloqueó <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Cómo hacerlo</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5668404140385795438">Anular la solicitud de inhabilitación del zoom de un sitio web</translation>
 <translation id="5677928146339483299">Bloqueadas</translation>

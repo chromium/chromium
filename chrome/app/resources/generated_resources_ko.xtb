@@ -3521,7 +3521,6 @@
 <translation id="3497560059572256875">기념일 로고 공유</translation>
 <translation id="3497915391670770295">내 기기로 보내기(&amp;D)</translation>
 <translation id="3498138244916757538">마이크 설정을 변경하려면 <ph name="SPECIFIC_NAME" /> 환경을 종료해야 합니다. 계속하려면 <ph name="SPECIFIC_NAME" /> 환경을 종료하세요.</translation>
-<translation id="3499091376302796297">사이트를 탐색하면 사이트의 페이지 콘텐츠가 기기에 암호화된 형식으로 저장됩니다.</translation>
 <translation id="3500417806337761827">공유를 마운트하는 중에 오류가 발생했습니다. 너무 많은 SMB 공유가 이미 마운트되었습니다.</translation>
 <translation id="3500764001796099683">분리형 웹 앱 사용 설정</translation>
 <translation id="350397915809787283">계정이 없는 경우 첫 번째 옵션을 선택하여 계정을 만드세요.</translation>
@@ -4990,7 +4989,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4562155214028662640">지문 추가</translation>
 <translation id="4562155266774382038">추천 닫기</translation>
 <translation id="4562364000855074606">이 <ph name="DEVICE_TYPE" />에 설치된 앱을 차단합니다. 앱 또는 콘텐츠 다운로드를 제한하려면 Google Play 설정으로 이동하세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">일상적인 단어를 사용하여 방문 기록을 검색하고 방문한 사이트를 찾아보세요.</translation>
 <translation id="4563210852471260509">중국어를 초기 입력 언어로 설정</translation>
 <translation id="4563382028841851106">계정에서 삭제</translation>
 <translation id="4563880231729913339">손가락 3</translation>

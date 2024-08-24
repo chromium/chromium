@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1192844206376121885">तपाईंले यसो गर्नुभयो भने <ph name="ORIGIN" /> ले भण्डारण गरेका सबै डेटा तथा कुकीहरू मेटिने छन्।</translation>
 <translation id="1201402288615127009">अर्को</translation>
+<translation id="1240190568154816272">Chrome का सुझावहरू</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> मा इम्बेड गरिएको</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
 <translation id="1289742167380433257">तपाईंको डेटाको खपत कम गर्न Google ले यो पृष्ठका फोटोहरू अप्टिमाइज गरेको छ।</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">साइटहरूलाई कुनै यन्त्रमा जडान गर्ने अनुमति दिनुअघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="1779089405699405702">छविको डिकोडर</translation>
 <translation id="1785415724048343560">उत्कृष्ट सुविधाका लागि सिफारिस गरिएको</translation>
+<translation id="1799920918471566157">Chrome को प्रयोगसम्बन्धी सुझावहरू</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> लाई AR प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
 <translation id="1887786770086287077">यो डिभाइसको स्थानमाथिको पहुँच निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="1915307458270490472">ह्याङ्ग अप</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">नवीनतम</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> ब्लक गरिएको छ</translation>
+<translation id="5632485077360054581">यसो गर्ने तरिका देखाउनुहोस्</translation>
 <translation id="5649053991847567735">स्वचालित डाउनलोडहरू</translation>
 <translation id="5668404140385795438">जूमिङ इनलाई रोक्न वेबसाइटको अनुरोधलाई ओभरराइड गर्नुहोस्</translation>
 <translation id="5677928146339483299">ब्लक गरिएको छ</translation>

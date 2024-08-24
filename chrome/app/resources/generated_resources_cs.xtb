@@ -3506,7 +3506,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3497560059572256875">Sdílet sváteční logo</translation>
 <translation id="3497915391670770295">Odeslat na vaše &amp;zařízení</translation>
 <translation id="3498138244916757538">Ke změně nastavení přístupu k mikrofonu je prostředí <ph name="SPECIFIC_NAME" /> potřeba vypnout. Pokud chcete pokračovat, vypněte prostředí <ph name="SPECIFIC_NAME" />.</translation>
-<translation id="3499091376302796297">Při procházení webů se do vašeho zařízení ukládá v zašifrované podobě obsah jejich stránek.</translation>
 <translation id="3500417806337761827">Při připojování sdíleného úložiště došlo k chybě. Již je připojeno příliš mnoho sdílených úložišť SMB.</translation>
 <translation id="3500764001796099683">Povolit izolované webové aplikace</translation>
 <translation id="350397915809787283">Pokud nemáte účet, vyberte první možnost a vytvořte si ho.</translation>
@@ -4975,7 +4974,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4562155214028662640">Přidat otisk prstu</translation>
 <translation id="4562155266774382038">Odmítnout návrh</translation>
 <translation id="4562364000855074606">Blokovat aplikace nainstalované na tomto zařízení <ph name="DEVICE_TYPE" />. Pokud chcete omezit stahování aplikací nebo obsahu, přejděte do Nastavení Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Vyhledávejte běžným jazykem v historii prohlížení a najděte navštívené weby.</translation>
 <translation id="4563210852471260509">Výchozí jazyk zadávání je čínština</translation>
 <translation id="4563382028841851106">Odebrat z účtu</translation>
 <translation id="4563880231729913339">Prst 3</translation>
@@ -5988,6 +5986,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5301954838959518834">Dobře, rozumím</translation>
 <translation id="5302032366299160685">Zkuste to znovu, až se otevře</translation>
 <translation id="5302048478445481009">Jazyk</translation>
+<translation id="5302435492906794790">Hledání viditelných zařízení v okolí…</translation>
 <translation id="5302932258331363306">Zobrazit náhrady</translation>
 <translation id="5305145881844743843">Tento účet je spravován doménou <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Zdroj není podporován</translation>
@@ -8698,6 +8697,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7321545336522791733">Server je nedostupný</translation>
 <translation id="7322515217754205362">Oprávnění k webům</translation>
 <translation id="7323315405936922211">Velikost oblasti kurzoru</translation>
+<translation id="7324020307732396723">Otevřít nastavení jazyků</translation>
 <translation id="7324297612904500502">Fórum beta</translation>
 <translation id="7325209047678309347">Papír je zaseklý</translation>
 <translation id="7325953439504232954">Přepnout profil?</translation>
@@ -9812,6 +9812,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8097959162767603171">Administrátor nejdřív musí přijmout smluvní podmínky v seznamu zařízení Chrome v administrátorské konzoli.</translation>
 <translation id="8098156986344908134">Nainstalovat systém <ph name="DEVICE_OS" /> a vymazat pevný disk?</translation>
 <translation id="8098616321286360457">Je vyžadováno připojení k síti</translation>
+<translation id="8100057926383586173">Otevřít nastavení jazyků</translation>
 <translation id="8100230553590752325">Používejte uložená hesla na libovolném zařízení</translation>
 <translation id="810068641062493918">Jazyk <ph name="LANGUAGE" /> je vybrán. Jeho výběr zrušíte stisknutím tlačítka Hledat a mezerníku.</translation>
 <translation id="8101409298456377967">Vytváření, ukládání a správa hesel pro snadné přihlašování na weby a do aplikací. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>

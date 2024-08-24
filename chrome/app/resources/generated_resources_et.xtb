@@ -3510,7 +3510,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3497560059572256875">Jaga Doodle'i vigurlogo</translation>
 <translation id="3497915391670770295">Saatmine teie &amp;seadmetesse</translation>
 <translation id="3498138244916757538">Mikrofoni seadete muudatuse jõustumiseks tuleb teenus <ph name="SPECIFIC_NAME" /> välja lülitada. Jätkamiseks lülitage teenus <ph name="SPECIFIC_NAME" /> välja.</translation>
-<translation id="3499091376302796297">Saitide sirvimisel salvestatakse nende lehtede sisu teie seadmesse krüpteeritud kujul.</translation>
 <translation id="3500417806337761827">Viga ühiskasutusse andmisel. SMB on ühiskasutusse antud juba liiga paljudele kasutajatele.</translation>
 <translation id="3500764001796099683">Isoleeritud veebirakenduste lubamine</translation>
 <translation id="350397915809787283">Kui teil pole kontot, valige selle loomiseks esimene valik.</translation>
@@ -4980,7 +4979,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4562155214028662640">Lisa sõrmejälg</translation>
 <translation id="4562155266774382038">Loobu soovitusest</translation>
 <translation id="4562364000855074606">Blokeerige sellesse seadmesse <ph name="DEVICE_TYPE" /> installitud rakendused. Rakenduste või sisu allalaadimise piiramiseks avage Google Play seaded. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Kasutage sirvimisajaloo otsimiseks ja külastatud saitide leidmiseks igapäevakeelt.</translation>
 <translation id="4563210852471260509">Esialgne sisestuskeel on hiina keel</translation>
 <translation id="4563382028841851106">Eemalda kontolt</translation>
 <translation id="4563880231729913339">3. sõrm</translation>
@@ -5995,6 +5993,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5301954838959518834">Selge, sain aru</translation>
 <translation id="5302032366299160685">Enne uuesti proovimist oodake, et faili avamine lõpetataks</translation>
 <translation id="5302048478445481009">Keel</translation>
+<translation id="5302435492906794790">Läheduses leitavate seadmete otsimine...</translation>
 <translation id="5302932258331363306">Kuva asendused</translation>
 <translation id="5305145881844743843">Seda kontot haldab <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Allikat ei toetata</translation>
@@ -8704,6 +8703,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7321545336522791733">Serveriga ei saa ühendust</translation>
 <translation id="7322515217754205362">Saidi load</translation>
 <translation id="7323315405936922211">Liikumisulatus</translation>
+<translation id="7324020307732396723">Avage valik Keeleseaded</translation>
 <translation id="7324297612904500502">Beeta foorum</translation>
 <translation id="7325209047678309347">Paber on ummistunud</translation>
 <translation id="7325953439504232954">Kas vahetada profiili?</translation>
@@ -9819,6 +9819,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8097959162767603171">Administraator peab esmalt nõustuma administraatori konsooli Chrome'i seadmete loendis olevate teenusetingimustega.</translation>
 <translation id="8098156986344908134">Kas installida <ph name="DEVICE_OS" /> ja kustutada kõvaketta sisu?</translation>
 <translation id="8098616321286360457">Vaja on võrguühendust</translation>
+<translation id="8100057926383586173">Avage keeleseaded</translation>
 <translation id="8100230553590752325">Kasutage salvestatud paroole mis tahes seadmes</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> on valitud. Valiku tühistamiseks vajutage korraga otsingu- ja tühikuklahvi.</translation>
 <translation id="8101409298456377967">Looge, salvestage ja hallake oma paroole, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>

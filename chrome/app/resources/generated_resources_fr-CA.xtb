@@ -3509,7 +3509,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3497560059572256875">Partager le logo commémoratif</translation>
 <translation id="3497915391670770295">Envoyer à vos &amp;appareils</translation>
 <translation id="3498138244916757538">La modification du paramètre du microphone nécessite la désactivation de <ph name="SPECIFIC_NAME" />. Désactivez <ph name="SPECIFIC_NAME" /> pour continuer.</translation>
-<translation id="3499091376302796297">Lorsque vous parcourez des sites, le contenu de leurs pages est enregistré sous une forme chiffrée sur votre appareil.</translation>
 <translation id="3500417806337761827">Erreur durant le montage du répertoire partagé. Un trop grand nombre de répertoires SMB partagés sont déjà montés.</translation>
 <translation id="3500764001796099683">Activer les applications Web isolées</translation>
 <translation id="350397915809787283">Si vous n'avez pas de compte, sélectionnez la première option pour en créer un.</translation>
@@ -4979,7 +4978,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4562155214028662640">Ajouter une empreinte digitale</translation>
 <translation id="4562155266774382038">Fermer la suggestion</translation>
 <translation id="4562364000855074606">Bloquez les applis installées sur cet appareil <ph name="DEVICE_TYPE" />. Pour restreindre le téléchargement d'applis ou de contenu, accédez aux paramètres de Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Utilisez un langage courant pour effectuer des recherches dans votre historique de navigation et trouver les sites que vous avez visités.</translation>
 <translation id="4563210852471260509">Le chinois est la langue d'entrée initiale</translation>
 <translation id="4563382028841851106">Retirer du compte</translation>
 <translation id="4563880231729913339">Doigt 3</translation>
@@ -5992,6 +5990,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5301954838959518834">J'ai compris.</translation>
 <translation id="5302032366299160685">Attendez que le fichier s'ouvre avant de réessayer</translation>
 <translation id="5302048478445481009">Langue</translation>
+<translation id="5302435492906794790">Recherche d'appareils détectables à proximité en cours…</translation>
 <translation id="5302932258331363306">Afficher les substitutions</translation>
 <translation id="5305145881844743843">Ce compte est géré par <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Source non prise en charge</translation>
@@ -8702,6 +8701,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7321545336522791733">Serveur inaccessible</translation>
 <translation id="7322515217754205362">Autorisations du site</translation>
 <translation id="7323315405936922211">Taille de la zone du curseur</translation>
+<translation id="7324020307732396723">Ouvrir les paramètres de langue</translation>
 <translation id="7324297612904500502">Forum bêta</translation>
 <translation id="7325209047678309347">Le papier est bloqué</translation>
 <translation id="7325953439504232954">Changer de profil?</translation>
@@ -9816,6 +9816,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8097959162767603171">Votre administrateur doit tout d'abord accepter les conditions d'utilisation dans la liste d'appareils de la console d'administrateur de Chrome.</translation>
 <translation id="8098156986344908134">Installer <ph name="DEVICE_OS" /> et effacer les données présentes sur le disque dur?</translation>
 <translation id="8098616321286360457">Connexion réseau requise</translation>
+<translation id="8100057926383586173">Ouvrir les paramètres de langue</translation>
 <translation id="8100230553590752325">Utilisez des mots de passe enregistrés sur n'importe quel appareil</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> sélectionné. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour désélectionner cette langue.</translation>
 <translation id="8101409298456377967">Créez, enregistrez et gérez vos mots de passe pour pouvoir vous connecter facilement aux sites et aux applications. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

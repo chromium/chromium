@@ -1244,7 +1244,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3307649904964670439">Botón para personalizar Chrome. Actívao para personalizar o aspecto do navegador</translation>
 <translation id="3308006649705061278">Unidade organizativa (UO)</translation>
 <translation id="3318016344440038475">Comedias de televisión</translation>
-<translation id="3321152582690622182">Sen seguimento</translation>
 <translation id="3324687287337751929">4 x 6 polgadas</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3325027355611702542">Campistas e caravanas</translation>
@@ -1524,6 +1523,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="378611282717571199">Mellores resultados para "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Tamaño 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="3790417903123637354">Produciuse un erro. Téntao de novo máis tarde</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Películas independentes e de culto</translation>
 <translation id="3793574014653384240">Número de fallos ocorridos recentemente e as súas causas</translation>
@@ -2879,7 +2879,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="634500758737709758">Indicacións</translation>
 <translation id="6348220984832452017">Variacións activas</translation>
 <translation id="6349101878882523185">Instalar a aplicación <ph name="APP_NAME" /></translation>
-<translation id="6351398281531821890">CONSULTAR</translation>
 <translation id="6351658970066645919">Eliminar datos navegación</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ningún}=1{1 contrasinal (para <ph name="DOMAIN_LIST" />, sincronizado)}=2{2 contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}other{# contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}}</translation>
 <translation id="6355392890578844978">Ningunha compañía ou organización xestiona este navegador. A actividade deste dispositivo pódese xestionar fóra de Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -3174,6 +3173,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897140037006041989">Axente de usuario</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
+<translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6907458757809079309">Actividade física</translation>
 <translation id="691024665142758461">Descargar varios ficheiros</translation>
 <translation id="6915804003454593391">Usuario:</translation>
@@ -3703,7 +3703,6 @@ Detalles adicionais:
 <translation id="7825558994363763489">Microondas</translation>
 <translation id="782886543891417279">É posible que a rede wifi que utilizas (<ph name="WIFI_NAME" />) requira o acceso á súa páxina de inicio de sesión.</translation>
 <translation id="7831993212387676366">Que é a lista da compra?</translation>
-<translation id="7832078172950550575">Podes usar a linguaxe cotiá para facer buscas no historial de navegación con frases como "pizzarías preto de min" ou "parques familiares no centro da cidade". As túas buscas, o mellores resultados e o contido das páxinas envíanse a Google. Ademais, os membros do equipo de revisión poden velos para mellorar esta función. <ph name="BEGIN_LINK" />Xestionar configuración das buscas no historial<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Comezou a captura de pantalla</translation>
 <translation id="784137052867620416">Estatísticas de compras</translation>
 <translation id="784404208867107517">Historial agrupado</translation>
@@ -4421,7 +4420,6 @@ Detalles adicionais:
 <translation id="9191834167571392248">Perforación na parte inferior esquerda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Cosmética ecolóxica</translation>
-<translation id="919455784772793601">Abre unha páxina que mostra outras tendas nas que se vende este produto.</translation>
 <translation id="9199905725844810519">A opción de impresión está bloqueada</translation>
 <translation id="9205078245616868884">Os teus datos encriptáronse co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
 <translation id="920643408853370361">Seguros de viaxe</translation>

@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1192844206376121885">Esta ação elimina todos os dados e cookies armazenados por <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Seguinte</translation>
+<translation id="1240190568154816272">Sugestões do Chrome</translation>
 <translation id="1242008676835033345">Incorporada em <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1289742167380433257">Para guardar os seus dados, as imagens desta página foram otimizadas pela Google.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Perguntar antes de permitir a ligação de sites a um dispositivo (recomendado)</translation>
 <translation id="1779089405699405702">Descodificador de imagem</translation>
 <translation id="1785415724048343560">Recomendado para obter a melhor experiência</translation>
+<translation id="1799920918471566157">Sugestões do Chrome</translation>
 <translation id="1818308510395330587">Para permitir que a app <ph name="APP_NAME" /> utilize a realidade aumentada, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">O acesso à localização está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Desligar</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Mais recentes</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> impedido</translation>
+<translation id="5632485077360054581">Mostrar-me como</translation>
 <translation id="5649053991847567735">Transferências automáticas</translation>
 <translation id="5668404140385795438">Substituir pedido de um Website para evitar aumentar o zoom</translation>
 <translation id="5677928146339483299">Bloqueado</translation>

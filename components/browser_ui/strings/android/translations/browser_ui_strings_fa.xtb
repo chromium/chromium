@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1192844206376121885">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط <ph name="ORIGIN" /> حذف می‌شود.</translation>
 <translation id="1201402288615127009">بعدی</translation>
+<translation id="1240190568154816272">‏نکته‌های Chrome</translation>
 <translation id="1242008676835033345">جاسازی‌شده در <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">توقف</translation>
 <translation id="1289742167380433257">‏برای صرفه‌جویی درمصرف داده، Google تصاویر این صفحه را بهینه‌سازی کرده است.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">قبل از اجازه دادن به سایت‌ها برای اتصال به دستگاه سؤال شود (توصیه می‌شود)</translation>
 <translation id="1779089405699405702">رمزگشای تصویر</translation>
 <translation id="1785415724048343560">توصیه‌شده برای داشتن بهترین تجربه</translation>
+<translation id="1799920918471566157">‏نکته‌های Chrome</translation>
 <translation id="1818308510395330587">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید از AR استفاده کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="1887786770086287077">‏دسترسی به مکان برای این دستگاه خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">جدیدترین</translation>
 <translation id="5556459405103347317">بار کردن مجدد</translation>
 <translation id="5591840828808741583">‫<ph name="SITE_NAME" /> مسدود شده است</translation>
+<translation id="5632485077360054581">نمایش روش انجام کار</translation>
 <translation id="5649053991847567735">بارگیری‌های خودکار</translation>
 <translation id="5668404140385795438">لغو درخواست وب‌سایت برای جلوگیری از بزرگ‌نمایی</translation>
 <translation id="5677928146339483299">مسدود است</translation>

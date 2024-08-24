@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1192844206376121885">Ова ќе ги избрише сите податоци и колачиња складирани од сајтот <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Следно</translation>
+<translation id="1240190568154816272">Совети за Chrome</translation>
 <translation id="1242008676835033345">Вметнато во <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1289742167380433257">Google ги оптимизираше сликите на страницава за да ви заштеди интернет.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Прашај пред да дозволиш сајтовите да се поврзуваат со уред (се препорачува)</translation>
 <translation id="1779089405699405702">Декодер на слики</translation>
 <translation id="1785415724048343560">Препорачано за најдобро доживување</translation>
+<translation id="1799920918471566157">Совети за Chrome</translation>
 <translation id="1818308510395330587">За да овозможите <ph name="APP_NAME" /> да користи AR, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Пристапот до локацијата е исклучен за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Спушти</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Најнови</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5591840828808741583">Блокирано: <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Покажи ми како</translation>
 <translation id="5649053991847567735">Автоматски преземања</translation>
 <translation id="5668404140385795438">Отфрли го барањето на веб-локацијата да спречи зумирање</translation>
 <translation id="5677928146339483299">Блокирано</translation>

@@ -3496,7 +3496,6 @@
 <translation id="3497560059572256875">分享涂鸦</translation>
 <translation id="3497915391670770295">发送到您的设备(&amp;D)</translation>
 <translation id="3498138244916757538">您必须关闭 <ph name="SPECIFIC_NAME" /> 才能更改麦克风设置。请关闭 <ph name="SPECIFIC_NAME" /> 以继续操作。</translation>
-<translation id="3499091376302796297">当您浏览网站时，网页内容会以加密形式保存在您的设备上。</translation>
 <translation id="3500417806337761827">装载文件共享时出错。已装载太多 SMB 文件共享。</translation>
 <translation id="3500764001796099683">启用独立式 Web 应用</translation>
 <translation id="350397915809787283">如果您没有账号，请选择第一个选项创建一个。</translation>
@@ -4965,7 +4964,6 @@
 <translation id="4562155214028662640">添加指纹</translation>
 <translation id="4562155266774382038">忽略建议</translation>
 <translation id="4562364000855074606">屏蔽在此 <ph name="DEVICE_TYPE" /> 上安装的应用。如要限制下载应用或内容，请前往 Google Play 设置。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">使用日常用语搜索您的浏览记录，并查找您访问过的网站。</translation>
 <translation id="4563210852471260509">初始输入语言是中文</translation>
 <translation id="4563382028841851106">从账号中移除</translation>
 <translation id="4563880231729913339">手指 3</translation>

@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1192844206376121885">Aquesta acció suprimirà totes les dades i galetes emmagatzemades per <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Següent</translation>
+<translation id="1240190568154816272">Consells de Chrome</translation>
 <translation id="1242008676835033345">Incrustada a <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Atura</translation>
 <translation id="1289742167380433257">Perquè estalviïs dades, Google ha optimitzat les imatges d'aquesta pàgina.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Pregunta abans de permetre que els llocs web es connectin a un dispositiu (opció recomanada)</translation>
 <translation id="1779089405699405702">Descodificador d'imatges</translation>
 <translation id="1785415724048343560">Opció recomanada per gaudir de la millor experiència</translation>
+<translation id="1799920918471566157">Consells per a Chrome</translation>
 <translation id="1818308510395330587">Per permetre que <ph name="APP_NAME" /> utilitzi RA, activa també la càmera a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">L'accés a la ubicació està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Penja</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Més recents</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloquejat</translation>
+<translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5649053991847567735">Baixades automàtiques</translation>
 <translation id="5668404140385795438">Ignora la sol·licitud d'un lloc web per evitar que s'apropi la imatge</translation>
 <translation id="5677928146339483299">Bloquejat</translation>

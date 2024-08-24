@@ -3520,7 +3520,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3497560059572256875">Compartilhar doodle</translation>
 <translation id="3497915391670770295">Enviar para seus dispositivos</translation>
 <translation id="3498138244916757538">A mudança na configuração do microfone exige que você desligue o <ph name="SPECIFIC_NAME" />. Desligue o <ph name="SPECIFIC_NAME" /> para continuar.</translation>
-<translation id="3499091376302796297">Quando você navega em sites, o conteúdo das páginas é salvo de forma criptografada no seu dispositivo.</translation>
 <translation id="3500417806337761827">Erro ao ativar o compartilhamento. Muitos compartilhamentos SMB já estão ativos.</translation>
 <translation id="3500764001796099683">Ativar Apps Isolados da Web</translation>
 <translation id="350397915809787283">Se você não tem uma conta, selecione a primeira opção para criar uma.</translation>
@@ -4990,7 +4989,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4562155214028662640">Adicionar impressão digital</translation>
 <translation id="4562155266774382038">Dispensar sugestão</translation>
 <translation id="4562364000855074606">Bloquear apps instalados neste <ph name="DEVICE_TYPE" />. Para restringir o download de apps ou conteúdo, acesse as configurações do Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Use a linguagem cotidiana para pesquisar seu histórico de navegação e encontrar sites que você visitou.</translation>
 <translation id="4563210852471260509">O idioma de entrada inicial é o chinês</translation>
 <translation id="4563382028841851106">Remover da conta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
@@ -6005,6 +6003,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5301954838959518834">Ok, entendi</translation>
 <translation id="5302032366299160685">Aguarde até o arquivo ser aberto antes de tentar de novo</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5302435492906794790">Procurando dispositivos detectáveis por perto…</translation>
 <translation id="5302932258331363306">Mostrar substituições</translation>
 <translation id="5305145881844743843">Esta conta é gerenciada por <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Fonte incompatível</translation>
@@ -8717,6 +8716,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7321545336522791733">Servidor inacessível</translation>
 <translation id="7322515217754205362">Permissões de sites</translation>
 <translation id="7323315405936922211">Tamanho da área do cursor</translation>
+<translation id="7324020307732396723">Abrir configurações de idioma</translation>
 <translation id="7324297612904500502">Fórum do Beta</translation>
 <translation id="7325209047678309347">Atolamento de papel</translation>
 <translation id="7325953439504232954">Trocar de perfil?</translation>
@@ -9832,6 +9832,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8097959162767603171">Primeiro, o administrador precisa aceitar os Termos de Serviço na lista de dispositivos Chrome do Admin Console.</translation>
 <translation id="8098156986344908134">Instalar o <ph name="DEVICE_OS" /> e limpar o disco rígido?</translation>
 <translation id="8098616321286360457">Conexão de rede necessária</translation>
+<translation id="8100057926383586173">Abrir configurações de idioma</translation>
 <translation id="8100230553590752325">Use senhas salvas em qualquer dispositivo</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> selecionado. Pressione "Pesquisar" junto à barra de espaço para desmarcar.</translation>
 <translation id="8101409298456377967">Crie, salve e gerencie suas senhas para fazer login em sites e apps com facilidade. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

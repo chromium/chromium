@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">En consecuencia, Chromium sempre solicitará abrir o sitio para ordenadores.</translation>
 <translation id="2313870531055795960">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="231828342043114302">Para recibir contido personalizado en función dos teus intereses, inicia sesión en Chromium.</translation>
+<translation id="2326738825692478496">Algúns dos teus datos de Chromium aínda non se gardaron na túa Conta de Google.
+
+Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="2374627437126809292">Chromium usa Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
 <translation id="2386292341327187942">Na caixa de busca de widgets, escribe Chromium</translation>
 <translation id="2426113998523353159">A túa organización esixe que inicies para usar Chromium.</translation>
@@ -292,6 +295,8 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 
 Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Introdúcea para usar e gardar os datos de Chromium na túa Conta de Google.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
+<translation id="9031260906956926157">Algúns dos teus datos de Chromium aínda non se gardaron na túa Conta de Google.
+Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="9050790730841755540">Utiliza Chromium sempre que toques ligazóns noutras aplicacións.</translation>
 <translation id="9057082013386654559">Usa Chromium para iPad de forma predeterminada</translation>
 <translation id="9059693977935746710">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais para <ph name="EMAIL" /></translation>

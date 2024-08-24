@@ -3518,7 +3518,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3497560059572256875">Jaa Doodle</translation>
 <translation id="3497915391670770295">Lähetä &amp;laitteillesi</translation>
 <translation id="3498138244916757538">Mikrofoniasetuksen muutos edellyttää sovelluksen (<ph name="SPECIFIC_NAME" />) sammuttamista. Sammuta <ph name="SPECIFIC_NAME" /> jatkaaksesi.</translation>
-<translation id="3499091376302796297">Kun selaat sivustoja, sivujen sisältö tallennetaan laitteelle salatussa muodossa.</translation>
 <translation id="3500417806337761827">Virhe jaon käyttöönotossa. Liian monta SMB-jakoa on jo käytössä.</translation>
 <translation id="3500764001796099683">Ota eristetyt verkkosovellukset käyttöön</translation>
 <translation id="350397915809787283">Jos sinulla ei vielä ole tiliä, luo sellainen valitsemalla ensimmäinen vaihtoehto.</translation>
@@ -4985,7 +4984,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4562155214028662640">Lisää sormenjälki</translation>
 <translation id="4562155266774382038">Hylkää ehdotus</translation>
 <translation id="4562364000855074606">Estä laitteelle (<ph name="DEVICE_TYPE" />) asennetut sovellukset. Voit rajoittaa sovellusten tai sisällön lataamista Google Playn asetuksissa. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Hae avaamiasi sivustoja selaushistoriasta arkikielellä</translation>
 <translation id="4563210852471260509">Alkuperäinen syöttökieli on kiina</translation>
 <translation id="4563382028841851106">Poista tililtä</translation>
 <translation id="4563880231729913339">Sormi 3</translation>
@@ -6000,6 +5998,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5301954838959518834">Selvä</translation>
 <translation id="5302032366299160685">Odota, että tiedosto avautuu, ennen kuin yrität uudelleen</translation>
 <translation id="5302048478445481009">Kieli</translation>
+<translation id="5302435492906794790">Etsitään läheltä tunnistettavissa olevia laitteita…</translation>
 <translation id="5302932258331363306">Näytä korvaavat</translation>
 <translation id="5305145881844743843">Tätä tiliä hoitaa <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />.</translation>
 <translation id="5307030433605830021">Lähdettä ei tueta</translation>
@@ -8709,6 +8708,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7321545336522791733">Palvelimeen ei saada yhteyttä.</translation>
 <translation id="7322515217754205362">Sivustoluvat</translation>
 <translation id="7323315405936922211">Kohdistinalueen koko</translation>
+<translation id="7324020307732396723">Avaa kieliasetukset</translation>
 <translation id="7324297612904500502">Beta-keskusteluryhmä</translation>
 <translation id="7325209047678309347">Paperi on juuttunut</translation>
 <translation id="7325953439504232954">Haluatko vaihtaa profiilia?</translation>
@@ -9823,6 +9823,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8097959162767603171">Järjestelmänvalvojan on ensin hyväksyttävä käyttöehdot hallintakonsolin Chrome-laitelistassa.</translation>
 <translation id="8098156986344908134">Asennetaanko <ph name="DEVICE_OS" /> ja tyhjennetäänkö kiintolevy?</translation>
 <translation id="8098616321286360457">Verkkoyhteys vaaditaan</translation>
+<translation id="8100057926383586173">Avaa kieliasetukset</translation>
 <translation id="8100230553590752325">Käytä tallennettuja salasanoja kaikilla laitteilla</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> valittu. Poista valinta painamalla Haku ja Välilyönti.</translation>
 <translation id="8101409298456377967">Luo, tallenna ja ylläpidä salasanoja, jotta voit kirjautua helposti sivustoille ja sovelluksiin <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>

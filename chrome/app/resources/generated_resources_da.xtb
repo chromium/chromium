@@ -3520,7 +3520,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3497560059572256875">Del doodle</translation>
 <translation id="3497915391670770295">Send til dine enheder</translation>
 <translation id="3498138244916757538">Ændringen af mikrofonindstillingen kræver, at <ph name="SPECIFIC_NAME" /> skal lukkes ned. Sluk <ph name="SPECIFIC_NAME" /> for at fortsætte.</translation>
-<translation id="3499091376302796297">Når du besøger websites, gemmes indholdet på de pågældende sider i krypteret form på din enhed.</translation>
 <translation id="3500417806337761827">Delingen kunne ikke tilføjes. Der er allerede tilføjet for mange SMB-delinger.</translation>
 <translation id="3500764001796099683">Aktivér isolerede webapps</translation>
 <translation id="350397915809787283">Hvis du ikke har en konto, skal du vælge den første mulighed for at oprette en.</translation>
@@ -4990,7 +4989,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4562155214028662640">Tilføj fingeraftryk</translation>
 <translation id="4562155266774382038">Afvis forslag</translation>
 <translation id="4562364000855074606">Bloker apps, der er installeret på denne <ph name="DEVICE_TYPE" />. Hvis du vil begrænse download af apps eller indhold, skal du gå til indstillingerne for Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Brug dagligsprog til at søge i din browserhistorik og finde websites, du har besøgt.</translation>
 <translation id="4563210852471260509">Det oprindelige indtastningssprog er kinesisk</translation>
 <translation id="4563382028841851106">Fjern fra konto</translation>
 <translation id="4563880231729913339">Finger 3</translation>
@@ -6005,6 +6003,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5301954838959518834">OK, det er forstået</translation>
 <translation id="5302032366299160685">Vent, indtil filen er åben, før du prøver igen</translation>
 <translation id="5302048478445481009">Sprog</translation>
+<translation id="5302435492906794790">Søger efter synlige enheder i nærheden…</translation>
 <translation id="5302932258331363306">Vis erstatninger</translation>
 <translation id="5305145881844743843">Denne konto administreres af <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Kilden understøttes ikke</translation>
@@ -8716,6 +8715,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7321545336522791733">Serveren er utilgængelig</translation>
 <translation id="7322515217754205362">Websitetilladelser</translation>
 <translation id="7323315405936922211">Størrelse på markørområde</translation>
+<translation id="7324020307732396723">Åbn sprogindstillingerne</translation>
 <translation id="7324297612904500502">Betaforum</translation>
 <translation id="7325209047678309347">Papiret sidder fast</translation>
 <translation id="7325953439504232954">Vil du skifte profil?</translation>
@@ -9830,6 +9830,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8097959162767603171">Din administrator skal først acceptere servicevilkårene i listen over Chrome-enheder i administrationskonsollen.</translation>
 <translation id="8098156986344908134">Vil du installere <ph name="DEVICE_OS" /> og rydde harddisken?</translation>
 <translation id="8098616321286360457">En netværksforbindelse er påkrævet</translation>
+<translation id="8100057926383586173">Åbn sprogindstillingerne</translation>
 <translation id="8100230553590752325">Brug gemte adgangskoder på alle enheder</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> er valgt. Tryk på søgetasten og mellemrumstasten på samme tid for at fjerne markeringen.</translation>
 <translation id="8101409298456377967">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>

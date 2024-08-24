@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" />에서 저장한 모든 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="1201402288615127009">다음</translation>
+<translation id="1240190568154816272">Chrome 사용 팁</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />에 삽입됨</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1289742167380433257">데이터를 저장하기 위해 Google에서 이 페이지의 이미지를 최적화했습니다.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">사이트에서 내 기기에 연결하도록 허용하기 전에 확인(권장)</translation>
 <translation id="1779089405699405702">이미지 디코더</translation>
 <translation id="1785415724048343560">최적의 경험을 위해 권장됨</translation>
+<translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />에서 AR을 사용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="1887786770086287077">이 기기의 위치 액세스가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="1915307458270490472">종료</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">최신</translation>
 <translation id="5556459405103347317">새로고침</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> 차단됨</translation>
+<translation id="5632485077360054581">방법 보기</translation>
 <translation id="5649053991847567735">자동 다운로드</translation>
 <translation id="5668404140385795438">웹사이트의 확대 방지 요청 무시</translation>
 <translation id="5677928146339483299">차단됨</translation>

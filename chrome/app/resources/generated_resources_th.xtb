@@ -3504,7 +3504,6 @@
 <translation id="3497560059572256875">แชร์ Doodle</translation>
 <translation id="3497915391670770295">ส่งไปยังอุปกรณ์ของคุณ</translation>
 <translation id="3498138244916757538">ต้องปิด <ph name="SPECIFIC_NAME" /> เพื่อเปลี่ยนแปลงการตั้งค่าไมโครโฟน ปิด <ph name="SPECIFIC_NAME" /> เพื่อดำเนินการต่อ</translation>
-<translation id="3499091376302796297">ขณะที่คุณท่องเว็บ ระบบจะบันทึกเนื้อหาในหน้าเว็บไว้ในรูปแบบที่เข้ารหัสในอุปกรณ์ของคุณ</translation>
 <translation id="3500417806337761827">เกิดข้อผิดพลาดในการต่อเชื่อมการแชร์ มีการต่อเชื่อม SMB เป็นจำนวนมากอยู่แล้ว</translation>
 <translation id="3500764001796099683">เปิดใช้ Isolated Web App</translation>
 <translation id="350397915809787283">หากคุณไม่มีบัญชี ให้เลือกตัวเลือกแรกเพื่อสร้างบัญชี</translation>
@@ -4974,7 +4973,6 @@
 <translation id="4562155214028662640">เพิ่มลายนิ้วมือ</translation>
 <translation id="4562155266774382038">ปิดคำแนะนำ</translation>
 <translation id="4562364000855074606">บล็อกแอปที่ติดตั้งใน <ph name="DEVICE_TYPE" /> เครื่องนี้ หากต้องการจำกัดการดาวน์โหลดแอปหรือเนื้อหา ให้ไปที่การตั้งค่า Google Play <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">ใช้ภาษาที่ใช้ในชีวิตประจำวันเพื่อค้นหาประวัติการท่องเว็บและหาเว็บไซต์ที่เคยเข้าชม</translation>
 <translation id="4563210852471260509">ภาษาป้อนข้อมูลเบื้องต้นคือจีน</translation>
 <translation id="4563382028841851106">นำออกจากบัญชี</translation>
 <translation id="4563880231729913339">นิ้วที่ 3</translation>

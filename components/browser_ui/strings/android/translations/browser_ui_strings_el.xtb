@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1192844206376121885">Με αυτόν τον τρόπο θα διαγραφούν όλα τα δεδομένα και τα cookie που αποθηκεύτηκαν από το <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
+<translation id="1240190568154816272">Συμβουλές για το Chrome</translation>
 <translation id="1242008676835033345">Ενσωματωμένο σε <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Διακοπή</translation>
 <translation id="1289742167380433257">Οι εικόνες αυτής της σελίδας έχουν βελτιστοποιηθεί από την Google για την εξοικονόμηση των δεδομένων σας.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Να γίνεται ερώτηση προτού επιτραπεί στους ιστοτόπους να συνδεθούν σε μια συσκευή (συνιστάται)</translation>
 <translation id="1779089405699405702">Εργαλείο αποκωδικοποίησης εικόνων</translation>
 <translation id="1785415724048343560">Συνιστάται για την καλύτερη δυνατή εμπειρία</translation>
+<translation id="1799920918471566157">Συμβουλές για το Chrome</translation>
 <translation id="1818308510395330587">Για να επιτρέπεται στην εφαρμογή <ph name="APP_NAME" /> να χρησιμοποιεί AR, ενεργοποιήστε επίσης την κάμερα στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Η πρόσβαση στην Τοποθεσία είναι απενεργοποιημένη γι' αυτήν τη συσκευή. Ενεργοποιήστε τη στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Τερματισμός κλήσης</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Πιο πρόσφατα</translation>
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> αποκλείστηκε</translation>
+<translation id="5632485077360054581">Οδηγίες</translation>
 <translation id="5649053991847567735">Αυτόματες λήψεις</translation>
 <translation id="5668404140385795438">Παράκαμψη του αιτήματος ενός ιστότοπου για παρεμπόδιση εστίασης</translation>
 <translation id="5677928146339483299">Αποκλεισμένο</translation>

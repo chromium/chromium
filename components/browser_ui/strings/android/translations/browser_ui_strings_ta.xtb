@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1192844206376121885">இதைச் செய்தால் <ph name="ORIGIN" /> சேமித்துள்ள அனைத்து தரவும் குக்கீகளும் நீக்கப்படும்.</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
+<translation id="1240190568154816272">Chrome உதவிக்குறிப்புகள்</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> இல் உட்பொதியப்பட்டது</translation>
 <translation id="1272079795634619415">நிறுத்து</translation>
 <translation id="1289742167380433257">உங்கள் டேட்டாவைச் சேமிப்பதற்காக, இந்தப் பக்கத்தின் படங்கள் Googleளால் சுருக்கப்பட்டுள்ளன.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">சாதனத்தை இணைக்க, தளங்களை அனுமதிப்பதற்கு முன், கேள் (பரிந்துரைக்கப்படுவது)</translation>
 <translation id="1779089405699405702">இமேஜ் டீகோடர்</translation>
 <translation id="1785415724048343560">சிறந்த அனுபவத்திற்காகப் பரிந்துரைக்கப்படுகிறது</translation>
+<translation id="1799920918471566157">Chrome உதவிக்குறிப்புகள்</translation>
 <translation id="1818308510395330587">ARரைப் பயன்படுத்த <ph name="APP_NAME" /> ஆப்ஸை அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> கேமராவிற்கான அனுமதியை இயக்கவும்.</translation>
 <translation id="1887786770086287077">இந்தச் சாதனத்திற்கான இருப்பிட அணுகல் முடக்கப்பட்டுள்ளது. அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> இயக்கவும்.</translation>
 <translation id="1915307458270490472">மூடுக</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">சமீபத்தியவை</translation>
 <translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> தடுக்கப்பட்டது</translation>
+<translation id="5632485077360054581">எப்படி எனக் காட்டு</translation>
 <translation id="5649053991847567735">தன்னியக்கப் பதிவிறக்கங்கள்</translation>
 <translation id="5668404140385795438">பெரிதாக்கப்படுவதைத் தடுக்க இணையதளம் விடுத்த கோரிக்கையைப் புறக்கணிக்கவும்</translation>
 <translation id="5677928146339483299">தடுக்கப்பட்டது</translation>

@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" /> က သိမ်းထားသည့် ဒေတာနှင့် ကွတ်ကီးအားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
+<translation id="1240190568154816272">Chrome အကြံပြုချက်များ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> တွင် မြှုပ်သွင်းထားသည်</translation>
 <translation id="1272079795634619415">ရပ်ရန်</translation>
 <translation id="1289742167380433257">ဒေတာချွေတာရန် စာမျက်နှာပါပုံများကို Google က အကောင်းဆုံးပြုပြင်ထားသည်။</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">ဝဘ်ဆိုက်များအား စက်သို့ချိတ်ဆက်ခွင့်မပေးမီ ဦးစွာမေးပါ (အကြံပြုထားသည်)</translation>
 <translation id="1779089405699405702">ပုံကို ကုဒ်ဖြည်သည့် စနစ်</translation>
 <translation id="1785415724048343560">အကောင်းဆုံးအသုံးပြုမှုအတွက် အကြံပြုထားသည်</translation>
+<translation id="1799920918471566157">Chrome အကြံပြုချက်များ</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> က AR အသုံးပြုနိုင်ရန် <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း ကင်မရာကို ဖွင့်ပါ။</translation>
 <translation id="1887786770086287077">ဤစက်ပစ္စည်းအတွက် တည်နေရာ အသုံးပြုခွင့်ကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ၎င်းကို ဖွင့်ပါ။</translation>
 <translation id="1915307458270490472">ဖုန်းချရန်</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">နောက်ဆုံး</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> ကို ပိတ်ထားသည်</translation>
+<translation id="5632485077360054581">လုပ်နည်း ပြရန်</translation>
 <translation id="5649053991847567735">အလိုအလျောက် ဒေါင်းလုပ်ရယူခြင်း</translation>
 <translation id="5668404140385795438">ချဲ့နေမှုကို ဟန့်တားရန် ဝဘ်ဆိုက် တစ်ခု၏ တောင်းဆိုချက်ကို အုပ်ရေးပါ</translation>
 <translation id="5677928146339483299">ပိတ်ဆို့ထား</translation>

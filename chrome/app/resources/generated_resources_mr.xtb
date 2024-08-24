@@ -3518,7 +3518,6 @@
 <translation id="3497560059572256875">डूडल शेअर करा</translation>
 <translation id="3497915391670770295">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="3498138244916757538">मायक्रोफोन सेटिंगमधील बदलासाठी <ph name="SPECIFIC_NAME" /> बंद करणे आवश्यक आहे. पुढे सुरू ठेवण्यासाठी <ph name="SPECIFIC_NAME" /> बंद करा.</translation>
-<translation id="3499091376302796297">तुम्ही साइट ब्राउझ करत असताना, त्यांच्या पेजचा आशय तुमच्या डिव्हाइसवर एन्क्रिप्ट केलेल्या स्वरूपात सेव्ह केला जातो.</translation>
 <translation id="3500417806337761827">शेअर माउंट करताना एरर आली. खूप जास्त SMB शेअर आधीच माउंट केले गेले आहेत.</translation>
 <translation id="3500764001796099683">आयसोलेटेड वेब ॲप्स सुरू करा</translation>
 <translation id="350397915809787283">तुमच्याकडे खाते नसल्यास, ते तयार करण्यासाठी पहिला पर्याय निवडा.</translation>
@@ -4986,7 +4985,6 @@
 <translation id="4562155214028662640">फिंगरप्रिंट जोडा</translation>
 <translation id="4562155266774382038">सूचना डिसमिस करा</translation>
 <translation id="4562364000855074606">या <ph name="DEVICE_TYPE" /> वर इंस्टॉल केलेली ॲप्स ब्लॉक करा. ॲप्स किंवा आशय डाउनलोड करणे प्रतिबंधित करण्यासाठी, Google Play सेटिंग्ज वर जा. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">तुमचा ब्राउझिंग इतिहास शोधण्यासाठी आणि तुम्ही भेट दिलेल्या साइट शोधण्यासाठी दररोजची भाषा वापरा.</translation>
 <translation id="4563210852471260509">चीनी आरंभिक इनपुट भाषा आहे</translation>
 <translation id="4563382028841851106">खात्यामधून काढून टाका</translation>
 <translation id="4563880231729913339">तिसरे बोट</translation>
@@ -6001,6 +5999,7 @@
 <translation id="5301954838959518834">ठीक आहे, समजले</translation>
 <translation id="5302032366299160685">पुन्हा प्रयत्न करण्यापूर्वी फाइल उघडण्याची प्रतीक्षा करा</translation>
 <translation id="5302048478445481009">भाषा</translation>
+<translation id="5302435492906794790">जवळपासची शोधसुलभ डिव्हाइस शोधत आहे...</translation>
 <translation id="5302932258331363306">उपघटक दाखवा</translation>
 <translation id="5305145881844743843">हे खाते <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ने व्यवस्थापित केले आहे</translation>
 <translation id="5307030433605830021">स्रोत सपोर्ट करत नाही</translation>
@@ -8713,6 +8712,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7321545336522791733">सर्व्हर आवाक्याबाहेर आहे</translation>
 <translation id="7322515217754205362">साइट परवानग्या</translation>
 <translation id="7323315405936922211">कर्सरच्या भागाचा आकार</translation>
+<translation id="7324020307732396723">भाषा सेटिंग्ज उघडा</translation>
 <translation id="7324297612904500502">बीटा फोरम</translation>
 <translation id="7325209047678309347">पेपर अडकले आहेत</translation>
 <translation id="7325953439504232954">प्रोफाइल स्विच करायची आहे का?</translation>
@@ -9826,6 +9826,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8097959162767603171">तुमच्या अ‍ॅडमिनिस्ट्रेटरने प्रथमतः ॲडमिन कन्सोल Chrome डिव्हाइस सूचीमधील सेवा अटी स्वीकारणे आवश्यक आहे.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> इंस्टॉल करायचे आहे का आणि हार्ड ड्राइव्ह मिटवायची आहे का?</translation>
 <translation id="8098616321286360457">नेटवर्क कनेक्शन आवश्यक आहे</translation>
+<translation id="8100057926383586173">भाषा सेटिंग्ज उघडा</translation>
 <translation id="8100230553590752325">कोणत्याही डिव्हाइसवर सेव्ह केलेले पासवर्ड वापरा</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> निवडली. निवड रद्द करण्यासाठी सर्च आणि स्पेस प्रेस करा.</translation>
 <translation id="8101409298456377967">तुमचे पासवर्ड तयार, सेव्ह आणि व्यवस्थापित करा, जेणेकरून तुम्ही साइट आणि अ‍ॅप्समध्ये सहजरीत्या साइन इन करू शकाल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>

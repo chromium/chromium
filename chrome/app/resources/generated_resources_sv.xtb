@@ -3519,7 +3519,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3497560059572256875">Dela doodle</translation>
 <translation id="3497915391670770295">Skicka till dina &amp;enheter</translation>
 <translation id="3498138244916757538">Ändringen av mikrofoninställning kräver att <ph name="SPECIFIC_NAME" /> avslutas. Stäng av <ph name="SPECIFIC_NAME" /> för att fortsätta.</translation>
-<translation id="3499091376302796297">När du besöker webbplatser sparas deras sidinnehåll i krypterat format på din enhet.</translation>
 <translation id="3500417806337761827">Det gick inte att montera filresursen. För många SMB-filresurser har redan monterats.</translation>
 <translation id="3500764001796099683">Aktivera isolerade webbappar</translation>
 <translation id="350397915809787283">Om du inte har ett konto väljer du det första alternativet för att skapa ett.</translation>
@@ -4989,7 +4988,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4562155214028662640">Lägg till fingeravtryck</translation>
 <translation id="4562155266774382038">Ta bort förslag</translation>
 <translation id="4562364000855074606">Blockera appar som har installerats på denna <ph name="DEVICE_TYPE" />. Öppna inställningarna för Google Play om du vill begränsa nedladdning av appar eller innehåll. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Använd vardagligt språk för att söka i webbhistoriken och hitta webbplatser du har besökt.</translation>
 <translation id="4563210852471260509">Det ursprungliga inmatningsspråket är kinesiska</translation>
 <translation id="4563382028841851106">Ta bort från konto</translation>
 <translation id="4563880231729913339">Finger 3</translation>

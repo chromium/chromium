@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Ondorioz, Chromium-ek beti eskatuko du ordenagailuetarako webgunea.</translation>
 <translation id="2313870531055795960">URLak Chromium-en gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chromium-ek URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="231828342043114302">Zure interesetan oinarritutako eduki pertsonalizatua jasotzeko, hasi saioa Chromium-en.</translation>
+<translation id="2326738825692478496">Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik.
+
+Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
 <translation id="2374627437126809292">Chromium-ek Google Maps erabiltzen du hautemandako helbideetarako jarraibideak eta haiei buruzko tokiko informazioa eskaintzeko.</translation>
 <translation id="2386292341327187942">Bilaketa-widgetaren koadroan, idatzi Chromium.</translation>
 <translation id="2426113998523353159">Saioa hasteko eskatzen dizu zure erakundeak, Chromium erabiltzearren.</translation>
@@ -292,6 +295,8 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 
 Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chromium-eko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatz ezazu.</translation>
 <translation id="9022552996538154597">Hasi saioa Chromium-en</translation>
+<translation id="9031260906956926157">Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik.
+Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
 <translation id="9050790730841755540">Erabili Chromium beste aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="9057082013386654559">Erabili iPad-etarako Chromium modu lehenetsian</translation>
 <translation id="9059693977935746710">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuko Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>

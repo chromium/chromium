@@ -3513,7 +3513,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3497560059572256875">Del doodlen</translation>
 <translation id="3497915391670770295">Send til &amp;enhetene dine</translation>
 <translation id="3498138244916757538">Endringen i mikrofoninnstillingen krever at <ph name="SPECIFIC_NAME" /> avsluttes. Avslutt <ph name="SPECIFIC_NAME" /> for å fortsette.</translation>
-<translation id="3499091376302796297">Når du besøker nettsteder, lagres sideinnholdet i kryptert form på enheten din.</translation>
 <translation id="3500417806337761827">Feil ved innsetting av delt nettverksressurs. Det er allerede satt inn for mange delte SMB-nettverksressurser.</translation>
 <translation id="3500764001796099683">Aktiver isolerte nettapper</translation>
 <translation id="350397915809787283">Hvis du ikke har noen konto, velger du det første alternativet for å opprette en.</translation>
@@ -4981,7 +4980,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4562155214028662640">Legg til fingeravtrykk</translation>
 <translation id="4562155266774382038">Avvis forslaget</translation>
 <translation id="4562364000855074606">Blokker apper som er installert på <ph name="DEVICE_TYPE" />. For å begrense nedlasting av apper eller innhold, gå til Google Play-innstillingene. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Bruk dagligdags språk for å søke i nettleserloggen og finne nettsteder du har besøkt.</translation>
 <translation id="4563210852471260509">Det opprinnelige inndataspråket er kinesisk</translation>
 <translation id="4563382028841851106">Fjern fra kontoen</translation>
 <translation id="4563880231729913339">Finger 3</translation>

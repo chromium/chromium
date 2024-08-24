@@ -76,6 +76,9 @@ Kontuan hartu beharrekoak:
 <translation id="2703746758996815929">Chrome-ri buruzko aholku lagungarriak jasotzeko, aktibatu jakinarazpenak iOS-en ezarpenetan.</translation>
 <translation id="2736805085127235148">Chrome-ren jakinarazpenak desaktibatuta daude une honetan gailuaren ezarpenetan.</translation>
 <translation id="2750626042242931740">Hautatu duzuna aldatzeko, joan Chrome-ren ezarpenetara.</translation>
+<translation id="2754428955276778271">Chrome-ko datu batzuk ez dira gorde Google-ko kontuan oraindik.
+
+Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
 <translation id="2767464022270041271">Ez dago pasahitzik gordeta. Gordetako pasahitzak egiaztatzeko gai da Google-ren Pasahitz-kudeatzailea.</translation>
 <translation id="2869959624320573933">Hasi saioa Chrome-n</translation>
 <translation id="2876628302275096482">Lortu <ph name="BEGIN_LINK" />Chrome-k zure datuen pribatutasuna babesteko duen moduari<ph name="END_LINK" /> buruzko informazio gehiago</translation>
@@ -145,6 +148,8 @@ Kontuan hartu beharrekoak:
 <translation id="5190139289262548459"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabili duzun kontua eta Chrome erabiltzeko modua.</translation>
 <translation id="5256908199795498284">Chrome-k paketeen jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Eginbide hori emateko eta erosketak guztientzat hobetzeko, datuak Google-rekin partekatuko dira.</translation>
 <translation id="5278862365980079760">Blokeatu ezkutuko moduko fitxak Chrome-tik irtetean edo beste aplikazio batera aldatzean.</translation>
+<translation id="5310957470610282541">Chrome-ko datu batzuk ez dira gorde Google-ko kontuan oraindik.
+Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
 <translation id="5389212809648216794">Google Chrome-k ezin du erabili kamera, beste aplikazio bat ari delako hura erabiltzen</translation>
 <translation id="5395376160638294582">Izan beti Google-ko kontuko Chrome-ren datuak erabiltzeko aukera</translation>
 <translation id="5439191312780166229">Webgune arriskutsuen berri ematen dizu, Google-k ezagutzen ez zituenak barne, webguneetan babes estandarrak baino datu gehiago aztertuz. Chrome-ren abisuak saltatzea aukera dezakezu.</translation>

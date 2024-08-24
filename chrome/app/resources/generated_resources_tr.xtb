@@ -3502,7 +3502,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3497560059572256875">Doodle Paylaş</translation>
 <translation id="3497915391670770295">&amp;Cihazlarıma Gönder</translation>
 <translation id="3498138244916757538">Mikrofon ayarlarında yapılan değişiklik, <ph name="SPECIFIC_NAME" /> öğesinin kapatılmasını gerektirir. Devam etmek için <ph name="SPECIFIC_NAME" /> öğesini kapatın.</translation>
-<translation id="3499091376302796297">Göz attığınız sitelerin sayfa içerikleri şifrelenerek cihazınıza kaydedilir.</translation>
 <translation id="3500417806337761827">Paylaşım eklenirken hata oluştu. Halihazırda eklenmiş çok fazla SMB paylaşımı var.</translation>
 <translation id="3500764001796099683">Yalıtılmış web uygulamalarını etkinleştirin</translation>
 <translation id="350397915809787283">Hesabınız yoksa ilk seçeneği kullanarak hesap oluşturun.</translation>
@@ -4972,7 +4971,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4562155214028662640">Parmak İzi Ekle</translation>
 <translation id="4562155266774382038">Öneriyi reddet</translation>
 <translation id="4562364000855074606">Bu <ph name="DEVICE_TYPE" /> cihazda yüklü uygulamaları engelleyin. Uygulama veya içerik indirmeyi kısıtlamak için Google Play Ayarları'na gidin. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi edinin<ph name="END_LINK_LEARN_MORE" />.</translation>
-<translation id="4562925006886238518">Günlük dil kullanarak tarama geçmişinizde arama yapabilir ve ziyaret ettiğiniz siteleri bulabilirsiniz.</translation>
 <translation id="4563210852471260509">Başlangıç giriş dili Çince</translation>
 <translation id="4563382028841851106">Hesaptan kaldır</translation>
 <translation id="4563880231729913339">3. parmak</translation>
@@ -5986,6 +5984,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5301954838959518834">Tamam, anladım</translation>
 <translation id="5302032366299160685">Tekrar denemeden önce dosyanın açılmasını bekleyin</translation>
 <translation id="5302048478445481009">Dil</translation>
+<translation id="5302435492906794790">Yakındaki keşfedilebilir cihazlar aranıyor...</translation>
 <translation id="5302932258331363306">Değişiklikleri Göster</translation>
 <translation id="5305145881844743843">Bu hesap <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> tarafından yönetilmektedir</translation>
 <translation id="5307030433605830021">Kaynak desteklenmiyor</translation>
@@ -8696,6 +8695,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7321545336522791733">Sunucuya ulaşılamıyor</translation>
 <translation id="7322515217754205362">Site İzinleri</translation>
 <translation id="7323315405936922211">İmleç alanı boyutu</translation>
+<translation id="7324020307732396723">Dil Ayarlarını Aç</translation>
 <translation id="7324297612904500502">Beta Forumu</translation>
 <translation id="7325209047678309347">Kağıt sıkıştı</translation>
 <translation id="7325953439504232954">Profil değiştirilsin mi?</translation>
@@ -9810,6 +9810,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8097959162767603171">Yöneticiniz önce Yönetici konsolu Chrome cihaz listesindeki hizmet şartlarını kabul etmelidir.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> yüklenip sabit disk silinsin mi?</translation>
 <translation id="8098616321286360457">Ağ bağlantısı gerekiyor</translation>
+<translation id="8100057926383586173">Dil ayarlarını aç</translation>
 <translation id="8100230553590752325">Kayıtlı şifrelerinizi herhangi bir cihazda kullanın</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seçildi. Seçimi kaldırmak için Arama'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="8101409298456377967">Sitelerde ve uygulamalarda kolayca oturum açabilmek için şifrelerinizi oluşturun, kaydedin ve yönetin. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>

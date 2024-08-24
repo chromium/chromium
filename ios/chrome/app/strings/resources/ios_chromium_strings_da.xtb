@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Det betyder, at Chromium anmoder om computerwebsitet hver gang.</translation>
 <translation id="2313870531055795960">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chromium. Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chromium muligvis også webadresser og bl.a. mindre mængder sideindhold til Beskyttet browsing.</translation>
 <translation id="231828342043114302">Log ind i Chromium for at få personligt tilpasset indhold baseret på dine interesser.</translation>
+<translation id="2326738825692478496">Nogle af dine Chromium-data er endnu ikke gemt på din Google-konto.
+
+Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes de pågældende data.</translation>
 <translation id="2374627437126809292">Chromium bruger Google Maps til at give dig rutevejledninger og lokale oplysninger om registrerede adresser.</translation>
 <translation id="2386292341327187942">Skriv Chromium i feltet Søgewidgets</translation>
 <translation id="2426113998523353159">Din organisation kræver, at du logger ind for at bruge Chromium.</translation>
@@ -292,6 +295,8 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 
 Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgangssætningen for at bruge og gemme Chromium-data på din Google-konto.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
+<translation id="9031260906956926157">Nogle af dine Chromium-data er endnu ikke gemt på din Google-konto.
+Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes de pågældende data.</translation>
 <translation id="9050790730841755540">Brug Chromium, hver gang du trykker på links i andre apps.</translation>
 <translation id="9057082013386654559">Brug Chromium til iPad som standard</translation>
 <translation id="9059693977935746710">Du behøver ikke at huske denne adgangskode. Den gemmes i Adgangs­kode­admin­istrator for <ph name="EMAIL" /></translation>

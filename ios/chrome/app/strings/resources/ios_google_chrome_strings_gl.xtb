@@ -76,6 +76,9 @@ Cuestións que debes ter en conta:
 <translation id="2703746758996815929">Se queres recibir consellos útiles sobre Chrome, activa as notificacións na configuración de iOS.</translation>
 <translation id="2736805085127235148">As notificacións de Chrome están desactivadas actualmente na configuración do dispositivo.</translation>
 <translation id="2750626042242931740">Podes modificar a túa selección en calquera momento na configuración de Chrome.</translation>
+<translation id="2754428955276778271">Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google.
+
+Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="2767464022270041271">Non hai contrasinais gardados. O xestor de contrasinais de Google poderá comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
 <translation id="2876628302275096482">Máis información sobre <ph name="BEGIN_LINK" />como protexe Chrome a privacidade dos teus datos<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Cuestións que debes ter en conta:
 <translation id="5190139289262548459">A túa organización, <ph name="DOMAIN" />, xestiona a conta na que tes a sesión iniciada e o xeito no que se usa Chrome.</translation>
 <translation id="5256908199795498284">Chrome detectará os números de seguimento dos paquetes nos sitios que visites e mostrarache a información actualizada na páxina Nova pestana. Os teus datos compartiranse con Google para poder fornecer esta función e mellorar a experiencia de compra para todo o mundo.</translation>
 <translation id="5278862365980079760">Pecha as pestanas do modo de incógnito ao saír de Chrome ou ao cambiar de aplicación.</translation>
+<translation id="5310957470610282541">Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google.
+Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="5389212809648216794">Google Chrome non pode usar a cámara porque a está usando outra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de poder usar sempre os datos de Chrome na túa Conta de Google</translation>
 <translation id="5439191312780166229">Analiza máis datos de sitios que a protección estándar para avisarte sobre os sitios perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chrome.</translation>

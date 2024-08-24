@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1192844206376121885">Всички данни и „бисквитки“, съхранявани от <ph name="ORIGIN" />, ще бъдат изтрити.</translation>
 <translation id="1201402288615127009">Напред</translation>
+<translation id="1240190568154816272">Съвети за Chrome</translation>
 <translation id="1242008676835033345">Вграден в <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Стоп</translation>
 <translation id="1289742167380433257">Изображенията на тази страница бяха оптимизирани от Google с цел пестене на данни.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Извеждане на запитване, преди да се разреши на сайтовете да се свържат с устройство (препоръчително)</translation>
 <translation id="1779089405699405702">Декодиране на изображения</translation>
 <translation id="1785415724048343560">Препоръчва се за най-добра практическа работа</translation>
+<translation id="1799920918471566157">Съвети за Chrome</translation>
 <translation id="1818308510395330587">За да разрешите на <ph name="APP_NAME" /> да използва AR, камерата трябва да бъде включена от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Достъпът до местоположението е изключен за това устройство. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Затваряне</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Най-новите</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5591840828808741583">Достъпът до <ph name="SITE_NAME" /> е блокиран</translation>
+<translation id="5632485077360054581">Покажете ми как</translation>
 <translation id="5649053991847567735">Автоматични изтегляния</translation>
 <translation id="5668404140385795438">Отмяна на искането на уебсайта да не се допуска увеличаване на мащаба</translation>
 <translation id="5677928146339483299">Блокирано</translation>

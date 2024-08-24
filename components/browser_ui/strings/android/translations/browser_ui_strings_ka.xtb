@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1192844206376121885">ეს მოქმედება წაშლის <ph name="ORIGIN" />-ის მიერ შენახულ ყველა მონაცემსა და ქუქი-ჩანაწერს.</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
+<translation id="1240190568154816272">Chrome-ის მინიშნებები</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-ში ჩაშენებული</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
 <translation id="1289742167380433257">მონაცემთა მოცულობის დაზოგვის მიზნით, სურათები ოპტიმიზებულია Google-ის მიერ.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">შეკითხვა საიტებისთვის მოწყობილობასთან დაკავშირების დაშვებამდე (რეკომენდებული)</translation>
 <translation id="1779089405699405702">სურათების დეკოდერი</translation>
 <translation id="1785415724048343560">რეკომენდებულია საუკეთესო შედეგების მისაღებად</translation>
+<translation id="1799920918471566157">მინიშნებები Chrome-ისთვის</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-მა AR რომ გამოიყენოს, გაააქტიურეთ კამერაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">მდებარეობაზე წვდომა გამორთულია ამ მოწყობილობისთვის. ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">გათიშვა</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">უახლესი</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> დაბლოკილია</translation>
+<translation id="5632485077360054581">ინსტრუქციის ნახვა</translation>
 <translation id="5649053991847567735">ავტომატური ჩამოტვირთვები</translation>
 <translation id="5668404140385795438">ვებსაიტის მიერ მასშტაბირების აკრძალვის გაუქმება</translation>
 <translation id="5677928146339483299">დაბლოკილი</translation>

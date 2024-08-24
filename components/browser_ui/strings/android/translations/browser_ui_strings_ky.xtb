@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1192844206376121885">Ушуну менен <ph name="ORIGIN" /> сактаган бардык маалымат менен cookie файлдары өчүрүлөт.</translation>
 <translation id="1201402288615127009">Кийинки</translation>
+<translation id="1240190568154816272">Chrome'ду колдонуу кеңештери</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> кыналган</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
 <translation id="1289742167380433257">Интернет трафигин үнөмдөө үчүн Google бул барактагы сүрөттөрдү ыңгайлаштырды.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Сайттар түзмөккө туташуудан мурун уруксат суралсын (сунушталат)</translation>
 <translation id="1779089405699405702">Сүрөттү дешифрлегич</translation>
 <translation id="1785415724048343560">Мыкты тажрыйба үчүн сунушталат</translation>
+<translation id="1799920918471566157">Chrome'ду колдонуу кеңештери</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> колдонмосуна AR'ди колдоонуусуна уруксат берүү үчүн камераны <ph name="BEGIN_LINK" />Android параметрлеринен<ph name="END_LINK" /> күйгүзүңүз.</translation>
 <translation id="1887786770086287077">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android параметрлерине<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
 <translation id="1915307458270490472">Жогоруда кадоо</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Эң акыркы</translation>
 <translation id="5556459405103347317">Кайра жүктөө</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> бөгөттөлдү</translation>
+<translation id="5632485077360054581">Кантип?</translation>
 <translation id="5649053991847567735">Автоматтык жүктөп алуулар</translation>
 <translation id="5668404140385795438">Чоңойтууга жол берилбесин деген вебсайттын сурамын жокко чыгаруу</translation>
 <translation id="5677928146339483299">Бөгөттөлгөн</translation>

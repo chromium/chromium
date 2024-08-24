@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1192844206376121885">Tímto vymažete všechna uložená data a soubory cookie webu <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Další</translation>
+<translation id="1240190568154816272">Tipy k Chromu</translation>
 <translation id="1242008676835033345">Vloženo do <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Zastavit</translation>
 <translation id="1289742167380433257">Google obrázky na této stránce optimalizoval, abyste ušetřili data.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Pokud se web bude chtít připojit k zařízení, zobrazit dotaz (doporučeno)</translation>
 <translation id="1779089405699405702">Dekodér obrázků</translation>
 <translation id="1785415724048343560">Doporučeno pro nejlepší zážitek</translation>
+<translation id="1799920918471566157">Tipy Chrome</translation>
 <translation id="1818308510395330587">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit používání rozšířené reality, zapněte také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> fotoaparát.</translation>
 <translation id="1887786770086287077">Přístup k poloze je v tomto zařízení vypnut. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Nejnovější</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> – blokováno</translation>
+<translation id="5632485077360054581">Ukázat postup</translation>
 <translation id="5649053991847567735">Automatické stahování</translation>
 <translation id="5668404140385795438">Přepsat požadavek webu na zákaz přiblížení</translation>
 <translation id="5677928146339483299">Zablokováno</translation>

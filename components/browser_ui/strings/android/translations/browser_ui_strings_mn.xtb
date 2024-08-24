@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1192844206376121885">Энэ нь <ph name="ORIGIN" />-н хадгалсан бүх өгөгдөл болон күүкиг устгана.</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
+<translation id="1240190568154816272">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-д оруулсан</translation>
 <translation id="1272079795634619415">Зогс</translation>
 <translation id="1289742167380433257">Таны өгөгдлийг хадгалахын тулд Google энэ хуудасны зургуудыг оновчилсон байна.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Сайтуудыг төхөөрөмжид холбогдохыг зөвшөөрөхөөс өмнө асуух (санал болгосон)</translation>
 <translation id="1779089405699405702">Зургийн код тайлагч</translation>
 <translation id="1785415724048343560">Хамгийн сайн үйлчилгээг санал болгосон</translation>
+<translation id="1799920918471566157">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-д AR-г ашиглахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын Тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="1887786770086287077">Байршлын хандалт энэ төхөөрөмжид унтраалттай байна. Үүнийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" /> хэсэгт асаана уу.</translation>
 <translation id="1915307458270490472">Таслах</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Хамгийн сүүлийн үеийн</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" />-г блоклосон</translation>
+<translation id="5632485077360054581">Надад хэрхэн хийхийг харуулна уу</translation>
 <translation id="5649053991847567735">Автоматаар татаж  авах файл</translation>
 <translation id="5668404140385795438">Томруулах үйлдлээс урьдчилан сэргийлэхийн тулд вэбсайтны хүсэлтийг хүчингүй болгох</translation>
 <translation id="5677928146339483299">Хаагдсан</translation>

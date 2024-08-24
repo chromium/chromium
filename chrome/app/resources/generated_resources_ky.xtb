@@ -3519,7 +3519,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3497560059572256875">Doodle'ду бөлүшүү</translation>
 <translation id="3497915391670770295">&amp;Түзмөктөрүңүзгө жөнөтүү</translation>
 <translation id="3498138244916757538">Микрофондун параметрине өзгөртүүлөр киргизилгендиктен <ph name="SPECIFIC_NAME" /> жабуу керек. Улантуу үчүн <ph name="SPECIFIC_NAME" /> жабыңыз.</translation>
-<translation id="3499091376302796297">Сайттарды карап жатканда алардын мазмуну түзмөгүңүздө шифрленген формада сакталат.</translation>
 <translation id="3500417806337761827">Түзмөктү кошууда ката кетти. Өтө көп SMB бөлүшүүлөрү кошулган.</translation>
 <translation id="3500764001796099683">Обочолонгон веб-колдонмолорду иштетүү</translation>
 <translation id="350397915809787283">Эгер аккаунтуңуз жок болсо, түзүү үчүн биринчи опцияны тандаңыз.</translation>
@@ -4989,7 +4988,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4562155214028662640">Манжа изин кошуу</translation>
 <translation id="4562155266774382038">Сунушту четке кагуу</translation>
 <translation id="4562364000855074606">Ушул <ph name="DEVICE_TYPE" /> түзмөгүнө орнотулган колдонмолорду бөгөттөңүз. Колдонмолорду же контентти жүктөп алуу мүмкүнчүлүгүн чектөө үчүн Google Play параметрлерине өтүңүз. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Көрүлгөн вебсайттардан издеп, сиз баш баккан сайттарды табыңыз.</translation>
 <translation id="4563210852471260509">Баштапкы киргизүү тили – кытайча</translation>
 <translation id="4563382028841851106">Аккаунттан өчүрүү</translation>
 <translation id="4563880231729913339">3-манжа</translation>
@@ -6004,6 +6002,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5301954838959518834">Жарайт, түшүндүм</translation>
 <translation id="5302032366299160685">Кайталоодон мурун файлдын ачылышын күтө туруңуз</translation>
 <translation id="5302048478445481009">Тил</translation>
+<translation id="5302435492906794790">Жакын жердеги баарына көрүнүп турган түзмөктөр изделүүдө...</translation>
 <translation id="5302932258331363306">Алмаштыруу варианттарын көрсөтүү</translation>
 <translation id="5305145881844743843">Бул аккаунтту <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> башкарат</translation>
 <translation id="5307030433605830021">Булак колдоого алынбайт</translation>
@@ -8712,6 +8711,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7321545336522791733">Серверге туташуу мүмкүн эмес</translation>
 <translation id="7322515217754205362">Сайттын уруксаттары</translation>
 <translation id="7323315405936922211">Курсордун аймагынын өлчөмү</translation>
+<translation id="7324020307732396723">Тил параметрлерин ачуу</translation>
 <translation id="7324297612904500502">Бета форуму</translation>
 <translation id="7325209047678309347">Кагаз чайналып калды</translation>
 <translation id="7325953439504232954">Профиль которулсунбу?</translation>
@@ -9826,6 +9826,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8097959162767603171">Алгач администратордун консолундагы Chrome түзмөктөрүнүн тейлөө шарттарын администраторуңуз кабыл алышы керек.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> тутуму орнотулуп, катуу диск тазалансынбы?</translation>
 <translation id="8098616321286360457">Тармакка туташуу талап кылынат</translation>
+<translation id="8100057926383586173">Тил параметрлерин ачуу</translation>
 <translation id="8100230553590752325">Сакталган сырсөздөрдү каалаган түзмөктө колдонуңуз</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> тандалды. Тандоодон чыгаруу үчүн "Издөө" жана боштук баскычын басыңыз.</translation>
 <translation id="8101409298456377967">Сайттарга жана колдонмолорго оңой кирүү үчүн сырсөздөрдү түзүп, сактап жана башкарыңыз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>

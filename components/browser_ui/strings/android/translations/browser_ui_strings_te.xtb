@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1192844206376121885">దీని వలన <ph name="ORIGIN" /> స్టోర్ చేసిన మొత్తం డేటాతో పాటు కుక్కీలన్నీ కూడా తొలగిపోతాయి.</translation>
 <translation id="1201402288615127009">తర్వాత</translation>
+<translation id="1240190568154816272">Chrome చిట్కాలు</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />లో పొందుపరచబడింది</translation>
 <translation id="1272079795634619415">ఆపు</translation>
 <translation id="1289742167380433257">మీ కోసం డేటాను సేవ్ చేయడానికి, ఈ పేజీ ఇమేజ్‌లు Google ద్వారా ఆప్టిమైజ్ చేయబడ్డాయి.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">ఏదైనా పరికరానికి కనెక్ట్ చేయగలిగేలా సైట్‌లను అనుమతించే ముందు మిమ్మల్ని అడుగుతుంది (సిఫార్సు చేయడమైనది)</translation>
 <translation id="1779089405699405702">చిత్ర డీకోడర్</translation>
 <translation id="1785415724048343560">ఉత్తమ అనుభవం కోసం సిఫార్సు చేయబడింది</translation>
+<translation id="1799920918471566157">Chrome చిట్కాలు</translation>
 <translation id="1818308510395330587">ARని వినియోగించడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా కెమెరాను ఆన్ చేయండి.</translation>
 <translation id="1887786770086287077">ఈ పరికరానికి స్థానం యాక్సెస్ ఆఫ్ చేయబడింది. దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో తిరిగి ఆన్ చేయండి.</translation>
 <translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">ఇటీవలివి</translation>
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> బ్లాక్ చేయబడింది</translation>
+<translation id="5632485077360054581">ఎలా చేయాలో నాకు చూపించు</translation>
 <translation id="5649053991847567735">ఆటోమేటిక్ డౌన్‌లోడ్‌లు</translation>
 <translation id="5668404140385795438">దగ్గరకు జూమ్ చేయడాన్ని నిరోధించడానికి ప్రయత్నించే వెబ్‌సైట్ రిక్వెస్ట్‌ను పట్టించుకోదు</translation>
 <translation id="5677928146339483299">బ్లాక్ చేయబడింది</translation>

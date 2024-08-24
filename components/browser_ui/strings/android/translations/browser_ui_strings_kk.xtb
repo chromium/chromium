@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" /> сақтаған барлық дерек пен cookie файлы жойылады.</translation>
 <translation id="1201402288615127009">Келесі</translation>
+<translation id="1240190568154816272">Chrome браузеріне қатысты кеңестер</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> мекенжайына ендірілген</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
 <translation id="1289742167380433257">Деректеріңізді сақтау үшін бұл беттің суреттері Google арқылы оңтайландырылды.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Сайттардың құрылғыға жалғануына рұқсат бермес бұрын сұрау (ұсынылады)</translation>
 <translation id="1779089405699405702">Кескін декодері</translation>
 <translation id="1785415724048343560">Тиімді пайдалану үшін ұсынылады.</translation>
+<translation id="1799920918471566157">Chrome-ды пайдалану кеңестері</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> браузеріне AR режимін пайдалануға рұқсат ету үшін <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> камераны да қосыңыз.</translation>
 <translation id="1887786770086287077">Бұл құрылғыда орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
 <translation id="1915307458270490472">Жабу</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Ең соңғысы</translation>
 <translation id="5556459405103347317">Қайта жүктеу</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> блокталған.</translation>
+<translation id="5632485077360054581">Орындалуын көру</translation>
 <translation id="5649053991847567735">Автоматты жүктеулер</translation>
 <translation id="5668404140385795438">Веб-сайттардың үлкейтуге тыйым салу туралы сұрауларын елемеу</translation>
 <translation id="5677928146339483299">Тыйым салынған</translation>

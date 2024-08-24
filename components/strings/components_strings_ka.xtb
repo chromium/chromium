@@ -1244,7 +1244,6 @@
 <translation id="3307649904964670439">ღილაკი Chrome-ის პარამეტრების დაყენება, თქვენი ბრაუზერის იერსახის დასაყენებლად გაააქტიურეთ ის</translation>
 <translation id="3308006649705061278">ორგანიზაციული ერთეული (OU)</translation>
 <translation id="3318016344440038475">სატელევიზიო კომედიები</translation>
-<translation id="3321152582690622182">არ მიმდინარეობს თვალყურის დევნება</translation>
 <translation id="3324687287337751929">4 x 6 დუიმი</translation>
 <translation id="3324983252691184275">ალისფერი</translation>
 <translation id="3325027355611702542">მისაბმელი სახლები და ავტოფურგონები</translation>
@@ -1524,6 +1523,7 @@
 <translation id="378611282717571199">საუკეთესო შესატყვისები მოთხოვნისთვის „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">ზომა 16</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
+<translation id="3790417903123637354">წარმოიქმნა შეფერხება. ცადეთ მოგვიანებით</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> დუიმი)</translation>
 <translation id="3792826587784915501">საკულტო და ინდი ფილმები</translation>
 <translation id="3793574014653384240">ახლახან დაფიქსირებული ავარიული გათიშვების ნომრები და გამომწვევი მიზეზები</translation>
@@ -2880,7 +2880,6 @@
 <translation id="634500758737709758">მიმართულებები</translation>
 <translation id="6348220984832452017">აქტიური ვარიაციები</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />-ის ინსტალაცია</translation>
-<translation id="6351398281531821890">ნახვა</translation>
 <translation id="6351658970066645919">დათვალიერების მონაცემების წაშლა</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{არცერთი}=1{1 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}=2{2 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}other{# პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}}</translation>
 <translation id="6355392890578844978">ამ ბრაუზერს არ მართავს კომპანია და არც სხვა ორგანიზაცია. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chromium-ს მიღმა. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -3175,6 +3174,7 @@
 <translation id="6896758677409633944">კოპირება</translation>
 <translation id="6897140037006041989">მომხმარებლის აგენტი</translation>
 <translation id="6898699227549475383">ორგანიზაცია (O)</translation>
+<translation id="6903907808598579934">სინქრონიზაციის ჩართვა</translation>
 <translation id="6907458757809079309">ფიტნესი</translation>
 <translation id="691024665142758461">მრავლობითი ფაილების ჩამოტვირთვა</translation>
 <translation id="6915804003454593391">მომხმარებელი:</translation>
@@ -3705,7 +3705,6 @@
 <translation id="7825558994363763489">მიკროტალღური ღუმელები</translation>
 <translation id="782886543891417279">Wi-Fi-მ, რომელსაც თქვენ იყენებთ (<ph name="WIFI_NAME" />) შეიძლება მოითხოვოს თქვენი სტუმრობა მის ავტორიზაციის გვერდზე.</translation>
 <translation id="7831993212387676366">რა არის საყიდლების სია?</translation>
-<translation id="7832078172950550575">სალაპარაკო ენის გამოყენებით შეგიძლიათ, დათვალიერების ისტორიაში მოძებნოთ სასურველი კონტენტი შემდეგი ფრაზების გამოყენებით: „პიცერია ჩემთან ახლოს“ ან „ოჯახისთვის შესაფერისი პარკები ქალაქის ცენტრში“. თქვენი ძიებები, საუკეთესო შესატყვისები და მათი გვერდების კონტენტი, ამ ფუნქციის გაუმჯობესების მიზნით, გაეგზავნება Google-ს და შეიძლება ისინი ნახონ ადამიანმა მიმომხილველებმა. <ph name="BEGIN_LINK" />ისტორიაში ძიების პარამეტრის მართვა<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">ეკრანის აღბეჭდვა დაიწყო</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="784404208867107517">დაჯგუფებული ისტორია</translation>
@@ -4423,7 +4422,6 @@
 <translation id="9191834167571392248">ქვედა მარცხენა ნაწილის გახვრეტა</translation>
 <translation id="9192361865877479444">ლითონი (მქრქალი)</translation>
 <translation id="9192947025498305328">სუფთა სილამაზე</translation>
-<translation id="919455784772793601">გახსენით გვერდი, რომელზეც ნაჩვენებია სხვა მაღაზიები, სადაც იყიდება აღნიშნული პროდუქტი.</translation>
 <translation id="9199905725844810519">ბეჭდვა დაბლოკილია</translation>
 <translation id="9205078245616868884">თქვენი მონაცემები დაშიფრულია სინქრონიზაციის საიდუმლო ფრაზის მეშვეობით. სინქრონიზაციის დასაწყებად, შეიყვანეთ საიდუმლო ფრაზა.</translation>
 <translation id="920643408853370361">სამოგზაურო დაზღვევა</translation>

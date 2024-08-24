@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1192844206376121885">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Далее</translation>
+<translation id="1240190568154816272">Советы по работе с Chrome</translation>
 <translation id="1242008676835033345">Встроено на сайте <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1289742167380433257">В целях экономии трафика изображения на странице были оптимизированы.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Запрашивать разрешение на подключение к устройству (рекомендуется)</translation>
 <translation id="1779089405699405702">Дешифратор изображений</translation>
 <translation id="1785415724048343560">Рекомендуется для максимального удобства</translation>
+<translation id="1799920918471566157">Советы по работе с Chrome</translation>
 <translation id="1818308510395330587">Чтобы браузер "<ph name="APP_NAME" />" мог использовать дополненную реальность, также предоставьте ему доступ к камере в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Для устройства отключено определение местоположения. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Закрыть</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Дата</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5591840828808741583">Заблокировано для сайта <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Показать</translation>
 <translation id="5649053991847567735">Автоматическое скачивание</translation>
 <translation id="5668404140385795438">Игнорировать запросы сайтов на запрет масштабирования</translation>
 <translation id="5677928146339483299">Заблокировано</translation>

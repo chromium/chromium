@@ -687,6 +687,7 @@
 <translation id="3455468639467374593">Үлгү, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 түзмөк <ph name="DEVICE_NAME" /> байланыш түйүнүнө туташып турат</translation>
 <translation id="346243998268439747">Чоңойтуп/кичирейтүү деңгээлин баштапкы абалга келтирүү</translation>
+<translation id="3463151196028058330">Жүздү ретуштоо</translation>
 <translation id="3465223694362104965">Түзмөккө акыркы жолу киргениңизден кийин ага башка баскычтоп туташтырылды. Аны колдонуудан мурда ал ишенимдүү экенин текшериңиз.</translation>
 <translation id="3465356146291925647">Администраторуңуз башкарат</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, андан соң <ph name="KEY_TWO" /> же <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
 <translation id="5176318573511391780">Экрандын жарымын видеого жаздырып алуу</translation>
 <translation id="5187627942836026988">Байланыш түйүнүнүн чоо-жайын көрсөтүү. Байланыш түйүнүн администраторуңуз бөгөттөп койду.</translation>
+<translation id="518847040357731612">Студияда тартылган параметри</translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> иш-чара</translation>
 <translation id="5198715732953550718">Жаңы папка түзүү үчүн <ph name="MOVED_APP_NAME" /> менен <ph name="IN_PLACE_APP" /> бириктирилди.</translation>

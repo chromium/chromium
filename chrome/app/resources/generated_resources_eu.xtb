@@ -179,7 +179,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1119447706177454957">Barneko errorea</translation>
 <translation id="1122068467107743258">Lanekoa</translation>
 <translation id="1122198203221319518">&amp;Tresnak</translation>
-<translation id="1122242684574577509">Ezin izan da autentifikatu. Erabiltzen ari zaren Wi-Fi sarean (<ph name="NETWORK_ID" />) saioa hasteko orrira joateko, egin klik hemen.</translation>
+<translation id="1122242684574577509">Ezin izan da autentifikatu. Erabiltzen ari zaren wifi-sarean (<ph name="NETWORK_ID" />) saioa hasteko orrira joateko, egin klik hemen.</translation>
 <translation id="1122587596907914265">Atondu horma-paper esklusiboak</translation>
 <translation id="1122913801042512795">Kontuan saioa hasteko xehetasunak zaharkituta daude. Amaitu saioa eta has ezazu berriro.</translation>
 <translation id="1122960773616686544">Laster-markaren izena</translation>
@@ -3504,7 +3504,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3497560059572256875">Partekatu doodle-a</translation>
 <translation id="3497915391670770295">Bidali zure gailuetara</translation>
 <translation id="3498138244916757538">Mikrofonoaren ezarpenean egindako aldaketa aplikatzeko, itzali egin behar da <ph name="SPECIFIC_NAME" />. Aurrera egiteko, itzali <ph name="SPECIFIC_NAME" />.</translation>
-<translation id="3499091376302796297">Webguneak arakatu ahala, haien orrien edukia enkriptatuta gordetzen da gailuan.</translation>
 <translation id="3500417806337761827">Errore bat gertatu da fitxategiak partekatzeko biltegia muntatzean. SMBko fitxategiak partekatzeko biltegi gehiegi daude jada muntatuta.</translation>
 <translation id="3500764001796099683">Gaitu sareko aplikazio isolatuak</translation>
 <translation id="350397915809787283">Konturik ez baduzu, hautatu lehenengo aukera eta sortu bat.</translation>
@@ -4974,7 +4973,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4562155214028662640">Gehitu hatz-marka</translation>
 <translation id="4562155266774382038">Baztertu iradokizuna</translation>
 <translation id="4562364000855074606">Blokeatu <ph name="DEVICE_TYPE" /> honetan instalatutako aplikazioak. Aplikazioak edo edukia deskargatzeko aukera murrizteko, joan Google Play-ren ezarpenetara. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Erabili eguneroko hizkera arakatze-historian bilaketak egiteko eta bisitatu dituzun webguneak aurkitzeko.</translation>
 <translation id="4563210852471260509">Hasierako idazteko hizkuntza txinera da</translation>
 <translation id="4563382028841851106">Kendu kontutik</translation>
 <translation id="4563880231729913339">3. hatza</translation>
@@ -5987,6 +5985,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5301954838959518834">Ados, ulertu dut</translation>
 <translation id="5302032366299160685">Berriro saiatu aurretik, itxaron fitxategia ireki arte</translation>
 <translation id="5302048478445481009">Hizkuntza</translation>
+<translation id="5302435492906794790">Inguruan ikusgai dauden gailuak bilatzen…</translation>
 <translation id="5302932258331363306">Erakutsi ordezkapenen panela</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> da kontuaren kudeatzailea</translation>
 <translation id="5307030433605830021">Ez da onartzen iturburua</translation>
@@ -8692,6 +8691,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7321545336522791733">Ezin da konektatu zerbitzarira</translation>
 <translation id="7322515217754205362">Webgunearen baimenak</translation>
 <translation id="7323315405936922211">Kurtsorearen inguruko eremuaren tamaina</translation>
+<translation id="7324020307732396723">Ireki hizkuntzaren ezarpenak</translation>
 <translation id="7324297612904500502">Beta foroa</translation>
 <translation id="7325209047678309347">Papera trabatuta dago</translation>
 <translation id="7325953439504232954">Profila aldatu nahi duzu?</translation>
@@ -9805,6 +9805,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8097959162767603171">Administratzaileak Zerbitzu-baldintzak onartu behar ditu administrazio-kontsolaren Chrome-ko gailuen zerrendan.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> instalatu nahi duzu, eta disko gogorreko eduki guztia ezabatu?</translation>
 <translation id="8098616321286360457">Sarera konektatuta egon behar duzu</translation>
+<translation id="8100057926383586173">Ireki hizkuntzaren ezarpenak</translation>
 <translation id="8100230553590752325">Erabili gordetako pasahitzak edozein gailutan</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> hautatu duzu. Desautatzeko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="8101409298456377967">Sortu, gorde eta kudeatu pasahitzak, webgune eta aplikazioetan erraz hasteko saioa. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>

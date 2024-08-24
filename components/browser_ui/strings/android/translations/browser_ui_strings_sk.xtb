@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1192844206376121885">Týmto odstránite všetky dáta a súbory cookie uložené webom <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Ďalej</translation>
+<translation id="1240190568154816272">Tipy pre Chrome</translation>
 <translation id="1242008676835033345">Vložené na webe <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Zastaviť</translation>
 <translation id="1289742167380433257">Google optimalizoval obrázky tejto stránky, aby vám ušetril dáta.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Pýtať sa, či chcete povoliť webu pripojiť sa k zariadeniu (odporúčané)</translation>
 <translation id="1779089405699405702">Dekodér obrázkov</translation>
 <translation id="1785415724048343560">Odporúčané pre najlepší dojem</translation>
+<translation id="1799920918471566157">Tipy pre Chrome</translation>
 <translation id="1818308510395330587">Fotoaparát zapnite aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />, aby mohla aplikácia <ph name="APP_NAME" /> používať RR.</translation>
 <translation id="1887786770086287077">Prístup k polohe je v tomto zariadení vypnutý. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Zložiť</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Najnovšie</translation>
 <translation id="5556459405103347317">Znova načítať</translation>
 <translation id="5591840828808741583">Blokované: <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Ukázať postup</translation>
 <translation id="5649053991847567735">Automatické sťahovanie</translation>
 <translation id="5668404140385795438">Ignorovať požiadavku webových stránok na zákaz priblíženia</translation>
 <translation id="5677928146339483299">Blokované</translation>

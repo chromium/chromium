@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1192844206376121885">Essa ação vai excluir todos os dados e cookies armazenados por <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Próxima</translation>
+<translation id="1240190568154816272">Dicas do Chrome</translation>
 <translation id="1242008676835033345">Incorporado em <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1289742167380433257">Para que você economize dados, as imagens desta página foram otimizadas pelo Google.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Perguntar antes de permitir que sites se conectem ao dispositivo (recomendado)</translation>
 <translation id="1779089405699405702">Decodificador de imagem</translation>
 <translation id="1785415724048343560">Recomendado para melhorar a experiência</translation>
+<translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1818308510395330587">Para permitir que o app <ph name="APP_NAME" /> use RA, também é necessário ativar a câmera nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">O acesso ao local está desativado neste dispositivo. Ative nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Desligar</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Mais recentes</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqueado</translation>
+<translation id="5632485077360054581">Me ajude a fazer isso</translation>
 <translation id="5649053991847567735">Downloads automáticos</translation>
 <translation id="5668404140385795438">Aplicar zoom mesmo que o site tente impedir</translation>
 <translation id="5677928146339483299">Bloqueado</translation>

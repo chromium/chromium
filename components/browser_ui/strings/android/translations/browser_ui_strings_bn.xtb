@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1192844206376121885">এটি আপনার <ph name="ORIGIN" />-এর মাধ্যমে সেভ হওয়া সব ডেটা এবং কুকি মুছে দেবে।</translation>
 <translation id="1201402288615127009">পরের</translation>
+<translation id="1240190568154816272">Chrome সংক্রান্ত পরামর্শ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-এ এম্বেড করা হয়েছে</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
 <translation id="1289742167380433257">আপনার ডেটা সেভ করার জন্য, এই পৃষ্ঠার ছবিগুলি Google অপ্টিমাইজ করেছে।</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">কোনও সাইটকে ডিভাইসের সাথে কানেক্ট করার আগে অনুমতি দেওয়ার ব্যবস্থা রাখুন (প্রস্তাবিত)</translation>
 <translation id="1779089405699405702">ছবি ডিকোডার</translation>
 <translation id="1785415724048343560">সেরা অভিজ্ঞতা পাওয়ার জন্য সাজেস্ট করা হচ্ছে</translation>
+<translation id="1799920918471566157">Chrome সংক্রান্ত পরামর্শ</translation>
 <translation id="1818308510395330587">তাছাড়া, যাতে <ph name="APP_NAME" /> এ আর (AR) ব্যবহার করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও ক্যামেরা চালু করে দিন।</translation>
 <translation id="1887786770086287077">এই ডিভাইসে লোকেশন অ্যাক্সেস বন্ধ আছে। চালু করতে <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> যান।</translation>
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">লেটেস্ট</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> ব্লক করা হয়েছে</translation>
+<translation id="5632485077360054581">কীভাবে করতে হবে তা দেখান</translation>
 <translation id="5649053991847567735">অটোমেটিক ডাউনলোডগুলি</translation>
 <translation id="5668404140385795438">কোনো ওয়েবসাইটের জুম ইন প্রতিরোধ করার অনুরোধ উপেক্ষা করুন</translation>
 <translation id="5677928146339483299">অবরুদ্ধ</translation>

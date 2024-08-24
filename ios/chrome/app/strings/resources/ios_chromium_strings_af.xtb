@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Dit beteken dat Chromium elke keer die rekenaarwerf sal versoek.</translation>
 <translation id="2313870531055795960">Vergelyk URL'e met 'n lys onveilige werwe wat in Chromium geberg is. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
 <translation id="231828342043114302">Meld by Chromium aan om gepersonaliseerde inhoud op grond van jou belangstellings te ontvang.</translation>
+<translation id="2326738825692478496">Sommige van jou Chromium-data is nog nie in jou Google-rekening gestoor nie.
+
+Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
 <translation id="2374627437126809292">Chromium gebruik Google Maps om vir jou aanwysings en plaaslike inligting oor bespeurde adresse te gee.</translation>
 <translation id="2386292341327187942">Voer Chromium in die Search-legstuk-boks in</translation>
 <translation id="2426113998523353159">Jou organisasie vereis dat jy aanmeld om Chromium te gebruik.</translation>
@@ -292,6 +295,8 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 
 Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou Google-rekening te gebruik en te stoor.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>
+<translation id="9031260906956926157">Sommige van jou Chromium-data is nog nie in jou Google-rekening gestoor nie.
+Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
 <translation id="9050790730841755540">Gebruik Chromium enige tyd wanneer jy op skakels in ander apps tik.</translation>
 <translation id="9057082013386654559">Gebruik Chromium vir iPad by verstek</translation>
 <translation id="9059693977935746710">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal vir <ph name="EMAIL" /> in Wagwoordbestuurder gestoor word</translation>

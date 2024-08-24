@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1192844206376121885">Bydd hyn yn dileu'r holl ddata a chwcis sy'n cael eu storio gan <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Nesaf</translation>
+<translation id="1240190568154816272">Awgrymiadau Chrome</translation>
 <translation id="1242008676835033345">Plannwyd ar <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stopio</translation>
 <translation id="1289742167380433257">Er mwyn cadw eich data, mae lluniau'r dudalen hon wedi'u hoptimeiddio gan Google.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Gofyn cyn caniatáu i wefannau gysylltu â dyfais (argymhellir)</translation>
 <translation id="1779089405699405702">Datgodiwr lluniau</translation>
 <translation id="1785415724048343560">Argymhellir ar gyfer y profiad gorau</translation>
+<translation id="1799920918471566157">Awgrymiadau Chrome</translation>
 <translation id="1818308510395330587">I ganiatáu i <ph name="APP_NAME" /> ddefnyddio AR, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Mae mynediad lleoliad wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Diweddaraf</translation>
 <translation id="5556459405103347317">Ail-lwytho</translation>
 <translation id="5591840828808741583">Rhwystrwyd <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Dangoswch i fi sut</translation>
 <translation id="5649053991847567735">Lawrlwythiadau awtomatig</translation>
 <translation id="5668404140385795438">Diystyru cais gwefan i atal chwyddo</translation>
 <translation id="5677928146339483299">Rhwystrwyd</translation>

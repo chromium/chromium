@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1192844206376121885">سيؤدي هذا الإجراء إلى حذف جميع البيانات وملفات تعريف الارتباط المُخزَّنة من خلال <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">التالي</translation>
+<translation id="1240190568154816272">‏معلومات بشأن استخدام متصفّح Chrome</translation>
 <translation id="1242008676835033345">مضمّن في <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">إيقاف</translation>
 <translation id="1289742167380433257">‏لحفظ بياناتك، حسَّنت Google الصور في هذه الصفحة.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">السؤال قبل السماح للمواقع الإلكترونية بالاتصال بجهاز (موصى به)</translation>
 <translation id="1779089405699405702">أداة فك ترميز الصور</translation>
 <translation id="1785415724048343560">ننصحك بهذا الخيار للحصول على أفضل تجربة</translation>
+<translation id="1799920918471566157">‏معلومات بشأن استخدام متصفِّح Chrome</translation>
 <translation id="1818308510395330587">‏للسماح لتطبيق <ph name="APP_NAME" /> باستخدام ميزة الواقع المعزَّز، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
@@ -279,6 +281,7 @@
 <translation id="5553374991681107062">الأحدث</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="5591840828808741583">تم حظر "<ph name="SITE_NAME" />".</translation>
+<translation id="5632485077360054581">الاطّلاع على الإرشادات</translation>
 <translation id="5649053991847567735">عمليات التنزيل التلقائية</translation>
 <translation id="5668404140385795438">تجاوز طلب الموقع الإلكتروني لمنع التكبير</translation>
 <translation id="5677928146339483299">محظور</translation>

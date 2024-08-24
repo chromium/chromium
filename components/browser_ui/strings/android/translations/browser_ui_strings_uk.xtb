@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1192844206376121885">Усі дані й файли cookie сайту <ph name="ORIGIN" /> буде видалено.</translation>
 <translation id="1201402288615127009">Далі</translation>
+<translation id="1240190568154816272">Поради щодо Chrome</translation>
 <translation id="1242008676835033345">Вбудовано на сайті <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Зупинити</translation>
 <translation id="1289742167380433257">Щоб заощадити трафік, ми оптимізували зображення на цій сторінці.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Запитувати, перш ніж дозволяти сайтам підключатися до пристрою (рекомендовано)</translation>
 <translation id="1779089405699405702">Декодер зображень</translation>
 <translation id="1785415724048343560">Рекомендовано, щоб завжди показувалася потрібна версія сайту</translation>
+<translation id="1799920918471566157">Поради щодо Chrome</translation>
 <translation id="1818308510395330587">Щоб дозволити додатку <ph name="APP_NAME" /> використовувати доповнену реальність, увімкніть камеру в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">На цьому пристрої вимкнено доступ до геоданих. Увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Закрити</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Останні</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5591840828808741583">Сайт <ph name="SITE_NAME" /> заблоковано</translation>
+<translation id="5632485077360054581">Докладніше</translation>
 <translation id="5649053991847567735">Автоматичні завантаження</translation>
 <translation id="5668404140385795438">Відхиляти запит веб-сайту, щоб забороняти масштабування</translation>
 <translation id="5677928146339483299">Заблоковано</translation>

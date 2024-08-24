@@ -3505,7 +3505,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3497560059572256875">Compartir doodle</translation>
 <translation id="3497915391670770295">Enviar aos teus &amp;dispositivos</translation>
 <translation id="3498138244916757538">Para cambiar a configuración do micrófono é necesario pechar <ph name="SPECIFIC_NAME" />. Pecha <ph name="SPECIFIC_NAME" /> to continuar.</translation>
-<translation id="3499091376302796297">Cando navegas polos sitios, o contido das páxinas gárdase de forma encriptada no teu dispositivo.</translation>
 <translation id="3500417806337761827">Produciuse un erro ao montar o recurso compartido. Xa hai montados demasiados recursos compartidos SMB.</translation>
 <translation id="3500764001796099683">Activar aplicacións web illadas</translation>
 <translation id="350397915809787283">Se non tes ningunha conta, selecciona a primeira opción para crear unha.</translation>
@@ -4978,7 +4977,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4562155214028662640">Engadir impresión dixital</translation>
 <translation id="4562155266774382038">Ignorar suxestión</translation>
 <translation id="4562364000855074606">Bloquea as aplicacións instaladas neste dispositivo (<ph name="DEVICE_TYPE" />). Para restrinxir a descarga de aplicacións ou contido, vai á configuración de Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Usa unha linguaxe cotiá para facer buscas no historial de navegación e atopar sitios que visitaches.</translation>
 <translation id="4563210852471260509">O idioma inicial de introdución de texto é o chinés</translation>
 <translation id="4563382028841851106">Quitar da conta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
@@ -5993,6 +5991,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5302032366299160685">Espera a que se abra o ficheiro antes de tentalo de novo</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5302435492906794790">Buscando dispositivos detectables próximos...</translation>
 <translation id="5302932258331363306">Mostrar substitucións</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> xestiona esta conta</translation>
 <translation id="5307030433605830021">A fonte non é compatible</translation>
@@ -8698,6 +8697,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7321545336522791733">Non se pode acceder ao servidor</translation>
 <translation id="7322515217754205362">Permisos de sitios</translation>
 <translation id="7323315405936922211">Tamaño da área do cursor</translation>
+<translation id="7324020307732396723">Abrir configuración de idioma</translation>
 <translation id="7324297612904500502">Foro de Chrome Beta</translation>
 <translation id="7325209047678309347">O papel está atascado</translation>
 <translation id="7325953439504232954">Queres cambiar de perfil?</translation>
@@ -9812,6 +9812,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8097959162767603171">O teu administrador ten que aceptar as condicións de servizo que se atopan na lista de dispositivos Chrome, na consola de administración.</translation>
 <translation id="8098156986344908134">Queres instalar <ph name="DEVICE_OS" /> e borrar a información da unidade de disco duro?</translation>
 <translation id="8098616321286360457">Necesítase conexión de rede</translation>
+<translation id="8100057926383586173">Abrir configuración de idioma</translation>
 <translation id="8100230553590752325">Usa desde calquera dispositivo os contrasinais gardados</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seleccionado. Preme Buscar e Espazo para anular a selección.</translation>
 <translation id="8101409298456377967">Crea, garda e xestiona os teus contrasinais para que poidas iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

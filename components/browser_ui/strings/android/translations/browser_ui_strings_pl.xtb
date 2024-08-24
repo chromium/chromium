@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1192844206376121885">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez stronę <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Dalej</translation>
+<translation id="1240190568154816272">Wskazówki dotyczące Chrome</translation>
 <translation id="1242008676835033345">Umieszczono na <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1289742167380433257">Aby zaoszczędzić dane, obrazy z tej strony zostały zoptymalizowane przez Google.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Pytaj, zanim zezwolisz stronom na połączenie z urządzeniem (zalecane)</translation>
 <translation id="1779089405699405702">Dekoder obrazów</translation>
 <translation id="1785415724048343560">Polecane dla wygody przeglądania</translation>
+<translation id="1799920918471566157">Chrome – wskazówki</translation>
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Najnowsze</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5591840828808741583">Zablokowano: <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Pokaż jak</translation>
 <translation id="5649053991847567735">Pobieranie automatyczne</translation>
 <translation id="5668404140385795438">Zignoruj żądanie strony, gdy chce zapobiec powiększeniu widoku</translation>
 <translation id="5677928146339483299">Zablokowane</translation>

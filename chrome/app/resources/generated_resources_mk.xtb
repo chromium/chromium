@@ -3520,7 +3520,6 @@
 <translation id="3497560059572256875">Сподели Doodle</translation>
 <translation id="3497915391670770295">Испратете на вашите уреди</translation>
 <translation id="3498138244916757538">Промената на поставките за микрофонот бара да се исклучи <ph name="SPECIFIC_NAME" />. Исклучете <ph name="SPECIFIC_NAME" /> за да продолжите.</translation>
-<translation id="3499091376302796297">Додека прелистувате сајтови, содржините на нивните страници се зачувуваат во шифрирана форма на уредот.</translation>
 <translation id="3500417806337761827">Грешка при прикачување на споделувањето. Веќе се прикачени премногу SMB-споделувања.</translation>
 <translation id="3500764001796099683">Овозможете изолирани веб-апликации</translation>
 <translation id="350397915809787283">Ако немате сметка, изберете ја првата опција за да си создадете.</translation>
@@ -4990,7 +4989,6 @@
 <translation id="4562155214028662640">Додај отпечаток</translation>
 <translation id="4562155266774382038">Отфрли го предлогот</translation>
 <translation id="4562364000855074606">Блокирајте ги апликациите инсталирани на овој <ph name="DEVICE_TYPE" />. За да го ограничите преземањето апликации или содржини, одете во „Поставки за Google Play“. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Користете секојдневен јазик за да ја пребарувате вашата историја на прелистувањето и да наоѓате сајтови што сте ги отвориле.</translation>
 <translation id="4563210852471260509">Првичниот јазик на внесување е кинески</translation>
 <translation id="4563382028841851106">Отстрани од сметката</translation>
 <translation id="4563880231729913339">Прст 3</translation>
@@ -6005,6 +6003,7 @@
 <translation id="5301954838959518834">Добро, сфатив</translation>
 <translation id="5302032366299160685">Почекајте да се отвори датотеката пред да се обидете повторно</translation>
 <translation id="5302048478445481009">Јазик</translation>
+<translation id="5302435492906794790">Се бараат достапни уреди во близина…</translation>
 <translation id="5302932258331363306">Прикажи ги замените</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> управува со сметкава</translation>
 <translation id="5307030433605830021">Изворот не е поддржан</translation>
@@ -8715,6 +8714,7 @@
 <translation id="7321545336522791733">Серверот е недостапен</translation>
 <translation id="7322515217754205362">Дозволи за сајт</translation>
 <translation id="7323315405936922211">Големина на површина на курсор</translation>
+<translation id="7324020307732396723">Отворете ги поставките за јазик</translation>
 <translation id="7324297612904500502">Форум за Beta Chrome</translation>
 <translation id="7325209047678309347">Хартијата е заглавена</translation>
 <translation id="7325953439504232954">Да се смени профилот?</translation>
@@ -9829,6 +9829,7 @@
 <translation id="8097959162767603171">Вашиот администратор прво мора да ги прифати „Условите за користење“ во списокот со уреди со Chrome во администраторската конзола.</translation>
 <translation id="8098156986344908134">Да се инсталира <ph name="DEVICE_OS" /> и да се избрише хард дискот?</translation>
 <translation id="8098616321286360457">Потребна е мрежна врска</translation>
+<translation id="8100057926383586173">Отворете ги поставките за јазик</translation>
 <translation id="8100230553590752325">Користење зачувани лозинки на кој било уред</translation>
 <translation id="810068641062493918">Избран е <ph name="LANGUAGE" />. Притиснете „Пребарувај“ и Space за да го поништите изборот.</translation>
 <translation id="8101409298456377967">Создавајте, зачувувајте и управувајте со лозинки за лесно најавување на сајтови и апликации. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>

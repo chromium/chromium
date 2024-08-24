@@ -3520,7 +3520,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3497560059572256875">Ibahagi ang Doodle</translation>
 <translation id="3497915391670770295">Ipadala sa Iyong Mga &amp;Device</translation>
 <translation id="3498138244916757538">Nire-require sa pagbabago sa setting ng mikropono na i-shut down ang <ph name="SPECIFIC_NAME" />. I-shut down ang <ph name="SPECIFIC_NAME" /> para magpatuloy.</translation>
-<translation id="3499091376302796297">Habang nagba-browse ka sa mga site, sine-save ang mga content ng page ng mga ito nang naka-encrypt sa iyong device.</translation>
 <translation id="3500417806337761827">Nagka-error sa pag-mount ng pagbabahagi. Masyado nang marami ang na-mount na pagbabahagi ng SMB.</translation>
 <translation id="3500764001796099683">I-enable ang mga naka-isolate na web app</translation>
 <translation id="350397915809787283">Kung wala kang account, piliin ang unang opsyon para gumawa nito.</translation>
@@ -4990,7 +4989,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4562155214028662640">Magdagdag ng Fingerprint</translation>
 <translation id="4562155266774382038">I-dismiss ang suhestyon</translation>
 <translation id="4562364000855074606">I-block ang mga naka-install na app sa <ph name="DEVICE_TYPE" /> na ito. Para paghigpitan ang pag-download ng mga app o content, pumunta sa Mga Setting ng Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Gamitin ang pang-araw-araw na wika para maghanap sa iyong history ng pag-browse at makita ang mga site na binisita mo.</translation>
 <translation id="4563210852471260509">Ang paunang wika sa pag-input ay Chinese</translation>
 <translation id="4563382028841851106">Alisin sa account</translation>
 <translation id="4563880231729913339">Daliri 3</translation>

@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1192844206376121885">Bus ištrinti visi domeno <ph name="ORIGIN" /> saugomi duomenys ir slapukai.</translation>
 <translation id="1201402288615127009">Kitas</translation>
+<translation id="1240190568154816272">„Chrome“ patarimai</translation>
 <translation id="1242008676835033345">Įterpta <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Sustabdyti</translation>
 <translation id="1289742167380433257">Siekdama apsaugoti jūsų duomenis, „Google“ optimizavo šio puslapio vaizdus.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Paklausti prieš leidžiant svetainėms prisijungti prie įrenginio (rekomenduojama)</translation>
 <translation id="1779089405699405702">Vaizdų dekoderis</translation>
 <translation id="1785415724048343560">Rekomenduojama siekiant užtikrinti geriausią patirtį</translation>
+<translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1818308510395330587">Norėdami leisti „<ph name="APP_NAME" />“ naudoti AR, taip pat įjunkite fotoaparatą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Vietos prieiga išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Baigti</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Naujausi</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
 <translation id="5591840828808741583">Užblokuota: <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Peržiūrėti, kaip tai padaryti</translation>
 <translation id="5649053991847567735">Automatiškai atsisiųsti</translation>
 <translation id="5668404140385795438">Nepaisyti svetainės mastelio keitimo vengimo užklausos</translation>
 <translation id="5677928146339483299">Užblokuoti</translation>

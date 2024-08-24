@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1192844206376121885">This will delete all data and cookies stored by <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Next</translation>
+<translation id="1240190568154816272">Chrome tips</translation>
 <translation id="1242008676835033345">Embedded on <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">To save you data, this page's images have been optimised by Google.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
 <translation id="1779089405699405702">Image decoder</translation>
 <translation id="1785415724048343560">Recommended for best experience</translation>
+<translation id="1799920918471566157">Chrome tips</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Location access is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Hang up</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Latest</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> blocked</translation>
+<translation id="5632485077360054581">Show me how</translation>
 <translation id="5649053991847567735">Automatic downloads</translation>
 <translation id="5668404140385795438">Override a website’s request to prevent zooming in</translation>
 <translation id="5677928146339483299">Blocked</translation>

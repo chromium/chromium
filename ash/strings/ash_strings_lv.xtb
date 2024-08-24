@@ -687,6 +687,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3455468639467374593">Veidne, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Šīs ierīces (<ph name="DEVICE_NAME" />) tīklājam ir pievienota viena ierīce.</translation>
 <translation id="346243998268439747">Atiestatīt tālummaiņas līmeni</translation>
+<translation id="3463151196028058330">Sejas retušēšana</translation>
 <translation id="3465223694362104965">Kopš pēdējoreiz pierakstījāties, šai ierīcei ir pievienota cita tastatūra. Pirms izmantojat šo tastatūru, pārliecinieties, ka tā ir uzticama.</translation>
 <translation id="3465356146291925647">Pārvalda jūsu administrators</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> un pēc tam <ph name="KEY_TWO" /> vai <ph name="KEY_THREE" /></translation>
@@ -1212,6 +1213,7 @@ Varat arī izmantot īsinājumtaustiņus. Vispirms atzīmējiet tekstu un pēc t
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5176318573511391780">Ierakstīt daļu ekrāna</translation>
 <translation id="5187627942836026988">Tīklāja informācijas rādīšana. Tīklāju bloķēja jūsu administrators.</translation>
+<translation id="518847040357731612">Studijas izskata preference</translation>
 <translation id="5197255632782567636">Internets</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> pasākumi</translation>
 <translation id="5198715732953550718">Lietotne <ph name="MOVED_APP_NAME" /> kombinēta ar lietotni <ph name="IN_PLACE_APP" />, lai izveidotu jaunu mapi.</translation>

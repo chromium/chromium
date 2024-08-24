@@ -3503,7 +3503,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3497560059572256875">Compartir doodle</translation>
 <translation id="3497915391670770295">Enviar a tus dispositivos</translation>
 <translation id="3498138244916757538">Es necesario que cierres <ph name="SPECIFIC_NAME" /> para aplicar los cambios de la configuración del micrófono. Cierra <ph name="SPECIFIC_NAME" /> para continuar.</translation>
-<translation id="3499091376302796297">Cuando navegas por sitios, el contenido de sus páginas se guarda de forma encriptada en tu dispositivo.</translation>
 <translation id="3500417806337761827">Se produjo un error al activar el recurso compartido porque ya se activaron demasiados archivos compartidos SMB.</translation>
 <translation id="3500764001796099683">Habilitar apps web aisladas</translation>
 <translation id="350397915809787283">Si no tienes una cuenta, selecciona la primera opción para crear una.</translation>
@@ -4973,7 +4972,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4562155214028662640">Agregar huella dactilar</translation>
 <translation id="4562155266774382038">Descartar la sugerencia</translation>
 <translation id="4562364000855074606">Bloquea las apps instaladas en tu <ph name="DEVICE_TYPE" />. Para restringir la descarga de apps o contenido, ve a la configuración de Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Usa el lenguaje cotidiano para buscar en tu historial de navegación y encontrar los sitios que visitaste.</translation>
 <translation id="4563210852471260509">El idioma inicial de entrada es chino</translation>
 <translation id="4563382028841851106">Quitar de la cuenta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>

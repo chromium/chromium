@@ -76,6 +76,9 @@ Vær opmærksom på følgende:
 <translation id="2703746758996815929">Aktivér notifikationer i iOS-indstillingerne for at få nyttige tips til Chrome.</translation>
 <translation id="2736805085127235148">Chrome-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="2750626042242931740">Du kan til enhver tid opdatere dine valg i Chrome-indstillingerne.</translation>
+<translation id="2754428955276778271">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto.
+
+Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes de pågældende data.</translation>
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangs­kode­admin­istrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2869959624320573933">Log ind i Chrome</translation>
 <translation id="2876628302275096482">Se, <ph name="BEGIN_LINK" />hvordan Chrome beskytter dine data<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Vær opmærksom på følgende:
 <translation id="5190139289262548459">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du er logget ind på, og hvordan Chrome bruges.</translation>
 <translation id="5256908199795498284">Chrome registrerer pakkesporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Dine data deles med Google med henblik på at levere denne funktion og forbedre Shopping for alle.</translation>
 <translation id="5278862365980079760">Lås dine inkognitofaner, når du forlader Chrome eller skifter til en anden app.</translation>
+<translation id="5310957470610282541">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto.
+Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes de pågældende data.</translation>
 <translation id="5389212809648216794">Google Chrome kan ikke bruge dit kamera, da det bruges af en anden app</translation>
 <translation id="5395376160638294582">Sørg for, at du altid kan bruge Chrome-dataene på din Google-konto</translation>
 <translation id="5439191312780166229">Advarer dig om skadelige websites – også websites, som Google ikke tidligere har kendt til – ved at analysere flere data fra websites end Standardbeskyttelse. Du kan vælge at springe Chrome-advarsler over.</translation>

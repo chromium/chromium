@@ -50,6 +50,9 @@
 <translation id="2236584955986023187">To znamená, že Chromium bude pokaždé odesílat požadavek na web pro počítač.</translation>
 <translation id="2313870531055795960">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v prohlížeči Chromium. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chromium Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="231828342043114302">Pokud chcete dostávat personalizovaný obsah na základě svých zájmů, přihlaste se do prohlížeče Chromium.</translation>
+<translation id="2326738825692478496">Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google.
+
+Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="2374627437126809292">Chromium používá Mapy Google k poskytování tras a místních informací o zjištěných adresách.</translation>
 <translation id="2386292341327187942">Do pole Widgety Vyhledávání zadejte Chromium</translation>
 <translation id="2426113998523353159">Vaše organizace vyžaduje, abyste se k používání prohlížeče Chromium přihlásili.</translation>
@@ -291,6 +294,8 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 
 Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, zadejte ji.</translation>
 <translation id="9022552996538154597">Přihlásit se do prohlížeče Chromium</translation>
+<translation id="9031260906956926157">Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google.
+Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="9050790730841755540">Používejte Chromium, kdykoli klepnete na odkazy v jiných aplikacích.</translation>
 <translation id="9057082013386654559">Používejte Chromium pro iPad jako výchozí prohlížeč</translation>
 <translation id="9059693977935746710">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel pro účet <ph name="EMAIL" />.</translation>

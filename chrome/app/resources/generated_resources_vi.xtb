@@ -3519,7 +3519,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3497560059572256875">Chia sẻ Doodle</translation>
 <translation id="3497915391670770295">Gửi đến thiết bị của bạn</translation>
 <translation id="3498138244916757538">Bạn cần tắt <ph name="SPECIFIC_NAME" /> để thay đổi chế độ cài đặt micrô. Hãy tắt <ph name="SPECIFIC_NAME" /> để tiếp tục.</translation>
-<translation id="3499091376302796297">Khi bạn duyệt xem trang web, nội dung các trang đó sẽ được lưu dưới dạng mã hoá trên thiết bị của bạn.</translation>
 <translation id="3500417806337761827">Lỗi kết nối mục chia sẻ. Đã có quá nhiều mục chia sẻ của doanh nghiệp vừa và nhỏ (SMB) được liên kết.</translation>
 <translation id="3500764001796099683">Bật các ứng dụng web tách biệt</translation>
 <translation id="350397915809787283">Nếu bạn chưa có tài khoản, hãy chọn lựa chọn đầu tiên để tạo tài khoản.</translation>
@@ -4989,7 +4988,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4562155214028662640">Thêm vân tay</translation>
 <translation id="4562155266774382038">Đóng đề xuất</translation>
 <translation id="4562364000855074606">Chặn các ứng dụng được cài đặt trên <ph name="DEVICE_TYPE" /> này. Để hạn chế việc tải ứng dụng hoặc nội dung xuống, hãy chuyển đến phần Cài đặt Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Dùng ngôn ngữ giao tiếp thường ngày để tìm nhật ký duyệt web và tìm các trang web bạn đã truy cập.</translation>
 <translation id="4563210852471260509">Ngôn ngữ nhập vào ban đầu là tiếng Trung</translation>
 <translation id="4563382028841851106">Xoá khỏi tài khoản</translation>
 <translation id="4563880231729913339">Ngón tay số 3</translation>
@@ -6004,6 +6002,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5301954838959518834">Ok</translation>
 <translation id="5302032366299160685">Đợi tệp mở ra rồi thử lại</translation>
 <translation id="5302048478445481009">Ngôn ngữ</translation>
+<translation id="5302435492906794790">Đang tìm thiết bị có thể phát hiện ở gần đây...</translation>
 <translation id="5302932258331363306">Hiển thị ký tự thay thế</translation>
 <translation id="5305145881844743843">Tài khoản này do <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> quản lý</translation>
 <translation id="5307030433605830021">Nguồn không được hỗ trợ</translation>
@@ -8715,6 +8714,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7321545336522791733">Máy chủ không truy cập được</translation>
 <translation id="7322515217754205362">Quyền cho trang web</translation>
 <translation id="7323315405936922211">Kích thước vùng con trỏ</translation>
+<translation id="7324020307732396723">Mở phần cài đặt ngôn ngữ</translation>
 <translation id="7324297612904500502">Diễn đàn beta</translation>
 <translation id="7325209047678309347">Kẹt giấy</translation>
 <translation id="7325953439504232954">Bạn muốn chuyển đổi hồ sơ?</translation>
@@ -9830,6 +9830,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8097959162767603171">Trước tiên, quản trị viên của bạn phải chấp nhận điều khoản dịch vụ trong danh sách thiết bị Chrome trên Bảng điều khiển dành cho quản trị viên.</translation>
 <translation id="8098156986344908134">Bạn có muốn cài đặt <ph name="DEVICE_OS" /> và xóa ổ đĩa cứng?</translation>
 <translation id="8098616321286360457">Cần kết nối mạng</translation>
+<translation id="8100057926383586173">Mở phần cài đặt ngôn ngữ</translation>
 <translation id="8100230553590752325">Sử dụng mật khẩu đã lưu trên mọi thiết bị</translation>
 <translation id="810068641062493918">Đã chọn <ph name="LANGUAGE" />. Hãy nhấn phím Tìm kiếm + Phím cách để bỏ chọn.</translation>
 <translation id="8101409298456377967">Tạo, lưu và quản lý mật khẩu để bạn có thể dễ dàng đăng nhập vào các trang web và ứng dụng. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>

@@ -3498,7 +3498,6 @@
 <translation id="3497560059572256875">Doodle を共有</translation>
 <translation id="3497915391670770295">お使いのデバイスに送信(&amp;D)</translation>
 <translation id="3498138244916757538">マイクの設定を変更するには、<ph name="SPECIFIC_NAME" /> をシャットダウンする必要があります。続行するには <ph name="SPECIFIC_NAME" /> をシャットダウンしてください。</translation>
-<translation id="3499091376302796297">サイトを閲覧すると、そのページのコンテンツが暗号化された形式でデバイスに保存されます。</translation>
 <translation id="3500417806337761827">共有フォルダのマウントエラー。マウントされた SMB 共有の数が上限を超えています。</translation>
 <translation id="3500764001796099683">独立したウェブアプリを有効にする</translation>
 <translation id="350397915809787283">アカウントがない場合は、最初のオプションを選択して作成してください。</translation>
@@ -4965,7 +4964,6 @@
 <translation id="4562155214028662640">指紋を追加</translation>
 <translation id="4562155266774382038">候補を却下</translation>
 <translation id="4562364000855074606">この <ph name="DEVICE_TYPE" /> でアプリのインストールをブロックします。アプリやコンテンツのダウンロードを制限するには、Google Play の設定にアクセスしてください。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">普段使う表現で閲覧履歴やアクセスしたサイトを検索できます。</translation>
 <translation id="4563210852471260509">初期の入力言語を中国語にする</translation>
 <translation id="4563382028841851106">アカウントから削除</translation>
 <translation id="4563880231729913339">指 3</translation>

@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1192844206376121885">Будуць выдалены ўсе даныя і файлы cookie, захаваныя сайтам <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Далей</translation>
+<translation id="1240190568154816272">Парады адносна Chrome</translation>
 <translation id="1242008676835033345">Убудавана на сайце <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Спыніць</translation>
 <translation id="1289742167380433257">Відарысы на гэтай старонцы былі аптымізаваны з дапамогай Google для эканоміі трафіка.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Запытваць дазвол на падключэнне сайтаў да прылады (рэкамендуецца)</translation>
 <translation id="1779089405699405702">Дэкодар відарысаў</translation>
 <translation id="1785415724048343560">Рэкамендуем зрабіць гэта для аптымізацыі работы са старонкамі</translation>
+<translation id="1799920918471566157">Парады адносна Chrome</translation>
 <translation id="1818308510395330587">Каб праграма "<ph name="APP_NAME" />" магла выкарыстоўваць дапоўненую рэальнасць, уключыце таксама камеру ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Доступ да месцазнаходжання для гэтай прылады выключаны. Уключыце яго ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Закрыць</translation>
@@ -278,6 +280,7 @@
 <translation id="5553374991681107062">Апошняе</translation>
 <translation id="5556459405103347317">Перазагрузіць</translation>
 <translation id="5591840828808741583">Заблакіравана для сайта <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Паказаць</translation>
 <translation id="5649053991847567735">Аўтаматычнае спампоўванне</translation>
 <translation id="5668404140385795438">Перавызначаць запыт вэб-сайта на прадухіленне павелічэння маштабу</translation>
 <translation id="5677928146339483299">Заблакіравана</translation>

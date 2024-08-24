@@ -51,6 +51,9 @@
 <translation id="2236584955986023187">Tämä tarkoittaa, että Chromium pyytää aina tietokonesivustoa.</translation>
 <translation id="2313870531055795960">Tarkistaa URL-osoitteet Chromiumiin tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chromium voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, myös osia sivujen sisällöstä.</translation>
 <translation id="231828342043114302">Jos haluat saada kiinnostuksen kohteisiisi perustuvaa personoitua sisältöä, kirjaudu Chromiumiin.</translation>
+<translation id="2326738825692478496">Osaa Chromium-datastasi ei ole vielä tallennettu Google-tilillesi.
+
+Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="2374627437126809292">Chromium käyttää Google Mapsia reittiohjeiden ja paikallisten tietojen tarjoamiseen havaituissa osoitteissa.</translation>
 <translation id="2386292341327187942">Kirjoita Haku-widgetin kenttään "Chromium"</translation>
 <translation id="2426113998523353159">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromiumia.</translation>
@@ -292,6 +295,8 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 
 Datasi salattiin tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käyttää ja tallentaa Chromium-dataa Google-tililläsi.</translation>
 <translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>
+<translation id="9031260906956926157">Osaa Chromium-datastasi ei ole vielä tallennettu Google-tilillesi.
+Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="9050790730841755540">Käytä Chromiumia aina, kun napautat linkkejä muissa sovelluksissa.</translation>
 <translation id="9057082013386654559">Käytä oletuksena iPadin Chromiumia</translation>
 <translation id="9059693977935746710">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>

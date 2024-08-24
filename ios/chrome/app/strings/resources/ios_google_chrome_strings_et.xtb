@@ -76,6 +76,9 @@ Tasub teada
 <translation id="2703746758996815929">Lülitage iOS-i seadetes märguanded sisse, et saada Chrome'i kohta kasulikke nõuandeid.</translation>
 <translation id="2736805085127235148">Chrome’i märguanded on praegu teie seadme seadetes välja lülitatud.</translation>
 <translation id="2750626042242931740">Chrome'i seadetes saate igal ajal oma valikuid värskendada.</translation>
+<translation id="2754428955276778271">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud.
+
+Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
 <translation id="2767464022270041271">Salvestatud paroole ei ole. Google'i paroolihaldur saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="2869959624320573933">Logige Chromeʼi sisse</translation>
 <translation id="2876628302275096482">Vaadake lisateavet, <ph name="BEGIN_LINK" />kuidas Chrome teie andmeid privaatsena hoiab<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Tasub teada
 <translation id="5190139289262548459">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele olete sisse logitud, ja Chrome’i kasutamist.</translation>
 <translation id="5256908199795498284">Chrome tuvastab teie külastatud saitidel saadetise jälgimisnumbrid ja kuvab teile saadetise värskendusi uuel vahelehel. Teie andmeid jagatakse Google'iga, et pakkuda seda funktsiooni ja parandada ostlemist kõigi jaoks.</translation>
 <translation id="5278862365980079760">Lukustage Chrome’ist väljumisel või muu rakenduse aktiveerimisel oma inkognito vahelehed.</translation>
+<translation id="5310957470610282541">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud.
+Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
 <translation id="5389212809648216794">Google Chrome ei saa kaamerat kasutada, kuna seda kasutab muu rakendus</translation>
 <translation id="5395376160638294582">Veenduge, et saaksite alati kasutada oma Google'i kontol Chrome'i andmeid</translation>
 <translation id="5439191312780166229">Hoiatab teid ohtlike saitide eest, isegi nende eest, millest Google varem ei teadnud, analüüsides standardse kaitsega võrreldes rohkem saitidelt pärinevaid andmeid. Soovi korral saate Chrome'i hoiatused vahele jätta.</translation>

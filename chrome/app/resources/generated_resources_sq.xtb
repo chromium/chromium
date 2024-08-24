@@ -3502,7 +3502,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3497560059572256875">Ndaje vizatimin Doodle</translation>
 <translation id="3497915391670770295">Dërgo te &amp;pajisjet e tua</translation>
 <translation id="3498138244916757538">Ndryshimi në cilësimin e mikrofonit kërkon që të fiket <ph name="SPECIFIC_NAME" />. Fik <ph name="SPECIFIC_NAME" /> për të vazhduar.</translation>
-<translation id="3499091376302796297">Kur shfleton sajtet, përmbajtjet e faqeve të tyre ruhen në formë të enkriptuar në pajisjen tënde.</translation>
 <translation id="3500417806337761827">Gabim në montimin e ndarjes. Janë montuar tashmë shumë ndarje SMB.</translation>
 <translation id="3500764001796099683">Aktivizo aplikacionet e izoluara të uebit</translation>
 <translation id="350397915809787283">Nëse nuk ke një llogari, zgjidh opsionin e parë për të krijuar një të tillë.</translation>
@@ -4972,7 +4971,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4562155214028662640">Shto një gjurmë gishti</translation>
 <translation id="4562155266774382038">Hiq sugjerimin</translation>
 <translation id="4562364000855074606">Blloko aplikacionet e instaluara në këtë <ph name="DEVICE_TYPE" />. Për të kufizuar shkarkimin e aplikacioneve ose përmbajtjeve, shko te "Cilësimet" e Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Përdor gjuhën e përditshme për të kërkuar te historiku i shfletimit dhe për të gjetur sajtet që ke vizituar.</translation>
 <translation id="4563210852471260509">Gjuha fillestare e hyrjes është kinezishtja</translation>
 <translation id="4563382028841851106">Hiq nga llogaria</translation>
 <translation id="4563880231729913339">Gishti 3</translation>
@@ -5985,6 +5983,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5301954838959518834">Në rregull, kuptova.</translation>
 <translation id="5302032366299160685">Prit që skedari të hapet para se të provosh përsëri</translation>
 <translation id="5302048478445481009">Gjuha</translation>
+<translation id="5302435492906794790">Po kërkon për pajisje të zbulueshme në afërsi...</translation>
 <translation id="5302932258331363306">Shfaq zëvendësimet</translation>
 <translation id="5305145881844743843">Kjo llogari menaxhohet nga <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Burimi nuk mbështetet</translation>
@@ -8693,6 +8692,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7321545336522791733">Serveri i paarritshëm</translation>
 <translation id="7322515217754205362">Lejet e sajtit</translation>
 <translation id="7323315405936922211">Madhësia e zonës së kursorit</translation>
+<translation id="7324020307732396723">Hap cilësimet e gjuhës</translation>
 <translation id="7324297612904500502">Forumi beta</translation>
 <translation id="7325209047678309347">Letra është bllokuar</translation>
 <translation id="7325953439504232954">Të ndërrohet profili?</translation>
@@ -9806,6 +9806,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8097959162767603171">Administratori yt duhet të pranojë fillimisht kushtet e shërbimit në listën e pajisjeve Chrome të "Panelit të administratorit".</translation>
 <translation id="8098156986344908134">Të instalohet <ph name="DEVICE_OS" /> dhe të fshihet disku i ngurtë?</translation>
 <translation id="8098616321286360457">Nevojitet lidhje me rrjetin</translation>
+<translation id="8100057926383586173">Hap cilësimet e gjuhës</translation>
 <translation id="8100230553590752325">Përdor fjalëkalimet e ruajtura në çdo pajisje</translation>
 <translation id="810068641062493918">U zgjodh <ph name="LANGUAGE" />. Shtyp "Kërko" plus "Hapësirë" për ta anuluar zgjedhjen.</translation>
 <translation id="8101409298456377967">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>

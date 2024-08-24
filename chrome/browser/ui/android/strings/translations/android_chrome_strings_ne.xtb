@@ -1017,6 +1017,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="587735546353481577">आफूले चाहेको साइट फलो गर्न उक्त साइटमा जानुहोस्, Chrome मेनु खोल्नुहोस् र 'फलो गर्नुहोस्' मा ट्याप गर्नुहोस्।</translation>
 <translation id="5879072387416556377">अझ राम्रा सुझावहरू प्राप्त गर्नुहोस्</translation>
 <translation id="5885378508678660271">नोटिफिकेसन <ph name="SEPARATOR" /> यो साइट खतरनाक भएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
+<translation id="5895834791314695851">पासवर्डहरूले यो डिभाइसमा चाँडै नै काम गर्न छाड्न सक्छन्। आफ्ना पासवर्डहरू प्रयोग गरिरहन Google Play services अपडेट गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">कुनै पनि पासकी सिट बन्द गरिएको छैन</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5919204609460789179">सिंक सुरु गर्न <ph name="PRODUCT_NAME" /> लाई अपडेट गर्नुहोस्</translation>
@@ -1556,6 +1557,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="820568752112382238">सबैभन्दा बढी हेरिएका साइटहरू</translation>
 <translation id="8209050860603202033">छवि खोल्नुहोस्</translation>
 <translation id="8210770465353466621">तपाईंका ट्याबहरू यहाँ देखिने छन्</translation>
+<translation id="8211101263765532799">केही पासवर्डहरूले चाँडै नै काम गर्न छाड्ने छन्</translation>
 <translation id="8215740705341534369">छेउको पाना</translation>
 <translation id="8218622182176210845">आफ्नो खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8221401890884589479">तपाईं आफूलाई नचाहिने साइटहरू ब्लक गर्न सक्नुहुन्छ। साथै Chrome ले पनि उक्त सूचीमा भएका ३० दिनभन्दा पुराना साइटहरू स्वतः मेटाउँछ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -1656,6 +1658,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="864544049772947936">विन्डोहरू व्यवस्थापन गर्नु… (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">आफूले चाहे जसरी Chrome प्रयोग गर्नुहोस्</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
+<translation id="8672883760227492369">यो डिभाइसमा सेभ गरिएका केही पासवर्डहरूले चाँडै नै काम गर्न छाड्ने छन्। तपाईं यी पासवर्डहरू सारेर Google पासवर्ड म्यानेजरमा लैजान सक्नुहुन्छ।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन अप गर्नुहोस्</translation>
 <translation id="8676789164135894283">साइन इन गर्न कार्यको पुष्टिसम्बन्धी सूचना</translation>
 <translation id="8683039184091909753">फोटो</translation>

@@ -76,6 +76,9 @@ Considerações:
 <translation id="2703746758996815929">Para receber dicas úteis sobre o Chrome, ative as notificações nos ajustes do iOS.</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão desativadas nas configurações do dispositivo no momento.</translation>
 <translation id="2750626042242931740">Você pode atualizar suas escolhas a qualquer momento nas configurações do Chrome.</translation>
+<translation id="2754428955276778271">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google.
+
+Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
@@ -145,6 +148,8 @@ Considerações:
 <translation id="5190139289262548459">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você fez login e a forma como o Chrome é usado.</translation>
 <translation id="5256908199795498284">O Chrome vai detectar números de rastreamento de pacotes nos sites que você visitar e mostrará atualizações de pacotes na página "Nova guia". Seus dados serão compartilhados com o Google para fornecer este recurso e melhorar o Shopping para todos.</translation>
 <translation id="5278862365980079760">Bloqueie o modo de navegação anônima ao sair do Chrome ou mudar para outro app.</translation>
+<translation id="5310957470610282541">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google.
+Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="5395376160638294582">Garanta que você sempre possa usar os dados do Chrome na sua Conta do Google</translation>
 <translation id="5439191312780166229">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>

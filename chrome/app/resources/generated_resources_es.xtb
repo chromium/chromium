@@ -3506,7 +3506,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3497560059572256875">Compartir doodle</translation>
 <translation id="3497915391670770295">Enviar a tus &amp;dispositivos</translation>
 <translation id="3498138244916757538">Es necesario apagar <ph name="SPECIFIC_NAME" /> para que se aplique el cambio realizado en el ajuste del micrófono. Apaga <ph name="SPECIFIC_NAME" /> para continuar.</translation>
-<translation id="3499091376302796297">Cuando navegas por sitios, el contenido de sus páginas se guarda en tu dispositivo de forma cifrada.</translation>
 <translation id="3500417806337761827">No se ha podido activar el sistema de archivos compartidos. Ya se han activado demasiados sistemas de archivos compartidos SMB.</translation>
 <translation id="3500764001796099683">Habilitar aplicaciones web aisladas</translation>
 <translation id="350397915809787283">Si no tienes una cuenta, selecciona la primera opción para crear una.</translation>
@@ -4975,7 +4974,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4562155214028662640">Añadir huella digital</translation>
 <translation id="4562155266774382038">Rechazar sugerencia</translation>
 <translation id="4562364000855074606">Bloquea las aplicaciones instaladas en este <ph name="DEVICE_TYPE" />. Para restringir la descarga de aplicaciones o contenido, ve a Ajustes en Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Usa frases cotidianas para buscar en tu historial de navegación y encontrar los sitios que has visitado.</translation>
 <translation id="4563210852471260509">El lenguaje de entrada inicial es el chino.</translation>
 <translation id="4563382028841851106">Quitar de la cuenta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>

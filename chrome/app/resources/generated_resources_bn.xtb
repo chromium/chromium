@@ -3519,7 +3519,6 @@
 <translation id="3497560059572256875">ডুডল শেয়ার করুন</translation>
 <translation id="3497915391670770295">আপনার অন্যান্য &amp;ডিভাইসে পাঠান</translation>
 <translation id="3498138244916757538">মাইক্রোফোন সেটিং পরিবর্তন করতে <ph name="SPECIFIC_NAME" /> বন্ধ করতে হবে। এগিয়ে যেতে <ph name="SPECIFIC_NAME" /> বন্ধ করুন।</translation>
-<translation id="3499091376302796297">সাইট ব্রাউজ করার সময়, সেটির পৃষ্ঠার কন্টেন্ট এনক্রিপ্ট করা অবস্থায় আপনার ডিভাইসে সেভ হয়।</translation>
 <translation id="3500417806337761827">শেয়ার মাউন্ট করার সময় কোনও সমস্যা হয়েছে। অনেকগুলি SMB শেয়ার আগে থেকেই মাউন্ট করা হয়েছে।</translation>
 <translation id="3500764001796099683">আইসোলেটেড ওয়েব অ্যাপ চালু করুন</translation>
 <translation id="350397915809787283">আপনার অ্যাকাউন্ট না থাকলে, প্রথম বিকল্পটি বেছে নিয়ে একটি অ্যাকাউন্ট তৈরি করুন।</translation>
@@ -4988,7 +4987,6 @@
 <translation id="4562155214028662640">আঙ্গুলের ছাপ যোগ করুন</translation>
 <translation id="4562155266774382038">সাজেশন বাতিল করুন</translation>
 <translation id="4562364000855074606">এই <ph name="DEVICE_TYPE" /> ডিভাইসে ইনস্টল করা অ্যাপ ব্লক করুন। অ্যাপ বা কন্টেন্ট ডাউনলোড করাতে বিধিনিষেধ আরোপ করতে, Google Play সেটিংসে যান। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">ব্রাউজিং ইতিহাস সার্চ করতে এবং আপনার দেখা সাইটগুলি খুঁজে পেতে দৈনন্দিন ভাষা ব্যবহার করুন।</translation>
 <translation id="4563210852471260509">প্রাথমিক ইনপুট  ভাষা  চীনা</translation>
 <translation id="4563382028841851106">অ্যাকাউন্ট থেকে সরিয়ে দিন</translation>
 <translation id="4563880231729913339">আঙ্গুল ৩</translation>
@@ -6003,6 +6001,7 @@
 <translation id="5301954838959518834">ঠিক আছে, বুঝেছি</translation>
 <translation id="5302032366299160685">আবার চেষ্টা করার আগে ফাইল খোলার জন্য অপেক্ষা করুন</translation>
 <translation id="5302048478445481009">ভাষা</translation>
+<translation id="5302435492906794790">আশেপাশের খুঁজে নেওয়ার যোগ্য ডিভাইস সার্চ করা হচ্ছে...</translation>
 <translation id="5302932258331363306">প্রতিস্থাপনের প্যানেল দেখুন</translation>
 <translation id="5305145881844743843">এই অ্যাকাউন্ট <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ম্যানেজ করছে</translation>
 <translation id="5307030433605830021">সোর্সটি সমর্থিত নয়</translation>
@@ -8715,6 +8714,7 @@
 <translation id="7321545336522791733">সার্ভারে সংযোগ করা যাচ্ছে না</translation>
 <translation id="7322515217754205362">সাইট অ্যাক্সেস করার অনুমতি</translation>
 <translation id="7323315405936922211">কার্সর এরিয়া সাইজ</translation>
+<translation id="7324020307732396723">ভাষার সেটিংস খুলুন</translation>
 <translation id="7324297612904500502">বিটা ফোরাম</translation>
 <translation id="7325209047678309347">প্রিন্টারে কাগজ আটকে গেছে</translation>
 <translation id="7325953439504232954">প্রোফাইল পরিবর্তন করবেন?</translation>
@@ -9828,6 +9828,7 @@
 <translation id="8097959162767603171">আপনার অ্যাডমিনিস্ট্রেটরকে অবশ্যই প্রথমে অ্যাডমিন কনসোলের Chrome ডিভাইসের তালিকাতে দেওয়া পরিষেবার শর্তাবলীর সাথে সম্মত হতে হবে।</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> ইনস্টল করবেন এবং হার্ড ড্রাইভ মুছবেন?</translation>
 <translation id="8098616321286360457">নেটওয়ার্ক কানেকশন প্রয়োজন</translation>
+<translation id="8100057926383586173">ভাষার সেটিংস খুলুন</translation>
 <translation id="8100230553590752325">যেকোনও ডিভাইসে সেভ করা পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> বেছে নেওয়া হয়েছে। টিক চিহ্ন সরিয়ে দিতে Search ও Space বোতাম প্রেস করুন।</translation>
 <translation id="8101409298456377967">পাসওয়ার্ড তৈরি, সেভ ও ম্যানেজ করুন যাতে আপনি সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
