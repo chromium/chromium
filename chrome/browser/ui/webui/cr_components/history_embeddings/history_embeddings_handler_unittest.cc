@@ -200,7 +200,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   base::test::TestFuture<history_embeddings::mojom::SearchResultPtr> future;
   EXPECT_CALL(page_, SearchResultChanged)
       .WillOnce(base::test::InvokeFuture(future));
-  handler_->OnReceivedSearchResult(embeddings_result);
+  handler_->OnReceivedSearchResult(std::move(embeddings_result));
 
   auto mojo_result = future.Take();
   EXPECT_EQ(mojo_result->query, "search query");
