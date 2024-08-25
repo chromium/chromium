@@ -1,0 +1,49 @@
+# Test false detection cases.
+
+# Processor type
+x86
+# .text start RVA and end RVA
+1000
+3000
+# .reloc start RVA and end RVA
+3800
+4000
+# End RVA
+5000
+
+# Assume ImageBase = 00400000. This does not affect the test.
+Program:
+  00401000: 55                 push        ebp
+  00401001: 8B EC              mov         ebp,esp
+  00401003: B8 E8 00 00 00     mov         eax,0E8h  # E8 00 00 00 00
+  00401008: 00 C0              add         al,al
+  0040100A: 90                 nop
+  0040100B: 90                 nop
+  0040100C: B9 00 00 00 E9     mov         ecx,0E9000000h  # E9 E8 00 00 00
+  00401011: E8 00 00 00 00     call        00401016
+  00401016: 90                 nop
+  00401017: 90                 nop
+  00401018: B1 0F              mov         cl,0Fh  # 0F 80 C0 00 00 00
+  0040101A: 80 C0 00           add         al,0
+  0040101D: 00 00              add         byte ptr [eax],al
+  0040101F: 90                 nop
+  00401020: 90                 nop
+  00401021: B8 E8 00 00 00     mov         eax,0E8h  # E8 00 00 00 E8
+  00401026: E8 00 00 00 00     call        0040102B
+  0040102B: 90                 nop
+  0040102C: 90                 nop
+  0040102D: E8 00 E9 00 00     call        0040F932  # E9 00 00 00 00
+  00401032: 00 00              add         byte ptr [eax],al
+  00401034: 5D                 pop         ebp
+  00401035: C3                 ret
+
+Abs32:
+
+Expected:
+1005  # False positive
+1011  # False positive
+# 1012 => False negative: shadowed by 1011
+101B  # False positive
+# 1023 => Potential false positive, but suppressed since target is outside .text
+1027  # Emerges since it's not shadowed by 1023
+1030  # False positive: target of 102E was outside .text, so fall back to this

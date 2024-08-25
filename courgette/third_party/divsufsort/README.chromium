@@ -1,0 +1,36 @@
+Name: divsufsort
+URL: https://github.com/y-256/libdivsufsort
+Date: 2016-06-01
+Security Critical: no
+Shipped: yes
+License: MIT
+License File: LICENSE
+
+Description:
+This directory contains a modified version of Yuta Mori's libdivsufsort,
+available in its original form from:
+
+  https://github.com/y-256/libdivsufsort
+
+The copy in this directory is so extensively modified that the binary format is
+incompatible with the original and it cannot be compiled outside the Chromium
+source tree or the Courgette project.
+
+List of changes made to original code:
+  - Flattened directory and renamed .c files to .cc files.
+  - Extracted top-of-file license to common file LICENCE.
+  - Removed unused features, e.g., Burrows-Wheeler transformation.
+  - Removed Open EMP usage.
+  - Changed static functions to anonymous namespace functions.
+  - Moved various #define's from divsufsort_private.h to files that use them.
+  - Adapted code to enable PagedArray usage, to reduce effect of memory
+    fragmentation:
+    - Classified saidx_t* to {saidx_t*, saidx_it, const_saidx_it}.
+    - Extracted ss_compare_internal() from ss_compare(), to break awkward usage
+      of local array at end of sssort().
+    - Defined saidx_it and const_saidx_it to use PagedArray iterators. To
+      restore old behavior, we can define DIVSUFSORT_NO_PAGED_ARRAY.
+  - Added namespace divsuf.
+  - Added divsufsort_with_empty().
+  - Added unit tests.
+  - Patch to avoid int/uint comparison warnings.

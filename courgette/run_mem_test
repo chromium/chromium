@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Copyright 2013 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Collect memory usage on the patches from run_stress_test
+
+source "$(dirname ${0})/stress_test_common"
+
+main() {
+  if [ $# -lt 1 ]; then
+    cat <<EOF
+
+USAGE: $(basename ${0}) dir
+
+Collect memory usage on the patches from run_stress_test
+
+EOF
+    exit 1
+  fi
+
+  local dir="${1}"
+  if [ ! -d "${dir}" ]; then
+    error "\"${dir}\" not found"
+    exit 1
+  fi
+
+  local patches_dir="${dir}/patches"
+
+  find "${patches_dir}" \
+    | grep "\.patch$" \
+    | while read i; do
+    local patch="${i}"
+    local subdir_filename="${patch:$((${#patches_dir} + 1))}"
+    local out_base="${dir}/metrics/${subdir_filename}"
+    mkdir -p "$(dirname ${out_base})"
+
+    local original="${subdir_filename%.patch}"
+    local applied="${out_base}.applied"
+    local apply_mem="${out_base}.apply_mem"
+    valgrind --tool=massif --massif-out-file="${apply_mem}" courgette -apply \
+      "${original}" "${patch}" "${applied}" &
+
+    local bz2_patch="${i}.bz2"
+    local unbz2="${out_base}.unbz2"
+    local unbz2_mem="${out_base}.unbz2_mem"
+    valgrind --tool=massif --massif-out-file="${unbz2_mem}" bunzip2 -c \
+      "${bz2_patch}" > "${unbz2}" &
+
+    local xz_patch="${i}.xz"
+    local unxz="${out_base}.unxz"
+    local unxz_mem="${out_base}.unxz_mem"
+    valgrind --tool=massif --massif-out-file="${unxz_mem}" unxz -c \
+      "${xz_patch}" > "${unxz}" &
+
+    local bsdiff_patch="${patch%.patch}.bsdiff_patch"
+    local applied_bsdiff="${out_base}.applied_bsdiff"
+    local bsdiff_mem="${out_base}.bsdiff_mem"
+    valgrind --tool=massif --massif-out-file="${bsdiff_mem}" bspatch \
+      "${original}" "${applied_bsdiff}" "${bsdiff_patch}" &
+
+    wait
+  done
+}
+
+main "${@}"

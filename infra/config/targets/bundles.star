@@ -139,6 +139,7 @@ targets.bundle(
     targets = [
         "aura_unittests",
         "blink_common_unittests",
+        "courgette_unittests",
         "crypto_unittests",
         "filesystem_service_unittests",
         "web_engine_integration_tests",

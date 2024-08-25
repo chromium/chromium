@@ -1,0 +1,235 @@
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/compiler/compiler.gni")
+import("//testing/test.gni")
+
+static_library("courgette_lib") {
+  sources = [
+    "adjustment_method.cc",
+    "adjustment_method.h",
+    "adjustment_method_2.cc",
+    "assembly_program.cc",
+    "assembly_program.h",
+    "consecutive_range_visitor.h",
+    "courgette.h",
+    "courgette_flow.cc",
+    "courgette_flow.h",
+    "difference_estimator.cc",
+    "difference_estimator.h",
+    "disassembler.cc",
+    "disassembler.h",
+    "disassembler_elf_32.cc",
+    "disassembler_elf_32.h",
+    "disassembler_elf_32_x86.cc",
+    "disassembler_elf_32_x86.h",
+    "disassembler_win32.cc",
+    "disassembler_win32.h",
+    "disassembler_win32_x64.cc",
+    "disassembler_win32_x64.h",
+    "disassembler_win32_x86.cc",
+    "disassembler_win32_x86.h",
+    "encoded_program.cc",
+    "encoded_program.h",
+    "ensemble.cc",
+    "ensemble.h",
+    "ensemble_apply.cc",
+    "ensemble_create.cc",
+    "image_utils.h",
+    "instruction_utils.h",
+    "label_manager.cc",
+    "label_manager.h",
+    "patch_generator_x86_32.h",
+    "patcher_x86_32.h",
+    "program_detector.cc",
+    "program_detector.h",
+    "rel32_finder.cc",
+    "rel32_finder.h",
+    "rel32_finder_x64.cc",
+    "rel32_finder_x64.h",
+    "rel32_finder_x86.cc",
+    "rel32_finder_x86.h",
+    "simple_delta.cc",
+    "simple_delta.h",
+    "types_elf.h",
+    "types_win_pe.h",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/lzma_sdk",
+  ]
+
+  public_deps = [
+    ":bsdiff",
+    ":courgette_common",
+  ]
+}
+
+source_set("courgette_common") {
+  sources = [
+    "crc.cc",
+    "crc.h",
+    "memory_allocator.cc",
+    "memory_allocator.h",
+    "region.h",
+    "streams.cc",
+    "streams.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/lzma_sdk",
+  ]
+}
+
+source_set("paged_array") {
+  sources = [ "third_party/bsdiff/paged_array.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("bsdiff") {
+  sources = [
+    "third_party/bsdiff/bsdiff.h",
+    "third_party/bsdiff/bsdiff_apply.cc",
+    "third_party/bsdiff/bsdiff_create.cc",
+    "third_party/bsdiff/bsdiff_search.h",
+  ]
+  deps = [
+    ":courgette_common",
+    "//base",
+  ]
+  public_deps = [
+    ":divsufsort",
+    ":paged_array",
+  ]
+}
+
+source_set("divsufsort") {
+  sources = [
+    "third_party/divsufsort/divsufsort.cc",
+    "third_party/divsufsort/divsufsort.h",
+    "third_party/divsufsort/divsufsort_private.h",
+    "third_party/divsufsort/sssort.cc",
+    "third_party/divsufsort/trsort.cc",
+  ]
+  deps = [
+    ":courgette_common",
+    ":paged_array",
+    "//base",
+  ]
+}
+
+if (!is_ios) {
+  executable("courgette") {
+    if (is_win && current_cpu == "x64") {
+      # The build infrastructure needs courgette to be named courgette64.
+      output_name = "courgette64"
+    }
+
+    sources = [ "courgette_tool.cc" ]
+
+    if (is_win) {
+      ldflags = [ "/LARGEADDRESSAWARE" ]
+    }
+
+    deps = [
+      ":courgette_lib",
+      "//base",
+      "//build/win:default_exe_manifest",
+    ]
+  }
+
+  executable("courgette_minimal_tool") {
+    sources = [ "courgette_minimal_tool.cc" ]
+
+    deps = [
+      ":courgette_lib",
+      "//base",
+      "//build/win:default_exe_manifest",
+    ]
+  }
+
+  if (is_win) {
+    if (current_cpu != "x64") {
+      # Make sure that we have a copy of courgette64.exe(.pdb) in the root out
+      # directory.
+      courgette64_toolchain = "//build/toolchain/win:win_clang_x64"
+      courgette64_label = ":courgette($courgette64_toolchain)"
+
+      courgette64_out_dir = get_label_info(courgette64_label, "root_out_dir")
+
+      if (symbol_level > 0) {
+        copy("copy_courgette_pdb") {
+          visibility = [ ":copy_courgette_binaries" ]
+          sources = [ "$courgette64_out_dir/courgette64.exe.pdb" ]
+          outputs = [ "$root_out_dir/{{source_file_part}}" ]
+          deps = [ courgette64_label ]
+        }
+      }
+
+      copy("copy_courgette_binaries") {
+        sources = [ "$courgette64_out_dir/courgette64.exe" ]
+        outputs = [ "$root_out_dir/{{source_file_part}}" ]
+        deps = [ courgette64_label ]
+        if (symbol_level > 0) {
+          deps += [ ":copy_courgette_pdb" ]
+        }
+      }
+    }
+  }
+}
+
+test("courgette_unittests") {
+  sources = [
+    "adjustment_method_unittest.cc",
+    "base_test_unittest.cc",
+    "base_test_unittest.h",
+    "bsdiff_memory_unittest.cc",
+    "consecutive_range_visitor_unittest.cc",
+    "difference_estimator_unittest.cc",
+    "disassembler_elf_32_x86_unittest.cc",
+    "disassembler_win32_x64_unittest.cc",
+    "disassembler_win32_x86_unittest.cc",
+    "encode_decode_unittest.cc",
+    "encoded_program_unittest.cc",
+    "ensemble_unittest.cc",
+    "image_utils_unittest.cc",
+    "label_manager_unittest.cc",
+    "memory_allocator_unittest.cc",
+    "program_detector_unittest.cc",
+    "rel32_finder_unittest.cc",
+    "streams_unittest.cc",
+    "third_party/bsdiff/bsdiff_search_unittest.cc",
+    "third_party/bsdiff/paged_array_unittest.cc",
+    "third_party/divsufsort/divsufsort_unittest.cc",
+    "typedrva_unittest.cc",
+    "versioning_unittest.cc",
+  ]
+
+  deps = [
+    ":courgette_lib",
+    "//base",
+    "//base:i18n",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+
+  data = [ "testdata/" ]
+}
+
+test("courgette_fuzz") {
+  sources = [
+    "base_test_unittest.cc",
+    "base_test_unittest.h",
+    "encoded_program_fuzz_unittest.cc",
+  ]
+  deps = [
+    ":courgette_lib",
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

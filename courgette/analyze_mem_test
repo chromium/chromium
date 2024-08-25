@@ -1,0 +1,94 @@
+#!/bin/bash
+
+# Copyright 2013 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Produce memory metrics for run_apply_test
+
+source "$(dirname ${0})/stress_test_common"
+
+compute_percentiles() {
+  if [ -z "${1}" ]; then
+    return;
+  fi
+  local pctls=".5 .9 1"
+  local lines=$(cat ${1} | wc -l)
+  for p in $pctls; do
+    local count="$(echo "${lines} * $p" | bc -lq | cut -d. -f1)"
+    local bytes=$(cat ${1} \
+      | cut -d' ' -f2 \
+      | sort -n \
+      | head -n$count \
+      | tail -n1)
+    echo -n "$((bytes / 1000000))MB "
+  done
+}
+
+main() {
+  if [ $# -lt 1 ]; then
+    cat <<EOF
+
+USAGE: $(basename ${0}) dir
+
+Produce memory metrics for run_apply_test.  This shows the percentiles
+of the max heap size across all files.
+
+EOF
+    exit 1
+  fi
+
+  local dir="${1}"
+  if [ ! -d "${dir}" ]; then
+    error "\"${dir}\" not found" exit 1
+  fi
+
+  local metrics_dir="${dir}/metrics"
+  local metrics="${dir}/mem_per_file.txt"
+
+  if [ ! -f "${metrics}" ]; then
+    local metrics_tmp="${metrics}.tmp"
+    echo "computing usage percentiles for courgette.  this may take a while..."
+    find "${metrics_dir}" \
+      | grep "\.apply_mem$" \
+      | while read i; do
+      local apply_mem="${i}"
+      local unbz2_mem="${apply_mem%.apply_mem}.unbz2_mem"
+      local unxz_mem="${apply_mem%.apply_mem}.unxz_mem"
+      echo -n "$apply_mem "
+      cat "${apply_mem}" "${unbz2_mem}" "${unxz_mem}" \
+        | grep "mem_heap_B" \
+        | cut -d= -f2 \
+        | sort -nr \
+        | head -n1
+    done | sort -k2 -n > "${metrics_tmp}"
+    mv "${metrics_tmp}" "${metrics}"
+  fi
+
+  echo "$(compute_percentiles ${metrics})max heap per file for Courgette" \
+    "(50th 90th 100th)"
+
+  local metrics_bsdiff="${dir}/mem_per_file_bsdiff.txt"
+
+  if [ ! -f "${metrics_bsdiff}" ]; then
+    local metrics_bsdiff_tmp="${metrics_bsdiff}.tmp"
+    echo "computing usage percentiles for bsdiff.  this may take a while..."
+    find "${metrics_dir}" \
+      | grep "\.bsdiff_mem$" \
+      | while read i; do
+      local bsdiff_mem="${i}"
+      echo -n "$bsdiff_mem "
+      cat $bsdiff_mem \
+        | grep "mem_heap_B" \
+        | cut -d= -f2 \
+        | sort -nr \
+        | head -n1
+    done | sort -k2 -n > "${metrics_bsdiff_tmp}"
+    mv "${metrics_bsdiff_tmp}" "${metrics_bsdiff}"
+  fi
+
+  echo "$(compute_percentiles ${metrics_bsdiff})max heap per file for bsdiff" \
+    "(50th 90th 100th)"
+}
+
+main "${@}"

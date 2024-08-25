@@ -1,0 +1,42 @@
+# Test target validity: only accept target RVA in [1000, 3000).
+
+# Processor type
+x86
+# .text start RVA and end RVA
+1000
+3000
+# .reloc start RVA and end RVA
+3800
+4000
+# End RVA
+5000
+
+# Assume ImageBase = 00400000. This does not affect the test.
+Program:
+  00401000: 55                 push        ebp
+  00401001: 8B EC              mov         ebp,esp
+  00401003: E8 F8 EF FF FF     call        00400000  # RVA start, outside .text
+  00401008: E8 F3 FF FF FF     call        00401000
+  0040100D: E8 ED FF FF FF     call        00400FFF  # 1 byte before .text
+  00401012: 90                 nop                   # Padding so E8 & E9 ...
+  00401013: 90                 nop
+  00401014: E9 E7 FF FF FF     jmp         00401000  # ... don't appear here.
+  00401019: E9 E1 FF FF FF     jmp         00400FFF  # 1 byte before .text
+  0040101E: E8 DC 1F 00 00     call        00402FFF
+  00401023: E8 D8 1F 00 00     call        00403000  # 1 byte after .text
+  00401028: 0F 87 D1 1F 00 00  ja          00402FFF
+  0040102E: 0F 88 CC 1F 00 00  js          00403000  # 1 byte after .text
+  00401034: E8 C6 3F 00 00     call        00404FFF  # In image, outside .text
+  00401039: E8 C2 3F 00 00     call        00405000  # Outside image
+  0040103E: E8 BE 3F 00 00     call        00405001  # Outside image
+  00401043: E8 88 88 88 88     call        88C898D0  # Far away
+  00401048: 5D                 pop         ebp
+  00401049: C3                 ret
+
+Abs32:
+
+Expected:
+1009
+1015
+101F
+102A

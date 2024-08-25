@@ -1,0 +1,146 @@
+<h1>Courgette Internals</h1>
+
+<h2>Patch Generation</h2>
+
+<p><img src="generation.png" alt="Patch Generation" title="" /></p>
+
+<ul>
+<li><p>courgette_tool.cc:GenerateEnsemblePatch kicks off the patch
+generation by calling ensemble_create.cc:GenerateEnsemblePatch</p></li>
+<li><p>The files are read in by in courgette:SourceStream objects</p></li>
+<li><p>ensemble_create.cc:GenerateEnsemblePatch uses FindGenerators, which
+uses MakeGenerator to create
+patch_generator_x86_32.h:PatchGeneratorX86_32 classes.</p></li>
+<li><p>PatchGeneratorX86_32's Transform method transforms the input file
+using Courgette's core techniques that make the bsdiff delta
+smaller.  The steps it takes are the following:</p>
+
+<ul>
+<li><p><em>disassemble</em> the old and new binaries into AssemblyProgram
+objects,</p></li>
+<li><p><em>adjust</em> the new AssemblyProgram object, and</p></li>
+<li><p><em>encode</em> the AssemblyProgram object back into raw bytes.</p></li>
+</ul></li>
+</ul>
+
+<h3>Disassemble</h3>
+
+<ul>
+<li><p>The input is a pointer to a buffer containing the raw bytes of the
+input file.</p></li>
+<li><p>Disassembly converts certain machine instructions that reference
+addresses to Courgette instructions.  It is not actually
+disassembly, but this is the term the code-base uses.  Specifically,
+it detects instructions that use absolute addresses given by the
+binary file's relocation table, and relative addresses used in
+relative branches.</p></li>
+<li><p>Done by disassemble:ParseDetectedExecutable, which selects the
+appropriate Disassembler subclass by looking at the binary file's
+headers.</p>
+
+<ul>
+<li><p>disassembler_win32_x86.h defines the PE/COFF x86 disassembler</p></li>
+<li><p>disassembler_elf_32_x86.h defines the ELF 32-bit x86 disassembler</p></li>
+</ul></li>
+<li><p>The Disassembler replaces the relocation table with a Courgette
+instruction that can regenerate the relocation table.</p></li>
+<li><p>The Disassembler builds a list of addresses referenced by the
+machine code, numbering each one.</p></li>
+<li><p>The Disassembler replaces and address used in machine instructions
+with its index number.</p></li>
+<li><p>The output is an assembly_program.h:AssemblyProgram class, which
+contains a list of instructions, machine or Courgette, and a mapping
+of indices to actual addresses.</p></li>
+</ul>
+
+<h3>Adjust</h3>
+
+<ul>
+<li><p>This step takes the AssemblyProgram for the old file and reassigns
+the indices that map to actual addresses.  It is performed by
+adjustment_method.cc:Adjust().</p></li>
+<li><p>The goal is the match the indices from the old program to the new
+program as closely as possible.</p></li>
+<li><p>When matched correctly, machine instructions that jump to the
+function in both the new and old binary will look the same to
+bsdiff, even the function is located in a different part of the
+binary.</p></li>
+</ul>
+
+<h3>Encode</h3>
+
+<ul>
+<li><p>This step takes an AssemblyProgram object and encodes both the
+instructions and the mapping of indices to addresses as byte
+vectors.  This format can be written to a file directly, and is also
+more appropriate for bsdiffing.  It is done by
+AssemblyProgram.Encode().</p></li>
+<li><p>encoded_program.h:EncodedProgram defines the binary format and a
+WriteTo method that writes to a file.</p></li>
+</ul>
+
+<h3>bsdiff</h3>
+
+<ul>
+<li>simple_delta.c:GenerateSimpleDelta</li>
+</ul>
+
+<h2>Patch Application</h2>
+
+<p><img src="application.png" alt="Patch Application" title="" /></p>
+
+<ul>
+<li><p>courgette_tool.cc:ApplyEnsemblePatch kicks off the patch generation
+by calling ensemble_apply.cc:ApplyEnsemblePatch</p></li>
+<li><p>ensemble_create.cc:ApplyEnsemblePatch, reads and verifies the
+patch's header, then calls the overloaded version of
+ensemble_create.cc:ApplyEnsemblePatch.</p></li>
+<li><p>The patch is read into an ensemble<em>apply.cc:EnsemblePatchApplication
+object, which generates a set of patcher</em>x86<em>32.h:PatcherX86</em>32
+objects for the sections in the patch.</p></li>
+<li><p>The original file is disassembled and encoded via a call
+EnsemblePatchApplication.TransformUp, which in turn call
+patcher<em>x86</em>32.h:PatcherX86_32.Transform.</p></li>
+<li><p>The transformed file is then bspatched via
+EnsemblePatchApplication.SubpatchTransformedElements, which calls
+EnsemblePatchApplication.SubpatchStreamSets, which calls
+simple_delta.cc:ApplySimpleDelta, Courgette's built-in
+implementation of bspatch.</p></li>
+<li><p>Finally, EnsemblePatchApplication.TransformDown assembles, i.e.,
+reverses the encoding and disassembly, on the patched binary data.
+This is done by calling PatcherX86<em>32.Reform, which in turn calls
+the global function encoded</em>program.cc:Assemble, which calls
+EncodedProgram.AssembleTo.</p></li>
+</ul>
+
+<h2>Glossary</h2>
+
+<p><strong>Adjust</strong>: Reassign address indices in the new program to match more
+  closely those from the old.</p>
+
+<p><strong>Assembly program</strong>: The output of <em>disassembly</em>.  Contains a list of
+  <em>Courgette instructions</em> and an index of branch target addresses.</p>
+
+<p><strong>Assemble</strong>: Convert an <em>assembly program</em> back into an object file
+  by evaluating the <em>Courgette instructions</em> and leaving the machine
+  instructions in place.</p>
+
+<p><strong>Courgette instruction</strong>: Replaces machine instructions in the
+  program.  Courgette instructions replace branches with an index to
+  the target addresses and replace part of the relocation table.</p>
+
+<p><strong>Disassembler</strong>: Takes a binary file and produces an <em>assembly
+  program</em>.</p>
+
+<p><strong>Encode</strong>: Convert an <em>assembly program</em> into an <em>encoded program</em> by
+  serializing its data structures into byte vectors more appropriate
+  for storage in a file.</p>
+
+<p><strong>Encoded Program</strong>: The output of encoding.</p>
+
+<p><strong>Ensemble</strong>: A Courgette-style patch containing sections for the list
+  of branch addresses, the encoded program.  It supports patching
+  multiple object files at once.</p>
+
+<p><strong>Opcode</strong>: The number corresponding to either a machine or <em>Courgette
+  instruction</em>.</p>

@@ -1,0 +1,124 @@
+#!/bin/bash
+
+# Copyright 2013 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Produce metrics analyzing the output of a stress test
+
+source "$(dirname ${0})/stress_test_common"
+
+set -e
+
+# Given a token, search for and compute the percentiles from logfile.
+compute_percentiles() {
+  if [ ! -z "${1}" ]; then
+    local pctls=".5 .9 1"
+    local lines=$(count_result ${1})
+    for p in $pctls; do
+      local count="$(echo "${lines} * $p" | bc -lq | cut -d. -f1)"
+      echo -n $(cat ${log} \
+        | grep ${1} \
+        | cut -d' ' -f2 \
+        | sort -n \
+        | head -n$count \
+        | tail -n1)
+      echo -n "s "
+    done
+  fi
+}
+
+main() {
+  if [ $# -lt 1 ]; then
+    cat <<EOF
+
+USAGE: $(basename ${0}) logfile
+
+Analyze the logfile of a stress test and produce metrics.
+
+EOF
+    exit 1
+  fi
+
+  local log="${1}"
+  if [ ! -f "${log}" ]; then
+    error "\"${log}\" not found"
+    exit 1
+  fi
+
+  cat <<EOF
+$(count_result "PASS_COURGETTE") successful courgette patches
+$(count_result "FAIL_COURGETTE") failed courgette patches
+$(count_result "FAIL_DISASSEMBLE") failed to disassemble/assemble
+$(count_result "PASS_BSDIFF") succesful bsdiff patches
+$(count_result "FAIL_BSDIFF") failed bsdiff patches
+$(count_result "BEST_COURGETTE") patch(es) where courgette is smaller (bz2)
+$(count_result "BEST_BSDIFF") patch(es) where bsdiff is smaller (bz2)
+$(count_result "BEST_TIE") patch(es) where both are the same size (bz2)
+$(count_result "XZBEST_COURGETTE") patch(es) where courgette (xz) is smaller
+$(count_result "XZBEST_BSDIFF") patch(es) where bsdiff is smaller (xz)
+$(count_result "XZBEST_TIE") patch(es) where both are the same size (xz)
+EOF
+
+  # Log file has the format "^SIZE courgette=... bsdiff=..."
+  local courgette_total="$(cat "${log}" \
+    | grep "^SIZE " \
+    | cut -d' ' -f2 \
+    | awk -F= 'BEGIN{sum=0} {sum += $2} END{print sum}')"
+  echo "${courgette_total} bytes for a courgette payload (bz2)"
+
+  local courgette_total_xz="$(cat "${log}" \
+    | grep "^SIZE " \
+    | cut -d' ' -f4 \
+    | awk -F= 'BEGIN{sum=0} {sum += $2} END{print sum}')"
+  echo "${courgette_total_xz} bytes for a courgette payload (xz)"
+
+  local bsdiff_total="$(cat "${log}" \
+    | grep "^SIZE " \
+    | cut -d' ' -f3 \
+    | awk -F= 'BEGIN{sum=0} {sum += $2} END{print sum}')"
+  echo "${bsdiff_total} bytes for a bsdiff payload"
+
+  local best_total="$(cat "${log}" \
+    | grep "^BEST_" \
+    | awk 'BEGIN{sum=0} {sum += $2} END{print sum}')"
+    echo "${best_total} bytes for a best-choice payload (bz2)"
+
+  local best_total_xz="$(cat "${log}" \
+    | grep "^XZBEST_" \
+    | awk 'BEGIN{sum=0} {sum += $2} END{print sum}')"
+    echo "${best_total_xz} bytes for a best-choice payload (xz)"
+
+  local pct="$(echo "100*${best_total}/${bsdiff_total}" \
+    | bc -lq \
+    | awk '{printf "%.2f\n", $0}')"
+    echo "${pct}% of a bsdiff-only payload (bz2)"
+
+  local pct="$(echo "100*${best_total_xz}/${bsdiff_total}" \
+    | bc -lq \
+    | awk '{printf "%.2f\n", $0}')"
+    echo "${pct}% of a bsdiff-only payload (xz)"
+
+  local savings="$((bsdiff_total - best_total))"
+  echo "${savings} bytes saved by courgette (bz2)"
+
+  local savings_xz="$((bsdiff_total - best_total_xz))"
+  echo "${savings} bytes saved by courgette (xz)"
+
+  local pct_savings="$(echo "100*${savings}/${bsdiff_total}" \
+    | bc -lq \
+    | awk '{printf "%.2f\n", $0}')"
+  echo "${pct_savings}% savings (bz2)"
+
+  local pct_savings="$(echo "100*${savings_xz}/${bsdiff_total}" \
+    | bc -lq \
+    | awk '{printf "%.2f\n", $0}')"
+  echo "${pct_savings}% savings (xz)"
+
+  echo "$(compute_percentiles "TIME_GEN")to generate a patch (50th 90th 100th)"
+  echo "$(compute_percentiles "TIME_APPLY")to apply a patch (50th 90th 100th)"
+  echo "$(compute_percentiles "TIME_BSDIFF")for bsdiff (50th 90th 100th)"
+  echo "$(compute_percentiles "TIME_BSPATCH")for bspatch (50th 90th 100th)"
+}
+
+main "${@}"
