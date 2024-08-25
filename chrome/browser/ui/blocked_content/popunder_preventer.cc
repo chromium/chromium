@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

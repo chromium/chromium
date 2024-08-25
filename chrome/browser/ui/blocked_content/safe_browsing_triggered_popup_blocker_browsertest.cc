@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"

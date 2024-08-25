@@ -5,8 +5,6 @@
 #include <stdint.h>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
-#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
-#include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,15 +21,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -43,7 +35,6 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/embedder_support/switches.h"
-#include "components/input/native_web_keyboard_event.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
@@ -52,10 +43,6 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/policy_constants.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -71,7 +58,6 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "printing/buildflags/buildflags.h"
@@ -90,7 +76,6 @@
 #endif
 
 using content::WebContents;
-using input::NativeWebKeyboardEvent;
 using testing::_;
 using testing::Return;
 
