@@ -155,6 +155,26 @@ suite('CardsTest', () => {
         });
 
     test(
+        `Policy disables toggling 'Show cards' when cards visibility is ${
+            visible}`,
+        async () => {
+          await setupTest(
+              [
+                {id: 'foo', name: 'foo name', enabled: true},
+                {id: 'bar', name: 'bar name', enabled: false},
+              ],
+              /*modulesManaged=*/ true,
+              /*modulesVisible=*/ visible);
+
+          customizeCards.$.showToggleContainer.click();
+          await callbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          // Assert.
+          assertEquals(visible, getToggleElement().checked);
+        });
+
+    test(
         `Policy disables actionable elements when cards visibility is ${
             visible}`,
         async () => {
