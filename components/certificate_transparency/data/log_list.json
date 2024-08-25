@@ -1,6 +1,6 @@
 {
-  "version": "41.14",
-  "log_list_timestamp": "2024-08-23T12:57:05Z",
+  "version": "42.1",
+  "log_list_timestamp": "2024-08-25T12:56:39Z",
   "operators": [
     {
       "name": "Google",
@@ -617,6 +617,38 @@
           "temporal_interval": {
             "start_inclusive": "2025-06-20T00:00:00Z",
             "end_exclusive": "2026-01-20T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt 'Oak2026h1'",
+          "log_id": "GYbUxyiqb/66A294Kk0BkarOLXIxD67OXXBBLSVMx9Q=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmdRhcCL6d5MNs8eAliJRvyV5sQFC6UF7iwzHsmVaifT64gJG1IrHzBAHESdFSJAjQN56TYky+9cK616MovH2SQ==",
+          "url": "https://oak.ct.letsencrypt.org/2026h1/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-21T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2025-12-20T00:00:00Z",
+            "end_exclusive": "2026-07-20T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt 'Oak2026h2'",
+          "log_id": "rKswcGzr7IQx9BPS9JFfER5CJEOx8qaMTzwrO6ceAsM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEanCds5bj7IU2lcNPnIvZfMnVkSmu69aH3AS8O/Y0D/bbCPdSqYjvuz9Z1tT29PxcqYxf+w1g5CwPFuwqsm3rFQ==",
+          "url": "https://oak.ct.letsencrypt.org/2026h2/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-21T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-06-20T00:00:00Z",
+            "end_exclusive": "2027-01-20T00:00:00Z"
           }
         }
       ]
