@@ -136,9 +136,13 @@ void WebrtcConnectionToClient::set_input_stub(protocol::InputStub* input_stub) {
 void WebrtcConnectionToClient::ApplySessionOptions(
     const SessionOptions& options) {
   session_options_ = options;
-  DCHECK(transport_);
   transport_->ApplySessionOptions(options);
   video_encoder_factory_->ApplySessionOptions(options);
+}
+
+void WebrtcConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_->ApplyNetworkSettings(settings);
 }
 
 PeerConnectionControls* WebrtcConnectionToClient::peer_connection_controls() {

@@ -125,6 +125,11 @@ std::unique_ptr<AudioStream> IceConnectionToClient::StartAudioStream(
                     std::move(audio_encoder), audio_writer_.get()));
 }
 
+void IceConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_.ApplyNetworkSettings(settings);
+}
+
 // Return pointer to ClientStub.
 ClientStub* IceConnectionToClient::client_stub() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

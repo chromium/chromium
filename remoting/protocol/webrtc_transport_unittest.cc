@@ -244,6 +244,9 @@ class WebrtcTransportTest : public testing::Test {
         client_authenticator_.get(),
         base::BindRepeating(&WebrtcTransportTest::ProcessTransportInfo,
                             base::Unretained(this), &host_transport_, false));
+
+    host_transport_->ApplyNetworkSettings(network_settings_);
+    client_transport_->ApplyNetworkSettings(network_settings_);
   }
 
   void WaitUntilConnected() {

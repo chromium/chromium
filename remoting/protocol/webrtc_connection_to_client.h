@@ -56,6 +56,7 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   void set_host_stub(HostStub* host_stub) override;
   void set_input_stub(InputStub* input_stub) override;
   void ApplySessionOptions(const SessionOptions& options) override;
+  void ApplyNetworkSettings(const NetworkSettings& settings) override;
   PeerConnectionControls* peer_connection_controls() override;
   WebrtcEventLogData* rtc_event_log() override;
 

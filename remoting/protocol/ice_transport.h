@@ -49,6 +49,8 @@ class IceTransport : public Transport,
   MessageChannelFactory* GetChannelFactory();
   MessageChannelFactory* GetMultiplexedChannelFactory();
 
+  void ApplyNetworkSettings(const NetworkSettings& settings);
+
   // Transport interface.
   void Start(Authenticator* authenticator,
              SendTransportInfoCallback send_transport_info_callback) override;
@@ -56,6 +58,8 @@ class IceTransport : public Transport,
 
  private:
   typedef std::map<std::string, IceTransportChannel*> ChannelsMap;
+  using PendingChannelCreatedCallbacks =
+      std::map<std::string, ChannelCreatedCallback>;
 
   // DatagramChannelFactory interface.
   void CreateChannel(const std::string& name,
@@ -108,6 +112,11 @@ class IceTransport : public Transport,
 
   std::unique_ptr<IceTransportInfo> pending_transport_info_message_;
   base::OneShotTimer transport_info_timer_;
+
+  // Pending channel creations to be executed after network settings are
+  // applied.
+  PendingChannelCreatedCallbacks pending_channel_created_callbacks_;
+  std::unique_ptr<NetworkSettings> network_settings_;
 
   base::WeakPtrFactory<IceTransport> weak_factory_{this};
 };

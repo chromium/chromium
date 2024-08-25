@@ -11,6 +11,7 @@
 
 #include "remoting/base/session_options.h"
 #include "remoting/protocol/message_pipe.h"
+#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
@@ -112,6 +113,10 @@ class ConnectionToClient {
   // experimental behaviors, implementations can ignore this function if no
   // control logic can be applied.
   virtual void ApplySessionOptions(const SessionOptions& options) {}
+
+  // Applies network settings. The connection may be blocked until this method
+  // is called.
+  virtual void ApplyNetworkSettings(const NetworkSettings& settings) = 0;
 
   // Returns an interface for changing connection parameters after the
   // connection is established. nullptr will be returned if the connection does

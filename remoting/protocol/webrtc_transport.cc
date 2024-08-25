@@ -24,6 +24,7 @@
 #include "components/webrtc/net_address_utils.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/logging.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/port_allocator_factory.h"
@@ -419,13 +420,16 @@ WebrtcTransport::WebrtcTransport(
     : transport_context_(transport_context),
       event_handler_(event_handler),
       handshake_hmac_(crypto::HMAC::SHA256) {
-  std::unique_ptr<cricket::PortAllocator> port_allocator =
+  auto create_port_allocator_result =
       transport_context_->port_allocator_factory()->CreatePortAllocator(
           transport_context_, weak_factory_.GetWeakPtr());
 
+  apply_network_settings_ =
+      std::move(create_port_allocator_result.apply_network_settings);
   peer_connection_wrapper_ = std::make_unique<PeerConnectionWrapper>(
       worker_thread, std::move(video_encoder_factory),
-      std::move(port_allocator), weak_factory_.GetWeakPtr());
+      std::move(create_port_allocator_result.allocator),
+      weak_factory_.GetWeakPtr());
 
   StartRtcEventLogging();
 }
@@ -471,6 +475,11 @@ std::unique_ptr<MessagePipe> WebrtcTransport::CreateOutgoingChannel(
     event_data_channel_ = data_channel;
   }
   return std::make_unique<WebrtcDataStreamAdapter>(data_channel);
+}
+
+void WebrtcTransport::ApplyNetworkSettings(
+    const NetworkSettings& network_settings) {
+  std::move(apply_network_settings_).Run(network_settings);
 }
 
 void WebrtcTransport::Start(
@@ -868,15 +877,27 @@ void WebrtcTransport::OnRemoteDescriptionSet(bool send_answer,
 
   // Create and send answer on the server.
   if (send_answer) {
-    const webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
-    peer_connection()->CreateAnswer(
-        CreateSessionDescriptionObserver::Create(
-            base::BindOnce(&WebrtcTransport::OnLocalSessionDescriptionCreated,
-                           weak_factory_.GetWeakPtr())),
-        options);
+    if (!apply_network_settings_) {
+      SendAnswer();
+    } else {
+      HOST_LOG << "SendAnswer is delayed until network settings are applied.";
+      apply_network_settings_ =
+          std::move(apply_network_settings_)
+              .Then(base::BindOnce(&WebrtcTransport::SendAnswer,
+                                   weak_factory_.GetWeakPtr()));
+    }
   }
 
   AddPendingCandidatesIfPossible();
+}
+
+void WebrtcTransport::SendAnswer() {
+  const webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
+  peer_connection()->CreateAnswer(
+      CreateSessionDescriptionObserver::Create(
+          base::BindOnce(&WebrtcTransport::OnLocalSessionDescriptionCreated,
+                         weak_factory_.GetWeakPtr())),
+      options);
 }
 
 void WebrtcTransport::OnCloseAfterDisconnectTimeout() {
@@ -1154,9 +1175,18 @@ void WebrtcTransport::RequestNegotiation() {
 
   if (!negotiation_pending_) {
     negotiation_pending_ = true;
+    auto send_offer_cb =
+        base::BindOnce(&WebrtcTransport::SendOffer, weak_factory_.GetWeakPtr());
+
+    if (apply_network_settings_) {
+      HOST_LOG << "SendOffer is delayed until network settings are applied.";
+      apply_network_settings_ =
+          std::move(apply_network_settings_).Then(std::move(send_offer_cb));
+      return;
+    }
+
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&WebrtcTransport::SendOffer,
-                                  weak_factory_.GetWeakPtr()));
+        FROM_HERE, std::move(send_offer_cb));
   }
 }
 

@@ -160,6 +160,7 @@ static_library("protocol") {
     "performance_tracker.h",
     "port_allocator.cc",
     "port_allocator.h",
+    "port_allocator_factory.cc",
     "port_allocator_factory.h",
     "pseudotcp_adapter.cc",
     "pseudotcp_adapter.h",

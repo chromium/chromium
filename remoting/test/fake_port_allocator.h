@@ -54,7 +54,7 @@ class FakePortAllocatorFactory : public protocol::PortAllocatorFactory {
   FakePacketSocketFactory* socket_factory() { return socket_factory_.get(); }
 
   // PortAllocatorFactory interface.
-  std::unique_ptr<cricket::PortAllocator> CreatePortAllocator(
+  CreatePortAllocatorResult CreatePortAllocator(
       scoped_refptr<protocol::TransportContext> transport_context,
       base::WeakPtr<protocol::SessionOptionsProvider> session_options_provider)
       override;

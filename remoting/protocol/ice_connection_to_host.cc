@@ -57,6 +57,11 @@ void IceConnectionToHost::Disconnect(ErrorCode error) {
   session_->Close(error);
 }
 
+void IceConnectionToHost::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_->ApplyNetworkSettings(settings);
+}
+
 const SessionConfig& IceConnectionToHost::config() {
   return session_->config();
 }

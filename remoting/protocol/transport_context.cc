@@ -84,10 +84,6 @@ TransportContext::TransportContext(
 
 TransportContext::~TransportContext() = default;
 
-void TransportContext::Prepare() {
-  EnsureFreshIceConfig();
-}
-
 void TransportContext::GetIceConfig(GetIceConfigCallback callback) {
   EnsureFreshIceConfig();
 
@@ -106,13 +102,6 @@ void TransportContext::EnsureFreshIceConfig() {
   // Check if request is already pending.
   if (ice_config_request_) {
     HOST_LOG << "ICE Config request is already pending.";
-    return;
-  }
-
-  // Don't need to make ICE config request if both STUN and Relay are disabled.
-  if ((network_settings_.flags & (NetworkSettings::NAT_TRAVERSAL_STUN |
-                                  NetworkSettings::NAT_TRAVERSAL_RELAY)) == 0) {
-    HOST_LOG << "Skipping ICE Config request as STUN and RELAY are disabled";
     return;
   }
 

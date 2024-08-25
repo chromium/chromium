@@ -61,11 +61,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
     ice_config_ = ice_config;
   }
 
-  // Prepares fresh ICE configs. It may be called while connection is being
-  // negotiated to minimize the chance that the following GetIceConfig() will
-  // be blocking.
-  void Prepare();
-
   // Requests fresh STUN and TURN information.
   void GetIceConfig(GetIceConfigCallback callback);
 

@@ -58,6 +58,11 @@ void FakeConnectionToClient::SetEventHandler(EventHandler* event_handler) {
   event_handler_ = event_handler;
 }
 
+void FakeConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  network_settings_ = settings;
+}
+
 std::unique_ptr<VideoStream> FakeConnectionToClient::StartVideoStream(
     webrtc::ScreenId screen_id,
     std::unique_ptr<DesktopCapturer> desktop_capturer) {

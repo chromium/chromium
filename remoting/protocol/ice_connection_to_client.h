@@ -54,6 +54,7 @@ class IceConnectionToClient : public ConnectionToClient,
       std::unique_ptr<DesktopCapturer> desktop_capturer) override;
   std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) override;
+  void ApplyNetworkSettings(const NetworkSettings& settings) override;
   ClientStub* client_stub() override;
   void set_clipboard_stub(ClipboardStub* clipboard_stub) override;
   void set_host_stub(HostStub* host_stub) override;

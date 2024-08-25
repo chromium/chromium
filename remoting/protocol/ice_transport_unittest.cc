@@ -127,6 +127,7 @@ class IceTransportTest : public testing::Test {
                              socket_factory, nullptr, nullptr,
                              network_settings_, TransportRole::SERVER),
         &host_event_handler_);
+    host_transport_->ApplyNetworkSettings(network_settings_);
     if (!host_authenticator_) {
       host_authenticator_ =
           std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
@@ -137,6 +138,7 @@ class IceTransportTest : public testing::Test {
                              socket_factory, nullptr, nullptr,
                              network_settings_, TransportRole::CLIENT),
         &client_event_handler_);
+    client_transport_->ApplyNetworkSettings(network_settings_);
     if (!client_authenticator_) {
       client_authenticator_ =
           std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
