@@ -58,8 +58,10 @@ class ASH_PUBLIC_EXPORT CoralCluster {
   CoralCluster& operator=(const CoralCluster&) = delete;
   ~CoralCluster();
 
+  const std::u16string& title() const { return title_; }
+
  private:
-  std::string title_;
+  std::u16string title_;
   std::vector<std::pair<AppData, float>> scored_app_data_;
   std::vector<std::pair<TabData, float>> scored_tab_data_;
 };

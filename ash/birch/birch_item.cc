@@ -995,7 +995,9 @@ std::u16string BirchLostMediaItem::GetSubtitle(SecondaryIconType type) {
 
 BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
                                const std::u16string& coral_text)
-    : BirchItem(coral_title, coral_text) {}
+    : BirchItem(coral_title, coral_text) {
+  set_addon_label(u"Show");
+}
 
 BirchCoralItem::BirchCoralItem(BirchCoralItem&&) = default;
 
@@ -1018,11 +1020,22 @@ std::string BirchCoralItem::ToString() const {
 }
 
 void BirchCoralItem::PerformAction() {
-  // TODO(yulunwu) add actions
+  // TODO(yulunwu) restore all applicable items in group to active desk.
+  // Open all related tabs in the same window with the default window bounds.
+  // Open related app(s) in its last used window state.
+}
+
+void BirchCoralItem::PerformAddonAction() {
+  // TODO(sammiequon) show feedback menu and coral items in scrollable view.
+}
+
+BirchAddonType BirchCoralItem::GetAddonType() const {
+  // TODO(zxdan) maybe add a new add-on type
+  return BirchAddonType::kButton;
 }
 
 void BirchCoralItem::LoadIcon(LoadIconCallback callback) const {
-  // TODO(yulunwu) load icons
+  // TODO(yulunwu) load icons for first four birch restore items.
 }
 
 ////////////////////////////////////////////////////////////////////////////////

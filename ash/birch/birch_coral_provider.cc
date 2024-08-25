@@ -4,6 +4,7 @@
 
 #include "ash/birch/birch_coral_provider.h"
 
+#include "ash/birch/birch_model.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "ash/shell.h"
@@ -75,6 +76,11 @@ void BirchCoralProvider::HandleCoralResponse(
   // TODO(yulunwu) update `birch_model_`
   response_ = std::move(response);
   CHECK(HasValidClusterCount(response_->clusters().size()));
+  std::vector<BirchCoralItem> items;
+  for (auto& cluster : response_->clusters()) {
+    items.emplace_back(cluster.title(), /*subtitle=*/std::u16string());
+  }
+  birch_model_->SetCoralItems(items);
 }
 
 }  // namespace ash
