@@ -1,0 +1,74 @@
+# Test target validity: only accept target RVA in [1000, 3000).
+
+# Processor type
+x64
+# .text start RVA and end RVA
+1000
+3000
+# .reloc start RVA and end RVA
+3800
+4000
+# End RVA
+5000
+
+# Assume ImageBase = 00400000. This does not affect the test.
+Program:
+  00401000: 55                 push        ebp
+  00401001: 8B EC              mov         ebp,esp
+  00401003: E8 F8 EF FF FF     call        00400000  # RVA start, outside .text
+  00401008: E8 F3 FF FF FF     call        00401000
+  0040100D: E8 ED FF FF FF     call        00400FFF  # 1 byte before .text
+  00401012: 90                 nop                   # Padding so E8 & E9 ...
+  00401013: 90                 nop
+  00401014: E9 E7 FF FF FF     jmp         00401000  # ... don't appear here.
+  00401019: E9 E1 FF FF FF     jmp         00400FFF  # 1 byte before .text
+  0040101E: E8 DC 1F 00 00     call        00402FFF
+  00401023: E8 D8 1F 00 00     call        00403000  # 1 byte after .text
+  00401028: 0F 87 D1 1F 00 00  ja          00402FFF
+  0040102E: 0F 88 CC 1F 00 00  js          00403000  # 1 byte after .text
+  00401034: E8 C6 3F 00 00     call        00404FFF  # In image, outside .text
+  00401039: E8 C2 3F 00 00     call        00405000  # Outside image
+  0040103E: E8 BE 3F 00 00     call        00405001  # Outside image
+  00401043: E8 88 88 88 88     call        88C898D0  # Far away
+  00401048: FF 15 B1 EF FF FF  call        [rip-0000104F]      # 003FFFFF
+                                                     # 1 byte before image
+  0040104E: FF 15 AC EF FF FF  call        [rip-00401054]      # 00400000
+                                                     # In image
+  00401054: FF 15 A5 3F 00 00  call        [rip+00003FA5]      # 00404FFF
+                                                     # 1 byte before end
+  0040105A: FF 15 A0 3F 00 00  call        [rip+00003FA0]      # 00405000
+                                                     # Outside image
+  00401060: FF 15 00 00 00 60  call        [rip+60000000]      # 60401066
+                                                     # Far away
+  00401066: FF 25 93 EF FF FF  jmp         [rip+FFFFEF93]      # 003FFFFF
+                                                     # 1 byte before image
+  0040106C: FF 25 8E EF FF FF  jmp         [rip+FFFFEF8E]      # 00400000
+                                                     # In image
+  00401072: FF 25 87 3F 00 00  jmp         [rip+00003F87]      # 00404FFF
+                                                     # 1 byte before end
+  00401078: FF 25 82 3F 00 00  jmp         [rip+00003F82]      # 00405000
+                                                     # Outside image
+  0040107E: 8D 05 7B EF FF FF  lea         eax,[rip-00001085]  # 003FFFFF
+                                                     # 1 byte before image
+  00401084: 8D 05 76 EF FF FF  lea         eax,[rip-0000108A]  # 00400000
+                                                     # In image
+  0040108A: 8D 05 6F 3F 00 00  lea         eax,[rip+00003F6F]  # 00404FFF
+                                                     # 1 byte before end
+  00401090: 8D 05 6A 3F 00 00  lea         eax,[rip+00003F6A]  # 00405000
+                                                     # Outside image
+  00401096: 5D                 pop         ebp
+  00401097: C3                 ret
+
+Abs32:
+
+Expected:
+1009
+1015
+101F
+102A
+1050
+1056
+106E
+1074  # x64 rip ignores .text boundaries (target likely in .data section).
+1086
+108C

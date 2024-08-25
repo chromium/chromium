@@ -1,0 +1,114 @@
+# Test rel32 jump instructions with abs32 and .reloc obstructions.
+
+# Processor type
+x64
+# .text start RVA and end RVA
+1000
+3000
+# .reloc start RVA and end RVA
+# Typically this won't overlap with .text.
+# Note: If we use 1020, then the algorithm would never encounter it, so the
+# .reloc does not get skipped! This edge case is not worth fixing right now.
+101F
+1030
+# End RVA
+5000
+
+# Assume ImageBase = 00400000. This does not affect the test.
+Program:
+  00401000: 55                 push        ebp
+  00401001: 8B EC              mov         ebp,esp
+  00401003: E8 00 00 00 00     call        00401008  # Overlaps with abs32
+  00401008: E9 00 00 00 00     jmp         0040100D  # Overlaps with abs32
+  0040100D: 0F 80 00 00 00 00  jo          00401013
+  00401013: 0F 81 00 00 00 00  jno         00401019
+  00401019: 0F 82 00 00 00 00  jb          0040101F
+  0040101F: 0F 83 00 00 00 00  jae         00401025  # Overlaps with .reloc
+  00401025: 0F 84 00 00 00 00  je          0040102B  # Overlaps with .reloc
+  0040102B: 0F 85 00 00 00 00  jne         00401031  # Overlaps with .reloc
+  00401031: 0F 86 00 00 00 00  jbe         00401037
+  00401037: 0F 87 00 00 00 00  ja          0040103D
+  0040103D: 0F 88 00 00 00 00  js          00401043
+  00401043: 0F 89 00 00 00 00  jns         00401049
+  00401049: 0F 8A 00 00 00 00  jp          0040104F  # Ignored!
+  0040104F: 0F 8B 00 00 00 00  jnp         00401055  # Ignored!
+  00401055: 0F 8C 00 00 00 00  jl          0040105B  # Overlaps with abs32
+  0040105B: 0F 8D 00 00 00 00  jge         00401061  # Overlaps with abs32
+  00401061: 0F 8E 00 00 00 00  jle         00401067
+  00401067: 0F 8F 00 00 00 00  jg          0040106D
+  0040106D: FF 15 00 00 00 00  call        [rip+00000000]
+  00401073: FF 25 00 00 00 00  jmp         [rip+00000000]
+  00401079: 8B 05 00 00 00 00  mov         eax,[rip+00000000]
+  0040107F: 8B 3D 00 00 00 00  mov         edi,[rip+00000000]
+  00401085: 8D 05 00 00 00 00  lea         eax,[rip+00000000]
+  0040108B: 8D 3D 00 00 00 00  lea         edi,[rip+00000000]
+  00401091: 48 8B 05 00 00 00  mov         rax,[rip+00000000]
+            00
+  00401098: 48 8B 3D 00 00 00  mov         rdi,[rip+00000000]
+            00
+  0040109F: 48 8D 05 00 00 00  lea         rax,[rip+00000000]
+            00
+  004010A6: 48 8D 3D 00 00 00  lea         rdi,[rip+00000000]
+            00
+  004010AD: 4C 8B 05 00 00 00  mov         r8,[rip+00000000]
+            00
+  004010B4: 4C 8B 3D 00 00 00  mov         r15,[rip+00000000]
+            00
+  004010BB: 4C 8D 05 00 00 00  lea         r8,[rip+00000000]
+            00
+  004010C2: 4C 8D 3D 00 00 00  lea         r15,[rip+00000000]
+            00
+  004010C9: 66 8B 05 00 00 00  mov         ax,[rip+00000000]
+            00
+  004010D0: 66 8B 3D 00 00 00  mov         di,[rip+00000000]
+            00
+  004010D7: 66 8D 05 00 00 00  lea         ax,[rip+00000000]
+            00
+  004010DE: 66 8D 3D 00 00 00  lea         di,[rip+00000000]
+            00
+  004010C9: 5D                 pop         ebp
+  004010CA: C3                 ret
+
+Abs32:
+1004
+1008
+105A  # Straddles across two instructions.
+105F  # Same, but covers the op code (and not the target) of the second.
+10B3  # Straddles across two instructions.
+10BA  # Same, but covers the op code (and not the target) of the second.
+
+Expected:
+# 1004
+# 1009
+100F
+1015
+101B
+# 1021
+# 1027
+# 102D
+1033
+1039
+103F
+1045
+# 1057
+# 105D
+1063
+1069
+106F
+1075
+107B
+1081
+1087
+108D
+1094
+109B
+10A2
+10A9
+# 10B0
+# 10B7
+10BE
+10C5
+10CC
+10D3
+10DA
+10E1

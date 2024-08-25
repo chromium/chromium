@@ -1989,6 +1989,7 @@ targets.legacy_basic_suite(
     # chromium gtests running on fuchsia.
     name = "fuchsia_chrome_gtests",
     tests = {
+        "courgette_unittests": targets.legacy_test_config(),
         "headless_unittests": targets.legacy_test_config(),
         "message_center_unittests": targets.legacy_test_config(),
         "views_examples_unittests": targets.legacy_test_config(
@@ -5203,6 +5204,7 @@ targets.legacy_basic_suite(
     name = "win_specific_chromium_gtests",
     tests = {
         "chrome_elf_unittests": targets.legacy_test_config(),
+        "courgette_unittests": targets.legacy_test_config(),
         "delayloads_unittests": targets.legacy_test_config(),
         "elevation_service_unittests": targets.legacy_test_config(),
         "gcp_unittests": targets.legacy_test_config(),

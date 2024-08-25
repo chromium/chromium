@@ -605,6 +605,10 @@
     "label": "//content/test:content_unittests",
     "type": "windowed_test_launcher",
   },
+  "courgette_unittests": {
+    "label": "//courgette:courgette_unittests",
+    "type": "console_test_launcher",
+  },
   "cq_medium_tast_tests": {
     "label": "//chromeos:cq_medium_tast_tests",
     "type": "generated_script",

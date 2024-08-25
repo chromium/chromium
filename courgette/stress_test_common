@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Emit an error message
+error() {
+  echo "error: ${@}" >&2
+}
+
+# Given a token, search for and count the instances of lines from the
+# logfile that start with the token.
+count_result() {
+  if [ ! -z "${1}" ]; then
+    echo $(cat "${log}" | grep "^${1} " | wc -l)    
+  else
+    echo 0
+  fi
+}

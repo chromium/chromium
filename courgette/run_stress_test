@@ -1,0 +1,178 @@
+#!/bin/bash
+
+# Copyright 2013 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Stress test and size measurement for courgette patches.
+
+source "$(dirname ${0})/stress_test_common"
+
+outdir_prefix="stress_test_"
+time="/usr/bin/time"
+
+if [ $# -lt 2 ]; then
+  cat <<EOF
+
+USAGE: $(basename ${0}) [-s] dir1 dir2 [outdir]
+
+  -s only test files supported by courgette
+
+Stress test courgette by generating and applying patches for two given
+directories, dir1 and dir2.  The test will use files with the same
+name and relative path in the two directories, which makes it easy to
+compare two extracted ChromeOS images.  It also compares the unzipped
+and bzipped patches against the likewise bsdiff patches.  If outdir is
+not specified, the name will be "${outdir_prefix}" concatenated with
+the current date and time.
+
+EOF
+  exit 1
+fi
+
+if [ "${1}" == "-s" ]; then
+  test_supported_only=true
+  shift
+else
+  test_supported_only=
+fi
+
+dir1="${1}"
+if [ ! -e "${dir1}" ]; then
+  error "\"${dir1}\" not found"
+  exit 1
+fi
+
+dir2="${2}"
+if [ ! -e "${dir2}" ]; then
+  error "\"${dir2}\" not found"
+  exit 1
+fi
+
+out_dir="${3:-${outdir_prefix}$(date +%Y%m%d_%H%M%S)}"
+if [ -e "${out_dir}" ]; then
+  error "\"${out_dir}\" already exists"
+  exit 1
+fi
+
+mkdir -p "${out_dir}" || exit 1
+
+patches_dir="${out_dir}/patches"
+applied_dir="${out_dir}/applied"
+dis_dir="${out_dir}/dis"
+bsdiff="${out_dir}/bsdiff"
+log="${out_dir}/log"
+results="${out_dir}/results"
+
+echo "${0} ${@}" > "${log}"
+date >> "${log}"
+
+run_test() {
+  if [[ ! -z "${1}" && ! -z "${2}" ]]; then
+    local file1="${1}"
+    local file2="${2}"
+    local patch="${patches_dir}/${file1}.patch"
+    local apply="${applied_dir}/${file2}.applied"
+    local dis="${dis_dir}/${file1}.dis"
+    local asm="${dis_dir}/${file1}.asm"
+    mkdir -p "$(dirname "${dis}")"
+    if [ ! $test_supported_only ]; then
+      courgette -supported "${file1}" >/dev/null
+      if [ "${?}" -eq 0 ]; then
+        courgette -dis "${file1}" "${dis}"
+        courgette -asm "${dis}" "${asm}"
+        cmp -s "${file1}" "${asm}"
+        if [ "${?}" -ne 0 ]; then
+          echo "FAIL_DISASSEMBLE ${file1}"
+        fi
+      fi
+    fi
+    mkdir -p "$(dirname "${patch}")"
+    mkdir -p "$(dirname "${apply}")"
+    echo "courgette -gen"
+    ${time} -f "TIME_GEN %e ${file1}" courgette -gen "${file1}" "${file2}" \
+      "${patch}"
+    echo "courgette -apply"
+    ${time} -f "TIME_APPLY %e ${file1}" courgette -apply "${file1}" "${patch}" \
+      "${apply}"
+    cmp -s "${file2}" "${apply}"
+    if [ "${?}" -ne 0 ]; then
+      echo "FAIL_COURGETTE ${file1}"
+    else
+      echo "PASS_COURGETTE ${file1}"
+      local bsdiff_patch="${patches_dir}/${file1}.bsdiff_patch"
+      local bsdiff_apply="${applied_dir}/${file2}.bsdiff_applied"
+      echo "RUN bsdiff"
+      ${time} -f "TIME_BSDIFF %e ${file1}" bsdiff "${file1}" "${file2}" \
+        "${bsdiff_patch}"
+      echo "RUN bspatch"
+      ${time} -f "TIME_BSPATCH %e ${file1}" bspatch "${file1}" \
+        "${bsdiff_apply}" "${bsdiff_patch}"
+      cmp -s "${file2}" "${bsdiff_apply}"
+      if [ "${?}" -ne 0 ]; then
+        echo "FAIL_BSDIFF ${file1}"
+      else
+        echo "PASS_BSDIFF ${file1}"
+        local bz2_patch="${patch}.bz2"
+        local xz_patch="${patch}.xz"
+        bzip2 -9 -c "${patch}" > "${bz2_patch}"
+        xz -9 -c "${patch}" > "${xz_patch}"
+        local patch_size="$(du -b "${bz2_patch}" | cut -f1)"
+        local bsdiff_patch_size="$(du -b "${bsdiff_patch}" | cut -f1)"
+        local xz_patch_size="$(du -b "${xz_patch}" | cut -f1)"
+        echo "SIZE courgette=${patch_size} bsdiff=${bsdiff_patch_size}" \
+          "courgette_xz=${xz_patch_size} ${file1}"
+        if [ "${patch_size}" -eq "${bsdiff_patch_size}" ]; then
+          echo "BEST_TIE ${patch_size} ${file1}"
+        elif [ "${patch_size}" -lt "${bsdiff_patch_size}" ]; then
+          echo "BEST_COURGETTE ${patch_size} ${file1}"
+        elif [ "${patch_size}" -gt "${bsdiff_patch_size}" ]; then
+          echo "BEST_BSDIFF ${bsdiff_patch_size} ${file1}"
+        fi
+        if [ "${xz_patch_size}" -eq "${bsdiff_patch_size}" ]; then
+          echo "XZBEST_TIE ${xz_patch_size} ${file1}"
+        elif [ "${xz_patch_size}" -lt "${bsdiff_patch_size}" ]; then
+          echo "XZBEST_COURGETTE ${xz_patch_size} ${file1}"
+        elif [ "${xz_patch_size}" -gt "${bsdiff_patch_size}" ]; then
+          echo "XZBEST_BSDIFF ${bsdiff_patch_size} ${file1}"
+        fi
+      fi
+    fi
+  fi
+}
+
+# Use diff to find the files that appear in both directories.
+time diff -qr "${dir1}" "${dir2}" 2>/dev/null \
+  | grep "^Files" \
+  | awk '{print $2,$4}' \
+  | while read file; do
+  # Use awk to separate the two filenames.  May break if filenames
+  # contain spaces.
+  file1="$(echo "${file}" | awk '{print $1}')"
+  file2="$(echo "${file}" | awk '{print $2}')"
+  if [ $test_supported_only ]; then
+    courgette -supported "${file1}" >/dev/null
+    if [ "${?}" -ne 0 ]; then
+      continue;
+    fi
+  fi
+  run_test "${file1}" "${file2}"
+done 2>&1 | tee -a "${log}"
+
+date >> "${log}"
+
+cat <<EOF | tee -a "${log}"
+$(count_result "PASS_COURGETTE") successful courgette patches
+$(count_result "FAIL_COURGETTE") failed courgette patches (search log for \
+"^FAIL_COURGETTE")
+$(count_result "FAIL_DISASSEMBLE") failed to disassemble/assemble (search log \
+for "^FAIL_DISASSEMBLE")
+$(count_result "PASS_BSDIFF") succesful bsdiff patches
+$(count_result "FAIL_BSDIFF") failed bsdiff patches
+$(count_result "BEST_COURGETTE") patch(es) where courgette (bz2) is smaller
+$(count_result "BEST_BSDIFF") patch(es) where bsdiff is smaller (bz2)
+$(count_result "BEST_TIE") patch(es) where both are the same size (bz2)
+$(count_result "XZBEST_COURGETTE") patch(es) where courgette (xz) is smaller
+$(count_result "XZBEST_BSDIFF") patch(es) where bsdiff is smaller (xz)
+$(count_result "XZBEST_TIE") patch(es) where both are the same size (xz)
+EOF

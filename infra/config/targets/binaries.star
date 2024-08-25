@@ -603,6 +603,11 @@ targets.binaries.windowed_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "courgette_unittests",
+    label = "//courgette:courgette_unittests",
+)
+
+targets.binaries.console_test_launcher(
     name = "crashpad_tests",
     label = "//third_party/crashpad/crashpad:crashpad_tests",
 )
