@@ -15,16 +15,6 @@
 
 namespace autofill {
 
-size_t TestAutofillManagerWaiter::EventCount::num_pending_events() const {
-  CHECK_GE(num_before_events, num_after_events) << location.ToString();
-  return num_before_events - num_after_events;
-}
-
-size_t TestAutofillManagerWaiter::EventCount::num_completed_events() const {
-  CHECK_GE(num_before_events, num_after_events) << location.ToString();
-  return num_after_events;
-}
-
 TestAutofillManagerWaiter::State::State() = default;
 TestAutofillManagerWaiter::State::~State() = default;
 
@@ -59,7 +49,9 @@ std::string TestAutofillManagerWaiter::State::Describe() const {
 size_t TestAutofillManagerWaiter::num_pending_events() const {
   size_t events = 0;
   for (const auto& [_, event_count] : state_->events) {
-    events += event_count.num_pending_events();
+    CHECK_GE(event_count.num_before_events, event_count.num_after_events)
+        << state_->Describe();
+    events += event_count.num_before_events - event_count.num_after_events;
   }
   return events;
 }
@@ -68,7 +60,9 @@ size_t TestAutofillManagerWaiter::num_completed_relevant_events() const {
   size_t events = 0;
   for (const auto& [event, event_count] : state_->events) {
     if (IsRelevant(event)) {
-      events += event_count.num_completed_events();
+      CHECK_GE(event_count.num_before_events, event_count.num_after_events)
+          << state_->Describe();
+      events += event_count.num_after_events;
     }
   }
   return events;
@@ -253,7 +247,8 @@ void TestAutofillManagerWaiter::OnAfter(Event event,
   }
   VLOG(1) << __func__ << "(" << location.function_name() << ")";
   EventCount* e = state_->Get(event);
-  ASSERT_TRUE(e) << state_->Describe();
+  ASSERT_TRUE(e) << __func__ << "(" << location.function_name()
+                 << "): " << state_->Describe();
   ++e->num_after_events;
   ASSERT_GE(e->num_before_events, e->num_after_events) << state_->Describe();
   if (num_pending_events() == 0 &&

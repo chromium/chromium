@@ -107,12 +107,6 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
  private:
   struct EventCount {
-    // The number of pairs of On{Before,After}Foo() events.
-    // This is just the same as `num_after_events`.
-    size_t num_completed_events() const;
-    // The number of outstanding OnAfterFoo() events.
-    size_t num_pending_events() const;
-
     // The OnBeforeFoo() function. Used for meaningful error messages.
     base::Location location;
     // The total number of recorded OnBeforeFoo() events.
