@@ -294,7 +294,6 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool SupportsAcceleratedCompositing() const final { return false; }
   bool PrepareUnacceleratedTransferableResource(
       viz::TransferableResource* out_resource) final;
-  bool NeedsReadLockFences() const final { return false; }
   gfx::Size Size() const final;
   void TakeSkImage(sk_sp<SkImage> image) final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
@@ -482,7 +481,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
   bool SupportsAcceleratedCompositing() const override { return true; }
-  bool NeedsReadLockFences() const final { return false; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   gfx::Size Size() const final { return transferable_resource_.size; }
@@ -539,7 +537,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
   bool SupportsAcceleratedCompositing() const override { return true; }
-  bool NeedsReadLockFences() const final { return false; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   gfx::Size Size() const final { return size_; }
