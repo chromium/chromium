@@ -304,7 +304,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "accelerator_metadata_unittest.cc",
     "app_icon_color_cache_unittest.cc",
     "arc_vm_data_migration_confirmation_dialog_unittest.cc",
     "window_pin_util_ash_unittest.cc",
@@ -371,6 +370,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/sharesheet:unit_tests",
     "//chrome/browser/ui/ash/shelf:unit_tests",
     "//chrome/browser/ui/ash/system:unit_tests",
+    "//chrome/browser/ui/ash/test:unit_tests",
     "//chrome/browser/ui/ash/user_education:unit_tests",
     "//chrome/browser/ui/ash/wallpaper:unit_tests",
   ]
@@ -382,11 +382,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "accelerator_commands_browsertest.cc",
     "arc_open_url_delegate_impl_browsertest.cc",
-    "event_latency_metrics_browsertest.cc",
-    "feature_discovery_duration_reporter_browsertest.cc",
-    "float_controller_browsertest.cc",
     "screen_orientation_delegate_chromeos_browsertest.cc",
     "snap_group_browsertest.cc",
   ]
@@ -470,6 +466,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/shelf:browser_tests",
     "//chrome/browser/ui/ash/shelf/app_service:browser_tests",
     "//chrome/browser/ui/ash/system:browser_tests",
+    "//chrome/browser/ui/ash/test:browser_tests",
     "//chrome/browser/ui/ash/thumbnail_loader:browser_tests",
     "//chrome/browser/ui/ash/user_education:browser_tests",
     "//chrome/browser/ui/ash/user_education/views:browser_tests",
@@ -482,31 +479,16 @@ source_set("browser_tests") {
 }
 
 if (is_chromeos_device) {
-  crosier_tests("integration_tests") {
-    sources = [ "quick_settings_integration_test.cc" ]
-
-    sources_metadata = [ "quick_settings_integration_test.yaml" ]
-
+  group("integration_tests") {
+    testonly = true
     deps = [
-      ":ash",
-      "//ash",
-      "//ash/constants",
-      "//base/test:test_support",
-      "//chrome/browser/ash/crosapi",
-      "//chrome/common",
-      "//chrome/test:ash_integration_test_support",
-      "//chromeos/ash/components/standalone_browser",
-      "//testing/gtest",
-      "//ui/base:test_support",
-
-      # Gather tests from subdirectories.
       "//chrome/browser/ui/ash/shelf:integration_tests",
+      "//chrome/browser/ui/ash/test:integration_tests",
     ]
   }
 } else {
   group("interactive_ui_tests") {
     testonly = true
-
     deps = [
       "//chrome/browser/ui/ash/app_list:interactive_ui_tests",
       "//chrome/browser/ui/ash/clipboard:interactive_ui_tests",
