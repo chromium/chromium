@@ -7,14 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
-
 @protocol DriveFilePickerCommands;
 
 // Navigation controller for the Drive file picker. Allows navigation across a
 // user's Drive folders.
-@interface DriveFilePickerNavigationController
-    : UINavigationController <DriveFilePickerConsumer>
+@interface DriveFilePickerNavigationController : UINavigationController
 
 // Drive file picker handler.
 @property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;

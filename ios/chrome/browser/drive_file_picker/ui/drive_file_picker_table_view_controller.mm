@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -33,6 +34,12 @@
 
   // The sort button.
   UIBarButtonItem* _sortButton;
+
+  // The selected email from the accounts signed in the device.
+  NSString* _selectedEmail;
+
+  // Account chooser button.
+  UIBarButtonItem* _accountButton;
 }
 
 - (instancetype)init {
@@ -85,6 +92,12 @@
   self.navigationItem.titleView = titleLabel;
 }
 
+#pragma mark - DriveFilePickerConsumer
+
+- (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
+  _selectedEmail = selectedUserIdentityEmail;
+}
+
 #pragma mark - UI actions
 
 - (void)confirmSelection {
@@ -121,17 +134,17 @@
   _sortButton.enabled =
       self != self.navigationController.viewControllers.firstObject;
 
-  // TODO(crbug.com/344812548): Add the menu and the title of the account button
+  // TODO(crbug.com/344812548): Add the menu of the account button
   // based of the current identity.
-  UIBarButtonItem* accountButton =
-      [[UIBarButtonItem alloc] initWithTitle:@"dummyEmail@gmail.com" menu:nil];
+  _accountButton = [[UIBarButtonItem alloc] initWithTitle:_selectedEmail
+                                                     menu:nil];
 
   UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
                            action:nil];
   [self setToolbarItems:@[
-    filterButton, spaceButton, accountButton, spaceButton, _sortButton
+    filterButton, spaceButton, _accountButton, spaceButton, _sortButton
   ]
                animated:NO];
 }

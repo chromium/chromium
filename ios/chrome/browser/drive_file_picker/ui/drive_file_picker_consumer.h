@@ -10,6 +10,8 @@
 // Consumer interface for the Drive file picker.
 @protocol DriveFilePickerConsumer <NSObject>
 
+// Set the consumer's selected user identity email.
+- (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail;
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSUMER_H_

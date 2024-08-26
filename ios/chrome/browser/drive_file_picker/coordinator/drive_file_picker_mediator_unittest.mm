@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -15,8 +16,9 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     web_state_ = std::make_unique<web::FakeWebState>();
-    mediator_ =
-        [[DriveFilePickerMediator alloc] initWithWebState:web_state_.get()];
+    mediator_ = [[DriveFilePickerMediator alloc]
+        initWithWebState:web_state_.get()
+                identity:[FakeSystemIdentity fakeIdentity1]];
     // Start file selection in `web_state_`.
     choose_file_tab_helper_ =
         ChooseFileTabHelper::GetOrCreateForWebState(web_state_.get());

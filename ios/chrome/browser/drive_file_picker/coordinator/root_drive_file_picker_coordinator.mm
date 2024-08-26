@@ -5,15 +5,20 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/root_drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 
 @interface RootDriveFilePickerCoordinator () <
@@ -28,6 +33,8 @@
   RootDriveFilePickerTableViewController* _viewController;
   // WebState for which the Drive file picker is presented.
   base::WeakPtr<web::WebState> _webState;
+  AuthenticationService* _authenticationService;
+  id<SystemIdentity> _currentIdentity;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -42,11 +49,18 @@
 }
 
 - (void)start {
+  ChromeBrowserState* browserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  _authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  _currentIdentity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   _viewController = [[RootDriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];
   _mediator =
-      [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()];
+      [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
+                                               identity:_currentIdentity];
 
   _navigationController.modalInPresentation = YES;
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -65,6 +79,7 @@
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   _viewController.driveFilePickerHandler = driveFilePickerHandler;
   _viewController.mutator = _mediator;
+  _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _navigationController.driveFilePickerHandler = driveFilePickerHandler;
 
@@ -81,6 +96,7 @@
                          completion:nil];
   _navigationController = nil;
   _viewController = nil;
+  _authenticationService = nil;
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
     [coordinator stop];
   }
@@ -109,7 +125,8 @@
           initWithBaseNavigationViewController:_navigationController
                                        browser:self.browser
                                       webState:_webState
-                                        folder:driveFolder];
+                                        folder:driveFolder
+                                      identity:_currentIdentity];
   [browseCoordinator start];
   [self.childCoordinators addObject:browseCoordinator];
 }

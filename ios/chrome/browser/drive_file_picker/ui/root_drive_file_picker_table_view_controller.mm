@@ -70,6 +70,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 @implementation RootDriveFilePickerTableViewController {
   UITableViewDiffableDataSource<NSString*, DriveItem*>* _diffableDataSource;
+  // The selected email from the accounts signed in the device.
+  NSString* _selectedEmail;
+
+  // Account chooser button.
+  UIBarButtonItem* _accountButton;
 }
 
 - (instancetype)init {
@@ -198,17 +203,17 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   sortButton.enabled =
       self != self.navigationController.viewControllers.firstObject;
 
-  // TODO(crbug.com/344812548): Add the menu and the title of the account button
+  // TODO(crbug.com/344812548): Add the menu of the account button
   // based of the current identity.
-  UIBarButtonItem* accountButton =
-      [[UIBarButtonItem alloc] initWithTitle:@"dummyEmail@gmail.com" menu:nil];
+  _accountButton = [[UIBarButtonItem alloc] initWithTitle:_selectedEmail
+                                                     menu:nil];
 
   UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
                            action:nil];
   [self setToolbarItems:@[
-    filterButton, spaceButton, accountButton, spaceButton, sortButton
+    filterButton, spaceButton, _accountButton, spaceButton, sortButton
   ]
                animated:NO];
 }
@@ -266,6 +271,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
          cornerRadius:kCellIconCornerRadius];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return cell;
+}
+
+- (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
+  _selectedEmail = selectedUserIdentityEmail;
 }
 
 @end

@@ -5,19 +5,25 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
 @implementation DriveFilePickerMediator {
   base::WeakPtr<web::WebState> _webState;
+  id<SystemIdentity> _identity;
 }
 
-- (instancetype)initWithWebState:(web::WebState*)webState {
+- (instancetype)initWithWebState:(web::WebState*)webState
+                        identity:(id<SystemIdentity>)identity {
   self = [super init];
   if (self) {
     CHECK(webState);
+    CHECK(identity);
     _webState = webState->GetWeakPtr();
+    _identity = identity;
   }
   return self;
 }
@@ -31,6 +37,11 @@
     }
     _webState = nullptr;
   }
+}
+
+- (void)setConsumer:(id<DriveFilePickerConsumer>)consumer {
+  _consumer = consumer;
+  [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
 }
 
 - (void)selectDriveItem:(DriveItem*)driveItem {

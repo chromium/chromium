@@ -17,8 +17,11 @@ source_set("coordinator") {
     "//ios/chrome/browser/drive_file_picker/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/web/model/choose_file",
     "//ios/web/public",
   ]
@@ -29,6 +32,7 @@ source_set("unit_tests") {
   sources = [ "drive_file_picker_mediator_unittest.mm" ]
   deps = [
     ":coordinator",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/web/model/choose_file",
     "//ios/chrome/browser/web/model/choose_file:test_support",
     "//ios/web/public/test/fakes",

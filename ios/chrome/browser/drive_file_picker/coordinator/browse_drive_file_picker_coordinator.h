@@ -8,6 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol SystemIdentity;
 namespace web {
 class WebState;
 }
@@ -23,6 +24,7 @@ class WebState;
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
                                   folder:(NSString*)folder
+                                identity:(id<SystemIdentity>)identity
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
