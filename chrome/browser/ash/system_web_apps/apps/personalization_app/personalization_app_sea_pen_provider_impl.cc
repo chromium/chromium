@@ -156,6 +156,10 @@ void PersonalizationAppSeaPenProviderImpl::SelectRecentSeaPenImageInternal(
                                            preview_mode, std::move(callback));
 }
 
+bool PersonalizationAppSeaPenProviderImpl::IsManagedSeaPenEnabledInternal() {
+  return ::ash::personalization_app::IsManagedSeaPenWallpaperEnabled(profile_);
+}
+
 bool PersonalizationAppSeaPenProviderImpl::
     IsManagedSeaPenFeedbackEnabledInternal() {
   return ::ash::personalization_app::IsManagedSeaPenWallpaperFeedbackEnabled(

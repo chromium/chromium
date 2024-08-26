@@ -135,6 +135,8 @@ void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isSeaPenEnterpriseEnabled",
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenEnterpriseEnabled());
+  source->AddBoolean("isManagedSeaPenEnabled",
+                     sea_pen_provider_->IsManagedSeaPenEnabled());
   source->AddBoolean("isManagedSeaPenFeedbackEnabled",
                      sea_pen_provider_->IsManagedSeaPenFeedbackEnabled());
   source->AddBoolean("isLacrosEnabled",

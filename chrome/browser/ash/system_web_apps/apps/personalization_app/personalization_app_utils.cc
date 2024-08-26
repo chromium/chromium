@@ -176,7 +176,7 @@ bool IsEligibleForSeaPen(Profile* profile) {
   }
 }
 
-bool IsManagedSeaPenEnabled(const int settings) {
+bool IsManagedSeaPenSettingsEnabled(const int settings) {
   switch (static_cast<ManagedSeaPenSettings>(settings)) {
     case ManagedSeaPenSettings::kAllowed:
     case ManagedSeaPenSettings::kAllowedWithoutLogging:
@@ -188,7 +188,7 @@ bool IsManagedSeaPenEnabled(const int settings) {
 }
 
 bool IsManagedSeaPenWallpaperEnabled(Profile* profile) {
-  return IsManagedSeaPenEnabled(
+  return IsManagedSeaPenSettingsEnabled(
       profile->GetPrefs()->GetInteger(ash::prefs::kGenAIWallpaperSettings));
 }
 
@@ -198,7 +198,7 @@ bool IsManagedSeaPenWallpaperFeedbackEnabled(Profile* profile) {
 }
 
 bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile) {
-  return IsManagedSeaPenEnabled(
+  return IsManagedSeaPenSettingsEnabled(
       profile->GetPrefs()->GetInteger(ash::prefs::kGenAIVcBackgroundSettings));
 }
 

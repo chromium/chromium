@@ -93,8 +93,6 @@ class PersonalizationAppWallpaperProviderImpl
   // fetch photos.
   bool IsEligibleForGooglePhotos() override;
 
-  bool IsManagedSeaPenEnabled() override;
-
   // ash::personalization_app::mojom::WallpaperProvider:
 
   // Configure the window to be transparent so that the user can trigger a "full

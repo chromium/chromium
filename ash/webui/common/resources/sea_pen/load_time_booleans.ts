@@ -34,6 +34,10 @@ export function isVcResizeThumbnailEnabled() {
   return loadTimeData.getBoolean('isVcResizeThumbnailEnabled');
 }
 
+export function isManagedSeaPenEnabled() {
+  return loadTimeData.getBoolean('isManagedSeaPenEnabled');
+}
+
 export function isManagedSeaPenFeedbackEnabled() {
   return loadTimeData.getBoolean('isManagedSeaPenFeedbackEnabled');
 }

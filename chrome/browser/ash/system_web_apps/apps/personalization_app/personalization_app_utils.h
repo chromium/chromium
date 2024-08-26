@@ -59,7 +59,7 @@ bool IsSystemInEnglishLanguage();
 bool IsEligibleForSeaPen(Profile* profile);
 
 // Controls whether SeaPen feature is enabled with the current `settings` value.
-bool IsManagedSeaPenEnabled(const int settings);
+bool IsManagedSeaPenSettingsEnabled(const int settings);
 
 // Controls whether SeaPen Wallpaper is enabled for managed profiles.
 bool IsManagedSeaPenWallpaperEnabled(Profile* profile);

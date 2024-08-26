@@ -99,6 +99,10 @@ bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPenTextInput() {
   return ::ash::personalization_app::IsEligibleForSeaPenTextInput(profile_);
 }
 
+bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenEnabled() {
+  return IsManagedSeaPenEnabledInternal();
+}
+
 bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenFeedbackEnabled() {
   if (!profile_->GetProfilePolicyConnector()->IsManaged()) {
     return true;

@@ -115,6 +115,7 @@ class MockSeaPenProvider
               (override));
   bool IsEligibleForSeaPen() override { return true; }
   bool IsEligibleForSeaPenTextInput() override { return true; }
+  bool IsManagedSeaPenEnabled() override { return true; }
   bool IsManagedSeaPenFeedbackEnabled() override { return false; }
   // ::ash::personalization_app::mojom::SeaPenProvider:
   MOCK_METHOD(void,
@@ -221,7 +222,6 @@ class MockPersonalizationAppWallpaperProvider
                   ash::personalization_app::mojom::WallpaperProvider> receiver),
               (override));
   bool IsEligibleForGooglePhotos() override { return true; }
-  bool IsManagedSeaPenEnabled() override { return true; }
   void GetWallpaperAsJpegBytes(
       content::WebUIDataSource::GotDataCallback callback) override {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());

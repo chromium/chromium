@@ -146,10 +146,6 @@ bool PersonalizationAppWallpaperProviderImpl::IsEligibleForGooglePhotos() {
   return GetUser(profile_)->HasGaiaAccount();
 }
 
-bool PersonalizationAppWallpaperProviderImpl::IsManagedSeaPenEnabled() {
-  return ::ash::personalization_app::IsManagedSeaPenWallpaperEnabled(profile_);
-}
-
 void PersonalizationAppWallpaperProviderImpl::MakeTransparent() {
   WallpaperControllerClientImpl::Get()->MakeTransparent(
       web_ui_->GetWebContents());

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -17,13 +18,16 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/test_sea_pen_observer.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/manta/features.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -231,6 +235,46 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, ObserverTests) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest,
+                       ManagedUsersTests) {
+  browser()
+      ->profile()
+      ->GetProfilePolicyConnector()
+      ->OverrideIsManagedForTesting(true);
+  browser()->profile()->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIVcBackgroundSettings,
+      static_cast<int>(
+          ash::personalization_app::ManagedSeaPenSettings::kAllowed));
+  EXPECT_TRUE(sea_pen_provider_->IsManagedSeaPenEnabled())
+      << " SeaPen VC Background should be enabled for managed users with "
+         "setting kAllowed";
+  EXPECT_TRUE(sea_pen_provider_->IsManagedSeaPenFeedbackEnabled())
+      << " SeaPen VC Background feedback should be enabled for managed users "
+         "with setting kAllowed";
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIVcBackgroundSettings,
+      static_cast<int>(ash::personalization_app::ManagedSeaPenSettings::
+                           kAllowedWithoutLogging));
+  EXPECT_TRUE(sea_pen_provider_->IsManagedSeaPenEnabled())
+      << " SeaPen VC Background should be enabled for managed users with "
+         "setting kAllowedWithoutLogging";
+  EXPECT_FALSE(sea_pen_provider_->IsManagedSeaPenFeedbackEnabled())
+      << " SeaPen VC Background feedback should not be enabled for managed "
+         "users with setting kAllowedWithoutLogging";
+  ;
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIVcBackgroundSettings,
+      static_cast<int>(
+          ash::personalization_app::ManagedSeaPenSettings::kDisabled));
+  EXPECT_FALSE(sea_pen_provider_->IsManagedSeaPenEnabled())
+      << " SeaPen VC Background should not be enabled for managed users with "
+         "setting kDisabled";
+  EXPECT_FALSE(sea_pen_provider_->IsManagedSeaPenFeedbackEnabled())
+      << " SeaPen VC Background feedback should not be enabled for managed "
+         "users with setting kDisabled";
+}
 }  // namespace
 
 }  // namespace ash::vc_background_ui
