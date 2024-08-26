@@ -267,7 +267,6 @@ Textfield::Textfield()
   // accessibility since a plain text field should always be a leaf node in the
   // accessibility trees of all the platforms we support.
   GetViewAccessibility().SetIsLeaf(true);
-  UpdateAccessibilityTextDirection();
   UpdateAccessibleDefaultActionVerb();
 }
 
@@ -284,6 +283,11 @@ Textfield::~Textfield() {
 
 void Textfield::SetController(TextfieldController* controller) {
   controller_ = controller;
+}
+
+void Textfield::AddedToWidget() {
+  UpdateAccessibilityTextDirection();
+  UpdateAccessibleValue();
 }
 
 bool Textfield::GetReadOnly() const {
@@ -1051,16 +1055,11 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Editable state indicates support of editable interface, and is always set
   // for a textfield, even if disabled or readonly.
   node_data->AddState(ax::mojom::State::kEditable);
-  if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
-    node_data->SetValue(std::u16string(
-        GetText().size(), gfx::RenderText::kPasswordReplacementChar));
-  } else {
-    node_data->SetValue(GetText());
-  }
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-  std::u16string ax_value =
-      node_data->GetString16Attribute(ax::mojom::StringAttribute::kValue);
+  // TODO(https://crbug.com/325137417): Recompute the text offsets whenever
+  // the value changes, not when GetAccessibleNodeData is different.
+  std::u16string ax_value = GetViewAccessibility().GetValue();
   // If the accessible value changed since the last time we computed the text
   // offsets, we need to recompute them.
   if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
@@ -2700,7 +2699,7 @@ void Textfield::UpdateAfterChange(
   if (text_change_type != TextChangeType::kNone) {
     if ((text_change_type == TextChangeType::kUserTriggered) && controller_)
       controller_->ContentsChanged(this, GetText());
-    NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+    UpdateAccessibleValue();
   }
   UpdateAccessibilityTextDirection();
   if (cursor_changed) {
@@ -2722,6 +2721,15 @@ void Textfield::UpdateAccessibilityTextDirection() {
       static_cast<int32_t>(GetTextDirection() == base::i18n::RIGHT_TO_LEFT
                                ? ax::mojom::WritingDirection::kRtl
                                : ax::mojom::WritingDirection::kLtr));
+}
+
+void Textfield::UpdateAccessibleValue() {
+  if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    GetViewAccessibility().SetValue(std::u16string(
+        GetText().size(), gfx::RenderText::kPasswordReplacementChar));
+  } else {
+    GetViewAccessibility().SetValue(GetText());
+  }
 }
 
 void Textfield::UpdateCursorVisibility() {

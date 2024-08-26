@@ -687,7 +687,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
 
   // When editing starts, the accessible value becomes the same as the raw
   // edited text.
-  omnibox_view_views->GetAccessibleNodeData(&node_data);
+  node_data = ui::AXNodeData();
+  omnibox_view_views->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(u"hxps://google.com",
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }

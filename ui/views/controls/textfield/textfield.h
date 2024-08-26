@@ -564,6 +564,8 @@ class VIEWS_EXPORT Textfield : public View,
 
   virtual void UpdateAccessibleTextSelection();
 
+  void AddedToWidget() override;
+
  private:
   friend class TextfieldTestApi;
 
@@ -614,6 +616,10 @@ class VIEWS_EXPORT Textfield : public View,
       std::optional<bool> notify_caret_bounds_changed = std::nullopt);
 
   virtual void UpdateAccessibilityTextDirection();
+
+  // Subclass OmniboxViewViews is overriding this method to update the
+  // accessible value.
+  virtual void UpdateAccessibleValue();
 
   // Updates cursor visibility and blinks the cursor if needed.
   void ShowCursor();

@@ -867,6 +867,11 @@ void ViewAccessibility::RemoveValue() {
   NotifyEvent(ax::mojom::Event::kValueChanged, true);
 }
 
+std::u16string ViewAccessibility::GetValue() const {
+  return base::UTF8ToUTF16(
+      data_.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+}
+
 void ViewAccessibility::SetDefaultActionVerb(
     const ax::mojom::DefaultActionVerb default_action_verb) {
   data_.SetDefaultActionVerb(default_action_verb);

@@ -267,6 +267,8 @@ class OmniboxViewViews
   void ExecuteTextEditCommand(ui::TextEditCommand command) override;
   bool ShouldShowPlaceholderText() const override;
 
+  void UpdateAccessibleValue() override;
+
   // ash::input_method::InputMethodManager::CandidateWindowObserver:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void CandidateWindowOpened(

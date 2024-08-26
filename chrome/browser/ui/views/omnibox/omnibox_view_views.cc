@@ -859,7 +859,8 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
     return;
   friendly_suggestion_text_.clear();
   friendly_suggestion_text_prefix_length_ = 0;
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+
+  UpdateAccessibleValue();
   UpdateAccessibleTextSelection();
 }
 
@@ -886,8 +887,7 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
         model()->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
   }
 
-  if (notify_text_changed)
-    NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  UpdateAccessibleValue();
 
 #if BUILDFLAG(IS_MAC)
   // On macOS, the only way to get VoiceOver to speak the friendly suggestion
@@ -1300,19 +1300,6 @@ void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
                                 "Ctrl+L");
 #endif
-  if (friendly_suggestion_text_.empty()) {
-    // While user edits text, use the exact text displayed in the omnibox.
-    node_data->SetValue(GetText());
-  } else {
-    // While user navigates omnibox suggestions, use the current editable
-    // text decorated with additional friendly labelling text, such as the
-    // title of the page and the type of autocomplete, for example:
-    // "Google https://google.com location from history".
-    // The edited text is always a substring of the friendly label, so that
-    // users can navigate to specific characters in the friendly version using
-    // Braille display routing keys or other assistive technologies.
-    node_data->SetValue(friendly_suggestion_text_);
-  }
   node_data->html_attributes.push_back(std::make_pair("type", "url"));
 
   if (model()->PopupIsOpen()) {
@@ -1565,6 +1552,22 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
 bool OmniboxViewViews::ShouldShowPlaceholderText() const {
   return Textfield::ShouldShowPlaceholderText() &&
          !model()->is_caret_visible() && !model()->is_keyword_selected();
+}
+
+void OmniboxViewViews::UpdateAccessibleValue() {
+  if (friendly_suggestion_text_.empty()) {
+    // While user edits text, use the exact text displayed in the omnibox.
+    GetViewAccessibility().SetValue(GetText());
+  } else {
+    // While user navigates omnibox suggestions, use the current editable
+    // text decorated with additional friendly labelling text, such as the
+    // title of the page and the type of autocomplete, for example:
+    // "Google https://google.com location from history".
+    // The edited text is always a substring of the friendly label, so that
+    // users can navigate to specific characters in the friendly version using
+    // Braille display routing keys or other assistive technologies.
+    GetViewAccessibility().SetValue(friendly_suggestion_text_);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

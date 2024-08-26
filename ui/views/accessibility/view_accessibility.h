@@ -380,6 +380,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetValue(const std::string& value);
   void SetValue(const std::u16string& value);
   void RemoveValue();
+  std::u16string GetValue() const;
 
   void SetDefaultActionVerb(
       const ax::mojom::DefaultActionVerb default_action_verb);

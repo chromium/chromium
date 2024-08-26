@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_TRUE(contains(observer.omnibox_value(), "Tab switch button"));
   EXPECT_EQ(observer.selected_children_changed_count(), 3);
   EXPECT_EQ(observer.selection_changed_count(), 3);
-  EXPECT_EQ(observer.value_changed_count(), 4);
+  EXPECT_EQ(observer.value_changed_count(), 3);
   EXPECT_TRUE(contains(observer.omnibox_value(), "press Enter to switch"));
   EXPECT_FALSE(contains(observer.omnibox_value(), "2 of 2"));
   EXPECT_TRUE(
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_TRUE(contains(observer.selected_option_name(), "foobar.com"));
   EXPECT_EQ(observer.selected_children_changed_count(), 4);
   EXPECT_EQ(observer.selection_changed_count(), 4);
-  EXPECT_EQ(observer.value_changed_count(), 5);
+  EXPECT_EQ(observer.value_changed_count(), 4);
   EXPECT_TRUE(contains(observer.omnibox_value(), "press Tab then Enter"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "2 of 2"));
   EXPECT_TRUE(
