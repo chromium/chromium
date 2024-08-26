@@ -150,9 +150,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>>
       _scopedWebStateObservation;
 
-  // ItemID of the dragged tab. Used to check if the dropped tab is from the
-  // same Chrome window.
-  web::WebStateID _dragItemID;
+  // The current Browser.
   base::WeakPtr<Browser> _browser;
 
   // Items selected for editing.
@@ -1300,16 +1298,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   return [self dragItemForItemWithID:item.identifier];
 }
 
-- (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
-  _dragItemID = item.identifier;
-}
-
-- (void)dragWillBeginForTabGroupItem:(TabSwitcherItem*)item {
-  NOTREACHED_IN_MIGRATION();
-}
-
 - (void)dragSessionDidEnd {
-  _dragItemID = web::WebStateID();
   // Update buttons as the number of items or the number of selected items might
   // have changed.
   [self.toolbarsMutator setButtonsEnabled:YES];
@@ -1330,16 +1319,6 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       return UIDropOperationForbidden;
     }
 
-    // If the dropped tab is from the same Chrome window and has been removed,
-    // cancel the drop operation.
-    if (_dragItemID == tabInfo.tabID &&
-        GetWebStateIndex(self.webStateList,
-                         WebStateSearchCriteria{
-                             .identifier = tabInfo.tabID,
-                             .pinned_state = PinnedState::kNonPinned,
-                         }) == WebStateList::kInvalidIndex) {
-      return UIDropOperationCancel;
-    }
     if (self.browserState->IsOffTheRecord() == tabInfo.incognito) {
       return UIDropOperationMove;
     }

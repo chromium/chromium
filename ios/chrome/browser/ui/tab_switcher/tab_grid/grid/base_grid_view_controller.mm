@@ -700,9 +700,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     case GridItemType::kInactiveTabsButton:
       NOTREACHED();
     case GridItemType::kTab: {
-      [self.dragDropHandler
-          dragWillBeginForTabSwitcherItem:_draggedItemIdentifier
-                                              .tabSwitcherItem];
       base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent,
                                     DragDropItem::kDragBegin);
       [self.delegate gridViewControllerDragSessionWillBeginForTab:self];

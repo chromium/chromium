@@ -481,7 +481,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
-  [self.dragDropHandler dragWillBeginForTabSwitcherItem:_draggedItem];
   _dragEndAtNewIndex = NO;
   _localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabsEvent,

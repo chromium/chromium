@@ -14,27 +14,6 @@
 // collection view involving the model layer.
 @protocol TabCollectionDragDropHandler
 
-// Returns a drag item encapsulating all necessary information to perform
-// valid drop operations for the given `item`.
-// Note that this drag item may be dropped anywhere,
-// including within the same collection, another view, or other apps.
-- (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item;
-
-// Returns a drag item encapsulating all necessary information to perform
-// valid drop operations for the given `tabGroupItem`.
-// Note that this drag item cannot be dropped within other apps.
-- (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem;
-
-// Tells the receiver that the drag session will begin for the
-// `tabSwitcherItem`.
-- (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)tabSwitcherItem;
-
-// Tells the receiver that the drag session will begin for the `tabGroupItem`.
-- (void)dragWillBeginForTabGroupItem:(TabGroupItem*)tabGroupItem;
-
-// Tells the receiver that the drag session did end.
-- (void)dragSessionDidEnd;
-
 // Returns a value which represents how a drag activity should be resolved when
 // the user drops a drag item. `session` contains pertinent information
 // including the drag item.
@@ -57,6 +36,29 @@
                      toIndex:(NSUInteger)destinationIndex
           placeholderContext:
               (id<UICollectionViewDropPlaceholderContext>)placeholderContext;
+
+@optional
+
+// Returns a drag item encapsulating all necessary information to perform
+// valid drop operations for the given `item`.
+// Note that this drag item may be dropped anywhere,
+// including within the same collection, another view, or other apps.
+- (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item;
+
+// Returns a drag item encapsulating all necessary information to perform
+// valid drop operations for the given `tabGroupItem`.
+// Note that this drag item cannot be dropped within other apps.
+- (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem;
+
+// Tells the receiver that the drag session will begin for the
+// `tabSwitcherItem`.
+- (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)tabSwitcherItem;
+
+// Tells the receiver that the drag session will begin for the `tabGroupItem`.
+- (void)dragWillBeginForTabGroupItem:(TabGroupItem*)tabGroupItem;
+
+// Tells the receiver that the drag session did end.
+- (void)dragSessionDidEnd;
 
 // Returns the drag items list of selected element in selection mode. Selection
 // mode is only supported for incognito and regular grids.
