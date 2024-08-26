@@ -49,10 +49,6 @@ void StorageSelector::CreateLocalStorageModule(
       StorageOptions()
           .set_directory(local_reporting_path)
           .set_signature_verification_public_key(verification_key),
-      base::FeatureList::IsEnabled(kLegacyStorageEnabledFeature)
-          ? "SECURITY,IMMEDIATE,FAST_BATCH,SLOW_BATCH,BACKGROUND_BATCH,"
-            "MANUAL_BATCH,MANUAL_BATCH_LACROS"
-          : "UNDEFINED_PRIORITY",
       QueuesContainer::Create(
           base::FeatureList::IsEnabled(kControlledDegradationFeature)),
       EncryptionModule::Create(),

@@ -24,15 +24,12 @@ class StorageDirectory {
       FILE_PATH_LITERAL("META");
 
   struct Hash {
-    size_t operator()(
-        const std::tuple<Priority, GenerationGuid>& v) const noexcept {
-      const auto& [priority, guid] = v;
+    size_t operator()(Priority priority) const noexcept {
       static constexpr std::hash<Priority> priority_hasher;
-      static constexpr std::hash<GenerationGuid> guid_hasher;
-      return priority_hasher(priority) ^ guid_hasher(guid);
+      return priority_hasher(priority);
     }
   };
-  using Set = std::unordered_set<std::tuple<Priority, GenerationGuid>, Hash>;
+  using Set = std::unordered_set<Priority, Hash>;
 
   // Returns a set of <Priority, GenerationGuid> tuples corresponding to valid
   // queue directories found in the storage directory provided in `options`. For
@@ -41,28 +38,7 @@ class StorageDirectory {
       const base::FilePath& storage_directory,
       const StorageOptions::QueuesOptionsList& options_list);
 
-  // Deletes all multigenerational queue directories in `storage_directory` that
-  // contain no unconfirmed records. Returns false on error. Returns true
-  // otherwise.
-  static bool DeleteEmptyMultigenerationQueueDirectories(
-      const base::FilePath& directory);
-
-  // Returns false if `queue_directory` contains records that have not been
-  // confirmed by the server. Returns true otherwise.
-  static bool QueueDirectoryContainsNoUnconfirmedRecords(
-      const base::FilePath& queue_directory);
-
  private:
-  // Returns priority/generation guid tuple from a filepath, or error status.
-  static StatusOr<std::tuple<Priority, GenerationGuid>>
-  GetPriorityAndGenerationGuid(
-      const base::FilePath& full_name,
-      const StorageOptions::QueuesOptionsList& options_list);
-
-  // Returns generation guid from a filepath, or error status.
-  static StatusOr<GenerationGuid> ParseGenerationGuidFromFilePath(
-      const base::FilePath& full_name);
-
   // Return priority from a filepath, or error status.
   static StatusOr<Priority> ParsePriorityFromQueueDirectory(
       const base::FilePath& full_path,
