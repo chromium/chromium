@@ -321,14 +321,16 @@ class SunfishBehavior : public CaptureModeBehavior {
   const std::u16string GetCaptureLabelRegionText() const override {
     return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
   }
-
   int GetCaptureBarWidth() const override {
     // Return the height so the button is circular.
     return capture_mode::kCaptureBarHeight;
   }
-
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<SunfishCaptureBarView>();
+  }
+  bool OnRegionSelected() override {
+    CaptureModeController::Get()->PerformImageSearch();
+    return true;
   }
 };
 
@@ -532,5 +534,9 @@ int CaptureModeBehavior::GetCaptureBarWidth() const {
 void CaptureModeBehavior::OnAudioRecordingModeChanged() {}
 
 void CaptureModeBehavior::OnDemoToolsSettingsChanged() {}
+
+bool CaptureModeBehavior::OnRegionSelected() {
+  return false;
+}
 
 }  // namespace ash
