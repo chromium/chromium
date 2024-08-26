@@ -244,6 +244,17 @@ TEST_F(CardUnmaskPromptControllerImplGenericTest, LogRealPanTryAgainFailure) {
       AutofillMetrics::PAYMENTS_RESULT_TRY_AGAIN_FAILURE, 1);
 }
 
+TEST_F(CardUnmaskPromptControllerImplGenericTest, LogRealPanClientSideTimeout) {
+  ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
+  base::HistogramTester histogram_tester;
+
+  controller_->OnVerificationResult(PaymentsRpcResult::kClientSideTimeout);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UnmaskPrompt.GetRealPanResult.ServerCard",
+      AutofillMetrics::PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT, 1);
+}
+
 TEST_F(CardUnmaskPromptControllerImplGenericTest,
        LogUnmaskingDurationResultSuccess) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
@@ -283,6 +294,20 @@ TEST_F(CardUnmaskPromptControllerImplGenericTest,
                                     1);
   histogram_tester.ExpectTotalCount(
       "Autofill.UnmaskPrompt.UnmaskingDuration.VirtualCard.VcnRetrievalFailure",
+      1);
+}
+
+TEST_F(CardUnmaskPromptControllerImplGenericTest,
+       LogUnmaskingDurationClientSideTimeout) {
+  ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
+  base::HistogramTester histogram_tester;
+
+  controller_->OnVerificationResult(PaymentsRpcResult::kClientSideTimeout);
+
+  histogram_tester.ExpectTotalCount("Autofill.UnmaskPrompt.UnmaskingDuration",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.UnmaskPrompt.UnmaskingDuration.ServerCard.ClientSideTimeout",
       1);
 }
 

@@ -194,6 +194,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.PaymentsRpcResult">
+  <variant name="ClientSideTimeout"
+      summary="Request took longer time to finish than the set client-side
+               timeout. The request may still have completed on the server
+               side."/>
   <variant name="Failure"
       summary="Request failed during the authentication process. This is not
                related to virtual cards."/>

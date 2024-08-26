@@ -743,7 +743,10 @@ TEST_F(VirtualCardEnrollmentManagerTest,
       failure_results = {
           payments::PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
           payments::PaymentsAutofillClient::PaymentsRpcResult::
-              kPermanentFailure};
+              kPermanentFailure,
+          payments::PaymentsAutofillClient::PaymentsRpcResult::
+              kClientSideTimeout,
+      };
 
   VirtualCardEnrollmentProcessState* state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();

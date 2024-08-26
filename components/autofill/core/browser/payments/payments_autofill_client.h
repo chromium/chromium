@@ -100,6 +100,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
     // Request failed in retrieving virtual card information; don't try again.
     kVcnRetrievalPermanentFailure,
+
+    // Request took longer time to finish than the set client-side timeout.
+    kClientSideTimeout,
   };
 
   enum class SaveIbanOfferUserDecision {

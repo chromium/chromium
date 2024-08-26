@@ -5322,6 +5322,29 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_EQ(1, credit_card_save_strike_database.GetStrikes("1111"));
 }
 
+// Tests that one strike is added when upload times out on client-side and
+// bubble is shown.
+TEST_F(CreditCardSaveManagerTest,
+       UploadCreditCard_NumStrikesLoggedOnUploadClientSideTimeout) {
+  payments::PaymentsNetworkInterface::UploadCardResponseDetails
+      upload_card_response_details;
+  payments_network_interface().SetUploadCardResponseDetailsForUploadCard(
+      upload_card_response_details);
+  TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
+      TestCreditCardSaveStrikeDatabase(&strike_database());
+  EXPECT_EQ(0, credit_card_save_strike_database.GetStrikes("1111"));
+
+  // If upload timed out on the client side and the bubble was shown, strike
+  // count should increase by 1.
+  credit_card_save_manager_->set_show_save_prompt(true);
+  credit_card_save_manager_->set_upload_request_card_number(
+      u"4111111111111111");
+  credit_card_save_manager_->OnDidUploadCard(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout,
+      upload_card_response_details);
+  EXPECT_EQ(1, credit_card_save_strike_database.GetStrikes("1111"));
+}
+
 // Make sure that the PersonalDataManager gets notified when the user accepts
 // an upload offer.
 TEST_F(CreditCardSaveManagerTest, OnUserDidAcceptUpload_NotifiesPDM) {

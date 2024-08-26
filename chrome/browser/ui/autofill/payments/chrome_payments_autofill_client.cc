@@ -642,6 +642,7 @@ void ChromePaymentsAutofillClient::OnUnmaskVerificationResult(
     case PaymentsRpcResult::kTryAgainFailure:
     case PaymentsRpcResult::kPermanentFailure:
     case PaymentsRpcResult::kNetworkError:
+    case PaymentsRpcResult::kClientSideTimeout:
       // Do nothing
       break;
     case PaymentsRpcResult::kNone:

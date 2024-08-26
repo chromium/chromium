@@ -2676,6 +2676,30 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration.ServerCard.Failure", 1);
   }
+
+  // Reset the autofill manager state.
+  test_api(autofill_manager()).Reset();
+  autofill_manager().AddSeenForm(form, field_types);
+  // Creating masked card
+  RecreateCreditCards(/*include_local_credit_card=*/false,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/false);
+
+  {
+    // Simulating filling a masked card server suggestion.
+    base::HistogramTester histogram_tester;
+    autofill_manager().AuthenticateThenFillCreditCardForm(
+        form, form.fields().back(),
+        *personal_data().payments_data_manager().GetCreditCardByGUID(
+            kTestMaskedCardId),
+        {.trigger_source = AutofillTriggerSource::kPopup});
+    OnDidGetRealPan(PaymentsRpcResult::kClientSideTimeout, std::string());
+    histogram_tester.ExpectTotalCount(
+        "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.UnmaskPrompt.GetRealPanDuration.ServerCard.ClientSideTimeout",
+        1);
+  }
 }
 
 // Test that a malformed or non-HTTP_OK response doesn't cause problems, per
@@ -2745,6 +2769,20 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_ServerCard) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogRealPanResult(
+        PaymentsRpcResult::kClientSideTimeout,
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard);
+
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult",
+        AutofillMetrics::PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult.ServerCard",
+        AutofillMetrics::PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    AutofillMetrics::LogRealPanResult(
         PaymentsRpcResult::kSuccess,
         payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard);
 
@@ -2758,8 +2796,8 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_ServerCard) {
 }
 
 TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_VirtualCard) {
-  base::HistogramTester histogram_tester;
   {
+    base::HistogramTester histogram_tester;
     AutofillMetrics::LogRealPanResult(
         PaymentsRpcResult::kTryAgainFailure,
         payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
@@ -2773,6 +2811,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_VirtualCard) {
   }
 
   {
+    base::HistogramTester histogram_tester;
     AutofillMetrics::LogRealPanResult(
         PaymentsRpcResult::kVcnRetrievalPermanentFailure,
         payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
@@ -2786,6 +2825,21 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_VirtualCard) {
   }
 
   {
+    base::HistogramTester histogram_tester;
+    AutofillMetrics::LogRealPanResult(
+        PaymentsRpcResult::kClientSideTimeout,
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
+
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult",
+        AutofillMetrics::PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.UnmaskPrompt.GetRealPanResult.VirtualCard",
+        AutofillMetrics::PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
     AutofillMetrics::LogRealPanResult(
         PaymentsRpcResult::kSuccess,
         payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);

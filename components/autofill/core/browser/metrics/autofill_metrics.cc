@@ -1124,6 +1124,9 @@ void AutofillMetrics::LogRealPanResult(PaymentsRpcResult result,
       DCHECK_EQ(card_type, PaymentsRpcCardType::kVirtualCard);
       metric_result = PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE;
       break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      metric_result = PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT;
+      break;
     case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
       return;
@@ -1188,6 +1191,9 @@ void AutofillMetrics::LogRealPanDuration(base::TimeDelta duration,
     case PaymentsRpcResult::kNetworkError:
       result_suffix = "NetworkError";
       break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      result_suffix = "ClientSideTimeout";
+      break;
     case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
       return;
@@ -1234,6 +1240,9 @@ void AutofillMetrics::LogUnmaskingDuration(base::TimeDelta duration,
       break;
     case PaymentsRpcResult::kNetworkError:
       result_suffix = "NetworkError";
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      result_suffix = "ClientSideTimeout";
       break;
     case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
@@ -3243,6 +3252,9 @@ const std::string PaymentsRpcResultToMetricsSuffix(PaymentsRpcResult result) {
     case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
     case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
       result_suffix = ".VcnRetrievalFailure";
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      result_suffix = ".ClientSideTimeout";
       break;
     case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();

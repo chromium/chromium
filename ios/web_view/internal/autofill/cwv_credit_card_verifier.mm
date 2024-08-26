@@ -38,6 +38,8 @@ CWVCreditCardVerificationError CWVConvertPaymentsRPCResult(
       return CWVCreditCardVerificationErrorNone;
     case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
         kTryAgainFailure:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kClientSideTimeout:
       return CWVCreditCardVerificationErrorTryAgainFailure;
     case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
         kPermanentFailure:

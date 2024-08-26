@@ -94,6 +94,7 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
     case PaymentsRpcResult::kSuccess:
       break;
 
+    case PaymentsRpcResult::kClientSideTimeout:
     case PaymentsRpcResult::kTryAgainFailure: {
       if (IsVirtualCard()) {
         error_message = l10n_util::GetStringFUTF16(
@@ -136,7 +137,8 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
   }
 
   flow_ended_with_unmask_server_response_ =
-      result != PaymentsRpcResult::kTryAgainFailure;
+      result != PaymentsRpcResult::kTryAgainFailure &&
+      result != PaymentsRpcResult::kClientSideTimeout;
 
   unmasking_result_ = result;
   payments::PaymentsAutofillClient::PaymentsRpcCardType card_type =
