@@ -162,6 +162,10 @@ void AnnotationsTabHelper::OnDecorated(web::WebState* web_state,
                                        int failures,
                                        const base::Value::List& cancelled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (annotations) {
+    int percentage = (100 * successes) / annotations;
+    base::UmaHistogramPercentage("IOS.Annotations.Percentage", percentage);
+  }
   for (size_t i = 0; i < cancelled.size(); i++) {
     const std::string* cancelledId = cancelled[i].GetIfString();
     if (!cancelledId || match_cache_.find(*cancelledId) == match_cache_.end()) {

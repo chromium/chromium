@@ -7,6 +7,7 @@
 #import <vector>
 
 #import "base/logging.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/shared_highlighting/ios/parsing_utils.h"
@@ -182,6 +183,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     if (!data || !rect || !text || !cancel) {
       return;
     }
+    UMA_HISTOGRAM_BOOLEAN("IOS.Annotations.UserTap.Cancelled", *cancel);
     if (!*cancel) {
       manager->OnClick(
           web_state, *text,
