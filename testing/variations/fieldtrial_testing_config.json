@@ -20103,20 +20103,22 @@
             ]
         }
     ],
-    "SafeBrowsingSevenZipEvaluationEnabled": [
+    "SafeBrowsingRemoveCookiesInAuthRequests": [
         {
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
                 "mac",
-                "windows"
+                "windows",
+                "android",
+                "ios"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SafeBrowsingSevenZipEvaluationEnabled"
+                        "SafeBrowsingRemoveCookiesInAuthRequests"
                     ]
                 }
             ]
