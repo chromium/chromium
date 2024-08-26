@@ -14,7 +14,7 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": []
+                "arguments": ["--fileserver"]
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -41,7 +41,7 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": []
+                "arguments": ["--fileserver"]
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -68,7 +68,7 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": []
+                "arguments": ["--fileserver"]
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -95,7 +95,7 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": []
+                "arguments": ["--fileserver"]
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
