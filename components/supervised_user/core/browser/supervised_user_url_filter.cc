@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
+#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -775,6 +776,8 @@ bool SupervisedUserURLFilter::RunAsyncChecker(
     return true;
   }
 
+  // The primary account must be supervised to run async URL classification.
+  CHECK(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
   CHECK(async_url_checker_);
   return async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
