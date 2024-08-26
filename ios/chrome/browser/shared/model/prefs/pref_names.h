@@ -665,6 +665,11 @@ inline constexpr char kHomeCustomizationMagicStackTabResumptionEnabled[] =
 inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
     "ios.home_customization.magic_stack.parcel_tracking.enabled";
 
+// Integer preference that stores the most recent count of Safety Check issues
+// presented to the user in the Safety Check module (part of the Magic Stack).
+inline constexpr char kHomeCustomizationMagicStackSafetyCheckIssuesCount[] =
+    "ios.home_customization.magic_stack.safety_check.issues_count";
+
 // A time object storing when the last the identity confirmation snackbar was
 // prompted. Used to limit the frequency of this snackbar.
 inline constexpr char kIdentityConfirmationSnackbarLastPromptTime[] =

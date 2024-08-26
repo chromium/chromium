@@ -35,6 +35,10 @@ BASE_DECLARE_FEATURE(kTestFeature);
 // Feature to add the Safety Check module to the Magic Stack.
 BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
 
+// Killswitch for conditionally hiding the Safety Check module in the Magic
+// Stack if no issues are found.
+BASE_DECLARE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
+
 // A parameter representing how many hours must elapse before the Safety Check
 // is automatically run in the Magic Stack.
 extern const char kSafetyCheckMagicStackAutorunHoursThreshold[];
@@ -327,6 +331,9 @@ BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
 
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
+
+// Whether the Safety Check module is hidden when no issues are found.
+bool ShouldHideSafetyCheckModuleIfNoIssues();
 
 // Whether Safety Check Push Notifications should be sent to the user.
 bool IsSafetyCheckNotificationsEnabled();

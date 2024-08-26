@@ -143,8 +143,9 @@
 #pragma mark - SetUpListMediatorAudience
 
 - (void)removeSetUpList {
-  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
-                            ContentSuggestionsModuleType::kCompactedSetUpList);
+  base::UmaHistogramEnumeration(
+      kMagicStackModuleDisabledHistogram,
+      ContentSuggestionsModuleType::kCompactedSetUpList);
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_setUpListMediator.setUpListConfigs[0]];
 }
@@ -162,8 +163,8 @@
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
-                            ContentSuggestionsModuleType::kSafetyCheck);
+  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
+                                ContentSuggestionsModuleType::kSafetyCheck);
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_safetyCheckMediator.safetyCheckState];
 }
@@ -190,8 +191,8 @@
 }
 
 - (void)removeTabResumptionModule {
-  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
-                            ContentSuggestionsModuleType::kTabResumption);
+  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
+                                ContentSuggestionsModuleType::kTabResumption);
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_tabResumptionMediator.itemConfig];
 }
@@ -209,8 +210,8 @@
 }
 
 - (void)parcelTrackingDisabled {
-  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
-                            ContentSuggestionsModuleType::kParcelTracking);
+  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
+                                ContentSuggestionsModuleType::kParcelTracking);
   [self.delegate
       magicStackRankingModel:self
                didRemoveItem:_parcelTrackingMediator.parcelTrackingItemToShow];
@@ -433,18 +434,48 @@
         }
         [magicStackOrder addObject:_tabResumptionMediator.itemConfig];
         break;
-      case ContentSuggestionsModuleType::kSafetyCheck:
-        if (!IsSafetyCheckMagicStackEnabled() ||
+      case ContentSuggestionsModuleType::kSafetyCheck: {
+        // Handles adding Safety Check to Magic Stack. Disables/hides if:
+        // - Manually disabled or disabled via preferences.
+        // - No current or previous issues, to avoid consistently displaying the
+        // "All Safe" state and taking up carousel space for other modules.
+        // - Irrelevant modules are hidden and it's not the first ranked module.
+        BOOL disabled =
+            !IsSafetyCheckMagicStackEnabled() ||
             safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
-                IsHomeCustomizationEnabled() ? _prefService : _localState)) {
+                IsHomeCustomizationEnabled() ? _prefService : _localState);
+
+        if (disabled) {
+          base::UmaHistogramEnumeration(
+              kIOSSafetyCheckMagicStackHiddenReason,
+              IOSSafetyCheckHiddenReason::kManuallyDisabled);
           break;
         }
+
+        int previousIssuesCount = _localState->GetInteger(
+            prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount);
+
+        int issuesCount =
+            [_safetyCheckMediator.safetyCheckState numberOfIssues];
+
+        BOOL hidden = ShouldHideSafetyCheckModuleIfNoIssues() &&
+                      (previousIssuesCount == 0) &&
+                      (previousIssuesCount == issuesCount);
+
+        if (hidden) {
+          base::UmaHistogramEnumeration(kIOSSafetyCheckMagicStackHiddenReason,
+                                        IOSSafetyCheckHiddenReason::kNoIssues);
+          break;
+        }
+
         // If ShouldHideIrrelevantModules() is enabled and it is not the first
         // ranked module, do not add it to the Magic Stack.
         if (!ShouldHideIrrelevantModules() || [magicStackOrder count] == 0) {
           [magicStackOrder addObject:_safetyCheckMediator.safetyCheckState];
         }
+
         break;
+      }
       case ContentSuggestionsModuleType::kShortcuts:
         [magicStackOrder addObject:_shortcutsMediator.shortcutsConfig];
         break;

@@ -40,6 +40,10 @@ BASE_FEATURE(kSafetyCheckMagicStack,
              "SafetyCheckMagicStack",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch,
+             "SafetyCheckModuleHiddenIfNoIssuesKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafetyCheckNotifications,
              "SafetyCheckNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -303,6 +307,11 @@ BASE_FEATURE(kTabGridAlwaysBounce,
 
 bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
+}
+
+bool ShouldHideSafetyCheckModuleIfNoIssues() {
+  return base::FeatureList::IsEnabled(
+      kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
 }
 
 bool IsSafetyCheckNotificationsEnabled() {

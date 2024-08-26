@@ -664,6 +664,11 @@ the generic promo launch. -->
   <int value="1" label="Update Chrome Check - State Changed"/>
 </enum>
 
+<enum name="IOSSafetyCheckHiddenReason">
+  <int value="0" label="Manually disabled"/>
+  <int value="1" label="No issues"/>
+</enum>
+
 <enum name="IOSSaveToDriveOutcomeType">
   <int value="0" label="Failure - WebState Hidden"/>
   <int value="1" label="Failure - WebState Destroyed"/>

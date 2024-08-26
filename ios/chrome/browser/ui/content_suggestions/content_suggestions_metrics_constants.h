@@ -19,6 +19,19 @@ extern const char kShowReturnToRecentTabTileAction[];
 extern const char kOpenMostRecentTabAction[];
 extern const char kContentNotificationSnackbarAction[];
 
+#pragma mark - Enums
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange
+enum class IOSSafetyCheckHiddenReason {
+  kManuallyDisabled = 0,
+  kNoIssues = 1,
+  kMaxValue = kNoIssues,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSafetyCheckHiddenReason)
+
 #pragma mark - Histograms
 
 extern const char kTrendingQueriesHistogram[];
@@ -32,6 +45,7 @@ extern const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[];
 extern const char kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram[];
 extern const char kMagicStackModuleDisabledHistogram[];
 extern const char kContentNotificationSnackbarEventHistogram[];
+extern const char kIOSSafetyCheckMagicStackHiddenReason[];
 
 // The name of the histogram that records fetch time for the Segmentation
 // ranking for Magic Stack.

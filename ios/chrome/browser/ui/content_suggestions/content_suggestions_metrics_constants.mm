@@ -43,6 +43,8 @@ const char kMagicStackModuleDisabledHistogram[] =
     "IOS.MagicStack.Module.Disabled";
 const char kContentNotificationSnackbarEventHistogram[] =
     "ContentNotifications.Promo.Snackbar.Event";
+const char kIOSSafetyCheckMagicStackHiddenReason[] =
+    "IOS.SafetyCheck.MagicStack.HiddenReason";
 
 const char kMagicStackStartSegmentationRankingFetchTimeHistogram[] =
     "IOS.MagicStack.Start.SegmentationRankingFetchTime";

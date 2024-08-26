@@ -3675,6 +3675,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.SafetyCheck.MagicStack.HiddenReason"
+    enum="IOSSafetyCheckHiddenReason" expires_after="2024-12-24">
+  <owner>bwwilliams@google.com</owner>
+  <owner>thegreenfrog@google.com</owner>
+  <summary>
+    This histogram logs the reason why the Safety Check module is hidden in the
+    Magic Stack.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SafetyCheck.MagicStack.ModuleExistsInModuleOrder"
     enum="BooleanMatched" expires_after="2024-12-24">
   <owner>bwwilliams@google.com</owner>
