@@ -4381,10 +4381,6 @@
       status: "stable",
     },
     {
-      name: "URLParse",
-      status: "stable",
-    },
-    {
       name: "URLPatternCompareComponent",
       status: "experimental",
     },
