@@ -991,7 +991,7 @@
       // Spec change to search for container query and container units up the
       // flat tree instead of the shadow-including ancestors.
       name: "CSSFlatTreeContainer",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSFontSizeAdjust",
