@@ -669,11 +669,14 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
   auto* parser_context =
       MakeGarbageCollected<CSSParserContext>(*execution_context);
   CSSTokenizer tokenizer(value);
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenStream stream(tokenizer);
 
   style_scope_ =
-      StyleScope::Parse(tokens, parser_context, nesting_type,
+      StyleScope::Parse(stream, parser_context, nesting_type,
                         parent_rule_for_nesting, is_within_scope, style_sheet);
+  if (!stream.AtEnd()) {
+    style_scope_ = nullptr;
+  }
 
   // Reparent rules within the @scope's body.
   Reparent(style_scope_->RuleForNesting());

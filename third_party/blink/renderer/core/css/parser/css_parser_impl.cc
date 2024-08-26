@@ -1747,31 +1747,30 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
+  // Parse the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  auto* style_scope =
+      StyleScope::Parse(stream, context_, nesting_type, parent_rule_for_nesting,
+                        is_within_scope_, style_sheet_);
+  if (!style_scope) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleScope);
+    return nullptr;
+  }
+
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleScope)) {
     return nullptr;
   }
-  CSSParserTokenStream::BlockGuard guard(stream);
 
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kScope, prelude_offset_start);
     observer_->EndRuleHeader(prelude_offset_end);
-  }
-
-  auto* style_scope = StyleScope::Parse(prelude, context_, nesting_type,
-                                        parent_rule_for_nesting,
-                                        is_within_scope_, style_sheet_);
-  if (!style_scope) {
-    return nullptr;
-  }
-
-  if (observer_) {
     observer_->StartRuleBody(stream.Offset());
   }
 
+  // Parse the actual block.
+  CSSParserTokenStream::BlockGuard guard(stream);
   base::AutoReset<bool> auto_is_within_scope(&is_within_scope_, true);
 
   HeapVector<Member<StyleRuleBase>, 4> rules;

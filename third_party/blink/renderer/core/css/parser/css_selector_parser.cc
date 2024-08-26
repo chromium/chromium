@@ -377,7 +377,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
           stream);  // Forwards until the end of the argument (i.e. to comma or
                     // EOB).
     }
-    if (stream.AtEnd()) {
+    if (stream.Peek().GetType() != kCommaToken) {
       break;
     }
     stream.ConsumeIncludingWhitespace();
