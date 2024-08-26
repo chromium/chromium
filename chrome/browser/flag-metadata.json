@@ -776,7 +776,7 @@
   {
     "name": "autofill-enable-syncing-of-pix-bank-accounts",
     "owners": ["siashah@chromium.org", "chrome-payments-team@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-enable-vcn-3ds-authentication",
@@ -3726,7 +3726,7 @@
   {
     "name": "enable-pix-detection",
     "owners": [ "vishwasuppoor@google.com", "rouslan@chromium.org", "chrome-payments-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-pix-detection-on-copy-event",
@@ -3736,12 +3736,12 @@
   {
     "name": "enable-pix-detection-on-dom-content-loaded",
     "owners": [ "vishwasuppoor@google.com", "rouslan@chromium.org", "siashah@chromium.org", "chrome-payments-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-pix-payments",
     "owners": [ "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-pixel-canvas-recording",
