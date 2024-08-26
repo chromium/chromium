@@ -47,15 +47,10 @@ class ExtensionInstallUI {
   // Sets whether to show the default UI after completing the installation.
   void SetSkipPostInstallUI(bool skip_ui);
 
-  // Show the platform-specific bubble UI. This method has different
-  // implementations on different platforms, controlled by build flags.
-  // TODO(crbug.com/330588494): There are no longer platform-specific bubbles.
-  // Rename this to ShowBubble and move the implementation here (it doesn't need
-  // to be on extension_installed_bubble_view.cc).
-  static void ShowPlatformBubble(
-      scoped_refptr<const extensions::Extension> extension,
-      Browser* browser,
-      const SkBitmap& icon);
+  // Show the install bubble UI.
+  static void ShowBubble(scoped_refptr<const extensions::Extension> extension,
+                         Browser* browser,
+                         const SkBitmap& icon);
 
   // For testing:
   static base::AutoReset<bool> disable_ui_for_tests(bool disable);

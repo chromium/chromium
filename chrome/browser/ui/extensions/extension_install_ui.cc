@@ -167,7 +167,7 @@ void ExtensionInstallUI::OnInstallSuccess(
   Browser* browser = FindOrCreateVisibleBrowser(current_profile);
 
   if (!extension->is_app()) {
-    ShowPlatformBubble(extension, browser, *icon);
+    ShowBubble(extension, browser, *icon);
     return;
   }
 
@@ -177,7 +177,7 @@ void ExtensionInstallUI::OnInstallSuccess(
   }
 
   if (browser) {
-    ShowPlatformBubble(extension, browser, *icon);
+    ShowBubble(extension, browser, *icon);
   }
 }
 

@@ -274,7 +274,7 @@ void ShowUiOnToolbarMenu(scoped_refptr<const extensions::Extension> extension,
                    browser->profile(), extension.get(), icon));
 }
 
-void ExtensionInstallUI::ShowPlatformBubble(
+void ExtensionInstallUI::ShowBubble(
     scoped_refptr<const extensions::Extension> extension,
     Browser* browser,
     const SkBitmap& icon) {

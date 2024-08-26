@@ -106,8 +106,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
       LoadTestExtension("extensions/uitest/window_open");
 
       // Trigger post-install dialog.
-      ExtensionInstallUI::ShowPlatformBubble(extensions()[0], browser(),
-                                             SkBitmap());
+      ExtensionInstallUI::ShowBubble(extensions()[0], browser(), SkBitmap());
     } else {
       ClickExtensionsMenuButton();
       ASSERT_TRUE(ExtensionsMenuView::GetExtensionsMenuViewForTesting());
