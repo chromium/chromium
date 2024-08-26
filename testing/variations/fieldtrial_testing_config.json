@@ -5332,25 +5332,6 @@
             ]
         }
     ],
-    "ClientSideDetectionNotificationPrompt": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionNotificationPrompt"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionRetryLimit": [
         {
             "platforms": [
