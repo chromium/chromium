@@ -37,6 +37,14 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   METADATA_HEADER(PickerSearchResultsView, PickerPageView)
 
  public:
+  // Describes the way local file results are visually presented.
+  enum class LocalFileResultStyle {
+    // Shown as list items with the name of the file as the label.
+    kList,
+    // Shown as a grid of thumbnail previews.
+    kGrid,
+  };
+
   // `delegate`, `asset_fetcher`, `submenu_controller`, `preview_controller`
   // must remain valid for the lifetime of this class.
   explicit PickerSearchResultsView(
@@ -53,6 +61,8 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // Wait for a delay before showing the animation.
   static constexpr base::TimeDelta kLoadingAnimationDelay =
       base::Milliseconds(400);
+
+  void SetLocalFileResultStyle(LocalFileResultStyle style);
 
   // PickerPageView:
   views::View* GetTopItem() override;
@@ -154,6 +164,8 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // Number of emoji search results displayed by the emoji bar. Used for
   // accessibility announcements.
   int num_emoji_results_displayed_ = 0;
+
+  LocalFileResultStyle local_file_result_style_ = LocalFileResultStyle::kList;
 };
 
 }  // namespace ash

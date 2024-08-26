@@ -2533,6 +2533,9 @@ BASE_FEATURE(kPickerDogfood,
              "PickerDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Uses grid view for recent local files.
+BASE_FEATURE(kPickerGrid, "PickerGrid", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPipDoubleTapToResize,
              "PipDoubleTapToResize",
              base::FEATURE_DISABLED_BY_DEFAULT);

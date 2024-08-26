@@ -10,6 +10,7 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/picker_asset_fetcher.h"
+#include "ash/picker/views/picker_async_preview_image_view.h"
 #include "ash/picker/views/picker_gif_view.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_image_item_grid_view.h"
@@ -63,6 +64,8 @@ constexpr auto kBrowsingHistoryIconSize = gfx::Size(18, 18);
 constexpr auto kSectionTitleMargins = gfx::Insets::VH(8, 16);
 constexpr auto kSectionTitleTrailingLinkMargins =
     gfx::Insets::TLBR(4, 8, 4, 16);
+
+constexpr int kLocalFileGridItemSize = 140;
 
 PickerCategory GetCategoryForEditorData(const PickerEditorResult& data) {
   switch (data.mode) {
@@ -191,6 +194,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
     PickerPreviewBubbleController* preview_controller,
     PickerAssetFetcher* asset_fetcher,
     int available_width,
+    LocalFileResultStyle local_file_result_style,
     SelectResultCallback select_result_callback) {
   using ReturnType = std::unique_ptr<PickerItemView>;
   return std::visit(
@@ -247,18 +251,34 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             return item_view;
           },
           [&](const PickerLocalFileResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
-                std::move(select_result_callback));
-            item_view->SetPrimaryText(data.title);
-            // `base::Unretained` is safe because `asset_fetcher` outlives the
-            // return value.
-            item_view->SetPreview(
-                preview_controller,
-                base::BindOnce(ResolveFileInfo, data.file_path), data.file_path,
-                base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
-                                    base::Unretained(asset_fetcher)),
-                /*update_icon=*/true);
-            return item_view;
+            switch (local_file_result_style) {
+              case LocalFileResultStyle::kList: {
+                auto item_view = std::make_unique<PickerListItemView>(
+                    std::move(select_result_callback));
+                item_view->SetPrimaryText(data.title);
+                // `base::Unretained` is safe because `asset_fetcher` outlives
+                // the return value.
+                item_view->SetPreview(
+                    preview_controller,
+                    base::BindOnce(ResolveFileInfo, data.file_path),
+                    data.file_path,
+                    base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
+                                        base::Unretained(asset_fetcher)),
+                    /*update_icon=*/true);
+                return item_view;
+              }
+              case LocalFileResultStyle::kGrid: {
+                // `base::Unretained` is safe because `asset_fetcher` outlives
+                // the return value.
+                auto image_view = std::make_unique<PickerAsyncPreviewImageView>(
+                    data.file_path,
+                    gfx::Size(kLocalFileGridItemSize, kLocalFileGridItemSize),
+                    base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
+                                        base::Unretained(asset_fetcher)));
+                return std::make_unique<PickerImageItemView>(
+                    std::move(select_result_callback), std::move(image_view));
+              }
+            }
           },
           [&](const PickerDriveFileResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
@@ -431,10 +451,11 @@ PickerItemView* PickerSectionView::AddItem(
 PickerItemView* PickerSectionView::AddResult(
     const PickerSearchResult& result,
     PickerPreviewBubbleController* preview_controller,
+    LocalFileResultStyle local_file_result_style,
     SelectResultCallback select_result_callback) {
-  return AddItem(CreateItemFromResult(result, preview_controller,
-                                      asset_fetcher_, section_width_,
-                                      std::move(select_result_callback)));
+  return AddItem(CreateItemFromResult(
+      result, preview_controller, asset_fetcher_, section_width_,
+      local_file_result_style, std::move(select_result_callback)));
 }
 
 void PickerSectionView::ClearItems() {

@@ -139,10 +139,12 @@ TEST_F(PickerSectionViewTest, AddsResults) {
                                  &submenu_controller);
 
   section_view.AddResult(PickerTextResult(u"Result"), &preview_controller,
+                         PickerSectionView::LocalFileResultStyle::kList,
                          base::DoNothing());
   section_view.AddResult(
       PickerLocalFileResult(u"title", base::FilePath("abc.png")),
-      &preview_controller, base::DoNothing());
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -162,7 +164,8 @@ TEST_F(PickerSectionViewTest,
   section_view.AddResult(
       PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
                                   u"Example Foo", /*icon=*/{}),
-      &preview_controller, base::DoNothing());
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -184,7 +187,8 @@ TEST_F(PickerSectionViewTest,
   section_view.AddResult(
       PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
                                   /*title=*/u"", /*icon=*/{}),
-      &preview_controller, base::DoNothing());
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -210,7 +214,8 @@ TEST_F(PickerSectionViewTest,
                             /*display_text=*/u"image.png",
                             /*display_image=*/{},
                             /*is_recent=*/false),
-      &preview_controller, base::DoNothing());
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -241,7 +246,8 @@ TEST_F(PickerSectionViewTest,
                             /*display_text=*/u"2 files",
                             /*display_image=*/{},
                             /*is_recent=*/false),
-      &preview_controller, base::DoNothing());
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -267,7 +273,8 @@ TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
   section_view.AddResult(
       PickerCapsLockResult(
           /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
-      &preview_controller, base::DoNothing());
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -315,7 +322,8 @@ TEST_P(PickerSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
 
   section_view.AddResult(
       PickerBrowsingHistoryResult(GetParam().first, u"title", /*icon=*/{}),
-      &preview_controller, base::DoNothing());
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();

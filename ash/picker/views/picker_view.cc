@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/ash_features.h"
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
@@ -791,6 +792,10 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
           this, kPickerViewWidth, delegate_->GetAssetFetcher(),
           &submenu_controller_, &preview_controller_));
+  if (base::FeatureList::IsEnabled(ash::features::kPickerGrid)) {
+    category_results_view_->SetLocalFileResultStyle(
+        PickerSearchResultsView::LocalFileResultStyle::kGrid);
+  }
   search_results_view_ =
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
           this, kPickerViewWidth, delegate_->GetAssetFetcher(),

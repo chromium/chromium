@@ -43,6 +43,14 @@ class ASH_EXPORT PickerSectionView : public views::View {
  public:
   using SelectResultCallback = base::RepeatingClosure;
 
+  // Describes the way local file results are visually presented.
+  enum class LocalFileResultStyle {
+    // Shown as list items with the name of the file as the label.
+    kList,
+    // Shown as a grid of thumbnail previews.
+    kGrid,
+  };
+
   explicit PickerSectionView(int section_width,
                              PickerAssetFetcher* asset_fetcher,
                              PickerSubmenuController* submenu_controller);
@@ -60,6 +68,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
       PickerPreviewBubbleController* preview_controller,
       PickerAssetFetcher* asset_fetcher,
       int available_width,
+      LocalFileResultStyle local_file_result_style,
       SelectResultCallback select_result_callback);
 
   void AddTitleLabel(const std::u16string& title_text);
@@ -88,6 +97,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // section.
   PickerItemView* AddResult(const PickerSearchResult& result,
                             PickerPreviewBubbleController* preview_controller,
+                            LocalFileResultStyle local_file_result_style,
                             SelectResultCallback select_result_callback);
 
   void ClearItems();

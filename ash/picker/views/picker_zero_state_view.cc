@@ -113,6 +113,7 @@ PickerZeroStateView::PickerZeroStateView(
     auto result = PickerCategoryResult(category);
     GetOrCreateSectionView(category)->AddResult(
         std::move(result), preview_controller_,
+        PickerSectionView::LocalFileResultStyle::kList,
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
   }
@@ -211,6 +212,7 @@ void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
                                              PickerSectionView* section) {
   PickerItemView* view = section->AddResult(
       result, preview_controller_,
+      PickerSectionView::LocalFileResultStyle::kList,
       base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                           weak_ptr_factory_.GetWeakPtr(), result));
 
@@ -299,8 +301,10 @@ void PickerZeroStateView::OnFetchSuggestedResults(
                               weak_ptr_factory_.GetWeakPtr(), result);
       switch (GetEditorSubmenu(editor_data->category)) {
         case EditorSubmenu::kNone:
-          primary_section_view_->AddResult(result, preview_controller_,
-                                           std::move(callback));
+          primary_section_view_->AddResult(
+              result, preview_controller_,
+              PickerSectionView::LocalFileResultStyle::kList,
+              std::move(callback));
           break;
         case EditorSubmenu::kLength:
           length_submenu->AddEntry(result, std::move(callback));

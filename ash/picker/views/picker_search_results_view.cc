@@ -79,6 +79,16 @@ std::u16string GetAccessibleNameForSeeMoreButton(
   }
 }
 
+PickerSectionView::LocalFileResultStyle ConvertLocalFileResultStyle(
+    PickerSearchResultsView::LocalFileResultStyle style) {
+  switch (style) {
+    case PickerSearchResultsView::LocalFileResultStyle::kList:
+      return PickerSectionView::LocalFileResultStyle::kList;
+    case PickerSearchResultsView::LocalFileResultStyle::kGrid:
+      return PickerSectionView::LocalFileResultStyle::kGrid;
+  }
+}
+
 }  // namespace
 
 PickerSearchResultsView::PickerSearchResultsView(
@@ -135,6 +145,11 @@ PickerSearchResultsView::PickerSearchResultsView(
 }
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
+
+void PickerSearchResultsView::SetLocalFileResultStyle(
+    LocalFileResultStyle style) {
+  local_file_result_style_ = style;
+}
 
 views::View* PickerSearchResultsView::GetTopItem() {
   return section_list_view_->GetTopItem();
@@ -268,6 +283,7 @@ void PickerSearchResultsView::AddResultToSection(
   // takes this callback.
   PickerItemView* view = section_view->AddResult(
       result, preview_controller_,
+      ConvertLocalFileResultStyle(local_file_result_style_),
       base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
                           base::Unretained(this), result));
 

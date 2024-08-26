@@ -127,7 +127,8 @@ void PickerItemWithSubmenuView::ShowSubmenu() {
     // `available_width`.
     items.push_back(PickerSectionView::CreateItemFromResult(
         result, /*preview_controller=*/nullptr, /*asset_fetcher=*/nullptr,
-        /*available_width=*/0, callback));
+        /*available_width=*/0, PickerSectionView::LocalFileResultStyle::kList,
+        callback));
   }
   GetSubmenuController()->Show(this, std::move(items));
 }
