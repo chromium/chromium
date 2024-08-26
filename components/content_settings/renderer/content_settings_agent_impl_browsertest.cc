@@ -35,7 +35,6 @@ namespace content_settings {
 namespace {
 
 constexpr char kAllowlistScheme[] = "foo";
-constexpr char kEndUrl[] = ":something";
 
 class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
  public:
@@ -115,7 +114,6 @@ MockContentSettingsAgentImpl::MockContentSettingsAgentImpl(
     content::RenderFrame* render_frame)
     : ContentSettingsAgentImpl(
           render_frame,
-          false,
           std::make_unique<MockContentSettingsAgentDelegate>()),
       image_url_("http://www.foo.com/image.jpg"),
       image_origin_("http://www.foo.com") {}
@@ -257,34 +255,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "BackgroundResourceFetchDisabled";
       }
     });
-
-TEST_P(ContentSettingsAgentImplBrowserTest, AllowlistedSchemes) {
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAllowlistScheme, url::SCHEME_WITH_HOST);
-
-  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
-  GURL chrome_ui_url =
-      GURL(std::string(content::kChromeUIScheme).append(kEndUrl));
-  LoadHTMLWithUrlOverride("<html></html>", chrome_ui_url.spec().c_str());
-  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
-
-  GURL chrome_dev_tools_url =
-      GURL(std::string(content::kChromeDevToolsScheme).append(kEndUrl));
-  LoadHTMLWithUrlOverride("<html></html>", chrome_dev_tools_url.spec().c_str());
-  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
-
-  GURL allowlist_url = GURL(std::string(kAllowlistScheme).append(kEndUrl));
-  LoadHTMLWithUrlOverride("<html></html>", allowlist_url.spec().c_str());
-  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
-
-  LoadHTMLWithUrlOverride("<html></html>", "file:///dir/");
-  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
-  LoadHTMLWithUrlOverride("<html></html>", "file:///dir/file");
-  EXPECT_FALSE(mock_agent.IsAllowlistedForContentSettings());
-
-  LoadHTMLWithUrlOverride("<html></html>", "http://server.com/path");
-  EXPECT_FALSE(mock_agent.IsAllowlistedForContentSettings());
-}
 
 TEST_P(ContentSettingsAgentImplBrowserTest, DidBlockContentType) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());

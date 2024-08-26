@@ -62,10 +62,7 @@ class ContentSettingsAgentImpl
     virtual std::optional<bool> AllowMutationEvents();
   };
 
-  // Set `should_allowlist` to true if `render_frame()` contains content that
-  // should be allowlisted for content settings.
   ContentSettingsAgentImpl(content::RenderFrame* render_frame,
-                           bool should_allowlist,
                            std::unique_ptr<Delegate> delegate);
 
   ContentSettingsAgentImpl(const ContentSettingsAgentImpl&) = delete;
@@ -132,11 +129,6 @@ class ContentSettingsAgentImpl
   // Resets the `content_blocked_` array.
   void ClearBlockedContentSettings();
 
-  // Helpers.
-  // True if `render_frame()` contains content that is allowlisted for content
-  // settings.
-  bool IsAllowlistedForContentSettings() const;
-
   // A getter for `content_settings_manager_` that ensures it is bound.
   mojom::ContentSettingsManager& GetContentSettingsManager();
 
@@ -153,9 +145,6 @@ class ContentSettingsAgentImpl
   // Caches the result of AllowStorageAccess.
   using StoragePermissionsKey = std::pair<url::Origin, StorageType>;
   base::flat_map<StoragePermissionsKey, bool> cached_storage_permissions_;
-
-  // If true, IsAllowlistedForContentSettings will always return true.
-  const bool should_allowlist_;
 
   std::unique_ptr<Delegate> delegate_;
 

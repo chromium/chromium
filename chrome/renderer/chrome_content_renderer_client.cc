@@ -586,9 +586,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   new prerender::PrerenderRenderFrameObserver(render_frame);
 
-  bool should_allow_for_content_settings =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kInstantProcess);
   auto content_settings_delegate =
       std::make_unique<ChromeContentSettingsAgentDelegate>(render_frame);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -597,8 +594,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
   content_settings::ContentSettingsAgentImpl* content_settings =
       new content_settings::ContentSettingsAgentImpl(
-          render_frame, should_allow_for_content_settings,
-          std::move(content_settings_delegate));
+          render_frame, std::move(content_settings_delegate));
   if (chrome_observer_.get()) {
     if (chrome_observer_->content_settings_manager()) {
       mojo::Remote<content_settings::mojom::ContentSettingsManager> manager;

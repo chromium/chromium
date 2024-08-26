@@ -467,7 +467,6 @@ class TestRunner {
   void DumpResourceResponseMIMETypes();
 
   // WebContentSettingsClient related.
-  void SetImagesAllowed(bool allowed, WebFrameTestProxy& source);
   void SetStorageAllowed(bool allowed, WebFrameTestProxy& source);
   void SetAllowRunningOfInsecureContent(bool allowed,
                                         WebFrameTestProxy& source);
