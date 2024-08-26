@@ -32,7 +32,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -52,9 +51,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kNoMediaTextFontSizeIncrease = 2;
 constexpr int kNoMediaTextFontSize = 14;
-constexpr int kTitleFontSizeIncrease = 4;
 constexpr int kTitleViewHeight = 60;
 
 constexpr gfx::Insets kTitleViewInsets = gfx::Insets::VH(16, 16);
@@ -110,39 +107,20 @@ class GlobalMediaControlsTitleView : public views::View {
     DCHECK(MediaTray::IsPinnedToShelf());
     pin_button_ = AddChildView(std::make_unique<MediaTray::PinButton>());
 
-    if (base::FeatureList::IsEnabled(
-            media::kGlobalMediaControlsCrOSUpdatedUI)) {
-      title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
-                                            *title_label_);
-      SetPreferredSize(gfx::Size(kWideTrayMenuWidth, kTitleViewHeight));
+    title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                          *title_label_);
+    SetPreferredSize(gfx::Size(kWideTrayMenuWidth, kTitleViewHeight));
 
-      // Makes the title in the center of the card horizontally.
-      title_label_->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets::TLBR(0, pin_button_->GetPreferredSize().width(), 0, 0)));
-    } else {
-      title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
-          kTitleFontSizeIncrease, gfx::Font::NORMAL,
-          gfx::Font::Weight::MEDIUM));
-      SetPreferredSize(gfx::Size(kTrayMenuWidth, kTitleViewHeight));
-    }
+    // Makes the title in the center of the card horizontally.
+    title_label_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, pin_button_->GetPreferredSize().width(), 0, 0)));
+
     box_layout->SetFlexForView(title_label_, 1);
   }
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    if (!base::FeatureList::IsEnabled(
-            media::kGlobalMediaControlsCrOSUpdatedUI)) {
-      SetBorder(views::CreatePaddedBorder(
-          views::CreateSolidSidedBorder(
-              gfx::Insets::TLBR(0, 0, kMenuSeparatorWidth, 0),
-              AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kSeparatorColor)),
-          gfx::Insets::TLBR(kMenuSeparatorVerticalPadding, 0,
-                            kMenuSeparatorVerticalPadding - kMenuSeparatorWidth,
-                            0)));
-    }
     title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
@@ -411,11 +389,9 @@ void MediaTray::ShowBubbleWithItem(const std::string& item_id) {
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
           kMenuSeparatorWidth, /*should_clip_height=*/true, entry_point,
           item_id));
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    bubble_view->SetPreferredWidth(kWideTrayMenuWidth);
-    content_view_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(0, 0, kMediaNotificationListViewBottomPadding, 0)));
-  }
+  bubble_view->SetPreferredWidth(kWideTrayMenuWidth);
+  content_view_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, 0, kMediaNotificationListViewBottomPadding, 0)));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
@@ -480,15 +456,9 @@ void MediaTray::ShowEmptyState() {
       AshColorProvider::ContentLayerType::kTextColorSecondary));
   no_media_label->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_NO_MEDIA_TEXT));
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    no_media_label->SetFontList(
-        gfx::FontList({"Google Sans", "Roboto"}, gfx::Font::NORMAL,
-                      kNoMediaTextFontSize, gfx::Font::Weight::NORMAL));
-  } else {
-    no_media_label->SetFontList(
-        views::Label::GetDefaultFontList().DeriveWithSizeDelta(
-            kNoMediaTextFontSizeIncrease));
-  }
+  no_media_label->SetFontList(
+      gfx::FontList({"Google Sans", "Roboto"}, gfx::Font::NORMAL,
+                    kNoMediaTextFontSize, gfx::Font::Weight::NORMAL));
   empty_state_view->AddChildView(std::move(no_media_label));
 
   empty_state_view->SetPaintToLayer();

@@ -65,9 +65,7 @@ MediaNotificationProviderImpl::MediaNotificationProviderImpl(
           item_manager_.get(), /*source_id=*/std::nullopt);
   item_manager_->AddItemProducer(media_session_item_producer_.get());
 
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    media_color_theme_ = GetCrosMediaColorTheme();
-  }
+  media_color_theme_ = GetCrosMediaColorTheme();
 }
 
 MediaNotificationProviderImpl::~MediaNotificationProviderImpl() {

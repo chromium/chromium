@@ -10,9 +10,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/media_message_center/mock_media_notification_item.h"
-#include "media/base/media_switches.h"
 
 namespace ash {
 
@@ -26,8 +24,6 @@ class QuickSettingsMediaViewControllerTest : public AshTestBase {
   ~QuickSettingsMediaViewControllerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({media::kGlobalMediaControlsCrOSUpdatedUI},
-                                   {});
     AshTestBase::SetUp();
     provider_ = std::make_unique<MockMediaNotificationProvider>();
 
@@ -53,7 +49,6 @@ class QuickSettingsMediaViewControllerTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<media_message_center::test::MockMediaNotificationItem> item_;
   std::unique_ptr<MockMediaNotificationProvider> provider_;
 };
