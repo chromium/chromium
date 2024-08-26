@@ -39,6 +39,10 @@ EnumTraits<network::mojom::CookieExemptionReason,
       return network::mojom::CookieExemptionReason::k3PCDMetadata;
     case net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial:
       return network::mojom::CookieExemptionReason::k3PCDDeprecationTrial;
+    case net::CookieInclusionStatus::ExemptionReason::
+        kTopLevel3PCDDeprecationTrial:
+      return network::mojom::CookieExemptionReason::
+          kTopLevel3PCDDeprecationTrial;
     case net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics:
       return network::mojom::CookieExemptionReason::k3PCDHeuristics;
     case net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy:
@@ -71,6 +75,10 @@ bool EnumTraits<network::mojom::CookieExemptionReason,
     case network::mojom::CookieExemptionReason::k3PCDDeprecationTrial:
       *output =
           net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial;
+      return true;
+    case network::mojom::CookieExemptionReason::kTopLevel3PCDDeprecationTrial:
+      *output = net::CookieInclusionStatus::ExemptionReason::
+          kTopLevel3PCDDeprecationTrial;
       return true;
     case network::mojom::CookieExemptionReason::k3PCDHeuristics:
       *output = net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;

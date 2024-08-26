@@ -1035,6 +1035,9 @@ Network::CookieExemptionReason GetProtocolCookieExemptionReason(
       return Network::CookieExemptionReasonEnum::TPCDMetadata;
     case net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial:
       return Network::CookieExemptionReasonEnum::TPCDDeprecationTrial;
+    case net::CookieInclusionStatus::ExemptionReason::
+        kTopLevel3PCDDeprecationTrial:
+      return Network::CookieExemptionReasonEnum::TopLevelTPCDDeprecationTrial;
     case net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics:
       return Network::CookieExemptionReasonEnum::TPCDHeuristics;
     case net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy:

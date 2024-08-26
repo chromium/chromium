@@ -6342,6 +6342,8 @@ domain Network
       TPCDMetadata
       # The cookie should have been blocked by 3PCD but is exempted by Deprecation Trial mitigation.
       TPCDDeprecationTrial
+      # The cookie should have been blocked by 3PCD but is exempted by Top-level Deprecation Trial mitigation.
+      TopLevelTPCDDeprecationTrial
       # The cookie should have been blocked by 3PCD but is exempted by heuristics mitigation.
       TPCDHeuristics
       # The cookie should have been blocked by 3PCD but is exempted by Enterprise Policy.
