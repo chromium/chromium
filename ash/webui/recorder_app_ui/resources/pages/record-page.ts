@@ -379,12 +379,14 @@ export class RecordPage extends ReactiveLitElement {
       return;
     }
 
+    const speakerLabelEnabled = this.platformHandler.canUseSpeakerLabel.value &&
+      settings.value.speakerLabelEnabled === SpeakerLabelEnableState.ENABLED;
+
     const session = await RecordingSession.create({
       micId: assertExists(this.micId),
       includeSystemAudio: this.includeSystemAudio,
       platformHandler: this.platformHandler,
-      speakerLabelEnabled:
-        settings.value.speakerLabelEnabled === SpeakerLabelEnableState.ENABLED,
+      speakerLabelEnabled,
     });
 
     try {

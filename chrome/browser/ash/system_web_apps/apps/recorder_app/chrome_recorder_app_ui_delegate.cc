@@ -11,7 +11,10 @@
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/feedback/feedback_constants.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
 #include "url/gurl.h"
@@ -22,8 +25,7 @@ ChromeRecorderAppUIDelegate::ChromeRecorderAppUIDelegate(content::WebUI* web_ui)
 void ChromeRecorderAppUIDelegate::InstallSoda(
     speech::LanguageCode language_code) {
   CHECK(speech::IsOnDeviceSpeechRecognitionSupported());
-  raw_ptr<PrefService> profile_prefs =
-      ProfileManager::GetPrimaryUserProfile()->GetPrefs();
+  raw_ptr<PrefService> profile_prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
   raw_ptr<PrefService> global_prefs = g_browser_process->local_state();
 
   auto* soda_installer = speech::SodaInstaller::GetInstance();
@@ -57,4 +59,12 @@ ChromeRecorderAppUIDelegate::GetMediaDeviceSaltService(
     content::BrowserContext* context) {
   return MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
       context);
+}
+
+bool ChromeRecorderAppUIDelegate::CanUseSpeakerLabelForCurrentProfile() {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  // TODO: b/341806818 - Integrate with capabilities.
+  return identity_manager != nullptr &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }

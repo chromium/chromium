@@ -8,8 +8,12 @@
  * implementation other than mojo to exist in release image.
  */
 import 'chrome://resources/cros_components/dropdown/dropdown_option.js';
+import 'chrome://resources/cros_components/switch/switch.js';
 import '../../components/cra/cra-dropdown.js';
 
+import {
+  Switch as CrosSwitch,
+} from 'chrome://resources/cros_components/switch/switch.js';
 import {html, nothing, styleMap} from 'chrome://resources/mwc/lit/index.js';
 
 import {CraDropdown} from '../../components/cra/cra-dropdown.js';
@@ -24,7 +28,7 @@ import {
 import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
-import {signal} from '../../core/reactive/signal.js';
+import {computed, signal} from '../../core/reactive/signal.js';
 import {
   HypothesisPart,
   SodaEvent,
@@ -326,6 +330,10 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override readonly sodaState = signal<ModelState>({kind: 'notInstalled'});
 
+  override readonly canUseSpeakerLabel = computed(
+    () => devSettings.value.canUseSpeakerLabel,
+  );
+
   override async init(): Promise<void> {
     settingsInit();
     if (devSettings.value.sodaInstalled) {
@@ -386,12 +394,18 @@ export class PlatformHandler extends PlatformHandlerBase {
   }
 
   override renderDevUi(): RenderResult {
-    function handleChange(ev: Event) {
+    function handleColorModeChange(ev: Event) {
       devSettings.mutate((s) => {
         s.forceTheme = assertEnumVariant(
           ColorTheme,
           assertInstanceof(ev.target, CraDropdown).value,
         );
+      });
+    }
+    function handleCanUseSpeakerLabelChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.canUseSpeakerLabel = target.selected;
       });
     }
     // TODO(pihsun): Move the dev toggle to a separate component, so we don't
@@ -406,7 +420,7 @@ export class PlatformHandler extends PlatformHandlerBase {
         <label style=${styleMap(labelStyle)}>
           <cra-dropdown
             label="dark/light mode"
-            @change=${handleChange}
+            @change=${handleColorModeChange}
             .value=${devSettings.value.forceTheme ?? ColorTheme.SYSTEM}
           >
             <cros-dropdown-option
@@ -419,6 +433,20 @@ export class PlatformHandler extends PlatformHandlerBase {
             <cros-dropdown-option headline="Dark" value=${ColorTheme.DARK}>
             </cros-dropdown-option>
           </cra-dropdown>
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(pihsun): cros-switch doesn't automatically makes clicking the
+            surrounding label toggles the switch, unlike md-switch.
+          -->
+          <cros-switch
+            @change=${handleCanUseSpeakerLabelChange}
+            .selected=${this.canUseSpeakerLabel.value}
+          >
+          </cros-switch>
+          Toggle can use speaker label
         </label>
       </div>
     `;

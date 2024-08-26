@@ -135,6 +135,9 @@ class RecorderAppUI
 
   void SetQuietMode(bool quiet_mode) override;
 
+  void CanUseSpeakerLabelForCurrentProfile(
+      CanUseSpeakerLabelForCurrentProfileCallback callback) override;
+
   // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;
 

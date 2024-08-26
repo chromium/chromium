@@ -563,6 +563,13 @@ void RecorderAppUI::SetQuietMode(bool quiet_mode) {
   message_center::MessageCenter::Get()->SetQuietMode(quiet_mode);
 }
 
+void RecorderAppUI::CanUseSpeakerLabelForCurrentProfile(
+    CanUseSpeakerLabelForCurrentProfileCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::move(callback).Run(delegate_->CanUseSpeakerLabelForCurrentProfile());
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(RecorderAppUI)
 
 }  // namespace ash

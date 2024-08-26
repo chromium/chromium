@@ -52,6 +52,8 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override readonly quietMode: Signal<boolean>;
 
+  override canUseSpeakerLabel = signal(false);
+
   constructor() {
     super();
     this.summaryModelLoader = new SummaryModelLoader(this.remote);
@@ -71,6 +73,9 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override async init(): Promise<void> {
     ColorChangeUpdater.forDocument().start();
+
+    this.canUseSpeakerLabel.value =
+      (await this.remote.canUseSpeakerLabelForCurrentProfile()).supported;
 
     const update = (state: MojoModelState) => {
       this.sodaState.value = mojoModelStateToModelState(state);

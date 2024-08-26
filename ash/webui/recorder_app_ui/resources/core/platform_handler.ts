@@ -96,4 +96,16 @@ export abstract class PlatformHandler {
    * Gets/sets the quiet mode of the system.
    */
   abstract readonly quietMode: Signal<boolean>;
+
+  /**
+   * Whether speaker label can be used by current profile.
+   *
+   * In additional to this, SODA still needs to be supported and installed, and
+   * the language pack needs to support speaker label for speaker label to work.
+   *
+   * Note that in typical SWA case, this value is set and fixed on startup, and
+   * currently there's no case where this would change at runtime, but to
+   * support easier development we still use a signal here.
+   */
+  abstract readonly canUseSpeakerLabel: ReadonlySignal<boolean>;
 }

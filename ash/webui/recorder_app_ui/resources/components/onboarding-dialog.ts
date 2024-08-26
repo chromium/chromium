@@ -169,6 +169,12 @@ export class OnboardingDialog extends ReactiveLitElement {
     switch (this.step.value) {
       case 0: {
         const nextStep = () => {
+          if (this.platformHandler.sodaState.value.kind === 'unavailable') {
+            // SODA isn't available on this platform. Don't ask for enabling
+            // transcription or speaker label.
+            this.close();
+            return;
+          }
           this.step.value = 1;
         };
         return this.renderDialog(
@@ -187,6 +193,11 @@ export class OnboardingDialog extends ReactiveLitElement {
             s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
           });
           this.platformHandler.installSoda();
+          if (!this.platformHandler.canUseSpeakerLabel.value) {
+            // Speaker label isn't supported on this platform.
+            this.close();
+            return;
+          }
           this.step.value = 2;
         };
         const disableTranscription = () => {

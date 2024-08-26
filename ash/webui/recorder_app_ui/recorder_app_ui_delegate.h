@@ -25,6 +25,8 @@ class RecorderAppUIDelegate {
   virtual void OpenAiFeedbackDialog(
       const std::string& description_template) = 0;
 
+  virtual bool CanUseSpeakerLabelForCurrentProfile() = 0;
+
   virtual ~RecorderAppUIDelegate() = default;
 
   // Returns a service that provides persistent salts for generating media
