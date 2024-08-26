@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
 
+@class HomeCustomizationMagicStackViewController;
 @class HomeCustomizationMainViewController;
 @class HomeCustomizationMediator;
 
@@ -17,6 +18,10 @@
 // Exposing as readonly for testing.
 @property(nonatomic, strong, readonly)
     HomeCustomizationMainViewController* mainViewController;
+
+// Exposing as readonly for testing.
+@property(nonatomic, strong, readonly)
+    HomeCustomizationMagicStackViewController* magicStackViewController;
 
 // Exposing as readonly for testing.
 @property(nonatomic, strong, readonly) HomeCustomizationMediator* mediator;

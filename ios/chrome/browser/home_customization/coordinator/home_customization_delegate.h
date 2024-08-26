@@ -9,9 +9,8 @@
 // its parent coordinator, the NewTabPageCoordinator.
 @protocol HomeCustomizationDelegate
 
-// Called when the presented customization menu is dismissed.
-- (void)handleCustomizationMenuDismissed:
-    (HomeCustomizationCoordinator*)coordinator;
+// Dismisses the customization menu.
+- (void)dismissCustomizationMenu;
 
 @end
 
