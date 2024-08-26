@@ -337,6 +337,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetPlaceholder(const std::string& placeholder);
 
+  void AddAction(ax::mojom::Action action);
+
   void SetCheckedState(ax::mojom::CheckedState checked_state);
   void RemoveCheckedState();
 

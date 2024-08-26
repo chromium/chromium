@@ -17,6 +17,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/slider.h"
 
 namespace ash {
@@ -83,6 +84,9 @@ QuickSettingsSlider::QuickSettingsSlider(views::SliderListener* listener,
     : views::Slider(listener), slider_style_(slider_style) {
   SetValueIndicatorRadius(kFullSliderRoundedRadius);
   SetFocusBehavior(FocusBehavior::ALWAYS);
+
+  GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
+  GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
 }
 
 QuickSettingsSlider::~QuickSettingsSlider() = default;
@@ -129,9 +133,6 @@ void QuickSettingsSlider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   } else {
     node_data->SetValue(volume_level);
   }
-
-  node_data->AddAction(ax::mojom::Action::kIncrement);
-  node_data->AddAction(ax::mojom::Action::kDecrement);
 }
 
 SkColor QuickSettingsSlider::GetThumbColor() const {
