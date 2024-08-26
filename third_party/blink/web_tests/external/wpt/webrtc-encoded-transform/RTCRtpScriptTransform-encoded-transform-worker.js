@@ -22,9 +22,11 @@ function RestoreAndWrite(chunk, transformer) {
         self.postMessage("got expected");
     }
     else {
-        self.postMessage("unexpected value, lastByte" + lastByte +
-            ",  frame data length: " + frameData.byteLength + " rtpTimestamp: ",
-             chunk.value.getMetadata().rtpTimestamp);
+        self.postMessage("unexpected value: lastByte (got " + lastByte +
+            ", expected " + modification +
+            "),  frame data length (got " + frameData.byteLength +
+            ", expected 0), rtpTimestamp (got " +
+             chunk.value.getMetadata().rtpTimestamp, ", expected null)");
     }
 }
 onrtctransform = (event) => {
