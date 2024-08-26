@@ -14,13 +14,13 @@
 #include "ash/auth/views/active_session_auth_view.h"
 #include "ash/auth/views/auth_common.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
-#include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/components/osauth/public/request/auth_request.h"
 #include "components/account_id/account_id.h"
 #include "ui/aura/window.h"
 #include "ui/views/view_observer.h"
@@ -38,8 +38,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
     : public ActiveSessionAuthController,
       public ActiveSessionAuthView::Observer,
       public UserDataAuthClient::AuthFactorStatusUpdateObserver,
-      public views::ViewObserver,
-      public InSessionAuthTokenProvider {
+      public views::ViewObserver {
  public:
   class TestApi {
    public:
@@ -75,8 +74,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   ~ActiveSessionAuthControllerImpl() override;
 
   // ActiveSessionAuthController:
-  bool ShowAuthDialog(Reason reason,
-                      AuthCompletionCallback on_auth_complete) override;
+  bool ShowAuthDialog(std::unique_ptr<AuthRequest> auth_request) override;
   bool IsShown() const override;
 
   // views::ViewObserver:
@@ -90,11 +88,6 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   // UserDataAuthClient::AuthFactorStatusUpdateObserver:
   void OnAuthFactorStatusUpdate(
       const user_data_auth::AuthFactorStatusUpdate& update) override;
-
-  // InSessionAuthTokenProvider:
-  void ExchangeForToken(
-      std::unique_ptr<UserContext> user_context,
-      InSessionAuthTokenProvider::OnAuthTokenGenerated callback) override;
 
   // Actions:
   void MoveToTheCenter();
@@ -147,8 +140,6 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   std::u16string title_;
   std::u16string description_;
 
-  AuthCompletionCallback on_auth_complete_;
-
   std::unique_ptr<AuthFactorEditor> auth_factor_editor_;
   std::unique_ptr<AuthPerformer> auth_performer_;
 
@@ -157,9 +148,9 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   AuthFactorSet available_factors_;
   ActiveSessionAuthState state_ = ActiveSessionAuthState::kWaitForInit;
 
-  Reason reason_;
   std::optional<user_data_auth::AuthFactorStatusUpdate>
       pending_pin_factor_status_update_ = std::nullopt;
+  std::unique_ptr<AuthRequest> auth_request_;
 
   ActiveSessionAuthMetricsRecorder uma_recorder_;
 

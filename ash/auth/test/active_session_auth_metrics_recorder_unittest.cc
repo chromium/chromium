@@ -68,24 +68,22 @@ void ActiveSessionAuthMetricsRecorderTest::SetUp() {
 
 // Verifies that histogram records the Password manager show reason.
 TEST_F(ActiveSessionAuthMetricsRecorderTest, ShowReasonPasswordManagerTest) {
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
   histogram_tester_->ExpectUniqueSample(
-      kShowReasonHistogram,
-      ActiveSessionAuthController::Reason::kPasswordManager, 1);
+      kShowReasonHistogram, AuthRequest::Reason::kPasswordManager, 1);
 }
 
 // Verifies that histogram records the settings show reason.
 TEST_F(ActiveSessionAuthMetricsRecorderTest, ShowReasonSettingsTest) {
-  metrics_recorder_.RecordShow(ActiveSessionAuthController::Reason::kSettings);
-  histogram_tester_->ExpectUniqueSample(
-      kShowReasonHistogram, ActiveSessionAuthController::Reason::kSettings, 1);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kSettings);
+  histogram_tester_->ExpectUniqueSample(kShowReasonHistogram,
+                                        AuthRequest::Reason::kSettings, 1);
 }
 
 // Verifies that histogram records when password is submitted.
 TEST_F(ActiveSessionAuthMetricsRecorderTest,
        ActiveSessionAuthStartWithPasswordTest) {
-  metrics_recorder_.RecordShow(ActiveSessionAuthController::Reason::kSettings);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kSettings);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPassword);
   histogram_tester_->ExpectUniqueSample(kAuthStartedHistogram,
@@ -95,7 +93,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest,
 // Verifies that histogram records when PIN is submitted.
 TEST_F(ActiveSessionAuthMetricsRecorderTest,
        ActiveSessionAuthStartWithPinTest) {
-  metrics_recorder_.RecordShow(ActiveSessionAuthController::Reason::kSettings);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kSettings);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPin);
   histogram_tester_->ExpectUniqueSample(kAuthStartedHistogram,
@@ -105,8 +103,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest,
 // Verifies that histogram records when password authentication is failed.
 TEST_F(ActiveSessionAuthMetricsRecorderTest,
        ActiveSessionAuthPasswordFailedTest) {
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPassword);
   metrics_recorder_.RecordAuthFailed(AuthInputType::kPassword);
@@ -116,8 +113,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest,
 
 // Verifies that histogram records when PIN authentication is failed.
 TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionAuthPinFailedTest) {
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPin);
   metrics_recorder_.RecordAuthFailed(AuthInputType::kPin);
@@ -128,8 +124,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionAuthPinFailedTest) {
 // Verifies that histogram records when password authentication is succeeded.
 TEST_F(ActiveSessionAuthMetricsRecorderTest,
        ActiveSessionAuthPasswordSucceededTest) {
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPassword);
   metrics_recorder_.RecordAuthSucceeded(AuthInputType::kPassword);
@@ -140,8 +135,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest,
 // Verifies that histogram records when PIN authentication is succeeded.
 TEST_F(ActiveSessionAuthMetricsRecorderTest,
        ActiveSessionAuthPinSucceededTest) {
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPin);
   metrics_recorder_.RecordAuthSucceeded(AuthInputType::kPin);
@@ -152,8 +146,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest,
 // Verifies that histogram records when closed after authentication is
 // succeeded.
 TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionCloseSucceededTest) {
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPassword);
   metrics_recorder_.RecordAuthSucceeded(AuthInputType::kPassword);
@@ -164,8 +157,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionCloseSucceededTest) {
 
 // Verifies that histogram records when PIN authentication is succeeded.
 TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionCloseFailedTest) {
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPin);
   metrics_recorder_.RecordAuthFailed(AuthInputType::kPin);
@@ -178,7 +170,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionCloseFailedTest) {
 // authentication.
 TEST_F(ActiveSessionAuthMetricsRecorderTest,
        ActiveSessionClosedDuringAuthTest) {
-  metrics_recorder_.RecordShow(ActiveSessionAuthController::Reason::kSettings);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kSettings);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPassword);
   histogram_tester_->ExpectUniqueSample(kClosedDuringAuthHistogram, true, 0);
@@ -188,8 +180,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest,
 
 // Verifies that histogram records when closed happens after the authentication.
 TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionClosedAfterAuthTest) {
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPin);
   metrics_recorder_.RecordAuthSucceeded(AuthInputType::kPin);
@@ -201,8 +192,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionClosedAfterAuthTest) {
 // Verifies that histogram records that how long was the dialog shown.
 TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionOpenDurationTest) {
   const base::TimeDelta kShowDuration = base::Seconds(3);
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPin);
   task_environment()->AdvanceClock(kShowDuration);
   metrics_recorder_.RecordClose();
@@ -213,7 +203,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionOpenDurationTest) {
 // Verifies that histogram records the password authentication attempt counter.
 TEST_F(ActiveSessionAuthMetricsRecorderTest,
        ActiveSessionAuthPasswordAttemptTest) {
-  metrics_recorder_.RecordShow(ActiveSessionAuthController::Reason::kSettings);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kSettings);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPassword);
   metrics_recorder_.RecordAuthFailed(AuthInputType::kPassword);
@@ -229,8 +219,7 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest,
 
 // Verifies that histogram records the PIN authentication attempt counter.
 TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionAuthPinAttemptTest) {
-  metrics_recorder_.RecordShow(
-      ActiveSessionAuthController::Reason::kPasswordManager);
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
 
   metrics_recorder_.RecordAuthStarted(AuthInputType::kPin);
   metrics_recorder_.RecordAuthFailed(AuthInputType::kPin);

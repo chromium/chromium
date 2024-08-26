@@ -50,8 +50,7 @@ ActiveSessionAuthMetricsRecorder::ActiveSessionAuthMetricsRecorder() = default;
 
 ActiveSessionAuthMetricsRecorder::~ActiveSessionAuthMetricsRecorder() = default;
 
-void ActiveSessionAuthMetricsRecorder::RecordShow(
-    ActiveSessionAuthController::Reason reason) {
+void ActiveSessionAuthMetricsRecorder::RecordShow(AuthRequest::Reason reason) {
   CHECK(!open_reason_.has_value());
   CHECK(!open_timer_.has_value());
 
