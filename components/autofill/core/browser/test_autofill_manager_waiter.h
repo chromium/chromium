@@ -210,8 +210,7 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
   void OnBeforeFocusOnFormField(AutofillManager& manager,
                                 FormGlobalId form,
-                                FieldGlobalId field,
-                                const FormData& form_data) override;
+                                FieldGlobalId field) override;
   void OnAfterFocusOnFormField(AutofillManager& manager,
                                FormGlobalId form,
                                FieldGlobalId field) override;
@@ -385,10 +384,8 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
   }
   void OnBeforeFocusOnFormField(AutofillManager& manager,
                                 FormGlobalId form,
-                                FieldGlobalId field,
-                                const FormData& form_data) override {
-    MaybeQuit(&Observer::OnBeforeFocusOnFormField, manager, form, field,
-              form_data);
+                                FieldGlobalId field) override {
+    MaybeQuit(&Observer::OnBeforeFocusOnFormField, manager, form, field);
   }
   void OnAfterFocusOnFormField(AutofillManager& manager,
                                FormGlobalId form,

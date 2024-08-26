@@ -143,8 +143,7 @@ class AutofillManager
 
     virtual void OnBeforeFocusOnFormField(AutofillManager& manager,
                                           FormGlobalId form,
-                                          FieldGlobalId field,
-                                          const FormData& form_data) {}
+                                          FieldGlobalId field) {}
     virtual void OnAfterFocusOnFormField(AutofillManager& manager,
                                          FormGlobalId form,
                                          FieldGlobalId field) {}

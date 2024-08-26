@@ -390,7 +390,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   manager().OnAskForValuesToFill(form, field.global_id(), gfx::Rect(),
                                  AutofillSuggestionTriggerSource::kUnspecified);
 
-  EXPECT_CALL(observer, OnBeforeFocusOnFormField(m, f, ff, Ref(form)));
+  EXPECT_CALL(observer, OnBeforeFocusOnFormField(m, f, ff));
   EXPECT_CALL(observer, OnAfterFocusOnFormField(m, f, ff));
   manager().OnFocusOnFormField(form, field.global_id());
 

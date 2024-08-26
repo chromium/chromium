@@ -197,8 +197,7 @@ void TestAutofillManagerWaiter::OnAfterAskForValuesToFill(
 void TestAutofillManagerWaiter::OnBeforeFocusOnFormField(
     AutofillManager& manager,
     FormGlobalId form,
-    FieldGlobalId field,
-    const FormData& form_data) {
+    FieldGlobalId field) {
   OnBefore(Event::kFocusOnFormField);
 }
 

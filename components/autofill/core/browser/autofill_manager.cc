@@ -479,7 +479,7 @@ void AutofillManager::OnFocusOnFormField(const FormData& form,
     return;
   }
   NotifyObservers(&Observer::OnBeforeFocusOnFormField, form.global_id(),
-                  field_id, form);
+                  field_id);
   ParseFormAsync(
       form,
       ParsingCallback(&AutofillManager::OnFocusOnFormFieldImpl, field_id)
