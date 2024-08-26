@@ -8082,6 +8082,29 @@
             ]
         }
     ],
+    "DevToolsFreestylerDogfood": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "params": {
+                        "aida_model_id": "",
+                        "aida_temperature": "0"
+                    },
+                    "enable_features": [
+                        "DevToolsFreestylerDogfood"
+                    ]
+                }
+            ]
+        }
+    ],
     "DevToolsTabTarget": [
         {
             "platforms": [
