@@ -123,6 +123,28 @@ id<GREYMatcher> AutofillFormButton() {
                     grey_interactable(), nullptr);
 }
 
+// Verifies that the number of accepted suggestions recorded for the given
+// `suggestion_index` is as expected.
+void CheckAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index) {
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.Profile"],
+      @"Unexpected histogram count for accepted address suggestion index.");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:@"Autofill.UserAcceptedSuggestionAtIndex."
+                                      @"Address.ManualFallback"],
+      @"Unexpected histogram count for manual fallback accepted address "
+      @"suggestion index.");
+}
+
 // Checks that the chip button with `title` is sufficiently visible.
 void CheckChipButtonVisibility(std::u16string title) {
   [[EarlGrey selectElementWithMatcher:ChipButton(title)]
@@ -515,14 +537,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   [self verifyAddressInfoHasBeenFilled:autofill::test::GetFullProfile()];
 
   // Verify that the acceptance of the address suggestion at index 0 was
-  // recorded in the right histogram.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:0
-                         forHistogram:
-                             @"Autofill.SuggestionAcceptedIndex.Profile"],
-      @"Unexpected histogram error for accepted address suggestion index.");
+  // correctly recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
 }
 
 // Tests that the overflow menu button is only visible when the Keyboard

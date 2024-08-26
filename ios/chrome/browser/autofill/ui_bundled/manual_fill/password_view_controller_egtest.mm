@@ -152,6 +152,30 @@ void OpenPasswordManualFillView(bool has_suggestions) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Verifies that the number of accepted suggestions recorded for the given
+// `suggestion_index` is as expected. `from_all_password_context` indicates
+// whether the suggestion was accpeted form the all password list.
+void CheckAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index,
+    bool from_all_password_context = false) {
+  NSString* histogram =
+      @"Autofill.UserAcceptedSuggestionAtIndex.Password.ManualFallback";
+  NSString* error_message = @"Unexpected histogram count for manual fallback "
+                            @"accepted password suggestion index.";
+
+  if (from_all_password_context) {
+    histogram = [NSString stringWithFormat:@"%@.AllPasswords", histogram];
+    error_message =
+        [NSString stringWithFormat:@"%@ In all password list.", error_message];
+  }
+
+  GREYAssertNil(
+      [MetricsAppInterface expectUniqueSampleWithCount:1
+                                             forBucket:suggestion_index
+                                          forHistogram:histogram],
+      error_message);
+}
+
 // Validates that the Password Manager UI opened from the manual fallback UI is
 // dismissed when local authentication fails.
 // - manual_fallback_action_matcher: Matcher for the action button opening the
@@ -1236,6 +1260,10 @@ void CheckKeyboardIsUpAndNotCovered() {
   [self verifyPasswordInfoHasBeenFilled:base::SysUTF8ToNSString(
                                             kExampleUsername)];
 
+  // Verify that the acceptance of the password suggestion at index 0 was
+  // correctly recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
+
   [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 }
 
@@ -1302,6 +1330,11 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Verify that the page is filled properly.
   [self verifyPasswordInfoHasBeenFilled:base::SysUTF8ToNSString(
                                             kExampleUsername)];
+
+  // Verify that the acceptance of the password suggestion at index 0 was
+  // correctly recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(
+      /*suggestion_index=*/0, /*from_all_password_context=*/true);
 }
 
 #pragma mark - Private

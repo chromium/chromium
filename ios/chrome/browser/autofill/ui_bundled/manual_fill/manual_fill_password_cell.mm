@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
@@ -66,6 +68,10 @@ CGFloat GetFaviconSize() {
 @end
 
 @implementation ManualFillCredentialItem {
+  // The 0-based index at which the password is in the list of passwords to
+  // show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
 
@@ -80,6 +86,7 @@ CGFloat GetFaviconSize() {
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                        menuActions:(NSArray<UIAction*>*)menuActions
+                         cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
             shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
@@ -90,6 +97,7 @@ CGFloat GetFaviconSize() {
     _isConnectedToNextItem = isConnectedToNextItem;
     _contentInjector = contentInjector;
     _menuActions = menuActions;
+    _cellIndex = cellIndex;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
     _showAutofillFormButton = showAutofillFormButton;
     _shouldReauthToAutofill = shouldReauthToAutofill;
@@ -106,6 +114,7 @@ CGFloat GetFaviconSize() {
             isConnectedToNextCell:self.isConnectedToNextItem
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
+                        cellIndex:_cellIndex
       cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel
            showAutofillFormButton:_showAutofillFormButton
            shouldReauthToAutofill:_shouldReauthToAutofill];
@@ -178,6 +187,10 @@ static const CGFloat kOffsetForConnectedCell = 16;
 @end
 
 @implementation ManualFillPasswordCell {
+  // The 0-based index at which the password is in the list of passwords to
+  // show.
+  NSInteger _cellIndex;
+
   // If `YES`, the user should be asked to re-authenticate before autofilling
   // the entire form.
   BOOL _shouldReauthToAutofill;
@@ -215,9 +228,11 @@ static const CGFloat kOffsetForConnectedCell = 16;
           isConnectedToNextCell:(BOOL)isConnectedToNextCell
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
          shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
+  _cellIndex = cellIndex;
   _shouldReauthToAutofill = shouldReauthToAutofill;
 
   if (self.contentView.subviews.count == 0) {
@@ -440,6 +455,13 @@ static const CGFloat kOffsetForConnectedCell = 16;
 // Called when the "Autofill Form" button is tapped. Fills the current form with
 // the credential' data.
 - (void)onAutofillFormButtonTapped {
+  std::string histogram =
+      "Autofill.UserAcceptedSuggestionAtIndex.Password.ManualFallback";
+  if (!_shouldReauthToAutofill) {
+    histogram = base::StrCat({histogram, ".AllPasswords"});
+  }
+
+  base::UmaHistogramSparse(histogram, _cellIndex);
   [self.contentInjector autofillFormWithCredential:self.credential
                                       shouldReauth:_shouldReauthToAutofill];
 }

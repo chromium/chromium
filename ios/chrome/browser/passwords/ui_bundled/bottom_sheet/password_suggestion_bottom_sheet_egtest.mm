@@ -84,6 +84,31 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
   GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
 }
 
+// Verifies that the number of accepted suggestions recorded for the given
+// `suggestion_index` is as expected. `is_unique` indicates whether the bucket
+// count we're verifying should be unique or not.
+void CheckAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index,
+    bool is_unique = true) {
+  NSString* histogram =
+      @"Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet";
+  NSString* error_message = @"Unexpected histogram count for bottom sheet "
+                            @"accepted password suggestion index.";
+
+  if (is_unique) {
+    GREYAssertNil(
+        [MetricsAppInterface expectUniqueSampleWithCount:1
+                                               forBucket:suggestion_index
+                                            forHistogram:histogram],
+        error_message);
+  } else {
+    GREYAssertNil([MetricsAppInterface expectCount:1
+                                         forBucket:suggestion_index
+                                      forHistogram:histogram],
+                  error_message);
+  }
+}
+
 }  // namespace
 
 @interface PasswordSuggestionBottomSheetEGTest : ChromeTestCase
@@ -228,6 +253,10 @@ id<GREYMatcher> OpenKeyboardButton() {
           expectTotalCount:0
               forHistogram:@"PasswordManager.TouchToFill.CredentialIndex"],
       @"Unexpected histogram error for touch to fill credential index");
+
+  // Verify that the acceptance of the password suggestion at index 0 was
+  // correctly recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
 
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
@@ -663,6 +692,10 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
       performAction:grey_tap()];
 
+  // Verify that the acceptance of the password suggestion at index 0 was
+  // correctly recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
+
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user2"
                                                   password:@"password2"
                                                        URL:URL];
@@ -698,6 +731,11 @@ id<GREYMatcher> OpenKeyboardButton() {
                          forHistogram:
                              @"PasswordManager.TouchToFill.CredentialIndex"],
       @"Unexpected histogram error for touch to fill credential index");
+
+  // Verify that the acceptance of the password suggestion at index 1 was
+  // correctly recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/1,
+                                                   /*is_unique=*/false);
 
   [self verifyPasswordFieldsHaveBeenFilled:@"user2"];
 

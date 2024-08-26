@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_cell.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -819,6 +820,10 @@ CGFloat GPayIconTopAnchorOffset() {
 // Called when the "Autofill Form" button is tapped. Fills the current form with
 // the card's data.
 - (void)onAutofillFormButtonTapped {
+  base::UmaHistogramSparse(
+      "Autofill.UserAcceptedSuggestionAtIndex.CreditCard.ManualFallback",
+      _cellIndex);
+
   autofill::SuggestionType type =
       autofill::VirtualCardFeatureEnabled() &&
               [self.card recordType] == kVirtualCard

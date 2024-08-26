@@ -311,6 +311,7 @@ BOOL AreCredentialsAtIndicesConnected(
               isConnectedToNextItem:isConnectedToNextItem
                     contentInjector:self
                         menuActions:menuActions
+                          cellIndex:i
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
              showAutofillFormButton:_showAutofillFormButton
              shouldReauthToAutofill:![self isFromAllPasswordsContext]];

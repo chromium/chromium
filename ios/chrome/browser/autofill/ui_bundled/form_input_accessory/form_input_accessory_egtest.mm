@@ -67,6 +67,64 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion() {
       [NSString stringWithFormat:@"%@ ••••••••", kExampleUsername]);
 }
 
+// Verifies that the number of accepted address suggestions recorded for the
+// given `suggestion_index` is as expected.
+void CheckAddressAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index) {
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.Profile"],
+      @"Unexpected histogram count for accepted address suggestion index.");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:@"Autofill.UserAcceptedSuggestionAtIndex."
+                                      @"Address.KeyboardAccessory"],
+      @"Unexpected histogram count for keyboard accessory accepted address "
+      @"suggestion index.");
+}
+
+// Verifies that the number of accepted card suggestions recorded for the given
+// `suggestion_index` is as expected.
+void CheckCardAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index) {
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
+      @"Unexpected histogram count for accepted card suggestion index.");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:@"Autofill.UserAcceptedSuggestionAtIndex."
+                                      @"CreditCard.KeyboardAccessory"],
+      @"Unexpected histogram count for keyboard accessory accepted card "
+      @"suggestion index.");
+}
+
+// Verifies that the number of accepted password suggestions recorded for the
+// given `suggestion_index` is as expected.
+void CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index) {
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:@"Autofill.UserAcceptedSuggestionAtIndex."
+                                      @"Password.KeyboardAccessory"],
+      @"Unexpected histogram count for keyboard accessory accepted password "
+      @"suggestion index.");
+}
+
 }  // namespace
 
 @interface FormInputAccessoryEGTest : WebHttpServerChromeTestCase
@@ -269,6 +327,11 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   [self verifyFieldsHaveBeenFilledWithUsername:username password:password];
 
+  // Verify that the acceptance of the password suggestion at index 0 was
+  // correctly recorded.
+  CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
+      /*suggestion_index=*/0);
+
   [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 }
 
@@ -381,15 +444,9 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:card];
 
-  // Verify that the acceptance of the card suggestion at index 1 was
-  // recorded in the right histogram.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:1
-                         forHistogram:
-                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
-      @"Unexpected histogram error for accepted card suggestion index.");
+  // Verify that the acceptance of the card suggestion at index 1 was correctly
+  // recorded.
+  CheckCardAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/1);
 
   [AutofillAppInterface clearMockReauthenticationModule];
 }
@@ -416,14 +473,9 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [self verifyAddressInfosHaveBeenFilled:profile];
 
   // Verify that the acceptance of the address suggestion at index 0 was
-  // recorded in the right histogram.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:0
-                         forHistogram:
-                             @"Autofill.SuggestionAcceptedIndex.Profile"],
-      @"Unexpected histogram error for accepted address suggestion index.");
+  // correctly recorded.
+  CheckAddressAutofillSuggestionAcceptedIndexMetricsCount(
+      /*suggestion_index=*/0);
 }
 
 // Tests that the manual fill button opens the expanded manual fill view.

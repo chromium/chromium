@@ -229,6 +229,8 @@ CGFloat const kSpacingAfterTitle = 4;
 
 - (void)confirmationAlertPrimaryAction {
   NSInteger index = [self selectedRow];
+  base::UmaHistogramSparse(
+      "Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet", index);
   [self.handler primaryButtonTappedForSuggestion:_suggestions[index]
                                          atIndex:index];
 
