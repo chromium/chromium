@@ -485,7 +485,6 @@ crbug.com/730267 [ Mac11 ] virtual/gpu-rasterization/images/yuv-decode-eligible/
 # Flaky virtual/threaded-prefer-compositing tests
 crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-animates.html [ Crash Failure Pass Timeout ]
 crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Crash Failure Pass Timeout ]
-crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/horizontal-smooth-scroll-in-rtl.html [ Crash Failure Pass Timeout ]
 crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-added.html [ Crash Failure Pass Timeout ]
 crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-correctness.html [ Crash Failure Pass Timeout ]
 crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/mousewheel-scroll-interrupted.html [ Crash Failure Pass Timeout ]

@@ -399,6 +399,11 @@ function wheelTick(scroll_tick_x, scroll_tick_y, center, speed_in_pixels_s,
 
 const LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER = 120;
 
+// The number of pixels keyboard arrows will scroll when the device scale factor
+// equals to 1. Defined in cc/input/scroll_utils.h.
+// Matches SCROLLBAR_SCROLL_PIXELS from scrollbar-util.js.
+const KEYBOARD_SCROLL_PIXELS = 40;
+
 // Returns the number of pixels per wheel tick which is a platform specific value.
 function pixelsPerTick() {
   // Comes from ui/events/event.cc
@@ -808,6 +813,12 @@ async function waitForScrollReset(scroller = document.scrollingElement,
       waitForScrollendEvent(scrollendEventTarget(scroller)).then(resolve);
     }
   });
+}
+
+function waitForWindowScrollBy(options) {
+  const scrollPromise = waitForScrollendEvent(document);
+  window.scrollBy(options);
+  return scrollPromise;
 }
 
 function waitForWindowScrollTo(options) {
