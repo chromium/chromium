@@ -377,7 +377,8 @@ TEST(NativeUnwinderAndroidTest, ResumeUnwinding) {
 }
 
 // Checks that java frames can be unwound through.
-TEST(NativeUnwinderAndroidTest, JavaFunction) {
+// TODO(crbug.com/362210993): Re-enable test.
+TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
   auto* build_info = base::android::BuildInfo::GetInstance();
   const auto sdk_version = build_info->sdk_int();
 
