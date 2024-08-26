@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
@@ -325,7 +326,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     /** Begins the process of decluttering tabs if it hasn't been started already. */
     public void maybeBeginDeclutter() {
         if (mDeclutterInitializationCalled) return;
+        mDeclutterInitializationCalled = true;
+        waitUntilSelectorInitializedAndPostTask(this::maybeBeginDeclutterImpl);
+    }
 
+    private void maybeBeginDeclutterImpl() {
         assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
         assert mTabArchiver != null;
         mTabArchiver.initDeclutter();
@@ -348,8 +353,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                     }
                 });
         runDeclutterAndScheduleNext();
-
-        mDeclutterInitializationCalled = true;
     }
 
     /**
@@ -359,15 +362,23 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      */
     public void maybeRescueArchivedTabs() {
         if (mRescueTabsCalled) return;
+        mRescueTabsCalled = true;
+        waitUntilSelectorInitializedAndPostTask(this::maybeRescueArchivedTabsImpl);
+    }
 
+    private void maybeRescueArchivedTabsImpl() {
         assert ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled();
         mTabArchiver.rescueArchivedTabs(mRegularTabCreator);
-
-        mRescueTabsCalled = true;
     }
 
     public void initializeHistoricalTabModelObserver(Supplier<TabModel> regularTabModelSupplier) {
         mHistoricalTabModelObserver.addSecodaryTabModelSupplier(regularTabModelSupplier);
+    }
+
+    private void waitUntilSelectorInitializedAndPostTask(Runnable task) {
+        TabModelUtils.runOnTabStateInitialized(
+                getTabModelSelector(),
+                (selector) -> ThreadUtils.postOnUiThread(mCallbackController.makeCancelable(task)));
     }
 
     // TabModelOrchestrator lifecycle methods.

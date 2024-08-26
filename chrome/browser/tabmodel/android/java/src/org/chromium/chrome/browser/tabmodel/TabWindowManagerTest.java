@@ -57,7 +57,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
 public class TabWindowManagerTest {
     private TabWindowManager mSubject;
     private AsyncTabParamsManager mAsyncTabParamsManager;
@@ -700,7 +700,7 @@ public class TabWindowManagerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
     public void testcanTabStateBeDeleted() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -764,7 +764,7 @@ public class TabWindowManagerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
     public void testcanTabThumbnailBeDeleted() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();

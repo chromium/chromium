@@ -222,7 +222,10 @@ public class TabbedModeTabPersistencePolicyTest {
     @Test
     @Feature("TabPersistentStore")
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH,
+        ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
+    })
     public void testCleanupInstanceState() throws Throwable {
         Assert.assertNotNull(TabStateDirectory.getOrCreateBaseStateDirectory());
 
