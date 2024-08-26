@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/android/window_android.h"
+#include "ui/display/screen.h"
 #include "ui/events/back_gesture_event.h"
 
 namespace content {
@@ -105,58 +107,140 @@ base::TimeTicks GetFittedTimeTicksForForegroundProgress(float progress) {
 enum class TargetProperty {
   kScrim = 0,
   kCrossFade,
+  kFaviconOpacity,
+  kFaviconPosition,
 };
 
-struct ScrimAndCrossFadeAnimaitonConfig {
+template <typename KeyFrameType>
+struct KeyFrame {
+  base::TimeDelta time;
+  KeyFrameType value;
+};
+
+// Each `KeyFrame` is interpolated using a linear function.
+template <typename KeyFrameType, std::size_t Size>
+struct LinearModelConfig {
   TargetProperty target_property;
-  float start;
-  float end;
-  base::TimeDelta duration;
+  std::array<KeyFrame<KeyFrameType>, Size> key_frames;
 };
 
 //============================= Crossfade animation ============================
 static constexpr base::TimeDelta kCrossfadeDuration = base::Milliseconds(100);
 
-static constexpr ScrimAndCrossFadeAnimaitonConfig kCrossFadeAnimation{
+static constexpr LinearModelConfig<float, 2u> kCrossFadeAnimation{
     .target_property = TargetProperty::kCrossFade,
-    .start = 1.0f,
-    .end = 0.0f,
-    .duration = kCrossfadeDuration};
+    .key_frames = {KeyFrame{
+                       .time = base::TimeDelta(),
+                       .value = 1.0f,
+                   },
+                   KeyFrame{
+                       .time = kCrossfadeDuration,
+                       .value = 0.0f,
+                   }}};
 
 //=============================== Scrim animation ==============================
 // The scrim range is from 0.2 to 0 in dark mode and 0.1 to 0 in light mode. The
 // scrim value is a linear function of the top layer's position.
-static constexpr ScrimAndCrossFadeAnimaitonConfig kScrimAnimationLightMode{
+static constexpr LinearModelConfig<float, 2u> kScrimAnimationLightMode{
     .target_property = TargetProperty::kScrim,
-    .start = 0.1f,
-    .end = 0.0f,
-    .duration = kFittedTimelineDuration};
+    .key_frames = {KeyFrame{
+                       .time = base::TimeDelta(),
+                       .value = 0.1f,
+                   },
+                   KeyFrame{
+                       .time = kFittedTimelineDuration,
+                       .value = 0.0f,
+                   }}};
 
-static constexpr ScrimAndCrossFadeAnimaitonConfig kScrimAnimationDarkMode{
+static constexpr LinearModelConfig<float, 2u> kScrimAnimationDarkMode{
     .target_property = TargetProperty::kScrim,
-    .start = 0.2f,
-    .end = 0.0f,
-    .duration = kFittedTimelineDuration};
+    .key_frames = {KeyFrame{
+                       .time = base::TimeDelta(),
+                       .value = 0.2f,
+                   },
+                   KeyFrame{
+                       .time = kFittedTimelineDuration,
+                       .value = 0.0f,
+                   }}};
 
-void AddFloatModelToEffect(ScrimAndCrossFadeAnimaitonConfig config,
-                           gfx::FloatAnimationCurve::Target* target,
-                           gfx::KeyframeEffect& effect) {
-  auto curve = gfx::KeyframedFloatAnimationCurve::Create();
-  curve->AddKeyframe(gfx::FloatKeyframe::Create(/*time=*/base::TimeDelta(),
-                                                /*value=*/config.start,
-                                                /*timing_function=*/nullptr));
-  curve->AddKeyframe(gfx::FloatKeyframe::Create(/*time=*/config.duration,
-                                                /*value=*/config.end,
-                                                /*timing_function=*/nullptr));
+template <typename KeyFrameType, std::size_t Size>
+void AddLinearModelToEffect(
+    LinearModelConfig<KeyFrameType, Size> config,
+    std::conditional_t<std::is_same<KeyFrameType, float>::value,
+                       gfx::FloatAnimationCurve::Target,
+                       gfx::TransformAnimationCurve::Target>* target,
+    gfx::KeyframeEffect& effect) {
+  using CurveType = std::conditional_t<std::is_same<KeyFrameType, float>::value,
+                                       gfx::KeyframedFloatAnimationCurve,
+                                       gfx::KeyframedTransformAnimationCurve>;
+  using KeyframeType =
+      std::conditional_t<std::is_same<KeyFrameType, float>::value,
+                         gfx::FloatKeyframe, gfx::TransformKeyframe>;
+
+  auto curve = CurveType::Create();
+  for (size_t i = 0; i < Size; ++i) {
+    const auto& keyframe = config.key_frames.at(i);
+    curve->AddKeyframe(KeyframeType::Create(/*time=*/keyframe.time,
+                                            /*value=*/keyframe.value,
+                                            /*timing_function=*/nullptr));
+  }
   curve->set_target(target);
-
   auto model = gfx::KeyframeModel::Create(
       /*curve=*/std::move(curve),
       /*keyframe_model_id=*/effect.GetNextKeyframeModelId(),
       /*target_property_id=*/
       static_cast<int>(config.target_property));
-
   effect.AddKeyframeModel(std::move(model));
+}
+
+//================================ Fallback UX =================================
+//
+// Size of the favicon's rounded rectangle background.
+constexpr static int kRRectSizeDip = 56;
+// Radius of the rounded rectangle.
+constexpr static float kRRectRadiusDip = 20.f;
+// Relative position of the favicon with respect to the rounded rectangle.
+constexpr static int kFaviconPosDip = 16;
+
+static constexpr LinearModelConfig<float, 4u> kRRectOpacityModel{
+    .target_property = TargetProperty::kFaviconOpacity,
+    // The opacity is 0.f until 25% progress, and reaches 1.f at 50% progress.
+    .key_frames = {
+        KeyFrame{
+            .time = base::TimeDelta(),
+            .value = 0.f,
+        },
+        KeyFrame{
+            .time = kFittedTimelineDuration * 0.25,
+            .value = 0.0f,
+        },
+        KeyFrame{
+            .time = kFittedTimelineDuration * 0.5,
+            .value = 1.f,
+        },
+        KeyFrame{
+            .time = kFittedTimelineDuration,
+            .value = 1.f,
+        },
+    }};
+
+scoped_refptr<cc::slim::SolidColorLayer> AddRoundedRectangle(
+    cc::slim::Layer* parent,
+    int size_px,
+    float corner_radius_px,
+    SkColor4f color) {
+  auto rrect = cc::slim::SolidColorLayer::Create();
+  // The motion of the fallback UX is driven by the `effect_`. The first ever
+  // `OnGestureProgressed()` call at the end will move the rrect to its desired
+  // starting position.
+  rrect->SetPosition(gfx::PointF(0.f, 0.f));
+  rrect->SetBounds(gfx::Size(size_px, size_px));
+  rrect->SetRoundedCorner(gfx::RoundedCornersF(
+      corner_radius_px, corner_radius_px, corner_radius_px, corner_radius_px));
+  rrect->SetBackgroundColor(color);
+  rrect->SetIsDrawable(true);
+  parent->AddChild(rrect);
+  return rrect;
 }
 
 }  // namespace
@@ -196,7 +280,7 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 
   ResetLiveOverlayLayer();
 
-  if (!use_fallback_screenshot_) {
+  if (!fallback_ux_) {
     CHECK_NE(ui_resource_id_, cc::UIResourceClient::kUninitializedUIResourceId);
     DeleteUIResource(ui_resource_id_);
 
@@ -237,15 +321,22 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
       animation_manager_(animation_manager),
       is_copied_from_embedder_(destination_entry->navigation_transition_data()
                                    .is_copied_from_embedder()),
-      use_fallback_screenshot_(
-          ShouldUseFallbackScreenshot(animation_manager_, destination_entry)),
-      fallback_ux_config_(animation_manager_->web_contents_view_android()
-                              ->web_contents()
-                              ->GetDelegate()
-                              ->GetBackForwardTransitionFallbackUXConfig()),
+      device_scale_factor_(animation_manager_->web_contents_view_android()
+                               ->GetTopLevelNativeWindow()
+                               ->GetDipScale()),
       physics_model_(GetViewportWidthPx(),
                      web_contents_view_android->GetNativeView()->GetDipScale()),
       latest_progress_gesture_(gesture) {
+  if (ShouldUseFallbackScreenshot(animation_manager_, destination_entry)) {
+    fallback_ux_ = {
+        .color_config = animation_manager_->web_contents_view_android()
+                            ->web_contents()
+                            ->GetDelegate()
+                            ->GetBackForwardTransitionFallbackUXConfig(),
+        .start_px = CalculateRRectStartPx(),
+        .end_px = CalculateRRectEndPx(),
+    };
+  }
   state_ = State::kStarted;
   SetupForScreenshotPreview(std::move(embedder_content));
   ProcessState();
@@ -810,7 +901,6 @@ void BackForwardTransitionAnimator::OnFloatAnimated(
     int target_property_id,
     gfx::KeyframeModel* keyframe_model) {
   TargetProperty property = static_cast<TargetProperty>(target_property_id);
-  CHECK_EQ(effect_.keyframe_models().size(), 1u);
   switch (property) {
     case TargetProperty::kScrim: {
       CHECK(screenshot_scrim_);
@@ -824,12 +914,39 @@ void BackForwardTransitionAnimator::OnFloatAnimated(
       screenshot_layer_->SetOpacity(value);
       return;
     }
+    case TargetProperty::kFaviconOpacity: {
+      CHECK(rounded_rectangle_);
+      rounded_rectangle_->SetOpacity(value);
+      return;
+    }
+    case TargetProperty::kFaviconPosition: {
+      break;
+    }
+  }
+  NOTREACHED_IN_MIGRATION();
+}
+
+void BackForwardTransitionAnimator::OnTransformAnimated(
+    const gfx::TransformOperations& transform,
+    int target_property_id,
+    gfx::KeyframeModel* keyframe_model) {
+  TargetProperty property = static_cast<TargetProperty>(target_property_id);
+  switch (property) {
+    case TargetProperty::kFaviconPosition: {
+      CHECK(fallback_ux_);
+      CHECK(rounded_rectangle_);
+      rounded_rectangle_->SetTransform(transform.Apply());
+      return;
+    }
+    case TargetProperty::kScrim:
+    case TargetProperty::kCrossFade:
+    case TargetProperty::kFaviconOpacity:
+      break;
   }
   NOTREACHED_IN_MIGRATION();
 }
 
 void BackForwardTransitionAnimator::OnCancelAnimationDisplayed() {
-  CHECK_EQ(effect_.keyframe_models().size(), 1U);
   CHECK_EQ(effect_.keyframe_models()[0]->TargetProperty(),
            static_cast<int>(TargetProperty::kScrim));
   if (navigation_state_ == NavigationState::kBeforeUnloadDispatched) {
@@ -965,9 +1082,35 @@ void BackForwardTransitionAnimator::
 
   if (web_prefs.preferred_color_scheme ==
       blink::mojom::PreferredColorScheme::kDark) {
-    AddFloatModelToEffect(kScrimAnimationDarkMode, this, effect_);
+    AddLinearModelToEffect(kScrimAnimationDarkMode, this, effect_);
   } else {
-    AddFloatModelToEffect(kScrimAnimationLightMode, this, effect_);
+    AddLinearModelToEffect(kScrimAnimationLightMode, this, effect_);
+  }
+  if (rounded_rectangle_) {
+    CHECK(fallback_ux_);
+    AddLinearModelToEffect(kRRectOpacityModel, this, effect_);
+    gfx::TransformOperations start;
+    start.AppendTranslate(fallback_ux_->start_px.x(),
+                          fallback_ux_->start_px.y(), 0.f);
+    gfx::TransformOperations end;
+    end.AppendTranslate(fallback_ux_->end_px.x(), fallback_ux_->end_px.y(),
+                        0.f);
+    AddLinearModelToEffect(
+        LinearModelConfig<gfx::TransformOperations, 2u>{
+            .target_property = TargetProperty::kFaviconPosition,
+            .key_frames =
+                {
+                    KeyFrame{
+                        .time = base::TimeDelta(),
+                        .value = start,
+                    },
+                    KeyFrame{
+                        .time = kFittedTimelineDuration,
+                        .value = end,
+                    },
+                },
+        },
+        this, effect_);
   }
 }
 
@@ -975,7 +1118,7 @@ void BackForwardTransitionAnimator::InitializeEffectForCrossfadeAnimation() {
   // Before we add the cross-fade model, the scrim model must have finished.
   CHECK(effect_.keyframe_models().empty());
 
-  AddFloatModelToEffect(kCrossFadeAnimation, this, effect_);
+  AddLinearModelToEffect(kCrossFadeAnimation, this, effect_);
 }
 
 void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
@@ -1104,13 +1247,8 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
   CHECK(destination_entry);
   auto* preview = static_cast<NavigationEntryScreenshot*>(
       destination_entry->GetUserData(NavigationEntryScreenshot::kUserDataKey));
-  CHECK(use_fallback_screenshot_ ||
+  CHECK(fallback_ux_ ||
         preview->navigation_entry_id() == destination_entry_id_);
-
-  if (!use_fallback_screenshot_) {
-    auto* cache = nav_controller->GetNavigationEntryScreenshotCache();
-    screenshot_ = cache->RemoveScreenshot(destination_entry);
-  }
 
   // The layers can be reused. We need to make sure there is no ongoing
   // transform on the layer of the current `WebContents`'s view.
@@ -1119,15 +1257,15 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
                        ->transform();
   CHECK(transform.IsIdentity()) << transform.ToString();
 
-  if (use_fallback_screenshot_) {
-    // For now, the fallback screenshot is only a solid color, without the
-    // rounded rectangle and favicon.
-    //
-    // TODO(crbug/40260440): Implement the UX's spec using the favicon.
+  if (fallback_ux_) {
     auto screenshot_layer = cc::slim::SolidColorLayer::Create();
-    screenshot_layer->SetBackgroundColor(fallback_ux_config_.background_color);
+    screenshot_layer->SetBackgroundColor(
+        fallback_ux_->color_config.background_color);
     screenshot_layer_ = std::move(screenshot_layer);
   } else {
+    auto* cache = nav_controller->GetNavigationEntryScreenshotCache();
+    screenshot_ = cache->RemoveScreenshot(destination_entry);
+
     ui_resource_id_ = CreateUIResource(screenshot_.get());
     auto screenshot_layer = cc::slim::UIResourceLayer::Create();
     screenshot_layer->SetUIResourceId(ui_resource_id_);
@@ -1147,6 +1285,29 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
   // Makes sure `screenshot_scrim_` is drawn on top of `screenshot_layer_`.
   screenshot_layer_->AddChild(screenshot_scrim_);
   screenshot_scrim_->SetContentsOpaque(false);
+
+  // Add the rounded rectangle and the favicon. We need to do this after setting
+  // up the scrim because the scrim shouldn't be applied to the rounded
+  // rectangle and the favicon.
+  const auto& favicon_bitmap =
+      destination_entry->navigation_transition_data().favicon();
+  // Do not draw the rrect if we don't have a valid bitmap.
+  bool should_draw_rrect = fallback_ux_ && !favicon_bitmap.drawsNothing();
+  if (should_draw_rrect) {
+    auto favicon = cc::slim::UIResourceLayer::Create();
+    auto favicon_width = favicon_bitmap.width();
+    auto favicon_height = favicon_bitmap.height();
+    favicon->SetBitmap(favicon_bitmap);
+    favicon->SetIsDrawable(true);
+    favicon->SetPosition(
+        gfx::PointF(DipToPx(kFaviconPosDip), DipToPx(kFaviconPosDip)));
+    favicon->SetBounds(gfx::Size(favicon_width, favicon_height));
+    rounded_rectangle_ =
+        AddRoundedRectangle(screenshot_layer_.get(), DipToPx(kRRectSizeDip),
+                            DipToPx(kRRectRadiusDip),
+                            fallback_ux_->color_config.rounded_rectangle_color);
+    rounded_rectangle_->AddChild(std::move(favicon));
+  }
 
   SetUpEmbedderContentLayerIfNeeded(std::move(embedder_content));
 
@@ -1179,7 +1340,7 @@ void BackForwardTransitionAnimator::SetupProgressBar() {
 }
 
 bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
-  CHECK(use_fallback_screenshot_ || screenshot_);
+  CHECK(fallback_ux_ || screenshot_);
   CHECK(!tracked_request_);
   CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
 
@@ -1270,8 +1431,9 @@ BackForwardTransitionAnimator::ComputeAnimationValues(
     const PhysicsModel::Result& result) {
   ComputedAnimationValues values;
 
+  const auto viewport_width_px = GetViewportWidthPx();
   values.progress =
-      std::abs(result.foreground_offset_physical) / GetViewportWidthPx();
+      std::abs(result.foreground_offset_physical) / viewport_width_px;
 
   if (nav_direction_ == NavigationDirection::kForward) {
     // The physics model assumes the background comes in from slightly outside
@@ -1279,24 +1441,24 @@ BackForwardTransitionAnimator::ComputeAnimationValues(
     // background, it starts fully in the viewport, and moves slightly
     // offscreen. So shift the live page so that it starts in the viewport.
     float start_from_origin =
-        -PhysicsModel::kScreenshotInitialPositionRatio * GetViewportWidthPx();
-    values.live_page_offset =
+        -PhysicsModel::kScreenshotInitialPositionRatio * viewport_width_px;
+    values.live_page_offset_px =
         result.background_offset_physical + start_from_origin;
     // The physics model assumes the foreground starts fully in the viewport and
     // slides out. In a forward navigation the foreground is the screenshot and
     // comes from fully out of the viewport so offset it by the viewport width
     // to make it animate from fully out to fully in.
-    values.screenshot_offset =
-        result.foreground_offset_physical - GetViewportWidthPx();
+    values.screenshot_offset_px =
+        result.foreground_offset_physical - viewport_width_px;
   } else {
-    values.live_page_offset = result.foreground_offset_physical;
-    values.screenshot_offset = result.background_offset_physical;
+    values.live_page_offset_px = result.foreground_offset_physical;
+    values.screenshot_offset_px = result.background_offset_physical;
   }
 
   // Swipes from the right edge will travel in the opposite direction.
   if (initiating_edge_ == SwipeEdge::RIGHT) {
-    values.live_page_offset *= -1;
-    values.screenshot_offset *= -1;
+    values.live_page_offset_px *= -1;
+    values.screenshot_offset_px *= -1;
   }
 
   CHECK_GE(values.progress, 0.f);
@@ -1334,10 +1496,10 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
   ComputedAnimationValues values = ComputeAnimationValues(result);
 
   screenshot_layer_->SetTransform(
-      gfx::Transform::MakeTranslation(values.screenshot_offset, 0.f));
+      gfx::Transform::MakeTranslation(values.screenshot_offset_px, 0.f));
 
   const auto live_page_transform =
-      gfx::Transform::MakeTranslation(values.live_page_offset, 0.f);
+      gfx::Transform::MakeTranslation(values.live_page_offset_px, 0.f);
   animation_manager_->web_contents_view_android()
       ->parent_for_web_page_widgets()
       ->SetTransform(live_page_transform);
@@ -1457,6 +1619,13 @@ int BackForwardTransitionAnimator::GetViewportWidthPx() const {
       .width();
 }
 
+int BackForwardTransitionAnimator::GetViewportHeightPx() const {
+  return animation_manager_->web_contents_view_android()
+      ->GetNativeView()
+      ->GetPhysicalBackingSize()
+      .height();
+}
+
 void BackForwardTransitionAnimator::StartInputSuppression() {
   CHECK(!ignore_input_scope_);
 
@@ -1477,6 +1646,7 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
   //      |- parent_for_web_page_widgets_ (RWHVAndroid, Overscroll etc).
   //      |-   progress_bar_ (child of screenshot_layer_,
   //                          only during invoke animation)
+  //      |-   rrect_layer_ (child of screenshot_layer_, if fallback UX is used)
   //      |-   screenshot_scrim_ (child of screenshot_layer_)
   //      |- screenshot_layer_
   //
@@ -1484,6 +1654,7 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
   //
   //   WebContentsViewAndroid::view_->GetLayer()
   //      |-   progress_bar_
+  //      |-   rrect_layer_ (if fallback UX is used)
   //      |-   screenshot_scrim_
   //      |- screenshot_layer_
   //      |- old_surface_clone_
@@ -1581,6 +1752,120 @@ void BackForwardTransitionAnimator::ResetLiveOverlayLayer() {
     old_surface_clone_->RemoveFromParent();
     old_surface_clone_.reset();
   }
+}
+
+gfx::PointF BackForwardTransitionAnimator::CalculateRRectStartPx() const {
+  float y_start = (GetViewportHeightPx() - DipToPx(kRRectSizeDip)) / 2.f;
+  /* LTR, left edge back nav. The rrect starts at 25%*W px w.r.t. the
+     screenshot.
+
+    screenshot   live page       screenshot                 live page
+      ▲                ▲              ▲                        ▲
+      │                │              │                        │
+    ┌─┼──┌─────────────┼─┐        ┌───┼───────────┌────────────┼──┐
+    │    │         │     │        │               │               │
+    │    │         │     │        │               │               │
+    │    ┌────┐    │     │        │     ┌────┐    │               │
+    │    │    │    │     │        │     │    │    │               │
+    │25% │    │    │     │        │     │    │    │               │
+    │    └────┘    │     │        │     └────┘    │               │
+    │    │         │     │        │               │               │
+    │    │         │     │        │               │               │
+    └────└───────────────┘        └───────────────└───────────────┘
+          start                                stop
+  */
+  if (initiating_edge_ == SwipeEdge::LEFT &&
+      nav_direction_ == NavigationDirection::kBackward) {
+    return gfx::PointF(std::abs(GetViewportWidthPx() *
+                                PhysicsModel::kScreenshotInitialPositionRatio),
+                       y_start);
+  }
+  /* LTR, right edge forward nav. The rrect starts at 0px w.r.t. the screenshot.
+
+  live page              screenshot      live page          screenshot
+       ▲                     ▲               ▲                  ▲
+       │                     │               │                  │
+    ┌──┼───────────┌─────────┼────┐        ┌─┼───┌──────────────┼──┐
+    │              │              │        │     │          │      │
+    │              │              │        │     │          │      │
+    │              │              │        │     │          │      │
+    │              ┌─────┐        │        │     │     ┌─────┐     │
+    │              │     │        │        │     │     │    ││     │
+    │              │     │        │        │     │     │    ││     │
+    │              └─────┘        │        │     │     └─────┘     │
+    │              │              │        │     │          │      │
+    │              │              │        │     │          │      │
+    │              │              │        │     │          │      │
+    └──────────────└──────────────┘        └─────└──────────┴──────┘
+              start                                stop
+  */
+  else if (initiating_edge_ == SwipeEdge::RIGHT &&
+           nav_direction_ == NavigationDirection::kForward) {
+    return gfx::PointF(0.f, y_start);
+  }
+  /* RTL, right edge back nav. The rrect starts at (1-25%)*W px w.r.t the
+     screenshot layer.
+
+    live page          screenshot       live page             screenshot
+        ▲                  ▲                ▲                      ▲
+        │                  │                │                      │
+      ┌─┼───┌──────────────┼──┐         ┌───┼────────────┌─────────┼──────┐
+      │ │   │          │   │  │         │   │            │         │      │
+      │     │          │      │         │                │                │
+      │     │          │  25% │         │                │                │
+      │     │          ┌──────┐         │                │    ┌──────┐    │
+      │     │          │      │         │                │    │      │    │
+      │     │          │      │         │                │    │      │    │
+      │     │          └──────┘         │                │    └──────┘    │
+      │     │          │      │         │                │                │
+      │     │          │      │         │                │                │
+      │     │          │      │         │                │                │
+      └─────└──────────┴──────┘         └────────────────└────────────────┘
+             start                                   stop
+  */
+  else if (initiating_edge_ == SwipeEdge::RIGHT &&
+           nav_direction_ == NavigationDirection::kBackward) {
+    return gfx::PointF(
+        GetViewportWidthPx() -
+            std::abs(GetViewportWidthPx() *
+                     PhysicsModel::kScreenshotInitialPositionRatio),
+        y_start);
+  }
+  /* RTL, left edge forward nav. The rrect starts at W-w px w.r.t the
+     screenshot, where w is the width of the rrect.
+
+       screenshot          live page    screenshot           live page
+        ▲                     ▲               ▲                  ▲
+        │                     │               │                  │
+     ┌──┼───────────┌─────────┼────┐        ┌─┼───┌──────────────┼──┐
+     │  │           │         │    │        │ │   │          │   │  │
+     │              │              │        │     │          │      │
+     │              │              │        │     │          │      │
+     │        ┌─────┐              │        │     ┌─────┐    │      │
+     │        │     │              │        │     │     │    │      │
+     │        │     │              │        │     │     │    │      │
+     │        └─────┘              │        │     └─────┘    │      │
+     │              │              │        │     │          │      │
+     │              │              │        │     │          │      │
+     └──────────────└──────────────┘        └─────└──────────┴──────┘
+                start                                stop
+  */
+  else if (initiating_edge_ == SwipeEdge::LEFT &&
+           nav_direction_ == NavigationDirection::kForward) {
+    return gfx::PointF(GetViewportWidthPx() - DipToPx(kRRectSizeDip), y_start);
+  } else {
+    NOTREACHED_NORETURN();
+  }
+}
+
+gfx::PointF BackForwardTransitionAnimator::CalculateRRectEndPx() const {
+  return gfx::PointF((GetViewportWidthPx() - DipToPx(kRRectSizeDip)) / 2.f,
+                     (GetViewportHeightPx() - DipToPx(kRRectSizeDip)) / 2.f);
+}
+
+int BackForwardTransitionAnimator::DipToPx(int dip) const {
+  return gfx::ScaleToFlooredSize(gfx::Size(dip, dip), device_scale_factor_)
+      .width();
 }
 
 }  // namespace content

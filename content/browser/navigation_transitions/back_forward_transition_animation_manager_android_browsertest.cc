@@ -516,6 +516,21 @@ class BackForwardTransitionAnimationManagerBrowserTest
     return GetAnimator()->progress_bar_for_testing()->GetLayer().get();
   }
 
+  const cc::slim::Layer* GetRRectLayer() {
+    if (!GetAnimator()) {
+      return nullptr;
+    }
+    return GetAnimator()->rrect_layer_for_testing();
+  }
+
+  const cc::slim::Layer* GetFaviconLayer() {
+    if (!GetRRectLayer()) {
+      return nullptr;
+    }
+    EXPECT_EQ(GetRRectLayer()->children().size(), 1u);
+    return GetRRectLayer()->children().at(0).get();
+  }
+
   // Prints known children of the given layer, in increasing z-order.
   std::string ChildrenInOrder(const cc::slim::Layer& layer) {
     std::stringstream output;
@@ -537,6 +552,10 @@ class BackForwardTransitionAnimationManagerBrowserTest
         layer_name = "ProgressBar";
       } else if (child.get() == GetEmbedderLayer()) {
         layer_name = "EmbedderContentLayer";
+      } else if (child.get() == GetRRectLayer()) {
+        layer_name = "RRect";
+      } else if (child.get() == GetFaviconLayer()) {
+        layer_name = "Favicon";
       }
 
       if (!layer_name.empty()) {
@@ -546,7 +565,8 @@ class BackForwardTransitionAnimationManagerBrowserTest
         list_non_empty = true;
 
         output << layer_name;
-        if (child.get() == GetScreenshotLayer()) {
+        if (child.get() == GetScreenshotLayer() ||
+            child.get() == GetRRectLayer()) {
           output << ChildrenInOrder(*child.get());
         }
       }
@@ -1310,9 +1330,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 }
 
 // If the destination has no screenshot, we will compose a fallback screenshot
-// for transition.
+// for transition. The destination page has no favicon so we don't draw
+// the rounded rectangle.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       DestinationHasNoScreenshot) {
+                       DestinationHasNoScreenshot_NoFavicon) {
   std::optional<int> index =
       web_contents()->GetController().GetIndexForGoBack();
   ASSERT_TRUE(index);
@@ -1326,16 +1347,103 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
                                           SwipeEdge::LEFT, NavType::kBackward);
 
-  // live page layer with screenshot underneath.
+  // live page layer with screenshot underneath. No rrect.
   ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  auto* fallback_screenshot = GetScreenshotLayer();
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.2));
   auto expected_bg_color = web_contents()
                                ->GetDelegate()
                                ->GetBackForwardTransitionFallbackUXConfig()
                                .background_color;
-  ASSERT_EQ(fallback_screenshot->background_color(), expected_bg_color);
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.5));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.8));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  TestFrameNavigationObserver back_navigation(web_contents());
+
+  // Trigger and complete the back navigation.
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(destroyed.Wait());
+  back_navigation.Wait();
+
+  ASSERT_EQ(back_navigation.last_committed_url(), RedURL());
+  ASSERT_FALSE(web_contents()->GetController().GetActiveEntry()->GetUserData(
+      NavigationEntryScreenshot::kUserDataKey));
+}
+
+// If the destination has no screenshot, we will compose a fallback screenshot
+// for transition. The destination page has a favicon so we  draw
+// the rounded rectangle, and the rrect embeds the favicon.
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       DestinationHasNoScreenshot_HasFavicon) {
+  SkBitmap stub_favicon;
+  stub_favicon.allocN32Pixels(20, 20);
+  stub_favicon.eraseColor(SkColors::kMagenta);
+  stub_favicon.setImmutable();
+  std::optional<int> index =
+      web_contents()->GetController().GetIndexForGoBack();
+  ASSERT_TRUE(index);
+  NavigationEntryImpl* red_entry =
+      web_contents()->GetController().GetEntryAtIndex(*index);
+  ASSERT_TRUE(web_contents()
+                  ->GetController()
+                  .GetNavigationEntryScreenshotCache()
+                  ->RemoveScreenshot(red_entry));
+  red_entry->navigation_transition_data().set_favicon(stub_favicon);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+
+  // live page layer with screenshot underneath, and the rounded rectangle is
+  // above the scrim.
+  ASSERT_EQ("[Screenshot[Scrim,RRect[Favicon]],LivePage]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.2));
+  auto expected_bg_color = web_contents()
+                               ->GetDelegate()
+                               ->GetBackForwardTransitionFallbackUXConfig()
+                               .background_color;
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 0.f,
+                                         kFloatTolerance));
+  // Opacity value isn't propagated into the subtree.
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.5));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 0.7f,
+                                         kFloatTolerance));
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.8));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 0.02f,
+                                         kFloatTolerance));
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
 
   TestFrameNavigationObserver back_navigation(web_contents());
 
@@ -2272,8 +2380,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                                           SwipeEdge::LEFT, NavType::kBackward);
   ASSERT_TRUE(GetAnimator());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.5));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(),
+            web_contents()
+                ->GetDelegate()
+                ->GetBackForwardTransitionFallbackUXConfig()
+                .background_color);
+  EXPECT_FALSE(GetRRectLayer());
+  EXPECT_FALSE(GetFaviconLayer());
 
   const auto& children =
       static_cast<WebContentsViewAndroid*>(web_contents()->GetView())

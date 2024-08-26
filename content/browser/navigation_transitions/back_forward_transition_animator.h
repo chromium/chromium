@@ -39,7 +39,8 @@ class RenderFrameHostImpl;
 // updates the UI in response. It is 1:1 with a single gesture, i.e. each time
 // the user touches the screen to start a gesture a new instance is created.
 class CONTENT_EXPORT BackForwardTransitionAnimator
-    : public gfx::FloatAnimationCurve::Target {
+    : public gfx::FloatAnimationCurve::Target,
+      public gfx::TransformAnimationCurve::Target {
  public:
   // Identifies the different stages of the animation that this manager is in.
   enum class State {
@@ -190,6 +191,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   cc::slim::SurfaceLayer* clone_layer_for_testing() const {
     return old_surface_clone_.get();
   }
+  cc::slim::SolidColorLayer* rrect_layer_for_testing() const {
+    return rounded_rectangle_.get();
+  }
   ProgressBar* progress_bar_for_testing() const { return progress_bar_.get(); }
   cc::slim::UIResourceLayer* embedder_live_content_clone_for_testing() const {
     return embedder_live_content_clone_.get();
@@ -214,6 +218,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void OnFloatAnimated(const float& value,
                        int target_property_id,
                        gfx::KeyframeModel* keyframe_model) override;
+
+  // `gfx::TransformAnimationCurve::Target`:
+  void OnTransformAnimated(const gfx::TransformOperations& transform,
+                           int target_property_id,
+                           gfx::KeyframeModel* keyframe_model) override;
 
   // Called when each animation finishes. Advances `this` into the next state.
   // Being virtual for testing.
@@ -292,9 +301,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   struct ComputedAnimationValues {
     // The offset that will be applied to the live, outgoing page.
-    float live_page_offset = 0.f;
+    float live_page_offset_px = 0.f;
     // The offset that will be applied to the incoming screenshot layer.
-    float screenshot_offset = 0.f;
+    float screenshot_offset_px = 0.f;
     // The current progress of the animation, running from 0 to 1.
     float progress = 0.f;
   };
@@ -326,6 +335,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void UnregisterNewFrameActivationObserver();
 
   int GetViewportWidthPx() const;
+  int GetViewportHeightPx() const;
 
   void StartInputSuppression();
 
@@ -337,6 +347,13 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void OnPostNavigationFirstFrameTimeout();
 
   void ResetLiveOverlayLayer();
+
+  // Calculate the start and end position of the rrect for the fallback UX, in
+  // physical pixels.
+  gfx::PointF CalculateRRectStartPx() const;
+  gfx::PointF CalculateRRectEndPx() const;
+
+  int DipToPx(int dip) const;
 
   const BackForwardTransitionAnimationManager::NavigationDirection
       nav_direction_;
@@ -403,17 +420,26 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // it's being displayed in the UI.
   std::unique_ptr<NavigationEntryScreenshot> screenshot_;
 
-  // Other information about the screenshot, and about the page we are
-  // navigating towards.
-  //
   // If `screenshot_` is supplied by the embedder.
   const bool is_copied_from_embedder_;
-  // The current transition is using a fallback screenshot of page's background
-  // color.
-  const bool use_fallback_screenshot_;
-  // Color information to compose a fallback screenshot.
-  const BackForwardTransitionAnimationManager::FallbackUXConfig
-      fallback_ux_config_;
+
+  // The scale factor is constant per gesture.
+  const float device_scale_factor_;
+
+  // Color and positional information to compose a fallback screenshot.
+  struct FallbackUX {
+    BackForwardTransitionAnimationManager::FallbackUXConfig color_config;
+    // The start and stop positions of the rounded rectangle, with respect to
+    // its parent (the screenshot layer).
+    gfx::PointF start_px;
+    gfx::PointF end_px;
+  };
+  std::optional<FallbackUX> fallback_ux_;
+  // The rounded rectangle specified by `fallback_ux_`. It embeds the favicon,
+  // and is child of the screenshot layer. Need the reference here because the
+  // animation timeline of the rounded rectangle and the favicon is different
+  // from the screenshot.
+  scoped_refptr<cc::slim::SolidColorLayer> rounded_rectangle_;
 
   // Tracks various state of the navigation request associated with this
   // gesture. Only set if the navigation request is successfully created.
@@ -440,11 +466,13 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // to null when the tracked `RenderWidgetHost` is destroyed.
   raw_ptr<RenderWidgetHostImpl> new_render_widget_host_;
 
-  // Responsible for the non-transformational animations (scrim and
-  // cross-fade).
+  // Responsible for the non-transformational animations (e.g., scrim and
+  // cross-fade), and the position of the rounded rectangle (when fallback UX is
+  // used).
   gfx::KeyframeEffect effect_;
 
-  // Responsible for the transformational animations.
+  // Responsible for the transformational animations of the live page and the
+  // screenshot.
   PhysicsModel physics_model_;
 
   // Set by the latest `OnGestureProgressed()`.
