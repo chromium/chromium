@@ -306,6 +306,11 @@ export class SettingsInternetPageElement extends
         computed: 'showProviderLocked_(subpageType_, deviceStates)',
       },
 
+      isDeviceUpdating_: {
+        type: Boolean,
+        computed: 'showDeviceUpdating_(subpageType_, deviceStates)',
+      },
+
       /**
        * eSIM network used in internet detail menu.
        */
@@ -399,6 +404,7 @@ export class SettingsInternetPageElement extends
   private showInternetConfig_: boolean;
   private showSimLockDialog_: boolean;
   private isProviderLocked_: boolean;
+  private isDeviceUpdating_: boolean;
   private showSpinner_: boolean;
   private subpageType_: NetworkType;
   private vpnIsProhibited_: boolean;
@@ -783,6 +789,18 @@ export class SettingsInternetPageElement extends
     const cellularDeviceState =
         this.getDeviceState_(NetworkType.kCellular, this.deviceStates);
     if (!cellularDeviceState || !cellularDeviceState.isCarrierLocked) {
+      return false;
+    }
+    return true;
+  }
+
+  private showDeviceUpdating_(): boolean {
+    if (this.subpageType_ !== NetworkType.kCellular) {
+      return false;
+    }
+    const cellularDeviceState =
+        this.getDeviceState_(NetworkType.kCellular, this.deviceStates);
+    if (!cellularDeviceState || !cellularDeviceState.isFlashing) {
       return false;
     }
     return true;

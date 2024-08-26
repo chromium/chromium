@@ -827,6 +827,58 @@ suite('<settings-internet-page>', () => {
         assertNull(cellularSubtitle);
       });
 
+  test('Show modem flashing sub header when flashing', async () => {
+    await init();
+
+    const params = new URLSearchParams();
+    params.append('type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+
+    // Pretend that we initially started on the INTERNET_NETWORKS route with the
+    // params.
+    Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+    internetPage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
+
+    // Update the device state here to trigger an onDeviceStatesChanged_() call.
+    mojoApi.setDeviceStateForTest({
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
+      inhibitReason: InhibitReason.kNotInhibited,
+      isFlashing: true,
+    } as DeviceStateProperties);
+    await flushTasks();
+
+    const flashingSubtitle =
+        internetPage.shadowRoot!.querySelector<HTMLElement>(
+            '#flashingSubtitle');
+    assertTrue(!!flashingSubtitle);
+  });
+
+  test('Not showing modem flashing sub header when flashing', async () => {
+    await init();
+
+    const params = new URLSearchParams();
+    params.append('type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+
+    // Pretend that we initially started on the INTERNET_NETWORKS route with the
+    // params.
+    Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+    internetPage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
+
+    // Update the device state here to trigger an onDeviceStatesChanged_() call.
+    mojoApi.setDeviceStateForTest({
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
+      inhibitReason: InhibitReason.kNotInhibited,
+      isFlashing: false,
+    } as DeviceStateProperties);
+    await flushTasks();
+
+    const flashingSubtitle =
+        internetPage.shadowRoot!.querySelector<HTMLElement>(
+            '#flashingSubtitle');
+    assertNull(flashingSubtitle);
+  });
+
   test(
       'Show no connection toast if receive show-cellular-setup' +
           'event and not connected to non-cellular network',
