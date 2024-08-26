@@ -300,13 +300,12 @@ TEST_F(WebDataServiceAutofillTest, ProfileAdd) {
   done_event_.TimedWait(test_timeout_);
 
   // Check that it was added.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<AutofillProfile>>>
-      consumer;
+  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer;
   WebDataServiceBase::Handle handle = wds_->GetAutofillProfiles(
       AutofillProfile::Source::kLocalOrSyncable, &consumer);
   EXPECT_EQ(handle, consumer.WaitForHandle());
   ASSERT_EQ(1U, consumer.result().size());
-  EXPECT_EQ(profile, *consumer.result()[0]);
+  EXPECT_EQ(profile, consumer.result()[0]);
 }
 
 TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
@@ -319,13 +318,12 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
   done_event_.TimedWait(test_timeout_);
 
   // Check that it was added.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<AutofillProfile>>>
-      consumer;
+  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer;
   WebDataServiceBase::Handle handle = wds_->GetAutofillProfiles(
       AutofillProfile::Source::kLocalOrSyncable, &consumer);
   EXPECT_EQ(handle, consumer.WaitForHandle());
   ASSERT_EQ(1U, consumer.result().size());
-  EXPECT_EQ(profile, *consumer.result()[0]);
+  EXPECT_EQ(profile, consumer.result()[0]);
 
   // Check that GUID-based notification was sent.
   const AutofillProfileChange expected_change(AutofillProfileChange::REMOVE,
@@ -339,8 +337,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
   done_event_.TimedWait(test_timeout_);
 
   // Check that it was removed.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<AutofillProfile>>>
-      consumer2;
+  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer2;
   WebDataServiceBase::Handle handle2 = wds_->GetAutofillProfiles(
       AutofillProfile::Source::kLocalOrSyncable, &consumer2);
   EXPECT_EQ(handle2, consumer2.WaitForHandle());
@@ -370,14 +367,13 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   done_event_.TimedWait(test_timeout_);
 
   // Check that they were added.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<AutofillProfile>>>
-      consumer;
+  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer;
   WebDataServiceBase::Handle handle = wds_->GetAutofillProfiles(
       AutofillProfile::Source::kLocalOrSyncable, &consumer);
   EXPECT_EQ(handle, consumer.WaitForHandle());
   ASSERT_EQ(2U, consumer.result().size());
-  EXPECT_EQ(profile2, *consumer.result()[0]);
-  EXPECT_EQ(profile1, *consumer.result()[1]);
+  EXPECT_EQ(profile2, consumer.result()[0]);
+  EXPECT_EQ(profile1, consumer.result()[1]);
 
   AutofillProfile profile2_changed(profile2);
   profile2_changed.SetRawInfo(NAME_FIRST, u"Bill");
@@ -392,15 +388,14 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   done_event_.TimedWait(test_timeout_);
 
   // Check that the updates were made.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<AutofillProfile>>>
-      consumer2;
+  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> consumer2;
   WebDataServiceBase::Handle handle2 = wds_->GetAutofillProfiles(
       AutofillProfile::Source::kLocalOrSyncable, &consumer2);
   EXPECT_EQ(handle2, consumer2.WaitForHandle());
   ASSERT_EQ(2U, consumer2.result().size());
-  EXPECT_EQ(profile2_changed, *consumer2.result()[0]);
-  EXPECT_NE(profile2, *consumer2.result()[0]);
-  EXPECT_EQ(profile1, *consumer2.result()[1]);
+  EXPECT_EQ(profile2_changed, consumer2.result()[0]);
+  EXPECT_NE(profile2, consumer2.result()[0]);
+  EXPECT_EQ(profile1, consumer2.result()[1]);
 }
 
 TEST_F(WebDataServiceAutofillTest, CreditAdd) {
@@ -484,13 +479,12 @@ TEST_F(WebDataServiceAutofillTest, AutofillRemoveModifiedBetween) {
   done_event_.TimedWait(test_timeout_);
 
   // Check that it was added.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<AutofillProfile>>>
-      profile_consumer;
+  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> profile_consumer;
   WebDataServiceBase::Handle handle = wds_->GetAutofillProfiles(
       AutofillProfile::Source::kLocalOrSyncable, &profile_consumer);
   EXPECT_EQ(handle, profile_consumer.WaitForHandle());
   ASSERT_EQ(1U, profile_consumer.result().size());
-  EXPECT_EQ(profile, *profile_consumer.result()[0]);
+  EXPECT_EQ(profile, profile_consumer.result()[0]);
 
   // Add a credit card.
   CreditCard credit_card;
@@ -515,8 +509,7 @@ TEST_F(WebDataServiceAutofillTest, AutofillRemoveModifiedBetween) {
   done_event_.TimedWait(test_timeout_);
 
   // Check that the profile was removed.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<AutofillProfile>>>
-      profile_consumer2;
+  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> profile_consumer2;
   WebDataServiceBase::Handle handle2 = wds_->GetAutofillProfiles(
       AutofillProfile::Source::kLocalOrSyncable, &profile_consumer2);
   EXPECT_EQ(handle2, profile_consumer2.WaitForHandle());

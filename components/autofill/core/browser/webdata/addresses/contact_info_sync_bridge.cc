@@ -285,7 +285,7 @@ AutofillSyncMetadataTable* ContactInfoSyncBridge::GetSyncMetadataStore() {
 std::unique_ptr<syncer::MutableDataBatch>
 ContactInfoSyncBridge::GetDataAndFilter(
     base::RepeatingCallback<bool(const std::string&)> filter) {
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile> profiles;
   if (!GetAutofillTable()->GetAutofillProfiles(
           AutofillProfile::Source::kAccount, profiles)) {
     change_processor()->ReportError(
@@ -293,13 +293,13 @@ ContactInfoSyncBridge::GetDataAndFilter(
     return nullptr;
   }
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
-    const std::string& guid = profile->guid();
+  for (const AutofillProfile& profile : profiles) {
+    const std::string& guid = profile.guid();
     if (filter.Run(guid)) {
       batch->Put(
           guid,
           CreateContactInfoEntityDataFromAutofillProfile(
-              *profile,
+              profile,
               GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(guid)));
     }
   }

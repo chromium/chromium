@@ -217,15 +217,16 @@ bool AutofillProfileSyncDifferenceTracker::
     return true;
   }
 
-  std::vector<std::unique_ptr<AutofillProfile>> entries;
+  std::vector<AutofillProfile> entries;
   if (!table_->GetAutofillProfiles(AutofillProfile::Source::kLocalOrSyncable,
                                    entries)) {
     return false;
   }
 
-  for (std::unique_ptr<AutofillProfile>& entry : entries) {
-    std::string storage_key = GetStorageKeyFromAutofillProfile(*entry);
-    local_only_entries_[storage_key] = std::move(entry);
+  for (AutofillProfile& entry : entries) {
+    std::string storage_key = GetStorageKeyFromAutofillProfile(entry);
+    local_only_entries_[storage_key] =
+        std::make_unique<AutofillProfile>(std::move(entry));
   }
 
   local_only_entries_initialized_ = true;

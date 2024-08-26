@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -448,8 +449,8 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
 // the country code found.
 // The returned profile's metadata isn't populated, since it is stored in a
 // different table (see `ReadProfileMetadata()` below).
-// If reading from the table fails, a nullptr is returned.
-std::unique_ptr<AutofillProfile> GetProfileFromTypeTokensTable(
+// If reading from the table fails, nullopt is returned.
+std::optional<AutofillProfile> GetProfileFromTypeTokensTable(
     sql::Database* db,
     const std::string& guid,
     AutofillProfile::Source source) {
@@ -457,7 +458,7 @@ std::unique_ptr<AutofillProfile> GetProfileFromTypeTokensTable(
   if (!SelectByGuid(db, s, GetProfileTypeTokensTable(source),
                     {kType, kValue, kVerificationStatus, kObservations},
                     guid)) {
-    return nullptr;
+    return std::nullopt;
   }
 
   struct FieldTypeData {
@@ -501,15 +502,14 @@ std::unique_ptr<AutofillProfile> GetProfileFromTypeTokensTable(
 
   // TODO(crbug.com/40275657): Define a proper migration strategy from stored
   // legacy profiles into i18n ones.
-  auto profile = std::make_unique<AutofillProfile>(
-      guid, source, AddressCountryCode(country_code));
+  AutofillProfile profile(guid, source, AddressCountryCode(country_code));
   for (const auto& data : field_type_values) {
-    profile->SetRawInfoWithVerificationStatusInt(data.type, data.value,
-                                                 data.status);
-    profile->token_quality().LoadSerializedObservationsForStoredType(
+    profile.SetRawInfoWithVerificationStatusInt(data.type, data.value,
+                                                data.status);
+    profile.token_quality().LoadSerializedObservationsForStoredType(
         data.type, data.serialized_data);
   }
-  profile->FinalizeAfterImport();
+  profile.FinalizeAfterImport();
   return profile;
 }
 
@@ -639,7 +639,7 @@ bool AddressAutofillTable::UpdateAutofillProfile(
     const AutofillProfile& profile) {
   DCHECK(base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid());
 
-  std::unique_ptr<AutofillProfile> old_profile =
+  std::optional<AutofillProfile> old_profile =
       GetAutofillProfile(profile.guid(), profile.source());
   if (!old_profile) {
     return false;
@@ -682,39 +682,39 @@ bool AddressAutofillTable::RemoveAllAutofillProfiles(
          transaction.Commit();
 }
 
-std::unique_ptr<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
+std::optional<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
     const std::string& guid,
     AutofillProfile::Source profile_source) const {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  std::unique_ptr<AutofillProfile> profile =
+  std::optional<AutofillProfile> profile =
       GetProfileFromTypeTokensTable(db_, guid, profile_source);
   if (!profile || !ReadProfileMetadata(db_, *profile)) {
-    return nullptr;
+    return std::nullopt;
   }
   return profile;
 }
 
 bool AddressAutofillTable::GetAutofillProfiles(
     AutofillProfile::Source profile_source,
-    std::vector<std::unique_ptr<AutofillProfile>>& profiles) const {
+    std::vector<AutofillProfile>& profiles) const {
   profiles.clear();
 
   sql::Statement s;
   SelectBuilder(db_, s, GetProfileMetadataTable(profile_source), {kGuid});
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
-    std::unique_ptr<AutofillProfile> profile =
+    std::optional<AutofillProfile> profile =
         GetAutofillProfile(guid, profile_source);
     if (!profile) {
       continue;
     }
-    profiles.push_back(std::move(profile));
+    profiles.push_back(std::move(*profile));
   }
 
   return s.Succeeded();
 }
 
-std::unique_ptr<AutofillProfile>
+std::optional<AutofillProfile>
 AddressAutofillTable::GetAutofillProfileFromLegacyTable(
     const std::string& guid) const {
   sql::Statement s;
@@ -723,36 +723,35 @@ AddressAutofillTable::GetAutofillProfileFromLegacyTable(
                      kState, kZipcode, kSortingCode, kCountryCode, kUseCount,
                      kUseDate, kDateModified, kLanguageCode, kLabel},
                     guid)) {
-    return nullptr;
+    return std::nullopt;
   }
 
-  auto profile = std::make_unique<AutofillProfile>(
-      guid, AutofillProfile::Source::kLocalOrSyncable,
-      i18n_model_definition::kLegacyHierarchyCountryCode);
+  AutofillProfile profile(guid, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
 
-  DCHECK(base::Uuid::ParseCaseInsensitive(profile->guid()).is_valid());
+  DCHECK(base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid());
 
   // Get associated name info using guid.
-  AddLegacyAutofillProfileNamesToProfile(db_, profile.get());
+  AddLegacyAutofillProfileNamesToProfile(db_, &profile);
 
   // Get associated email info using guid.
-  AddLegacyAutofillProfileEmailsToProfile(db_, profile.get());
+  AddLegacyAutofillProfileEmailsToProfile(db_, &profile);
 
   // Get associated phone info using guid.
-  AddLegacyAutofillProfilePhonesToProfile(db_, profile.get());
+  AddLegacyAutofillProfilePhonesToProfile(db_, &profile);
 
   // The details should be added after the other info to make sure they don't
   // change when we change the names/emails/phones.
-  AddLegacyAutofillProfileDetailsFromStatement(s, profile.get());
+  AddLegacyAutofillProfileDetailsFromStatement(s, &profile);
 
   // The structured address information should be added after the street_address
   // from the query above was  written because this information is used to
   // detect changes by a legacy client.
-  AddLegacyAutofillProfileAddressesToProfile(db_, profile.get());
+  AddLegacyAutofillProfileAddressesToProfile(db_, &profile);
 
   // For more-structured profiles, the profile must be finalized to fully
   // populate the name fields.
-  profile->FinalizeAfterImport();
+  profile.FinalizeAfterImport();
 
   return profile;
 }
@@ -760,7 +759,7 @@ AddressAutofillTable::GetAutofillProfileFromLegacyTable(
 // TODO(crbug.com/40267335): This function's implementation is very similar to
 // `GetAutofillProfiles()`. Simplify somehow.
 bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
-    std::vector<std::unique_ptr<AutofillProfile>>& profiles) const {
+    std::vector<AutofillProfile>& profiles) const {
   profiles.clear();
 
   sql::Statement s;
@@ -768,12 +767,12 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
-    std::unique_ptr<AutofillProfile> profile =
+    std::optional<AutofillProfile> profile =
         GetAutofillProfileFromLegacyTable(guid);
     if (!profile) {
       continue;
     }
-    profiles.push_back(std::move(profile));
+    profiles.push_back(std::move(*profile));
   }
 
   return s.Succeeded();
@@ -782,7 +781,7 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
 bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
     base::Time delete_begin,
     base::Time delete_end,
-    std::vector<std::unique_ptr<AutofillProfile>>& profiles) {
+    std::vector<AutofillProfile>& profiles) {
   DCHECK(delete_end.is_null() || delete_begin < delete_end);
 
   time_t delete_begin_t = delete_begin.ToTimeT();
@@ -798,20 +797,20 @@ bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
   profiles.clear();
   while (s_profiles_get.Step()) {
     std::string guid = s_profiles_get.ColumnString(0);
-    std::unique_ptr<AutofillProfile> profile =
+    std::optional<AutofillProfile> profile =
         GetAutofillProfile(guid, AutofillProfile::Source::kLocalOrSyncable);
     if (!profile) {
       return false;
     }
-    profiles.push_back(std::move(profile));
+    profiles.push_back(std::move(*profile));
   }
   if (!s_profiles_get.Succeeded()) {
     return false;
   }
 
   // Remove Autofill profiles in the time range.
-  for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
-    if (!RemoveAutofillProfile(profile->guid(),
+  for (const AutofillProfile& profile : profiles) {
+    if (!RemoveAutofillProfile(profile.guid(),
                                AutofillProfile::Source::kLocalOrSyncable)) {
       return false;
     }
@@ -998,11 +997,11 @@ bool AddressAutofillTable::
   }
   bool success = true;
   if (db_->DoesTableExist(kAutofillProfilesTable)) {
-    std::vector<std::unique_ptr<AutofillProfile>> profiles;
+    std::vector<AutofillProfile> profiles;
     success = GetAutofillProfilesFromLegacyTable(profiles);
     // Migrate profiles to the new tables. Preserve the modification dates.
-    for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
-      success = success && AddAutofillProfileToTableVersion113(db_, *profile);
+    for (const AutofillProfile& profile : profiles) {
+      success = success && AddAutofillProfileToTableVersion113(db_, profile);
     }
   }
   // Delete all profiles from the legacy tables. The tables are dropped in

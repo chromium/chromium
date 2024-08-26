@@ -1031,10 +1031,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion112ToCurrent) {
     // AddressAutofillTable will read from them.
     autofill::AddressAutofillTable table;
     table.Init(&connection, /*meta_table=*/nullptr);
-    std::unique_ptr<autofill::AutofillProfile> profile =
-        table.GetAutofillProfile(
-            "00000000-0000-0000-0000-000000000000",
-            autofill::AutofillProfile::Source::kLocalOrSyncable);
+    std::optional<autofill::AutofillProfile> profile = table.GetAutofillProfile(
+        "00000000-0000-0000-0000-000000000000",
+        autofill::AutofillProfile::Source::kLocalOrSyncable);
     ASSERT_TRUE(profile);
     EXPECT_EQ(profile->modification_date(), base::Time::FromTimeT(123));
     EXPECT_EQ(profile->GetRawInfo(autofill::NAME_FULL), u"full name");

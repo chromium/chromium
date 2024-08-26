@@ -28,30 +28,27 @@ TestAddressDataManager::TestAddressDataManager(
 TestAddressDataManager::~TestAddressDataManager() = default;
 
 void TestAddressDataManager::AddProfile(const AutofillProfile& profile) {
-  std::unique_ptr<AutofillProfile> profile_ptr =
-      std::make_unique<AutofillProfile>(profile);
-  profile_ptr->FinalizeAfterImport();
-  GetProfileStorage(profile.source()).push_back(std::move(profile_ptr));
+  AutofillProfile profile_copy = profile;
+  profile_copy.FinalizeAfterImport();
+  GetProfileStorage(profile_copy.source()).push_back(std::move(profile_copy));
   NotifyObservers();
 }
 
 void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
-  std::vector<std::unique_ptr<AutofillProfile>>& storage =
-      GetProfileStorage(profile.source());
+  std::list<AutofillProfile>& storage = GetProfileStorage(profile.source());
   auto adm_profile =
       base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
   if (adm_profile != storage.end()) {
-    **adm_profile = profile;
+    *adm_profile = profile;
     NotifyObservers();
   }
 }
 
 void TestAddressDataManager::RemoveProfile(const std::string& guid) {
   const AutofillProfile* profile = GetProfileByGUID(guid);
-  std::vector<std::unique_ptr<AutofillProfile>>& profiles =
-      GetProfileStorage(profile->source());
-  profiles.erase(base::ranges::find(profiles, profile,
-                                    &std::unique_ptr<AutofillProfile>::get));
+  std::list<AutofillProfile>& profiles = GetProfileStorage(profile->source());
+  profiles.erase(
+      base::ranges::find(profiles, profile->guid(), &AutofillProfile::guid));
   NotifyObservers();
 }
 
@@ -64,12 +61,11 @@ void TestAddressDataManager::LoadProfiles() {
 }
 
 void TestAddressDataManager::RecordUseOf(const AutofillProfile& profile) {
-  std::vector<std::unique_ptr<AutofillProfile>>& storage =
-      GetProfileStorage(profile.source());
+  std::list<AutofillProfile>& storage = GetProfileStorage(profile.source());
   auto adm_profile =
       base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
   if (adm_profile != storage.end()) {
-    (*adm_profile)->RecordAndLogUse();
+    adm_profile->RecordAndLogUse();
   }
 }
 

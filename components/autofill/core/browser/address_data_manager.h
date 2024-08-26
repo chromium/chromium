@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_MANAGER_H_
 
 #include <deque>
+#include <list>
 #include <memory>
 #include <optional>
 #include <string>
@@ -309,15 +310,15 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
  protected:
   friend class AddressDataManagerTestApi;
 
-  // Profiles of different sources are stored in different vectors.
-  // Several function need to read/write from the correct vector, depending
-  // on the source of the profile they are dealing with. This helper function
-  // returns the vector where profiles of the given `source` are stored.
-  const std::vector<std::unique_ptr<AutofillProfile>>& GetProfileStorage(
+  // Profiles of different sources are stored in different members. Several
+  // function need to read/write from the correct one, depending on the source
+  // of the profile they are dealing with. This helper function returns returns
+  // the container where profiles of the given `source` are stored.
+  const std::list<AutofillProfile>& GetProfileStorage(
       AutofillProfile::Source source) const;
-  std::vector<std::unique_ptr<AutofillProfile>>& GetProfileStorage(
+  std::list<AutofillProfile>& GetProfileStorage(
       AutofillProfile::Source source) {
-    return const_cast<std::vector<std::unique_ptr<AutofillProfile>>&>(
+    return const_cast<std::list<AutofillProfile>&>(
         const_cast<const AddressDataManager*>(this)->GetProfileStorage(source));
   }
 
@@ -408,8 +409,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // two sources:
   // - kLocalOrSyncable: Stored in `synced_local_profiles_`.
   // - kAccount: Stored in `account_profiles_`.
-  std::vector<std::unique_ptr<AutofillProfile>> synced_local_profiles_;
-  std::vector<std::unique_ptr<AutofillProfile>> account_profiles_;
+  // TODO(b/40100455): This should be `std::vector<AutofillProfile>`. List is
+  // used for its stable iterators.
+  std::list<AutofillProfile> synced_local_profiles_;
+  std::list<AutofillProfile> account_profiles_;
 
   // Handles to pending read queries for `synced_local_profiles_` and
   // `account_profiles_`. 0 means that no reads are pending.

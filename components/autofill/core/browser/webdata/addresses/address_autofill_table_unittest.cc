@@ -163,7 +163,7 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   EXPECT_TRUE(table_.AddAutofillProfile(home_profile));
 
   // Get the 'Home' profile from the table.
-  std::unique_ptr<AutofillProfile> db_profile =
+  std::optional<AutofillProfile> db_profile =
       table_.GetAutofillProfile(home_profile.guid(), home_profile.source());
   ASSERT_TRUE(db_profile);
 
@@ -173,7 +173,7 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   // Remove the profile and expect that no profiles remain.
   EXPECT_TRUE(
       table_.RemoveAutofillProfile(home_profile.guid(), profile_source()));
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile> profiles;
   EXPECT_TRUE(table_.GetAutofillProfiles(profile_source(), profiles));
   EXPECT_TRUE(profiles.empty());
 }
@@ -190,13 +190,13 @@ TEST_F(AddressAutofillTableTest, GetAutofillProfiles) {
   EXPECT_TRUE(table_.AddAutofillProfile(local_profile));
   EXPECT_TRUE(table_.AddAutofillProfile(account_profile));
 
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile> profiles;
   EXPECT_TRUE(table_.GetAutofillProfiles(
       AutofillProfile::Source::kLocalOrSyncable, profiles));
-  EXPECT_THAT(profiles, ElementsAre(testing::Pointee(local_profile)));
+  EXPECT_THAT(profiles, ElementsAre(local_profile));
   EXPECT_TRUE(
       table_.GetAutofillProfiles(AutofillProfile::Source::kAccount, profiles));
-  EXPECT_THAT(profiles, ElementsAre(testing::Pointee(account_profile)));
+  EXPECT_THAT(profiles, ElementsAre(account_profile));
 }
 
 // Tests that `RemoveAllAutofillProfiles()` clears all profiles of the given
@@ -212,7 +212,7 @@ TEST_P(AddressAutofillTableProfileTest, RemoveAllAutofillProfiles) {
   EXPECT_TRUE(table_.RemoveAllAutofillProfiles(profile_source()));
 
   // Expect that the profiles from `profile_source()` are gone.
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile> profiles;
   ASSERT_TRUE(table_.GetAutofillProfiles(profile_source(), profiles));
   EXPECT_TRUE(profiles.empty());
 
@@ -310,7 +310,7 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   table_.AddAutofillProfile(profile);
 
   // Get the profile.
-  std::unique_ptr<AutofillProfile> db_profile =
+  std::optional<AutofillProfile> db_profile =
       table_.GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
@@ -355,14 +355,14 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
       "VALUES('00000000-0000-0000-0000-000000000005', 3, 'first name5');"));
 
   // Remove all entries modified in the bounded time range [17,41).
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile> profiles;
   table_.RemoveAutofillDataModifiedBetween(Time::FromTimeT(17),
                                            Time::FromTimeT(41), profiles);
 
   // Two profiles should have been removed.
   ASSERT_EQ(2UL, profiles.size());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000001", profiles[0]->guid());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000002", profiles[1]->guid());
+  EXPECT_EQ("00000000-0000-0000-0000-000000000001", profiles[0].guid());
+  EXPECT_EQ("00000000-0000-0000-0000-000000000002", profiles[1].guid());
 
   // Make sure that only the expected profiles are still present.
   sql::Statement s_autofill_profiles_bounded(
@@ -398,8 +398,8 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   table_.RemoveAutofillDataModifiedBetween(Time::FromTimeT(51), Time(),
                                            profiles);
   ASSERT_EQ(2UL, profiles.size());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000004", profiles[0]->guid());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000005", profiles[1]->guid());
+  EXPECT_EQ("00000000-0000-0000-0000-000000000004", profiles[0].guid());
+  EXPECT_EQ("00000000-0000-0000-0000-000000000005", profiles[1].guid());
 
   // Make sure that only the expected profiles are still present.
   sql::Statement s_autofill_profiles_unbounded(
@@ -428,8 +428,8 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
 
   // Two profiles should have been removed.
   ASSERT_EQ(2UL, profiles.size());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000000", profiles[0]->guid());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000003", profiles[1]->guid());
+  EXPECT_EQ("00000000-0000-0000-0000-000000000000", profiles[0].guid());
+  EXPECT_EQ("00000000-0000-0000-0000-000000000003", profiles[1].guid());
 
   // Make sure there are no profiles remaining.
   sql::Statement s_autofill_profiles_empty(

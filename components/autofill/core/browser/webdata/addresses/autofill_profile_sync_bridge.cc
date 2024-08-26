@@ -165,7 +165,7 @@ AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
 std::unique_ptr<syncer::DataBatch> AutofillProfileSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::unique_ptr<AutofillProfile>> entries;
+  std::vector<AutofillProfile> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
           AutofillProfile::Source::kLocalOrSyncable, entries)) {
     change_processor()->ReportError(
@@ -176,10 +176,10 @@ std::unique_ptr<syncer::DataBatch> AutofillProfileSyncBridge::GetDataForCommit(
   std::unordered_set<std::string> keys_set(storage_keys.begin(),
                                            storage_keys.end());
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const std::unique_ptr<AutofillProfile>& entry : entries) {
-    std::string key = GetStorageKeyFromAutofillProfile(*entry);
+  for (const AutofillProfile& entry : entries) {
+    std::string key = GetStorageKeyFromAutofillProfile(entry);
     if (keys_set.contains(key)) {
-      batch->Put(key, CreateEntityDataFromAutofillProfile(*entry));
+      batch->Put(key, CreateEntityDataFromAutofillProfile(entry));
     }
   }
   return batch;
@@ -189,7 +189,7 @@ std::unique_ptr<syncer::DataBatch>
 AutofillProfileSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<std::unique_ptr<AutofillProfile>> entries;
+  std::vector<AutofillProfile> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
           AutofillProfile::Source::kLocalOrSyncable, entries)) {
     change_processor()->ReportError(
@@ -198,9 +198,9 @@ AutofillProfileSyncBridge::GetAllDataForDebugging() {
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const std::unique_ptr<AutofillProfile>& entry : entries) {
-    batch->Put(GetStorageKeyFromAutofillProfile(*entry),
-               CreateEntityDataFromAutofillProfile(*entry));
+  for (const AutofillProfile& entry : entries) {
+    batch->Put(GetStorageKeyFromAutofillProfile(entry),
+               CreateEntityDataFromAutofillProfile(entry));
   }
   return batch;
 }

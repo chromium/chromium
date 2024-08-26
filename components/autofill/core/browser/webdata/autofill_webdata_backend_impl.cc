@@ -371,7 +371,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
   // Only perform the update if the profile exists.  It is currently
   // valid to try to update a missing profile.  We simply drop the write and
   // the caller will detect this on the next refresh.
-  std::unique_ptr<AutofillProfile> original_profile =
+  std::optional<AutofillProfile> original_profile =
       table->GetAutofillProfile(profile.guid(), profile.source());
   if (!original_profile) {
     ReportResult(Result::kUpdateAutofillProfile_ReadFailure);
@@ -407,7 +407,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
     AutofillProfile::Source profile_source,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::unique_ptr<AutofillProfile> profile =
+  std::optional<AutofillProfile> profile =
       AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfile(
           guid, profile_source);
   if (!profile) {
@@ -441,11 +441,10 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
     AutofillProfile::Source profile_source,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile> profiles;
   AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfiles(profile_source,
                                                                  profiles);
-  return std::make_unique<
-      WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
+  return std::make_unique<WDResult<std::vector<AutofillProfile>>>(
       AUTOFILL_PROFILES_RESULT, std::move(profiles));
 }
 
@@ -871,16 +870,16 @@ AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween(
     base::Time delete_end,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile> profiles;
   bool commit_needed = false;
   bool failures_observed = false;
   if (AddressAutofillTable::FromWebDatabase(db)
           ->RemoveAutofillDataModifiedBetween(delete_begin, delete_end,
                                               profiles)) {
-    for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
+    for (const AutofillProfile& profile : profiles) {
       for (auto& db_observer : db_observer_list_) {
         db_observer.AutofillProfileChanged(AutofillProfileChange(
-            AutofillProfileChange::REMOVE, profile->guid(), *profile));
+            AutofillProfileChange::REMOVE, profile.guid(), profile));
       }
     }
     commit_needed = true;

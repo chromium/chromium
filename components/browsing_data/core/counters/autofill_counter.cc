@@ -159,17 +159,14 @@ void AutofillCounter::OnWebDataServiceRequestDone(
     // Addresses.
     DCHECK_EQ(AUTOFILL_PROFILES_RESULT, result->GetType());
     auto addresses =
-        static_cast<
-            WDResult<std::vector<std::unique_ptr<autofill::AutofillProfile>>>*>(
+        static_cast<WDResult<std::vector<autofill::AutofillProfile>>*>(
             result.get())
             ->GetValue();
 
     num_addresses_ = base::ranges::count_if(
-        addresses,
-        [start,
-         end](const std::unique_ptr<autofill::AutofillProfile>& address) {
-          return (address->modification_date() >= start &&
-                  address->modification_date() < end);
+        addresses, [start, end](const autofill::AutofillProfile& address) {
+          return (address.modification_date() >= start &&
+                  address.modification_date() < end);
         });
     addresses_query_ = 0;
 

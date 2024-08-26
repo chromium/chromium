@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -112,16 +113,15 @@ class AddressAutofillTable : public WebDatabaseTable {
 
   // Retrieves a profile with guid `guid` from `kAutofillProfilesTable` or
   // `kContactInfoTable`.
-  std::unique_ptr<AutofillProfile> GetAutofillProfile(
+  std::optional<AutofillProfile> GetAutofillProfile(
       const std::string& guid,
       AutofillProfile::Source profile_source) const;
 
   // Retrieves profiles in the database. They are returned in unspecified order.
   // The `profile_source` specifies if profiles from the legacy or the remote
   // backend should be retrieved.
-  bool GetAutofillProfiles(
-      AutofillProfile::Source profile_source,
-      std::vector<std::unique_ptr<AutofillProfile>>& profiles) const;
+  bool GetAutofillProfiles(AutofillProfile::Source profile_source,
+                           std::vector<AutofillProfile>& profiles) const;
 
   // Removes rows from local_addresses tables if they were created on or after
   // `delete_begin` and strictly before `delete_end`. Returns the list of
@@ -134,7 +134,7 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool RemoveAutofillDataModifiedBetween(
       base::Time delete_begin,
       base::Time delete_end,
-      std::vector<std::unique_ptr<AutofillProfile>>& profiles);
+      std::vector<AutofillProfile>& profiles);
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
@@ -159,10 +159,10 @@ class AddressAutofillTable : public WebDatabaseTable {
 
  private:
   // Reads profiles from the deprecated autofill_profiles table.
-  std::unique_ptr<AutofillProfile> GetAutofillProfileFromLegacyTable(
+  std::optional<AutofillProfile> GetAutofillProfileFromLegacyTable(
       const std::string& guid) const;
   bool GetAutofillProfilesFromLegacyTable(
-      std::vector<std::unique_ptr<AutofillProfile>>& profiles) const;
+      std::vector<AutofillProfile>& profiles) const;
 
   bool InitLegacyProfileAddressesTable();
   bool InitProfileMetadataTable(AutofillProfile::Source source);

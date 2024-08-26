@@ -30,8 +30,7 @@ typedef enum {
   AUTOFILL_VALUE_RESULT,         // WDResult<std::vector<AutofillEntry>>
   AUTOFILL_CLEANUP_RESULT,       // WDResult<size_t>
   AUTOFILL_CHANGES,              // WDResult<std::vector<AutofillChange>>
-  AUTOFILL_PROFILES_RESULT,      // WDResult<std::vector<
-                                 //     std::unique_ptr<AutofillProfile>>>
+  AUTOFILL_PROFILES_RESULT,      // WDResult<std::vector<AutofillProfile>>
   AUTOFILL_CLOUDTOKEN_RESULT,    // WDResult<std::vector<std::unique_ptr<
                                  //     CreditCardCloudTokenData>>>
   AUTOFILL_CREDITCARDS_RESULT,   // WDResult<std::vector<
