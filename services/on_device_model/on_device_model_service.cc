@@ -16,7 +16,7 @@
 #include "services/on_device_model/ml/on_device_model_internal.h"
 
 #if !defined(ENABLE_ML_INTERNAL)
-#include "services/on_device_model/on_device_model_fake.h"  //nogncheck
+#include "services/on_device_model/fake/on_device_model_fake.h"  //nogncheck
 #endif
 
 namespace on_device_model {
@@ -357,7 +357,7 @@ const ml::OnDeviceModelInternalImpl* DefaultImpl() {
 #if defined(ENABLE_ML_INTERNAL)
   return ml::GetOnDeviceModelInternalImpl();
 #else
-  return GetOnDeviceModelFakeImpl();
+  return fake_ml::GetOnDeviceModelFakeImpl();
 #endif
 }
 

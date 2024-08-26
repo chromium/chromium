@@ -9,7 +9,7 @@
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/on_device_model_internal.h"
 
-namespace on_device_model {
+namespace fake_ml {
 
 namespace {
 
