@@ -51,6 +51,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
       dm_protocol::kChromePublicAccountPolicyType,
       dm_protocol::kChromeSigninExtensionPolicyType,
       dm_protocol::kChromeUserPolicyType,
+      dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,
   };
   const base::flat_set<std::string> kExtensionPolicyTypes{
       dm_protocol::kChromeExtensionPolicyType,

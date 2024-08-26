@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
+#include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -439,22 +440,25 @@ void CloudPolicyClient::RegisterWithCertificate(
                      std::move(signing_service)));
 }
 
-void CloudPolicyClient::RegisterBrowserWithEnrollmentToken(
+void CloudPolicyClient::RegisterBrowserOrPolicyAgentWithEnrollmentToken(
     const std::string& token,
     const std::string& client_id,
     const ClientDataDelegate& client_data_delegate,
-    bool is_mandatory) {
+    bool is_mandatory,
+    DeviceManagementService::JobConfiguration::JobType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(service_);
   DCHECK(!token.empty());
   DCHECK(!client_id.empty());
   DCHECK(!is_registered());
+  DCHECK(type == DeviceManagementService::JobConfiguration::
+                     TYPE_BROWSER_REGISTRATION ||
+         type == DMServerJobConfiguration::JobConfiguration::
+                     TYPE_POLICY_AGENT_REGISTRATION);
 
   SetClientId(client_id);
 
-  auto params = DMServerJobConfiguration::CreateParams::WithClient(
-      DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION,
-      this);
+  auto params = DMServerJobConfiguration::CreateParams::WithClient(type, this);
   params.auth_data = DMAuth::FromEnrollmentToken(token);
   params.callback = base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
                                    weak_ptr_factory_.GetWeakPtr());
@@ -472,6 +476,26 @@ void CloudPolicyClient::RegisterBrowserWithEnrollmentToken(
   client_data_delegate.FillRegisterBrowserRequest(
       request, base::BindOnce(&CloudPolicyClient::CreateUniqueRequestJob,
                               base::Unretained(this), std::move(config)));
+}
+
+void CloudPolicyClient::RegisterBrowserWithEnrollmentToken(
+    const std::string& token,
+    const std::string& client_id,
+    const ClientDataDelegate& client_data_delegate,
+    bool is_mandatory) {
+  RegisterBrowserOrPolicyAgentWithEnrollmentToken(
+      token, client_id, client_data_delegate, is_mandatory,
+      DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION);
+}
+
+void CloudPolicyClient::RegisterPolicyAgentWithEnrollmentToken(
+    const std::string& token,
+    const std::string& client_id,
+    const ClientDataDelegate& client_data_delegate) {
+  RegisterBrowserOrPolicyAgentWithEnrollmentToken(
+      token, client_id, client_data_delegate, /*is_mandatory=*/true,
+      DeviceManagementService::JobConfiguration::
+          TYPE_POLICY_AGENT_REGISTRATION);
 }
 
 void CloudPolicyClient::RegisterDeviceWithEnrollmentToken(

@@ -275,6 +275,9 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_FM_REGISTRATION_TOKEN:
       return "UploadFmRegistrationToken";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_POLICY_AGENT_REGISTRATION:
+      return "PolicyAgentRegistration";
     // TODO(b/263367348): Remove the Active Directory types below, after they're
     // removed from the corresponding enum.
     case DeviceManagementService::JobConfiguration::
