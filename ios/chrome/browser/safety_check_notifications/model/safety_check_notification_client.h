@@ -27,6 +27,11 @@ class SafetyCheckNotificationClient : public PushNotificationClient {
   void OnSceneActiveForegroundBrowserReady() override;
 
  private:
+  // Returns true if the user has enabled Safety Check notifications, either in
+  // the Notifications Settings UI or through an opt-in prompt (e.g., Magic
+  // Stack, Safety Check page, Password Checkup page).
+  bool IsPermitted();
+
   // Validates asynchronous `PushNotificationClient` events are evaluated on the
   // same sequence that `SafetyCheckNotificationClient` was created on.
   SEQUENCE_CHECKER(sequence_checker_);

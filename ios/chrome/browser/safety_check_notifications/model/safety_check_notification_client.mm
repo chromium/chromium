@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/safety_check_notifications/model/safety_check_notification_client.h"
 
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 SafetyCheckNotificationClient::SafetyCheckNotificationClient()
     : PushNotificationClient(PushNotificationClientId::kSafetyCheck) {}
@@ -46,4 +50,18 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady() {
   // TODO(crbug.com/347975105): Implement
   // `OnSceneActiveForegroundBrowserReady()` to conditionally schedule
   // notifications.
+}
+
+bool SafetyCheckNotificationClient::IsPermitted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/362260014): Replace current opt-in state logic with
+  // `GetMobileNotificationPermissionStatusForClient()` once
+  // `PushNotificationClient` dependencies are refactored.
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  return local_pref_service
+      ->GetDict(prefs::kAppLevelPushNotificationPermissions)
+      .FindBool(kSafetyCheckNotificationKey)
+      .value_or(false);
 }
