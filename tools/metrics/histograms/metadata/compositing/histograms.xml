@@ -315,6 +315,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Display.Draw.AverageOverdraw" units="units"
+    expires_after="2025-01-05">
+  <owner>zoraiznaeem@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The average overdraw of the aggregated compositor frame. It is logged once
+    per frame. Overdraw is expected to range is [1.0, 6.0]. An overdraw of 2.0
+    means that on average each pixel of the display is drawn twice. Note: The
+    overdraw value is logged as `overdraw * 100000`.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.Draw.LastPass.Quads" units="quads"
     expires_after="2025-05-13">
   <owner>berlu@chromium.org</owner>

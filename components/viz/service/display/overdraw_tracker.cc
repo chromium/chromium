@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
@@ -26,7 +27,61 @@ namespace {
 // is 1s and no tests should run longer than 30min.
 constexpr size_t kMaxRecords = 1800u;
 
+void LogAverageOverdrawCountUMA(float overdraw) {
+  constexpr char kAverageOverdrawHistogramName[] =
+      "Compositing.Display.Draw.AverageOverdraw";
+  // For optimal histogram bucketing, convert floating-point values into
+  // integers while preserving the desired level of decimal precision.
+  constexpr int kConversionFactor = 100'000;
+
+  // The expected overdraw ranges is [1, 6].
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      kAverageOverdrawHistogramName, overdraw * kConversionFactor,
+      /*minimum=*/1 * kConversionFactor,
+      /*maximum=*/(6 * kConversionFactor) + 1, /*bucket_count=*/50);
+}
+
 }  // namespace
+
+// static
+void OverdrawTracker::EstimateAndRecordOverdrawAsUMAMetric(
+    const AggregatedFrame* frame) {
+  const float overdraw = EstimateOverdraw(frame);
+  LogAverageOverdrawCountUMA(overdraw);
+}
+
+// static
+float OverdrawTracker::EstimateOverdraw(const AggregatedFrame* frame) {
+  if (frame->render_pass_list.empty()) {
+    return 0;
+  }
+
+  auto* root_render_pass = frame->render_pass_list.back().get();
+  DCHECK(root_render_pass);
+
+  const gfx::Rect& display_rect = root_render_pass->output_rect;
+
+  base::CheckedNumeric<uint64_t> overdraw = 0;
+  for (const auto& pass : frame->render_pass_list) {
+    for (auto quad = pass->quad_list.begin(); quad != pass->quad_list.end();
+         ++quad) {
+      auto* sqs = quad->shared_quad_state;
+      auto quad_to_root_transform = sqs->quad_to_target_transform;
+
+      if (!quad_to_root_transform.NonDegeneratePreserves2dAxisAlignment()) {
+        continue;
+      }
+
+      auto quad_rect = gfx::ToEnclosingRect(
+          quad_to_root_transform.MapRect(gfx::RectF(quad->visible_rect)));
+
+      overdraw += quad_rect.size().GetCheckedArea();
+    }
+  }
+
+  return static_cast<float>(overdraw.ValueOrDefault(0)) /
+         display_rect.size().Area64();
+}
 
 OverdrawTracker::OverdrawTracker(const Settings& settings)
     : settings_(settings), start_time_(base::TimeTicks::Now()) {
@@ -78,38 +133,6 @@ void OverdrawTracker::Record(float overdraw, base::TimeTicks timestamp) {
   DecomposedAverage& interval_average =
       interval_overdraw_averages_.at(interval_index);
   interval_average.AddValue(overdraw);
-}
-
-float OverdrawTracker::EstimateOverdraw(const AggregatedFrame* frame) {
-  if (frame->render_pass_list.empty()) {
-    return 0;
-  }
-
-  auto* root_render_pass = frame->render_pass_list.back().get();
-  DCHECK(root_render_pass);
-
-  const gfx::Rect& display_rect = root_render_pass->output_rect;
-
-  base::CheckedNumeric<uint64_t> overdraw = 0;
-  for (const auto& pass : frame->render_pass_list) {
-    for (auto quad = pass->quad_list.begin(); quad != pass->quad_list.end();
-         ++quad) {
-      auto* sqs = quad->shared_quad_state;
-      auto quad_to_root_transform = sqs->quad_to_target_transform;
-
-      if (!quad_to_root_transform.NonDegeneratePreserves2dAxisAlignment()) {
-        continue;
-      }
-
-      auto quad_rect = gfx::ToEnclosingRect(
-          quad_to_root_transform.MapRect(gfx::RectF(quad->visible_rect)));
-
-      overdraw += quad_rect.size().GetCheckedArea();
-    }
-  }
-
-  return static_cast<float>(overdraw.ValueOrDefault(0)) /
-         display_rect.size().Area64();
 }
 
 size_t OverdrawTracker::GetIntervalIndex(base::TimeTicks timestamp) const {

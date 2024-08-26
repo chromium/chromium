@@ -54,6 +54,7 @@
 #include "components/viz/service/display/null_renderer.h"
 #include "components/viz/service/display/occlusion_culler.h"
 #include "components/viz/service/display/output_surface.h"
+#include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
 #include "components/viz/service/display/renderer_utils.h"
 #include "components/viz/service/display/skia_output_surface.h"
@@ -1007,6 +1008,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       overdraw_tracker_->EstimateAndRecordOverdraw(&frame,
                                                    base::TimeTicks::Now());
     }
+
+    OverdrawTracker::EstimateAndRecordOverdrawAsUMAMetric(&frame);
 
     draw_timer.emplace();
     overlay_processor_->SetFrameSequenceNumber(frame_sequence_number_);
