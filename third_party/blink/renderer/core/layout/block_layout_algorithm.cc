@@ -2788,6 +2788,14 @@ void BlockLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
 }
 
 BreakStatus BlockLayoutAlgorithm::FinalizeForFragmentation() {
+  if (Node().IsTableCell()) {
+    // For table cells, prevent breaking before trailing box decorations, as
+    // that might disturb the row stretching machinery, causing an infinite
+    // loop. We'd add the stretch amount to the block-size to the content box of
+    // the table cell, even though we're past it.
+    container_builder_.SetShouldPreventBreakBeforeBlockEndDecorations(true);
+  }
+
   if (Node().IsInlineFormattingContextRoot() && !early_break_ &&
       GetConstraintSpace().HasBlockFragmentation()) {
     if (container_builder_.HasInflowChildBreakInside() ||

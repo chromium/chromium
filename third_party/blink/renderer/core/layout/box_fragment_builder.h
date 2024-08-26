@@ -342,6 +342,13 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     should_clone_box_end_decorations_ = b;
   }
 
+  void SetShouldPreventBreakBeforeBlockEndDecorations(bool b) {
+    should_prevent_break_before_block_end_decorations_ = b;
+  }
+  bool ShouldPreventBreakBeforeBlockEndDecorations() const {
+    return should_prevent_break_before_block_end_decorations_;
+  }
+
   void SetIsMonolithic(bool b) { is_monolithic_ = b; }
 
   // Set how much of the block-size we've used so far for this box. This will be
@@ -714,6 +721,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   bool is_monolithic_ = true;
   bool is_first_for_node_ = true;
   bool should_clone_box_end_decorations_ = false;
+  bool should_prevent_break_before_block_end_decorations_ = false;
   bool did_break_self_ = false;
   bool has_inflow_child_break_inside_ = false;
   bool has_forced_break_ = false;
