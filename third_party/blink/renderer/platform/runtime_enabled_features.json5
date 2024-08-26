@@ -4295,7 +4295,7 @@
     },
     {
       name: "TransferableRTCDataChannel",
-      status: "experimental",
+      status: "stable",
     },
     // This is conditionally set if the platform supports translation.
     {
