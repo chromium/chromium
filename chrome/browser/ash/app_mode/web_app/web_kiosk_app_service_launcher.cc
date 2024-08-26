@@ -23,6 +23,8 @@
 #include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/pref_names.h"
+#include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/common/web_app_id.h"
@@ -112,12 +114,13 @@ void WebKioskAppServiceLauncher::GetInstallState(
 void WebKioskAppServiceLauncher::CheckWhetherNetworkIsRequired(
     WebKioskInstallState state,
     const std::optional<webapps::AppId>& id) {
-  if (state == WebKioskInstallState::kInstalled) {
-    NotifyAppPrepared(id);
+  if (state != WebKioskInstallState::kInstalled ||
+      !profile_->GetPrefs()->GetBoolean(::prefs::kKioskWebAppOfflineEnabled)) {
+    delegate_->InitializeNetwork();
     return;
   }
 
-  delegate_->InitializeNetwork();
+  NotifyAppPrepared(id);
 }
 
 void WebKioskAppServiceLauncher::ContinueWithNetworkReady() {

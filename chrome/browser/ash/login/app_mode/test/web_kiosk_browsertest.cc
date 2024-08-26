@@ -40,6 +40,11 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -217,24 +222,6 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NetworkTimeout) {
   WaitNetworkConfigureScreenAndContinueWithOnlineState(
       /*require_network*/ true, /*auto_close*/ true);
 
-  KioskSessionInitializedWaiter().Wait();
-}
-
-// App Service launcher requires installing web apps to Kiosk profile before
-// launching offline.
-IN_PROC_BROWSER_TEST_F(WebKioskTest, PRE_AlreadyInstalledOffline) {
-  PrepareAppLaunch();
-  EnsureAppIsInstalled();
-}
-
-// Runs the kiosk app offline when it has been already installed.
-IN_PROC_BROWSER_TEST_F(WebKioskTest, AlreadyInstalledOffline) {
-  base::AddFeatureIdTagToTestResult(
-      "screenplay-35e430a3-04b3-46a7-aa0a-207a368b8cba");
-
-  SetOnline(false);
-  PrepareAppLaunch();
-  LaunchApp();
   KioskSessionInitializedWaiter().Wait();
 }
 
@@ -452,6 +439,60 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest,
   ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 }
+
+class WebKioskOfflineEnabledTest : public WebKioskTest,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  WebKioskOfflineEnabledTest() = default;
+
+  WebKioskOfflineEnabledTest(const WebKioskOfflineEnabledTest&) = delete;
+  WebKioskOfflineEnabledTest& operator=(const WebKioskOfflineEnabledTest&) =
+      delete;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    WebKioskTest::SetUpInProcessBrowserTestFixture();
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
+
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+
+    policy::PolicyMap values;
+    values.Set(policy::key::kKioskWebAppOfflineEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(IsAppOfflineEnabled()),
+               nullptr);
+    provider_.UpdateChromePolicy(values);
+  }
+
+  bool IsAppOfflineEnabled() { return GetParam(); }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+
+IN_PROC_BROWSER_TEST_P(WebKioskOfflineEnabledTest,
+                       PRE_AlreadyInstalledOffline) {
+  PrepareAppLaunch();
+  EnsureAppIsInstalled();
+}
+
+IN_PROC_BROWSER_TEST_P(WebKioskOfflineEnabledTest, AlreadyInstalledOffline) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-35e430a3-04b3-46a7-aa0a-207a368b8cba");
+
+  SetOnline(false);
+  PrepareAppLaunch();
+  LaunchApp();
+
+  if (!IsAppOfflineEnabled()) {
+    WaitNetworkConfigureScreenAndContinueWithOnlineState(
+        /*require_network=*/true, /*auto_close=*/true);
+  }
+  KioskSessionInitializedWaiter().Wait();
+}
+
+INSTANTIATE_TEST_SUITE_P(All, WebKioskOfflineEnabledTest, ::testing::Bool());
 
 }  // namespace
 
