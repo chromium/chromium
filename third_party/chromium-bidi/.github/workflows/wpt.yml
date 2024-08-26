@@ -148,7 +148,7 @@ jobs:
           - kind: mapper
             head: headful
     runs-on: ubuntu-latest
-    needs: [wpt]
+    needs: [wpt-required]
     # Only update expectations if the tests were failed and either `auto-commit`
     # checkbox is set or `update-expectations` label is present.
     if: ${{ failure() && (github.event.inputs.auto-commit == 'true' || contains(github.event.pull_request.labels.*.name, 'update-expectations')) }}
