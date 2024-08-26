@@ -69,6 +69,7 @@
   },
   {
     "prefix": "gpu",
+    "owners": ["fserb@chromium.org", "wangxianzhu@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [ "fast/canvas",
                "external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html",
