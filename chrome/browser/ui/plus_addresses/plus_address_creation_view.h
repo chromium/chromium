@@ -19,6 +19,8 @@ class PlusAddressCreationView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressConfirmButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressDescriptionTextElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressErrorTextElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kPlusAddressGenerationMessageElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressNoticeElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressProgressBarId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressRefreshButtonElementId);

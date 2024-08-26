@@ -194,6 +194,8 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
   }
 
   // Respond to request immediately with PlusProfile and OK status.
+  // TODO: crbug.com/354865745 - Introduce a run loop here to simulate waiting
+  // for network responses. This would allow reliably verifying loading status.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequestWithSuccess(
       const net::test_server::HttpRequest& request) {
     // Ignore unrecognized path.
@@ -379,7 +381,6 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           // Simulate refresh.
           PressButton(
               PlusAddressCreationView::kPlusAddressRefreshButtonElementId),
-          EnsurePresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           WaitForViewProperty(
               PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
               views::Label, Text, kFakePlusAddressRefreshU16),
@@ -423,15 +424,15 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
   RunTestSequence(
       ShowModal(),
       InAnyContext(WaitForShow(
-          PlusAddressCreationView::kPlusAddressSuggestedEmailElementId)),
+          PlusAddressCreationView::kPlusAddressGenerationMessageElementId)),
       InSameContext(Steps(
           // Ensure that modal shows a placeholder & disables the confirm button
           // while `Reserve()` is pending.
           CheckViewProperty(
-              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
+              PlusAddressCreationView::kPlusAddressGenerationMessageElementId,
               &views::Label::GetText,
               l10n_util::GetStringUTF16(
-                  IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER)),
+                  IDS_PLUS_ADDRESS_MODAL_GENERATION_TEMPORARY_LABEL_CONTENT)),
           CheckViewProperty(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
               &views::View::GetEnabled, false),
@@ -494,7 +495,6 @@ IN_PROC_BROWSER_TEST_F(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-
       CheckHistogramUniqueSample(
           FormatHistogramNameFor(PlusAddressNetworkRequestType::kReserve),
           net::HttpStatusCode::HTTP_OK, 1),
@@ -930,15 +930,15 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsTest,
   RunTestSequence(
       ShowModal(),
       InAnyContext(WaitForShow(
-          PlusAddressCreationView::kPlusAddressSuggestedEmailElementId)),
+          PlusAddressCreationView::kPlusAddressGenerationMessageElementId)),
       InSameContext(Steps(
           // Ensure that modal shows a placeholder & disables the confirm button
           // while `Reserve()` is pending.
           CheckViewProperty(
-              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
+              PlusAddressCreationView::kPlusAddressGenerationMessageElementId,
               &views::Label::GetText,
               l10n_util::GetStringUTF16(
-                  IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER)),
+                  IDS_PLUS_ADDRESS_MODAL_GENERATION_TEMPORARY_LABEL_CONTENT)),
           CheckViewProperty(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
               &views::View::GetEnabled, false),

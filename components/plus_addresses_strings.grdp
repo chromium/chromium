@@ -111,8 +111,8 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_REFRESH_BUTTON_ACCESSIBLE_NAME" desc="The acessible name of the refresh button on the plus address modal" translateable="false">
       Refresh
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_REFRESH_TEMPORARY_LABEL_CONTENT" desc="The content shown in the plus address label of the modal while a refresh is ongoing" translateable="false">
-      Refreshing ...
+    <message name="IDS_PLUS_ADDRESS_MODAL_GENERATION_TEMPORARY_LABEL_CONTENT" desc="The content shown in the plus address label of the modal while a server request is ongoing" translateable="false">
+      Generating...
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE_NOTICE" desc="Title of the modal dialog on Desktop that is used on the first run, i.e. when the modal contains a notice." translateable="false">
       First time usage title placeholder.
