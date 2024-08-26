@@ -122,6 +122,8 @@ class MimeUtil {
   bool IsUnsupportedTextMimeType(const std::string& mime_type) const;
   bool IsSupportedJavascriptMimeType(const std::string& mime_type) const;
   bool IsJSONMimeType(const std::string&) const;
+  bool IsXMLMimeType(const std::string& mime_type) const;
+  bool IsSVGMimeType(const std::string& mime_type) const;
 
   bool IsSupportedMimeType(const std::string& mime_type) const;
 
@@ -177,12 +179,26 @@ bool MimeUtil::IsSupportedJavascriptMimeType(
   return base::Contains(javascript_types_, mime_type);
 }
 
-// TODO(sasebree): Allow non-application `*/*+json` MIME types.
+// TODO(crbug.com/362282752): Allow non-application `*/*+json` MIME types.
 // https://mimesniff.spec.whatwg.org/#json-mime-type
 bool MimeUtil::IsJSONMimeType(const std::string& mime_type) const {
   return net::MatchesMimeType("application/json", mime_type) ||
          net::MatchesMimeType("text/json", mime_type) ||
          net::MatchesMimeType("application/*+json", mime_type);
+}
+
+// TODO(crbug.com/362282752): Allow other `*/*+xml` MIME types.
+// https://mimesniff.spec.whatwg.org/#xml-mime-type
+bool MimeUtil::IsXMLMimeType(const std::string& mime_type) const {
+  return net::MatchesMimeType("text/xml", mime_type) ||
+         net::MatchesMimeType("application/xml", mime_type) ||
+         net::MatchesMimeType("application/*+xml", mime_type);
+}
+
+// From step 3 of
+// https://mimesniff.spec.whatwg.org/#minimize-a-supported-mime-type.
+bool MimeUtil::IsSVGMimeType(const std::string& mime_type) const {
+  return net::MatchesMimeType("image/svg+xml", mime_type);
 }
 
 bool MimeUtil::IsSupportedMimeType(const std::string& mime_type) const {
@@ -216,6 +232,14 @@ bool IsSupportedJavascriptMimeType(const std::string& mime_type) {
 
 bool IsJSONMimeType(const std::string& mime_type) {
   return g_mime_util.Get().IsJSONMimeType(mime_type);
+}
+
+bool IsXMLMimeType(const std::string& mime_type) {
+  return g_mime_util.Get().IsXMLMimeType(mime_type);
+}
+
+bool IsSVGMimeType(const std::string& mime_type) {
+  return g_mime_util.Get().IsSVGMimeType(mime_type);
 }
 
 bool IsSupportedMimeType(const std::string& mime_type) {

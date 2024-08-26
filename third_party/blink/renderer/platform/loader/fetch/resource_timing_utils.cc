@@ -99,7 +99,7 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
   if (allow_response_details) {
     info->response_status = response->HttpStatusCode();
     if (!response->HttpContentType().IsNull()) {
-      info->content_type = response->HttpContentType();
+      info->content_type = MinimizedMIMEType(response->HttpContentType());
     }
   }
 

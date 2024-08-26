@@ -3417,7 +3417,6 @@ crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.h
 crbug.com/626703 external/wpt/fetch/content-type/response.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-dynamic-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-001.html [ Failure ]
-crbug.com/892337 external/wpt/resource-timing/content-type-parsing.html [ Failure Timeout ]
 crbug.com/357931030 external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Timeout ]
 crbug.com/356498699 external/wpt/webdriver/tests/bidi/browsing_context/navigation_failed/navigation_failed.py [ Failure Timeout ]
 crbug.com/626703 [ Release ] external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_closed/user_prompt_closed.py [ Failure ]  # Flaky output
