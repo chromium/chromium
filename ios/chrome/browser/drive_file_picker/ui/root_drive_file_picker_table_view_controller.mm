@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
-#import "ios/chrome/browser/drive_file_picker/ui/drive_item.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -69,7 +69,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 @end
 
 @implementation RootDriveFilePickerTableViewController {
-  UITableViewDiffableDataSource<NSString*, DriveItem*>* _diffableDataSource;
+  UITableViewDiffableDataSource<NSString*, DriveItemIdentifier*>*
+      _diffableDataSource;
   // The selected email from the accounts signed in the device.
   NSString* _selectedEmail;
 
@@ -122,7 +123,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   __weak __typeof(self) weakSelf = self;
   auto cellProvider = ^UITableViewCell*(UITableView* tableView,
                                         NSIndexPath* indexPath,
-                                        DriveItem* itemIdentifier) {
+                                        DriveItemIdentifier* itemIdentifier) {
     return [weakSelf cellForIndexPath:indexPath itemIdentifier:itemIdentifier];
   };
 
@@ -170,7 +171,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  DriveItem* driveItem =
+  DriveItemIdentifier* driveItem =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
   [self.mutator selectDriveItem:driveItem];
 }
@@ -243,21 +244,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Returns the items in the main folder section (My drive, shared drives and
 // starred).
-- (NSArray<DriveItem*>*)mainFoldersSectionItems {
+- (NSArray<DriveItemIdentifier*>*)mainFoldersSectionItems {
   return @[
-    [DriveItem myDriveItem], [DriveItem sharedDrivesItem],
-    [DriveItem computersItem], [DriveItem starredItem]
+    [DriveItemIdentifier myDriveItem], [DriveItemIdentifier sharedDrivesItem],
+    [DriveItemIdentifier computersItem], [DriveItemIdentifier starredItem]
   ];
 }
 
 // Returns the items in the secondary folder section (recent and shared drives).
-- (NSArray<DriveItem*>*)secondaryFoldersSectionItems {
-  return @[ [DriveItem recentItem], [DriveItem sharedWithMeItem] ];
+- (NSArray<DriveItemIdentifier*>*)secondaryFoldersSectionItems {
+  return @[
+    [DriveItemIdentifier recentItem], [DriveItemIdentifier sharedWithMeItem]
+  ];
 }
 
 // Deques and sets up a cell for a drive item.
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
-                      itemIdentifier:(DriveItem*)itemIdentifier {
+                      itemIdentifier:(DriveItemIdentifier*)itemIdentifier {
   TableViewDetailIconCell* cell =
       DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
   cell.selectionStyle = UITableViewCellSelectionStyleNone;

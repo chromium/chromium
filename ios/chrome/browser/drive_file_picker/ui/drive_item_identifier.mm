@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/drive_file_picker/ui/drive_item.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
@@ -13,7 +13,7 @@ const CGFloat kIconPointSize = 18;
 
 }  // namespace
 
-@implementation DriveItem
+@implementation DriveItemIdentifier
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
                              title:(NSString*)title
@@ -34,7 +34,7 @@ const CGFloat kIconPointSize = 18;
 + (instancetype)myDriveItem {
   // TODO(crbug.com/344812548): Add a11y title.
   return
-      [[DriveItem alloc] initWithIdentifier:@"my_drive"
+      [[DriveItemIdentifier alloc] initWithIdentifier:@"my_drive"
                                       title:@"TEST My Drive"
                                        icon:CustomSymbolWithPointSize(
                                                 kMyDriveSymbol, kIconPointSize)
@@ -44,7 +44,7 @@ const CGFloat kIconPointSize = 18;
 
 + (instancetype)sharedDrivesItem {
   // TODO(crbug.com/344812548): Add a11y title.
-  return [[DriveItem alloc]
+  return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"shared_drives"
                    title:@"TEST Shared Drives"
                     icon:CustomSymbolWithPointSize(kSharedDrivesSymbol,
@@ -55,7 +55,7 @@ const CGFloat kIconPointSize = 18;
 
 + (instancetype)computersItem {
   // TODO(crbug.com/344812548): Add a11y title.
-  return [[DriveItem alloc]
+  return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"computers"
                    title:@"TEST Computers"
                     icon:DefaultSymbolWithPointSize(kLaptopAndIphoneSymbol,
@@ -66,7 +66,7 @@ const CGFloat kIconPointSize = 18;
 
 + (instancetype)starredItem {
   // TODO(crbug.com/344812548): Add a11y title.
-  return [[DriveItem alloc]
+  return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"starred"
                    title:@"TEST Starred"
                     icon:DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
@@ -77,7 +77,7 @@ const CGFloat kIconPointSize = 18;
 
 + (instancetype)recentItem {
   // TODO(crbug.com/344812548): Add a11y title.
-  return [[DriveItem alloc] initWithIdentifier:@"recent"
+  return [[DriveItemIdentifier alloc] initWithIdentifier:@"recent"
                                          title:@"TEST Recent"
                                           icon:DefaultSymbolWithPointSize(
                                                    kClockSymbol, kIconPointSize)
@@ -87,7 +87,7 @@ const CGFloat kIconPointSize = 18;
 
 + (instancetype)sharedWithMeItem {
   // TODO(crbug.com/344812548): Add a11y title.
-  return [[DriveItem alloc]
+  return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"shared_with_me"
                    title:@"TEST Shared With Me"
                     icon:DefaultSymbolWithPointSize(kPersonTwoSymbol,

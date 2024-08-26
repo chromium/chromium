@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
-#import "ios/chrome/browser/drive_file_picker/ui/drive_item.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/web/public/web_state.h"
@@ -44,7 +44,7 @@
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
 }
 
-- (void)selectDriveItem:(DriveItem*)driveItem {
+- (void)selectDriveItem:(DriveItemIdentifier*)driveItem {
   switch (driveItem.type) {
     case DriveItemType::kFile:
     case DriveItemType::kFolder:
