@@ -1,0 +1,18 @@
+This is a wdspec test.
+[FAIL] test_headers[headers0]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_headers[headers1]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_headers[headers2]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_headers_overrides_original_headers[headers0]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_headers_overrides_original_headers[headers1]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_headers_overrides_original_headers[headers2]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_set_cookie_header
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_set_cookie_header_and_cookies
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+Harness: the test ran to completion.

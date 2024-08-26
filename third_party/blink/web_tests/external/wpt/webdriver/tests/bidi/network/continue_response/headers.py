@@ -9,7 +9,6 @@ from webdriver.bidi.modules.network import (
 from .. import (
     assert_response_event,
     RESPONSE_COMPLETED_EVENT,
-    RESPONSE_STARTED_EVENT,
 )
 
 from ... import recursive_compare
@@ -27,7 +26,7 @@ LOAD_EVENT = "browsingContext.load"
         {"a": "1", "b": "2"},
     ],
 )
-async def test_headers_before_request_sent(
+async def test_headers(
     setup_blocked_request,
     subscribe_events,
     bidi_session,
@@ -37,41 +36,85 @@ async def test_headers_before_request_sent(
     url,
     headers,
 ):
-    request = await setup_blocked_request(phase="beforeRequestSent")
+    request = await setup_blocked_request(phase="responseStarted")
 
     await subscribe_events(
         events=[
             RESPONSE_COMPLETED_EVENT,
-            RESPONSE_STARTED_EVENT,
         ]
     )
 
-    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
 
     response_headers = []
     for name, value in headers.items():
         response_headers.append(Header(name=name, value=NetworkStringValue(value)))
 
-    await bidi_session.network.provide_response(
+    await bidi_session.network.continue_response(
         request=request,
-        body=NetworkStringValue("overridden response"),
-        status_code=200,
-        reason_phrase="OK",
         headers=response_headers,
     )
 
-    response_started_event = await wait_for_future_safe(on_response_started)
-    assert_response_event(
-        response_started_event, expected_response={"headers": response_headers}
-    )
     response_completed_event = await wait_for_future_safe(on_response_completed)
     assert_response_event(
         response_completed_event, expected_response={"headers": response_headers}
     )
 
 
-async def test_set_cookie_header_before_request_sent(
+@pytest.mark.parametrize(
+    "headers",
+    [
+        {},
+        {"foo": "baz"},
+        {"other": "header"},
+    ],
+)
+async def test_headers_overrides_original_headers(
+    setup_blocked_request,
+    subscribe_events,
+    bidi_session,
+    top_context,
+    wait_for_event,
+    wait_for_future_safe,
+    url,
+    headers,
+):
+    # Setup a blocked response which contains a foo=bar response header.
+    request = await setup_blocked_request(
+        phase="responseStarted",
+        blocked_url=url(
+            "/webdriver/tests/support/http_handlers/headers.py?header=foo:bar"
+        ),
+    )
+
+    await subscribe_events(events=[RESPONSE_COMPLETED_EVENT])
+    on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
+
+    response_headers = []
+    for name, value in headers.items():
+        response_headers.append(Header(name=name, value=NetworkStringValue(value)))
+
+    await bidi_session.network.continue_response(
+        request=request,
+        headers=response_headers,
+    )
+
+    response_completed_event = await wait_for_future_safe(on_response_completed)
+    assert_response_event(
+        response_completed_event, expected_response={"headers": response_headers}
+    )
+
+    # Check that the original foo=bar response header is no longer in the
+    # response headers.
+    # Note: We cannot assert that only the provided headers are present because
+    # browsers might require some response headers to remain, eg Content-Type in
+    # Firefox.
+    received_response_headers = response_completed_event["response"]["headers"]
+    for h in received_response_headers:
+        assert h["name"] != "foo" or h["value"]["value"] != "bar"
+
+
+async def test_set_cookie_header(
     setup_blocked_request,
     subscribe_events,
     bidi_session,
@@ -81,7 +124,7 @@ async def test_set_cookie_header_before_request_sent(
     url,
 ):
     request = await setup_blocked_request(
-        phase="beforeRequestSent",
+        phase="responseStarted",
         navigate=True,
     )
 
@@ -92,11 +135,8 @@ async def test_set_cookie_header_before_request_sent(
         name="Set-Cookie", value=NetworkStringValue("aaa=bbb;Path=/")
     )
 
-    await bidi_session.network.provide_response(
+    await bidi_session.network.continue_response(
         request=request,
-        body=NetworkStringValue("overridden response"),
-        status_code=200,
-        reason_phrase="OK",
         headers=[response_header],
     )
 
@@ -123,7 +163,7 @@ async def test_set_cookie_header_before_request_sent(
 
 # Check that cookies from Set-Cookie headers of the headers parameter
 # and from the cookies parameter are both present in the response.
-async def test_set_cookie_header_and_cookies_before_request_sent(
+async def test_set_cookie_header_and_cookies(
     setup_blocked_request,
     subscribe_events,
     bidi_session,
@@ -133,7 +173,7 @@ async def test_set_cookie_header_and_cookies_before_request_sent(
     url,
 ):
     request = await setup_blocked_request(
-        phase="beforeRequestSent",
+        phase="responseStarted",
         navigate=True,
     )
 
@@ -147,11 +187,8 @@ async def test_set_cookie_header_and_cookies_before_request_sent(
         name="baz", value=NetworkStringValue("biz"), path="/"
     )
 
-    await bidi_session.network.provide_response(
+    await bidi_session.network.continue_response(
         request=request,
-        body=NetworkStringValue("overridden response"),
-        status_code=200,
-        reason_phrase="OK",
         headers=[response_header],
         cookies=[response_cookie],
     )

@@ -5694,6 +5694,13 @@
        {}
       ]
      ],
+     "blur-from-rtl-editing-host-containing-big-video.html": [
+      "1f3c54f8cb968e6fea6151228e49e86c40d9d65c",
+      [
+       null,
+       {}
+      ]
+     ],
      "bold-in-output.html": [
       "43d78ec4e99289056c1d575f30695b1143d8181e",
       [
@@ -8555,7 +8562,7 @@
     "readable-streams": {
      "crashtests": {
       "from-cross-realm.https.html": [
-       "b242e41dac45930a2f77c801fbbb7086fed10b4a",
+       "58a4371186ece75af33f57d49bd78bca438c7be7",
        [
         null,
         {}
@@ -16001,6 +16008,13 @@
      ],
      "textarea-insertfromdrop-type-inputevent-data-manual.html": [
       "eee35a3822047dab86d24793de7d5c11793404ff",
+      [
+       null,
+       {}
+      ]
+     ],
+     "textarea-insertfromdrop-type-inputevent-data-withnewline-manual.html": [
+      "f6015a1f306f11b8f873554bf5cc788286f22fff",
       [
        null,
        {}
@@ -74432,12 +74446,12 @@
        ]
       ],
       "clip-text-text-decorations.html": [
-       "3a15fad5cef236ee978b536e3d209810aa3e66cb",
+       "e0212b30b37ddbaf618bd1e03595566c73a3140c",
        [
         null,
         [
          [
-          "/css/css-backgrounds/background-clip/clip-rounded-corner-ref.html",
+          "/css/css-backgrounds/background-clip/clip-text-text-decorations-ref.html",
           "=="
          ]
         ],
@@ -292896,6 +292910,32 @@
         {}
        ]
       ],
+      "non-scaling-stroke-005.html": [
+       "bc7259d083204f443ea0c2d82f68af6defb481e5",
+       [
+        null,
+        [
+         [
+          "/svg/painting/reftests/non-scaling-stroke-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "non-scaling-stroke-006.html": [
+       "677a35272b94dfce91970b91482764de1c58b437",
+       [
+        null,
+        [
+         [
+          "/svg/painting/reftests/non-scaling-stroke-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "paint-context-001.svg": [
        "7be33cb20fb257496cb1357a5481edecf364bc59",
        [
@@ -332429,7 +332469,7 @@
        []
       ],
       "external-images.svg": [
-       "8439561e160dd0a8919360c3d0d6896e90a972c8",
+       "ed06ecbd87728a09265c7cc6283774c07428c541",
        []
       ],
       "import-green.css": [
@@ -344052,46 +344092,6 @@
        "a4f65125f406f16ad0da8b4bce305f61a00da8f2",
        []
       ],
-      "text-wrap-computed-expected.txt": [
-       "f06a6a9ead80b164d56b27a54a02fc669eb9dc3c",
-       []
-      ],
-      "text-wrap-mode-computed-expected.txt": [
-       "9ba158259dbda523d3b482163573820c3b27d4e4",
-       []
-      ],
-      "text-wrap-mode-valid-expected.txt": [
-       "e4482658da5dc34254e4eb6e1d36b22777a08a33",
-       []
-      ],
-      "text-wrap-pretty-expected.txt": [
-       "c167bf6492db94669a495bcd99ea79b8be880872",
-       []
-      ],
-      "text-wrap-style-computed-expected.txt": [
-       "ca9bdc83c298a2ae0e4ecbc66a08ea32542e0716",
-       []
-      ],
-      "text-wrap-style-valid-expected.txt": [
-       "eeeec851dab61a07cb6e41b65f6ebdd423482d68",
-       []
-      ],
-      "text-wrap-valid-expected.txt": [
-       "0d2e318d627aa2215569a70d7d643b658e2eff43",
-       []
-      ],
-      "white-space-invalid-expected.txt": [
-       "f9083f75e9fe878da4d41053ace9f252cb69373a",
-       []
-      ],
-      "white-space-shorthand-expected.txt": [
-       "d53b5c96447891937c9a686afa3fab97adb3573f",
-       []
-      ],
-      "white-space-shorthand-text-wrap-expected.txt": [
-       "c7f4f8ed45cc7d15e3cf0fcb6985d788f8c12b77",
-       []
-      ],
       "word-break-valid-expected.txt": [
        "2935e8351624b5622315de12c72dc27a5af40efe",
        []
@@ -349338,7 +349338,7 @@
         []
        ],
        "white-space-expected.txt": [
-        "43e5cded90ede18dc0b0982f8288ea6b4c9ada97",
+        "2843b22c755c6e333196915bdae56dabc54e0c5a",
         []
        ],
        "width-expected.txt": [
@@ -360148,7 +360148,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=nowrap-expected.txt": [
-      "770d21d13c0e1fa7448f950bc8b4808a2ebd0472",
+      "e4381f3e3b134e16f0586cd6ad9e2a49b51d1888",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-line-expected.txt": [
@@ -360160,7 +360160,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=normal-expected.txt": [
-      "72871f2481eb868814fd94bf5f1877c6c8c546d6",
+      "3002d7ff0ee55c738613e012c8e2c2c19545fd78",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-expected.txt": [
@@ -360180,7 +360180,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
-      "af345b35b4f701c14a348ba9095a2747aac38ecd",
+      "cce03889b375872e116ab1ae8884a1a05ebcb2df",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
@@ -360192,11 +360192,11 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
-      "9304a3bb965925e75c916ed07498aee01b0c3a15",
+      "66e0eb138e4c7fd1b525010e1d23399969a2d63c",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=nowrap-expected.txt": [
-      "cab042f3c181fa04899ee0f08a57a2da2ff28e53",
+      "ce8f9ec83c5215336592681b9ddeb5239dbee34b",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-line-expected.txt": [
@@ -360208,7 +360208,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=normal-expected.txt": [
-      "fb9b6df951ccfe19e78d85a7095859ac73b808d4",
+      "634a2ba4bdc152acc93e34e172005fc26a36d920",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-expected.txt": [
@@ -360228,7 +360228,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
-      "2526a8cf57851041cb7434e08a2ace233aceb667",
+      "8015d83e92dd11e6c1b11e00c2bada638ea6f7b8",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
@@ -360240,11 +360240,11 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
-      "10c00dc3c6b381708512a8f0f38601733ca26a0c",
+      "6f0dc6c68ea9b0071e34d994063ec73c6ca82499",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=nowrap-expected.txt": [
-      "f29543da31c1c0f258d4508831708c2ef11b38c2",
+      "fe6e6aefc9955ba82164f7c599fe6a62d3eff4ef",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-line-expected.txt": [
@@ -360256,7 +360256,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=normal-expected.txt": [
-      "6eadd8d48b5bdc92d530cb50e5f0f259eaff4c4d",
+      "c4e077bac71592fbe6961c09e7aa02b611b077b6",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-expected.txt": [
@@ -360276,7 +360276,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
-      "cbc2d197808cf782ad5106040b7fc4d40d113369",
+      "9a5ddd8aad5a7c9e9200ba666ca661db36af0d22",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
@@ -360288,7 +360288,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
-      "51c453c5cc50664bfede3e6ae26877b3287f972d",
+      "b0fc4242f307e0cf84f93b6b9b2f8041b4a5c428",
       []
      ],
      "link-boundaries-insertion-expected.txt": [
@@ -403350,6 +403350,14 @@
        "4717ac4a2750e236db2a7e003ac9acd6c40a9305",
        []
       ],
+      "non-scaling-stroke-005-ref.html": [
+       "3adf8f2c8dd264d500bc342d232d61dd059c3871",
+       []
+      ],
+      "non-scaling-stroke-006-ref.html": [
+       "d4cc4a6e4eacfdb2e53072f067adef117461ad64",
+       []
+      ],
       "paint-context-001-ref.svg": [
        "99bd8c44cb78a4b0340ad6456c7e58e4ca397257",
        []
@@ -407982,7 +407990,7 @@
       },
       "network": {
        "__init__.py": [
-        "60a39741f833e65f22d733441390c7cad0b5d8dd",
+        "f67f7bccd52fc0659fddad1560f200b294e1e432",
         []
        ],
        "add_intercept": {
@@ -408009,10 +408017,6 @@
          []
         ]
        },
-       "conftest.py": [
-        "6928334b7d989006cd97b4b2d52ef288634dbdc2",
-        []
-       ],
        "continue_request": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -408729,7 +408733,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "9f3c31d3d57cfc0189481c48800512b4a780efc1",
+       "241ba528ddfaae95c4474dba578417813a189bcb",
        []
       ],
       "fixtures_http.py": [
@@ -409717,7 +409721,7 @@
      []
     ],
     "RTCRtpScriptTransform-encoded-transform-worker.js": [
-     "ba3ddc1b7564ee59ce561fe7bd11e992e86d715a",
+     "ea3f44e01dfde828dd431caf4a70c19da3e90493",
      []
     ],
     "RTCRtpScriptTransform-sender-worker-single-frame.js": [
@@ -454982,7 +454986,7 @@
        ]
       ],
       "animation-valid.html": [
-       "0c5d5713e3e335faeb4db6ae75062a1f894b2d3d",
+       "e0b54dca2f2655f2da3cd7fa7794cf71d3d7186f",
        [
         null,
         {}
@@ -460130,7 +460134,7 @@
       ]
      ],
      "timing-functions-syntax-valid.html": [
-      "fbeffea73f5f78e91d8f9a8387a2b06d0c642e1e",
+      "a05768ccb90358e68422fa383566e971d81f5b76",
       [
        null,
        {}
@@ -499114,7 +499118,7 @@
      ]
     ],
     "XMLSerializer-serializeToString.html": [
-     "17280af7b83cc039eaf53b8445b306eb0eb73587",
+     "ad65c9fafb370de6d482bd0166bc030453750b4d",
      [
       null,
       {}
@@ -556551,8 +556555,50 @@
        ]
       ],
       "named-access-on-the-window-object": {
+       "basics.html": [
+        "e8c0130df4b7cafc3e03eecea1f8f7231b08fa3a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "changing.html": [
+        "fdcec87a34375907a9f29a21c18a493a38d5cf6d",
+        [
+         null,
+         {}
+        ]
+       ],
        "cross-global-npo.html": [
         "2acad0734cda6a5076e836240cec107af036a72a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "doc-no-window.html": [
+        "baa948d859619ac0fbec2adfb08f2f89ddce2c16",
+        [
+         null,
+         {}
+        ]
+       ],
+       "existing-prop.html": [
+        "5de8a14673519047ceeab61241c57cc029cbe17a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "multi-match.html": [
+        "df84f7ac84281205ed15344c5f22abe16081a707",
+        [
+         null,
+         {}
+        ]
+       ],
+       "name-attribute-elements.html": [
+        "ca197d5ac7eeae2521c62e00108eae3d6151b885",
         [
          null,
          {}
@@ -556579,8 +556625,22 @@
          }
         ]
        ],
+       "nested-context.html": [
+        "c811021342c42b46f37f8748e197e4c497ffe21e",
+        [
+         null,
+         {}
+        ]
+       ],
        "prototype.html": [
         "910374381be85e5b37e1f343b6070ce7a776fe2b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "removing.html": [
+        "c597bbe4062c39f3b2c3ebb3ff376eccf138bf40",
         [
          null,
          {}
@@ -557005,7 +557065,7 @@
        ]
       ],
       "window-properties.https.html": [
-       "2fb408cdc9967ddc069e6686833cd74f04afba10",
+       "af7a00b1347dc201aa59d32470d14e3816c984c8",
        [
         null,
         {}
@@ -598492,6 +598552,13 @@
          {}
         ]
        ],
+       "change-src-attr-prepare-a-script.html": [
+        "9dc3808c90ca1d368a05b15e1e522a3f2c619b08",
+        [
+         null,
+         {}
+        ]
+       ],
        "css-module": {
         "charset-2.html": [
          "fb25b1ffb324b1b13eb0a2c71a77a1e7c4645540",
@@ -602892,6 +602959,62 @@
       ],
       "inheritance-bogus-meta.html": [
        "616ba51853c6cbd2ef503ebd6eddef9e2a6ed616",
+       [
+        null,
+        {}
+       ]
+      ],
+      "meta-charset-double-quotes.html": [
+       "0bc828170af9e5aa8ca15e47acf2c55c476f977c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "meta-charset-no-quotes.html": [
+       "733ffd16d98f6b522e7de6125eb66627d488225b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "meta-charset-single-quotes.html": [
+       "a5af5c4923f6ce36029f0ff8929a6858c5b8223e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "meta-commented-out.html": [
+       "a4fe966d8ab0a7c187219887b3d691df50781aae",
+       [
+        null,
+        {}
+       ]
+      ],
+      "meta-http-equiv-attribute-order.html": [
+       "56af4f3d4b7d46511a13c8bec488c0be091d690a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "meta-http-equiv-double-quotes.html": [
+       "0ee0a32e292c8aacce19a5ecdc81727d314eaa7a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "meta-http-equiv-no-quotes.html": [
+       "0adfdd58d559727077b657d87136774eef8eaaa1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "meta-http-equiv-single-quotes.html": [
+       "ace169c76d10e6044731eede5bd3fb2cecc205d0",
        [
         null,
         {}
@@ -610418,6 +610541,20 @@
       {
        "testdriver": true
       }
+     ]
+    ],
+    "textarea-insertfrompaste-type-inputevent-data-withnewline-atend.html": [
+     "475ad5e5649188b83abea252d346bb77b14985ae",
+     [
+      null,
+      {}
+     ]
+    ],
+    "textarea-insertfrompaste-type-inputevent-data-withnewline-atstart.html": [
+     "a911243f76c1f85d6b4c3c0547e0179da337be9d",
+     [
+      null,
+      {}
      ]
     ],
     "textarea-insertfrompaste-type-inputevent-data.html": [
@@ -742000,6 +742137,31 @@
       {}
      ]
     ],
+    "abort-with-error.any.js": [
+     "f21d01cdb61acbb8b41fca337f96e573a544e0ed",
+     [
+      "xhr/abort-with-error.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "XMLHttpRequest: abort() still works when error thrown internally"
+        ]
+       ]
+      }
+     ],
+     [
+      "xhr/abort-with-error.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "XMLHttpRequest: abort() still works when error thrown internally"
+        ]
+       ]
+      }
+     ]
+    ],
     "access-control-and-redirects-async-same-origin.any.js": [
      "11d38fa451e68dec722cc3aded171c70dd23013f",
      [
@@ -743312,6 +743474,13 @@
      ],
      "constructor-formelement.html": [
       "813e1d2a6c0ef432e743d4d1658deb8acefcbc18",
+      [
+       null,
+       {}
+      ]
+     ],
+     "constructor-submitter-coordinate.html": [
+      "992f64b721749b85e6d60ed701883242e8faf0fd",
       [
        null,
        {}
@@ -759901,8 +760070,22 @@
         ]
        },
        "continue_response": {
+        "cookies.py": [
+         "e77bf83cde14d4cd304350b2fc72820f5112645e",
+         [
+          null,
+          {}
+         ]
+        ],
         "credentials.py": [
          "499c8a28c126fccea5ec0af932595d0d2cefadb9",
+         [
+          null,
+          {}
+         ]
+        ],
+        "headers.py": [
+         "a9f4a6d8bca0fa6c0a0470672c6bca7bcc1a5b15",
          [
           null,
           {}
@@ -759975,14 +760158,14 @@
          ]
         ],
         "cookies.py": [
-         "c05321b3b05b50faf6db665ce82ead2125d01c4d",
+         "b1c9dc90437e2f436cf0951c927c3ae2ab170e9c",
          [
           null,
           {}
          ]
         ],
         "headers.py": [
-         "0436896ec196f0614206d9efaf4bb54b44eff903",
+         "95291b5a4c3517d07c38420b5d58d66c46c9a173",
          [
           null,
           {}

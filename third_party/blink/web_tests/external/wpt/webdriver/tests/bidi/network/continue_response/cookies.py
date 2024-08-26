@@ -24,7 +24,7 @@ pytestmark = pytest.mark.asyncio
 LOAD_EVENT = "browsingContext.load"
 
 
-async def test_cookie_before_request_sent(
+async def test_cookie_response_started(
     setup_blocked_request,
     subscribe_events,
     bidi_session,
@@ -35,7 +35,7 @@ async def test_cookie_before_request_sent(
     url,
 ):
     request = await setup_blocked_request(
-        phase="beforeRequestSent",
+        phase="responseStarted",
         navigate=True,
         blocked_url=url(PAGE_PROVIDE_RESPONSE_HTML),
         navigate_url=url(PAGE_PROVIDE_RESPONSE_HTML),
@@ -44,12 +44,10 @@ async def test_cookie_before_request_sent(
     await subscribe_events(
         events=[
             RESPONSE_COMPLETED_EVENT,
-            RESPONSE_STARTED_EVENT,
             LOAD_EVENT,
         ]
     )
 
-    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
 
     on_load = wait_for_event(LOAD_EVENT)
@@ -68,19 +66,12 @@ async def test_cookie_before_request_sent(
         value=NetworkStringValue("test-cookie=test-cookie-value;Path=/"),
     )
 
-    await bidi_session.network.provide_response(
+    await bidi_session.network.continue_response(
         request=request,
-        body=NetworkStringValue("<div>Test cookies for provideResponse</div>"),
-        status_code=200,
-        reason_phrase="OK",
         cookies=[response_cookie],
     )
 
     # Check that the response events contain the expected Set-Cookie header.
-    response_started_event = await wait_for_future_safe(on_response_started)
-    assert_response_event(
-        response_started_event, expected_response={"headers": [set_cookie_header]}
-    )
     response_completed_event = await wait_for_future_safe(on_response_completed)
     assert_response_event(
         response_completed_event, expected_response={"headers": [set_cookie_header]}
@@ -136,7 +127,7 @@ async def test_cookie_attributes_before_request_sent(
         expected_cookie["domain"] = domain_value()
 
     request = await setup_blocked_request(
-        phase="beforeRequestSent",
+        phase="responseStarted",
         navigate=True,
         blocked_url=url(PAGE_PROVIDE_RESPONSE_HTML, domain=domain),
     )
@@ -146,11 +137,8 @@ async def test_cookie_attributes_before_request_sent(
     on_load = wait_for_event(LOAD_EVENT)
 
     # Provide response with an empty cookies list
-    await bidi_session.network.provide_response(
+    await bidi_session.network.continue_response(
         request=request,
-        body=NetworkStringValue("<div>Test cookies for provideResponse</div>"),
-        status_code=200,
-        reason_phrase="OK",
         cookies=[cookie],
     )
 
@@ -176,7 +164,7 @@ async def test_no_cookie_before_request_sent(
     url,
 ):
     request = await setup_blocked_request(
-        phase="beforeRequestSent",
+        phase="responseStarted",
         navigate=True,
         blocked_url=url(PAGE_PROVIDE_RESPONSE_HTML),
         navigate_url=url(PAGE_PROVIDE_RESPONSE_HTML),
@@ -185,22 +173,17 @@ async def test_no_cookie_before_request_sent(
     await subscribe_events(
         events=[
             RESPONSE_COMPLETED_EVENT,
-            RESPONSE_STARTED_EVENT,
             LOAD_EVENT,
         ]
     )
 
-    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
 
     on_load = wait_for_event(LOAD_EVENT)
 
     # Provide response with an empty cookies list
-    await bidi_session.network.provide_response(
+    await bidi_session.network.continue_response(
         request=request,
-        body=NetworkStringValue("<div>Test cookies for provideResponse</div>"),
-        status_code=200,
-        reason_phrase="OK",
         cookies=[],
     )
 
@@ -210,7 +193,6 @@ async def test_no_cookie_before_request_sent(
         response_headers = response_event["response"]["headers"]
         assert len([h for h in response_headers if h["name"] == "Set-Cookie"]) == 0
 
-    await wait_for_event_and_assert_no_cookie(on_response_started)
     await wait_for_event_and_assert_no_cookie(on_response_completed)
 
     # Wait for the navigation to complete.
