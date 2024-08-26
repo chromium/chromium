@@ -1580,11 +1580,6 @@
       name: "DOMPartsAPIMinimal",
     },
     {
-      // Shipping in M121, so should be safe to remove in M126.
-      name: "DontFireDblclickOnDisabledFormControls",
-      status: "stable",
-    },
-    {
       // Drop the entire URL as plaintext in plaintext only editable position.
       // Fix for https://crbug.com/40895258. This change is landing in M127 and
       // the flag can be removed in M129 in case of no issues.
