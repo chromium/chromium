@@ -1,13 +1,7 @@
 This is a testharness.js-based test.
-Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Parsing origin: <x> against <sc://ñ>
-  assert_equals: origin expected "null" but got ""
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing origin: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank>
   assert_equals: origin expected "http://!\\"$&'()*+,-.;=_`{}~" but got "http://!\\"$&'()%2A+,-.;=_`{}~"
-[FAIL] Parsing origin: <#x> against <sc://ñ>
-  assert_equals: origin expected "null" but got ""
-[FAIL] Parsing origin: <?x> against <sc://ñ>
-  assert_equals: origin expected "null" but got ""
 [FAIL] Parsing origin: <blob:ftp://host/path> against <about:blank>
   assert_equals: origin expected "null" but got "ftp://host"
 [FAIL] Parsing origin: <blob:ws://example.org/> against <about:blank>

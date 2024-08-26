@@ -1,6 +1,0 @@
-CONSOLE ERROR: 'javascript' URLs may not be used as base URLs for a document.
-This is a testharness.js-based test.
-[FAIL] A base URL is an invalid 'javascript:' URL, whose host part includes spaces.
-  assert_unreached: Image should not have been loaded. Reached unreachable code
-Harness: the test ran to completion.
-

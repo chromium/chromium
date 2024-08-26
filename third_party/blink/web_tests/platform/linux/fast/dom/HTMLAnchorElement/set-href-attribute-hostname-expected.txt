@@ -7,7 +7,7 @@ PASS a.href is 'https://www.otherdomain.com:8080/path/'
 Extra slashes before hostname
 PASS a.href is 'https://www.mydomain.com:8080/path/'
 Set hostname to URL with foo: protocol
-FAIL a.href should be foo://www.otherdomain.com/path/. Was foo://www.mydomain.com/path/.
+PASS a.href is 'foo://www.otherdomain.com/path/'
 Set hostname to null
 PASS a.href is 'https://null:8080/path/'
 Set hostname to empty string
@@ -17,9 +17,9 @@ PASS a.href is 'really:bad:url'
 Set a hostname that contains space in it
 FAIL a.href should be http://www.my domain.com/path/. Was http://www.other%20domain.com/path/.
 Set hostname on a local file
-FAIL a.href should be file://a/C:/path/testurl.html. Was c:/path/testurl.html.
+FAIL a.href should be file://a/C:/path/testurl.html. Was c://a/path/testurl.html.
 Set hostname to 'localhost' on a local file
-FAIL a.href should be file:///C:/path/testurl.html. Was c:/path/testurl.html.
+FAIL a.href should be file:///C:/path/testurl.html. Was c://localhost/path/testurl.html.
 Set hostname to undefined
 PASS a.href is 'https://undefined:8080/path/'
 PASS successfullyParsed is true

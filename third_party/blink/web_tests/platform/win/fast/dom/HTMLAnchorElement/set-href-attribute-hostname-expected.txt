@@ -7,7 +7,7 @@ PASS a.href is 'https://www.otherdomain.com:8080/path/'
 Extra slashes before hostname
 PASS a.href is 'https://www.mydomain.com:8080/path/'
 Set hostname to URL with foo: protocol
-FAIL a.href should be foo://www.otherdomain.com/path/. Was foo://www.mydomain.com/path/.
+PASS a.href is 'foo://www.otherdomain.com/path/'
 Set hostname to null
 PASS a.href is 'https://null:8080/path/'
 Set hostname to empty string
