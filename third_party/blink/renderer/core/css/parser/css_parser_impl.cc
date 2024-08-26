@@ -119,6 +119,38 @@ StyleRuleBase::LayerName ConsumeCascadeLayerName(CSSParserTokenRange& range) {
   return name;
 }
 
+// Similar to the function above, but for the streaming parser:
+// Finds the longest prefix of |stream| that matches a <layer-name> and parses
+// it. Returns an empty result with |stream| unmodified if parsing fails.
+StyleRuleBase::LayerName ConsumeCascadeLayerName(CSSParserTokenStream& stream) {
+  CSSParserTokenStream::State savepoint = stream.Save();
+  StyleRuleBase::LayerName name;
+  while (!stream.AtEnd() && stream.Peek().GetType() == kIdentToken) {
+    const CSSParserToken& name_part = stream.Consume();
+    name.emplace_back(name_part.Value().ToString());
+
+    // Check if we have a next part.
+    if (stream.Peek().GetType() != kDelimiterToken ||
+        stream.Peek().Delimiter() != '.') {
+      break;
+    }
+    CSSParserTokenStream::State inner_savepoint = stream.Save();
+    stream.Consume();
+    if (stream.Peek().GetType() != kIdentToken) {
+      stream.Restore(inner_savepoint);
+      break;
+    }
+  }
+
+  if (!name.size()) {
+    stream.Restore(savepoint);
+  } else {
+    stream.ConsumeWhitespace();
+  }
+
+  return name;
+}
+
 StyleRule::RuleType RuleTypeForMutableDeclaration(
     MutableCSSPropertyValueSet* declaration) {
   switch (declaration->CssParserMode()) {
@@ -1880,38 +1912,45 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
+  // Consume the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
-  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+
+  Vector<StyleRuleBase::LayerName> names;
+  while (!stream.AtEnd() && stream.Peek().GetType() != kLeftBraceToken &&
+         stream.Peek().GetType() != kSemicolonToken) {
+    if (names.size()) {
+      if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
+        ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleLayer);
+        return nullptr;
+      }
+    }
+    StyleRuleBase::LayerName name = ConsumeCascadeLayerName(stream);
+    if (!name.size()) {
+      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleLayer);
+      return nullptr;
+    }
+    names.push_back(std::move(name));
+  }
 
   // @layer statement rule without style declarations.
   if (stream.AtEnd() || stream.UncheckedPeek().GetType() == kSemicolonToken) {
-    if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(
-            stream, CSSAtRuleID::kCSSAtRuleLayer)) {
+    if (!names.size()) {
+      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleLayer);
       return nullptr;
     }
+
     if (nesting_type == CSSNestingType::kNesting) {
       // @layer statement rules are not group rules, and can therefore
       // not be nested.
       //
       // https://drafts.csswg.org/css-nesting-1/#nested-group-rules
+      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleLayer);
       return nullptr;
     }
 
-    Vector<StyleRuleBase::LayerName> names;
-    while (!prelude.AtEnd()) {
-      if (names.size()) {
-        if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(prelude)) {
-          return nullptr;
-        }
-      }
-      StyleRuleBase::LayerName name = ConsumeCascadeLayerName(prelude);
-      if (!name.size()) {
-        return nullptr;
-      }
-      names.push_back(std::move(name));
-    }
-    if (!names.size()) {
+    wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+    if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(
+            stream, CSSAtRuleID::kCSSAtRuleLayer)) {
       return nullptr;
     }
 
@@ -1927,21 +1966,21 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
   }
 
   // @layer block rule with style declarations.
+  StyleRuleBase::LayerName name;
+  if (names.empty()) {
+    name.push_back(g_empty_atom);
+  } else if (names.size() > 1) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleLayer);
+    return nullptr;
+  } else {
+    name = std::move(names[0]);
+  }
+
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleLayer)) {
     return nullptr;
-  }
-  CSSParserTokenStream::BlockGuard guard(stream);
-
-  StyleRuleBase::LayerName name;
-  prelude.ConsumeWhitespace();
-  if (prelude.AtEnd()) {
-    name.push_back(g_empty_atom);
-  } else {
-    name = ConsumeCascadeLayerName(prelude);
-    if (!name.size() || !prelude.AtEnd()) {
-      return nullptr;
-    }
   }
 
   if (observer_) {
@@ -1950,6 +1989,8 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
+  // Consume the actual block.
+  CSSParserTokenStream::BlockGuard guard(stream);
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
       stream,
