@@ -99,13 +99,7 @@ _C_STR_TRANS = str.maketrans({
     '\\': '\\\\'
 })
 
-BASE_PROTO_NS = 'domatolpm.generated'
-
-
-def to_cpp_ns(proto_ns: str) -> str:
-  return proto_ns.replace('.', '::')
-
-
+CPP_PROTO_NS = '::testing::libfuzzer::research::domatolpm::'
 CPP_HANDLER_PREFIX = 'handle_'
 
 
@@ -254,7 +248,7 @@ class CppStringTableHandler(CppFunctionHandler):
   def __init__(self, name: str, var_name: str,
                strings: typing.List[CppStringExpr]):
     super().__init__(name=f'{CPP_HANDLER_PREFIX}{name}', exprs=[])
-    self.proto_type = f'{name}& arg'
+    self.proto_type = f'const {CPP_PROTO_NS}{name}& arg'
     self.strings = strings
     self.var_name = var_name
 
@@ -271,7 +265,7 @@ class CppProtoMessageFunctionHandler(CppFunctionHandler):
                exprs: typing.List[CppExpression],
                creator: typing.Optional[typing.Dict[str, str]] = None):
     super().__init__(name=f'{CPP_HANDLER_PREFIX}{name}', exprs=exprs)
-    self.proto_type = f'{name}& arg'
+    self.proto_type = f'const {CPP_PROTO_NS}{name}& arg'
     self.creator = creator
 
   def creates_new(self):
@@ -288,7 +282,7 @@ class CppOneOfMessageFunctionHandler(CppFunctionHandler):
   def __init__(self, name: str, switch_name: str,
                cases: typing.Dict[str, typing.List[CppExpression]]):
     super().__init__(name=f'{CPP_HANDLER_PREFIX}{name}', exprs=[])
-    self.proto_type = f'{name}& arg'
+    self.proto_type = f'const {CPP_PROTO_NS}{name}& arg'
     self.switch_name = switch_name
     self.cases = cases
 
@@ -895,7 +889,7 @@ class DomatoBuilder:
     return len(to_remove) > 0
 
 
-def render_proto(environment: jinja2.Environment, out_f: str, name: str,
+def render_proto(environment: jinja2.Environment, out_f: str,
                  builder: DomatoBuilder):
   template = environment.get_template('domatolpm.proto.tmpl')
   all_messages = builder.all_proto_messages()
@@ -913,12 +907,10 @@ def render_proto(environment: jinja2.Environment, out_f: str, name: str,
             fuzzcase,
             'generate_repeated_lines':
             builder.should_generate_repeated_lines(),
-            'proto_ns':
-            f'{BASE_PROTO_NS}.{name}',
         }))
 
 
-def render_cpp(environment: jinja2.Environment, out_f: str, name: str,
+def render_cpp(environment: jinja2.Environment, out_f: str,
                builder: DomatoBuilder):
   functions = builder.all_cpp_functions()
   funcs = [f for f in functions if f.is_message_handler()]
@@ -936,8 +928,7 @@ def render_cpp(environment: jinja2.Environment, out_f: str, name: str,
       'generate_one_line_handler': builder.should_generate_one_line_handler(),
       'line_prefix': builder.get_line_prefix(),
       'line_suffix': builder.get_line_suffix(),
-      'proto_ns': to_cpp_ns(f'{BASE_PROTO_NS}.{name}'),
-      'cpp_ns': f'domatolpm::{name}',
+      'proto_ns': CPP_PROTO_NS,
   }
   template = environment.get_template('domatolpm.cc.tmpl')
   with action_helpers.atomic_output(f'{out_f}.cc', mode='w') as f:
@@ -955,10 +946,6 @@ def main():
                       '--path',
                       required=True,
                       help='The path to a Domato grammar file.')
-  parser.add_argument('-n',
-                      '--name',
-                      required=True,
-                      help='The name of this grammar.')
   parser.add_argument(
       '-f',
       '--file-format',
@@ -975,8 +962,8 @@ def main():
   builder = DomatoBuilder(g)
   builder.parse_grammar()
   builder.simplify()
-  render_cpp(environment, args.file_format, args.name, builder)
-  render_proto(environment, args.file_format, args.name, builder)
+  render_cpp(environment, args.file_format, builder)
+  render_proto(environment, args.file_format, builder)
 
 
 if __name__ == '__main__':

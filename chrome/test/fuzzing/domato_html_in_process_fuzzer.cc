@@ -6,8 +6,8 @@
 
 #include "base/strings/escape.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/fuzzing/domato_html_fuzzer_grammar.h"
-#include "chrome/test/fuzzing/domato_html_fuzzer_grammar.pb.h"
+#include "chrome/test/fuzzing/html_grammar.h"
+#include "chrome/test/fuzzing/html_grammar.pb.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
@@ -16,7 +16,7 @@
 // rule.
 class DomatoHtmlInProcessFuzzer : public InProcessFuzzer {
  public:
-  using FuzzCase = domatolpm::generated::domato_html_fuzzer_grammar::fuzzcase;
+  using FuzzCase = testing::libfuzzer::research::domatolpm::fuzzcase;
   DomatoHtmlInProcessFuzzer() = default;
 
   int Fuzz(const uint8_t* data, size_t size) override;
@@ -34,7 +34,7 @@ int DomatoHtmlInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
     return -1;
   }
   domatolpm::Context ctx;
-  CHECK(domatolpm::domato_html_fuzzer_grammar::handle_fuzzer(&ctx, fuzz_case));
+  CHECK(handle_fuzzcase(&ctx, fuzz_case));
   std::string_view html_string(ctx.GetBuilder()->view());
   // See
   // docs/security/url_display_guidelines/url_display_guidelines.md#url-length
