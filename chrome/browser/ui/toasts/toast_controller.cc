@@ -25,6 +25,7 @@ bool ToastController::CanShowToast(ToastId id) {
 }
 
 void ToastController::ShowToast(ToastParams params) {
+  is_showing_toast_ = true;
   // TODO(crbug.com/358609791): Implement controller to work with the toast
   // service.
 }
@@ -32,4 +33,10 @@ void ToastController::ShowToast(ToastParams params) {
 void ToastController::ClosePersistentToast(ToastId id) {
   // TODO(crbug.com/358609791): Implement controller to work with the toast
   // service.
+}
+
+bool ToastController::IsShowingToast() const {
+  // TODO(crbug.com/358609791): Implement controller to work with the toast
+  // service.
+  return is_showing_toast_;
 }

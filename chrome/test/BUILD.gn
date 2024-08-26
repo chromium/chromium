@@ -1853,6 +1853,7 @@ if (!is_android) {
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",

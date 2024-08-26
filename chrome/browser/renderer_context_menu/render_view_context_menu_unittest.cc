@@ -1004,7 +1004,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
   params.suggested_filename = kTestSuggestedFileName;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       *web_contents()->GetPrimaryMainFrame(), params);
-  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0 /* event_flags */);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, /*event_flags=*/0);
 
   // Video item should have suggested file name.
   std::u16string suggested_filename =
@@ -1015,7 +1015,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
   params.suggested_filename = kTestSuggestedFileName;
   menu = std::make_unique<TestRenderViewContextMenu>(
       *web_contents()->GetPrimaryMainFrame(), params);
-  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0 /* event_flags */);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, /*event_flags=*/0);
 
   // Audio item should have suggested file name.
   suggested_filename =

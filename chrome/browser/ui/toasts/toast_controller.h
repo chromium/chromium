@@ -32,8 +32,11 @@ class ToastController {
   bool CanShowToast(ToastId id);
   void ShowToast(ToastParams params);
   void ClosePersistentToast(ToastId id);
+  bool IsShowingToast() const;
 
  private:
+  bool is_showing_toast_ = false;
+
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<const ToastRegistry> toast_registry_;
 };

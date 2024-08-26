@@ -325,6 +325,12 @@
 #include "ui/aura/window.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
+#endif
+
 using base::UserMetricsAction;
 using blink::ContextMenuData;
 using blink::ContextMenuDataEditFlags;
@@ -3260,6 +3266,12 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
       WriteURLToClipboard(params_.unfiltered_link_url);
+#if !BUILDFLAG(IS_ANDROID)
+      if (base::FeatureList::IsEnabled(features::kLinkCopiedToast)) {
+        GetBrowser()->GetFeatures().toast_controller()->ShowToast(
+            ToastParams(ToastId::kLinkCopied));
+      }
+#endif
       break;
 
     case IDC_CONTENT_CONTEXT_COPYLINKTEXT:
@@ -3273,6 +3285,12 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_COPYIMAGE:
       ExecCopyImageAt();
+#if !BUILDFLAG(IS_ANDROID)
+      if (base::FeatureList::IsEnabled(features::kImageCopiedToast)) {
+        GetBrowser()->GetFeatures().toast_controller()->ShowToast(
+            ToastParams(ToastId::kImageCopied));
+      }
+#endif
       break;
 
     case IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS:

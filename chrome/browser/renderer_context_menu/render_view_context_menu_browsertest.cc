@@ -53,9 +53,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_user_data.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -210,7 +213,8 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
   ContextMenuBrowserTestBase() {
     scoped_feature_list_.InitWithFeatures(
         {media::kContextMenuSaveVideoFrameAs,
-         media::kContextMenuSearchForVideoFrame},
+         media::kContextMenuSearchForVideoFrame, features::kLinkCopiedToast,
+         features::kImageCopiedToast},
         {});
   }
 
@@ -1188,6 +1192,24 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   // Emoji context menu item should never be present on a non-editable field.
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_EMOJI));
 }
+
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, ShowsToastOnLinkCopied) {
+  auto menu = CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                             GURL("http://www.google.com/"));
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
+                       /*event_flags=*/0);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, ShowsToastOnImageCopied) {
+  content::ContextMenuParams params;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kCanvas;
+
+  auto menu = CreateContextMenuFromParams(params);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Executing the emoji panel item with no associated browser should not crash.
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
