@@ -2934,7 +2934,7 @@
   },
   {
     "name": "enable-desktop-pwas-additional-windowing-controls",
-    "owners": [ "giovax@google.com", "pwa-commercial@google.com" , "pwa-team@google.com" ],
+    "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -2944,7 +2944,7 @@
   },
   {
     "name": "enable-desktop-pwas-borderless",
-    "owners": [ "giovax@google.com", "pwa-commercial@google.com" , "pwa-team@google.com" ],
+    "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -2959,8 +2959,8 @@
   },
   {
     "name": "enable-desktop-pwas-sub-apps",
-    "owners": ["giovax@chromium.org", "pwa-team@google.com"],
-    "expiry_milestone": 130
+    "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-desktop-pwas-tab-strip",
@@ -9373,8 +9373,8 @@
   },
   {
     "name": "web-hid-in-web-view",
-    "owners": ["vkovalova@google.com", "giovax@chromium.org"],
-    "expiry_milestone": 130
+    "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "web-identity-digital-credentials",
