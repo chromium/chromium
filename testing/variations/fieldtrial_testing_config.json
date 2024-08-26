@@ -18418,7 +18418,21 @@
                 "mac",
                 "linux",
                 "chromeos",
-                "chromeos_lacros",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProcessReuseOnPrerenderCOOPSwap"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProcessReuseOnPrerenderCOOPSwapAndroid": [
+        {
+            "platforms": [
                 "android"
             ],
             "experiments": [
