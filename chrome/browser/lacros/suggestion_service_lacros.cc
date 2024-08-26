@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 
@@ -19,6 +20,9 @@ crosapi::mojom::SuggestionDeviceFormFactor ToMojoFormFactor(
     syncer::DeviceInfo::FormFactor form_factor) {
   switch (form_factor) {
     case syncer::DeviceInfo::FormFactor::kUnknown:
+    case syncer::DeviceInfo::FormFactor::kAutomotive:
+    case syncer::DeviceInfo::FormFactor::kWearable:
+    case syncer::DeviceInfo::FormFactor::kTv:
     case syncer::DeviceInfo::FormFactor::kDesktop:
       return crosapi::mojom::SuggestionDeviceFormFactor::kDesktop;
     case syncer::DeviceInfo::FormFactor::kPhone:

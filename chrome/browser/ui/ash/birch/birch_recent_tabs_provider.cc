@@ -34,6 +34,9 @@ BirchTabItem::DeviceFormFactor GetTabItemFormFactor(
   // to DeviceInfo::FormFactor won't break the BirchTabItem's form factor.
   switch (form_factor) {
     case syncer::DeviceInfo::FormFactor::kUnknown:
+    case syncer::DeviceInfo::FormFactor::kAutomotive:
+    case syncer::DeviceInfo::FormFactor::kWearable:
+    case syncer::DeviceInfo::FormFactor::kTv:
     case syncer::DeviceInfo::FormFactor::kDesktop:
       return BirchTabItem::DeviceFormFactor::kDesktop;
     case syncer::DeviceInfo::FormFactor::kPhone:

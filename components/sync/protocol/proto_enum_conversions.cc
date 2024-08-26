@@ -343,12 +343,15 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::OsType os_type) {
 const char* ProtoEnumToString(
     sync_pb::SyncEnums::DeviceFormFactor device_form_factor) {
   ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, DeviceFormFactor,
-                     DEVICE_FORM_FACTOR_UNSPECIFIED, DEVICE_FORM_FACTOR_TABLET);
+                     DEVICE_FORM_FACTOR_UNSPECIFIED, DEVICE_FORM_FACTOR_TV);
   switch (device_form_factor) {
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_UNSPECIFIED);
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_DESKTOP);
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_PHONE);
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_TABLET);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_AUTOMOTIVE);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_WEARABLE);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_TV);
   }
   NOTREACHED_IN_MIGRATION();
   return "";

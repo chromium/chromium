@@ -169,6 +169,9 @@ message SyncEnums {
     DEVICE_FORM_FACTOR_DESKTOP = 1;
     DEVICE_FORM_FACTOR_PHONE = 2;
     DEVICE_FORM_FACTOR_TABLET = 3;
+    DEVICE_FORM_FACTOR_AUTOMOTIVE = 4;
+    DEVICE_FORM_FACTOR_WEARABLE = 5;
+    DEVICE_FORM_FACTOR_TV = 6;
   }
 
   // Types of browsers; used for history-related data types.
