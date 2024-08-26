@@ -5416,6 +5416,21 @@
       },
     },
   },
+   "webview_trichrome_64_cts_tests full_mode": {
+    'remove_from': [
+      'android-15-x64-fyi-rel',  # https://crbug.com/353915320
+    ],
+  },
+   "webview_trichrome_64_cts_tests instant_mode": {
+    'remove_from': [
+      'android-15-x64-fyi-rel',  # https://crbug.com/353915320
+    ],
+  },
+  "webview_trichrome_64_cts_tests_no_field_trial": {
+    'remove_from': [
+      'android-15-x64-fyi-rel',  # https://crbug.com/353915320
+    ],
+  },
   'webview_ui_test_app_test_apk': {
     'remove_from': [
       'android-11-x86-rel', # crbug.com/1165280
