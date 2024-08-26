@@ -50,8 +50,6 @@ class PaintCanvasVideoRenderer;
 // many mailboxes will be present.
 enum class VideoFrameResourceType {
   NONE,
-  YUV,
-  YUVA,
   RGB,
   RGBA_PREMULTIPLIED,
   RGBA,
@@ -248,8 +246,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   size_t upload_pixels_size_[SkYUVAInfo::kMaxPlanes] = {};
 
   VideoFrameResourceType frame_resource_type_;
-
-  uint32_t frame_bits_per_channel_;
 
   // Resources that will be placed into quads by the next call to
   // AppendDrawQuads().

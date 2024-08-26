@@ -4623,9 +4623,6 @@ extern const char kDisableIdleSocketsCloseOnMemoryPressureDescription[];
 extern const char kDisableOfficeEditingComponentAppName[];
 extern const char kDisableOfficeEditingComponentAppDescription[];
 
-extern const char kGateNV12GMBVideoFramesOnHWSupportName[];
-extern const char kGateNV12GMBVideoFramesOnHWSupportDescription[];
-
 extern const char kLacrosColorManagementName[];
 extern const char kLacrosColorManagementDescription[];
 

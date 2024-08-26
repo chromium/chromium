@@ -98,16 +98,15 @@ gfx::ProtectedVideoType ProtectedVideoTypeFromMetadata(
 VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     const VideoFrame& frame,
     GLuint target,
-    viz::SharedImageFormat si_formats[VideoFrame::kMaxPlanes],
+    viz::SharedImageFormat& si_format,
     bool use_stream_video_draw_quad) {
   const VideoPixelFormat format = frame.format();
-  const size_t num_textures = frame.NumTextures();
+  DCHECK_EQ(frame.NumTextures(), 1u);
 
   if (frame.RequiresExternalSampler()) {
     // The texture |target| can be 0 for Fuchsia.
     DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES)
         << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
-    DCHECK_EQ(num_textures, 1u);
     // Use viz::LegacyMultiPlaneFormat when default
     // SharedImageFormatType::Legacy is used and
     // kUseMultiPlaneFormatForLegacySIFType feature is NOT enabled.
@@ -115,16 +114,16 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         !base::FeatureList::IsEnabled(kUseMultiPlaneFormatForLegacySIFType)) {
       switch (format) {
         case PIXEL_FORMAT_NV12:
-          si_formats[0] = viz::LegacyMultiPlaneFormat::kNV12;
+          si_format = viz::LegacyMultiPlaneFormat::kNV12;
           break;
         case PIXEL_FORMAT_YV12:
-          si_formats[0] = viz::LegacyMultiPlaneFormat::kYV12;
+          si_format = viz::LegacyMultiPlaneFormat::kYV12;
           break;
         case PIXEL_FORMAT_P010LE:
-          si_formats[0] = viz::LegacyMultiPlaneFormat::kP010;
+          si_format = viz::LegacyMultiPlaneFormat::kP010;
           break;
         case PIXEL_FORMAT_NV12A:
-          si_formats[0] = viz::LegacyMultiPlaneFormat::kNV12A;
+          si_format = viz::LegacyMultiPlaneFormat::kNV12A;
           break;
         default:
           NOTREACHED();
@@ -136,21 +135,21 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       // true.
       switch (format) {
         case PIXEL_FORMAT_NV12:
-          si_formats[0] = viz::MultiPlaneFormat::kNV12;
+          si_format = viz::MultiPlaneFormat::kNV12;
           break;
         case PIXEL_FORMAT_YV12:
-          si_formats[0] = viz::MultiPlaneFormat::kYV12;
+          si_format = viz::MultiPlaneFormat::kYV12;
           break;
         case PIXEL_FORMAT_P010LE:
-          si_formats[0] = viz::MultiPlaneFormat::kP010;
+          si_format = viz::MultiPlaneFormat::kP010;
           break;
         case PIXEL_FORMAT_NV12A:
-          si_formats[0] = viz::MultiPlaneFormat::kNV12A;
+          si_format = viz::MultiPlaneFormat::kNV12A;
           break;
         default:
           NOTREACHED();
       }
-      si_formats[0].SetPrefersExternalSampler();
+      si_format.SetPrefersExternalSampler();
 #else
       // MultiplanarSharedImage with external sampling is supported only on
       // Ozone, and VideoFrames with external sampler should not be created on
@@ -171,15 +170,13 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_BGRA:
-      DCHECK_EQ(num_textures, 1u);
       // This maps VideoPixelFormat back to GMB BufferFormat
       // NOTE: ABGR == RGBA and ARGB == BGRA, they differ only byte order
       // See: VideoFormat function in gpu_memory_buffer_video_frame_pool
       // https://cs.chromium.org/chromium/src/media/video/gpu_memory_buffer_video_frame_pool.cc?type=cs&g=0&l=281
-      si_formats[0] =
-          (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR)
-              ? viz::SinglePlaneFormat::kRGBA_8888
-              : viz::SinglePlaneFormat::kBGRA_8888;
+      si_format = (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR)
+                      ? viz::SinglePlaneFormat::kRGBA_8888
+                      : viz::SinglePlaneFormat::kBGRA_8888;
 
       switch (target) {
         case GL_TEXTURE_EXTERNAL_OES:
@@ -203,27 +200,18 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       break;
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
-      si_formats[0] = (format == PIXEL_FORMAT_XR30)
-                          ? viz::SinglePlaneFormat::kBGRA_1010102
-                          : viz::SinglePlaneFormat::kRGBA_1010102;
+      si_format = (format == PIXEL_FORMAT_XR30)
+                      ? viz::SinglePlaneFormat::kBGRA_1010102
+                      : viz::SinglePlaneFormat::kRGBA_1010102;
       return VideoFrameResourceType::RGB;
     case PIXEL_FORMAT_I420:
-      if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
-        DCHECK_EQ(num_textures, 3u);
-        si_formats[0] = viz::SinglePlaneFormat::kR_8;
-        si_formats[1] = viz::SinglePlaneFormat::kR_8;
-        si_formats[2] = viz::SinglePlaneFormat::kR_8;
-        return VideoFrameResourceType::YUV;
-      } else {
-        DCHECK_EQ(num_textures, 1u);
-        si_formats[0] = viz::MultiPlaneFormat::kI420;
-        return VideoFrameResourceType::RGB;
-      }
+      si_format = viz::MultiPlaneFormat::kI420;
+      return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_YV12:
       CHECK_EQ(frame.shared_image_format_type(),
                SharedImageFormatType::kSharedImageFormat);
-      si_formats[0] = viz::MultiPlaneFormat::kYV12;
+      si_format = viz::MultiPlaneFormat::kYV12;
       return VideoFrameResourceType::RGBA;
 
     case PIXEL_FORMAT_NV12:
@@ -239,72 +227,35 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES ||
              target == GL_TEXTURE_2D || target == GL_TEXTURE_RECTANGLE_ARB)
           << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
-      if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
-        DCHECK_EQ(num_textures, 2u);
-        si_formats[0] = viz::SinglePlaneFormat::kR_8;
-        si_formats[1] = viz::SinglePlaneFormat::kRG_88;
-        return VideoFrameResourceType::YUV;
-      } else {
-        DCHECK_EQ(num_textures, 1u);
-        si_formats[0] = viz::MultiPlaneFormat::kNV12;
-        return VideoFrameResourceType::RGB;
-      }
+      si_format = viz::MultiPlaneFormat::kNV12;
+      return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_NV16:
-      DCHECK_EQ(num_textures, 1u);
-      si_formats[0] = viz::MultiPlaneFormat::kNV16;
+      si_format = viz::MultiPlaneFormat::kNV16;
       return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_NV24:
-      DCHECK_EQ(num_textures, 1u);
-      si_formats[0] = viz::MultiPlaneFormat::kNV24;
+      si_format = viz::MultiPlaneFormat::kNV24;
       return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_NV12A:
-      if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
-        DCHECK_EQ(num_textures, 3u);
-        si_formats[0] = viz::SinglePlaneFormat::kR_8;
-        si_formats[1] = viz::SinglePlaneFormat::kRG_88;
-        si_formats[2] = viz::SinglePlaneFormat::kR_8;
-        return VideoFrameResourceType::YUVA;
-      } else {
-        DCHECK_EQ(num_textures, 1u);
-        si_formats[0] = viz::MultiPlaneFormat::kNV12A;
-        return VideoFrameResourceType::RGBA;
-      }
+      si_format = viz::MultiPlaneFormat::kNV12A;
+      return VideoFrameResourceType::RGBA;
 
     case PIXEL_FORMAT_P010LE:
-      if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
-        DCHECK_EQ(num_textures, 2u);
-        // TODO(mcasas): Support other formats such as e.g. P012.
-        si_formats[0] = viz::SinglePlaneFormat::kR_16;
-        // TODO(crbug.com/40191425): This needs to be
-        // gfx::BufferFormat::RG_1616.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-        si_formats[1] = viz::SinglePlaneFormat::kRG_1616;
-#else
-        si_formats[1] = viz::SinglePlaneFormat::kRG_88;
-#endif
-        return VideoFrameResourceType::YUV;
-      } else {
-        DCHECK_EQ(num_textures, 1u);
-        si_formats[0] = viz::MultiPlaneFormat::kP010;
-        return VideoFrameResourceType::RGB;
-      }
+      si_format = viz::MultiPlaneFormat::kP010;
+      return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_P210LE:
-      DCHECK_EQ(num_textures, 1u);
-      si_formats[0] = viz::MultiPlaneFormat::kP210;
+      si_format = viz::MultiPlaneFormat::kP210;
       return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_P410LE:
-      DCHECK_EQ(num_textures, 1u);
-      si_formats[0] = viz::MultiPlaneFormat::kP410;
+      si_format = viz::MultiPlaneFormat::kP410;
       return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_RGBAF16:
-      DCHECK_EQ(num_textures, 1u);
-      si_formats[0] = viz::SinglePlaneFormat::kRGBA_F16;
+      si_format = viz::SinglePlaneFormat::kRGBA_F16;
       return VideoFrameResourceType::RGBA;
 
     case PIXEL_FORMAT_UYVY:
@@ -878,11 +829,6 @@ void VideoResourceUpdater::ObtainFrameResources(
       CreateExternalResourcesFromVideoFrame(video_frame);
   frame_resource_type_ = external_resources.type;
 
-  if (external_resources.type == VideoFrameResourceType::YUV ||
-      external_resources.type == VideoFrameResourceType::YUVA) {
-    frame_bits_per_channel_ = external_resources.bits_per_channel;
-  }
-
   DCHECK_EQ(external_resources.resources.size(),
             external_resources.release_callbacks.size());
   for (size_t i = 0; i < external_resources.resources.size(); ++i) {
@@ -942,52 +888,6 @@ void VideoResourceUpdater::AppendQuads(
           render_pass->CreateAndAppendDrawQuad<viz::VideoHoleDrawQuad>();
       video_hole_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
                               overlay_plane_id_);
-      break;
-    }
-    case VideoFrameResourceType::YUV:
-    case VideoFrameResourceType::YUVA: {
-      DCHECK_EQ(frame_resources_.size(),
-                VideoFrame::NumPlanes(frame->format()));
-      if (frame->HasTextures()) {
-        if (frame_resource_type_ == VideoFrameResourceType::YUV) {
-          DCHECK(frame->format() == PIXEL_FORMAT_NV12 ||
-                 frame->format() == PIXEL_FORMAT_P010LE ||
-                 frame->format() == PIXEL_FORMAT_I420);
-        } else {
-          DCHECK_EQ(frame->format(), PIXEL_FORMAT_NV12A);
-        }
-      }
-
-      // Get the scaling factor of the YA texture relative to the UV texture.
-      const gfx::Size uv_sample_size =
-          VideoFrame::SampleSize(frame->format(), VideoFrame::Plane::kU);
-
-      auto* yuv_video_quad =
-          render_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
-      viz::ResourceId v_plane_id;
-      viz::ResourceId a_plane_id;
-      if (frame_resource_type_ == VideoFrameResourceType::YUV) {
-        v_plane_id = frame_resources_.size() > 2 ? frame_resources_[2].id
-                                                 : frame_resources_[1].id;
-        a_plane_id = frame_resources_.size() > 3 ? frame_resources_[3].id
-                                                 : viz::kInvalidResourceId;
-      } else {
-        v_plane_id = frame_resources_.size() > 3 ? frame_resources_[2].id
-                                                 : frame_resources_[1].id;
-        a_plane_id = frame_resources_.size() > 3 ? frame_resources_[3].id
-                                                 : frame_resources_[2].id;
-      }
-      yuv_video_quad->SetNew(
-          shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
-          coded_size, visible_rect, uv_sample_size, frame_resources_[0].id,
-          frame_resources_[1].id, v_plane_id, a_plane_id, frame->ColorSpace(),
-          frame_bits_per_channel_,
-          ProtectedVideoTypeFromMetadata(frame->metadata()),
-          frame->hdr_metadata().value_or(gfx::HDRMetadata()));
-
-      for (viz::ResourceId resource_id : yuv_video_quad->resources) {
-        resource_provider_->ValidateResource(resource_id);
-      }
       break;
     }
     case VideoFrameResourceType::RGBA:
@@ -1193,17 +1093,19 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
   }
 
   VideoFrameExternalResources external_resources;
-
   const bool copy_required = video_frame->metadata().copy_required;
-
   GLuint target = video_frame->mailbox_holder(0).texture_target;
   // If |copy_required| then we will copy into a GL_TEXTURE_2D target.
-  if (copy_required)
+  if (copy_required) {
     target = GL_TEXTURE_2D;
+  }
 
-  viz::SharedImageFormat si_formats[VideoFrame::kMaxPlanes];
+  const size_t num_textures = video_frame->NumTextures();
+  DCHECK_EQ(num_textures, 1u);
+
+  viz::SharedImageFormat si_format;
   external_resources.type = ExternalResourceTypeForHardwarePlanes(
-      *video_frame, target, si_formats, use_stream_video_draw_quad_);
+      *video_frame, target, si_format, use_stream_video_draw_quad_);
   external_resources.bits_per_channel = video_frame->BitDepth();
 
   if (external_resources.type == VideoFrameResourceType::NONE) {
@@ -1212,58 +1114,52 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
     return external_resources;
   }
 
-  const size_t num_textures = video_frame->NumTextures();
-  if (video_frame->shared_image_format_type() !=
-      SharedImageFormatType::kLegacy) {
-    DCHECK_EQ(num_textures, 1u);
-  }
-
   // Make a copy of the current release SyncToken so we know if it changes.
   CopyingSyncTokenClient client;
   auto original_release_token = video_frame->UpdateReleaseSyncToken(&client);
 
-  for (size_t i = 0; i < num_textures; ++i) {
-    const gpu::MailboxHolder& mailbox_holder = video_frame->mailbox_holder(i);
-    if (mailbox_holder.mailbox.IsZero())
-      break;
+  const gpu::MailboxHolder& mailbox_holder =
+      video_frame->mailbox_holder(/*texture_index=*/0);
+  if (mailbox_holder.mailbox.IsZero()) {
+    return external_resources;
+  }
+  if (copy_required) {
+    CopyHardwarePlane(video_frame.get(), mailbox_holder, &external_resources);
+    return external_resources;
+  }
 
-    if (copy_required) {
-      CopyHardwarePlane(video_frame.get(), mailbox_holder, &external_resources);
-    } else {
-      const size_t width = video_frame->columns(i);
-      const size_t height = video_frame->rows(i);
-      const gfx::Size plane_size(width, height);
-      auto transfer_resource = viz::TransferableResource::MakeGpu(
-          mailbox_holder.mailbox, mailbox_holder.texture_target,
-          mailbox_holder.sync_token, plane_size, si_formats[i],
-          video_frame->metadata().allow_overlay,
-          viz::TransferableResource::ResourceSource::kVideo);
-      transfer_resource.color_space = video_frame->ColorSpace();
-      transfer_resource.hdr_metadata =
-          video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
-      transfer_resource.needs_detiling = video_frame->metadata().needs_detiling;
-      if (video_frame->metadata().read_lock_fences_enabled) {
-        transfer_resource.synchronization_type = viz::TransferableResource::
-            SynchronizationType::kGpuCommandsCompleted;
-      }
-      transfer_resource.ycbcr_info = video_frame->ycbcr_info();
+  const size_t width = video_frame->columns(/*plane=*/0);
+  const size_t height = video_frame->rows(/*plane=*/0);
+  const gfx::Size size(width, height);
+  auto transfer_resource = viz::TransferableResource::MakeGpu(
+      mailbox_holder.mailbox, mailbox_holder.texture_target,
+      mailbox_holder.sync_token, size, si_format,
+      video_frame->metadata().allow_overlay,
+      viz::TransferableResource::ResourceSource::kVideo);
+  transfer_resource.color_space = video_frame->ColorSpace();
+  transfer_resource.hdr_metadata =
+      video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
+  transfer_resource.needs_detiling = video_frame->metadata().needs_detiling;
+  if (video_frame->metadata().read_lock_fences_enabled) {
+    transfer_resource.synchronization_type =
+        viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
+  }
+  transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 
 #if BUILDFLAG(IS_ANDROID)
-      transfer_resource.is_backed_by_surface_texture =
-          video_frame->metadata().texture_owner;
+  transfer_resource.is_backed_by_surface_texture =
+      video_frame->metadata().texture_owner;
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-      transfer_resource.wants_promotion_hint =
-          video_frame->metadata().wants_promotion_hint;
+  transfer_resource.wants_promotion_hint =
+      video_frame->metadata().wants_promotion_hint;
 #endif
 
-      external_resources.resources.push_back(std::move(transfer_resource));
-      external_resources.release_callbacks.push_back(base::BindOnce(
-          &VideoResourceUpdater::ReturnTexture, weak_ptr_factory_.GetWeakPtr(),
-          video_frame, original_release_token));
-    }
-  }
+  external_resources.resources.push_back(std::move(transfer_resource));
+  external_resources.release_callbacks.push_back(base::BindOnce(
+      &VideoResourceUpdater::ReturnTexture, weak_ptr_factory_.GetWeakPtr(),
+      video_frame, original_release_token));
   return external_resources;
 }
 
