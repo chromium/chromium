@@ -343,6 +343,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                   /*key_piece=*/15, /*debug_data=*/{},
                                   /*aggregation_coordinator_origin=*/
                                   std::nullopt)))
+              .SetAttributionScopesData(
+                  *attribution_reporting::AttributionScopesData::Create(
+                      attribution_reporting::AttributionScopesSet({"a"}),
+                      /*attribution_scope_limit=*/3, /*max_event_states=*/3))
               .BuildStored(),
           SourceBuilder(now + base::Hours(1))
               .SetSourceId(StoredSource::Id(2))
@@ -452,24 +456,26 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         tds[10]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
         // Debug Cookie Set
         tds[11]?.innerText === 'true' &&
+        // Attribution Scopes Data
+        tds[12]?.innerText === '{\n   "limit": 3,\n   "max_event_states": 3,\n   "values": [ "a" ]\n}\n' &&
         // Epsilon
-        tds[12]?.innerText === '14.000' &&
+        tds[13]?.innerText === '14.000' &&
         // Trigger Data Matching
-        tds[13]?.innerText === 'modulus' &&
+        tds[14]?.innerText === 'modulus' &&
         // Event-Level Dedup Keys
-        tds[15]?.children[0]?.children[0]?.innerText === '13' &&
-        tds[15]?.children[0]?.children[1]?.innerText === '17' &&
+        tds[16]?.children[0]?.children[0]?.innerText === '13' &&
+        tds[16]?.children[0]?.children[1]?.innerText === '17' &&
         // Remaining Aggregatable Attribution Budget
-        tds[17]?.innerText === '1300 / 65536' &&
+        tds[18]?.innerText === '1300 / 65536' &&
         // Aggregation Keys
-        tds[18]?.innerText === '{\n "a": "0x1"\n}' &&
+        tds[19]?.innerText === '{\n "a": "0x1"\n}' &&
         // Aggregatable Dedup Keys
-        tds[19]?.children[0]?.children[0]?.innerText === '14' &&
-        tds[19]?.children[0]?.children[1]?.innerText === '18' &&
+        tds[20]?.children[0]?.children[0]?.innerText === '14' &&
+        tds[20]?.children[0]?.children[1]?.innerText === '18' &&
         // Remaining Aggregatable Debug Budget
-        tds[20]?.innerText === '100 / 65536' &&
+        tds[21]?.innerText === '100 / 65536' &&
         // Aggregatable Debug Key Piece
-        tds[21]?.innerText === '0xf'
+        tds[22]?.innerText === '0xf'
       ) {
         if (obs) {
           obs.disconnect();

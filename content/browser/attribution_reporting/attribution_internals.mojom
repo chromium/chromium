@@ -134,6 +134,8 @@ struct WebUISource {
   int32 remaining_aggregatable_debug_budget;
   // A hex-encoded 128-bit integer.
   string aggregatable_debug_key_piece;
+  // String is used for the same reasons as described for `trigger_specs_json`.
+  string attribution_scopes_data_json;
 
   enum Attributability {
     kAttributable,

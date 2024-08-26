@@ -102,6 +102,10 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       source.remaining_aggregatable_debug_budget(),
       attribution_reporting::HexEncodeAggregationKey(
           source.aggregatable_debug_key_piece()),
+      source.attribution_scopes_data().has_value()
+          ? SerializeAttributionJson(source.attribution_scopes_data()->ToJson(),
+                                     /*pretty_print=*/true)
+          : "null",
       attributability);
 }
 
