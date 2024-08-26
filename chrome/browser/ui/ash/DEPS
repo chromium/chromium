@@ -120,6 +120,7 @@ include_rules = [
   "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
   "+chrome/browser/speech/cros_speech_recognition_service_factory.h",
   "+chrome/browser/speech/fake_speech_recognition_service.h",
+  "+chrome/browser/speech/fake_speech_recognizer.h",
   "+chrome/browser/speech/speech_recognition_recognizer_client_impl.h",
   "+chrome/browser/speech/speech_recognizer_delegate.h",
   "+chrome/browser/supervised_user/supervised_user_service_factory.h",

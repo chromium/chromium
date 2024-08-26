@@ -9077,6 +9077,8 @@ static_library("test_support") {
       "sessions/tab_restore_service_load_waiter.h",
       "speech/fake_speech_recognition_service.cc",
       "speech/fake_speech_recognition_service.h",
+      "speech/fake_speech_recognizer.cc",
+      "speech/fake_speech_recognizer.h",
       "ui/tabs/tab_activity_simulator.cc",
       "ui/tabs/tab_activity_simulator.h",
     ]

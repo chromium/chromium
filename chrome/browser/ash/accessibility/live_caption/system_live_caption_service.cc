@@ -287,7 +287,7 @@ void SystemLiveCaptionService::StopTimeoutFinished() {
 }
 
 void SystemLiveCaptionService::CreateClient() {
-  // We must reset first to detach everything first, and then reattach.
+  // We must reset to detach everything first, and then reattach.
   client_.reset();
   client_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
       weak_ptr_factory_.GetWeakPtr(), profile_,

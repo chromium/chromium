@@ -9,9 +9,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
+#include "chrome/browser/speech/fake_speech_recognizer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -95,7 +97,9 @@ class MockAudioSystem : public media::AudioSystem {
 // Tests SpeechRecognitionRecognizerClientImpl plumbing with a fake
 // SpeechRecognitionService. Does not do end-to-end audio fetching or test SODA
 // on device.
-class SpeechRecognitionRecognizerClientImplTest : public InProcessBrowserTest {
+class SpeechRecognitionRecognizerClientImplTest
+    : public InProcessBrowserTest,
+      public speech::FakeSpeechRecognitionService::Observer {
  public:
   SpeechRecognitionRecognizerClientImplTest() = default;
   ~SpeechRecognitionRecognizerClientImplTest() override = default;
@@ -103,6 +107,15 @@ class SpeechRecognitionRecognizerClientImplTest : public InProcessBrowserTest {
       const SpeechRecognitionRecognizerClientImplTest&) = delete;
   SpeechRecognitionRecognizerClientImplTest& operator=(
       const SpeechRecognitionRecognizerClientImplTest&) = delete;
+
+  // FakeSpeechRecognitionService::Observer
+  void OnRecognizerBound(
+      speech::FakeSpeechRecognizer* bound_recognizer) override {
+    if (bound_recognizer->recognition_options()->recognizer_client_type ==
+        media::mojom::RecognizerClientType::kDictation) {
+      fake_speech_recognizer_ = bound_recognizer->GetWeakPtr();
+    }
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitAndEnableFeature(
@@ -135,6 +148,7 @@ class SpeechRecognitionRecognizerClientImplTest : public InProcessBrowserTest {
     std::unique_ptr<speech::FakeSpeechRecognitionService> fake_service =
         std::make_unique<speech::FakeSpeechRecognitionService>();
     fake_service_ = fake_service.get();
+    fake_service_->AddObserver(this);
     return std::move(fake_service);
   }
 
@@ -162,7 +176,7 @@ class SpeechRecognitionRecognizerClientImplTest : public InProcessBrowserTest {
         .Times(1)
         .RetiresOnSaturation();
     recognizer_->Start();
-    fake_service_->WaitForRecognitionStarted();
+    fake_speech_recognizer_->WaitForRecognitionStarted();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -183,6 +197,7 @@ class SpeechRecognitionRecognizerClientImplTest : public InProcessBrowserTest {
   // Unowned.
   raw_ptr<speech::FakeSpeechRecognitionService, DanglingUntriaged>
       fake_service_;
+  base::WeakPtr<speech::FakeSpeechRecognizer> fake_speech_recognizer_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -196,12 +211,12 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
                        StartsCapturingAudio) {
   testing::InSequence seq;
   ConstructRecognizerAndWaitForReady();
-  EXPECT_FALSE(fake_service_->is_capturing_audio());
+  EXPECT_FALSE(fake_speech_recognizer_->is_capturing_audio());
 
   // Toggle a few times.
   for (int i = 0; i < 2; i++) {
     StartAndWaitForRecognizing();
-    EXPECT_TRUE(fake_service_->is_capturing_audio());
+    EXPECT_TRUE(fake_speech_recognizer_->is_capturing_audio());
 
     EXPECT_CALL(*mock_speech_delegate_,
                 OnSpeechRecognitionStateChanged(SPEECH_RECOGNITION_STOPPING))
@@ -219,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
 
     recognizer_->Stop();
     base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(fake_service_->is_capturing_audio());
+    EXPECT_FALSE(fake_speech_recognizer_->is_capturing_audio());
   }
 }
 
@@ -239,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
                              testing::_))
       .Times(1)
       .RetiresOnSaturation();
-  fake_service_->SendSpeechRecognitionResult(
+  fake_speech_recognizer_->SendSpeechRecognitionResult(
       media::SpeechRecognitionResult("All mammals have hair", false));
   base::RunLoop().RunUntilIdle();
 
@@ -249,8 +264,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
                   true, testing::_))
       .Times(1)
       .RetiresOnSaturation();
-  fake_service_->SendSpeechRecognitionResult(media::SpeechRecognitionResult(
-      "All mammals drink milk from their mothers", true));
+  fake_speech_recognizer_->SendSpeechRecognitionResult(
+      media::SpeechRecognitionResult(
+          "All mammals drink milk from their mothers", true));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -263,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
               OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_ERROR))
       .Times(1)
       .RetiresOnSaturation();
-  fake_service_->SendSpeechRecognitionError();
+  fake_speech_recognizer_->SendSpeechRecognitionError();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -279,9 +295,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
   StartListeningWithAudioParams(params);
 
   EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
-            fake_service_->device_id());
-  ASSERT_TRUE(fake_service_->audio_parameters());
-  EXPECT_TRUE(fake_service_->audio_parameters()->Equals(params));
+            fake_speech_recognizer_->device_id());
+  ASSERT_TRUE(fake_speech_recognizer_->audio_parameters());
+  EXPECT_TRUE(fake_speech_recognizer_->audio_parameters()->Equals(params));
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
@@ -296,14 +312,14 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
   StartListeningWithAudioParams(params);
 
   EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
-            fake_service_->device_id());
-  ASSERT_TRUE(fake_service_->audio_parameters());
+            fake_speech_recognizer_->device_id());
+  ASSERT_TRUE(fake_speech_recognizer_->audio_parameters());
   EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO,
-            fake_service_->audio_parameters()->channel_layout());
+            fake_speech_recognizer_->audio_parameters()->channel_layout());
   // Picks a larger frames_per_buffer such that sample_rate/frames_per_buffer =
   // kDefaultPollingTimesPerSecond.
   EXPECT_EQ(sample_rate / kDefaultPollingTimesPerSecond,
-            fake_service_->audio_parameters()->frames_per_buffer());
+            fake_speech_recognizer_->audio_parameters()->frames_per_buffer());
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
@@ -318,11 +334,12 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
   StartListeningWithAudioParams(params);
 
   EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
-            fake_service_->device_id());
-  ASSERT_TRUE(fake_service_->audio_parameters());
-  EXPECT_EQ(sample_rate, fake_service_->audio_parameters()->sample_rate());
+            fake_speech_recognizer_->device_id());
+  ASSERT_TRUE(fake_speech_recognizer_->audio_parameters());
+  EXPECT_EQ(sample_rate,
+            fake_speech_recognizer_->audio_parameters()->sample_rate());
   EXPECT_EQ(media::CHANNEL_LAYOUT_MONO,
-            fake_service_->audio_parameters()->channel_layout());
+            fake_speech_recognizer_->audio_parameters()->channel_layout());
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
@@ -332,13 +349,14 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
   StartListeningWithAudioParams(std::nullopt);
 
   EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
-            fake_service_->device_id());
-  ASSERT_TRUE(fake_service_->audio_parameters());
+            fake_speech_recognizer_->device_id());
+  ASSERT_TRUE(fake_speech_recognizer_->audio_parameters());
   EXPECT_EQ(kDefaultSampleRate,
-            fake_service_->audio_parameters()->sample_rate());
-  EXPECT_EQ(kDefaultPollingTimesPerSecond,
-            fake_service_->audio_parameters()->sample_rate() /
-                fake_service_->audio_parameters()->frames_per_buffer());
+            fake_speech_recognizer_->audio_parameters()->sample_rate());
+  EXPECT_EQ(
+      kDefaultPollingTimesPerSecond,
+      fake_speech_recognizer_->audio_parameters()->sample_rate() /
+          fake_speech_recognizer_->audio_parameters()->frames_per_buffer());
   EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO,
-            fake_service_->audio_parameters()->channel_layout());
+            fake_speech_recognizer_->audio_parameters()->channel_layout());
 }
