@@ -169,6 +169,9 @@ include_rules = [
   # Features should add explicit dependencies.
   "-ios/chrome/browser",
   "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
+  "+ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h",
+  "+ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h",
+  "+ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h",
 
   # Shared dependencies.
   "+ios/chrome/browser/shared/coordinator",

@@ -6,6 +6,7 @@ source_set("test") {
   testonly = true
   sources = [
     "test_profile_ios.h",
+    "test_profile_ios.mm",
     "test_profile_manager_ios.h",
     "test_profile_manager_ios.mm",
   ]
@@ -13,10 +14,23 @@ source_set("test") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/policy/core/common",
+    "//components/profile_metrics",
+    "//components/supervised_user/core/browser",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/user_prefs",
+    "//ios/chrome/browser/browser_state/model",
+    "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/test:test_support",
+    "//net:test_support",
   ]
 }
 

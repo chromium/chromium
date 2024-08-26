@@ -71,6 +71,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
@@ -82,7 +83,6 @@ source_set("test_support") {
   testonly = true
   sources = [
     "test_chrome_browser_state.h",
-    "test_chrome_browser_state.mm",
     "test_chrome_browser_state_manager.h",
   ]
 
