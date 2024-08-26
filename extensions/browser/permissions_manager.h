@@ -132,6 +132,10 @@ class PermissionsManager : public KeyedService {
     virtual void OnSiteAccessRequestAdded(const ExtensionId& extension_id,
                                           int tab_id) {}
 
+    // Called when `extension_id` updated a site access request for `tab_id`.
+    virtual void OnSiteAccessRequestUpdated(const ExtensionId& extension_id,
+                                            int tab_id) {}
+
     // Called when `extension_id` removed a site access request for `tab_id`.
     virtual void OnSiteAccessRequestRemoved(const ExtensionId& extension_id,
                                             int tab_id) {}
@@ -283,11 +287,14 @@ class PermissionsManager : public KeyedService {
   std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
       const Extension& extension) const;
 
-  // Adds site access request for `extension` in `web_contents` with
-  // `tab_id`. Extension must have site access withheld for request to be added.
-  void AddSiteAccessRequest(content::WebContents* web_contents,
-                            int tab_id,
-                            const Extension& extension);
+  // Adds site access request with an optional `filter` for `extension` in
+  // `web_contents` with `tab_id`. Extension must have site access withheld for
+  // request to be added.
+  void AddSiteAccessRequest(
+      content::WebContents* web_contents,
+      int tab_id,
+      const Extension& extension,
+      const std::optional<URLPattern>& filter = std::nullopt);
 
   // Removes site access request for `extension` in `tab_id`, if existent.
   // Returns whether the request was removed.

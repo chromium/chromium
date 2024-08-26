@@ -22,6 +22,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/url_pattern.h"
 #include "extensions/test/permissions_manager_waiter.h"
 
 namespace extensions {
@@ -187,6 +188,44 @@ TEST_F(SiteAccessRequestsHelperUnittest, AddAndRemoveRequests) {
       tab_id, extension_B->id()));
 }
 
+// Tests that site access requests which include a filter are properly added
+// and removed.
+TEST_F(SiteAccessRequestsHelperUnittest,
+       AddAndRemoveRequestsWithPatternFilter) {
+  auto extension =
+      InstallExtensionAndWithholdHostPermissions("Extension", "<all_urls>");
+
+  content::WebContents* web_contents = AddTab(GURL("http://www.example.com/"));
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add a site access request with filter that does not match the current web
+  // contents. Verify request is not active.
+  URLPattern filter(Extension::kValidHostPermissionSchemes,
+                    "http://www.example.com/path");
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension,
+                                              filter);
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+
+  // Add a site access request with filter that matches the current web
+  // contents. Verify request is active.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents, GURL("http://www.example.com/path"));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+
+  // TODO(crbug.com/330588494): Once we add `pattern` to
+  // RemoveSiteAccessRequest, verify removing another pattern doesn't affect the
+  // current request.
+
+  // Remove site access request for extension. Verify request is no longer
+  // active.
+  EXPECT_TRUE(
+      permissions_manager()->RemoveSiteAccessRequest(tab_id, extension->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+}
+
 // Tests that site access requests dismissed by the user are not active
 // requests.
 TEST_F(SiteAccessRequestsHelperUnittest, UserDismissedRequest) {
@@ -234,6 +273,47 @@ TEST_F(SiteAccessRequestsHelperUnittest,
 
   // Cross-origin navigation should remove request.
   web_contents_tester->NavigateAndCommit(GURL("http://www.cross-origin.com/c"));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+}
+
+// Tests that a request with matching filter pattern are active on same origin
+// navigations.
+TEST_F(SiteAccessRequestsHelperUnittest, RequestUpdatedOnPageNavigations) {
+  auto extension =
+      InstallExtensionAndWithholdHostPermissions("Extension", "<all_urls>");
+
+  content::WebContents* web_contents = AddTab(GURL("http://www.example.com/"));
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add site access request for extension. Verify request is active.
+  std::optional<URLPattern> filter;
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension,
+                                              filter);
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+
+  // Add site access request for extension with a filter that doesn't match the
+  // current web contents but has the same origin. Verify request is not
+  // active, since new request should override the previous one.
+  filter = URLPattern(Extension::kValidHostPermissionSchemes, "*://*/path");
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension,
+                                              filter);
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+
+  // Navigate to a site that matches the filter. Verify request is active.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents, GURL("http://www.example.com/path"));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+
+  // Add site access request for extension with a filter that doesn't have the
+  // same origin as the current web contents. Verify request is not active.
+  filter = URLPattern(Extension::kValidHostPermissionSchemes,
+                      "http://www.other.com/path");
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension,
+                                              filter);
   EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
       tab_id, extension->id()));
 }

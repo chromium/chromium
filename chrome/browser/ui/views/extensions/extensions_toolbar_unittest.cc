@@ -184,9 +184,11 @@ void ExtensionsToolbarUnitTest::UpdateUserSiteSetting(
 
 void ExtensionsToolbarUnitTest::AddSiteAccessRequest(
     const extensions::Extension& extension,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    const std::optional<URLPattern>& filter) {
   int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  permissions_manager_->AddSiteAccessRequest(web_contents, tab_id, extension);
+  permissions_manager_->AddSiteAccessRequest(web_contents, tab_id, extension,
+                                             filter);
 }
 
 void ExtensionsToolbarUnitTest::RemoveSiteAccessRequest(

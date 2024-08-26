@@ -31,6 +31,7 @@
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/permissions_info.h"
+#include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 
 namespace extensions {
@@ -609,7 +610,11 @@ PermissionsAddSiteAccessRequestFunction::Run() {
     return RespondNow(Error(error));
   }
 
-  permissions_manager->AddSiteAccessRequest(web_contents, tab_id, *extension());
+  // TODO(crbug.com/330588494): Use pattern from parameter, if given, once it's
+  // added.
+  std::optional<URLPattern> pattern;
+  permissions_manager->AddSiteAccessRequest(web_contents, tab_id, *extension(),
+                                            pattern);
   return RespondNow(NoArguments());
 }
 

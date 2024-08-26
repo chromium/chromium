@@ -90,6 +90,8 @@ class ExtensionsMenuViewController
       bool can_show_requests) override;
   void OnSiteAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int tab_id) override;
+  void OnSiteAccessRequestUpdated(const extensions::ExtensionId& extension_id,
+                                  int tab_id) override;
   void OnSiteAccessRequestRemoved(const extensions::ExtensionId& extension_id,
                                   int tab_id) override;
   void OnSiteAccessRequestsCleared(int tab_id) override;

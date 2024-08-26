@@ -651,6 +651,47 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
+// Tests that an extension appears in the request access button iff it has a
+// site access request that matches the given pattern filter.
+TEST_F(ExtensionsToolbarContainerUnitTest,
+       RequestAccessButton_RequestWithPattern) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  // Navigate to a site and verify request access button is not visible, since
+  // no extension has added a request.
+  NavigateAndCommit(GURL("http://www.example.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add a site access request with filter that does not match the current web
+  // contents. Verify request access button is hidden.
+  URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
+                    "http://www.other.com/");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add a site access request with filter that matches the current web
+  // contents. Verify extension is visible on the request access button.
+  filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
+                      "http://www.example.com/");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Add a site access request with filter that does not match the current web
+  // contents. Verify request access button is hidden (previous request was
+  // removed).
+  filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
+                      "http://www.other.com/");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
+
 // Tests that an extension's site access request is removed when the extension
 // is granted site access.
 TEST_F(ExtensionsToolbarContainerUnitTest,
@@ -715,6 +756,50 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   // Navigate to the original site and verify request access button is hidden,
   // since requests are reset on cross-origin navigations.
   NavigateAndCommit(GURL("http://www.a.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
+
+// Tests that the request access button is visible for matched patterns on
+// same-origin navigations.
+TEST_F(ExtensionsToolbarContainerUnitTest,
+       RequestAccessButton_NavigationBetweenPages_RequestWithPattern) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  // Navigate to a site and verify request access button is hidden, since
+  // no extension has added a request.
+  NavigateAndCommit(GURL("http://www.example.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add site access request for extension with a filter that doesn't match the
+  // current web contents. Verify request access button is hidden.
+  URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
+                    "*://*/path");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Navigate to a same-origin site that matches the filter. Verify extension is
+  // visible on the request access button.
+  NavigateAndCommit(GURL("http://www.example.com/path"));
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Add site access request for extension with a filter that doesn't have the
+  // same origin as the current web contents. Verify request access button is
+  // hidden.
+  filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
+                      "http://www.other.com/path");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Navigate to a cross-origin site that matches the filters. Since it's a
+  // cross-origin navigation, requests are reset. Therefore, verify request
+  // access button is hidden.
+  NavigateAndCommit(GURL("http://www.other.com/path"));
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 

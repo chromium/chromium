@@ -786,13 +786,35 @@ PermissionsManager::GetExtensionGrantedPermissions(
 void PermissionsManager::AddSiteAccessRequest(
     content::WebContents* web_contents,
     int tab_id,
-    const Extension& extension) {
+    const Extension& extension,
+    const std::optional<URLPattern>& filter) {
   SiteAccessRequestsHelper* helper =
       GetOrCreateSiteAccessRequestsHelperFor(web_contents, tab_id);
-  helper->AddRequest(extension);
 
-  for (auto& observer : observers_) {
-    observer.OnSiteAccessRequestAdded(extension.id(), tab_id);
+  // Request will never be visible if `filter` doesn't match the current origin,
+  // since requests are cleared on cross-origin navigations. Thus, we don't need
+  // to add the request.
+  if (filter.has_value() && !filter.value().MatchesSecurityOrigin(
+                                web_contents->GetLastCommittedURL())) {
+    // Remove the existent request, if any, since the new request overrides it.
+    if (helper->RemoveRequest(extension.id())) {
+      for (auto& observer : observers_) {
+        observer.OnSiteAccessRequestRemoved(extension.id(), tab_id);
+      }
+    }
+    return;
+  }
+
+  if (helper->HasRequest(extension.id())) {
+    helper->UpdateRequest(extension, filter);
+    for (auto& observer : observers_) {
+      observer.OnSiteAccessRequestUpdated(extension.id(), tab_id);
+    }
+  } else {
+    helper->AddRequest(extension, filter);
+    for (auto& observer : observers_) {
+      observer.OnSiteAccessRequestAdded(extension.id(), tab_id);
+    }
   }
 }
 
