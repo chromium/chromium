@@ -142,7 +142,10 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
 
   MOCK_METHOD(void, OnFrameNodeAdded, (const FrameNode*), (override));
   MOCK_METHOD(void, OnBeforeFrameNodeRemoved, (const FrameNode*), (override));
-  MOCK_METHOD(void, OnIsCurrentChanged, (const FrameNode*), (override));
+  MOCK_METHOD(void,
+              OnCurrentFrameChanged,
+              (const FrameNode*, const FrameNode*),
+              (override));
   MOCK_METHOD(void, OnNetworkAlmostIdleChanged, (const FrameNode*), (override));
   MOCK_METHOD(void,
               OnFrameLifecycleStateChanged,
@@ -244,9 +247,10 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   const FrameNode* raw_frame_node = frame_node.get();
   EXPECT_EQ(raw_frame_node, obs.created_frame_node());
 
-  // Invoke "SetIsCurrent" and expect a "OnIsCurrentChanged" callback.
-  EXPECT_CALL(obs, OnIsCurrentChanged(raw_frame_node));
-  frame_node->SetIsCurrent(false);
+  // Invoke "UpdateCurrentFrame" and expect a "OnCurrentFrameChanged" callback.
+  EXPECT_CALL(obs, OnCurrentFrameChanged(raw_frame_node, nullptr));
+  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/frame_node.get(),
+                                    /*current_frame_node=*/nullptr, graph());
   testing::Mock::VerifyAndClear(&obs);
 
   // Invoke "SetNetworkAlmostIdle" and expect an "OnNetworkAlmostIdleChanged"

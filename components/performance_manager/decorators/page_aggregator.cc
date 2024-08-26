@@ -23,7 +23,23 @@ PageAggregatorData& GetOrCreateData(PageNodeImpl* page_node) {
   }
   return PageAggregatorData::Get(page_node);
 }
+
+const PageNode* GetPageNodeFromEither(const FrameNode* frame_node1,
+                                      const FrameNode* frame_node2) {
+  // Sanity check.
+  CHECK(frame_node1 || frame_node2);
+  if (frame_node1 && frame_node2) {
+    CHECK_EQ(frame_node1->GetPageNode(), frame_node2->GetPageNode());
+  }
+
+  if (frame_node1) {
+    return frame_node1->GetPageNode();
+  } else {
+    return frame_node2->GetPageNode();
+  }
 }
+
+}  // namespace
 
 PageAggregator::PageAggregator() = default;
 PageAggregator::~PageAggregator() = default;
@@ -64,23 +80,38 @@ void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
     data.UpdateFrameCountForIndexedDBLockUsage(false, page_node);
 }
 
-void PageAggregator::OnIsCurrentChanged(const FrameNode* frame_node) {
-  auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
+void PageAggregator::OnCurrentFrameChanged(
+    const FrameNode* previous_frame_node,
+    const FrameNode* current_frame_node) {
+  auto* page_node = PageNodeImpl::FromNode(
+      GetPageNodeFromEither(previous_frame_node, current_frame_node));
   Data& data = GetOrCreateData(page_node);
 
-  // Check if the frame node had some form interaction or user edit, in this
+  // Check if either frame node had some form interaction or user edit, in this
   // case there's two possibilities:
   //   - The frame became current: The counter of current frames with form
   //     interactions should be increased.
   //   - The frame became non current: The counter of current frames with form
   //     interactions should be decreased.
-  if (frame_node->HadFormInteraction()) {
-    data.UpdateCurrentFrameCountForFormInteraction(frame_node->IsCurrent(),
-                                                   page_node, nullptr);
+  if (previous_frame_node) {
+    const bool is_current = false;
+    if (previous_frame_node->HadFormInteraction()) {
+      data.UpdateCurrentFrameCountForFormInteraction(is_current, page_node,
+                                                     nullptr);
+    }
+    if (previous_frame_node->HadUserEdits()) {
+      data.UpdateCurrentFrameCountForUserEdits(is_current, page_node, nullptr);
+    }
   }
-  if (frame_node->HadUserEdits()) {
-    data.UpdateCurrentFrameCountForUserEdits(frame_node->IsCurrent(), page_node,
-                                             nullptr);
+  if (current_frame_node) {
+    const bool is_current = true;
+    if (current_frame_node->HadFormInteraction()) {
+      data.UpdateCurrentFrameCountForFormInteraction(is_current, page_node,
+                                                     nullptr);
+    }
+    if (current_frame_node->HadUserEdits()) {
+      data.UpdateCurrentFrameCountForUserEdits(is_current, page_node, nullptr);
+    }
   }
 }
 

@@ -40,7 +40,7 @@ TEST_F(FrameVisibilityDecoratorTest, IsCurrent) {
   EXPECT_TRUE(main_frame_node->IsCurrent());
   EXPECT_EQ(main_frame_node->GetVisibility(), FrameNode::Visibility::kVisible);
 
-  main_frame_node->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(main_frame_node.get(), nullptr, graph());
   EXPECT_EQ(main_frame_node->GetVisibility(),
             FrameNode::Visibility::kNotVisible);
 }

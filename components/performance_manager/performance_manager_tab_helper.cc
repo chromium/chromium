@@ -277,30 +277,17 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
            "dispatched before RenderFrameCreated with a live RenderFrame\n";
   }
   // If neither frame could be looked up there's nothing to do.
-  if (!old_frame && !new_frame)
+  if (!old_frame && !new_frame) {
     return;
+  }
 
   // Perform the swap in the graph.
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(
-                     [](FrameNodeImpl* old_frame, FrameNodeImpl* new_frame) {
-                       if (old_frame) {
-                         // Prerendering is a special case where
-                         // old_frame->is_current() may be false.
-                         // TODO(crbug.com/40182881): assert that
-                         // old_frame->is_current() or its PageState is
-                         // kPrerendering.
-                         old_frame->SetIsCurrent(false);
-                       }
-
-                       if (new_frame) {
-                         // The very first frame to be created is already
-                         // current by default except in the special case of
-                         // prerendering.
-                         // TODO(crbug.com/40182881): assert that
-                         // old_frame is null or its PageState is kPrerendering.
-                         new_frame->SetIsCurrent(true);
-                       }
+                     [](FrameNodeImpl* old_frame, FrameNodeImpl* new_frame,
+                        GraphImpl* graph) {
+                       FrameNodeImpl::UpdateCurrentFrame(old_frame, new_frame,
+                                                         graph);
                      },
                      old_frame, new_frame));
 }

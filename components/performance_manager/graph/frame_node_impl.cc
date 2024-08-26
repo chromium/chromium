@@ -178,7 +178,7 @@ const std::optional<url::Origin>& FrameNodeImpl::GetOrigin() const {
 
 bool FrameNodeImpl::IsCurrent() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_current_.value();
+  return is_current_;
 }
 
 const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
@@ -320,9 +320,35 @@ FrameNode::NodeSetView<WorkerNodeImpl*> FrameNodeImpl::child_worker_nodes()
   return NodeSetView<WorkerNodeImpl*>(child_worker_nodes_);
 }
 
-void FrameNodeImpl::SetIsCurrent(bool is_current) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_current_.SetAndMaybeNotify(this, is_current);
+// static
+void FrameNodeImpl::UpdateCurrentFrame(FrameNodeImpl* previous_frame_node,
+                                       FrameNodeImpl* current_frame_node,
+                                       GraphImpl* graph) {
+  if (previous_frame_node) {
+    bool did_change = previous_frame_node->SetIsCurrent(false);
+    // Don't notify if the frame was already not current.
+    if (!did_change) {
+      previous_frame_node = nullptr;
+    }
+  }
+
+  if (current_frame_node) {
+    bool did_change = current_frame_node->SetIsCurrent(true);
+    // Don't notify if the frame was already current.
+    if (!did_change) {
+      current_frame_node = nullptr;
+    }
+  }
+
+  // No need to notify observers.
+  if (!previous_frame_node && !current_frame_node) {
+    return;
+  }
+
+  // Notify observers.
+  for (auto& observer : graph->GetObservers<FrameNodeObserver>()) {
+    observer.OnCurrentFrameChanged(previous_frame_node, current_frame_node);
+  }
 
   // TODO(crbug.com/40182881): We maintain an invariant that of all sibling
   // frame nodes in the same FrameTreeNode, at most one may be current. We used
@@ -722,6 +748,12 @@ bool FrameNodeImpl::HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const {
 bool FrameNodeImpl::HasFrameNodeInTree(FrameNodeImpl* frame_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetFrameTreeRoot() == frame_node->GetFrameTreeRoot();
+}
+
+bool FrameNodeImpl::SetIsCurrent(bool is_current) {
+  CHECK(CanSetAndNotifyProperty());
+  bool was_current = std::exchange(is_current_, is_current);
+  return was_current != is_current_;
 }
 
 FrameNodeImpl::DocumentProperties::DocumentProperties() = default;

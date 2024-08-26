@@ -48,10 +48,11 @@ void InitializingFrameNodeObserverManager::OnBeforeFrameNodeRemoved(
   // frame nodes using `NotifyFrameNodeTearingDown()`.
 }
 
-void InitializingFrameNodeObserverManager::OnIsCurrentChanged(
-    const FrameNode* frame_node) {
+void InitializingFrameNodeObserverManager::OnCurrentFrameChanged(
+    const FrameNode* previous_frame_node,
+    const FrameNode* current_frame_node) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {
-    observer.OnIsCurrentChanged(frame_node);
+    observer.OnCurrentFrameChanged(previous_frame_node, current_frame_node);
   }
 }
 

@@ -121,8 +121,15 @@ void FrameVisibilityDecorator::OnFrameNodeInitializing(
       frame_node_impl, IsPageUserVisible(frame_node_impl->page_node())));
 }
 
-void FrameVisibilityDecorator::OnIsCurrentChanged(const FrameNode* frame_node) {
-  OnFramePropertyChanged(frame_node);
+void FrameVisibilityDecorator::OnCurrentFrameChanged(
+    const FrameNode* previous_frame_node,
+    const FrameNode* current_frame_node) {
+  if (previous_frame_node) {
+    OnFramePropertyChanged(previous_frame_node);
+  }
+  if (current_frame_node) {
+    OnFramePropertyChanged(current_frame_node);
+  }
 }
 
 void FrameVisibilityDecorator::OnViewportIntersectionStateChanged(
