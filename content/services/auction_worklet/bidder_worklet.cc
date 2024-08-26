@@ -1518,6 +1518,36 @@ BidderWorklet::V8State::RunGenerateBidOnce(
           },
           restrict_to_kanon_ads, &bidder_worklet_non_shared_params);
 
+  base::RepeatingCallback<bool(const std::string&,
+                               base::optional_ref<const std::string>,
+                               base::optional_ref<const std::string>,
+                               base::optional_ref<const std::string>)>
+      should_exclude_reporting_id_set_due_to_kanon = base::BindRepeating(
+          [](bool restrict_to_kanon_ads,
+             const mojom::BidderWorkletNonSharedParams* params,
+             const url::Origin* owner, const GURL* bidding_url,
+             const std::string& ad_url_from_gurl_spec,
+             base::optional_ref<const std::string> buyer_reporting_id,
+             base::optional_ref<const std::string>
+                 buyer_and_seller_reporting_id,
+             base::optional_ref<const std::string>
+                 selected_buyer_and_seller_reporting_id) {
+            return restrict_to_kanon_ads &&
+                   !BidderWorklet::IsKAnon(
+                       params,
+                       blink::
+                           HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
+                               /*interest_group_owner=*/*owner,
+                               /*interest_group_name=*/params->name,
+                               /*interest_group_bidding_url=*/*bidding_url,
+                               /*ad_render_url=*/ad_url_from_gurl_spec,
+                               buyer_reporting_id,
+                               buyer_and_seller_reporting_id,
+                               selected_buyer_and_seller_reporting_id));
+          },
+          restrict_to_kanon_ads, &bidder_worklet_non_shared_params, &owner_,
+          &script_source_url_);
+
   ContextRecyclerScope context_recycler_scope(*context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
@@ -1525,7 +1555,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       start, browser_signal_top_level_seller_origin != nullptr,
       &bidder_worklet_non_shared_params, expected_buyer_currency,
       multi_bid_limit, should_exclude_ad_due_to_kanon,
-      should_exclude_component_ad_due_to_kanon);
+      should_exclude_component_ad_due_to_kanon,
+      should_exclude_reporting_id_set_due_to_kanon);
 
   v8::LocalVector<v8::Value> args(isolate);
   v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);
@@ -1553,7 +1584,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       &bidder_worklet_non_shared_params);
   if (!context_recycler->interest_group_lazy_filler()->FillInObject(
           interest_group_object, should_exclude_ad_due_to_kanon,
-          should_exclude_component_ad_due_to_kanon)) {
+          should_exclude_component_ad_due_to_kanon,
+          should_exclude_reporting_id_set_due_to_kanon)) {
     return std::nullopt;
   }
 

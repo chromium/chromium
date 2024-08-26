@@ -23084,15 +23084,6 @@ TEST_P(AuctionRunnerKAnonTest, SelectedReportingIdRequired) {
       std::string(R"(
         function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
-          // TODO(crbug.com/334053709): Remove this when the k-anon restricted
-          // call to generateBid() removes non-k-anon
-          // selectedBuyerAndSellerReportingIds from
-          // interestGroup.ads[0].renderURL.
-          if (globalThis.alreadyCalled !== undefined) {
-            return;
-          }
-          globalThis.alreadyCalled = true;
-
           if (interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length
               === 0) {
             return;

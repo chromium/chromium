@@ -12206,6 +12206,208 @@ TEST_F(BidderWorkletTest, KAnonRerun) {
   }
 }
 
+TEST_F(BidderWorkletTest,
+       BidderWorkletOnlyPassesKAnonSelectableReportingIdsOnRestrictedRun) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAuctionDealSupport);
+
+  // The first time, this selects "non-k-anon-selected-id" because it's the
+  // first `selectableBuyerAndSellerReportingId`; the second time, it should
+  // select "k-anon-selected-id" because "non-k-anon-selected-id" will have been
+  // removed from that field.
+  const char kScript[] = R"(
+    function generateBid(interestGroup) {
+      return {
+          ad: ["ad"],
+          bid: interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length,
+          render: interestGroup.ads[0].renderURL,
+          selectedBuyerAndSellerReportingId:
+              interestGroup.ads[0].selectableBuyerAndSellerReportingIds[0],
+          selectedBuyerAndSellerReportingIdRequired: true,
+      };
+    }
+  )";
+
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
+
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"buyer1",
+      /*buyer_and_seller_reporting_id=*/"common1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"non-k-anon-selected-id", "k-anon-selected-id"});
+
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
+          url::Origin::Create(interest_group_bidding_url_),
+          interest_group_bidding_url_, "https://response.test/")));
+  kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
+      blink::HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
+          url::Origin::Create(interest_group_bidding_url_),
+          interest_group_name_, interest_group_bidding_url_,
+          "https://response.test/", std::string("buyer1"),
+          std::string("common1"), std::string("k-anon-selected-id"))));
+
+  std::vector<mojom::BidderWorkletBidPtr> expected;
+  expected.push_back(mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 2,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://response.test/")),
+      /*selected_buyer_and_seller_reporting_id_required=*/true,
+      /*selected_buyer_and_seller_reporting_id=*/"non-k-anon-selected-id",
+      /*ad_component_descriptors=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  expected.push_back(mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kEnforcedKAnon, R"(["ad"])", 1,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://response.test/")),
+      /*selected_buyer_and_seller_reporting_id_required=*/true,
+      /*selected_buyer_and_seller_reporting_id=*/"k-anon-selected-id",
+      /*ad_component_descriptors=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithJavascriptExpectingResult(kScript, std::move(expected));
+}
+
+TEST_F(BidderWorkletTest,
+       BidderWorkletRejectsNonKAnonSelectableReportingIdOnRestrictedRun) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAuctionDealSupport);
+
+  // Here, we select the same "non-k-anon-selected-id" on both calls to
+  // `generateBid()`, which shouldn't happen because it's not not provided as
+  // one of the `selectableBuyerAndSellerReportingIds` passed in on the call to
+  // `generateBid()`. This makes the bid not k-anon for reporting, and because
+  // this bid also returns `selectedBuyerAndSellerReportingIdRequired` = true,
+  // that makes this bid not k-anon, which makes it an invalid output for the
+  // k-anon restricted call. The BidderWorklet recognizes that and rejects this
+  // bid as invalid, emitting an error.
+  const char kScript[] = R"(
+    function generateBid(interestGroup) {
+      return {
+          ad: ["ad"],
+          bid: interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length,
+          render: interestGroup.ads[0].renderURL,
+          selectedBuyerAndSellerReportingId: "non-k-anon-selected-id",
+          selectedBuyerAndSellerReportingIdRequired: true,
+      };
+    }
+  )";
+
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
+
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"buyer1",
+      /*buyer_and_seller_reporting_id=*/"common1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"non-k-anon-selected-id", "k-anon-selected-id"});
+
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
+          url::Origin::Create(interest_group_bidding_url_),
+          interest_group_bidding_url_, "https://response.test/")));
+  kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
+      blink::HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
+          url::Origin::Create(interest_group_bidding_url_),
+          interest_group_name_, interest_group_bidding_url_,
+          "https://response.test/", std::string("buyer1"),
+          std::string("common1"), std::string("k-anon-selected-id"))));
+
+  std::vector<mojom::BidderWorkletBidPtr> expected;
+  expected.push_back(mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 2,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://response.test/")),
+      /*selected_buyer_and_seller_reporting_id_required=*/true,
+      /*selected_buyer_and_seller_reporting_id=*/"non-k-anon-selected-id",
+      /*ad_component_descriptors=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithJavascriptExpectingResult(
+      kScript, std::move(expected),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() Invalid selected buyer and seller "
+       "reporting id"});
+}
+
+TEST_F(BidderWorkletTest,
+       BidderWorkletOnlyAllowsProvidedSelectedReportingIdsOnRestrictedRun) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAuctionDealSupport);
+
+  // As with BidderWorkletRejectsNonKAnonSelectableReportingIdOnRestrictedRun,
+  // we select the same "non-k-anon-selected-id" on both calls to
+  // `generateBid()`, which shouldn't happen because it's not provided as one
+  // of the `selectableBuyerAndSellerReportingIds` passed in on the call to
+  // `generateBid()`. Even though this bid returns
+  // `selectedBuyerAndSellerReportingIdRequired` = false, so that this bid is
+  // technically k-anonymous, this bid is considered invalid because it used a
+  // `selectedBuyerAndSellerReportingId` that wasn't part of the
+  // `selectableBuyerAndSellerReportingIds` passed in.
+  const char kScript[] = R"(
+    function generateBid(interestGroup) {
+      const isRestrictedCall =
+          interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length < 2;
+      return {
+          ad: ["ad"],
+          bid: interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length,
+          render: interestGroup.ads[0].renderURL,
+          selectedBuyerAndSellerReportingId: "non-k-anon-selected-id",
+          selectedBuyerAndSellerReportingIdRequired: !isRestrictedCall,
+      };
+    }
+  )";
+
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
+
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"buyer1",
+      /*buyer_and_seller_reporting_id=*/"common1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"non-k-anon-selected-id", "k-anon-selected-id"});
+
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
+          url::Origin::Create(interest_group_bidding_url_),
+          interest_group_bidding_url_, "https://response.test/")));
+  kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
+      blink::HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
+          url::Origin::Create(interest_group_bidding_url_),
+          interest_group_name_, interest_group_bidding_url_,
+          "https://response.test/", std::string("buyer1"),
+          std::string("common1"), std::string("k-anon-selected-id"))));
+
+  std::vector<mojom::BidderWorkletBidPtr> expected;
+  expected.push_back(mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 2,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://response.test/")),
+      /*selected_buyer_and_seller_reporting_id_required=*/true,
+      /*selected_buyer_and_seller_reporting_id=*/"non-k-anon-selected-id",
+      /*ad_component_descriptors=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithJavascriptExpectingResult(
+      kScript, std::move(expected),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() Invalid selected buyer and seller "
+       "reporting id"});
+}
+
 TEST_F(BidderWorkletTest, IsKAnonURL) {
   const GURL kUrl1("https://example.test/1");
   const GURL kUrl2("https://example2.test/2");

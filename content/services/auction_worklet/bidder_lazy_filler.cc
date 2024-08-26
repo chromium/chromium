@@ -134,8 +134,12 @@ void InterestGroupLazyFiller::ReInitialize(
 bool InterestGroupLazyFiller::FillInObject(
     v8::Local<v8::Object> object,
     base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
-    base::RepeatingCallback<bool(const std::string&)>
-        is_ad_component_excluded) {
+    base::RepeatingCallback<bool(const std::string&)> is_ad_component_excluded,
+    base::RepeatingCallback<bool(const std::string&,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>)>
+        is_reporting_id_set_excluded) {
   if (bidder_worklet_non_shared_params_->user_bidding_signals &&
       !DefineLazyAttribute(object, "userBiddingSignals",
                            &HandleUserBiddingSignals)) {
@@ -183,13 +187,14 @@ bool InterestGroupLazyFiller::FillInObject(
 
   v8::Local<v8::ObjectTemplate> lazy_filler_template;
   if (bidder_worklet_non_shared_params_->ads &&
-      !CreateAdVector(object, "ads", is_ad_excluded,
-                      *bidder_worklet_non_shared_params_->ads,
-                      lazy_filler_template)) {
+      !CreateAdVector(
+          object, "ads", is_ad_excluded, is_reporting_id_set_excluded,
+          *bidder_worklet_non_shared_params_->ads, lazy_filler_template)) {
     return false;
   }
   if (bidder_worklet_non_shared_params_->ad_components &&
       !CreateAdVector(object, "adComponents", is_ad_component_excluded,
+                      is_reporting_id_set_excluded,
                       *bidder_worklet_non_shared_params_->ad_components,
                       lazy_filler_template)) {
     return false;
@@ -209,6 +214,11 @@ bool InterestGroupLazyFiller::CreateAdVector(
     v8::Local<v8::Object>& object,
     std::string_view name,
     base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+    base::RepeatingCallback<bool(const std::string&,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>)>
+        is_reporting_id_set_excluded,
     const std::vector<blink::InterestGroup::Ad>& ads,
     v8::Local<v8::ObjectTemplate>& lazy_filler_template) {
   v8::Isolate* isolate = v8_helper()->isolate();
@@ -236,13 +246,31 @@ bool InterestGroupLazyFiller::CreateAdVector(
       return false;
     }
     if (ad.selectable_buyer_and_seller_reporting_ids) {
+      // For the k-anon restricted run, we limit
+      // `selectable_buyer_and_seller_reporting_ids` to only those that would,
+      // in combination with the renderUrl and other reporting ids, be
+      // k-anonymous for reporting, so that, if the bid returns
+      // `selected_buyer_and_seller_reporting_id_required` = true, the bid is,
+      // in fact, k-anonymous for reporting.
+      std::vector<std::string_view>
+          valid_selectable_buyer_and_seller_reporting_ids;
+      for (auto& selectable_buyer_and_seller_reporting_id :
+           *ad.selectable_buyer_and_seller_reporting_ids) {
+        if (!is_reporting_id_set_excluded.Run(
+                ad.render_url(), ad.buyer_reporting_id,
+                ad.buyer_and_seller_reporting_id,
+                selectable_buyer_and_seller_reporting_id)) {
+          valid_selectable_buyer_and_seller_reporting_ids.push_back(
+              selectable_buyer_and_seller_reporting_id);
+        }
+      }
       if ((ad.buyer_reporting_id &&
            !ad_dict.Set("buyerReportingId", *ad.buyer_reporting_id)) ||
           (ad.buyer_and_seller_reporting_id &&
            !ad_dict.Set("buyerAndSellerReportingId",
                         *ad.buyer_and_seller_reporting_id)) ||
           !ad_dict.Set("selectableBuyerAndSellerReportingIds",
-                       *ad.selectable_buyer_and_seller_reporting_ids)) {
+                       valid_selectable_buyer_and_seller_reporting_ids)) {
         return false;
       }
     }

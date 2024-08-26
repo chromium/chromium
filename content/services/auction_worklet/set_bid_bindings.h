@@ -76,7 +76,12 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
       uint16_t multi_bid_limit,
       base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
       base::RepeatingCallback<bool(const std::string&)>
-          is_component_ad_excluded);
+          is_component_ad_excluded,
+      base::RepeatingCallback<bool(const std::string&,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>)>
+          is_reporting_id_set_excluded);
 
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
@@ -128,6 +133,15 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
                    const std::string& render_prefix,
                    const std::string& components_prefix);
 
+  // Verifies if the selectedBuyerAndSellerReportingId is present within the
+  // matching ad's selectableBuyerAndSellerReportingId array, and that (for
+  // the k-anon restricted run), the reporting ids, collectively, are
+  // k-anonymous for reporting, as indicated by the
+  // `is_reporting_id_set_excluded_` callback.
+  bool IsSelectedReportingIdValid(
+      const blink::InterestGroup::Ad& ad,
+      const std::string& selected_buyer_and_seller_reporting_id);
+
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
   base::TimeTicks start_;
@@ -146,6 +160,11 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   // can be used in a valid bid. Used to check the bid for non-k-anonymous ads.
   base::RepeatingCallback<bool(const std::string&)> is_ad_excluded_;
   base::RepeatingCallback<bool(const std::string&)> is_component_ad_excluded_;
+  base::RepeatingCallback<bool(const std::string&,
+                               base::optional_ref<const std::string>,
+                               base::optional_ref<const std::string>,
+                               base::optional_ref<const std::string>)>
+      is_reporting_id_set_excluded_;
 
   std::vector<BidAndWorkletOnlyMetadata> bids_;
 };
