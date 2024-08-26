@@ -96,6 +96,7 @@ export class PostSelectionRendererElement extends PolymerElement {
       canvasWidth: Number,
       canvasPhysicalHeight: Number,
       canvasPhysicalWidth: Number,
+      selectionOverlayRect: Object,
     };
   }
 
@@ -114,6 +115,10 @@ export class PostSelectionRendererElement extends PolymerElement {
   private canvasWidth: number;
   private canvasPhysicalHeight: number;
   private canvasPhysicalWidth: number;
+  // The bounds of the parent element. This is updated by the parent to avoid
+  // this class needing to call getBoundingClientRect().
+  private selectionOverlayRect: DOMRect;
+
   private context: CanvasRenderingContext2D;
   // Listener IDs for events tracked from the browser.
   private listenerIds: number[];
@@ -204,7 +209,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   }
 
   handleDragGesture(event: GestureEvent) {
-    const imageBounds = this.getBoundingClientRect();
+    const imageBounds = this.selectionOverlayRect;
     const normalizedX = (event.clientX - imageBounds.left) / imageBounds.width;
     const normalizedY = (event.clientY - imageBounds.top) / imageBounds.height;
     const normalizedMinBoxWidth = MIN_BOX_SIZE_PX / imageBounds.width;
@@ -324,7 +329,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   // currently being rendered.
   private getClampedBounds(bounds?: PostSelectionBoundingBox):
       PostSelectionBoundingBox {
-    const imageBounds = this.getBoundingClientRect();
+    const imageBounds = this.selectionOverlayRect;
     const left = bounds ? bounds.left : this.left;
     const top = bounds ? bounds.top : this.top;
     const right = bounds ? bounds.left + bounds.width : this.left + this.width;
@@ -416,7 +421,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   }
 
   private triggerNewBoxAnimation() {
-    const parentBoundingRect = this.getBoundingClientRect();
+    const parentBoundingRect = this.selectionOverlayRect;
     if (parentBoundingRect.width === 0 || parentBoundingRect.height === 0) {
       // Renderer has probably not been sized yet. Defer until resize.
       this.animateOnResize = true;
@@ -433,7 +438,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   }
 
   private getNewBoxAnimationKeyframes() {
-    const parentBoundingRect = this.getBoundingClientRect();
+    const parentBoundingRect = this.selectionOverlayRect;
     const cornerDimensions = this.getCornerDimensions();
     return [
       {
@@ -452,7 +457,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   }
 
   private getCornerDimensions(): CornerDimensions {
-    const imageBounds = this.getBoundingClientRect();
+    const imageBounds = this.selectionOverlayRect;
     if (imageBounds.width === 0 || imageBounds.height === 0) {
       // Renderer has probably not been sized yet. Return default values.
       return {
@@ -549,6 +554,10 @@ export class PostSelectionRendererElement extends PolymerElement {
   // Used in HTML template to know if there is currently a selection to render.
   private hasSelection(): boolean {
     return this.width > 0 && this.height > 0;
+  }
+
+  setSelectionOverlayRectForTesting(rect: DOMRect) {
+    this.selectionOverlayRect = rect;
   }
 }
 

@@ -183,6 +183,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Object,
         value: getFallbackTheme,
       },
+      selectionOverlayRect: Object,
     };
   }
 
@@ -202,6 +203,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // proper dimensions.
   private canvasHeight: number;
   private canvasWidth: number;
+  // The current content rectangle of the selection elements DIV. This is the
+  // bounds of the screenshot and the part the user interacts with. This should
+  // be used instead of call getBoundingClientRect().
+  private selectionOverlayRect: DOMRect;
   private highlightedText: string = '';
   private contentLanguage: string = '';
   private textSelectionStartIndex: number = -1;
@@ -229,16 +234,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // The feature currently being dragged. Once a feature responds to a drag
   // event, no other feature will receive gesture events.
   private draggingRespondent = DragFeature.NONE;
-  private resizeObserver: ResizeObserver = new ResizeObserver(() => {
-    this.handleResize();
-  });
-  // We need to listen to resizes on the selectionElements separately, since
-  // resizeObserver will trigger before the selectionElements have a chance to
-  // resize.
-  private selectionElementsResizeObserver: ResizeObserver =
-      new ResizeObserver(() => {
-        this.handleSelectionElementsResize();
-      });
+  private resizeObserver: ResizeObserver =
+      new ResizeObserver(this.handleResize.bind(this));
   // Used to listen for changes in the window.devicePixelRatio. Stored as a
   // variable so we can easily add and remove the listener.
   private matchMedia?: MediaQueryList;
@@ -247,10 +244,15 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private hasInitialFlashAnimationEnded = false;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
+  // The ID returned by requestAnimationFrame for the updateCursorPosition,
+  // onPointerMove, and handleResize functions.
+  private updateCursorPositionRequestId?: number;
+  private onPointerMoveRequestId?: number;
+  private handleResizeRequestId?: number;
+
   override connectedCallback() {
     super.connectedCallback();
     this.resizeObserver.observe(this);
-    this.selectionElementsResizeObserver.observe(this.$.selectionOverlay);
     this.listenerIds = [
       this.browserProxy.callbackRouter.notifyOverlayClosing.addListener(() => {
         this.isClosing = true;
@@ -259,13 +261,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.browserProxy.callbackRouter.triggerCopyText.addListener(() => {
         this.handleCopy();
       }),
-      this.browserProxy.callbackRouter.setPostRegionSelection.addListener(
-          () => {
-            // If we get a post selection from the browser, we can assume that
-            // the side panel will be opening and we don't want to play the
-            // initial flash animation.
-            this.isInitialSize = false;
-          }),
     ];
     ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
         this.screenshotDataReceived.bind(this));
@@ -357,13 +352,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.shimmerOnSegmentation = false;
     });
 
+    this.updateSelectionOverlayRect();
     this.updateDevicePixelRatioListener();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.resizeObserver.unobserve(this);
-    this.selectionElementsResizeObserver.unobserve(this.$.selectionOverlay);
     this.eventTracker_.removeAll();
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
@@ -409,43 +404,57 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private onDevicePixelRatioChanged() {
     // Update the listener to the new pixel ratio.
     this.updateDevicePixelRatioListener();
-    // Handle UI updates.
-    this.handleSelectionElementsResize();
+    // Resize the canvases to take the new pixel ratio change.\
+    this.resizeSelectionCanvases(
+        this.selectionOverlayRect.width, this.selectionOverlayRect.height);
   }
 
   private updateCursorPosition(event: PointerEvent) {
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
-
-    const cursorOffsetX = mouseX + this.cursorOffsetX;
-    const cursorOffsetY = mouseY + this.cursorOffsetY;
-
-    if (!this.disableShimmer &&
-        (this.isPointerInside ||
-         this.currentGesture.state === GestureState.DRAGGING)) {
-      this.updateShimmerForCursor(cursorOffsetX, cursorOffsetY);
+    // Cancel a pending event to prevent multiple updates per frame.
+    if (this.updateCursorPositionRequestId) {
+      cancelAnimationFrame(this.updateCursorPositionRequestId);
     }
 
-    this.$.cursor.style.transform =
-        `translate3d(${cursorOffsetX}px, ${cursorOffsetY}px, 0)`;
+    // Use requestAnimationFrame to only update the cursor once a frame instead
+    // of multiple times per frame. This helps ensure the cursor is being
+    // updated to the latest received pointer event.
+    this.updateCursorPositionRequestId = requestAnimationFrame(() => {
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+
+      const cursorOffsetX = mouseX + this.cursorOffsetX;
+      const cursorOffsetY = mouseY + this.cursorOffsetY;
+
+      if (!this.disableShimmer &&
+          (this.isPointerInside ||
+           this.currentGesture.state === GestureState.DRAGGING)) {
+        this.updateShimmerForCursor(cursorOffsetX, cursorOffsetY);
+      }
+
+      this.$.cursor.style.transform =
+          `translate3d(${cursorOffsetX}px, ${cursorOffsetY}px, 0)`;
+      this.updateCursorPositionRequestId = undefined;
+    });
   }
 
   private updateShimmerForCursor(cursorLeft: number, cursorTop: number) {
-    const boundingRect = this.$.selectionOverlay.getBoundingClientRect();
-
     const relativeXPercent =
         Math.max(
-            0, Math.min(cursorLeft, boundingRect.right) - boundingRect.left) /
-        boundingRect.width;
+            0,
+            Math.min(cursorLeft, this.selectionOverlayRect.right) -
+                this.selectionOverlayRect.left) /
+        this.selectionOverlayRect.width;
     const relativeYPercent =
         Math.max(
-            0, Math.min(cursorTop, boundingRect.bottom) - boundingRect.top) /
-        boundingRect.height;
+            0,
+            Math.min(cursorTop, this.selectionOverlayRect.bottom) -
+                this.selectionOverlayRect.top) /
+        this.selectionOverlayRect.height;
 
     focusShimmerOnRegion(
         this, relativeYPercent, relativeXPercent,
-        CURSOR_SIZE_PIXEL / boundingRect.width,
-        CURSOR_SIZE_PIXEL / boundingRect.height,
+        CURSOR_SIZE_PIXEL / this.selectionOverlayRect.width,
+        CURSOR_SIZE_PIXEL / this.selectionOverlayRect.height,
         ShimmerControlRequester.CURSOR);
   }
 
@@ -608,28 +617,35 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
     this.updateGestureCoordinates(event);
 
-    if (this.isDragging()) {
-      this.set('currentGesture.state', GestureState.DRAGGING);
-
-      // Capture pointer events so gestures still work if the users pointer
-      // leaves the selection overlay div. Pointer capture is implicitly
-      // released after pointerup or pointercancel events.
-      this.setPointerCapture(event.pointerId);
-
-      if (this.draggingRespondent === DragFeature.TEXT) {
-        this.setCursorToText();
-        this.$.textSelectionLayer.handleDragGesture(this.currentGesture);
-      } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
-        this.$.postSelectionRenderer.handleDragGesture(this.currentGesture);
-      } else {
-        // Let the features respond to the current drag if no other feature
-        // responded first.
-        this.setCursorToCrosshair();
-        this.$.postSelectionRenderer.clearSelection();
-        this.draggingRespondent = DragFeature.MANUAL_REGION;
-        this.$.regionSelectionLayer.handleDragGesture(this.currentGesture);
-      }
+    if (this.onPointerMoveRequestId) {
+      cancelAnimationFrame(this.onPointerMoveRequestId);
     }
+
+    this.onPointerMoveRequestId = requestAnimationFrame(() => {
+      if (this.isDragging()) {
+        this.set('currentGesture.state', GestureState.DRAGGING);
+
+        // Capture pointer events so gestures still work if the users pointer
+        // leaves the selection overlay div. Pointer capture is implicitly
+        // released after pointerup or pointercancel events.
+        this.setPointerCapture(event.pointerId);
+
+        if (this.draggingRespondent === DragFeature.TEXT) {
+          this.setCursorToText();
+          this.$.textSelectionLayer.handleDragGesture(this.currentGesture);
+        } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
+          this.$.postSelectionRenderer.handleDragGesture(this.currentGesture);
+        } else {
+          // Let the features respond to the current drag if no other feature
+          // responded first.
+          this.setCursorToCrosshair();
+          this.$.postSelectionRenderer.clearSelection();
+          this.draggingRespondent = DragFeature.MANUAL_REGION;
+          this.$.regionSelectionLayer.handleDragGesture(this.currentGesture);
+        }
+      }
+      this.onPointerMoveRequestId = undefined;
+    });
   }
 
   private onPointerCancel() {
@@ -644,70 +660,103 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.resetCursor();
   }
 
-  private handleResize() {
-    // If the screenshot is not rendered yet, there is nothing to do yet.
-    if (!this.isScreenshotRendered) {
-      return;
+  private handleResize(entries: ResizeObserverEntry[]) {
+    // Cancel a pending event to prevent multiple updates per frame.
+    if (this.handleResizeRequestId) {
+      cancelAnimationFrame(this.handleResizeRequestId);
     }
 
-    const newRect = this.getBoundingClientRect();
+    // We want to always have the most up to date overlay rect, since all
+    // children depend on it. This is safe to do since we are not calling
+    // getBoundingClientRect to calculate the rect.
+    this.updateSelectionOverlayRect();
 
-    // Set our own canvas size while preserving the canvas aspect ratio.
-    const screenshotHeight = this.$.backgroundImageCanvas.height;
-    const screenshotWidth = this.$.backgroundImageCanvas.width;
-    const doesScreenshotFillContainer = newRect.width ===
-            Math.round(screenshotWidth / window.devicePixelRatio) &&
-        newRect.height ===
-            Math.round(screenshotHeight / window.devicePixelRatio);
+    // Use requestAnimationFrame to only calculate the screenshot size once
+    // a frame instead of multiple times per frame.
+    this.handleResizeRequestId = requestAnimationFrame(() => {
+      assert(entries.length === 1);
+      const newRect = entries[0].contentRect;
 
-    // Apply margins if the page is resized and not closing.
-    const margins = !doesScreenshotFillContainer && !this.isClosing ?
-        SCREENSHOT_FULLSIZE_MARGIN_PIXEL * 2 :
-        0;
-    const containerWidth = newRect.width - margins;
-    const containerHeight = newRect.height - margins;
+      // If the screenshot is not rendered yet, there is nothing to do yet.
+      if (!this.isScreenshotRendered ||
+          (newRect.width === 0 && newRect.height === 0)) {
+        this.handleResizeRequestId = undefined;
+        return;
+      }
 
-    // Get the aspect ratio to force the image to conform to.
-    const aspectRatio = this.$.backgroundImageCanvas.width /
-        this.$.backgroundImageCanvas.height;
+      // Set our own canvas size while preserving the canvas aspect ratio.
+      const screenshotHeight = this.$.backgroundImageCanvas.height;
+      const screenshotWidth = this.$.backgroundImageCanvas.width;
 
-    // Calculate potential dimensions based on width and height
-    const widthBasedHeight = Math.round(containerWidth / aspectRatio);
-    const heightBasedWidth = Math.round(containerHeight * aspectRatio);
+      const doesScreenshotFillContainer = newRect.width ===
+              Math.round(screenshotWidth / window.devicePixelRatio) &&
+          newRect.height ===
+              Math.round(screenshotHeight / window.devicePixelRatio);
 
-    // Choose dimensions that fit within the container while preserving aspect
-    // ratio
-    if (widthBasedHeight <= containerHeight) {
-      // Width-based dimensions fit
-      this.canvasHeight = widthBasedHeight;
-      this.canvasWidth = containerWidth;
-    } else {
-      // Height-based dimensions fit
-      this.canvasWidth = heightBasedWidth;
-      this.canvasHeight = containerHeight;
-    }
+      // Apply margins if the page is resized and not closing.
+      const margins = !doesScreenshotFillContainer && !this.isClosing ?
+          SCREENSHOT_FULLSIZE_MARGIN_PIXEL * 2 :
+          0;
+      const containerWidth = newRect.width - margins;
+      const containerHeight = newRect.height - margins;
 
-    this.isResized = !doesScreenshotFillContainer;
-    if (this.isResized) {
-      this.isInitialSize = false;
-      // The flash animation is cut short but animationend is never called if
-      // the overlay is resized before animationend is called. This is because
-      // the flash scrim is hidden on resize.
-      this.onInitialFlashAnimationEnd();
-    }
+      // Get the aspect ratio to force the image to conform to.
+      const aspectRatio = this.$.backgroundImageCanvas.width /
+          this.$.backgroundImageCanvas.height;
+
+      // Calculate potential dimensions based on width and height
+      const widthBasedHeight = Math.round(containerWidth / aspectRatio);
+      const heightBasedWidth = Math.round(containerHeight * aspectRatio);
+
+      // Choose dimensions that fit within the container while preserving aspect
+      // ratio
+      if (widthBasedHeight <= containerHeight) {
+        // Width-based dimensions fit
+        this.canvasHeight = widthBasedHeight;
+        this.canvasWidth = containerWidth;
+      } else {
+        // Height-based dimensions fit
+        this.canvasWidth = heightBasedWidth;
+        this.canvasHeight = containerHeight;
+      }
+
+      this.isResized = !doesScreenshotFillContainer;
+      if (this.isResized) {
+        this.isInitialSize = false;
+        // The flash animation is cut short but animationend is never called if
+        // the overlay is resized before animationend is called. This is because
+        // the flash scrim is hidden on resize.
+        this.onInitialFlashAnimationEnd();
+      }
+
+      // TODO(b/361798599): Since we now pass selectionOverlayRect, we can use
+      // polymer events to allow each client to resize their canvas once
+      // selectionOverlayRect changes. We should remove this and do the
+      // resizing via polymer techniques.
+      this.resizeSelectionCanvases(
+          this.selectionOverlayRect.width, this.selectionOverlayRect.height);
+
+      this.handleResizeRequestId = undefined;
+    });
   }
 
-  private handleSelectionElementsResize() {
-    const selectionOverlayBounds =
-        this.$.selectionOverlay.getBoundingClientRect();
-    const height = selectionOverlayBounds.height;
-    const width = selectionOverlayBounds.width;
+  private updateSelectionOverlayRect(): void {
+    // We use offsetXXX instead of call this.getBoundingClientRect() because
+    // offsetXXX is a cached DOM property, while this.getBoundingClientRect()
+    // recalculates the layout every time it is called. Since we have no
+    // scrolling, these calls should be equivalent.
+    this.selectionOverlayRect = new DOMRect(
+        this.$.selectionOverlay.offsetLeft, this.$.selectionOverlay.offsetTop,
+        this.$.selectionOverlay.offsetWidth,
+        this.$.selectionOverlay.offsetHeight);
+  }
 
-    this.$.regionSelectionLayer.setCanvasSizeTo(width, height);
-    this.$.postSelectionRenderer.setCanvasSizeTo(width, height);
-    this.$.objectSelectionLayer.setCanvasSizeTo(width, height);
+  private resizeSelectionCanvases(newWidth: number, newHeight: number) {
+    this.$.regionSelectionLayer.setCanvasSizeTo(newWidth, newHeight);
+    this.$.postSelectionRenderer.setCanvasSizeTo(newWidth, newHeight);
+    this.$.objectSelectionLayer.setCanvasSizeTo(newWidth, newHeight);
     if (this.useShimmerCanvas) {
-      this.$.overlayShimmerCanvas.setCanvasSizeTo(width, height);
+      this.$.overlayShimmerCanvas.setCanvasSizeTo(newWidth, newHeight);
     }
   }
 

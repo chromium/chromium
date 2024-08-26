@@ -66,7 +66,7 @@
     visibility: hidden;
   }
 
-  :host([is-screenshot-rendered]) #backgroundImageCanvas  {
+  :host([is-screenshot-rendered]) #backgroundImageCanvas {
     visibility: visible;
   }
 
@@ -307,17 +307,20 @@
     <!-- Other elements that need to be bounded to the image go here -->
     <div id="extraScrim"></div>
     <overlay-shimmer-canvas hidden$="[[!useShimmerCanvas]]" theme="[[theme]]"
-      id="overlayShimmerCanvas"></overlay-shimmer-canvas>
+        id="overlayShimmerCanvas"></overlay-shimmer-canvas>
     <overlay-shimmer hidden$="[[useShimmerCanvas]]" theme="[[theme]]"
-      id="overlayShimmer"></overlay-shimmer>
-    <post-selection-renderer id="postSelectionRenderer">
+        id="overlayShimmer"></overlay-shimmer>
+    <post-selection-renderer id="postSelectionRenderer"
+        selection-overlay-rect="[[selectionOverlayRect]]">
     </post-selection-renderer>
     <lens-object-layer id="objectSelectionLayer"
         screenshot-data-uri="[[screenshotDataUri]]" theme="[[theme]]">
     </lens-object-layer>
     <region-selection id="regionSelectionLayer" theme="[[theme]]"
-        screenshot-data-uri="[[screenshotDataUri]]"></region-selection>
-    <lens-text-layer id="textSelectionLayer"></lens-text-layer>
+        screenshot-data-uri="[[screenshotDataUri]]"
+        selection-overlay-rect="[[selectionOverlayRect]]"></region-selection>
+    <lens-text-layer id="textSelectionLayer"
+        selection-overlay-rect="[[selectionOverlayRect]]"></lens-text-layer>
   </div>
   <div id="initialFlashScrim"></div>
   <div id="contextMenuOverlay">

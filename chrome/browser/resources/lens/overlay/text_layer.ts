@@ -121,14 +121,7 @@ export class TextLayerElement extends PolymerElement {
         value: loadTimeData.getBoolean('enableDebuggingMode'),
         reflectToAttribute: true,
       },
-      parentWidth: {
-        type: Number,
-        value: 0,
-      },
-      parentHeight: {
-        type: Number,
-        value: 0,
-      },
+      selectionOverlayRect: Object,
     };
   }
 
@@ -144,10 +137,9 @@ export class TextLayerElement extends PolymerElement {
   private selectionEndIndex: number;
   // Whether the user is currently selecting text.
   private isSelectingText: boolean;
-  // The height and width of this element. Used to rerender word hit boxes when
-  // the text layer resizes.
-  private parentWidth: number;
-  private parentHeight: number;
+  // The bounds of the parent element. This is updated by the parent to avoid
+  // this class needing to call getBoundingClientRect()
+  private selectionOverlayRect: DOMRect;
 
   // An array that corresponds 1:1 to renderedWords, where lineNumbers[i] is the
   // line number for renderedWords[i]. In addition, the index at lineNumbers[i]
@@ -165,11 +157,6 @@ export class TextLayerElement extends PolymerElement {
   // The content language received from OnTextReceived.
   private contentLanguage: string;
   private eventTracker_: EventTracker = new EventTracker();
-  private resizeObserver: ResizeObserver = new ResizeObserver(() => {
-    const parentRect = this.getBoundingClientRect();
-    this.parentHeight = parentRect.height;
-    this.parentWidth = parentRect.width;
-  });
   private listenerIds: number[];
   // IoU threshold for finding words in region.
   private selectTextTriggerThreshold: number =
@@ -178,8 +165,6 @@ export class TextLayerElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-
-    this.resizeObserver.observe(this);
 
     this.eventTracker_.add(
         document, 'detect-text-in-region',
@@ -206,7 +191,6 @@ export class TextLayerElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
-    this.resizeObserver.unobserve(this);
     this.eventTracker_.removeAll();
   }
 
@@ -235,8 +219,8 @@ export class TextLayerElement extends PolymerElement {
   }
 
   private detectTextInRegion(box: CenterRotatedBox) {
-    const selection = findWordsInRegion(
-        this.renderedWords, box, this.getBoundingClientRect());
+    const selection =
+        findWordsInRegion(this.renderedWords, box, this.selectionOverlayRect);
     if (selection.iou < this.selectTextTriggerThreshold) {
       this.dispatchEvent(new CustomEvent(
           'hide-detected-text-context-menu', {bubbles: true, composed: true}));
@@ -291,7 +275,7 @@ export class TextLayerElement extends PolymerElement {
   }
 
   handleDragGesture(event: GestureEvent) {
-    const imageBounds = this.getBoundingClientRect();
+    const imageBounds = this.selectionOverlayRect;
     const normalizedX = (event.clientX - imageBounds.left) / imageBounds.width;
     const normalizedY = (event.clientY - imageBounds.top) / imageBounds.height;
 
@@ -583,12 +567,13 @@ export class TextLayerElement extends PolymerElement {
   }
 
   /** @return The CSS styles string for the given word. */
-  private getWordStyle(word: Word, parentWidth: number, parentHeight: number):
-      string {
+  private getWordStyle(word: Word): string {
     const horizontalLineMarginPercent =
-        loadTimeData.getInteger('verticalTextMarginPx') / parentWidth;
+        loadTimeData.getInteger('verticalTextMarginPx') /
+        this.selectionOverlayRect.height;
     const verticalLineMarginPercent =
-        loadTimeData.getInteger('horizontalTextMarginPx') / parentHeight;
+        loadTimeData.getInteger('horizontalTextMarginPx') /
+        this.selectionOverlayRect.width;
 
     // Words without bounding boxes are filtered out, so guaranteed that
     // geometry is not null.

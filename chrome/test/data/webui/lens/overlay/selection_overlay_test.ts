@@ -109,6 +109,13 @@ suite('SelectionOverlay', function() {
     assertEquals(expectedIsClick, isClick);
   }
 
+  async function waitForScreenshotResize(): Promise<void> {
+    // The first render triggers the ResizeObserver. The second runs the
+    // requestAnimationFrame callback queued by the ResizeObserver.
+    await waitAfterNextRender(selectionOverlayElement);
+    await waitAfterNextRender(selectionOverlayElement);
+  }
+
   // <if expr="not chromeos_lacros">
   test(
       'verify that starting a drag on a word does not trigger region search',
@@ -171,7 +178,7 @@ suite('SelectionOverlay', function() {
         selectionOverlayElement.style.height = '50px';
         // Resize observer does not trigger with flushTasks(), so we need to use
         // waitAfterNextRender() instead.
-        await waitAfterNextRender(selectionOverlayElement);
+        await waitForScreenshotResize();
         assertEquals(
             50,
             selectionOverlayElement.$.regionSelectionLayer.$
@@ -183,7 +190,7 @@ suite('SelectionOverlay', function() {
 
         selectionOverlayElement.style.width = '200px';
         selectionOverlayElement.style.height = '200px';
-        await waitAfterNextRender(selectionOverlayElement);
+        await waitForScreenshotResize();
         assertEquals(
             200,
             selectionOverlayElement.$.regionSelectionLayer.$
@@ -202,7 +209,7 @@ suite('SelectionOverlay', function() {
         selectionOverlayElement.style.height = '50px';
         // Resize observer does not trigger with flushTasks(), so we need to use
         // waitAfterNextRender() instead.
-        await waitAfterNextRender(selectionOverlayElement);
+        await waitForScreenshotResize();
         assertEquals(
             50,
             selectionOverlayElement.$.objectSelectionLayer.$
@@ -214,7 +221,7 @@ suite('SelectionOverlay', function() {
 
         selectionOverlayElement.style.width = '200px';
         selectionOverlayElement.style.height = '200px';
-        await waitAfterNextRender(selectionOverlayElement);
+        await waitForScreenshotResize();
         assertEquals(
             200,
             selectionOverlayElement.$.objectSelectionLayer.$
@@ -443,12 +450,12 @@ suite('SelectionOverlay', function() {
     testBrowserProxy.page.screenshotDataReceived(
         fakeScreenshotBitmap(100, 100));
     await waitForScreenshotRendered(selectionOverlayElement);
-    await waitAfterNextRender(selectionOverlayElement);
+    await waitForScreenshotResize();
 
     // Resize to smaller than the screenshot and verify margins.
     selectionOverlayElement.style.width = '90px';
     selectionOverlayElement.style.height = '90px';
-    await waitAfterNextRender(selectionOverlayElement);
+    await waitForScreenshotResize();
 
     // Size should now be 90px - 48px margin.
     let imageSize =
@@ -459,7 +466,7 @@ suite('SelectionOverlay', function() {
     // Resize back to same size as screenshot and verify no margins.
     selectionOverlayElement.style.width = '100px';
     selectionOverlayElement.style.height = '100px';
-    await waitAfterNextRender(selectionOverlayElement);
+    await waitForScreenshotResize();
 
     // Size should now be back to fullscreen.
     imageSize =
@@ -473,7 +480,7 @@ suite('SelectionOverlay', function() {
     selectionOverlayElement.style.width = '67px';
     selectionOverlayElement.style.height = '67px';
     window.devicePixelRatio = 1.5;
-    await waitAfterNextRender(selectionOverlayElement);
+    await waitForScreenshotResize();
 
     // Size should now be back to fullscreen.
     imageSize =

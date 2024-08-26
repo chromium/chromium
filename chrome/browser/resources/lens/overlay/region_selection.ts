@@ -65,6 +65,7 @@ export class RegionSelectionElement extends PolymerElement {
         type: Object,
         value: getFallbackTheme,
       },
+      selectionOverlayRect: Object,
     };
   }
 
@@ -77,6 +78,9 @@ export class RegionSelectionElement extends PolymerElement {
   private screenshotDataUri: string;
   // The overlay theme.
   private theme: OverlayTheme;
+  // The bounds of the parent element. This is updated by the parent to avoid
+  // this class needing to call getBoundingClientRect()
+  private selectionOverlayRect: DOMRect;
   // Shader hex colors.
   private shaderLayerColorHexes: string[];
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -159,7 +163,7 @@ export class RegionSelectionElement extends PolymerElement {
   }
 
   private renderBoundingBox(event: GestureEvent, idealCornerRadius = 24) {
-    const parentRect = this.getBoundingClientRect();
+    const parentRect = this.selectionOverlayRect;
 
     // Get the drag event coordinates relative to the canvas
     const relativeDragStart =
@@ -252,8 +256,7 @@ export class RegionSelectionElement extends PolymerElement {
    */
   private getNormalizedCenterRotatedBoxFromDrag(gesture: GestureEvent):
       CenterRotatedBox {
-    const parentRect = this.getBoundingClientRect();
-
+    const parentRect = this.selectionOverlayRect;
     // Get coordinates relative to the region selection bounds
     const relativeDragStart = getRelativeCoordinate(
         {x: gesture.startX, y: gesture.startY}, parentRect);
@@ -306,7 +309,7 @@ export class RegionSelectionElement extends PolymerElement {
 
   private getPostSelectionRegionFromDrag(gesture: GestureEvent):
       PostSelectionBoundingBox {
-    const parentRect = this.getBoundingClientRect();
+    const parentRect = this.selectionOverlayRect;
 
     // Get coordinates relative to the region selection bounds
     const relativeDragStart = getRelativeCoordinate(
@@ -333,7 +336,7 @@ export class RegionSelectionElement extends PolymerElement {
 
   private getNormalizedRectangleFromTap(gesture: GestureEvent):
       NormalizedRectangle {
-    const parentRect = this.getBoundingClientRect();
+    const parentRect = this.selectionOverlayRect;
     // The size of the canvas relative to the size of the viewport.
     const scaleFactor = Math.min(
         parentRect.height / window.innerHeight,

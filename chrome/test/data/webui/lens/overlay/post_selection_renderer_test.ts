@@ -50,6 +50,8 @@ suite('PostSelectionRenderer', () => {
         testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
 
     postSelectionRenderer = document.createElement('post-selection-renderer');
+    postSelectionRenderer.setSelectionOverlayRectForTesting(
+        new DOMRect(0, 0, TEST_WIDTH, TEST_HEIGHT));
 
     postSelectionRenderer.style.display = 'block';
     postSelectionRenderer.style.width = `${TEST_WIDTH}px`;

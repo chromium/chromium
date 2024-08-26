@@ -107,6 +107,10 @@ export class LensOverlayAppElement extends PolymerElement {
   private listenerIds: number[];
   private invocationTime: number = loadTimeData.getValue('invocationTime');
 
+  // The ID returned by requestAnimationFrame for the updateCursorPosition
+  // function.
+  private updateCursorPositionRequestId?: number;
+
   constructor() {
     super();
 
@@ -270,9 +274,25 @@ export class LensOverlayAppElement extends PolymerElement {
     this.$.copyToast.hide();
   }
 
+
+
   private updateCursorPosition(event: PointerEvent) {
-    this.$.cursorTooltip.style.transform =
-        `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+    // Cancel the previous animation frame to prevent the code from running more
+    // than once a frame.
+    if (this.updateCursorPositionRequestId) {
+      cancelAnimationFrame(this.updateCursorPositionRequestId);
+    }
+
+    // Exit early if the tooltip is not visible.
+    if (!this.$.cursorTooltip.isTooltipVisible()) {
+      return;
+    }
+
+    this.updateCursorPositionRequestId = requestAnimationFrame(() => {
+      this.$.cursorTooltip.style.transform =
+          `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      this.updateCursorPositionRequestId = undefined;
+    });
   }
 
   private skColorToHex_(skColor: SkColor): string {
