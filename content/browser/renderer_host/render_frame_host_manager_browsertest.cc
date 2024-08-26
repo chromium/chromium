@@ -64,6 +64,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1306,7 +1307,8 @@ class RenderFrameHostManagerSpoofingTest : public RenderFrameHostManagerTest {
   // but the spoofing tests synchronize execution using window title changes.
   void ExecuteScript(const ToRenderFrameHost& adapter, const char* script) {
     adapter.render_frame_host()->ExecuteJavaScriptForTests(
-        base::UTF8ToUTF16(script), base::NullCallback());
+        base::UTF8ToUTF16(script), base::NullCallback(),
+        ISOLATED_WORLD_ID_GLOBAL);
   }
 };
 

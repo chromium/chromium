@@ -43,6 +43,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -301,7 +302,8 @@ class BaseSelectFileDialogExtensionBrowserTest
         button_class + "\').click();");
     // The file selection handler code closes the dialog but does not return
     // control to JavaScript, so do not wait for the script return value.
-    frame_host->ExecuteJavaScriptForTests(script, base::NullCallback());
+    frame_host->ExecuteJavaScriptForTests(script, base::NullCallback(),
+                                          content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void CloseDialog(DialogButtonType button_type,

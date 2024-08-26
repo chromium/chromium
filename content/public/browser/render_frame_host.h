@@ -592,26 +592,29 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                  JavaScriptResultCallback callback) = 0;
 
   // This runs the JavaScript in an isolated world of the top of this frame's
-  // context.
+  // context. It is invalid to specify a `world_id` of
+  // `ISOLATED_WORLD_ID_GLOBAL`.
   virtual void ExecuteJavaScriptInIsolatedWorld(
       const std::u16string& javascript,
       JavaScriptResultCallback callback,
       int32_t world_id) = 0;
 
-  // This runs the JavaScript, but without restrictions. THIS IS ONLY FOR TESTS.
-  virtual void ExecuteJavaScriptForTests(
-      const std::u16string& javascript,
-      JavaScriptResultCallback callback,
-      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) = 0;
+  // This runs the JavaScript, but without restrictions. Specify a `world_id` of
+  // `ISOLATED_WORLD_ID_GLOBAL` to run the code in the global world. THIS IS
+  // ONLY FOR TESTS.
+  virtual void ExecuteJavaScriptForTests(const std::u16string& javascript,
+                                         JavaScriptResultCallback callback,
+                                         int32_t world_id) = 0;
 
-  // This runs the JavaScript, but without restrictions. THIS IS ONLY FOR TESTS.
-  // Unlike the method above, this one triggers a fake user activation
-  // notification to test functionalities that are gated by user
-  // activation.
+  // This runs the JavaScript, but without restrictions. Unlike the method
+  // above, this one triggers a fake user activation notification to test
+  // functionalities that are gated by user activation. Specify a `world_id` of
+  // `ISOLATED_WORLD_ID_GLOBAL` to run the code in the global world. THIS IS
+  // ONLY FOR TESTS.
   virtual void ExecuteJavaScriptWithUserGestureForTests(
       const std::u16string& javascript,
       JavaScriptResultCallback callback,
-      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) = 0;
+      int32_t world_id) = 0;
 
   // Tells the renderer to perform a given action on the plugin located at a
   // given location in its local view coordinate space.
@@ -959,7 +962,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // may happen can set `do_nothing_if_no_network_service_connection` to true
   // (this should be needed relatively rarely).
   virtual void FlushNetworkAndNavigationInterfacesForTesting(
-      bool do_nothing_if_no_network_service_connection = false) = 0;
+      bool do_nothing_if_no_network_service_connection) = 0;
 
   using PrepareForInnerWebContentsAttachCallback =
       base::OnceCallback<void(RenderFrameHost*)>;

@@ -127,6 +127,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
@@ -4550,8 +4551,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrossOriginDownloadNavigatesIframe) {
   std::u16string failed_title(u"Loaded as main frame");
   content::TitleWatcher title_watcher(web_contents, expected_title);
   title_watcher.AlsoWaitForTitle(failed_title);
-  render_frame_host->ExecuteJavaScriptForTests(u"runTest();",
-                                               base::NullCallback());
+  render_frame_host->ExecuteJavaScriptForTests(
+      u"runTest();", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   // Also verify that there's no download.

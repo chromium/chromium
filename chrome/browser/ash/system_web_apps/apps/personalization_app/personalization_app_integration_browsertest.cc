@@ -21,6 +21,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -119,7 +120,8 @@ void WaitForOpacityFalse(content::WebContents* web_contents) {
 
 void CallMakeTransparent(content::WebContents* web_contents) {
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"personalizationTestApi.makeTransparent()", base::DoNothing());
+      u"personalizationTestApi.makeTransparent()", base::DoNothing(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 }
 
 }  // namespace

@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/render_frame_host_android.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "ui/gfx/geometry/rect.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -62,9 +63,10 @@ void RenderFrameHostTestExt::ExecuteJavaScript(
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback));
   if (with_user_gesture) {
     render_frame_host_->ExecuteJavaScriptWithUserGestureForTests(
-        script, std::move(callback));
+        script, std::move(callback), ISOLATED_WORLD_ID_GLOBAL);
   } else {
-    render_frame_host_->ExecuteJavaScriptForTests(script, std::move(callback));
+    render_frame_host_->ExecuteJavaScriptForTests(script, std::move(callback),
+                                                  ISOLATED_WORLD_ID_GLOBAL);
   }
 }
 

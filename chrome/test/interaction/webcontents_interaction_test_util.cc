@@ -41,6 +41,7 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -183,9 +184,12 @@ void ExecuteScript(content::RenderFrameHost* host, const std::string& script) {
   if (host->GetLifecycleState() !=
       content::RenderFrameHost::LifecycleState::kPrerendering) {
     host->ExecuteJavaScriptWithUserGestureForTests(
-        script16, base::NullCallback());  // IN-TEST
+        script16, base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);  // IN-TEST
   } else {
-    host->ExecuteJavaScriptForTests(script16, base::NullCallback());  // IN-TEST
+    host->ExecuteJavaScriptForTests(
+        script16, base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);  // IN-TEST
   }
 }
 

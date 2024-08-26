@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -49,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(SelectPopupBrowsertest, SelectPopupHiddenTab) {
   first_rfh->ExecuteJavaScriptWithUserGestureForTests(
       u"document.querySelector('select').showPicker();"
       u"document.title = 'foo';",
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 
   // Wait for the popup to open
   ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"foo");
@@ -60,6 +61,6 @@ IN_PROC_BROWSER_TEST_F(SelectPopupBrowsertest, SelectPopupHiddenTab) {
   first_rfh->ExecuteJavaScriptWithUserGestureForTests(
       u"document.title = document.querySelector('select').matches(':open')"
       u" ? 'fail' : 'pass';",
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   ASSERT_EQ(finished_title_watcher.WaitAndGetTitle(), u"pass");
 }

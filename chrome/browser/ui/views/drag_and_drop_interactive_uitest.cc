@@ -42,6 +42,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -1860,7 +1861,7 @@ void DragAndDropBrowserTest::CrossSiteDrag_Step2(
     GetRightFrame()->ExecuteJavaScriptWithUserGestureForTests(
         base::UTF8ToUTF16(base::StringPrintf(
             "domAutomationController.send(%s);", expected_response.c_str())),
-        base::NullCallback());
+        base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 
     // Wait until our response comes back (it might be mixed with responses
     // carrying events that are sent by event_monitoring.js).
@@ -1973,7 +1974,7 @@ void DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step2(
             base::UTF8ToUTF16(
                 base::StringPrintf("domAutomationController.send(%s);",
                                    expected_response.c_str())),
-            base::NullCallback());
+            base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 
     // Wait until our response comes back (it might be mixed with responses
     // carrying events that are sent by event_monitoring.js).

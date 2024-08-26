@@ -12,6 +12,7 @@
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/system_storage/storage_api_test_util.h"
 #include "extensions/browser/extension_host.h"
@@ -63,7 +64,8 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
                                const std::string& ok_message) {
     ExtensionTestMessageListener listener(ok_message);
     frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(js_command),
-                                     base::NullCallback());
+                                     base::NullCallback(),
+                                     content::ISOLATED_WORLD_ID_GLOBAL);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
 

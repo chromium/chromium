@@ -19,6 +19,7 @@
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/web_app_system_media_controls_manager.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -91,7 +92,7 @@ class WebAppSystemMediaControlsBrowserTest
     shell->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(
             JsReplace("document.getElementById($1).play();", id)),
-        base::NullCallback());
+        base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
     WaitForStart(shell);
   }
 

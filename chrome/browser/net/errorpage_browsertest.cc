@@ -59,6 +59,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -415,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
   // not send that notification.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.getElementById('reload-button').click();",
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   nav_observer.Wait();
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 }
@@ -436,7 +437,8 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest,
   // Do a same-document navigation on the error page, which should not result
   // in a new navigation.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.location='#';", base::NullCallback());
+      u"document.location='#';", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   content::WaitForLoadStop(web_contents);
   // Page being displayed should not change.
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
@@ -448,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest,
   // not send that notification.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.getElementById('reload-button').click();",
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   nav_observer2.Wait();
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 }
@@ -528,7 +530,8 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
     TestFailProvisionalLoadObserver fail_observer(wc);
     content::LoadStopObserver load_observer(wc);
     wc->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(script), base::NullCallback());
+        base::ASCIIToUTF16(script), base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     load_observer.Wait();
 
     // Ensure we saw the expected failure.
@@ -547,7 +550,8 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
   {
     content::LoadStopObserver load_observer(wc);
     wc->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(script), base::NullCallback());
+        base::ASCIIToUTF16(script), base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     load_observer.Wait();
   }
 
@@ -557,7 +561,8 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
     TestFailProvisionalLoadObserver fail_observer(wc);
     content::LoadStopObserver load_observer(wc);
     wc->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(script), base::NullCallback());
+        base::ASCIIToUTF16(script), base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     load_observer.Wait();
 
     EXPECT_EQ(fail_url, fail_observer.fail_url());
@@ -760,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
   content::TestNavigationObserver nav_observer(web_contents, 1);
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.getElementById('reload-button').click();",
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   nav_observer.Wait();
   EXPECT_FALSE(IsDisplayingText(
       browser(), l10n_util::GetStringUTF8(
@@ -790,7 +795,8 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
   // Same-document navigation on an error page should not interrupt the
   // scheduled auto-reload which should still be pending on the WebContents.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.location='#';", base::NullCallback());
+      u"document.location='#';", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 
   // Wait for the second auto reload to happen. It will succeed and update the
   // WebContents' title.

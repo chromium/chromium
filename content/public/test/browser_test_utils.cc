@@ -86,6 +86,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
@@ -871,7 +872,7 @@ void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
       [trigger_user_activation](RenderFrameHost* render_frame_host) {
         if (trigger_user_activation) {
           render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-              std::u16string(), base::NullCallback());
+              std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
         }
 
         // Disable the hang monitor, otherwise there will be a race between
@@ -1533,14 +1534,16 @@ void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
     ExecuteScriptAsyncWithoutUserGesture(adapter, script);
   } else {
     adapter.render_frame_host()->ExecuteJavaScriptWithUserGestureForTests(
-        base::UTF8ToUTF16(script), base::NullCallback());
+        base::UTF8ToUTF16(script), base::NullCallback(),
+        ISOLATED_WORLD_ID_GLOBAL);
   }
 }
 
 void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
                                           std::string_view script) {
   adapter.render_frame_host()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
+      base::UTF8ToUTF16(script), base::NullCallback(),
+      ISOLATED_WORLD_ID_GLOBAL);
 }
 
 // EvalJsResult methods.

@@ -117,6 +117,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -263,10 +264,10 @@ bool Click(Browser* browser, const std::string& node_id) {
   // We don't use EvalJs for this one, since clicking
   // the button/link may navigate away before the injected javascript can
   // reply, hanging the test.
-  rfh->ExecuteJavaScriptForTests(u"document.getElementById('" +
-                                     base::ASCIIToUTF16(node_id) +
-                                     u"').click();\n",
-                                 base::NullCallback());
+  rfh->ExecuteJavaScriptForTests(
+      u"document.getElementById('" + base::ASCIIToUTF16(node_id) +
+          u"').click();\n",
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   return true;
 }
 

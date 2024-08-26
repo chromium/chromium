@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -92,7 +93,8 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
 
   void ExecuteScript(const char* script) {
     shell()->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(script), base::NullCallback());
+        base::ASCIIToUTF16(script), base::NullCallback(),
+        ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void LoadInitialAccessibilityTreeFromHtml(const std::string& html) {

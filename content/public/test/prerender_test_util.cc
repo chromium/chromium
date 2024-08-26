@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -571,7 +572,7 @@ void PrerenderTestHelper::AddPrerendersAsync(
     // because some test pages have ContentSecurityPolicy and EvalJs cannot work
     // with it. See the quick migration guide for EvalJs for more information.
     GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::UTF8ToUTF16(script), base::NullCallback());
+        base::UTF8ToUTF16(script), base::NullCallback(), world_id);
   } else {
     GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
         base::UTF8ToUTF16(script), base::NullCallback(), world_id);
@@ -587,7 +588,8 @@ void PrerenderTestHelper::AddPrefetchAsync(const GURL& prefetch_url) {
   // because some test pages have ContentSecurityPolicy and EvalJs cannot work
   // with it. See the quick migration guide for EvalJs for more information.
   GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
+      base::UTF8ToUTF16(script), base::NullCallback(),
+      ISOLATED_WORLD_ID_GLOBAL);
 }
 
 std::unique_ptr<PrerenderHandle>

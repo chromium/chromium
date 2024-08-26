@@ -51,6 +51,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -498,13 +499,15 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ClosableAfterNavigation) {
   // Navigate it elsewhere.
   content::TestNavigationObserver nav_observer(popup);
   popup->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"location.href = '/empty.html'", base::NullCallback());
+      u"location.href = '/empty.html'", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   nav_observer.Wait();
 
   // Have it close itself.
   CloseObserver close_observer(popup);
-  popup->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"window.close()",
-                                                          base::NullCallback());
+  popup->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"window.close()", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   close_observer.Wait();
 }
 

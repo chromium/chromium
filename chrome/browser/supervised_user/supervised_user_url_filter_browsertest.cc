@@ -49,6 +49,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -97,13 +98,14 @@ class SupervisedUserURLFilterTestBase : public MixinBasedInProcessBrowserTest {
   void SendAccessRequest(WebContents* tab) {
     tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"supervisedUserErrorPageController.requestPermission()",
-        base::NullCallback());
+        base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
     return;
   }
 
   void GoBack(WebContents* tab) {
     tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"supervisedUserErrorPageController.goBack()", base::NullCallback());
+        u"supervisedUserErrorPageController.goBack()", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     return;
   }
 

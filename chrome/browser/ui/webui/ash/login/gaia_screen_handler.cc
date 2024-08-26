@@ -112,6 +112,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -1186,7 +1187,8 @@ void GaiaScreenHandler::SubmitLoginFormForTest() {
   // clang-format on
 
   frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(code),
-                                   base::NullCallback());
+                                   base::NullCallback(),
+                                   content::ISOLATED_WORLD_ID_GLOBAL);
   CallExternalAPI("clickPrimaryButtonForTesting");
 
   if (!test_services_.empty()) {
@@ -1197,13 +1199,15 @@ void GaiaScreenHandler::SubmitLoginFormForTest() {
     code = "document.getElementById('services').value = \"" + escaped_services +
            "\";";
     frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(code),
-                                     base::NullCallback());
+                                     base::NullCallback(),
+                                     content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   if (!test_pass_.empty()) {
     code = "document.getElementById('password').value = '" + test_pass_ + "';";
     frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(code),
-                                     base::NullCallback());
+                                     base::NullCallback(),
+                                     content::ISOLATED_WORLD_ID_GLOBAL);
     CallExternalAPI("clickPrimaryButtonForTesting");
   }
 

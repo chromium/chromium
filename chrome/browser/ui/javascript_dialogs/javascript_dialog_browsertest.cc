@@ -23,6 +23,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -59,8 +60,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, ReloadDoesntHang) {
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"alert()",
-                                                        base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"alert()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   runner->Run();
 
   // Try reloading.
@@ -82,7 +83,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WebContentsAddedObserver new_wc_observer;
   tab1->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"window.open('about:blank');", base::NullCallback());
+      u"window.open('about:blank');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   content::WebContents* tab2 = new_wc_observer.GetWebContents();
   ASSERT_NE(tab1, tab2);
   ASSERT_EQ(tab1->GetPrimaryMainFrame()->GetProcess(),
@@ -94,8 +96,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   javascript_dialogs::TabModalDialogManager* js_helper2 =
       javascript_dialogs::TabModalDialogManager::FromWebContents(tab2);
   js_helper2->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab2->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"alert()",
-                                                         base::NullCallback());
+  tab2->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"alert()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   runner->Run();
 
   // Tab two is closed while the dialog is up.
@@ -126,7 +128,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());
   tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
+      base::UTF8ToUTF16(script), base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   runner->Run();
 
   // The tab is closed while the dialog is up.

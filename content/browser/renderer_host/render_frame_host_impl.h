@@ -472,14 +472,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ExecuteJavaScriptInIsolatedWorld(const std::u16string& javascript,
                                         JavaScriptResultCallback callback,
                                         int32_t world_id) override;
-  void ExecuteJavaScriptForTests(
-      const std::u16string& javascript,
-      JavaScriptResultCallback callback,
-      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) override;
+  void ExecuteJavaScriptForTests(const std::u16string& javascript,
+                                 JavaScriptResultCallback callback,
+                                 int32_t world_id) override;
   void ExecuteJavaScriptWithUserGestureForTests(
       const std::u16string& javascript,
       JavaScriptResultCallback callback,
-      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) override;
+      int32_t world_id) override;
   void ExecutePluginActionAtLocalLocation(
       const gfx::Point& location,
       blink::mojom::PluginActionType plugin_action) override;
@@ -536,7 +535,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool push_to_renderer_now) override;
   bool IsSandboxed(network::mojom::WebSandboxFlags flags) override;
   void FlushNetworkAndNavigationInterfacesForTesting(
-      bool do_nothing_if_no_network_service_connection = false) override;
+      bool do_nothing_if_no_network_service_connection) override;
   void PrepareForInnerWebContentsAttach(
       PrepareForInnerWebContentsAttachCallback callback) override;
   blink::FrameOwnerElementType GetFrameOwnerElementType() override;

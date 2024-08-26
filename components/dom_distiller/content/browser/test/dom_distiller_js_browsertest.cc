@@ -20,6 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
@@ -153,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(DomDistillerJsTest, MAYBE_RunJsTests) {
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(kRunJsTestsJs),
       base::BindOnce(&DomDistillerJsTest::OnJsTestExecutionDone,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   run_loop.Run();
 
   // Convert to dictionary and parse the results.

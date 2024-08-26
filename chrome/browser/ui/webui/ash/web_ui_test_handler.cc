@@ -13,6 +13,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,8 +33,8 @@ void WebUITestHandler::PreloadJavaScript(
 }
 
 void WebUITestHandler::RunJavaScript(const std::u16string& js_text) {
-  GetRenderFrameHostForTest()->ExecuteJavaScriptForTests(js_text,
-                                                         base::NullCallback());
+  GetRenderFrameHostForTest()->ExecuteJavaScriptForTests(
+      js_text, base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 }
 
 bool WebUITestHandler::RunJavaScriptTestWithResult(
@@ -41,8 +42,10 @@ bool WebUITestHandler::RunJavaScriptTestWithResult(
   test_succeeded_ = false;
   run_test_succeeded_ = false;
   GetRenderFrameHostForTest()->ExecuteJavaScriptForTests(
-      js_text, base::BindOnce(&WebUITestHandler::JavaScriptComplete,
-                              base::Unretained(this)));
+      js_text,
+      base::BindOnce(&WebUITestHandler::JavaScriptComplete,
+                     base::Unretained(this)),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   return WaitForResult();
 }
 

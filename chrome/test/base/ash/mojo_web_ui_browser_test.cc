@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -141,5 +142,6 @@ void MojoWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_WEBUI_CHROMEOS_TEST_WEB_UI_TEST_MOJOM_LITE_JS);
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(test_mojo_lite_js), base::NullCallback());
+      base::UTF8ToUTF16(test_mojo_lite_js), base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 }

@@ -34,6 +34,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -101,7 +102,8 @@ IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
       "window.domAutomationController.send(addIFrame(%d, \"%s\"));",
       iframe_id, url.spec().c_str()));
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
+      base::UTF8ToUTF16(script), base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 
   quit_closure_ = run_loop.QuitWhenIdleClosure();
   run_loop.Run();

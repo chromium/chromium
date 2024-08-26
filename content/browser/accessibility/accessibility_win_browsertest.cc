@@ -41,6 +41,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -4721,8 +4722,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // The beforeunload dialog won't be shown unless the page has at
   // least one user gesture on it.
   auto* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
-  main_frame->ExecuteJavaScriptWithUserGestureForTests(std::u16string(),
-                                                       base::NullCallback());
+  main_frame->ExecuteJavaScriptWithUserGestureForTests(
+      std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
 
   // Trigger a reload here, which will get cancelled.
   AppModalDialogWaiter dialog_waiter(shell());

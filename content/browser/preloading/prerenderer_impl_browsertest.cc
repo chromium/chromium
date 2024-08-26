@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -220,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestNoPrefetchAhead,
   ASSERT_TRUE(rfh);
   const char* script = "navigator.getGamepads();";
   rfh->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script),
-                                 base::NullCallback());
+                                 base::NullCallback(),
+                                 ISOLATED_WORLD_ID_GLOBAL);
   observer.WaitForDestroyed();
 
   prerender_helper().NavigatePrimaryPage(prerender_url);
@@ -324,7 +326,8 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   ASSERT_TRUE(rfh);
   const char* script = "navigator.getGamepads();";
   rfh->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script),
-                                 base::NullCallback());
+                                 base::NullCallback(),
+                                 ISOLATED_WORLD_ID_GLOBAL);
   observer.WaitForDestroyed();
 
   prerender_helper().NavigatePrimaryPage(prerender_url);

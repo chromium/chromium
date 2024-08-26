@@ -16,6 +16,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -80,7 +81,8 @@ void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
     // No callback requested.
     web_contents->GetPrimaryMainFrame()
         ->ExecuteJavaScriptWithUserGestureForTests(
-            ConvertJavaStringToUTF16(env, script), base::NullCallback());
+            ConvertJavaStringToUTF16(env, script), base::NullCallback(),
+            ISOLATED_WORLD_ID_GLOBAL);
     return;
   }
 
@@ -91,7 +93,8 @@ void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
 
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       ConvertJavaStringToUTF16(env, script),
-      base::BindOnce(&JavaScriptResultCallback, std::move(j_callback)));
+      base::BindOnce(&JavaScriptResultCallback, std::move(j_callback)),
+      ISOLATED_WORLD_ID_GLOBAL);
 }
 
 void JNI_WebContentsUtils_CrashTab(JNIEnv* env,

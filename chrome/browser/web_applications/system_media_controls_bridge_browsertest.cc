@@ -19,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
@@ -77,7 +78,7 @@ class SystemMediaControlsBridgeBrowsertest
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(content::JsReplace(
             "document.getElementById($1).play();", media_id)),
-        base::NullCallback());
+        base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 
     // Wait for start
     content::MediaStartStopObserver observer(

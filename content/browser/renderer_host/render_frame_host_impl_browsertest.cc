@@ -64,6 +64,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -369,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // dropped. In https://crbug.com/1154852, this causes future messages sent via
   // GetAssociatedLocalFrame to also be dropped.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"'foo'", base::NullCallback());
+      u"'foo'", base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
 
   // Navigating will create the RenderFrame.
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -666,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [](content::RenderFrameHostImpl* render_frame_host) {
         render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-            std::u16string(), base::NullCallback());
+            std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
       });
 
   // Force a process switch by going to a privileged page. The beforeunload
@@ -718,8 +719,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // should be a dialog. If there is no dialog, the call to Wait will hang.
   web_contents()
       ->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(std::u16string(),
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
   web_contents()->GetController().Reload(ReloadType::NORMAL, false);
   dialog_manager.Wait();
 
@@ -3437,8 +3438,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // without any dialog being seen.
   web_contents()
       ->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(std::u16string(),
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
   web_contents()->GetPrimaryMainFrame()->DispatchBeforeUnload(
       RenderFrameHostImpl::BeforeUnloadType::DISCARD, false);
   dialog_manager.Wait();
@@ -3468,13 +3469,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // without any dialog being seen.
   web_contents()
       ->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(std::u16string(),
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
 
   // Launch an alert javascript dialog. This pending dialog should block a
   // subsequent discarding before unload request.
   web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"setTimeout(function(){alert('hello');}, 10);", base::NullCallback());
+      u"setTimeout(function(){alert('hello');}, 10);", base::NullCallback(),
+      ISOLATED_WORLD_ID_GLOBAL);
   dialog_manager.Wait();
   EXPECT_EQ(0, dialog_manager.num_beforeunload_dialogs_seen());
   EXPECT_EQ(0, dialog_manager.num_beforeunload_fired_seen());

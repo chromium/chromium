@@ -33,6 +33,7 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -535,7 +536,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesPrerenderingBrowserTest,
   base::RunLoop run_loop;
   permissions::PermissionRequestObserver observer(web_contents());
   prerender_rfh->ExecuteJavaScriptForTests(
-      u"doGetUserMedia({audio: true, video: true});", base::NullCallback());
+      u"doGetUserMedia({audio: true, video: true});", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 
   // The prerendering page should not show a permission request's bubble UI.
   EXPECT_FALSE(observer.request_shown());

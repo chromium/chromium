@@ -57,6 +57,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -12733,7 +12734,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     root->render_manager()
         ->current_frame_host()
         ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(script),
-                                                   base::NullCallback());
+                                                   base::NullCallback(),
+                                                   ISOLATED_WORLD_ID_GLOBAL);
     EXPECT_FALSE(shell()->web_contents()->IsLoading());
     shell()->web_contents()->GetController().LoadOriginalRequestURL();
     EXPECT_TRUE(shell()->web_contents()->IsLoading());

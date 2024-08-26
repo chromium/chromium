@@ -46,6 +46,7 @@
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
@@ -311,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppTimeOfDayBrowserTest,
     WallpaperChangedWaiter waiter(loop.QuitClosure());
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"personalizationTestApi.selectTimeOfDayWallpaper();",
-        base::DoNothing());
+        base::DoNothing(), content::ISOLATED_WORLD_ID_GLOBAL);
     loop.Run();
   }
 

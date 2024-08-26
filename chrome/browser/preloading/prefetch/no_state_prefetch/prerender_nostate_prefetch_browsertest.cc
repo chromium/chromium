@@ -63,6 +63,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -457,13 +458,15 @@ class NoStatePrefetchBrowserTest
     if (new_web_contents) {
       NewTabNavigationOrSwapObserver observer;
       render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-          base::ASCIIToUTF16(javascript), base::NullCallback());
+          base::ASCIIToUTF16(javascript), base::NullCallback(),
+          content::ISOLATED_WORLD_ID_GLOBAL);
       observer.Wait();
     } else {
       NavigationOrSwapObserver observer(current_browser()->tab_strip_model(),
                                         web_contents);
       render_frame_host->ExecuteJavaScriptForTests(
-          base::ASCIIToUTF16(javascript), base::NullCallback());
+          base::ASCIIToUTF16(javascript), base::NullCallback(),
+          content::ISOLATED_WORLD_ID_GLOBAL);
       observer.Wait();
     }
   }

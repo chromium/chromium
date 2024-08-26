@@ -72,6 +72,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -2917,7 +2918,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // gesture to allow dialogs.
   wc->GetPrimaryMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
   wc->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string(), base::NullCallback());
+      std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
   script = "window.onbeforeunload=function(e){ return 'x' };";
   EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.WillWaitForDialog();
