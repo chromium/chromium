@@ -78,6 +78,7 @@
     justify-content: flex-start;
     line-height: 16px;
     margin-top: 20px;
+    max-width: 566px;
   }
 
   #footer a {
@@ -125,7 +126,7 @@
   </horizontal-carousel>
 </div>
 <div id="footer" hidden$="[[showEmptyState_]]">
-  <div id="disclaimer">$i18n{experimentalFeatureDisclaimer}
+  <div id="disclaimer">[[getDisclaimerText_()]]
     <a id="learnMoreLink" href="$i18n{compareLearnMoreUrl}"
         target="_blank" aria-label="$i18n{learnMoreA11yLabel}">
       $i18n{learnMore}

@@ -538,7 +538,7 @@
     Delete comparison table
   </message>
   <message name="IDS_COMPARE_DISCLAIMER" desc="Disclaimer text shown in tab compare UIs.">
-    This is an experimental feature and won't always get it right.
+    The tab titles and URLs of pages you add to the table are sent to Google, saved to your account <ph name="EMAIL">$1<ex>test@gmail.com</ex></ph>, and may be seen by human reviewers to improve this feature.
   </message>
   <message name="IDS_COMPARE_EMPTY_PRODUCT_SELECTOR" desc="The text displayed in the product selector when there is no currently selected product.">
     Add a tab
@@ -561,8 +561,11 @@
   <message name="IDS_COMPARE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Compare feedback form.">
     Send feedback for Compare
   </message>
-  <message name="IDS_COMPARE_LEARN_MORE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about tab compare.">
-    Learn more about Compare.
+  <message name="IDS_COMPARE_LEARN_MORE" desc="Text for a link in the compare page that links to a help article about tab compare.">
+    Learn about comparison tables
+  </message>
+  <message name="IDS_COMPARE_LEARN_MORE_A11Y_LABEL" desc="Accessibility label for a link that links to a help article about tab compare.">
+    Learn about comparison tables
   </message>
   <message name="IDS_COMPARE_OFFLINE_TOAST_MESSAGE" desc="The message that shows when tab compare is offline.">
     Check your connection and try again.

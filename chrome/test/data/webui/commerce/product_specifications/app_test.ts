@@ -1314,19 +1314,33 @@ suite('AppTest', () => {
     assertTrue(isVisible(feedbackButtons));
   });
 
-  test('shows learn more link', async () => {
+  test('shows disclaimer and learn more link', async () => {
+    const testEmail = 'test@gmail.com';
+    loadTimeData.overrideValues({userEmail: testEmail});
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
     });
     createAppElementWithPromiseValues(promiseValues);
     const learnMoreLink =
         appElement.shadowRoot!.querySelector('#learnMoreLink');
+    const disclaimer = appElement.shadowRoot!.querySelector('#disclaimer');
 
     assertTrue(!!learnMoreLink);
     assertTrue(isVisible(learnMoreLink));
     assertEquals(
         loadTimeData.getString('compareLearnMoreUrl'),
         learnMoreLink!.getAttribute('href'));
+
+    assertTrue(!!disclaimer);
+    assertTrue(!!disclaimer.textContent);
+    // Remove the link part before verifying the string to avoid verifying the
+    // spaces due to the templated string.
+    const disclaimerText =
+        disclaimer!.textContent!.replace(learnMoreLink!.textContent!, '')
+            .trim();
+    assertEquals(
+        loadTimeData.getStringF('experimentalFeatureDisclaimer', testEmail),
+        disclaimerText);
   });
 
   test('updates on selection change', async () => {

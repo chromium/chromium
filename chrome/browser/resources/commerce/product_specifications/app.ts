@@ -572,6 +572,11 @@ export class ProductSpecificationsElement extends PolymerElement {
         return;
     }
   }
+
+  private getDisclaimerText_(): string {
+    return loadTimeData.getStringF(
+        'experimentalFeatureDisclaimer', loadTimeData.getString('userEmail'));
+  }
 }
 
 declare global {

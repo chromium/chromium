@@ -101,7 +101,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"emptyStateDescription", IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION},
       {"emptyStateTitle", IDS_COMPARE_EMPTY_STATE_TITLE},
       {"experimentalFeatureDisclaimer", IDS_COMPARE_DISCLAIMER},
-      {"learnMore", IDS_LEARN_MORE},
+      {"learnMore", IDS_COMPARE_LEARN_MORE},
       {"learnMoreA11yLabel", IDS_COMPARE_LEARN_MORE_A11Y_LABEL},
       {"offlineMessage", IDS_COMPARE_OFFLINE_TOAST_MESSAGE},
       {"pageTitle", IDS_COMPARE_DEFAULT_PAGE_TITLE},
