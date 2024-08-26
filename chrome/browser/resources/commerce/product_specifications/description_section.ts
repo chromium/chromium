@@ -5,6 +5,7 @@
 import './description_citation.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './description_section.css.js';
 import {getHtml} from './description_section.html.js';
@@ -40,9 +41,17 @@ export class DescriptionSectionElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    this.citationCount = (this.description.summary || [])
+                             .map(summary => summary.urls.length)
+                             .reduce((count, current) => count + current, 0);
+    super.willUpdate(changedProperties);
+  }
+
   static override get properties() {
     return {
       description: {type: Object},
+      productName: {type: String},
     };
   }
 
@@ -50,6 +59,8 @@ export class DescriptionSectionElement extends CrLitElement {
     attributes: [],
     summary: [],
   };
+  productName: string = '';
+  citationCount: number = 0;
 
   protected computeCitationIndex_(summaryIndex: number, urlIndex: number):
       number {

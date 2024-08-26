@@ -5,6 +5,7 @@
 import 'chrome://compare/description_section.js';
 
 import type {DescriptionSectionElement, ProductDescription} from 'chrome://compare/description_section.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -61,7 +62,11 @@ suite('DescriptionSectionTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     descriptionSectionElement = document.createElement('description-section');
     descriptionSectionElement.description = description;
+    descriptionSectionElement.productName = 'product';
     document.body.appendChild(descriptionSectionElement);
+    loadTimeData.overrideValues({
+      citationA11yLabel: 'Citation $1 of $2, $3, $4',
+    });
     await flushTasks();
   });
 
@@ -85,6 +90,16 @@ suite('DescriptionSectionTest', () => {
     assertEquals('1', citations[0]!.getAttribute('index'));
     assertEquals('2', citations[1]!.getAttribute('index'));
     assertEquals('3', citations[2]!.getAttribute('index'));
+
+    assertEquals(
+        'Citation 1 of 3, product, example.com',
+        citations[0]!.$.citation.getAttribute('aria-label'));
+    assertEquals(
+        'Citation 2 of 3, product, example.com',
+        citations[1]!.$.citation.getAttribute('aria-label'));
+    assertEquals(
+        'Citation 3 of 3, product, example.com',
+        citations[2]!.$.citation.getAttribute('aria-label'));
   });
 
   test('attributes are listed correctly', async () => {

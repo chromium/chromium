@@ -93,6 +93,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"disclosureLearnMore", IDS_COMPARE_DISCLOSURE_LEARN_MORE},
 
       // Main UI strings:
+      {"citationA11yLabel", IDS_COMPARE_CITATION_A11Y_LABEL},
       {"delete", IDS_COMPARE_DELETE},
       {"defaultTableTitle", IDS_COMPARE_DEFAULT_TABLE_TITLE},
       {"emptyMenu", IDS_COMPARE_EMPTY_SELECTION_MENU},
@@ -111,6 +112,8 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"renameGroup", IDS_COMPARE_RENAME},
       {"seeAll", IDS_COMPARE_SEE_ALL},
       {"suggestedTabs", IDS_COMPARE_SUGGESTIONS_SECTION},
+      {"tableMenuA11yLabel", IDS_COMPARE_TABLE_MENU_A11Y_LABEL},
+      {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
   };
