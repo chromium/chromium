@@ -47,6 +47,10 @@
 // Returns the navigation bar's title for a given menu page.
 + (NSString*)navigationBarTitleForPage:(CustomizationMenuPage)page;
 
+// Returns the accessibility identifier for the collection view of a menu page.
++ (NSString*)accessibilityIdentifierForPageCollection:
+    (CustomizationMenuPage)page;
+
 // Returns `YES` if the given type supports navigation to a submenu.
 + (BOOL)doesTypeHaveSubmenu:(CustomizationToggleType)type;
 

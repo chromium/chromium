@@ -22,6 +22,9 @@
 - (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page
                               animated:(BOOL)animated;
 
+// Dismisses the customization menu.
+- (void)dismissCustomizationMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_COORDINATOR_H_

@@ -226,6 +226,20 @@
   }
 }
 
++ (NSString*)accessibilityIdentifierForPageCollection:
+    (CustomizationMenuPage)page {
+  switch (page) {
+    case CustomizationMenuPage::kMain:
+      return kCustomizationCollectionMainIdentifier;
+    case CustomizationMenuPage::kMagicStack:
+      return kCustomizationCollectionMagicStackIdentifier;
+    case CustomizationMenuPage::kDiscover:
+      return kCustomizationCollectionDiscoverIdentifier;
+    case CustomizationMenuPage::kUnknown:
+      NOTREACHED();
+  }
+}
+
 + (BOOL)doesTypeHaveSubmenu:(CustomizationToggleType)type {
   return [HomeCustomizationHelper menuPageForToggleType:type] !=
          CustomizationMenuPage::kUnknown;

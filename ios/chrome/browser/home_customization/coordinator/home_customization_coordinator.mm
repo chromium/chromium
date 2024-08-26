@@ -22,6 +22,9 @@ namespace {
 // and 3 cells.
 const CGFloat kInitialDetentHeight = 350;
 
+// The corner radius of the customization menu sheet.
+CGFloat const kSheetCornerRadius = 30;
+
 }  // namespace
 
 @interface HomeCustomizationCoordinator () <
@@ -112,10 +115,12 @@ const CGFloat kInitialDetentHeight = 350;
                             resolver:detentResolver];
   presentationController.detents = @[
     initialDetent,
-    UISheetPresentationControllerDetent.largeDetent,
   ];
   presentationController.selectedDetentIdentifier =
       kBottomSheetDetentIdentifier;
+  presentationController.largestUndimmedDetentIdentifier =
+      kBottomSheetDetentIdentifier;
+  presentationController.preferredCornerRadius = kSheetCornerRadius;
 
   // Present the navigation controller.
   [self.baseViewController presentViewController:self.navigationController
@@ -126,6 +131,13 @@ const CGFloat kInitialDetentHeight = 350;
   if (page != CustomizationMenuPage::kMain) {
     [self navigateToPage:page animated:animated];
   }
+}
+
+- (void)dismissCustomizationMenu {
+  [self.mainViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  [self.delegate handleCustomizationMenuDismissed:self];
 }
 
 #pragma mark - HomeCustomizationNavigationDelegate
@@ -143,7 +155,6 @@ const CGFloat kInitialDetentHeight = 350;
       [self.mediator configureMagicStackPageData];
       break;
     case CustomizationMenuPage::kDiscover:
-      [self expandMenu];
       [self.navigationController pushViewController:self.discoverViewController
                                            animated:animated];
       [self.mediator configureDiscoverPageData];
@@ -166,18 +177,6 @@ const CGFloat kInitialDetentHeight = 350;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.delegate handleCustomizationMenuDismissed:self];
-}
-
-#pragma mark - Private
-
-// Expands the menu to a large detent.
-- (void)expandMenu {
-  UISheetPresentationController* presentationController =
-      self.navigationController.sheetPresentationController;
-  [presentationController animateChanges:^{
-    presentationController.selectedDetentIdentifier =
-        UISheetPresentationControllerDetentIdentifierLarge;
-  }];
 }
 
 @end
