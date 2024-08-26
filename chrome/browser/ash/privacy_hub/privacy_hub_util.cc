@@ -329,7 +329,7 @@ bool ContentBlocked(ContentType type) {
     }
     case ContentType::GEOLOCATION: {
       if (!features::IsCrosPrivacyHubLocationEnabled()) {
-        return true;
+        return false;  // content not blocked as geo blocking not supported.
       }
       auto* const controller = GeolocationPrivacySwitchController::Get();
       CHECK(controller);
