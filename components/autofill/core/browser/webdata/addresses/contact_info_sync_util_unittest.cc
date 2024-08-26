@@ -845,9 +845,9 @@ TEST_P(ContactInfoSyncUtilTest, CreateAutofillProfileFromContactInfoSpecifics) {
       GetContactInfoSpecificsForCountry(GetParam());
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
 
-  std::unique_ptr<AutofillProfile> converted_profile =
+  std::optional<AutofillProfile> converted_profile =
       CreateAutofillProfileFromContactInfoSpecifics(specifics);
-  ASSERT_TRUE(converted_profile != nullptr);
+  ASSERT_TRUE(converted_profile.has_value());
   EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(*converted_profile));
 }
 
@@ -856,7 +856,8 @@ TEST_F(ContactInfoSyncUtilTest,
        CreateAutofillProfileFromContactInfoSpecifics_InvalidGUID) {
   ContactInfoSpecifics specifics;
   specifics.set_guid(kInvalidGuid);
-  EXPECT_EQ(CreateAutofillProfileFromContactInfoSpecifics(specifics), nullptr);
+  EXPECT_FALSE(
+      CreateAutofillProfileFromContactInfoSpecifics(specifics).has_value());
 }
 
 // Tests that if a token's `value` changes by external means, its observations
@@ -883,9 +884,9 @@ TEST_F(ContactInfoSyncUtilTest, ObservationResetting) {
 
   // Simulate syncing the `specifics` back to Autofill. Expect that the
   // NAME_FIRST observations are cleared.
-  std::unique_ptr<AutofillProfile> updated_profile =
+  std::optional<AutofillProfile> updated_profile =
       CreateAutofillProfileFromContactInfoSpecifics(*specifics);
-  ASSERT_NE(updated_profile, nullptr);
+  ASSERT_TRUE(updated_profile.has_value());
   EXPECT_TRUE(updated_profile->token_quality()
                   .GetObservationTypesForFieldType(NAME_FIRST)
                   .empty());

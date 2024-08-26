@@ -102,7 +102,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         // Deserialize the ContactInfoSpecifics and add/update them in the DB.
         DCHECK(change->data().specifics.has_contact_info());
-        std::unique_ptr<AutofillProfile> remote =
+        std::optional<AutofillProfile> remote =
             CreateAutofillProfileFromContactInfoSpecifics(
                 change->data().specifics.contact_info());
         // Since the specifics are guaranteed to be valid by

@@ -70,29 +70,20 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
   }
 
   void IncorporateRemoteProfile(const AutofillProfile& profile) {
-    EXPECT_EQ(std::nullopt, tracker()->IncorporateRemoteProfile(
-                                std::make_unique<AutofillProfile>(profile)));
+    EXPECT_EQ(std::nullopt, tracker()->IncorporateRemoteProfile(profile));
   }
 
   UpdatesToSync FlushToSync() {
     EXPECT_EQ(std::nullopt,
               tracker()->FlushToLocal(
                   /*autofill_changes_callback=*/base::DoNothing()));
-
     UpdatesToSync updates;
-    std::vector<std::unique_ptr<AutofillProfile>> vector_of_unique_ptrs;
-    EXPECT_EQ(std::nullopt,
-              tracker()->FlushToSync(
-                  /*profiles_to_upload_to_sync=*/&vector_of_unique_ptrs,
-                  /*profiles_to_delete_from_sync=*/&updates
-                      .profiles_to_delete_from_sync));
-
-    // Copy all the elements by value so that we have a vector that is easier to
-    // work with in the test.
-    for (const std::unique_ptr<AutofillProfile>& entry :
-         vector_of_unique_ptrs) {
-      updates.profiles_to_upload_to_sync.push_back(*entry);
-    }
+    EXPECT_EQ(
+        std::nullopt,
+        tracker()->FlushToSync(
+            /*profiles_to_upload_to_sync=*/&updates.profiles_to_upload_to_sync,
+            /*profiles_to_delete_from_sync=*/&updates
+                .profiles_to_delete_from_sync));
     return updates;
   }
 

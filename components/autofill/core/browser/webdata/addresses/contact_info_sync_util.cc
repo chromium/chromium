@@ -296,46 +296,46 @@ CreateContactInfoEntityDataFromAutofillProfile(
   return entity_data;
 }
 
-std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
+std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
     const ContactInfoSpecifics& specifics) {
-  if (!AreContactInfoSpecificsValid(specifics))
-    return nullptr;
+  if (!AreContactInfoSpecificsValid(specifics)) {
+    return std::nullopt;
+  }
 
   std::u16string country_name_or_code =
       base::ASCIIToUTF16(specifics.address_country().value());
   std::string country_code =
       CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
 
-  std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
-      specifics.guid(), AutofillProfile::Source::kAccount,
-      AddressCountryCode(country_code));
+  AutofillProfile profile(specifics.guid(), AutofillProfile::Source::kAccount,
+                          AddressCountryCode(country_code));
 
-  profile->set_use_count(specifics.use_count());
-  profile->set_use_date(base::Time::UnixEpoch() +
-                        base::Seconds(specifics.use_date_unix_epoch_seconds()));
+  profile.set_use_count(specifics.use_count());
+  profile.set_use_date(base::Time::UnixEpoch() +
+                       base::Seconds(specifics.use_date_unix_epoch_seconds()));
   if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
     if (specifics.has_use_date2_unix_epoch_seconds()) {
-      profile->set_use_date(
+      profile.set_use_date(
           base::Time::UnixEpoch() +
               base::Seconds(specifics.use_date2_unix_epoch_seconds()),
           2);
     }
     if (specifics.has_use_date3_unix_epoch_seconds()) {
-      profile->set_use_date(
+      profile.set_use_date(
           base::Time::UnixEpoch() +
               base::Seconds(specifics.use_date3_unix_epoch_seconds()),
           3);
     }
   }
-  profile->set_modification_date(
+  profile.set_modification_date(
       base::Time::UnixEpoch() +
       base::Seconds(specifics.date_modified_unix_epoch_seconds()));
-  profile->set_language_code(specifics.language_code());
-  profile->set_profile_label(specifics.profile_label());
-  profile->set_initial_creator_id(specifics.initial_creator_id());
-  profile->set_last_modifier_id(specifics.last_modifier_id());
+  profile.set_language_code(specifics.language_code());
+  profile.set_profile_label(specifics.profile_label());
+  profile.set_initial_creator_id(specifics.initial_creator_id());
+  profile.set_last_modifier_id(specifics.last_modifier_id());
 
-  ContactInfoProfileSetter s(*profile);
+  ContactInfoProfileSetter s(profile);
   // Set name-related values and statuses.
   s.Set(specifics.name_first(), NAME_FIRST);
   s.Set(specifics.name_middle(), NAME_MIDDLE);
@@ -386,7 +386,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.company_name(), COMPANY_NAME);
   s.Set(specifics.phone_home_whole_number(), PHONE_HOME_WHOLE_NUMBER);
 
-  profile->FinalizeAfterImport();
+  profile.FinalizeAfterImport();
   return profile;
 }
 

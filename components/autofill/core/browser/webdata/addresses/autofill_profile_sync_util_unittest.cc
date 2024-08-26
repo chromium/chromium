@@ -1054,7 +1054,7 @@ TEST_P(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics) {
       GetAutofillProfileSpecificsForCountry(GetParam());
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
 
-  std::unique_ptr<AutofillProfile> converted_profile =
+  std::optional<AutofillProfile> converted_profile =
       CreateAutofillProfileFromSpecifics(specifics);
   EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(*converted_profile));
 }
@@ -1064,20 +1064,20 @@ TEST_F(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics_Empty) {
   AutofillProfileSpecifics specifics;
   specifics.set_guid(kGuid);
 
-  std::unique_ptr<AutofillProfile> profile =
+  std::optional<AutofillProfile> profile =
       CreateAutofillProfileFromSpecifics(specifics);
 
   EXPECT_FALSE(profile->HasRawInfo(NAME_FULL));
   EXPECT_FALSE(profile->HasRawInfo(COMPANY_NAME));
 }
 
-// Test that nullptr is produced if the input guid is invalid.
+// Test that nullopt is produced if the input guid is invalid.
 TEST_F(AutofillProfileSyncUtilTest,
        CreateAutofillProfileFromSpecifics_Invalid) {
   AutofillProfileSpecifics specifics;
   specifics.set_guid(kGuidInvalid);
 
-  EXPECT_EQ(nullptr, CreateAutofillProfileFromSpecifics(specifics));
+  EXPECT_FALSE(CreateAutofillProfileFromSpecifics(specifics).has_value());
 }
 
 // Test that if conflicting info is set for address home, the (deprecated) line1
@@ -1093,7 +1093,7 @@ TEST_F(AutofillProfileSyncUtilTest,
   specifics.set_address_home_line1("456 Old St.");
   specifics.set_address_home_line2("Apt. 43");
 
-  std::unique_ptr<AutofillProfile> profile =
+  std::optional<AutofillProfile> profile =
       CreateAutofillProfileFromSpecifics(specifics);
 
   EXPECT_EQ("123 New St.",
