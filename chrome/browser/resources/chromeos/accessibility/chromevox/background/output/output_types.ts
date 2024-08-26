@@ -142,6 +142,12 @@ export const OutputPropertyMap: Record<string, Record<string, string>> = {
   },
 };
 
+type AnnotationType = string|OutputNodeSpan|OutputSelectionSpan|OutputAction;
+export interface AppendOptions {
+  annotation: AnnotationType[];
+  isUnique: boolean;
+}
+
 export interface StateOutputInfo {
   msgId?: string;
   earcon?: EarconId;

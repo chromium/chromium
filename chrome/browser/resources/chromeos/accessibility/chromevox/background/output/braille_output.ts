@@ -7,11 +7,14 @@
  * Currently a stub; logic is being moved incrementally from Output to
  * BrailleOutput over a series of small changes.
  */
+
+import {CursorRange} from '/common/cursors/range.js';
+
 import {LogType} from '../../common/log_types.js';
 import {Spannable} from '../../common/spannable.js';
 
 import {OutputFormatLogger} from './output_logger.js';
-import {OutputNodeSpan, OutputSelectionSpan, SPACE} from './output_types.js';
+import {AppendOptions, OutputNodeSpan, OutputSelectionSpan, SPACE} from './output_types.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 import RoleType = chrome.automation.RoleType;
@@ -33,6 +36,43 @@ export class BrailleOutput {
     }
     return true;
   }
+
+  subNode(range: CursorRange, options: AppendOptions): AppendOptions {
+    const node = range.start.node;
+    const rangeStart = range.start.index;
+    const rangeEnd = range.end.index;
+
+    options.annotation.push(new OutputNodeSpan(node));
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const selStart = node.textSelStart!;
+    const selEnd = node.textSelEnd!;
+
+    if (selStart !== undefined && selEnd >= rangeStart &&
+        selStart <= rangeEnd) {
+      // Editable text selection.
+
+      // |rangeStart| and |rangeEnd| are indices set by the caller and are
+      // assumed to be inside of the range. In braille, we only ever expect
+      // to get ranges surrounding a line as anything smaller doesn't make
+      // sense.
+
+      // |selStart| and |selEnd| reflect the editable selection. The
+      // relative selStart and relative selEnd for the current line are then
+      // just the difference between |selStart|, |selEnd| with |rangeStart|.
+      // See editing_test.js for examples.
+      options.annotation.push(
+          new OutputSelectionSpan(selStart - rangeStart, selEnd - rangeStart));
+    } else if (rangeStart !== 0 || rangeEnd !== range.start.getText().length) {
+      // Non-editable text selection over less than the full contents
+      // covered by the range. We exclude full content underlines because it
+      // is distracting to read braille with all cells underlined with a
+      // cursor.
+      options.annotation.push(new OutputSelectionSpan(rangeStart, rangeEnd));
+    }
+
+    return options;
+  }
+
 
   /** Converts the braille |spans| buffer to a single spannable. */
   static mergeSpans(spans: Spannable[]): Spannable {
