@@ -4373,4 +4373,4 @@ static void setup_rtcd_internal(void) {
 }  // extern "C"
 #endif
 
-#endif
+#endif  // VPX_DSP_RTCD_H_

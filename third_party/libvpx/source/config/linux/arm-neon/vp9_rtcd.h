@@ -243,4 +243,4 @@ static void setup_rtcd_internal(void) {
 }  // extern "C"
 #endif
 
-#endif
+#endif  // VP9_RTCD_H_
