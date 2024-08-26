@@ -888,6 +888,57 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
   }
 }
 
+// Tests that a cross-origin but same-site navigation to a document that was
+// previously loaded via top-level navigation uses the cache.
+IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
+                       CrossOriginSameSiteNavigation) {
+  // Do a top-level navigation to a document to add it to the cache.
+  EXPECT_FALSE(
+      NavigationResourceCached(GenURL("a.com", "/title1.html"), GURL(), false));
+
+  // Verify that the document did get added to the cache.
+  EXPECT_TRUE(
+      NavigationResourceCached(GenURL("a.com", "/title1.html"), GURL(), false));
+
+  // Navigate to a cross-site document that performs a client-side redirect to
+  // the document visited previously. Ensure that repeating this request results
+  // in a cache hit, and then try again with a different initiating site that is
+  // cross-origin but same-site.
+  bool a_example_com_initiator_first_navigation_result =
+      NavigationRedirectCached(GenURL("a.example.com", "/title1.html"),
+                               GenURL("a.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigationRedirectCached(GenURL("a.example.com", "/title1.html"),
+                                       GenURL("a.com", "/title1.html")));
+
+  bool b_example_com_initiator_navigation_result = NavigationRedirectCached(
+      GenURL("b.example.com", "/title1.html"), GenURL("a.com", "/title1.html"));
+
+  switch (GetParam()) {
+    case SplitCacheTestCase::kEnabledTripleKeyed:
+      // If we aren't partitioning cross-site navigations then these should come
+      // from the cache.
+      EXPECT_TRUE(a_example_com_initiator_first_navigation_result);
+      EXPECT_TRUE(b_example_com_initiator_navigation_result);
+      break;
+    case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
+      // Using the cross-site navigation boolean, the first of these should not
+      // be in the cache because it's cross-site, but a subsequent cross-site
+      // navigation from a different initiator should result in a cache hit.
+      EXPECT_FALSE(a_example_com_initiator_first_navigation_result);
+      EXPECT_TRUE(b_example_com_initiator_navigation_result);
+      break;
+    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
+    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
+      // If we are keying on initiator then these two cross-origin but same-site
+      // navigations should share a cache partition since the cache key
+      // incorporates the site instead of the origin.
+      EXPECT_FALSE(a_example_com_initiator_first_navigation_result);
+      EXPECT_TRUE(b_example_com_initiator_navigation_result);
+      break;
+  }
+}
+
 // This class invokes ComputeHttpCacheSize on the Network Context and
 // waits for the callback to be invoked.
 class SplitCacheComputeHttpCacheSize {
