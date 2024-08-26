@@ -254,6 +254,10 @@ const MojoSystemThunks* ImeService::GetMojoSystemThunks() {
   return MojoEmbedderGetSystemThunks32();
 }
 
+const MojoSystemThunks2* ImeService::GetMojoSystemThunks2() {
+  return MojoEmbedderGetSystemThunks2();
+}
+
 void ImeService::Unused1() {
   NOTIMPLEMENTED();
 }
