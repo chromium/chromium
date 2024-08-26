@@ -1546,14 +1546,14 @@ bool CSSSelector::IsAllowedAfterPart() const {
       Match() != CSSSelector::kPseudoClass) {
     return false;
   }
-  // Everything that makes sense should work following ::part. This list
-  // restricts it to what has been tested.
   switch (GetPseudoType()) {
+    // Pseudo-elements
+    //
+    // TODO(https://crbug.com/40825557): Eventually all pseudo-elements other
+    // than ::part() should be allowed after part.  However, this list
+    // restricts it to what has been tested.
     case kPseudoBefore:
     case kPseudoAfter:
-    case kPseudoAutofill:
-    case kPseudoAutofillPreviewed:
-    case kPseudoAutofillSelected:
     case kPseudoPlaceholder:
     case kPseudoFileSelectorButton:
     case kPseudoFirstLine:
@@ -1568,9 +1568,166 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
+      return true;
+
+    case kPseudoBackdrop:
+    case kPseudoCue:
+    case kPseudoMarker:
+    case kPseudoResizer:
+    case kPseudoScrollbar:
+    case kPseudoScrollbarButton:
+    case kPseudoScrollbarCorner:
+    case kPseudoScrollbarThumb:
+    case kPseudoScrollbarTrack:
+    case kPseudoScrollbarTrackPiece:
+    case kPseudoScrollMarker:
+    case kPseudoScrollMarkerGroup:
+    case kPseudoScrollNextButton:
+    case kPseudoScrollPrevButton:
+    case kPseudoWebKitCustomElement:
+    case kPseudoBlinkInternalElement:
+    case kPseudoSlotted:
+    case kPseudoViewTransition:
+    case kPseudoViewTransitionGroup:
+    case kPseudoViewTransitionImagePair:
+    case kPseudoViewTransitionNew:
+    case kPseudoViewTransitionOld:
+    case kPseudoDetailsContent:
+      return false;
+
+    case kPseudoPart:
+      return false;
+
+    // Pseudo-classes
+    //
+    // TODO(https://crbug.com/40623497): Eventually all non-structural
+    // pseudo-classes should be allowed, and structural pseudo-classes should
+    // be forbidden.
+    case kPseudoAutofill:
+    case kPseudoAutofillPreviewed:
+    case kPseudoAutofillSelected:
     case kPseudoWebKitAutofill:
       return true;
-    default:
+
+    case kPseudoActive:
+    case kPseudoActiveViewTransition:
+    case kPseudoActiveViewTransitionType:
+    case kPseudoAnyLink:
+    case kPseudoChecked:
+    case kPseudoCornerPresent:
+    case kPseudoCurrent:
+    case kPseudoDecrement:
+    case kPseudoDefault:
+    case kPseudoDialogInTopLayer:
+    case kPseudoDisabled:
+    case kPseudoDoubleButton:
+    case kPseudoDrag:
+    case kPseudoEnabled:
+    case kPseudoEnd:
+    case kPseudoFirstPage:
+    case kPseudoFocus:
+    case kPseudoFocusVisible:
+    case kPseudoFocusWithin:
+    case kPseudoFullPageMedia:
+    case kPseudoHorizontal:
+    case kPseudoHover:
+    case kPseudoIncrement:
+    case kPseudoIndeterminate:
+    case kPseudoInvalid:
+    case kPseudoLang:
+    case kPseudoLeftPage:
+    case kPseudoLink:
+    case kPseudoModal:
+    case kPseudoNoButton:
+    case kPseudoOptional:
+    case kPseudoPermissionGranted:
+    case kPseudoPlaceholderShown:
+    case kPseudoReadOnly:
+    case kPseudoReadWrite:
+    case kPseudoRequired:
+    case kPseudoRightPage:
+    case kPseudoSelectorFragmentAnchor:
+    case kPseudoSingleButton:
+    case kPseudoStart:
+    case kPseudoState:
+    case kPseudoStateDeprecatedSyntax:
+    case kPseudoTarget:
+    case kPseudoUnparsed:
+    case kPseudoUserInvalid:
+    case kPseudoUserValid:
+    case kPseudoValid:
+    case kPseudoVertical:
+    case kPseudoVisited:
+    case kPseudoWebkitAnyLink:
+    case kPseudoWindowInactive:
+    case kPseudoFullScreen:
+    case kPseudoFullScreenAncestor:
+    case kPseudoFullscreen:
+    case kPseudoInRange:
+    case kPseudoOutOfRange:
+    case kPseudoPaused:
+    case kPseudoPictureInPicture:
+    case kPseudoPlaying:
+    case kPseudoXrOverlay:
+    case kPseudoClosed:
+    case kPseudoDefined:
+    case kPseudoDir:
+    case kPseudoFutureCue:
+    case kPseudoIsHtml:
+    case kPseudoListBox:
+    case kPseudoMultiSelectFocus:
+    case kPseudoOpen:
+    case kPseudoPastCue:
+    case kPseudoPopoverInTopLayer:
+    case kPseudoPopoverOpen:
+    case kPseudoRelativeAnchor:
+    case kPseudoSpatialNavigationFocus:
+    case kPseudoTrue:
+    case kPseudoVideoPersistent:
+    case kPseudoVideoPersistentAncestor:
+      return false;
+
+    // TODO(https://crbug.com/40623497): Be careful with allowing these
+    // pseudo-classes since we need to consider what happens when
+    // structural pseudo-classes are inside them (and make sure they're
+    // treated *like* they're invalid, which means different things for
+    // :is() and :where() which use <forgiving-selector-list>).
+    case kPseudoAny:
+    case kPseudoIs:
+    case kPseudoNot:
+    case kPseudoWhere:
+      return false;
+
+    // TODO(https://crbug.com/40623497): Figure out what to do with this.
+    case kPseudoParent:
+      return false;
+
+    // These are structural pseudo-classes, which should not be allowed.
+    case kPseudoEmpty:
+    case kPseudoFirstChild:
+    case kPseudoFirstOfType:
+    case kPseudoLastChild:
+    case kPseudoLastOfType:
+    case kPseudoNthChild:
+    case kPseudoNthLastChild:
+    case kPseudoNthLastOfType:
+    case kPseudoNthOfType:
+    case kPseudoOnlyChild:
+    case kPseudoOnlyOfType:
+    case kPseudoRoot:
+      return false;
+
+    // These are other pseudo-classes that match based on tree information
+    // rather than local element information, which should not be allowed.
+    case kPseudoHas:
+    case kPseudoHasDatalist:
+    case kPseudoHost:
+    case kPseudoHostContext:
+    case kPseudoHostHasNonAutoAppearance:
+    case kPseudoScope:
+      return false;
+
+    case kPseudoUnknown:
       return false;
   }
 }
