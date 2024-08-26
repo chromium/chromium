@@ -126,6 +126,18 @@ public class TapToSeekHandlerUnitTest {
     }
 
     @Test
+    public void testTapToSeek_Empty() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH)
+                        .build();
+        tapToSeek("", 6, 9, "The\nquick brown fox  jumps\nover the lazy dog.", true);
+
+        histogram.assertExpected();
+        verify(mPlayback, never()).seekToWord(anyInt(), anyInt());
+    }
+
+    @Test
     public void testPlayPauseState() {
         tapToSeek(
                 "brown\nfox jumps", 6, 9, "The\nquick brown fox  jumps\nover the lazy dog.", true);
