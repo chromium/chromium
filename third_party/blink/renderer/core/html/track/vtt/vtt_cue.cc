@@ -437,7 +437,7 @@ static CSSValueID DetermineTextDirection(DocumentFragment* vtt_root) {
         break;
       }
     } else if (auto* vtt_element = DynamicTo<VTTElement>(node)) {
-      if (vtt_element->WebVTTNodeType() == kVTTNodeTypeRubyText) {
+      if (vtt_element->GetVttNodeType() == VttNodeType::kRubyText) {
         node = NodeTraversal::NextSkippingChildren(*node);
         continue;
       }
