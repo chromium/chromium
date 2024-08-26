@@ -164,6 +164,9 @@ BASE_DECLARE_FEATURE(kFreezingOnBatterySaverForTesting);
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);
 
+// When enabled, change the ordering of frame swap in render (crbug/357649043).
+BASE_DECLARE_FEATURE(kSeamlessRenderFrameSwap);
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

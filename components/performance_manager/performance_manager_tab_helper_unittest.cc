@@ -9,11 +9,13 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
@@ -42,9 +44,14 @@ const char kGrandchildUrl[] = "https://grandchild.com/";
 const char kNewGrandchildUrl[] = "https://newgrandchild.com/";
 const char kCousinFreddyUrl[] = "https://cousinfreddy.com/";
 
-class PerformanceManagerTabHelperTest : public PerformanceManagerTestHarness {
+class PerformanceManagerTabHelperTest
+    : public PerformanceManagerTestHarness,
+      public testing::WithParamInterface<bool> {
  public:
-  PerformanceManagerTabHelperTest() = default;
+  PerformanceManagerTabHelperTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kSeamlessRenderFrameSwap, GetParam());
+  }
 
   void TearDown() override {
     // Clean up the web contents, which should dispose of the page and frame
@@ -80,6 +87,8 @@ class PerformanceManagerTabHelperTest : public PerformanceManagerTestHarness {
     }
     return num_hosts;
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void PerformanceManagerTabHelperTest::CheckGraphTopology(
@@ -149,7 +158,9 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
 
 }  // namespace
 
-TEST_F(PerformanceManagerTabHelperTest, FrameHierarchyReflectsToGraph) {
+INSTANTIATE_TEST_SUITE_P(All, PerformanceManagerTabHelperTest, testing::Bool());
+
+TEST_P(PerformanceManagerTabHelperTest, FrameHierarchyReflectsToGraph) {
   SetContents(CreateTestWebContents());
 
   auto* parent = content::NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -230,7 +241,7 @@ void ExpectNotificationPermissionStatus(
 
 }  // namespace
 
-TEST_F(PerformanceManagerTabHelperTest, PageIsAudible) {
+TEST_P(PerformanceManagerTabHelperTest, PageIsAudible) {
   SetContents(CreateTestWebContents());
 
   ExpectPageIsAudible(false);
@@ -241,7 +252,7 @@ TEST_F(PerformanceManagerTabHelperTest, PageIsAudible) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
+TEST_P(PerformanceManagerTabHelperTest, NotificationPermission) {
   auto owned_permission_controller = std::make_unique<
       testing::StrictMock<content::MockPermissionController>>();
   auto* permission_controller = owned_permission_controller.get();
@@ -317,7 +328,7 @@ TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(PerformanceManagerTabHelperTest, GetFrameNode) {
+TEST_P(PerformanceManagerTabHelperTest, GetFrameNode) {
   SetContents(CreateTestWebContents());
 
   auto* tab_helper =
@@ -358,7 +369,7 @@ using MockPageNodeObserver = ::testing::StrictMock<LenientMockPageNodeObserver>;
 
 }  // namespace
 
-TEST_F(PerformanceManagerTabHelperTest,
+TEST_P(PerformanceManagerTabHelperTest,
        NotificationsFromInactiveFrameTreeAreIgnored) {
   SetContents(CreateTestWebContents());
 

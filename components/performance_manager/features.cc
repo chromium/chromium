@@ -174,4 +174,8 @@ BASE_FEATURE(kResourceAttributionIncludeOrigins,
              "ResourceAttributionIncludeOrigins",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSeamlessRenderFrameSwap,
+             "SeamlessRenderFrameSwap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace performance_manager::features

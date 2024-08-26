@@ -6,6 +6,7 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/features.h"
 
 namespace performance_manager {
 
@@ -124,11 +125,20 @@ void FrameVisibilityDecorator::OnFrameNodeInitializing(
 void FrameVisibilityDecorator::OnCurrentFrameChanged(
     const FrameNode* previous_frame_node,
     const FrameNode* current_frame_node) {
-  if (previous_frame_node) {
-    OnFramePropertyChanged(previous_frame_node);
-  }
-  if (current_frame_node) {
-    OnFramePropertyChanged(current_frame_node);
+  if (base::FeatureList::IsEnabled(features::kSeamlessRenderFrameSwap)) {
+    if (current_frame_node) {
+      OnFramePropertyChanged(current_frame_node);
+    }
+    if (previous_frame_node) {
+      OnFramePropertyChanged(previous_frame_node);
+    }
+  } else {
+    if (previous_frame_node) {
+      OnFramePropertyChanged(previous_frame_node);
+    }
+    if (current_frame_node) {
+      OnFramePropertyChanged(current_frame_node);
+    }
   }
 }
 
