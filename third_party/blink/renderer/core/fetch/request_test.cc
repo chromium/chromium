@@ -79,7 +79,7 @@ TEST_F(RequestBodyTest, InitWithBodyString) {
 TEST_F(RequestBodyTest, InitWithBodyArrayBuffer) {
   V8TestingScope scope;
   String body = "test body!";
-  auto* buffer = DOMArrayBuffer::Create(body.Bytes(), body.length());
+  auto* buffer = DOMArrayBuffer::Create(body.Span8());
   auto* init = CreateRequestInit(
       scope, ToV8Traits<DOMArrayBuffer>::ToV8(scope.GetScriptState(), buffer));
 

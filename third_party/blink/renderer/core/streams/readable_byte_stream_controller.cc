@@ -447,7 +447,7 @@ void ReadableByteStreamController::EnqueueClonedChunkToQueue(
   // 1. Let cloneResult be CloneArrayBuffer(buffer, byteOffset, byteLength,
   // %ArrayBuffer%).
   DOMArrayBuffer* const clone_result = DOMArrayBuffer::Create(
-      static_cast<char*>(buffer->Data()) + byte_offset, byte_length);
+    buffer->ByteSpan().subspan(byte_offset, byte_length));
   // 2. If cloneResult is an abrupt completion,
   //   a. Perform ! ReadableByteStreamControllerError(controller,
   //   cloneResult.[[Value]]). b. Return cloneResult.

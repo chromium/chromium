@@ -438,7 +438,7 @@ DOMArrayBuffer* XMLHttpRequest::ResponseArrayBuffer() {
       //
       response_array_buffer_failure_ = !buffer;
     } else {
-      response_array_buffer_ = DOMArrayBuffer::Create(nullptr, 0);
+      response_array_buffer_ = DOMArrayBuffer::Create(base::span<uint8_t>());
     }
   }
 

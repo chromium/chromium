@@ -121,7 +121,7 @@ bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
                               ExceptionState& exception_state) {
   DOMArrayBuffer* to_transfer = this;
   if (!IsDetachable(isolate)) {
-    to_transfer = DOMArrayBuffer::Create(Content()->Data(), ByteLength());
+    to_transfer = DOMArrayBuffer::Create(Content()->ByteSpan());
   }
 
   TryRethrowScope rethrow_scope(isolate, exception_state);
