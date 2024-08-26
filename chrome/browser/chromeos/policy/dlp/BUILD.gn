@@ -89,6 +89,7 @@ static_library("dlp") {
     "//components/download/content/public",
     "//components/download/public/common:public",
     "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
     "//components/file_access",
     "//components/keyed_service/core",
     "//components/policy/core/common:common_constants",
