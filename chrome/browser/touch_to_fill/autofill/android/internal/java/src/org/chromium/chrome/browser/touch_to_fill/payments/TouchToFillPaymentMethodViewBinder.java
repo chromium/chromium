@@ -80,6 +80,7 @@ class TouchToFillPaymentMethodViewBinder {
 
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param view The {@link TouchToFillPaymentMethodView} to update.
      * @param propertyKey The {@link PropertyKey} which changed.
@@ -104,7 +105,8 @@ class TouchToFillPaymentMethodViewBinder {
     private TouchToFillPaymentMethodViewBinder() {}
 
     /**
-     * Factory used to create a card item inside the ListView inside the TouchToFillPaymentMethodView.
+     * Factory used to create a card item inside the ListView inside the
+     * TouchToFillPaymentMethodView.
      *
      * @param parent The parent {@link ViewGroup} of the new item.
      */
@@ -117,7 +119,8 @@ class TouchToFillPaymentMethodViewBinder {
     }
 
     /**
-     * Factory used to create an IBAN item inside the ListView inside the TouchToFillPaymentMethodView.
+     * Factory used to create an IBAN item inside the ListView inside the
+     * TouchToFillPaymentMethodView.
      *
      * @param parent The parent {@link ViewGroup} of the new item.
      */
@@ -182,14 +185,20 @@ class TouchToFillPaymentMethodViewBinder {
 
     static void bindIbanItemView(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == IBAN_VALUE) {
-            TextView ibanValue = view.findViewById(R.id.iban_value);
-            ibanValue.setText(model.get(IBAN_VALUE));
-            ibanValue.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+            if (model.get(IBAN_NICKNAME).isEmpty()) {
+                TextView ibanPrimaryText = view.findViewById(R.id.iban_primary);
+                ibanPrimaryText.setText(model.get(IBAN_VALUE));
+                ibanPrimaryText.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+            } else {
+                TextView ibanSecondaryText = view.findViewById(R.id.iban_secondary);
+                ibanSecondaryText.setText(model.get(IBAN_VALUE));
+                ibanSecondaryText.setVisibility(View.VISIBLE);
+            }
         } else if (propertyKey == IBAN_NICKNAME) {
-            TextView ibanNickname = view.findViewById(R.id.iban_nickname);
             if (!model.get(IBAN_NICKNAME).isEmpty()) {
-                ibanNickname.setText(model.get(IBAN_NICKNAME));
-                ibanNickname.setVisibility(View.VISIBLE);
+                TextView ibanPrimaryText = view.findViewById(R.id.iban_primary);
+                ibanPrimaryText.setText(model.get(IBAN_NICKNAME));
+                ibanPrimaryText.setVisibility(View.VISIBLE);
             }
         } else if (propertyKey == ON_IBAN_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_IBAN_CLICK_ACTION).run());

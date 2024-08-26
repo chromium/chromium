@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.autofill;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -436,10 +438,13 @@ public class PersonalDataManager implements Destroyable {
 
     /** Autofill IBAN information. */
     public static class Iban {
-        private String mGuid;
-        private Long mInstrumentId;
+        @Nullable private String mGuid;
+        @Nullable private Long mInstrumentId;
+
         // Obfuscated IBAN value. This is used for displaying the IBAN in the Payment methods page.
-        private String mLabel;
+        // TODO(b/361791706): Add requireNonNull check for mLabel as it should not be empty.
+        @Nullable private String mLabel;
+
         private String mNickname;
         private @IbanRecordType int mRecordType;
         private String mValue;
@@ -454,9 +459,9 @@ public class PersonalDataManager implements Destroyable {
             mGuid = guid;
             mInstrumentId = instrumentId;
             mLabel = label;
-            mNickname = nickname;
+            mNickname = Objects.requireNonNull(nickname, "Nickname can't be null");
             mRecordType = recordType;
-            mValue = value;
+            mValue = Objects.requireNonNull(value, "Iban value can't be null");
         }
 
         // Creates an Iban instance that is not stored on a server nor locally,
@@ -465,7 +470,6 @@ public class PersonalDataManager implements Destroyable {
         @CalledByNative("Iban")
         public static Iban createEphemeral(String label, String nickname, String value) {
             return new Iban.Builder()
-                    .setGuid("")
                     .setLabel(label)
                     .setNickname(nickname)
                     .setRecordType(IbanRecordType.UNKNOWN)
@@ -597,6 +601,7 @@ public class PersonalDataManager implements Destroyable {
                 return this;
             }
 
+            // TODO(b/361791706): Add comprehensive constraints check for all three types.
             public Iban build() {
                 switch (mRecordType) {
                     case IbanRecordType.UNKNOWN:

@@ -44,6 +44,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -179,6 +180,12 @@ public class TouchToFillPaymentMethodViewTest {
                     /* guid= */ "000000111111",
                     /* label= */ "CH56 **** **** **** *800 9",
                     /* nickname= */ "My brother's IBAN",
+                    /* value= */ "CH5604835012345678009");
+    private static final Iban LOCAL_IBAN_NO_NICKNAME =
+            Iban.createLocal(
+                    /* guid= */ "000000111111",
+                    /* label= */ "CH56 **** **** **** *800 9",
+                    /* nickname= */ "",
                     /* value= */ "CH5604835012345678009");
 
     @Rule
@@ -562,7 +569,9 @@ public class TouchToFillPaymentMethodViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         TextView descriptionLine =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.description_line_2);
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.description_line_2);
         AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
         descriptionLine.onInitializeAccessibilityNodeInfo(info);
         assertEquals(
@@ -595,7 +604,9 @@ public class TouchToFillPaymentMethodViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         TextView descriptionLine =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.description_line_2);
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.description_line_2);
         AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
         descriptionLine.onInitializeAccessibilityNodeInfo(info);
         assertEquals(
@@ -749,19 +760,21 @@ public class TouchToFillPaymentMethodViewTest {
                         withText(
                                 mActivityTestRule
                                         .getActivity()
-                                        .getString(R.string.autofill_payment_method_continue_button)))
+                                        .getString(
+                                                R.string.autofill_payment_method_continue_button)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         onView(
                         withText(
                                 mActivityTestRule
                                         .getActivity()
-                                        .getString(R.string.autofill_payment_method_continue_button)))
+                                        .getString(
+                                                R.string.autofill_payment_method_continue_button)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
     }
 
     @Test
     @MediumTest
-    public void testIbanValueAndNicknameForIban() {
+    public void testIbanTouchToFillItem_displayPrimaryAndSecondaryText() {
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -771,12 +784,32 @@ public class TouchToFillPaymentMethodViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView ibanValue =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_value);
-        assertThat(ibanValue.getLayout().getText().toString(), is(LOCAL_IBAN.getLabel()));
-        TextView ibanNickname =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_nickname);
-        assertThat(ibanNickname.getLayout().getText().toString(), is(LOCAL_IBAN.getNickname()));
+        TextView ibanPrimaryText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_primary);
+        assertThat(ibanPrimaryText.getLayout().getText().toString(), is(LOCAL_IBAN.getNickname()));
+        TextView ibanSecondaryText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_secondary);
+        assertThat(ibanSecondaryText.getLayout().getText().toString(), is(LOCAL_IBAN.getLabel()));
+    }
+
+    @Test
+    @MediumTest
+    public void testIbanTouchToFillItem_displayPrimaryTextOnly() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(IBAN, createIbanModel(LOCAL_IBAN_NO_NICKNAME)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView ibanPrimaryText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_primary);
+        assertThat(ibanPrimaryText.getLayout().getText().toString(), is(LOCAL_IBAN.getLabel()));
+        TextView ibanSecondaryText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_secondary);
+        assertThat(ibanSecondaryText.getVisibility(), is(View.GONE));
     }
 
     private RecyclerView getCreditCardSuggestions() {
