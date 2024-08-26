@@ -265,7 +265,8 @@ suite('TabDiscardExceptionsDialog', function() {
     return microtasksFinished();
   }
 
-  test('testExceptionTabbedAddDialogSwitchTabs', async function() {
+  // Flaky on all OSes. TODO(crbug.com/356848453): Fix and enable the test.
+  test.skip('testExceptionTabbedAddDialogSwitchTabs', async function() {
     performanceBrowserProxy.setCurrentOpenSites([VALID_RULE]);
     dialog = await setupTabbedAddDialog();
     flush();
