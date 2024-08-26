@@ -235,6 +235,13 @@ class AbandonedPageLoadMetricsObserver
   // navigation, has been logged before.
   bool did_log_navigation_start_ = false;
 
+  // LCP is finalized in `FlushMetricsOnAppEnterBackground()` or `OnComplete()`.
+  // In `AbandonedPageLoadMetricsObserver`, we keep observing events even after
+  // the app is backgrounded, and that means both events are called. To prevent
+  // LCP being recorded twice, `is_lcp_finalized_` will be true once the LCP is
+  // recorded.
+  bool is_lcp_finalized_ = false;
+
   // The most up-to-date NavigationHandleTiming for the navigation we're
   // tracking, updated from `OnNavigationHandleTimingUpdated()`.
   content::NavigationHandleTiming latest_navigation_handle_timing_;

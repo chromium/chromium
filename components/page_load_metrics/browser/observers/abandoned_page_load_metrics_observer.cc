@@ -694,6 +694,9 @@ void AbandonedPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
 }
 
 void AbandonedPageLoadMetricsObserver::FinalizeLCP() {
+  if (is_lcp_finalized_) {
+    return;
+  }
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
       GetDelegate()
           .GetLargestContentfulPaintHandler()
@@ -707,6 +710,7 @@ void AbandonedPageLoadMetricsObserver::FinalizeLCP() {
     // regular LCP condition. Otherwise it will be less reliable.
     LogLoadingMilestone(NavigationMilestone::kLargestContentfulPaint,
                         largest_contentful_paint.Time().value());
+    is_lcp_finalized_ = true;
   }
 }
 

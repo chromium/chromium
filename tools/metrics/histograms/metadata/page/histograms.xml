@@ -102,7 +102,9 @@ chromium-metrics-reviews@google.com.
   <variant name="FirstRedirectResponseStart"/>
   <variant name="HeaderChunkEnd" summary="HeaderChunkEnd (added in M129)"/>
   <variant name="HeaderChunkStart" summary="HeaderChunkStart (added in M129)"/>
-  <variant name="LargestContentfulPaint"/>
+  <variant name="LargestContentfulPaint"
+      summary="LargestContentfulPaint (Warning: There were some duplicated
+               records in M128-129, crrev.com/c/5802697 for more details)"/>
   <variant name="LoaderStart"/>
   <variant name="LoadEventStarted"/>
   <variant name="NavigationStart"/>
