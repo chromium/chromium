@@ -304,7 +304,10 @@ class EgtestsAppTest(test_runner_test.TestCase):
     mock_listdir.return_value = [
         'random_file', 'main_binary', 'libclang_rt.asan_iossim_dynamic.dylib'
     ]
-    egtest = test_apps.EgtestsApp(_TEST_APP_PATH, _ALL_EG_TEST_NAMES)
+    egtest = test_apps.EgtestsApp(
+        _TEST_APP_PATH,
+        _ALL_EG_TEST_NAMES,
+        host_app_path='/path/to/host_app.app')
     self.assertEqual(['@executable_path/libclang_rt.asan_iossim_dynamic.dylib'],
                      egtest._additional_inserted_libs())
 
