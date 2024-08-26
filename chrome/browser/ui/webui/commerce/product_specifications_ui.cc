@@ -93,6 +93,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"disclosureLearnMore", IDS_COMPARE_DISCLOSURE_LEARN_MORE},
 
       // Main UI strings:
+      {"buyingOptions", IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS},
       {"citationA11yLabel", IDS_COMPARE_CITATION_A11Y_LABEL},
       {"delete", IDS_COMPARE_DELETE},
       {"defaultTableTitle", IDS_COMPARE_DEFAULT_TABLE_TITLE},

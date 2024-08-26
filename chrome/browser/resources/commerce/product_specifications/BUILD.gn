@@ -26,6 +26,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "buying_options_section.css",
     "description_citation.css",
     "description_section.css",
     "disclosure/app.css",
@@ -39,6 +40,8 @@ build_webui("build") {
   mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/commerce/shopping_service.mojom-webui.ts" ]
 
   non_web_component_files = [
+    "buying_options_section.html.ts",
+    "buying_options_section.ts",
     "description_citation.html.ts",
     "description_citation.ts",
     "description_section.html.ts",

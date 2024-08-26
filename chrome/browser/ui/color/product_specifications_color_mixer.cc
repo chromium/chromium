@@ -32,6 +32,7 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
   mixer[kColorProductSpecificationsHorizontalCarouselScrollbarThumb] = {
       ui::kColorSysTonalOutline};
   mixer[kColorProductSpecificationsIcon] = {ui::kColorIcon};
+  mixer[kColorProductSpecificationsLink] = {ui::kColorSysPrimary};
   mixer[kColorProductSpecificationsPageBackground] = {ui::kColorSysSurface2};
   mixer[kColorProductSpecificationsPrimaryTitle] = {
       ui::kColorPrimaryForeground};
