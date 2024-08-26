@@ -24,15 +24,6 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   explicit ShapeResultSpacing(const TextContainerType& text,
                               bool allow_word_spacing_anywhere = false)
       : text_(text),
-        letter_spacing_(0),
-        word_spacing_(0),
-        expansion_(0),
-        expansion_per_opportunity_(0),
-        expansion_opportunity_count_(0),
-        has_spacing_(false),
-        normalize_space_(false),
-        allow_tabs_(false),
-        is_after_expansion_(false),
         allow_word_spacing_anywhere_(allow_word_spacing_anywhere) {}
 
   const TextContainerType& Text() const { return text_; }
@@ -82,16 +73,16 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   float NextExpansion();
 
   const TextContainerType& text_;
-  float letter_spacing_;
-  float word_spacing_;
-  float expansion_;
-  float expansion_per_opportunity_;
-  unsigned expansion_opportunity_count_;
-  bool has_spacing_;
-  bool normalize_space_;
-  bool allow_tabs_;
-  bool is_after_expansion_;
-  bool allow_word_spacing_anywhere_;
+  float letter_spacing_ = 0;
+  float word_spacing_ = 0;
+  float expansion_ = 0;
+  float expansion_per_opportunity_ = 0;
+  unsigned expansion_opportunity_count_ = 0;
+  bool has_spacing_ = false;
+  bool normalize_space_ = false;
+  bool allow_tabs_ = false;
+  bool is_after_expansion_ = false;
+  bool allow_word_spacing_anywhere_ = false;
 };
 
 // Forward declare so no implicit instantiations happen before the
