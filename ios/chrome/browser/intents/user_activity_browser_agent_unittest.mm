@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/intents/user_activity_browser_agent.h"
 
-#import <memory>
-
 #import <CoreSpotlight/CoreSpotlight.h>
+
+#import <memory>
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
