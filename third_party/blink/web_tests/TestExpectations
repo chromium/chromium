@@ -6823,9 +6823,6 @@ crbug.com/1478891 [ Linux ] fast/events/middleClickAutoscroll-nested-divs-forbid
 crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failure Pass ]
 crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-event-fired.html [ Failure Pass ]
 
-# Temporary disable to land https://crrev.com/c/5803653
-crbug.com/361708650 http/tests/devtools/persistence/persistence-do-not-overwrite-css.js [ Pass Timeout ]
-
 # This test is so slow it must expect timeouts for the time being
 # on some platforms.
 crbug.com/1488391 external/wpt/mst-content-hint/RTCRtpSendParameters-degradationEffect.html [ Skip Timeout ]
