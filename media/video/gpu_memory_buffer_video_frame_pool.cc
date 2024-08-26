@@ -188,6 +188,8 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
 
     const gfx::Size size;
     const gfx::BufferUsage usage;
+    // TODO(crbug.com/332564976, hitawala): Store single resource for shared
+    // image.
     PlaneResource plane_resources[VideoFrame::kMaxPlanes];
     // The sync token used to recycle or destroy the resources. It is set when
     // the resources are returned from the VideoFrame (via
@@ -377,7 +379,7 @@ viz::SharedImageFormat OutputFormatToSharedImageFormat(
       DCHECK_LE(plane, 2u);
       // We have GMBs per plane for I420 so create shared images per plane
       // as well.
-      // TODO(hitawala): Create single GMB and shared image.
+      // TODO(hitawala): Remove OutputFormat::I420 cases.
       return viz::SinglePlaneFormat::kR_8;
     case GpuVideoAcceleratorFactories::OutputFormat::YV12:
       DCHECK_EQ(plane, 0u);
@@ -392,7 +394,7 @@ viz::SharedImageFormat OutputFormatToSharedImageFormat(
       DCHECK_LE(plane, 1u);
       // We have GMBs per plane for NV12_DUAL_GMB so create shared images
       // per plane as well.
-      // TODO(hitawala): Create single GMB and shared image.
+      // TODO(hitawala): Remove OutputFormat::NV12_DUAL_GMB cases.
       return plane == 0 ? viz::SinglePlaneFormat::kR_8
                         : viz::SinglePlaneFormat::kRG_88;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
@@ -1310,84 +1312,82 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     return nullptr;
   }
 
-  scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
   bool is_webgpu_compatible = false;
-  // Set up the planes creating the mailboxes needed to refer to the textures.
-  for (size_t plane = 0; plane < NumGpuMemoryBuffers(output_format_); plane++) {
-    PlaneResource& plane_resource = frame_resources->plane_resources[plane];
-    gfx::GpuMemoryBuffer* gpu_memory_buffer =
-        frame_resources->plane_resources[plane].gpu_memory_buffer.get();
+  CHECK_EQ(NumGpuMemoryBuffers(output_format_), 1u);
 
-    // This method is only expected to be called when there is a GMB or
-    // MappableSI and copy to it after mapping didn't fail.
-    CHECK((is_mappable_si_enabled_ && plane_resource.shared_image) ||
-          (!is_mappable_si_enabled_ && gpu_memory_buffer));
+  PlaneResource& plane_resource = frame_resources->plane_resources[0];
+  gfx::GpuMemoryBuffer* gpu_memory_buffer =
+      frame_resources->plane_resources[0].gpu_memory_buffer.get();
 
-    auto handle =
-        is_mappable_si_enabled_
-            ? plane_resource.shared_image->CloneGpuMemoryBufferHandle()
-            : gpu_memory_buffer->CloneHandle();
+  // This method is only expected to be called when there is a GMB or
+  // MappableSI and copy to it after mapping didn't fail.
+  CHECK((is_mappable_si_enabled_ && plane_resource.shared_image) ||
+        (!is_mappable_si_enabled_ && gpu_memory_buffer));
 
-    // Log software/hardware backed GpuMemoryBuffer's `output_format_` used to
-    // create the shared image.
-    if (handle.type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
-      UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatSoftwareGmb",
-                                output_format_);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatHardwareGmb",
-                                output_format_);
-    }
+  auto handle = is_mappable_si_enabled_
+                    ? plane_resource.shared_image->CloneGpuMemoryBufferHandle()
+                    : gpu_memory_buffer->CloneHandle();
+
+  // Log software/hardware backed GpuMemoryBuffer's `output_format_` used to
+  // create the shared image.
+  if (handle.type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+    UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatSoftwareGmb",
+                              output_format_);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatHardwareGmb",
+                              output_format_);
+  }
 
 #if BUILDFLAG(IS_MAC)
-    // Shared image uses iosurface as native resource which is compatible to
-    // WebGPU always.
-    is_webgpu_compatible =
-        media::IOSurfaceIsWebGPUCompatible(handle.io_surface.get());
+  // Shared image uses iosurface as native resource which is compatible to
+  // WebGPU always.
+  is_webgpu_compatible =
+      media::IOSurfaceIsWebGPUCompatible(handle.io_surface.get());
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    is_webgpu_compatible =
-        handle.native_pixmap_handle.supports_zero_copy_webgpu_import;
+  is_webgpu_compatible =
+      handle.native_pixmap_handle.supports_zero_copy_webgpu_import;
 #endif
 
-    // Bind the texture and create or rebind the image. This image may be read
-    // via the raster interface for import into canvas and/or 2-copy import into
-    // WebGL as well as potentially being read via the GLES interface for 1-copy
-    // import into WebGL.
-    // Note that when MappableSI is enabled via |is_mappable_si_enabled_|, we
-    // don't need to create a shared image here as we have already created a
-    // MappableSI instead of creating GpuMemoryBuffer in
-    // ::GetOrCreateFrameResource().
-    if (!is_mappable_si_enabled_ && !plane_resource.shared_image) {
-      constexpr char kDebugLabel[] = "MediaGmbVideoFramePool";
-      viz::SharedImageFormat si_format =
-          OutputFormatToSharedImageFormat(output_format_, plane);
-      if (handle.type != gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
-        SetPrefersExternalSampler(si_format);
-      }
-      plane_resource.shared_image =
-          sii->CreateSharedImage({si_format, gpu_memory_buffer->GetSize(),
-                                  color_space, si_usage_, kDebugLabel},
-                                 std::move(handle));
-      CHECK(plane_resource.shared_image);
-    } else {
-      sii->UpdateSharedImage(frame_resources->sync_token,
-                             plane_resource.shared_image->mailbox());
+  // Bind the texture and create or rebind the image. This image may be read
+  // via the raster interface for import into canvas and/or 2-copy import into
+  // WebGL as well as potentially being read via the GLES interface for 1-copy
+  // import into WebGL.
+  // Note that when MappableSI is enabled via |is_mappable_si_enabled_|, we
+  // don't need to create a shared image here as we have already created a
+  // MappableSI instead of creating GpuMemoryBuffer in
+  // ::GetOrCreateFrameResource().
+  if (!is_mappable_si_enabled_ && !plane_resource.shared_image) {
+    constexpr char kDebugLabel[] = "MediaGmbVideoFramePool";
+    viz::SharedImageFormat si_format =
+        OutputFormatToSharedImageFormat(output_format_, /*plane=*/0);
+    if (handle.type != gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+      SetPrefersExternalSampler(si_format);
     }
-    shared_images[plane] = plane_resource.shared_image;
+    plane_resource.shared_image =
+        sii->CreateSharedImage({si_format, gpu_memory_buffer->GetSize(),
+                                color_space, si_usage_, kDebugLabel},
+                               std::move(handle));
+    CHECK(plane_resource.shared_image);
+  } else {
+    sii->UpdateSharedImage(frame_resources->sync_token,
+                           plane_resource.shared_image->mailbox());
   }
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      plane_resource.shared_image;
 
   // Insert a sync_token, this is needed to make sure that the textures the
   // mailboxes refer to will be used only after all the previous commands posted
   // in the SharedImageInterface have been processed.
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
-  auto texture_target = shared_images[0]->GetTextureTarget();
+  auto texture_target = shared_image->GetTextureTarget();
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
 
   // Create the VideoFrame backed by native textures.
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImages(
-      frame_format, shared_images, sync_token, texture_target,
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
+      frame_format, shared_image, sync_token, texture_target,
       VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect, natural_size,
       timestamp);
 
@@ -1405,18 +1405,11 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     frame->set_ycbcr_info(ycbcr_info);
   }
 
-  if (NumGpuMemoryBuffers(output_format_) == 1) {
-    // Set type only for NV12_SINGLE_GMB and P010 cases. For NV12_DUAL_GMB and
-    // I420 cases there are still multiple GMBs with one for each plane so we
-    // have multiple shared images and it still goes through the legacy
-    // multiplanar path.
+  frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  if (plane_resource.shared_image->format().PrefersExternalSampler()) {
     frame->set_shared_image_format_type(
-        SharedImageFormatType::kSharedImageFormat);
-    PlaneResource& resource = frame_resources->plane_resources[0];
-    if (resource.shared_image->format().PrefersExternalSampler()) {
-      frame->set_shared_image_format_type(
-          SharedImageFormatType::kSharedImageFormatExternalSampler);
-    }
+        SharedImageFormatType::kSharedImageFormatExternalSampler);
   }
 
   bool allow_overlay = false;
