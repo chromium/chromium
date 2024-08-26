@@ -174,9 +174,8 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
   latest_selected_card_was_virtual_card_ = false;
   switch (credit_card.record_type()) {
     case CreditCard::RecordType::kLocalCard:
-    case CreditCard::RecordType::kFullServerCard:
-      // No need to log selections for local/full-server cards -- a selection is
-      // always followed by a form fill, which is logged separately.
+      // No need to log selections for local cards -- a selection is always
+      // followed by a form fill, which is logged separately.
       break;
     case CreditCard::RecordType::kMaskedServerCard:
       Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, form);
@@ -220,6 +219,13 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
         Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED_ONCE, form);
       }
       break;
+    case CreditCard::RecordType::kFullServerCard:
+      // Full server cards are a temporary cached state that do not exist as
+      // suggestions, and so should never be passed to this method. Even when a
+      // card is being re-filled in a page, the suggestion itself is a
+      // kMaskedServerCard and its corresponding kFullServerCard is looked up in
+      // a cache during the fill.
+      NOTREACHED();
   }
 
   autofill_metrics::LogAcceptanceLatency(
