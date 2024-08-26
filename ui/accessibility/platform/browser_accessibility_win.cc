@@ -14,15 +14,15 @@ namespace ui {
 // static
 std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
-    ui::AXNode* node) {
+    AXNode* node) {
   return base::WrapUnique(new BrowserAccessibilityWin(manager, node));
 }
 
 BrowserAccessibilityWin::BrowserAccessibilityWin(
     BrowserAccessibilityManager* manager,
-    ui::AXNode* node)
+    AXNode* node)
     : BrowserAccessibility(manager, node) {
-  ui::win::CreateATLModuleIfNeeded();
+  win::CreateATLModuleIfNeeded();
   HRESULT hr = CComObject<BrowserAccessibilityComWin>::CreateInstance(
       &browser_accessibility_com_.AsEphemeralRawAddr());
   DCHECK(SUCCEEDED(hr));
@@ -52,7 +52,7 @@ std::wstring BrowserAccessibilityWin::ComputeListItemNameFromContent() const {
       node()->GetFirstChild()->GetRole() == ax::mojom::Role::kListMarker) {
     offset = 1;
   }
-  auto start_position = ui::AXNodePosition::CreatePosition(*node(), offset);
+  auto start_position = AXNodePosition::CreatePosition(*node(), offset);
   auto end_position = start_position->CreatePositionAtEndOfAnchor();
   auto range = AXRange(std::move(start_position), std::move(end_position));
   // TODO(accessibility): We're aware that there is an issue with no space being
@@ -60,8 +60,8 @@ std::wstring BrowserAccessibilityWin::ComputeListItemNameFromContent() const {
   // names. For instance if we have a <li> with a child <ul> which has <li> as
   // children.
   str = base::UTF16ToWide(
-      range.GetText(ui::AXTextConcatenationBehavior::kWithoutParagraphBreaks,
-                    ui::AXEmbeddedObjectBehavior::kSuppressCharacter));
+      range.GetText(AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                    AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   return str;
 }
@@ -82,7 +82,7 @@ bool BrowserAccessibilityWin::CanFireEvents() const {
   return BrowserAccessibility::CanFireEvents();
 }
 
-ui::AXPlatformNode* BrowserAccessibilityWin::GetAXPlatformNode() const {
+AXPlatformNode* BrowserAccessibilityWin::GetAXPlatformNode() const {
   return GetCOM();
 }
 
@@ -96,8 +96,8 @@ std::u16string BrowserAccessibilityWin::GetHypertext() const {
 
 const std::vector<gfx::NativeViewAccessible>
 BrowserAccessibilityWin::GetUIADirectChildrenInRange(
-    ui::AXPlatformNodeDelegate* start,
-    ui::AXPlatformNodeDelegate* end) {
+    AXPlatformNodeDelegate* start,
+    AXPlatformNodeDelegate* end) {
   std::vector<gfx::NativeViewAccessible> descendants;
 
   if (!IsIgnored() && !ShouldHideChildrenForUIA() && PlatformChildCount() > 0) {
@@ -133,8 +133,9 @@ BrowserAccessibilityWin::GetUIADirectChildrenInRange(
 
       // The only children that should be returned are the ones that are
       // unignored UIA embedded objects.
-      if (in_range && ui::IsUIAEmbeddedObject(child->GetRole()))
+      if (in_range && IsUIAEmbeddedObject(child->GetRole())) {
         descendants.emplace_back(child->GetNativeViewAccessible());
+      }
 
       // Don't include the nodes that follow the end of the range.
       if (end_wrapper &&
@@ -165,7 +166,7 @@ const BrowserAccessibilityWin* ToBrowserAccessibilityWin(
   return static_cast<const BrowserAccessibilityWin*>(obj);
 }
 
-ui::TextAttributeList BrowserAccessibilityWin::ComputeTextAttributes() const {
+TextAttributeList BrowserAccessibilityWin::ComputeTextAttributes() const {
   return GetCOM()->AXPlatformNodeWin::ComputeTextAttributes();
 }
 
@@ -173,4 +174,4 @@ bool BrowserAccessibilityWin::ShouldHideChildrenForUIA() const {
   return GetCOM()->AXPlatformNodeWin::ShouldHideChildrenForUIA();
 }
 
-}  // namespace content
+}  // namespace ui

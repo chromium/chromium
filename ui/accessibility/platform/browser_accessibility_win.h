@@ -38,23 +38,22 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityWin : public BrowserAcce
   //
 
   bool CanFireEvents() const override;
-  ui::AXPlatformNode* GetAXPlatformNode() const override;
+  AXPlatformNode* GetAXPlatformNode() const override;
   void OnLocationChanged() override;
   std::u16string GetHypertext() const override;
 
   const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(
-      ui::AXPlatformNodeDelegate* start,
-      ui::AXPlatformNodeDelegate* end) override;
+      AXPlatformNodeDelegate* start,
+      AXPlatformNodeDelegate* end) override;
 
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
 
   class BrowserAccessibilityComWin* GetCOM() const;
 
  protected:
-  BrowserAccessibilityWin(BrowserAccessibilityManager* manager,
-                          ui::AXNode* node);
+  BrowserAccessibilityWin(BrowserAccessibilityManager* manager, AXNode* node);
 
-  ui::TextAttributeList ComputeTextAttributes() const override;
+  TextAttributeList ComputeTextAttributes() const override;
 
   bool ShouldHideChildrenForUIA() const;
 
@@ -70,6 +69,6 @@ COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityWin* ToBrowserAccessibilityWin
 COMPONENT_EXPORT(AX_PLATFORM) const BrowserAccessibilityWin* ToBrowserAccessibilityWin(
     const BrowserAccessibility* obj);
 
-}  // namespace content
+}  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_WIN_H_

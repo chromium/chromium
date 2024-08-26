@@ -10,12 +10,11 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 namespace ui {
 
-class TestAXPlatformTreeManagerDelegate
-    : public ui::AXPlatformTreeManagerDelegate {
+class TestAXPlatformTreeManagerDelegate : public AXPlatformTreeManagerDelegate {
  public:
   TestAXPlatformTreeManagerDelegate();
 
-  void AccessibilityPerformAction(const ui::AXActionData& data) override;
+  void AccessibilityPerformAction(const AXActionData& data) override;
   bool AccessibilityViewHasFocus() override;
   void AccessibilityViewSetFocus() override;
   gfx::Rect AccessibilityGetViewBounds() override;
@@ -29,8 +28,8 @@ class TestAXPlatformTreeManagerDelegate
       const gfx::Point& point_in_frame_pixels,
       const ax::mojom::Event& opt_event_to_fire,
       int opt_request_id,
-      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
-                              ui::AXNodeID hit_node_id)> opt_callback) override;
+      base::OnceCallback<void(AXPlatformTreeManager* hit_manager,
+                              AXNodeID hit_node_id)> opt_callback) override;
   gfx::NativeWindow GetTopLevelNativeWindow() override;
   bool CanFireAccessibilityEvents() const override;
   bool AccessibilityIsRootFrame() const override;

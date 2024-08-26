@@ -96,11 +96,11 @@ class AXPlatformNodeTextChildProviderTest : public AXPlatformNodeWinTest {
     // If the element does not support ITextChildProvider, create one anyways
     // for testing purposes.
     if (!text_child_provider) {
-      ui::AXPlatformNodeWin* platform_node =
-          (ui::AXPlatformNodeWin*)raw_element_provider.Get();
+      AXPlatformNodeWin* platform_node =
+          (AXPlatformNodeWin*)raw_element_provider.Get();
 
       ComPtr<ITextChildProvider> new_child_provider =
-          ui::AXPlatformNodeTextChildProviderWin::Create(platform_node);
+          AXPlatformNodeTextChildProviderWin::Create(platform_node);
       new_child_provider->QueryInterface(IID_PPV_ARGS(&text_child_provider));
     }
   }

@@ -72,22 +72,22 @@ namespace ui {
     EXPECT_STREQ(text, actual_text.Get());                           \
   }
 
-#define EXPECT_NATIVE_VIEW_ACCESSIBLE_VECTOR_EQ(descendants,                 \
-                                                expected_descendants)        \
-  {                                                                          \
-    size_t count = descendants.size();                                       \
-    EXPECT_EQ(count, expected_descendants.size());                           \
-    for (size_t i = 0; i < count; ++i) {                                     \
-      EXPECT_EQ(ui::AXPlatformNode::FromNativeViewAccessible(descendants[i]) \
-                    ->GetDelegate()                                          \
-                    ->GetData()                                              \
-                    .ToString(),                                             \
-                ui::AXPlatformNode::FromNativeViewAccessible(                \
-                    expected_descendants[i])                                 \
-                    ->GetDelegate()                                          \
-                    ->GetData()                                              \
-                    .ToString());                                            \
-    }                                                                        \
+#define EXPECT_NATIVE_VIEW_ACCESSIBLE_VECTOR_EQ(descendants,                \
+                                                expected_descendants)       \
+  {                                                                         \
+    size_t count = descendants.size();                                      \
+    EXPECT_EQ(count, expected_descendants.size());                          \
+    for (size_t i = 0; i < count; ++i) {                                    \
+      EXPECT_EQ(                                                            \
+          AXPlatformNode::FromNativeViewAccessible(descendants[i])          \
+              ->GetDelegate()                                               \
+              ->GetData()                                                   \
+              .ToString(),                                                  \
+          AXPlatformNode::FromNativeViewAccessible(expected_descendants[i]) \
+              ->GetDelegate()                                               \
+              ->GetData()                                                   \
+              .ToString());                                                 \
+    }                                                                       \
   }
 
 // BrowserAccessibilityWinTest ------------------------------------------------
@@ -103,9 +103,9 @@ class BrowserAccessibilityWinTest : public ::testing::Test {
   ~BrowserAccessibilityWinTest() override;
 
  protected:
-  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
+  std::unique_ptr<TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
-  ui::TestAXNodeIdDelegate node_id_delegate_;
+  TestAXNodeIdDelegate node_id_delegate_;
 
  private:
   void SetUp() override;
@@ -118,9 +118,9 @@ BrowserAccessibilityWinTest::BrowserAccessibilityWinTest() {}
 BrowserAccessibilityWinTest::~BrowserAccessibilityWinTest() {}
 
 void BrowserAccessibilityWinTest::SetUp() {
-  ui::win::CreateATLModuleIfNeeded();
+  win::CreateATLModuleIfNeeded();
   test_browser_accessibility_delegate_ =
-      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+      std::make_unique<TestAXPlatformTreeManagerDelegate>();
 }
 
 // Actual tests ---------------------------------------------------------------
@@ -128,20 +128,20 @@ void BrowserAccessibilityWinTest::SetUp() {
 // Test that BrowserAccessibilityManager correctly releases the tree of
 // BrowserAccessibility instances upon delete.
 TEST_F(BrowserAccessibilityWinTest, TestNoLeaks) {
-  // Create ui::AXNodeData objects for a simple document tree,
+  // Create AXNodeData objects for a simple document tree,
   // representing the accessibility information used to initialize
   // BrowserAccessibilityManager.
-  ui::AXNodeData button;
+  AXNodeData button;
   button.id = 2;
   button.role = ax::mojom::Role::kButton;
   button.SetName("Button");
 
-  ui::AXNodeData checkbox;
+  AXNodeData checkbox;
   checkbox.id = 3;
   checkbox.role = ax::mojom::Role::kCheckBox;
   checkbox.SetName("Checkbox");
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.SetName("Document");
@@ -149,7 +149,7 @@ TEST_F(BrowserAccessibilityWinTest, TestNoLeaks) {
   root.child_ids.push_back(3);
 
   // Construct a BrowserAccessibilityManager with this
-  // ui::AXNodeData tree and a factory for an instance-counting
+  // AXNodeData tree and a factory for an instance-counting
   // BrowserAccessibility, and ensure that exactly 3 instances were
   // created. Note that the manager takes ownership of the factory.
   std::unique_ptr<BrowserAccessibilityManager> manager(
@@ -188,22 +188,22 @@ TEST_F(BrowserAccessibilityWinTest, TestNoLeaks) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestChildrenChange) {
-  // Create ui::AXNodeData objects for a simple document tree,
+  // Create AXNodeData objects for a simple document tree,
   // representing the accessibility information used to initialize
   // BrowserAccessibilityManager.
-  ui::AXNodeData text;
+  AXNodeData text;
   text.id = 2;
   text.role = ax::mojom::Role::kStaticText;
   text.SetName("old text");
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.SetName("Document");
   root.child_ids.push_back(2);
 
   // Construct a BrowserAccessibilityManager with this
-  // ui::AXNodeData tree and a factory for an instance-counting
+  // AXNodeData tree and a factory for an instance-counting
   // BrowserAccessibility.
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
@@ -234,11 +234,11 @@ TEST_F(BrowserAccessibilityWinTest, TestChildrenChange) {
   text_accessible.Reset();
 
   // Notify the BrowserAccessibilityManager that the text child has changed.
-  ui::AXNodeData text2;
+  AXNodeData text2;
   text2.id = 2;
   text2.role = ax::mojom::Role::kStaticText;
   text2.SetName("new text");
-  ui::AXUpdatesAndEvents event_bundle;
+  AXUpdatesAndEvents event_bundle;
   event_bundle.updates.resize(1);
   event_bundle.updates[0].nodes.push_back(text2);
   ASSERT_TRUE(manager->OnAccessibilityEvents(event_bundle));
@@ -266,31 +266,31 @@ TEST_F(BrowserAccessibilityWinTest, TestChildrenChange) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestChildrenChangeNoLeaks) {
-  // Create ui::AXNodeData objects for a simple document tree,
+  // Create AXNodeData objects for a simple document tree,
   // representing the accessibility information used to initialize
   // BrowserAccessibilityManager.
-  ui::AXNodeData div;
+  AXNodeData div;
   div.id = 2;
   div.role = ax::mojom::Role::kGroup;
 
-  ui::AXNodeData text3;
+  AXNodeData text3;
   text3.id = 3;
   text3.role = ax::mojom::Role::kStaticText;
 
-  ui::AXNodeData text4;
+  AXNodeData text4;
   text4.id = 4;
   text4.role = ax::mojom::Role::kStaticText;
 
   div.child_ids.push_back(3);
   div.child_ids.push_back(4);
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids.push_back(2);
 
   // Construct a BrowserAccessibilityManager with this
-  // ui::AXNodeData tree and a factory for an instance-counting
+  // AXNodeData tree and a factory for an instance-counting
   // BrowserAccessibility and ensure that exactly 4 instances were
   // created. Note that the manager takes ownership of the factory.
   std::unique_ptr<BrowserAccessibilityManager> manager(
@@ -301,7 +301,7 @@ TEST_F(BrowserAccessibilityWinTest, TestChildrenChangeNoLeaks) {
   // Notify the BrowserAccessibilityManager that the div node and its children
   // were removed and ensure that only one BrowserAccessibility instance exists.
   root.child_ids.clear();
-  ui::AXUpdatesAndEvents event_bundle;
+  AXUpdatesAndEvents event_bundle;
   event_bundle.updates.resize(1);
   event_bundle.updates[0].nodes.push_back(root);
   ASSERT_TRUE(manager->OnAccessibilityEvents(event_bundle));
@@ -330,27 +330,27 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
   std::string line3 = "Seven eight nine.";
   std::string text_value = line1 + '\n' + line2 + '\n' + line3;
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
-  ui::AXNodeData text_field;
+  AXNodeData text_field;
   text_field.id = 2;
-  ui::AXNodeData text_container;
+  AXNodeData text_container;
   text_container.id = 3;
-  ui::AXNodeData static_text1;
+  AXNodeData static_text1;
   static_text1.id = 4;
-  ui::AXNodeData inline_box1;
+  AXNodeData inline_box1;
   inline_box1.id = 5;
-  ui::AXNodeData line_break1;
+  AXNodeData line_break1;
   line_break1.id = 6;
-  ui::AXNodeData static_text2;
+  AXNodeData static_text2;
   static_text2.id = 7;
-  ui::AXNodeData inline_box2;
+  AXNodeData inline_box2;
   inline_box2.id = 8;
-  ui::AXNodeData line_break2;
+  AXNodeData line_break2;
   line_break2.id = 9;
-  ui::AXNodeData static_text3;
+  AXNodeData static_text3;
   static_text3.id = 10;
-  ui::AXNodeData inline_box3;
+  AXNodeData inline_box3;
   inline_box3.id = 11;
 
   root.role = ax::mojom::Role::kRootWebArea;
@@ -632,17 +632,17 @@ TEST_F(BrowserAccessibilityWinTest, TestSimpleHypertext) {
   const std::string text2_name = " Four five six.";
   const LONG text_name_len = text1_name.length() + text2_name.length();
 
-  ui::AXNodeData text1;
+  AXNodeData text1;
   text1.id = 11;
   text1.role = ax::mojom::Role::kStaticText;
   text1.SetName(text1_name);
 
-  ui::AXNodeData text2;
+  AXNodeData text2;
   text2.id = 12;
   text2.role = ax::mojom::Role::kStaticText;
   text2.SetName(text2_name);
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids.push_back(text1.id);
@@ -705,17 +705,17 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   const std::u16string link_text_name = u"Blue";
   // Each control (combo / check box, button and link) will be represented by an
   // embedded object character.
-  const std::u16string embed(1, ui::AXPlatformNodeBase::kEmbeddedCharacter);
+  const std::u16string embed(1, AXPlatformNodeBase::kEmbeddedCharacter);
   const std::u16string root_hypertext =
       text1_name + embed + text2_name + embed + embed + embed;
   const LONG root_hypertext_len = root_hypertext.length();
 
-  ui::AXNodeData text1;
+  AXNodeData text1;
   text1.id = 11;
   text1.role = ax::mojom::Role::kStaticText;
   text1.SetName(base::UTF16ToUTF8(text1_name));
 
-  ui::AXNodeData combo_box;
+  AXNodeData combo_box;
   combo_box.id = 12;
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
@@ -724,12 +724,12 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   combo_box.SetName(base::UTF16ToUTF8(combo_box_name));
   combo_box.SetValue(base::UTF16ToUTF8(combo_box_value));
 
-  ui::AXNodeData text2;
+  AXNodeData text2;
   text2.id = 13;
   text2.role = ax::mojom::Role::kStaticText;
   text2.SetName(base::UTF16ToUTF8(text2_name));
 
-  ui::AXNodeData check_box;
+  AXNodeData check_box;
   check_box.id = 14;
   check_box.role = ax::mojom::Role::kCheckBox;
   check_box.SetCheckedState(ax::mojom::CheckedState::kTrue);
@@ -738,7 +738,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   check_box.SetNameFrom(ax::mojom::NameFrom::kContents);
   check_box.SetValue(base::UTF16ToUTF8(check_box_value));
 
-  ui::AXNodeData button, button_text;
+  AXNodeData button, button_text;
   button.id = 15;
   button_text.id = 17;
   button.role = ax::mojom::Role::kButton;
@@ -750,7 +750,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   button_text.SetName(base::UTF16ToUTF8(button_text_name));
   button.child_ids.push_back(button_text.id);
 
-  ui::AXNodeData link, link_text;
+  AXNodeData link, link_text;
   link.id = 16;
   link_text.id = 18;
   link.role = ax::mojom::Role::kLink;
@@ -758,7 +758,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   link_text.SetName(base::UTF16ToUTF8(link_text_name));
   link.child_ids.push_back(link_text.id);
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids.push_back(text1.id);
@@ -866,67 +866,67 @@ TEST_F(BrowserAccessibilityWinTest, TestGetUIADirectChildrenInRange) {
   // |       |      |                |                  |       |      |
   // text1   text2  text3            text4              text_5  image  text6
 
-  ui::AXNodeData text1;
+  AXNodeData text1;
   text1.id = 111;
   text1.role = ax::mojom::Role::kStaticText;
   text1.SetName("One two three.");
 
-  ui::AXNodeData text2;
+  AXNodeData text2;
   text2.id = 112;
   text2.role = ax::mojom::Role::kStaticText;
   text2.SetName("Two three four.");
 
-  ui::AXNodeData text3;
+  AXNodeData text3;
   text3.id = 113;
   text3.role = ax::mojom::Role::kStaticText;
   text3.SetName("Three four five.");
   text3.AddState(ax::mojom::State::kIgnored);
 
-  ui::AXNodeData text4;
+  AXNodeData text4;
   text4.id = 114;
   text4.role = ax::mojom::Role::kStaticText;
   text4.SetName("four five six.");
 
-  ui::AXNodeData text5;
+  AXNodeData text5;
   text5.id = 115;
   text5.role = ax::mojom::Role::kStaticText;
   text5.SetName("five six seven.");
 
-  ui::AXNodeData image;
+  AXNodeData image;
   image.id = 116;
   image.role = ax::mojom::Role::kImage;
 
-  ui::AXNodeData text6;
+  AXNodeData text6;
   text6.id = 117;
   text6.role = ax::mojom::Role::kStaticText;
   text6.SetName("six seven eight.");
 
-  ui::AXNodeData para1;
+  AXNodeData para1;
   para1.id = 11;
   para1.role = ax::mojom::Role::kParagraph;
   para1.child_ids = {text1.id, text2.id};
 
-  ui::AXNodeData link1;
+  AXNodeData link1;
   link1.id = 12;
   link1.role = ax::mojom::Role::kLink;
   link1.child_ids = {text3.id};
   link1.AddState(ax::mojom::State::kIgnored);
 
-  ui::AXNodeData link2;
+  AXNodeData link2;
   link2.id = 13;
   link2.role = ax::mojom::Role::kLink;
   link2.child_ids = {text4.id};
 
-  ui::AXNodeData button;
+  AXNodeData button;
   button.id = 14;
   button.role = ax::mojom::Role::kButton;
 
-  ui::AXNodeData para2;
+  AXNodeData para2;
   para2.id = 15;
   para2.role = ax::mojom::Role::kParagraph;
   para2.child_ids = {text5.id, image.id, text6.id};
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids = {para1.id, link1.id, link2.id, button.id, para2.id};
@@ -1015,17 +1015,17 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
 
   // Verify the root is as we expect by default.
   BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
-  EXPECT_EQ(ui::kInitialEmptyDocumentRootNodeID, root->GetId());
+  EXPECT_EQ(kInitialEmptyDocumentRootNodeID, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
 
   // Tree with a child textfield.
-  ui::AXNodeData tree1_1;
+  AXNodeData tree1_1;
   tree1_1.id = 1;
   tree1_1.role = ax::mojom::Role::kRootWebArea;
   tree1_1.child_ids.push_back(2);
 
-  ui::AXNodeData tree1_2;
+  AXNodeData tree1_2;
   tree1_2.id = 2;
   tree1_2.role = ax::mojom::Role::kTextField;
   tree1_2.AddState(ax::mojom::State::kEditable);
@@ -1033,7 +1033,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
   tree1_2.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
 
   // Process a load complete.
-  ui::AXUpdatesAndEvents event_bundle;
+  AXUpdatesAndEvents event_bundle;
   event_bundle.updates.resize(1);
   event_bundle.updates[0].node_id_to_clear = root->GetId();
   event_bundle.updates[0].root_id = tree1_1.id;
@@ -1049,12 +1049,12 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
   EXPECT_EQ(2, acc1_2->GetId());
 
   // Tree with a child button.
-  ui::AXNodeData tree2_1;
+  AXNodeData tree2_1;
   tree2_1.id = 1;
   tree2_1.role = ax::mojom::Role::kRootWebArea;
   tree2_1.child_ids.push_back(3);
 
-  ui::AXNodeData tree2_2;
+  AXNodeData tree2_2;
   tree2_2.id = 3;
   tree2_2.role = ax::mojom::Role::kButton;
 
@@ -1096,22 +1096,21 @@ TEST_F(BrowserAccessibilityWinTest, EmptyDocHasUniqueIdWin) {
 
   // Verify the root is as we expect by default.
   BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
-  EXPECT_EQ(ui::kInitialEmptyDocumentRootNodeID, root->GetId());
+  EXPECT_EQ(kInitialEmptyDocumentRootNodeID, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
 
   BrowserAccessibilityWin* win_root = ToBrowserAccessibilityWin(root);
 
-  ui::AXPlatformNode* node = static_cast<ui::AXPlatformNode*>(
-      ui::AXPlatformNodeWin::GetFromUniqueId(GetUniqueId(win_root)));
+  AXPlatformNode* node = static_cast<AXPlatformNode*>(
+      AXPlatformNodeWin::GetFromUniqueId(GetUniqueId(win_root)));
 
-  ui::AXPlatformNode* other_node =
-      static_cast<ui::AXPlatformNode*>(win_root->GetCOM());
+  AXPlatformNode* other_node = static_cast<AXPlatformNode*>(win_root->GetCOM());
   ASSERT_EQ(node, other_node);
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestIA2Attributes) {
-  ui::AXNodeData pseudo_before;
+  AXNodeData pseudo_before;
   pseudo_before.id = 2;
   pseudo_before.role = ax::mojom::Role::kGenericContainer;
   pseudo_before.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
@@ -1119,13 +1118,13 @@ TEST_F(BrowserAccessibilityWinTest, TestIA2Attributes) {
   pseudo_before.AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
                                    "none");
 
-  ui::AXNodeData checkbox;
+  AXNodeData checkbox;
   checkbox.id = 3;
   checkbox.role = ax::mojom::Role::kCheckBox;
   checkbox.SetCheckedState(ax::mojom::CheckedState::kTrue);
   checkbox.SetName("Checkbox");
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddState(ax::mojom::State::kFocusable);
@@ -1172,11 +1171,11 @@ TEST_F(BrowserAccessibilityWinTest, TestIA2Attributes) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData combo_box, combo_box_text_container, combo_box_text;
+  AXNodeData combo_box, combo_box_text_container, combo_box_text;
   combo_box.id = 2;
   combo_box_text_container.id = 3;
   combo_box_text.id = 4;
@@ -1194,8 +1193,7 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   combo_box.child_ids = {combo_box_text_container.id};
   combo_box_text_container.child_ids = {combo_box_text.id};
 
-  ui::AXNodeData search_box, search_box_text_container, search_box_text,
-      new_line;
+  AXNodeData search_box, search_box_text_container, search_box_text, new_line;
   search_box.id = 5;
   search_box_text_container.id = 6;
   search_box_text.id = 7;
@@ -1217,7 +1215,7 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   search_box.child_ids = {search_box_text_container.id};
   search_box_text_container.child_ids = {search_box_text.id, new_line.id};
 
-  ui::AXNodeData text_field, text_field_text_container;
+  AXNodeData text_field, text_field_text_container;
   text_field.id = 9;
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
@@ -1230,7 +1228,7 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   text_field_text_container.role = ax::mojom::Role::kGenericContainer;
   text_field.child_ids.push_back(text_field_text_container.id);
 
-  ui::AXNodeData link, link_text;
+  AXNodeData link, link_text;
   link.id = 11;
   link_text.id = 12;
   link.role = ax::mojom::Role::kLink;
@@ -1238,7 +1236,7 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   link_text.SetName("Link text");
   link.child_ids.push_back(link_text.id);
 
-  ui::AXNodeData slider, slider_text;
+  AXNodeData slider, slider_text;
   slider.id = 13;
   slider_text.id = 14;
   slider.role = ax::mojom::Role::kSlider;
@@ -1268,7 +1266,7 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   BrowserAccessibilityWin* combo_box_accessible =
       ToBrowserAccessibilityWin(root_accessible->PlatformGetChild(0));
   ASSERT_NE(nullptr, combo_box_accessible);
-  ui::AXTreeData data = manager->GetTreeData();
+  AXTreeData data = manager->GetTreeData();
   data.focus_id = combo_box_accessible->GetId();
   manager->ax_tree()->UpdateDataForTesting(data);
   ASSERT_EQ(combo_box_accessible,
@@ -1349,12 +1347,12 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   line2_word_starts.push_back(25);
   line2_word_starts.push_back(29);
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData textarea, textarea_div, textarea_text;
+  AXNodeData textarea, textarea_div, textarea_text;
   textarea.id = 2;
   textarea_div.id = 3;
   textarea_text.id = 4;
@@ -1373,7 +1371,7 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   textarea.child_ids.push_back(textarea_div.id);
   textarea_div.child_ids.push_back(textarea_text.id);
 
-  ui::AXNodeData textarea_line1, textarea_line2;
+  AXNodeData textarea_line1, textarea_line2;
   textarea_line1.id = 5;
   textarea_line2.id = 6;
   textarea_line1.role = ax::mojom::Role::kInlineTextBox;
@@ -1389,7 +1387,7 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   textarea_text.child_ids.push_back(textarea_line1.id);
   textarea_text.child_ids.push_back(textarea_line2.id);
 
-  ui::AXNodeData text_field, text_field_div, text_field_text;
+  AXNodeData text_field, text_field_div, text_field_text;
   text_field.id = 7;
   text_field_div.id = 8;
   text_field_text.id = 9;
@@ -1409,7 +1407,7 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   text_field.child_ids.push_back(text_field_div.id);
   text_field_div.child_ids.push_back(text_field_text.id);
 
-  ui::AXNodeData text_field_line;
+  AXNodeData text_field_line;
   text_field_line.id = 10;
   text_field_line.role = ax::mojom::Role::kInlineTextBox;
   text_field_line.AddState(ax::mojom::State::kEditable);
@@ -1499,23 +1497,23 @@ TEST_F(BrowserAccessibilityWinTest, TextBoundariesOnlyEmbeddedObjectsNoCrash) {
   //   | +-4 button_2_data
   //   +-5 static_text_data "after"
   //
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData menu_data;
+  AXNodeData menu_data;
   menu_data.id = 2;
   menu_data.role = ax::mojom::Role::kMenu;
 
-  ui::AXNodeData button_1_data;
+  AXNodeData button_1_data;
   button_1_data.id = 3;
   button_1_data.role = ax::mojom::Role::kButton;
 
-  ui::AXNodeData button_2_data;
+  AXNodeData button_2_data;
   button_2_data.id = 4;
   button_2_data.role = ax::mojom::Role::kButton;
 
-  ui::AXNodeData static_text_data;
+  AXNodeData static_text_data;
   static_text_data.id = 5;
   static_text_data.role = ax::mojom::Role::kStaticText;
   static_text_data.SetName("after");
@@ -1540,11 +1538,11 @@ TEST_F(BrowserAccessibilityWinTest, TextBoundariesOnlyEmbeddedObjectsNoCrash) {
   ASSERT_NE(nullptr, menu_accessible_com);
   ASSERT_EQ(ax::mojom::Role::kMenu, menu_accessible_com->GetRole());
 
-  EXPECT_IA2_TEXT_AT_OFFSET(menu_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
-                            /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
-                            /*text=*/
-                            base::as_wcstr(std::u16string{
-                                ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+  EXPECT_IA2_TEXT_AT_OFFSET(
+      menu_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
+      /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
+      /*text=*/
+      base::as_wcstr(std::u16string{AXPlatformNodeBase::kEmbeddedCharacter}));
 }
 
 TEST_F(BrowserAccessibilityWinTest,
@@ -1565,60 +1563,60 @@ TEST_F(BrowserAccessibilityWinTest,
   //     +-12 static_text_3_data "tail"
   //     | +-13 inline_text_3_data "tail"
   //
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData body_data;
+  AXNodeData body_data;
   body_data.id = 2;
   body_data.role = ax::mojom::Role::kGenericContainer;
 
-  ui::AXNodeData static_text_1_data;
+  AXNodeData static_text_1_data;
   static_text_1_data.id = 3;
   static_text_1_data.role = ax::mojom::Role::kStaticText;
   static_text_1_data.SetName("before");
 
-  ui::AXNodeData inline_text_1_data;
+  AXNodeData inline_text_1_data;
   inline_text_1_data.id = 4;
   inline_text_1_data.role = ax::mojom::Role::kInlineTextBox;
   inline_text_1_data.SetName("before");
 
-  ui::AXNodeData menu_data_1;
+  AXNodeData menu_data_1;
   menu_data_1.id = 5;
   menu_data_1.role = ax::mojom::Role::kMenu;
 
-  ui::AXNodeData button_data;
+  AXNodeData button_data;
   button_data.id = 6;
   button_data.role = ax::mojom::Role::kButton;
 
-  ui::AXNodeData button_leaf_container_data;
+  AXNodeData button_leaf_container_data;
   button_leaf_container_data.id = 7;
   button_leaf_container_data.role = ax::mojom::Role::kGenericContainer;
 
-  ui::AXNodeData button_leaf_svg_data;
+  AXNodeData button_leaf_svg_data;
   button_leaf_svg_data.id = 8;
   button_leaf_svg_data.role = ax::mojom::Role::kSvgRoot;
 
-  ui::AXNodeData menu_data_2;
+  AXNodeData menu_data_2;
   menu_data_2.id = 9;
   menu_data_2.role = ax::mojom::Role::kMenu;
 
-  ui::AXNodeData static_text_2_data;
+  AXNodeData static_text_2_data;
   static_text_2_data.id = 10;
   static_text_2_data.role = ax::mojom::Role::kStaticText;
   static_text_2_data.SetName("after");
 
-  ui::AXNodeData inline_text_2_data;
+  AXNodeData inline_text_2_data;
   inline_text_2_data.id = 11;
   inline_text_2_data.role = ax::mojom::Role::kInlineTextBox;
   inline_text_2_data.SetName("after");
 
-  ui::AXNodeData static_text_3_data;
+  AXNodeData static_text_3_data;
   static_text_3_data.id = 12;
   static_text_3_data.role = ax::mojom::Role::kStaticText;
   static_text_3_data.SetName("tail");
 
-  ui::AXNodeData inline_text_3_data;
+  AXNodeData inline_text_3_data;
   inline_text_3_data.id = 13;
   inline_text_3_data.role = ax::mojom::Role::kInlineTextBox;
   inline_text_3_data.SetName("tail");
@@ -1633,9 +1631,9 @@ TEST_F(BrowserAccessibilityWinTest,
   static_text_2_data.child_ids = {inline_text_2_data.id};
   static_text_3_data.child_ids = {inline_text_3_data.id};
 
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate update;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   tree_data.focused_tree_id = tree_data.tree_id;
   update.tree_data = tree_data;
   update.has_tree_data = true;
@@ -1715,18 +1713,18 @@ TEST_F(BrowserAccessibilityWinTest,
                             /*text=*/L"e");
 
   // L"before" <[obj]> [obj] L"after" L"tail"
-  EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
-                            /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
-                            /*text=*/
-                            base::as_wcstr(std::u16string{
-                                ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+  EXPECT_IA2_TEXT_AT_OFFSET(
+      body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
+      /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
+      /*text=*/
+      base::as_wcstr(std::u16string{AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" [obj] <[obj]> L"after" L"tail"
-  EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
-                            /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
-                            /*text=*/
-                            base::as_wcstr(std::u16string{
-                                ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+  EXPECT_IA2_TEXT_AT_OFFSET(
+      body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
+      /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
+      /*text=*/
+      base::as_wcstr(std::u16string{AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" [obj] [obj] L"<a>fter" L"tail"
   EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 8, IA2_TEXT_BOUNDARY_CHAR,
@@ -1781,11 +1779,11 @@ TEST_F(BrowserAccessibilityWinTest,
                             /*text=*/nullptr);
 
   // <[obj]>
-  EXPECT_IA2_TEXT_AT_OFFSET(menu_1_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
-                            /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
-                            /*text=*/
-                            base::as_wcstr(std::u16string{
-                                ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+  EXPECT_IA2_TEXT_AT_OFFSET(
+      menu_1_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
+      /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
+      /*text=*/
+      base::as_wcstr(std::u16string{AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // [obj]<>
   EXPECT_IA2_TEXT_AT_OFFSET(menu_1_accessible_com, 1, IA2_TEXT_BOUNDARY_CHAR,
@@ -1836,8 +1834,7 @@ TEST_F(BrowserAccessibilityWinTest,
       body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
       /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
       /*text=*/
-      base::as_wcstr(
-          std::u16string{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+      base::as_wcstr(std::u16string{AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" <[obj]> [obj] L"after" L"tail"
   EXPECT_IA2_TEXT_BEFORE_OFFSET(body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
@@ -1862,16 +1859,14 @@ TEST_F(BrowserAccessibilityWinTest,
       body_accessible_com, 5, IA2_TEXT_BOUNDARY_CHAR,
       /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
       /*text=*/
-      base::as_wcstr(
-          std::u16string{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+      base::as_wcstr(std::u16string{AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" <[obj]> [obj] L"after" L"tail"
   EXPECT_IA2_TEXT_AFTER_OFFSET(
       body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
       /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
       /*text=*/
-      base::as_wcstr(
-          std::u16string{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+      base::as_wcstr(std::u16string{AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // <[obj]>
   EXPECT_IA2_TEXT_AFTER_OFFSET(menu_1_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
@@ -1886,12 +1881,12 @@ TEST_F(BrowserAccessibilityWinTest,
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData combo_box;
+  AXNodeData combo_box;
   combo_box.id = 2;
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
@@ -1903,7 +1898,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
   combo_box.AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart, 1);
   combo_box.AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, 1);
 
-  ui::AXNodeData text_field;
+  AXNodeData text_field;
   text_field.id = 3;
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
@@ -1932,7 +1927,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
   BrowserAccessibilityWin* combo_box_accessible =
       ToBrowserAccessibilityWin(root_accessible->PlatformGetChild(0));
   ASSERT_NE(nullptr, combo_box_accessible);
-  ui::AXTreeData data = manager->GetTreeData();
+  AXTreeData data = manager->GetTreeData();
   data.focus_id = combo_box_accessible->GetId();
   data.sel_anchor_object_id = combo_box_accessible->GetId();
   data.sel_focus_object_id = combo_box_accessible->GetId();
@@ -1994,12 +1989,12 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestCaretInContentEditables) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData div_editable;
+  AXNodeData div_editable;
   div_editable.id = 2;
   div_editable.role = ax::mojom::Role::kGenericContainer;
   div_editable.AddState(ax::mojom::State::kEditable);
@@ -2008,14 +2003,14 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretInContentEditables) {
   div_editable.AddBoolAttribute(
       ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
 
-  ui::AXNodeData text;
+  AXNodeData text;
   text.id = 3;
   text.role = ax::mojom::Role::kStaticText;
   text.AddState(ax::mojom::State::kEditable);
   text.AddState(ax::mojom::State::kRichlyEditable);
   text.SetName("Click ");
 
-  ui::AXNodeData link;
+  AXNodeData link;
   link.id = 4;
   link.role = ax::mojom::Role::kLink;
   link.AddState(ax::mojom::State::kEditable);
@@ -2024,7 +2019,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretInContentEditables) {
   link.AddState(ax::mojom::State::kLinked);
   link.SetName("here");
 
-  ui::AXNodeData link_text;
+  AXNodeData link_text;
   link_text.id = 5;
   link_text.role = ax::mojom::Role::kStaticText;
   link_text.AddState(ax::mojom::State::kEditable);
@@ -2038,7 +2033,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretInContentEditables) {
   div_editable.child_ids.push_back(4);
   link.child_ids.push_back(5);
 
-  ui::AXTreeUpdate update =
+  AXTreeUpdate update =
       MakeAXTreeUpdateForTesting(root, div_editable, link, link_text, text);
 
   // Place the caret between 'h' and 'e'.
@@ -2080,7 +2075,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretInContentEditables) {
   EXPECT_EQ(6, caret_offset);
 
   // Move the focus to the content editable.
-  ui::AXTreeData data = manager->GetTreeData();
+  AXTreeData data = manager->GetTreeData();
   data.focus_id = div_editable_accessible->GetId();
   manager->ax_tree()->UpdateDataForTesting(data);
   ASSERT_EQ(div_editable_accessible,
@@ -2124,25 +2119,25 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretInContentEditables) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestSelectionInContentEditables) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData div_editable;
+  AXNodeData div_editable;
   div_editable.id = 2;
   div_editable.role = ax::mojom::Role::kGenericContainer;
   div_editable.AddState(ax::mojom::State::kFocusable);
   div_editable.AddState(ax::mojom::State::kEditable);
 
-  ui::AXNodeData text;
+  AXNodeData text;
   text.id = 3;
   text.role = ax::mojom::Role::kStaticText;
   text.AddState(ax::mojom::State::kFocusable);
   text.AddState(ax::mojom::State::kEditable);
   text.SetName("Click ");
 
-  ui::AXNodeData link;
+  AXNodeData link;
   link.id = 4;
   link.role = ax::mojom::Role::kLink;
   link.AddState(ax::mojom::State::kFocusable);
@@ -2150,7 +2145,7 @@ TEST_F(BrowserAccessibilityWinTest, TestSelectionInContentEditables) {
   link.AddState(ax::mojom::State::kLinked);
   link.SetName("here");
 
-  ui::AXNodeData link_text;
+  AXNodeData link_text;
   link_text.id = 5;
   link_text.role = ax::mojom::Role::kStaticText;
   link_text.AddState(ax::mojom::State::kFocusable);
@@ -2163,7 +2158,7 @@ TEST_F(BrowserAccessibilityWinTest, TestSelectionInContentEditables) {
   div_editable.child_ids.push_back(4);
   link.child_ids.push_back(5);
 
-  ui::AXTreeUpdate update =
+  AXTreeUpdate update =
       MakeAXTreeUpdateForTesting(root, div_editable, link, link_text, text);
 
   // Select the following part of the text: "lick here".
@@ -2253,7 +2248,7 @@ TEST_F(BrowserAccessibilityWinTest, TestSelectionInContentEditables) {
   EXPECT_EQ(7, caret_offset);
 
   // Move the focus to the content editable.
-  ui::AXTreeData data = manager->GetTreeData();
+  AXTreeData data = manager->GetTreeData();
   data.focus_id = div_editable_accessible->GetId();
   manager->ax_tree()->UpdateDataForTesting(data);
   ASSERT_EQ(div_editable_accessible,
@@ -2283,22 +2278,22 @@ TEST_F(BrowserAccessibilityWinTest, TestSelectionInContentEditables) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData div;
+  AXNodeData div;
   div.id = 2;
   div.role = ax::mojom::Role::kGenericContainer;
   div.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData text;
+  AXNodeData text;
   text.id = 3;
   text.role = ax::mojom::Role::kStaticText;
   text.SetName("Click ");
 
-  ui::AXNodeData link;
+  AXNodeData link;
   link.id = 4;
   link.role = ax::mojom::Role::kLink;
   link.AddState(ax::mojom::State::kFocusable);
@@ -2344,7 +2339,7 @@ TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
   base::win::ScopedBstr bstr;
 
   std::u16string div_hypertext(u"Click ");
-  div_hypertext.push_back(ui::AXPlatformNodeBase::kEmbeddedCharacter);
+  div_hypertext.push_back(AXPlatformNodeBase::kEmbeddedCharacter);
 
   // div_accessible and link_accessible are the only IA2 hyperlinks.
   EXPECT_HRESULT_FAILED(
@@ -2444,12 +2439,12 @@ TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData div_editable;
+  AXNodeData div_editable;
   div_editable.id = 2;
   div_editable.role = ax::mojom::Role::kGenericContainer;
   div_editable.AddState(ax::mojom::State::kEditable);
@@ -2460,7 +2455,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   div_editable.AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
                                   "Helvetica");
 
-  ui::AXNodeData text_before;
+  AXNodeData text_before;
   text_before.id = 3;
   text_before.role = ax::mojom::Role::kStaticText;
   text_before.AddState(ax::mojom::State::kEditable);
@@ -2469,7 +2464,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   text_before.AddTextStyle(ax::mojom::TextStyle::kBold);
   text_before.AddTextStyle(ax::mojom::TextStyle::kItalic);
 
-  ui::AXNodeData link;
+  AXNodeData link;
   link.id = 4;
   link.role = ax::mojom::Role::kLink;
   link.AddState(ax::mojom::State::kEditable);
@@ -2479,7 +2474,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   link.SetName("lnk");
   link.AddTextStyle(ax::mojom::TextStyle::kUnderline);
 
-  ui::AXNodeData link_text;
+  AXNodeData link_text;
   link_text.id = 5;
   link_text.role = ax::mojom::Role::kStaticText;
   link_text.AddState(ax::mojom::State::kEditable);
@@ -2501,7 +2496,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   link_text.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
                                 marker_ends);
 
-  ui::AXNodeData text_after;
+  AXNodeData text_after;
   text_after.id = 6;
   text_after.role = ax::mojom::Role::kStaticText;
   text_after.AddState(ax::mojom::State::kEditable);
@@ -2515,7 +2510,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   div_editable.child_ids.push_back(text_after.id);
   link.child_ids.push_back(link_text.id);
 
-  ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(
+  AXTreeUpdate update = MakeAXTreeUpdateForTesting(
       root, div_editable, text_before, link, link_text, text_after);
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
@@ -2693,12 +2688,12 @@ TEST_F(BrowserAccessibilityWinTest,
   LONG value2_length = static_cast<LONG>(value2.length());
   LONG combo_box_value_length = value1_length + value2_length;
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData combo_box;
+  AXNodeData combo_box;
   combo_box.id = 2;
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
@@ -2707,18 +2702,18 @@ TEST_F(BrowserAccessibilityWinTest,
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box.SetValue(value1 + value2);
 
-  ui::AXNodeData combo_box_div;
+  AXNodeData combo_box_div;
   combo_box_div.id = 3;
   combo_box_div.role = ax::mojom::Role::kGenericContainer;
   combo_box_div.AddState(ax::mojom::State::kEditable);
 
-  ui::AXNodeData static_text1;
+  AXNodeData static_text1;
   static_text1.id = 4;
   static_text1.role = ax::mojom::Role::kStaticText;
   static_text1.AddState(ax::mojom::State::kEditable);
   static_text1.SetName(value1);
 
-  ui::AXNodeData static_text2;
+  AXNodeData static_text2;
   static_text2.id = 5;
   static_text2.role = ax::mojom::Role::kStaticText;
   static_text2.AddState(ax::mojom::State::kEditable);
@@ -2808,12 +2803,12 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
   LONG value2_length = static_cast<LONG>(value2.length());
   LONG combo_box_value_length = value1_length + value2_length;
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData combo_box;
+  AXNodeData combo_box;
   combo_box.id = 2;
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
@@ -2822,18 +2817,18 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box.SetValue(value1 + value2);
 
-  ui::AXNodeData combo_box_div;
+  AXNodeData combo_box_div;
   combo_box_div.id = 3;
   combo_box_div.role = ax::mojom::Role::kGenericContainer;
   combo_box_div.AddState(ax::mojom::State::kEditable);
 
-  ui::AXNodeData static_text1;
+  AXNodeData static_text1;
   static_text1.id = 4;
   static_text1.role = ax::mojom::Role::kStaticText;
   static_text1.AddState(ax::mojom::State::kEditable);
   static_text1.SetName(value1);
 
-  ui::AXNodeData static_text2;
+  AXNodeData static_text2;
   static_text2.id = 5;
   static_text2.role = ax::mojom::Role::kStaticText;
   static_text2.AddState(ax::mojom::State::kEditable);
@@ -2885,9 +2880,9 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
                                    marker_starts);
   static_text2.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
                                    marker_ends);
-  ui::AXTree* tree = const_cast<ui::AXTree*>(manager->ax_tree());
+  AXTree* tree = const_cast<AXTree*>(manager->ax_tree());
   ASSERT_NE(nullptr, tree);
-  ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(static_text2);
+  AXTreeUpdate update = MakeAXTreeUpdateForTesting(static_text2);
   update.tree_data.tree_id = manager->GetTreeID();
   ASSERT_TRUE(tree->Unserialize(update));
 
@@ -2928,26 +2923,26 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestDeepestFirstLastChild) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData child1;
+  AXNodeData child1;
   child1.id = 2;
   child1.role = ax::mojom::Role::kStaticText;
   root.child_ids.push_back(2);
 
-  ui::AXNodeData child2;
+  AXNodeData child2;
   child2.id = 3;
   child2.role = ax::mojom::Role::kStaticText;
   root.child_ids.push_back(3);
 
-  ui::AXNodeData child2_child1;
+  AXNodeData child2_child1;
   child2_child1.id = 4;
   child2_child1.role = ax::mojom::Role::kInlineTextBox;
   child2.child_ids.push_back(4);
 
-  ui::AXNodeData child2_child2;
+  AXNodeData child2_child2;
   child2_child2.id = 5;
   child2_child2.role = ax::mojom::Role::kInlineTextBox;
   child2.child_ids.push_back(5);
@@ -3009,30 +3004,30 @@ TEST_F(BrowserAccessibilityWinTest, TestDeepestFirstLastChild) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestInheritedStringAttributes) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "en-US");
   root.AddStringAttribute(ax::mojom::StringAttribute::kFontFamily, "Helvetica");
 
-  ui::AXNodeData child1;
+  AXNodeData child1;
   child1.id = 2;
   child1.role = ax::mojom::Role::kStaticText;
   root.child_ids.push_back(2);
 
-  ui::AXNodeData child2;
+  AXNodeData child2;
   child2.id = 3;
   child2.role = ax::mojom::Role::kStaticText;
   child2.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "fr");
   child2.AddStringAttribute(ax::mojom::StringAttribute::kFontFamily, "Arial");
   root.child_ids.push_back(3);
 
-  ui::AXNodeData child2_child1;
+  AXNodeData child2_child1;
   child2_child1.id = 4;
   child2_child1.role = ax::mojom::Role::kInlineTextBox;
   child2.child_ids.push_back(4);
 
-  ui::AXNodeData child2_child2;
+  AXNodeData child2_child2;
   child2_child2.id = 5;
   child2_child2.role = ax::mojom::Role::kInlineTextBox;
   child2.child_ids.push_back(5);
@@ -3085,11 +3080,11 @@ TEST_F(BrowserAccessibilityWinTest, TestInheritedStringAttributes) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, AccChildOnlyReturnsDescendants) {
-  ui::AXNodeData root_node;
+  AXNodeData root_node;
   root_node.id = 1;
   root_node.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData child_node;
+  AXNodeData child_node;
   child_node.id = 2;
   root_node.child_ids.push_back(2);
 
@@ -3114,7 +3109,7 @@ TEST_F(BrowserAccessibilityWinTest, AccChildOnlyReturnsDescendants) {
 
 // TODO(crbug.com/41439880): Disabled due to flakiness.
 TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
   // Reflexive relations should be ignored.
@@ -3122,12 +3117,12 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
   root.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds,
                            describedby_ids);
 
-  ui::AXNodeData child1;
+  AXNodeData child1;
   child1.id = 2;
   child1.role = ax::mojom::Role::kStaticText;
   root.child_ids.push_back(2);
 
-  ui::AXNodeData child2;
+  AXNodeData child2;
   child2.id = 3;
   child2.role = ax::mojom::Role::kStaticText;
   root.child_ids.push_back(3);
@@ -3230,7 +3225,7 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
   std::vector<int32_t> labelledby_ids = {3};
   child1.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                              labelledby_ids);
-  ui::AXUpdatesAndEvents event_bundle;
+  AXUpdatesAndEvents event_bundle;
   event_bundle.updates.resize(1);
   event_bundle.updates[0].nodes.push_back(child1);
   ASSERT_TRUE(manager->OnAccessibilityEvents(event_bundle));
@@ -3241,4 +3236,4 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
   EXPECT_EQ(2, n_relations);
 }
 
-}  // namespace content
+}  // namespace ui

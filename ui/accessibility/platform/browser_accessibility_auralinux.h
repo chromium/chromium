@@ -16,13 +16,13 @@ class AXPlatformNodeAuraLinux;
 class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
  public:
   BrowserAccessibilityAuraLinux(BrowserAccessibilityManager* manager,
-                                ui::AXNode* node);
+                                AXNode* node);
   ~BrowserAccessibilityAuraLinux() override;
   BrowserAccessibilityAuraLinux(const BrowserAccessibilityAuraLinux&) = delete;
   BrowserAccessibilityAuraLinux& operator=(
       const BrowserAccessibilityAuraLinux&) = delete;
 
-  COMPONENT_EXPORT(AX_PLATFORM) ui::AXPlatformNodeAuraLinux* GetNode() const;
+  COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux* GetNode() const;
 
   // This is used to call UpdateHypertext, when a node needs to be
   // updated for some other reason other than via OnAtomicUpdateFinished.
@@ -30,19 +30,19 @@ class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
 
   // BrowserAccessibility methods.
   void OnDataChanged() override;
-  ui::AXPlatformNode* GetAXPlatformNode() const override;
+  AXPlatformNode* GetAXPlatformNode() const override;
   std::u16string GetHypertext() const override;
 
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
 
-  ui::TextAttributeList ComputeTextAttributes() const override;
+  TextAttributeList ComputeTextAttributes() const override;
 
   void SetIsPrimaryWebContentsForWindow() override;
   bool IsPrimaryWebContentsForWindow() const override;
 
  private:
   // TODO: use a unique_ptr since the node is owned by this class.
-  raw_ptr<ui::AXPlatformNodeAuraLinux> platform_node_;
+  raw_ptr<AXPlatformNodeAuraLinux> platform_node_;
 };
 
 COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(

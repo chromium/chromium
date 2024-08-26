@@ -460,7 +460,7 @@ gfx::NativeViewAccessible AXPlatformNodeBase::GetNativeViewAccessible() {
 
 void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   if (event_type == ax::mojom::Event::kAlert) {
-    CHECK(ui::IsAlert(GetRole()))
+    CHECK(IsAlert(GetRole()))
         << "On some platforms, the alert event does not work correctly unless "
            "it is fired on an object with an alert role. Role was "
         << GetRole();
@@ -1601,7 +1601,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("text-model", "a1", attributes);
 
   // Expose input-text type attribute.
-  if (IsAtomicTextField() || ui::IsDateOrTimeInput(GetRole())) {
+  if (IsAtomicTextField() || IsDateOrTimeInput(GetRole())) {
     AddAttributeToList(ax::mojom::StringAttribute::kInputType,
                        "text-input-type", attributes);
   }
@@ -1610,7 +1610,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   if (!details_roles.empty())
     AddAttributeToList("details-roles", details_roles, attributes);
 
-  if (ui::IsLink(GetRole())) {
+  if (IsLink(GetRole())) {
     AddAttributeToList(ax::mojom::StringAttribute::kLinkTarget, "link-target",
                        attributes);
   }
@@ -1758,7 +1758,7 @@ bool AXPlatformNodeBase::ScrollToNode(ScrollType scroll_type) {
       break;
   }
 
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.target_node_id = GetData().id;
   action_data.action = ax::mojom::Action::kScrollToMakeVisible;
   action_data.horizontal_scroll_alignment =
@@ -2378,8 +2378,8 @@ int AXPlatformNodeBase::NearestTextIndexToPoint(gfx::Point point) {
   return nearest_index;
 }
 
-ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
-  ui::TextAttributeList attributes;
+TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
+  TextAttributeList attributes;
 
   // From the IA2 Spec:
   // Occasionally, word processors will automatically generate characters which

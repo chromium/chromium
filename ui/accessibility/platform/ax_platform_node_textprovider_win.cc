@@ -221,7 +221,7 @@ HRESULT AXPlatformNodeTextProviderWin::RangeFromChild(
 
   *range = nullptr;
 
-  Microsoft::WRL::ComPtr<ui::AXPlatformNodeWin> child_platform_node;
+  Microsoft::WRL::ComPtr<AXPlatformNodeWin> child_platform_node;
   if (!SUCCEEDED(child->QueryInterface(IID_PPV_ARGS(&child_platform_node))))
     return UIA_E_INVALIDOPERATION;
 
@@ -307,8 +307,8 @@ HRESULT AXPlatformNodeTextProviderWin::GetConversionTarget(
 }
 
 void AXPlatformNodeTextProviderWin::GetRangeFromChild(
-    ui::AXPlatformNodeWin* ancestor,
-    ui::AXPlatformNodeWin* descendant,
+    AXPlatformNodeWin* ancestor,
+    AXPlatformNodeWin* descendant,
     ITextRangeProvider** range) {
   DCHECK(ancestor);
   DCHECK(descendant);
@@ -354,7 +354,7 @@ void AXPlatformNodeTextProviderWin::GetRangeFromChild(
 }
 
 void AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
-    ui::AXPlatformNodeWin* node,
+    AXPlatformNodeWin* node,
     ITextRangeProvider** text_range_provider) {
   DCHECK(node);
   DCHECK(node->GetDelegate());
@@ -367,7 +367,7 @@ void AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
       std::move(start), std::move(end), text_range_provider);
 }
 
-ui::AXPlatformNodeWin* AXPlatformNodeTextProviderWin::owner() const {
+AXPlatformNodeWin* AXPlatformNodeTextProviderWin::owner() const {
   return owner_.Get();
 }
 

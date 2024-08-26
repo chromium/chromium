@@ -28,7 +28,7 @@ class AXPlatformForTest : public AXPlatform::Delegate {
   void SetProcessMode(AXMode new_mode) override;
   void OnAccessibilityApiUsage() override;
 #if BUILDFLAG(IS_WIN)
-  ui::AXPlatform::ProductStrings GetProductStrings() override;
+  AXPlatform::ProductStrings GetProductStrings() override;
 #endif
 
  private:

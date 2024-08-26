@@ -15,31 +15,30 @@ namespace ui {
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    const ui::AXTreeUpdate& initial_tree,
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
+    const AXTreeUpdate& initial_tree,
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerFuchsia(initial_tree, node_id_delegate,
                                                 delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerFuchsia(
       BrowserAccessibilityManagerFuchsia::GetEmptyDocument(), node_id_delegate,
       delegate);
 }
 
 BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
-    const ui::AXTreeUpdate& initial_tree,
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate)
+    const AXTreeUpdate& initial_tree,
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(node_id_delegate, delegate) {
   Initialize(initial_tree);
 
-  ui::AccessibilityBridgeFuchsia* accessibility_bridge =
-      GetAccessibilityBridge();
+  AccessibilityBridgeFuchsia* accessibility_bridge = GetAccessibilityBridge();
   if (accessibility_bridge) {
     inspect_node_ = accessibility_bridge->GetInspectNode();
     tree_dump_node_ = inspect_node_.CreateLazyNode("tree-data", [this]() {
@@ -66,7 +65,7 @@ BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
 BrowserAccessibilityManagerFuchsia::~BrowserAccessibilityManagerFuchsia() =
     default;
 
-ui::AccessibilityBridgeFuchsia*
+AccessibilityBridgeFuchsia*
 BrowserAccessibilityManagerFuchsia::GetAccessibilityBridge() const {
   if (accessibility_bridge_for_test_)
     return accessibility_bridge_for_test_;
@@ -81,16 +80,16 @@ BrowserAccessibilityManagerFuchsia::GetAccessibilityBridge() const {
     return nullptr;
   }
 
-  ui::AccessibilityBridgeFuchsiaRegistry* accessibility_bridge_registry =
-      ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
+  AccessibilityBridgeFuchsiaRegistry* accessibility_bridge_registry =
+      AccessibilityBridgeFuchsiaRegistry::GetInstance();
   DCHECK(accessibility_bridge_registry);
 
   return accessibility_bridge_registry->GetAccessibilityBridge(
       accessibility_bridge_key);
 }
 
-void BrowserAccessibilityManagerFuchsia::FireFocusEvent(ui::AXNode* node) {
-  ui::AXTreeManager::FireFocusEvent(node);
+void BrowserAccessibilityManagerFuchsia::FireFocusEvent(AXNode* node) {
+  AXTreeManager::FireFocusEvent(node);
 
   if (!GetAccessibilityBridge())
     return;
@@ -109,12 +108,12 @@ void BrowserAccessibilityManagerFuchsia::FireFocusEvent(ui::AXNode* node) {
 }
 
 // static
-ui::AXTreeUpdate BrowserAccessibilityManagerFuchsia::GetEmptyDocument() {
-  ui::AXNodeData empty_document;
-  empty_document.id = ui::kInitialEmptyDocumentRootNodeID;
+AXTreeUpdate BrowserAccessibilityManagerFuchsia::GetEmptyDocument() {
+  AXNodeData empty_document;
+  empty_document.id = kInitialEmptyDocumentRootNodeID;
   empty_document.role = ax::mojom::Role::kRootWebArea;
   empty_document.AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, true);
-  ui::AXTreeUpdate update;
+  AXTreeUpdate update;
   update.root_id = empty_document.id;
   update.nodes.push_back(empty_document);
   return update;
@@ -153,8 +152,7 @@ void BrowserAccessibilityManagerFuchsia::OnHitTestResult(
 }
 
 void BrowserAccessibilityManagerFuchsia::UpdateDeviceScaleFactor() {
-  ui::AccessibilityBridgeFuchsia* accessibility_bridge =
-      GetAccessibilityBridge();
+  AccessibilityBridgeFuchsia* accessibility_bridge = GetAccessibilityBridge();
   if (accessibility_bridge)
     device_scale_factor_ = accessibility_bridge->GetDeviceScaleFactor();
   else
@@ -162,8 +160,8 @@ void BrowserAccessibilityManagerFuchsia::UpdateDeviceScaleFactor() {
 }
 
 void BrowserAccessibilityManagerFuchsia::SetAccessibilityBridgeForTest(
-    ui::AccessibilityBridgeFuchsia* accessibility_bridge_for_test) {
+    AccessibilityBridgeFuchsia* accessibility_bridge_for_test) {
   accessibility_bridge_for_test_ = accessibility_bridge_for_test;
 }
 
-}  // namespace content
+}  // namespace ui

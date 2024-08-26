@@ -32,17 +32,17 @@ namespace ui {
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    const ui::AXTreeUpdate& initial_tree,
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
+    const AXTreeUpdate& initial_tree,
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerMac(initial_tree, node_id_delegate,
                                             delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerMac(
       BrowserAccessibilityManagerMac::GetEmptyDocument(), node_id_delegate,
       delegate);
@@ -54,9 +54,9 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerMac() {
 }
 
 BrowserAccessibilityManagerMac::BrowserAccessibilityManagerMac(
-    const ui::AXTreeUpdate& initial_tree,
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate)
+    const AXTreeUpdate& initial_tree,
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(node_id_delegate, delegate) {
   Initialize(initial_tree);
 }
@@ -64,18 +64,18 @@ BrowserAccessibilityManagerMac::BrowserAccessibilityManagerMac(
 BrowserAccessibilityManagerMac::~BrowserAccessibilityManagerMac() = default;
 
 // static
-ui::AXTreeUpdate BrowserAccessibilityManagerMac::GetEmptyDocument() {
-  ui::AXNodeData empty_document;
-  empty_document.id = ui::kInitialEmptyDocumentRootNodeID;
+AXTreeUpdate BrowserAccessibilityManagerMac::GetEmptyDocument() {
+  AXNodeData empty_document;
+  empty_document.id = kInitialEmptyDocumentRootNodeID;
   empty_document.role = ax::mojom::Role::kRootWebArea;
-  ui::AXTreeUpdate update;
+  AXTreeUpdate update;
   update.root_id = empty_document.id;
   update.nodes.push_back(empty_document);
   return update;
 }
 
-void BrowserAccessibilityManagerMac::FireFocusEvent(ui::AXNode* node) {
-  ui::AXTreeManager::FireFocusEvent(node);
+void BrowserAccessibilityManagerMac::FireFocusEvent(AXNode* node) {
+  AXTreeManager::FireFocusEvent(node);
   FireNativeMacNotification(NSAccessibilityFocusedUIElementChangedNotification,
                             GetFromAXNode(node));
 }
@@ -88,12 +88,12 @@ void BrowserAccessibilityManagerMac::FireBlinkEvent(ax::mojom::Event event_type,
   NSString* mac_notification = nullptr;
   switch (event_type) {
     case ax::mojom::Event::kAutocorrectionOccured:
-      mac_notification = ui::NSAccessibilityAutocorrectionOccurredNotification;
+      mac_notification = NSAccessibilityAutocorrectionOccurredNotification;
       break;
     case ax::mojom::Event::kLoadComplete:
       if (!ShouldFireLoadCompleteNotification())
         return;
-      mac_notification = ui::NSAccessibilityLoadCompleteNotification;
+      mac_notification = NSAccessibilityLoadCompleteNotification;
       break;
     default:
       return;
@@ -119,7 +119,7 @@ void PostAnnouncementNotification(NSString* announcement,
 
 // Check whether the current batch of events contains the event type.
 bool BrowserAccessibilityManagerMac::IsInGeneratedEventBatch(
-    ui::AXEventGenerator::Event event_type) const {
+    AXEventGenerator::Event event_type) const {
   for (const auto& event : event_generator()) {
     if (event.event_params->event == event_type) {
       return true;  // Any side effects will have already been handled.
@@ -129,8 +129,8 @@ bool BrowserAccessibilityManagerMac::IsInGeneratedEventBatch(
 }
 
 void BrowserAccessibilityManagerMac::FireGeneratedEvent(
-    ui::AXEventGenerator::Event event_type,
-    const ui::AXNode* node) {
+    AXEventGenerator::Event event_type,
+    const AXNode* node) {
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
   BrowserAccessibility* wrapper = GetFromAXNode(node);
   DCHECK(wrapper);
@@ -140,7 +140,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
   // Refer to |AXObjectCache::postPlatformNotification| in WebKit source code.
   NSString* mac_notification = nullptr;
   switch (event_type) {
-    case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
+    case AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
       if (wrapper->GetRole() == ax::mojom::Role::kTree) {
         mac_notification = NSAccessibilitySelectedRowsChangedNotification;
       } else if (wrapper->GetRole() ==
@@ -156,34 +156,33 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
       }
       break;
-    case ui::AXEventGenerator::Event::ALERT:
+    case AXEventGenerator::Event::ALERT:
       NSAccessibilityPostNotification(
-          native_node, ui::NSAccessibilityLiveRegionCreatedNotification);
+          native_node, NSAccessibilityLiveRegionCreatedNotification);
       // Voiceover requires a live region changed notification to actually
       // announce the live region.
-      FireGeneratedEvent(ui::AXEventGenerator::Event::LIVE_REGION_CHANGED,
-                         node);
+      FireGeneratedEvent(AXEventGenerator::Event::LIVE_REGION_CHANGED, node);
       return;
-    case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
+    case AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
       // TODO(accessibility) Ask Apple for a notification.
       // There currently is none:
       // https://www.w3.org/TR/core-aam-1.2/#details-id-186
       return;
-    case ui::AXEventGenerator::Event::BUSY_CHANGED:
-      mac_notification = ui::NSAccessibilityElementBusyChangedNotification;
+    case AXEventGenerator::Event::BUSY_CHANGED:
+      mac_notification = NSAccessibilityElementBusyChangedNotification;
       break;
-    case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
+    case AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
-    case ui::AXEventGenerator::Event::COLLAPSED:
+    case AXEventGenerator::Event::COLLAPSED:
       if (wrapper->GetRole() == ax::mojom::Role::kRow ||
           wrapper->GetRole() == ax::mojom::Role::kTreeItem) {
         mac_notification = NSAccessibilityRowCollapsedNotification;
       } else {
-        mac_notification = ui::NSAccessibilityExpandedChanged;
+        mac_notification = NSAccessibilityExpandedChanged;
       }
       break;
-    case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
+    case AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
       mac_notification = NSAccessibilitySelectedTextChangedNotification;
       // WebKit fires a notification both on the focused object and the page
       // root.
@@ -206,25 +205,25 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
           root->GetNativeViewAccessible(), mac_notification, user_info);
       return;
     }
-    case ui::AXEventGenerator::Event::EXPANDED:
+    case AXEventGenerator::Event::EXPANDED:
       if (wrapper->GetRole() == ax::mojom::Role::kRow ||
           wrapper->GetRole() == ax::mojom::Role::kTreeItem) {
         mac_notification = NSAccessibilityRowExpandedNotification;
       } else {
-        mac_notification = ui::NSAccessibilityExpandedChanged;
+        mac_notification = NSAccessibilityExpandedChanged;
       }
       break;
-    case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
-      mac_notification = ui::NSAccessibilityInvalidStatusChangedNotification;
+    case AXEventGenerator::Event::INVALID_STATUS_CHANGED:
+      mac_notification = NSAccessibilityInvalidStatusChangedNotification;
       break;
-    case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED: {
+    case AXEventGenerator::Event::LIVE_REGION_CHANGED: {
       // Voiceover seems to drop live region changed notifications if they come
       // too soon after a live region created notification.
       // TODO(nektar): Limit the number of changed notifications as well.
 
       if (never_suppress_or_delay_events_for_testing_) {
         NSAccessibilityPostNotification(
-            native_node, ui::NSAccessibilityLiveRegionChangedNotification);
+            native_node, NSAccessibilityLiveRegionChangedNotification);
         return;
       }
 
@@ -234,7 +233,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
             root_manager->ToBrowserAccessibilityManagerMac();
         id window = root_manager_mac->GetWindow();
         if ([window isKindOfClass:[NSAccessibilityRemoteUIElement class]]) {
-          // ui::NSAccessibilityLiveRegionChangedNotification seems to require
+          // NSAccessibilityLiveRegionChangedNotification seems to require
           // application be active. Use the announcement API to get around on
           // PWA. Announcement requires active window, so send the announcement
           // notification to the PWA related window. same work around like
@@ -259,18 +258,17 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
               [](BrowserAccessibilityCocoa* wrapper) {
                 if (wrapper && [wrapper instanceActive]) {
                   NSAccessibilityPostNotification(
-                      wrapper,
-                      ui::NSAccessibilityLiveRegionChangedNotification);
+                      wrapper, NSAccessibilityLiveRegionChangedNotification);
                 }
               },
               retained_node),
           base::Milliseconds(kLiveRegionChangeIntervalMS));
       return;
     }
-    case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
-      mac_notification = ui::NSAccessibilityLiveRegionCreatedNotification;
+    case AXEventGenerator::Event::LIVE_REGION_CREATED:
+      mac_notification = NSAccessibilityLiveRegionCreatedNotification;
       break;
-    case ui::AXEventGenerator::Event::MENU_POPUP_END:
+    case AXEventGenerator::Event::MENU_POPUP_END:
       // Calling NSAccessibilityPostNotification on a menu which is about to be
       // closed/destroyed is possible, but the event does not appear to be
       // emitted reliably by the NSAccessibility stack. If VoiceOver is not
@@ -285,23 +283,23 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
           FireNativeMacNotification((NSString*)kAXMenuClosedNotification, root);
       }
       return;
-    case ui::AXEventGenerator::Event::MENU_POPUP_START:
+    case AXEventGenerator::Event::MENU_POPUP_START:
       mac_notification = (NSString*)kAXMenuOpenedNotification;
       break;
-    case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
-      mac_notification = ui::NSAccessibilityMenuItemSelectedNotification;
+    case AXEventGenerator::Event::MENU_ITEM_SELECTED:
+      mac_notification = NSAccessibilityMenuItemSelectedNotification;
       break;
-    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
+    case AXEventGenerator::Event::RANGE_VALUE_CHANGED:
       DCHECK(wrapper->GetData().IsRangeValueSupported())
           << "Range value changed but range values are not supported: "
           << wrapper;
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
-    case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
+    case AXEventGenerator::Event::ROW_COUNT_CHANGED:
       mac_notification = NSAccessibilityRowCountChangedNotification;
       break;
-    case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
-      if (ui::IsTableLike(wrapper->GetRole())) {
+    case AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
+      if (IsTableLike(wrapper->GetRole())) {
         mac_notification = NSAccessibilitySelectedRowsChangedNotification;
       } else {
         // VoiceOver does not read anything if selection changes on the
@@ -314,9 +312,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         if (focus && wrapper == container &&
             container->HasState(ax::mojom::State::kMultiselectable) &&
             !IsInGeneratedEventBatch(
-                ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED) &&
-            !IsInGeneratedEventBatch(
-                ui::AXEventGenerator::Event::FOCUS_CHANGED)) {
+                AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED) &&
+            !IsInGeneratedEventBatch(AXEventGenerator::Event::FOCUS_CHANGED)) {
           // Force announcement of current focus / activedescendant, even though
           // it's not changing. This way, the user can hear the new selection
           // state of the current object. Because VoiceOver ignores focus events
@@ -331,11 +328,11 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         mac_notification = NSAccessibilitySelectedChildrenChangedNotification;
       }
       break;
-    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
-      DCHECK(ui::IsSelectElement(wrapper->GetRole()));
+    case AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
+      DCHECK(IsSelectElement(wrapper->GetRole()));
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
-    case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
+    case AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
       DCHECK(wrapper->IsTextField());
       mac_notification = NSAccessibilityValueChangedNotification;
       if (!text_edits_.empty()) {
@@ -365,66 +362,66 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
       }
       break;
-    case ui::AXEventGenerator::Event::NAME_CHANGED:
+    case AXEventGenerator::Event::NAME_CHANGED:
       mac_notification = NSAccessibilityTitleChangedNotification;
       break;
 
     // Currently unused events on this platform.
-    case ui::AXEventGenerator::Event::NONE:
-    case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
-    case ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED:
-    case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
-    case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
-    case ui::AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
-    case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
-    case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
-    case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
-    case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
-    case ui::AXEventGenerator::Event::DETAILS_CHANGED:
-    case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
-    case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
-    case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
-    case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
-    case ui::AXEventGenerator::Event::ENABLED_CHANGED:
-    case ui::AXEventGenerator::Event::FOCUS_CHANGED:
-    case ui::AXEventGenerator::Event::FLOW_FROM_CHANGED:
-    case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
-    case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
-    case ui::AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
-    case ui::AXEventGenerator::Event::IGNORED_CHANGED:
-    case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
-    case ui::AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
-    case ui::AXEventGenerator::Event::LABELED_BY_CHANGED:
-    case ui::AXEventGenerator::Event::LANGUAGE_CHANGED:
-    case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
-    case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
-    case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
-    case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
-    case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::ORIENTATION_CHANGED:
-    case ui::AXEventGenerator::Event::PARENT_CHANGED:
-    case ui::AXEventGenerator::Event::PLACEHOLDER_CHANGED:
-    case ui::AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
-    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
-    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
-    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
-    case ui::AXEventGenerator::Event::READONLY_CHANGED:
-    case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
-    case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::ROLE_CHANGED:
-    case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
-    case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
-    case ui::AXEventGenerator::Event::SELECTED_CHANGED:
-    case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
-    case ui::AXEventGenerator::Event::SORT_CHANGED:
-    case ui::AXEventGenerator::Event::STATE_CHANGED:
-    case ui::AXEventGenerator::Event::SUBTREE_CREATED:
-    case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
-    case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
+    case AXEventGenerator::Event::NONE:
+    case AXEventGenerator::Event::ACCESS_KEY_CHANGED:
+    case AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED:
+    case AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
+    case AXEventGenerator::Event::ATOMIC_CHANGED:
+    case AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
+    case AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
+    case AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
+    case AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
+    case AXEventGenerator::Event::CHILDREN_CHANGED:
+    case AXEventGenerator::Event::CONTROLS_CHANGED:
+    case AXEventGenerator::Event::DETAILS_CHANGED:
+    case AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
+    case AXEventGenerator::Event::DESCRIPTION_CHANGED:
+    case AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
+    case AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
+    case AXEventGenerator::Event::ENABLED_CHANGED:
+    case AXEventGenerator::Event::FOCUS_CHANGED:
+    case AXEventGenerator::Event::FLOW_FROM_CHANGED:
+    case AXEventGenerator::Event::FLOW_TO_CHANGED:
+    case AXEventGenerator::Event::HASPOPUP_CHANGED:
+    case AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
+    case AXEventGenerator::Event::IGNORED_CHANGED:
+    case AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
+    case AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
+    case AXEventGenerator::Event::LABELED_BY_CHANGED:
+    case AXEventGenerator::Event::LANGUAGE_CHANGED:
+    case AXEventGenerator::Event::LAYOUT_INVALIDATED:
+    case AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
+    case AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
+    case AXEventGenerator::Event::LIVE_STATUS_CHANGED:
+    case AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
+    case AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
+    case AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
+    case AXEventGenerator::Event::ORIENTATION_CHANGED:
+    case AXEventGenerator::Event::PARENT_CHANGED:
+    case AXEventGenerator::Event::PLACEHOLDER_CHANGED:
+    case AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
+    case AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
+    case AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
+    case AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
+    case AXEventGenerator::Event::READONLY_CHANGED:
+    case AXEventGenerator::Event::RELATED_NODE_CHANGED:
+    case AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
+    case AXEventGenerator::Event::ROLE_CHANGED:
+    case AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
+    case AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
+    case AXEventGenerator::Event::SELECTED_CHANGED:
+    case AXEventGenerator::Event::SET_SIZE_CHANGED:
+    case AXEventGenerator::Event::SORT_CHANGED:
+    case AXEventGenerator::Event::STATE_CHANGED:
+    case AXEventGenerator::Event::SUBTREE_CREATED:
+    case AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
+    case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
+    case AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       return;
   }
 
@@ -477,13 +474,13 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
 }
 
 bool BrowserAccessibilityManagerMac::OnAccessibilityEvents(
-    const ui::AXUpdatesAndEvents& details) {
+    const AXUpdatesAndEvents& details) {
   text_edits_.clear();
   return BrowserAccessibilityManager::OnAccessibilityEvents(details);
 }
 
 void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
-    ui::AXTree* tree,
+    AXTree* tree,
     bool root_changed,
     const std::vector<Change>& changes) {
   BrowserAccessibilityManager::OnAtomicUpdateFinished(tree, root_changed,
@@ -514,12 +511,12 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
 NSDictionary* BrowserAccessibilityManagerMac::
     GetUserInfoForSelectedTextChangedNotification() {
   NSMutableDictionary* user_info = [NSMutableDictionary dictionary];
-  user_info[ui::NSAccessibilityTextStateSyncKey] = @YES;
-  user_info[ui::NSAccessibilityTextSelectionDirection] =
-      @(ui::AXTextSelectionDirectionUnknown);
-  user_info[ui::NSAccessibilityTextSelectionGranularity] =
-      @(ui::AXTextSelectionGranularityUnknown);
-  user_info[ui::NSAccessibilityTextSelectionChangedFocus] = @YES;
+  user_info[NSAccessibilityTextStateSyncKey] = @YES;
+  user_info[NSAccessibilityTextSelectionDirection] =
+      @(AXTextSelectionDirectionUnknown);
+  user_info[NSAccessibilityTextSelectionGranularity] =
+      @(AXTextSelectionGranularityUnknown);
+  user_info[NSAccessibilityTextSelectionChangedFocus] = @YES;
 
   // Try to detect when the text selection changes due to a focus change.
   // This is necessary so that VoiceOver also announces information about the
@@ -531,18 +528,18 @@ NSDictionary* BrowserAccessibilityManagerMac::
   DCHECK(focus_object);
 
   if (focus_object != GetFromAXNode(GetLastFocusedNode())) {
-    user_info[ui::NSAccessibilityTextStateChangeTypeKey] =
-        @(ui::AXTextStateChangeTypeSelectionMove);
+    user_info[NSAccessibilityTextStateChangeTypeKey] =
+        @(AXTextStateChangeTypeSelectionMove);
   } else {
-    user_info[ui::NSAccessibilityTextStateChangeTypeKey] =
-        @(ui::AXTextStateChangeTypeUnknown);
+    user_info[NSAccessibilityTextStateChangeTypeKey] =
+        @(AXTextStateChangeTypeUnknown);
   }
 
   focus_object = focus_object->PlatformGetLowestPlatformAncestor();
   BrowserAccessibilityCocoa* native_focus_object =
       focus_object->GetNativeViewAccessible();
   if (native_focus_object && [native_focus_object instanceActive]) {
-    user_info[ui::NSAccessibilityTextChangeElement] = native_focus_object;
+    user_info[NSAccessibilityTextChangeElement] = native_focus_object;
 
     id selected_text = [native_focus_object selectedTextMarkerRange];
     if (selected_text) {
@@ -570,39 +567,39 @@ BrowserAccessibilityManagerMac::GetUserInfoForValueChangedNotification(
   if (!deleted_text.empty()) {
     NSMutableDictionary* change =
         [NSMutableDictionary dictionaryWithDictionary:@{
-          ui::NSAccessibilityTextEditType : @(ui::AXTextEditTypeDelete),
-          ui::NSAccessibilityTextChangeValueLength : @(deleted_text.length()),
-          ui::NSAccessibilityTextChangeValue :
+          NSAccessibilityTextEditType : @(AXTextEditTypeDelete),
+          NSAccessibilityTextChangeValueLength : @(deleted_text.length()),
+          NSAccessibilityTextChangeValue :
               base::SysUTF16ToNSString(deleted_text)
         }];
     if (edit_text_marker) {
-      change[ui::NSAccessibilityChangeValueStartMarker] = edit_text_marker;
+      change[NSAccessibilityChangeValueStartMarker] = edit_text_marker;
     }
     [changes addObject:change];
   }
   if (!inserted_text.empty()) {
     // TODO(nektar): Figure out if this is a paste, insertion or typing.
     // Changes to Blink would be required. A heuristic is currently used.
-    auto edit_type = inserted_text.length() > 1 ? @(ui::AXTextEditTypeInsert)
-                                                : @(ui::AXTextEditTypeTyping);
+    auto edit_type = inserted_text.length() > 1 ? @(AXTextEditTypeInsert)
+                                                : @(AXTextEditTypeTyping);
     NSMutableDictionary* change =
         [NSMutableDictionary dictionaryWithDictionary:@{
-          ui::NSAccessibilityTextEditType : edit_type,
-          ui::NSAccessibilityTextChangeValueLength : @(inserted_text.length()),
-          ui::NSAccessibilityTextChangeValue :
+          NSAccessibilityTextEditType : edit_type,
+          NSAccessibilityTextChangeValueLength : @(inserted_text.length()),
+          NSAccessibilityTextChangeValue :
               base::SysUTF16ToNSString(inserted_text)
         }];
     if (edit_text_marker) {
-      change[ui::NSAccessibilityChangeValueStartMarker] = edit_text_marker;
+      change[NSAccessibilityChangeValueStartMarker] = edit_text_marker;
     }
     [changes addObject:change];
   }
 
   return @{
-    ui::
-    NSAccessibilityTextStateChangeTypeKey : @(ui::AXTextStateChangeTypeEdit),
-    ui::NSAccessibilityTextChangeValues : changes,
-    ui::NSAccessibilityTextChangeElement : native_node
+
+    NSAccessibilityTextStateChangeTypeKey : @(AXTextStateChangeTypeEdit),
+    NSAccessibilityTextChangeValues : changes,
+    NSAccessibilityTextChangeElement : native_node
   };
 }
 
@@ -673,4 +670,4 @@ bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
   return false;
 }
 
-}  // namespace content
+}  // namespace ui

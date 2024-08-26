@@ -12,9 +12,9 @@ namespace ui {
 class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerIOS
     : public BrowserAccessibilityManager {
  public:
-  BrowserAccessibilityManagerIOS(const ui::AXTreeUpdate& initial_tree,
-                                 ui::AXNodeIdDelegate& node_id_delegate,
-                                 ui::AXPlatformTreeManagerDelegate* delegate);
+  BrowserAccessibilityManagerIOS(const AXTreeUpdate& initial_tree,
+                                 AXNodeIdDelegate& node_id_delegate,
+                                 AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerIOS(const BrowserAccessibilityManagerIOS&) =
       delete;
@@ -23,14 +23,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerIOS
 
   ~BrowserAccessibilityManagerIOS() override;
 
-  static ui::AXTreeUpdate GetEmptyDocument();
+  static AXTreeUpdate GetEmptyDocument();
 
   // BrowserAccessibilityManager methods.
   gfx::Rect GetViewBoundsInScreenCoordinates() const override;
 
  private:
   // AXTreeObserver methods.
-  void OnAtomicUpdateFinished(ui::AXTree* tree,
+  void OnAtomicUpdateFinished(AXTree* tree,
                               bool root_changed,
                               const std::vector<Change>& changes) override;
 };

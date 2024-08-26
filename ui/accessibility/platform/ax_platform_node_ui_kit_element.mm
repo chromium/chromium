@@ -19,7 +19,7 @@
 
 @implementation AXPlatformNodeUIKitElement {
   // The AXPlatformNode corresponding to this wrapper instance.
-  raw_ptr<ui::AXPlatformNodeIOS> _node;
+  raw_ptr<AXPlatformNodeIOS> _node;
   // An array of children of this object. Cached to avoid re-computing.
   NSMutableArray* _children;
   // Whether the children have changed and need to be updated.
@@ -28,7 +28,7 @@
   BOOL _gettingChildren;
 }
 
-- (instancetype)initWithPlatformNode:(ui::AXPlatformNodeIOS*)platformNode {
+- (instancetype)initWithPlatformNode:(AXPlatformNodeIOS*)platformNode {
   id container = platformNode->GetParent();
   // TODO(crbug.com/336611337): Sometimes container is null for new subframes.
   // We need a way to retry after the AXTreeManager is connected to its parent.
@@ -49,8 +49,8 @@
   }
   _needsToUpdateChildren = YES;
   if (![self isIncludedInPlatformTree]) {
-    ui::AXPlatformNode* parentNode =
-        ui::AXPlatformNode::FromNativeViewAccessible(_node->GetParent());
+    AXPlatformNode* parentNode =
+        AXPlatformNode::FromNativeViewAccessible(_node->GetParent());
     if (parentNode) {
       [parentNode->GetNativeViewAccessible() childrenChanged];
     }
@@ -63,7 +63,7 @@
   _node = nullptr;
 }
 
-- (ui::AXPlatformNodeIOS*)node {
+- (AXPlatformNodeIOS*)node {
   return _node.get();
 }
 
@@ -92,7 +92,7 @@
         ax::mojom::IntListAttribute::kIndirectChildIds);
     for (uint32_t i = 0; i < indirectChildIds.size(); ++i) {
       int32_t child_id = indirectChildIds[i];
-      ui::AXPlatformNode* child = _node->GetDelegate()->GetFromNodeID(child_id);
+      AXPlatformNode* child = _node->GetDelegate()->GetFromNodeID(child_id);
 
       if (child) {
         [_children addObject:child->GetNativeViewAccessible()];
@@ -116,7 +116,7 @@
   }
 
   gfx::Rect rect = _node->GetDelegate()->GetBoundsRect(
-      ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kClipped);
+      AXCoordinateSystem::kScreenDIPs, AXClippingBehavior::kClipped);
   rect = ScaleToRoundedRect(
       rect, 1.f / _node->GetIOSDelegate()->GetDeviceScaleFactor());
 
@@ -198,7 +198,7 @@
 }
 
 - (BOOL)isImage {
-  return ui::IsImage(_node->GetRole()) &&
+  return IsImage(_node->GetRole()) &&
          !_node->GetBoolAttribute(
              ax::mojom::BoolAttribute::kCanvasHasFallback) &&
          !_node->GetChildCount() &&

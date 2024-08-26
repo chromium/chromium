@@ -17,13 +17,13 @@ using FuchsiaRole = fuchsia_accessibility_semantics::Role;
 
 BrowserAccessibilityFuchsia::BrowserAccessibilityFuchsia(
     BrowserAccessibilityManager* manager,
-    ui::AXNode* node)
+    AXNode* node)
     : BrowserAccessibility(manager, node) {
   platform_node_ =
-      static_cast<ui::AXPlatformNodeFuchsia*>(ui::AXPlatformNode::Create(this));
+      static_cast<AXPlatformNodeFuchsia*>(AXPlatformNode::Create(this));
 }
 
-ui::AccessibilityBridgeFuchsia*
+AccessibilityBridgeFuchsia*
 BrowserAccessibilityFuchsia::GetAccessibilityBridge() const {
   BrowserAccessibilityManagerFuchsia* manager_fuchsia =
       static_cast<BrowserAccessibilityManagerFuchsia*>(manager());
@@ -35,7 +35,7 @@ BrowserAccessibilityFuchsia::GetAccessibilityBridge() const {
 // static
 std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
-    ui::AXNode* node) {
+    AXNode* node) {
   return std::make_unique<BrowserAccessibilityFuchsia>(manager, node);
 }
 
@@ -70,8 +70,7 @@ void BrowserAccessibilityFuchsia::OnDataChanged() {
   // frame's tree.
   if (manager()->IsRootFrameManager() &&
       manager()->GetBrowserAccessibilityRoot() == this) {
-    ui::AccessibilityBridgeFuchsia* accessibility_bridge =
-        GetAccessibilityBridge();
+    AccessibilityBridgeFuchsia* accessibility_bridge = GetAccessibilityBridge();
     if (accessibility_bridge)
       accessibility_bridge->SetRootID(GetUniqueId());
   }
@@ -83,7 +82,7 @@ void BrowserAccessibilityFuchsia::OnLocationChanged() {
   UpdateNode();
 }
 
-ui::AXPlatformNode* BrowserAccessibilityFuchsia::GetAXPlatformNode() const {
+AXPlatformNode* BrowserAccessibilityFuchsia::GetAXPlatformNode() const {
   return platform_node_;
 }
 
@@ -438,14 +437,13 @@ bool BrowserAccessibilityFuchsia::IsListElement() const {
 }
 
 bool BrowserAccessibilityFuchsia::AccessibilityPerformAction(
-    const ui::AXActionData& action_data) {
+    const AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kHitTest) {
     BrowserAccessibilityManager* root_manager =
         manager()->GetManagerForRootFrame();
     DCHECK(root_manager);
 
-    ui::AccessibilityBridgeFuchsia* accessibility_bridge =
-        GetAccessibilityBridge();
+    AccessibilityBridgeFuchsia* accessibility_bridge = GetAccessibilityBridge();
     if (!accessibility_bridge)
       return false;
 
@@ -456,4 +454,4 @@ bool BrowserAccessibilityFuchsia::AccessibilityPerformAction(
   return BrowserAccessibility::AccessibilityPerformAction(action_data);
 }
 
-}  // namespace content
+}  // namespace ui

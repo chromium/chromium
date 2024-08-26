@@ -1871,7 +1871,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestPostponedAtkWindowActive) {
   g_object_ref(root_atk_object);
   EXPECT_TRUE(ATK_IS_WINDOW(root_atk_object));
 
-  AtkUtilAuraLinux* atk_util = ui::AtkUtilAuraLinux::GetInstance();
+  AtkUtilAuraLinux* atk_util = AtkUtilAuraLinux::GetInstance();
 
   {
     ActivationTester tester(root_atk_object);
@@ -2137,7 +2137,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkPopupWindowActive) {
 }
 
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkSelectionInterface) {
-  ui::TestAXTreeUpdate update(std::string(R"HTML(
+  TestAXTreeUpdate update(std::string(R"HTML(
     ++1 kListBox states=kFocusable,kMultiselectable
     ++++2 kListBoxOption
     ++++3 kListBoxOption

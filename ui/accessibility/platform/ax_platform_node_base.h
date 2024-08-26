@@ -124,11 +124,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   AXPlatformNodeBase* GetPlatformTextFieldAncestor() const;
 
   using AXPlatformNodeChildIterator =
-      ui::AXNode::ChildIteratorBase<AXPlatformNodeBase,
-                                    &AXPlatformNodeBase::GetNextSibling,
-                                    &AXPlatformNodeBase::GetPreviousSibling,
-                                    &AXPlatformNodeBase::GetFirstChild,
-                                    &AXPlatformNodeBase::GetLastChild>;
+      AXNode::ChildIteratorBase<AXPlatformNodeBase,
+                                &AXPlatformNodeBase::GetNextSibling,
+                                &AXPlatformNodeBase::GetPreviousSibling,
+                                &AXPlatformNodeBase::GetFirstChild,
+                                &AXPlatformNodeBase::GetLastChild>;
   AXPlatformNodeChildIterator AXPlatformNodeChildrenBegin() const;
   AXPlatformNodeChildIterator AXPlatformNodeChildrenEnd() const;
 
@@ -401,7 +401,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // input node. Due to perf concerns, this should only be called on leaf nodes.
   int NearestTextIndexToPoint(gfx::Point point);
 
-  ui::TextAttributeList ComputeTextAttributes() const;
+  TextAttributeList ComputeTextAttributes() const;
 
   // Get the number of items selected. It checks kMultiselectable and uses
   // GetSelectedItems to get the selected number.

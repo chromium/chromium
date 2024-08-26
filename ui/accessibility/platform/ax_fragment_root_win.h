@@ -30,7 +30,7 @@ class AXFragmentRootPlatformNodeWin;
 // expose one fragment root per HWND. The class that owns the HWND is expected
 // to own the corresponding AXFragmentRootWin.
 class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
-    : public ui::AXPlatformNodeDelegate {
+    : public AXPlatformNodeDelegate {
  public:
   AXFragmentRootWin(gfx::AcceleratedWidget widget,
                     AXFragmentRootDelegateWin* delegate);
@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
   gfx::NativeViewAccessible GetFocus() const override;
   AXPlatformNodeId GetUniqueId() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
-  AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
+  AXPlatformNode* GetFromTreeIDAndNodeID(const AXTreeID& ax_tree_id,
                                          int32_t id) override;
 
   // A fragment root does not correspond to any node in the platform neutral
@@ -84,8 +84,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
 
   gfx::AcceleratedWidget widget_;
   const raw_ptr<AXFragmentRootDelegateWin> delegate_;
-  Microsoft::WRL::ComPtr<ui::AXFragmentRootPlatformNodeWin> platform_node_;
-  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
+  Microsoft::WRL::ComPtr<AXFragmentRootPlatformNodeWin> platform_node_;
+  const AXUniqueId unique_id_{AXUniqueId::Create()};
 };
 
 }  // namespace ui

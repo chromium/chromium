@@ -13,7 +13,7 @@
 namespace ui {
 
 class BrowserAccessibilityIOS : public BrowserAccessibility,
-                                public ui::AXPlatformNodeIOSDelegate {
+                                public AXPlatformNodeIOSDelegate {
  public:
   ~BrowserAccessibilityIOS() override;
   BrowserAccessibilityIOS(const BrowserAccessibilityIOS&) = delete;
@@ -28,14 +28,13 @@ class BrowserAccessibilityIOS : public BrowserAccessibility,
   BrowserAccessibility* PlatformGetNextSibling() const override;
   BrowserAccessibility* PlatformGetPreviousSibling() const override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  ui::AXPlatformNode* GetAXPlatformNode() const override;
+  AXPlatformNode* GetAXPlatformNode() const override;
 
-  // ui::AXPlatformNodeIOSDelegate overrides.
+  // AXPlatformNodeIOSDelegate overrides.
   float GetDeviceScaleFactor() const override;
 
  protected:
-  BrowserAccessibilityIOS(BrowserAccessibilityManager* manager,
-                          ui::AXNode* node);
+  BrowserAccessibilityIOS(BrowserAccessibilityManager* manager, AXNode* node);
 
   friend class BrowserAccessibility;  // Needs access to our constructor.
 
@@ -45,7 +44,7 @@ class BrowserAccessibilityIOS : public BrowserAccessibility,
 
   // Manager of the native wrapper node. This should be a unique_ptr but
   // currently AXPlatformNodeBase manually manages deleting itself.
-  raw_ptr<ui::AXPlatformNodeIOS> platform_node_;
+  raw_ptr<AXPlatformNodeIOS> platform_node_;
 };
 
 }  // namespace ui

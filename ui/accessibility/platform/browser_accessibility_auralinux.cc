@@ -18,16 +18,16 @@ BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
 // static
 std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
-    ui::AXNode* node) {
+    AXNode* node) {
   return std::make_unique<BrowserAccessibilityAuraLinux>(manager, node);
 }
 
 BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux(
     BrowserAccessibilityManager* manager,
-    ui::AXNode* node)
+    AXNode* node)
     : BrowserAccessibility(manager, node) {
-  platform_node_ = static_cast<ui::AXPlatformNodeAuraLinux*>(
-      ui::AXPlatformNode::Create(this));
+  platform_node_ =
+      static_cast<AXPlatformNodeAuraLinux*>(AXPlatformNode::Create(this));
 }
 
 BrowserAccessibilityAuraLinux::~BrowserAccessibilityAuraLinux() {
@@ -37,7 +37,7 @@ BrowserAccessibilityAuraLinux::~BrowserAccessibilityAuraLinux() {
   platform_node_.ExtractAsDangling()->Destroy();
 }
 
-ui::AXPlatformNodeAuraLinux* BrowserAccessibilityAuraLinux::GetNode() const {
+AXPlatformNodeAuraLinux* BrowserAccessibilityAuraLinux::GetNode() const {
   return platform_node_;
 }
 
@@ -57,7 +57,7 @@ void BrowserAccessibilityAuraLinux::OnDataChanged() {
   platform_node_->EnsureAtkObjectIsValid();
 }
 
-ui::AXPlatformNode* BrowserAccessibilityAuraLinux::GetAXPlatformNode() const {
+AXPlatformNode* BrowserAccessibilityAuraLinux::GetAXPlatformNode() const {
   return GetNode();
 }
 
@@ -65,8 +65,7 @@ std::u16string BrowserAccessibilityAuraLinux::GetHypertext() const {
   return GetNode()->AXPlatformNodeAuraLinux::GetHypertext();
 }
 
-ui::TextAttributeList BrowserAccessibilityAuraLinux::ComputeTextAttributes()
-    const {
+TextAttributeList BrowserAccessibilityAuraLinux::ComputeTextAttributes() const {
   return GetNode()->ComputeTextAttributes();
 }
 
@@ -80,7 +79,7 @@ bool BrowserAccessibilityAuraLinux::IsPrimaryWebContentsForWindow() const {
   auto primary_id = manager()
                         ->ToBrowserAccessibilityManagerAuraLinux()
                         ->GetPrimaryWebContentsForWindow();
-  return primary_id != ui::kInvalidAXNodeID && primary_id == GetId();
+  return primary_id != kInvalidAXNodeID && primary_id == GetId();
 }
 
 }  // namespace ui

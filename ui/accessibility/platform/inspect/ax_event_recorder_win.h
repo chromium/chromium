@@ -15,7 +15,7 @@
 namespace ui {
 
 class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWin
-    : public ui::AXEventRecorder {
+    : public AXEventRecorder {
  public:
   // Flag values that specify the way events are handled.
   enum ListenerType {
@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWin
   };
 
   AXEventRecorderWin(base::ProcessId pid,
-                     const ui::AXTreeSelector& selector,
+                     const AXTreeSelector& selector,
                      ListenerType listenerType = kSync);
 
   AXEventRecorderWin(const AXEventRecorderWin&) = delete;

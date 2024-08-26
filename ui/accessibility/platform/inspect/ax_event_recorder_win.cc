@@ -157,8 +157,9 @@ void AXEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   }
 
   if (only_web_events_) {
-    if (hwnd_class_name != base::WideToUTF8(ui::kLegacyRenderWidgetHostHwnd))
+    if (hwnd_class_name != base::WideToUTF8(kLegacyRenderWidgetHostHwnd)) {
       return;
+    }
 
     Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
     hr = iaccessible->QueryInterface(IID_PPV_ARGS(&service_provider));

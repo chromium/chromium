@@ -24,10 +24,9 @@ class BrowserAccessibilityAuraLinux;
 class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerAuraLinux
     : public BrowserAccessibilityManager {
  public:
-  BrowserAccessibilityManagerAuraLinux(
-      const ui::AXTreeUpdate& initial_tree,
-      ui::AXNodeIdDelegate& node_id_delegate,
-      ui::AXPlatformTreeManagerDelegate* delegate);
+  BrowserAccessibilityManagerAuraLinux(const AXTreeUpdate& initial_tree,
+                                       AXNodeIdDelegate& node_id_delegate,
+                                       AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerAuraLinux(
       const BrowserAccessibilityManagerAuraLinux&) = delete;
@@ -36,20 +35,20 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerAuraLinux
 
   ~BrowserAccessibilityManagerAuraLinux() override;
 
-  static ui::AXTreeUpdate GetEmptyDocument();
+  static AXTreeUpdate GetEmptyDocument();
 
-  void SetPrimaryWebContentsForWindow(ui::AXNodeID node_id);
-  ui::AXNodeID GetPrimaryWebContentsForWindow() const;
+  void SetPrimaryWebContentsForWindow(AXNodeID node_id);
+  AXNodeID GetPrimaryWebContentsForWindow() const;
 
   // AXTreeManager overrides.
-  void FireFocusEvent(ui::AXNode* node) override;
+  void FireFocusEvent(AXNode* node) override;
 
   // BrowserAccessibilityManager overrides.
   void FireBlinkEvent(ax::mojom::Event event_type,
                       BrowserAccessibility* node,
                       int action_request_id) override;
-  void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                          const ui::AXNode* node) override;
+  void FireGeneratedEvent(AXEventGenerator::Event event_type,
+                          const AXNode* node) override;
 
   void FireSelectedEvent(BrowserAccessibility* node);
   void FireEnabledChangedEvent(BrowserAccessibility* node);
@@ -78,17 +77,17 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerAuraLinux
   FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerAuraLinuxTest,
                            TestEmitChildrenChanged);
   // AXTreeObserver methods.
-  void OnNodeDeleted(ui::AXTree* tree, int32_t node_id) override;
+  void OnNodeDeleted(AXTree* tree, int32_t node_id) override;
   void OnIgnoredWillChange(
-      ui::AXTree* tree,
-      ui::AXNode* node,
+      AXTree* tree,
+      AXNode* node,
       bool is_ignored_new_value,
       bool is_changing_unignored_parents_children) override;
-  void OnSubtreeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
+  void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
   void OnAtomicUpdateFinished(
-      ui::AXTree* tree,
+      AXTree* tree,
       bool root_changed,
-      const std::vector<ui::AXTreeObserver::Change>& changes) override;
+      const std::vector<AXTreeObserver::Change>& changes) override;
 
  private:
   bool CanEmitChildrenChanged(BrowserAccessibility* node) const;
@@ -97,9 +96,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerAuraLinux
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;
 
-  ui::AXNodeID primary_web_contents_for_window_id_ = ui::kInvalidAXNodeID;
+  AXNodeID primary_web_contents_for_window_id_ = kInvalidAXNodeID;
 };
 
-}  // namespace content
+}  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_MANAGER_AURALINUX_H_

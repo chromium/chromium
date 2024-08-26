@@ -33,9 +33,9 @@ using UiaRaiseActiveTextPositionChangedEventFunction =
 class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
     : public BrowserAccessibilityManager {
  public:
-  BrowserAccessibilityManagerWin(const ui::AXTreeUpdate& initial_tree,
-                                 ui::AXNodeIdDelegate& node_id_delegate,
-                                 ui::AXPlatformTreeManagerDelegate* delegate);
+  BrowserAccessibilityManagerWin(const AXTreeUpdate& initial_tree,
+                                 AXNodeIdDelegate& node_id_delegate,
+                                 AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerWin(const BrowserAccessibilityManagerWin&) =
       delete;
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
 
   ~BrowserAccessibilityManagerWin() override;
 
-  static ui::AXTreeUpdate GetEmptyDocument();
+  static AXTreeUpdate GetEmptyDocument();
   static bool IsUiaActiveTextPositionChangedEventSupported();
 
   // Get the closest containing HWND.
@@ -62,12 +62,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
       ax::mojom::AriaNotificationInterrupt interrupt_property,
       ax::mojom::AriaNotificationPriority priority_property) override;
 
-  void FireFocusEvent(ui::AXNode* node) override;
+  void FireFocusEvent(AXNode* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,
                       BrowserAccessibility* node,
                       int action_request_id) override;
-  void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                          const ui::AXNode* node) override;
+  void FireGeneratedEvent(AXEventGenerator::Event event_type,
+                          const AXNode* node) override;
 
   void FireWinAccessibilityEvent(LONG win_event, BrowserAccessibility* node);
   void FireUiaAccessibilityEvent(LONG uia_event, BrowserAccessibility* node);
@@ -87,11 +87,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
 
  protected:
   // AXTreeObserver methods.
-  void OnSubtreeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
+  void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
   void OnAtomicUpdateFinished(
-      ui::AXTree* tree,
+      AXTree* tree,
       bool root_changed,
-      const std::vector<ui::AXTreeObserver::Change>& changes) override;
+      const std::vector<AXTreeObserver::Change>& changes) override;
 
  private:
   struct SelectionEvents {
@@ -172,6 +172,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
   SelectionEventsMap uia_selection_events_;
 };
 
-}  // namespace content
+}  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_MANAGER_WIN_H_

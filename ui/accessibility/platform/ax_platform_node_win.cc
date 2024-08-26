@@ -290,15 +290,15 @@ GetWinAccessibilityAPIUsageObserverList() {
 // Used to simplify calling StartFiringUIAEvents and EndFiringEvents
 WinAccessibilityAPIUsageScopedUIAEventsNotifier::
     WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
-  for (ui::WinAccessibilityAPIUsageObserver& observer :
-       ui::GetWinAccessibilityAPIUsageObserverList()) {
+  for (WinAccessibilityAPIUsageObserver& observer :
+       GetWinAccessibilityAPIUsageObserverList()) {
     observer.StartFiringUIAEvents();
   }
 }
 WinAccessibilityAPIUsageScopedUIAEventsNotifier::
     ~WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
-  for (ui::WinAccessibilityAPIUsageObserver& observer :
-       ui::GetWinAccessibilityAPIUsageObserverList()) {
+  for (WinAccessibilityAPIUsageObserver& observer :
+       GetWinAccessibilityAPIUsageObserverList()) {
     observer.EndFiringUIAEvents();
   }
 }
@@ -1724,7 +1724,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accDefaultAction(VARIANT var_id,
   }
 
   std::wstring action_verb = base::UTF8ToWide(
-      ui::ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action)));
+      ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action)));
   if (action_verb.empty()) {
     *def_action = nullptr;
     return S_FALSE;

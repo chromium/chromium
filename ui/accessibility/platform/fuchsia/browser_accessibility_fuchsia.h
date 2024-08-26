@@ -26,7 +26,7 @@ namespace ui {
 class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityFuchsia : public BrowserAccessibility {
  public:
   BrowserAccessibilityFuchsia(BrowserAccessibilityManager* manager,
-                              ui::AXNode* node);
+                              AXNode* node);
   ~BrowserAccessibilityFuchsia() override;
 
   // Disallow copy and assign.
@@ -45,8 +45,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityFuchsia : public Browser
   // BrowserAccessibility overrides.
   void OnDataChanged() override;
   void OnLocationChanged() override;
-  ui::AXPlatformNode* GetAXPlatformNode() const override;
-  bool AccessibilityPerformAction(const ui::AXActionData& action_data) override;
+  AXPlatformNode* GetAXPlatformNode() const override;
+  bool AccessibilityPerformAction(const AXActionData& action_data) override;
 
   // Returns this object's AXUniqueID as a uint32_t.
   uint32_t GetFuchsiaNodeID() const;
@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityFuchsia : public Browser
   friend class BrowserAccessibility;  // Needs access to our constructor.
 
  private:
-  ui::AccessibilityBridgeFuchsia* GetAccessibilityBridge() const;
+  AccessibilityBridgeFuchsia* GetAccessibilityBridge() const;
 
   void UpdateNode();
   void DeleteNode();
@@ -70,13 +70,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityFuchsia : public Browser
 
   // Returns true if this AXNode has role AXRole::kList.
   // This may need to be expanded later to include more roles, maybe using
-  // ui::IsList
+  // IsList
   // (https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/ax_role_properties.cc;l=399;drc=2c712b0d61f0788c0ed1b05176ae7430e8c705e5;bpv=1;bpt=1).
   bool IsList() const;
 
   // Returns true if this AXNode has role AXRole::klistItem.
   // This may need to be expanded later to include more roles, maybe using
-  // ui::IsListItem
+  // IsListItem
   // (https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/ax_role_properties.cc;drc=2c712b0d61f0788c0ed1b05176ae7430e8c705e5;l=413).
   bool IsListElement() const;
 
@@ -84,12 +84,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityFuchsia : public Browser
   bool IsFuchsiaDefaultAction() const;
 
   // Fuchsia-specific representation of this node.
-  ui::AXPlatformNodeFuchsia* platform_node_;
+  AXPlatformNodeFuchsia* platform_node_;
 };
 
 BrowserAccessibilityFuchsia* COMPONENT_EXPORT(AX_PLATFORM)
 ToBrowserAccessibilityFuchsia(BrowserAccessibility* obj);
 
-}  // namespace content
+}  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_FUCHSIA_BROWSER_ACCESSIBILITY_FUCHSIA_H_

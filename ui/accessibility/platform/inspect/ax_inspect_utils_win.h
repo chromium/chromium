@@ -58,7 +58,7 @@ COMPONENT_EXPORT(AX_PLATFORM) HWND GetHwndForProcess(base::ProcessId pid);
 
 // Returns HWND of window matching a given tree selector.
 COMPONENT_EXPORT(AX_PLATFORM)
-HWND GetHWNDBySelector(const ui::AXTreeSelector& selector);
+HWND GetHWNDBySelector(const AXTreeSelector& selector);
 
 COMPONENT_EXPORT(AX_PLATFORM)
 std::u16string RoleVariantToU16String(const base::win::ScopedVariant& role);

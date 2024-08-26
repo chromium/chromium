@@ -273,13 +273,13 @@ bool AccessibilityComboboxPredicate(BrowserAccessibility* start,
 
 bool AccessibilityControlPredicate(BrowserAccessibility* start,
                                    BrowserAccessibility* node) {
-  if (ui::IsControl(node->GetRole()))
+  if (IsControl(node->GetRole())) {
     return true;
+  }
   if (node->HasState(ax::mojom::State::kFocusable) &&
       node->GetRole() != ax::mojom::Role::kIframe &&
       node->GetRole() != ax::mojom::Role::kIframePresentational &&
-      !ui::IsLink(node->GetRole()) &&
-      !ui::IsPlatformDocument(node->GetRole())) {
+      !IsLink(node->GetRole()) && !IsPlatformDocument(node->GetRole())) {
     return true;
   }
   return false;
@@ -288,59 +288,60 @@ bool AccessibilityControlPredicate(BrowserAccessibility* start,
 bool AccessibilityFocusablePredicate(BrowserAccessibility* start,
                                      BrowserAccessibility* node) {
   bool focusable = node->HasState(ax::mojom::State::kFocusable);
-  if (ui::IsIframe(node->GetRole()) || ui::IsPlatformDocument(node->GetRole()))
+  if (IsIframe(node->GetRole()) || IsPlatformDocument(node->GetRole())) {
     focusable = false;
+  }
   return focusable;
 }
 
 bool AccessibilityGraphicPredicate(BrowserAccessibility* start,
                                    BrowserAccessibility* node) {
-  return ui::IsImageOrVideo(node->GetRole());
+  return IsImageOrVideo(node->GetRole());
 }
 
 bool AccessibilityHeadingPredicate(BrowserAccessibility* start,
                                    BrowserAccessibility* node) {
-  return ui::IsHeading(node->GetRole());
+  return IsHeading(node->GetRole());
 }
 
 bool AccessibilityH1Predicate(BrowserAccessibility* start,
                               BrowserAccessibility* node) {
-  return (ui::IsHeading(node->GetRole()) &&
+  return (IsHeading(node->GetRole()) &&
           node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel) ==
               1);
 }
 
 bool AccessibilityH2Predicate(BrowserAccessibility* start,
                               BrowserAccessibility* node) {
-  return (ui::IsHeading(node->GetRole()) &&
+  return (IsHeading(node->GetRole()) &&
           node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel) ==
               2);
 }
 
 bool AccessibilityH3Predicate(BrowserAccessibility* start,
                               BrowserAccessibility* node) {
-  return (ui::IsHeading(node->GetRole()) &&
+  return (IsHeading(node->GetRole()) &&
           node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel) ==
               3);
 }
 
 bool AccessibilityH4Predicate(BrowserAccessibility* start,
                               BrowserAccessibility* node) {
-  return (ui::IsHeading(node->GetRole()) &&
+  return (IsHeading(node->GetRole()) &&
           node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel) ==
               4);
 }
 
 bool AccessibilityH5Predicate(BrowserAccessibility* start,
                               BrowserAccessibility* node) {
-  return (ui::IsHeading(node->GetRole()) &&
+  return (IsHeading(node->GetRole()) &&
           node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel) ==
               5);
 }
 
 bool AccessibilityH6Predicate(BrowserAccessibility* start,
                               BrowserAccessibility* node) {
-  return (ui::IsHeading(node->GetRole()) &&
+  return (IsHeading(node->GetRole()) &&
           node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel) ==
               6);
 }
@@ -360,7 +361,7 @@ bool AccessibilityFramePredicate(BrowserAccessibility* start,
     return false;
   if (!node->PlatformGetParent())
     return false;
-  return ui::IsPlatformDocument(node->GetRole());
+  return IsPlatformDocument(node->GetRole());
 }
 
 bool AccessibilityLandmarkPredicate(BrowserAccessibility* start,
@@ -387,17 +388,17 @@ bool AccessibilityLandmarkPredicate(BrowserAccessibility* start,
 
 bool AccessibilityLinkPredicate(BrowserAccessibility* start,
                                 BrowserAccessibility* node) {
-  return ui::IsLink(node->GetRole());
+  return IsLink(node->GetRole());
 }
 
 bool AccessibilityListPredicate(BrowserAccessibility* start,
                                 BrowserAccessibility* node) {
-  return ui::IsList(node->GetRole());
+  return IsList(node->GetRole());
 }
 
 bool AccessibilityListItemPredicate(BrowserAccessibility* start,
                                     BrowserAccessibility* node) {
-  return ui::IsListItem(node->GetRole());
+  return IsListItem(node->GetRole());
 }
 
 bool AccessibilityLiveRegionPredicate(BrowserAccessibility* start,
@@ -444,7 +445,7 @@ bool AccessibilitySectionPredicate(BrowserAccessibility* start,
 
 bool AccessibilityTablePredicate(BrowserAccessibility* start,
                                  BrowserAccessibility* node) {
-  return ui::IsTableWithColumns(node->GetRole());
+  return IsTableWithColumns(node->GetRole());
 }
 
 bool AccessibilityTextfieldPredicate(BrowserAccessibility* start,

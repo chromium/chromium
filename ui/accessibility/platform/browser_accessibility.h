@@ -47,18 +47,19 @@ class BrowserAccessibilityManager;
 // There are subclasses of BrowserAccessibility for each platform where we
 // implement some of the native accessibility APIs that are only specific to the
 // Web.
-class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatformNodeDelegate {
+class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
+    : public AXPlatformNodeDelegate {
  public:
   // Creates a platform specific BrowserAccessibility. Ownership passes to the
   // caller.
   static std::unique_ptr<BrowserAccessibility> Create(
       BrowserAccessibilityManager* manager,
-      ui::AXNode* node);
+      AXNode* node);
 
   // Returns |delegate| as a BrowserAccessibility object, if |delegate| is
   // non-null and an object in the BrowserAccessibility class hierarchy.
   static BrowserAccessibility* FromAXPlatformNodeDelegate(
-      ui::AXPlatformNodeDelegate* delegate);
+      AXPlatformNodeDelegate* delegate);
 
   ~BrowserAccessibility() override;
   BrowserAccessibility(const BrowserAccessibility&) = delete;
@@ -88,7 +89,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
 
   // Return the AXPlatformNode corresponding to this node, if applicable
   // on this platform.
-  virtual ui::AXPlatformNode* GetAXPlatformNode() const;
+  virtual AXPlatformNode* GetAXPlatformNode() const;
 
   // Returns the number of children of this object, or 0 if PlatformIsLeaf()
   // returns true.
@@ -111,7 +112,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   virtual BrowserAccessibility* PlatformGetPreviousSibling() const;
 
   // Iterator over platform children.
-  class COMPONENT_EXPORT(AX_PLATFORM) PlatformChildIterator : public ui::ChildIterator {
+  class COMPONENT_EXPORT(AX_PLATFORM) PlatformChildIterator
+      : public ChildIterator {
    public:
     using iterator_category = std::bidirectional_iterator_tag;
     using difference_type = int;
@@ -137,12 +139,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
 
    private:
     raw_ptr<const BrowserAccessibility> parent_;
-    ui::AXNode::ChildIteratorBase<
-        BrowserAccessibility,
-        &BrowserAccessibility::PlatformGetNextSibling,
-        &BrowserAccessibility::PlatformGetPreviousSibling,
-        &BrowserAccessibility::PlatformGetFirstChild,
-        &BrowserAccessibility::PlatformGetLastChild>
+    AXNode::ChildIteratorBase<BrowserAccessibility,
+                              &BrowserAccessibility::PlatformGetNextSibling,
+                              &BrowserAccessibility::PlatformGetPreviousSibling,
+                              &BrowserAccessibility::PlatformGetFirstChild,
+                              &BrowserAccessibility::PlatformGetLastChild>
         platform_iterator;
   };
 
@@ -267,15 +268,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   gfx::Rect GetUnclippedRootFrameInnerTextRangeBoundsRect(
       const int start_offset,
       const int end_offset,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      AXOffscreenResult* offscreen_result = nullptr) const;
 
   // DEPRECATED: Prefer using the interfaces provided by AXPlatformNodeDelegate
   // when writing new code.
   gfx::Rect GetScreenHypertextRangeBoundsRect(
       int start,
       int len,
-      const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      const AXClippingBehavior clipping_behavior,
+      AXOffscreenResult* offscreen_result = nullptr) const;
 
   // Returns the bounds of the given range in coordinates relative to the
   // top-left corner of the overall web area. Only valid when the role is
@@ -285,8 +286,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   gfx::Rect GetRootFrameHypertextRangeBoundsRect(
       int start,
       int len,
-      const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      const AXClippingBehavior clipping_behavior,
+      AXOffscreenResult* offscreen_result = nullptr) const;
 
   // This is an approximate hit test that only uses the information in
   // the browser process to compute the correct result. It will not return
@@ -323,7 +324,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   BrowserAccessibility* InternalGetLastChild() const;
   BrowserAccessibility* InternalGetNextSibling() const;
   BrowserAccessibility* InternalGetPreviousSibling() const;
-  using InternalChildIterator = ui::AXNode::ChildIteratorBase<
+  using InternalChildIterator = AXNode::ChildIteratorBase<
       BrowserAccessibility,
       &BrowserAccessibility::InternalGetNextSibling,
       &BrowserAccessibility::InternalGetPreviousSibling,
@@ -377,42 +378,42 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   gfx::NativeViewAccessible GetSelectionContainer() const override;
   gfx::NativeViewAccessible GetTableAncestor() const override;
 
-  std::unique_ptr<ui::ChildIterator> ChildrenBegin() const override;
-  std::unique_ptr<ui::ChildIterator> ChildrenEnd() const override;
+  std::unique_ptr<ChildIterator> ChildrenBegin() const override;
+  std::unique_ptr<ChildIterator> ChildrenEnd() const override;
 
   bool SetHypertextSelection(int start_offset, int end_offset) override;
   gfx::Rect GetBoundsRect(
-      const ui::AXCoordinateSystem coordinate_system,
-      const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const override;
+      const AXCoordinateSystem coordinate_system,
+      const AXClippingBehavior clipping_behavior,
+      AXOffscreenResult* offscreen_result = nullptr) const override;
   gfx::Rect GetHypertextRangeBoundsRect(
       const int start_offset,
       const int end_offset,
-      const ui::AXCoordinateSystem coordinate_system,
-      const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const override;
+      const AXCoordinateSystem coordinate_system,
+      const AXClippingBehavior clipping_behavior,
+      AXOffscreenResult* offscreen_result = nullptr) const override;
   gfx::Rect GetInnerTextRangeBoundsRect(
       const int start_offset,
       const int end_offset,
-      const ui::AXCoordinateSystem coordinate_system,
-      const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const override;
+      const AXCoordinateSystem coordinate_system,
+      const AXClippingBehavior clipping_behavior,
+      AXOffscreenResult* offscreen_result = nullptr) const override;
   gfx::NativeViewAccessible HitTestSync(int physical_pixel_x,
                                         int physical_pixel_y) const override;
   gfx::NativeViewAccessible GetFocus() const override;
-  ui::AXPlatformNode* GetFromNodeID(int32_t id) override;
-  ui::AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
-                                             int32_t id) override;
+  AXPlatformNode* GetFromNodeID(int32_t id) override;
+  AXPlatformNode* GetFromTreeIDAndNodeID(const AXTreeID& ax_tree_id,
+                                         int32_t id) override;
   std::optional<size_t> GetIndexInParent() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
 
   const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(
-      ui::AXPlatformNodeDelegate* start,
-      ui::AXPlatformNodeDelegate* end) override;
+      AXPlatformNodeDelegate* start,
+      AXPlatformNodeDelegate* end) override;
 
-  ui::AXPlatformNode* GetTableCaption() const override;
+  AXPlatformNode* GetTableCaption() const override;
 
-  bool AccessibilityPerformAction(const ui::AXActionData& data) override;
+  bool AccessibilityPerformAction(const AXActionData& data) override;
 
 // TODO(https://crbug.com/358567091): Move this logic outside of
 // BrowserAccessibility to avoid platform-specific code in the base class.
@@ -426,15 +427,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   std::u16string GetStyleNameAttributeAsLocalizedString() const override;
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
-  ui::TextAttributeMap ComputeTextAttributeMap(
-      const ui::TextAttributeList& default_attributes) const override;
+  TextAttributeMap ComputeTextAttributeMap(
+      const TextAttributeList& default_attributes) const override;
   bool ShouldIgnoreHoveredStateForTesting() override;
   bool IsOffscreen() const override;
   bool IsWebContent() const override;
   bool HasVisibleCaretOrSelection() const override;
-  std::vector<ui::AXPlatformNode*> GetSourceNodesForReverseRelations(
+  std::vector<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntAttribute attr) override;
-  std::vector<ui::AXPlatformNode*> GetSourceNodesForReverseRelations(
+  std::vector<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntListAttribute attr) override;
   std::optional<int> GetPosInSet() const override;
   std::optional<int> GetSetSize() const override;
@@ -457,9 +458,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   std::string ToString() const;
 
  protected:
-  BrowserAccessibility(BrowserAccessibilityManager* manager, ui::AXNode* node);
+  BrowserAccessibility(BrowserAccessibilityManager* manager, AXNode* node);
 
-  virtual ui::TextAttributeList ComputeTextAttributes() const;
+  virtual TextAttributeList ComputeTextAttributes() const;
 
   // The manager of this tree of accessibility objects. Weak, owns us.
   const raw_ptr<BrowserAccessibilityManager> manager_;
@@ -469,12 +470,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   // where it could be confused with an id that comes from the node data,
   // which is only unique to the Blink process.
   // Does need to be called by subclasses such as BrowserAccessibilityAndroid.
-  ui::AXPlatformNodeId GetUniqueId() const override;
+  AXPlatformNodeId GetUniqueId() const override;
 
   // Returns a text attribute map indicating the offsets in the text of a leaf
   // object, such as a text field or static text, where spelling and grammar
   // errors are present.
-  ui::TextAttributeMap GetSpellingAndGrammarAttributes() const;
+  TextAttributeMap GetSpellingAndGrammarAttributes() const;
 
   std::string SubtreeToStringHelper(size_t level) override;
 
@@ -497,19 +498,18 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   // outside of the window or offscreen. If an offscreen result address is
   // provided, it will be populated depending on whether the returned bounding
   // box is onscreen or offscreen.
-  gfx::Rect RelativeToAbsoluteBounds(
-      gfx::RectF bounds,
-      const ui::AXCoordinateSystem coordinate_system,
-      const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result) const;
+  gfx::Rect RelativeToAbsoluteBounds(gfx::RectF bounds,
+                                     const AXCoordinateSystem coordinate_system,
+                                     const AXClippingBehavior clipping_behavior,
+                                     AXOffscreenResult* offscreen_result) const;
 
   // Return a rect for a 1-width character past the end of text. This is what
   // ATs expect when getting the character extents past the last character in
   // a line, and equals what the caret bounds would be when past the end of
   // the text.
   gfx::Rect GetRootFrameHypertextBoundsPastEndOfText(
-      const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      const AXClippingBehavior clipping_behavior,
+      AXOffscreenResult* offscreen_result = nullptr) const;
 
   // See `AXNode::GetTextContentRangeBoundsUTF16`.
   gfx::RectF GetTextContentRangeBoundsUTF16(int start_offset,
@@ -519,9 +519,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   gfx::Rect GetInnerTextRangeBoundsRectInSubtree(
       const int start_offset,
       const int end_offset,
-      const ui::AXCoordinateSystem coordinate_system,
-      const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result) const;
+      const AXCoordinateSystem coordinate_system,
+      const AXClippingBehavior clipping_behavior,
+      AXOffscreenResult* offscreen_result) const;
 
   // If the node has a child tree, get the root node.
   BrowserAccessibility* PlatformGetRootOfChildTree() const;
@@ -536,13 +536,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
   // because document markers that are present on text leaves need to be
   // propagated to their parent object for compatibility with Firefox.
   static void MergeSpellingAndGrammarIntoTextAttributes(
-      const ui::TextAttributeMap& spelling_attributes,
+      const TextAttributeMap& spelling_attributes,
       int start_offset,
-      ui::TextAttributeMap* text_attributes);
+      TextAttributeMap* text_attributes);
 
   // Return true is the list of text attributes already includes an invalid
   // attribute originating from ARIA.
-  static bool HasInvalidAttribute(const ui::TextAttributeList& attributes);
+  static bool HasInvalidAttribute(const TextAttributeList& attributes);
 
   // Disable hover state - needed just to avoid flaky tests.
   // Accessibility objects can have the "hot tracked" state set when
@@ -554,9 +554,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility : public ui::AXPlatform
 
   // The node's unique identifier as chosen by the node's manager. The value is
   // computed on first use.
-  mutable ui::AXPlatformNodeId unique_id_;
+  mutable AXPlatformNodeId unique_id_;
 };
 
-}  // namespace content
+}  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_H_

@@ -14,8 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
-using ui::AXTreeSelector;
-
 namespace ui {
 
 // Returns true if the given accessibility attribute is valid, and could have

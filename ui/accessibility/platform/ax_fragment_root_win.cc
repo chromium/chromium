@@ -233,7 +233,7 @@ class AXFragmentRootMapWin {
 
   void RemoveFragmentRoot(gfx::AcceleratedWidget widget) { map_.erase(widget); }
 
-  ui::AXFragmentRootWin* GetFragmentRoot(gfx::AcceleratedWidget widget) const {
+  AXFragmentRootWin* GetFragmentRoot(gfx::AcceleratedWidget widget) const {
     const auto& entry = map_.find(widget);
     if (entry != map_.end())
       return entry->second;
@@ -241,7 +241,7 @@ class AXFragmentRootMapWin {
     return nullptr;
   }
 
-  ui::AXFragmentRootWin* GetFragmentRootParentOf(
+  AXFragmentRootWin* GetFragmentRootParentOf(
       gfx::NativeViewAccessible accessible) const {
     for (const auto& entry : map_) {
       AXPlatformNodeDelegate* child = entry.second->GetChildNodeDelegate();
@@ -258,7 +258,7 @@ class AXFragmentRootMapWin {
 AXFragmentRootWin::AXFragmentRootWin(gfx::AcceleratedWidget widget,
                                      AXFragmentRootDelegateWin* delegate)
     : widget_(widget), delegate_(delegate) {
-  platform_node_ = ui::AXFragmentRootPlatformNodeWin::Create(this);
+  platform_node_ = AXFragmentRootPlatformNodeWin::Create(this);
   AXFragmentRootMapWin::GetInstance().AddFragmentRoot(widget, this);
 }
 
@@ -353,7 +353,7 @@ AXFragmentRootWin::GetTargetForNativeAccessibilityEvent() {
 }
 
 AXPlatformNode* AXFragmentRootWin::GetFromTreeIDAndNodeID(
-    const ui::AXTreeID& ax_tree_id,
+    const AXTreeID& ax_tree_id,
     int32_t node_id) {
   AXPlatformNodeDelegate* child_delegate = GetChildNodeDelegate();
   if (child_delegate)
@@ -365,7 +365,7 @@ AXPlatformNode* AXFragmentRootWin::GetFromTreeIDAndNodeID(
 AXPlatformNodeDelegate* AXFragmentRootWin::GetParentNodeDelegate() const {
   gfx::NativeViewAccessible parent = delegate_->GetParentOfAXFragmentRoot();
   if (parent)
-    return ui::AXPlatformNode::FromNativeViewAccessible(parent)->GetDelegate();
+    return AXPlatformNode::FromNativeViewAccessible(parent)->GetDelegate();
 
   return nullptr;
 }
@@ -373,7 +373,7 @@ AXPlatformNodeDelegate* AXFragmentRootWin::GetParentNodeDelegate() const {
 AXPlatformNodeDelegate* AXFragmentRootWin::GetChildNodeDelegate() const {
   gfx::NativeViewAccessible child = delegate_->GetChildOfAXFragmentRoot();
   if (child)
-    return ui::AXPlatformNode::FromNativeViewAccessible(child)->GetDelegate();
+    return AXPlatformNode::FromNativeViewAccessible(child)->GetDelegate();
 
   return nullptr;
 }
@@ -388,10 +388,11 @@ size_t AXFragmentRootWin::GetIndexInParentOfChild() const {
   if (child) {
     size_t child_count = parent->GetChildCount();
     for (size_t child_index = 0; child_index < child_count; child_index++) {
-      if (ui::AXPlatformNode::FromNativeViewAccessible(
+      if (AXPlatformNode::FromNativeViewAccessible(
               parent->ChildAtIndex(child_index))
-              ->GetDelegate() == child)
+              ->GetDelegate() == child) {
         return child_index;
+      }
     }
   }
   return 0;

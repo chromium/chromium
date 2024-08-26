@@ -72,9 +72,9 @@ using TextAttributeMap = std::map<int, TextAttributeList>;
 // otherwise.
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
  public:
-  using AXPosition = ui::AXNodePosition::AXPositionInstance;
-  using SerializedPosition = ui::AXNodePosition::SerializedPosition;
-  using AXRange = ui::AXRange<AXPosition::element_type>;
+  using AXPosition = AXNodePosition::AXPositionInstance;
+  using SerializedPosition = AXNodePosition::SerializedPosition;
+  using AXRange = AXRange<AXPosition::element_type>;
 
   AXPlatformNodeDelegate();
 
@@ -392,13 +392,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   gfx::Rect GetUnclippedScreenBoundsRect(
       AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetClippedRootFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetUnclippedRootFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetClippedFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetUnclippedFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      AXOffscreenResult* offscreen_result = nullptr) const;
 
   // Return the bounds of the text range given by text offsets relative to
   // GetHypertext in the coordinate system indicated. If the clipping behavior
@@ -479,7 +479,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Get a node from a different tree using a tree ID and node ID.
   // Note that this is only guaranteed to work if the other tree is of the
   // same type, i.e. it won't work between web and views or vice-versa.
-  virtual AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
+  virtual AXPlatformNode* GetFromTreeIDAndNodeID(const AXTreeID& ax_tree_id,
                                                  int32_t id);
 
   // Given a node ID attribute (one where IsNodeIdIntAttribute is true), return
@@ -525,8 +525,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Return a vector of all the descendants of this delegate's node. This method
   // is only meaningful for Windows UIA.
   virtual const std::vector<gfx::NativeViewAccessible>
-  GetUIADirectChildrenInRange(ui::AXPlatformNodeDelegate* start,
-                              ui::AXPlatformNodeDelegate* end);
+  GetUIADirectChildrenInRange(AXPlatformNodeDelegate* start,
+                              AXPlatformNodeDelegate* end);
 
   // Return a string representing the language code.
   //
@@ -659,7 +659,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
 
   // Given a set of Blink node IDs, get their respective platform nodes and
   // return only those that are valid targets for a relation.
-  std::vector<ui::AXPlatformNode*> GetNodesFromRelationIdSet(
+  std::vector<AXPlatformNode*> GetNodesFromRelationIdSet(
       const std::set<AXNodeID>& ids);
 
  private:

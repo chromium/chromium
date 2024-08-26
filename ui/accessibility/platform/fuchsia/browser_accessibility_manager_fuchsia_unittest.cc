@@ -25,9 +25,9 @@ namespace ui {
 namespace {
 
 class MockBrowserAccessibilityDelegate
-    : public ui::TestAXPlatformTreeManagerDelegate {
+    : public TestAXPlatformTreeManagerDelegate {
  public:
-  void AccessibilityPerformAction(const ui::AXActionData& data) override {
+  void AccessibilityPerformAction(const AXActionData& data) override {
     last_action_data_ = data;
   }
 
@@ -35,14 +35,13 @@ class MockBrowserAccessibilityDelegate
       const gfx::Point& point_in_frame_pixels,
       const ax::mojom::Event& opt_event_to_fire,
       int opt_request_id,
-      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
-                              ui::AXNodeID hit_node_id)> opt_callback)
-      override {
+      base::OnceCallback<void(AXPlatformTreeManager* hit_manager,
+                              AXNodeID hit_node_id)> opt_callback) override {
     last_hit_test_point_ = point_in_frame_pixels;
     last_request_id_ = opt_request_id;
   }
 
-  const std::optional<ui::AXActionData>& last_action_data() {
+  const std::optional<AXActionData>& last_action_data() {
     return last_action_data_;
   }
 
@@ -53,17 +52,17 @@ class MockBrowserAccessibilityDelegate
   }
 
  private:
-  std::optional<ui::AXActionData> last_action_data_;
+  std::optional<AXActionData> last_action_data_;
   std::optional<int> last_request_id_;
   std::optional<gfx::Point> last_hit_test_point_;
 };
 
-class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
+class MockAccessibilityBridge : public AccessibilityBridgeFuchsia {
  public:
   MockAccessibilityBridge() = default;
   ~MockAccessibilityBridge() override = default;
 
-  // ui::AccessibilityBridgeFuchsia overrides.
+  // AccessibilityBridgeFuchsia overrides.
   void UpdateNode(fuchsia_accessibility_semantics::Node node) override {
     node_updates_.push_back(std::move(node));
   }
@@ -143,13 +142,13 @@ class BrowserAccessibilityManagerFuchsiaTest : public testing::Test {
       mock_browser_accessibility_delegate_;
   std::unique_ptr<MockAccessibilityBridge> mock_accessibility_bridge_;
   const base::test::SingleThreadTaskEnvironment task_environment_;
-  ui::TestAXNodeIdDelegate node_id_delegate_;
+  TestAXNodeIdDelegate node_id_delegate_;
   std::unique_ptr<BrowserAccessibilityManager> manager_;
 };
 
 TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestEmitNodeUpdates) {
-  ui::AXTreeUpdate initial_state;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate initial_state;
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   initial_state.tree_data.tree_id = tree_id;
   initial_state.has_tree_data = true;
   initial_state.tree_data.loaded = true;
@@ -182,7 +181,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestEmitNodeUpdates) {
 
   // Send another update for node 1, and verify that it was passed to the
   // accessibility bridge.
-  ui::AXTreeUpdate updated_state;
+  AXTreeUpdate updated_state;
   updated_state.root_id = 1;
   updated_state.nodes.resize(2);
   updated_state.nodes[0].id = 1;
@@ -214,8 +213,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestEmitNodeUpdates) {
 }
 
 TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
-  ui::AXTreeUpdate initial_state;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate initial_state;
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   initial_state.tree_data.tree_id = tree_id;
   initial_state.has_tree_data = true;
   initial_state.tree_data.loaded = true;
@@ -245,7 +244,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
   uint32_t node_2_fuchsia_id = node_2->GetFuchsiaNodeID();
 
   // Delete node 2.
-  ui::AXTreeUpdate updated_state;
+  AXTreeUpdate updated_state;
   updated_state.nodes.resize(1);
   updated_state.nodes[0].id = 1;
 
@@ -274,8 +273,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
 }
 
 TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
-  ui::AXTreeUpdate initial_state;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate initial_state;
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   initial_state.tree_data.tree_id = tree_id;
   initial_state.has_tree_data = true;
   initial_state.tree_data.loaded = true;
@@ -294,11 +293,11 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
   }
 
   // Send location update for node 2.
-  std::vector<ui::AXLocationChanges> changes;
-  ui::AXRelativeBounds relative_bounds;
+  std::vector<AXLocationChanges> changes;
+  AXRelativeBounds relative_bounds;
   relative_bounds.bounds =
       gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
-  ui::AXLocationChanges change;
+  AXLocationChanges change;
   change.id = 2;
   change.ax_tree_id = tree_id;
   change.new_location = relative_bounds;
@@ -333,12 +332,12 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
   mock_browser_accessibility_delegate_->is_root_frame_ = true;
   BrowserAccessibilityManager::NeverSuppressOrDelayEventsForTesting();
 
-  ui::AXTreeUpdate initial_state;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate initial_state;
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   initial_state.tree_data.tree_id = tree_id;
   initial_state.has_tree_data = true;
   initial_state.tree_data.loaded = true;
-  initial_state.tree_data.parent_tree_id = ui::AXTreeIDUnknown();
+  initial_state.tree_data.parent_tree_id = AXTreeIDUnknown();
   initial_state.root_id = 1;
   initial_state.nodes.resize(2);
   initial_state.nodes[0].id = 1;
@@ -358,8 +357,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
   // Set focus to node 1, and check that the focus was updated from null to
   // node 1.
   {
-    ui::AXUpdatesAndEvents event;
-    ui::AXTreeUpdate updated_state;
+    AXUpdatesAndEvents event;
+    AXTreeUpdate updated_state;
     updated_state.tree_data.tree_id = tree_id;
     updated_state.has_tree_data = true;
     updated_state.tree_data.focused_tree_id = tree_id;
@@ -383,8 +382,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
   // Set focus to node 2, and check that focus was updated from node 1 to node
   // 2.
   {
-    ui::AXUpdatesAndEvents event;
-    ui::AXTreeUpdate updated_state;
+    AXUpdatesAndEvents event;
+    AXTreeUpdate updated_state;
     updated_state.tree_data.tree_id = tree_id;
     updated_state.has_tree_data = true;
     updated_state.tree_data.focused_tree_id = tree_id;
@@ -415,8 +414,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
 TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
   mock_browser_accessibility_delegate_->is_root_frame_ = true;
 
-  ui::AXTreeUpdate initial_state;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate initial_state;
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   initial_state.tree_data.tree_id = tree_id;
   initial_state.has_tree_data = true;
   initial_state.tree_data.loaded = true;
@@ -439,15 +438,14 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
   // of the hit test, so the geometry doesn't matter. We just need to verify
   // that the target point specified here matches the target point received by
   // the delegate.
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.action = ax::mojom::Action::kHitTest;
   action_data.target_point.set_x(1);
   action_data.target_point.set_y(2);
   action_data.request_id = 3;
 
-  ui::AXPlatformNodeFuchsia* platform_node =
-      static_cast<ui::AXPlatformNodeFuchsia*>(
-          ui::AXPlatformNodeBase::GetFromUniqueId(node_1->GetFuchsiaNodeID()));
+  AXPlatformNodeFuchsia* platform_node = static_cast<AXPlatformNodeFuchsia*>(
+      AXPlatformNodeBase::GetFromUniqueId(node_1->GetFuchsiaNodeID()));
   ASSERT_TRUE(platform_node);
 
   platform_node->PerformAction(action_data);
@@ -484,8 +482,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
 TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTestFails) {
   mock_browser_accessibility_delegate_->is_root_frame_ = true;
 
-  ui::AXTreeUpdate initial_state;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate initial_state;
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   initial_state.tree_data.tree_id = tree_id;
   initial_state.has_tree_data = true;
   initial_state.tree_data.loaded = true;
@@ -501,15 +499,14 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTestFails) {
       ToBrowserAccessibilityFuchsia(manager_->GetFromID(1));
   ASSERT_TRUE(node_1);
 
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.action = ax::mojom::Action::kHitTest;
   action_data.target_point.set_x(1);
   action_data.target_point.set_y(2);
   action_data.request_id = 4;
 
-  ui::AXPlatformNodeFuchsia* platform_node =
-      static_cast<ui::AXPlatformNodeFuchsia*>(
-          ui::AXPlatformNodeBase::GetFromUniqueId(node_1->GetFuchsiaNodeID()));
+  AXPlatformNodeFuchsia* platform_node = static_cast<AXPlatformNodeFuchsia*>(
+      AXPlatformNodeBase::GetFromUniqueId(node_1->GetFuchsiaNodeID()));
   ASSERT_TRUE(platform_node);
 
   platform_node->PerformAction(action_data);
@@ -537,8 +534,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTestFails) {
 TEST_F(BrowserAccessibilityManagerFuchsiaTest, PerformAction) {
   mock_browser_accessibility_delegate_->is_root_frame_ = true;
 
-  ui::AXTreeUpdate initial_state;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate initial_state;
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   initial_state.tree_data.tree_id = tree_id;
   initial_state.has_tree_data = true;
   initial_state.tree_data.loaded = true;
@@ -554,19 +551,18 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, PerformAction) {
       ToBrowserAccessibilityFuchsia(manager_->GetFromID(2));
   ASSERT_TRUE(node_2);
 
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.action = ax::mojom::Action::kScrollToMakeVisible;
   action_data.target_node_id = 2;
 
-  ui::AXPlatformNodeFuchsia* platform_node =
-      static_cast<ui::AXPlatformNodeFuchsia*>(
-          ui::AXPlatformNodeBase::GetFromUniqueId(node_2->GetFuchsiaNodeID()));
+  AXPlatformNodeFuchsia* platform_node = static_cast<AXPlatformNodeFuchsia*>(
+      AXPlatformNodeBase::GetFromUniqueId(node_2->GetFuchsiaNodeID()));
   ASSERT_TRUE(platform_node);
 
   platform_node->PerformAction(action_data);
 
   {
-    const std::optional<ui::AXActionData> last_action_data =
+    const std::optional<AXActionData> last_action_data =
         mock_browser_accessibility_delegate_->last_action_data();
     ASSERT_TRUE(last_action_data);
     EXPECT_EQ(last_action_data->action,
@@ -575,4 +571,4 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, PerformAction) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace ui

@@ -18,17 +18,17 @@ namespace ui {
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    const ui::AXTreeUpdate& initial_tree,
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
+    const AXTreeUpdate& initial_tree,
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerAuraLinux(initial_tree,
                                                   node_id_delegate, delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerAuraLinux(
       BrowserAccessibilityManagerAuraLinux::GetEmptyDocument(),
       node_id_delegate, delegate);
@@ -40,9 +40,9 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerAuraLinux() {
 }
 
 BrowserAccessibilityManagerAuraLinux::BrowserAccessibilityManagerAuraLinux(
-    const ui::AXTreeUpdate& initial_tree,
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate)
+    const AXTreeUpdate& initial_tree,
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(node_id_delegate, delegate) {
   Initialize(initial_tree);
 }
@@ -61,32 +61,32 @@ BrowserAccessibilityManagerAuraLinux::~BrowserAccessibilityManagerAuraLinux() {
 }
 
 // static
-ui::AXTreeUpdate BrowserAccessibilityManagerAuraLinux::GetEmptyDocument() {
-  ui::AXNodeData empty_document;
-  empty_document.id = ui::kInitialEmptyDocumentRootNodeID;
+AXTreeUpdate BrowserAccessibilityManagerAuraLinux::GetEmptyDocument() {
+  AXNodeData empty_document;
+  empty_document.id = kInitialEmptyDocumentRootNodeID;
   empty_document.role = ax::mojom::Role::kRootWebArea;
-  ui::AXTreeUpdate update;
+  AXTreeUpdate update;
   update.root_id = empty_document.id;
   update.nodes.push_back(empty_document);
   return update;
 }
 
 void BrowserAccessibilityManagerAuraLinux::SetPrimaryWebContentsForWindow(
-    ui::AXNodeID node_id) {
-  DCHECK_NE(node_id, ui::kInvalidAXNodeID);
+    AXNodeID node_id) {
+  DCHECK_NE(node_id, kInvalidAXNodeID);
   DCHECK(GetFromID(node_id));
   DCHECK(primary_web_contents_for_window_id_ == node_id ||
-         primary_web_contents_for_window_id_ == ui::kInvalidAXNodeID);
+         primary_web_contents_for_window_id_ == kInvalidAXNodeID);
   primary_web_contents_for_window_id_ = node_id;
 }
 
-ui::AXNodeID
-BrowserAccessibilityManagerAuraLinux::GetPrimaryWebContentsForWindow() const {
+AXNodeID BrowserAccessibilityManagerAuraLinux::GetPrimaryWebContentsForWindow()
+    const {
   return primary_web_contents_for_window_id_;
 }
 
-void BrowserAccessibilityManagerAuraLinux::FireFocusEvent(ui::AXNode* node) {
-  ui::AXTreeManager::FireFocusEvent(node);
+void BrowserAccessibilityManagerAuraLinux::FireFocusEvent(AXNode* node) {
+  AXTreeManager::FireFocusEvent(node);
   FireEvent(GetFromAXNode(node), ax::mojom::Event::kFocus);
 }
 
@@ -227,23 +227,23 @@ void BrowserAccessibilityManagerAuraLinux::FireSubtreeCreatedEvent(
 }
 
 void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
-    ui::AXEventGenerator::Event event_type,
-    const ui::AXNode* node) {
+    AXEventGenerator::Event event_type,
+    const AXNode* node) {
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
 
   BrowserAccessibility* wrapper = GetFromAXNode(node);
   DCHECK(wrapper);
   switch (event_type) {
-    case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
+    case AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
       FireEvent(wrapper, ax::mojom::Event::kActiveDescendantChanged);
       break;
-    case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
+    case AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
       FireTextAttributesChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
+    case AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       FireEvent(wrapper, ax::mojom::Event::kCheckedStateChanged);
       break;
-    case ui::AXEventGenerator::Event::BUSY_CHANGED: {
+    case AXEventGenerator::Event::BUSY_CHANGED: {
       // We reliably get busy-changed notifications when the value of aria-busy
       // changes. We may or may not get a generated busy-changed notification
       // for the document at the start or end of a page load. For instance,
@@ -258,54 +258,53 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
                                         ax::mojom::BoolAttribute::kBusy));
       break;
     }
-    case ui::AXEventGenerator::Event::COLLAPSED:
+    case AXEventGenerator::Event::COLLAPSED:
       FireExpandedEvent(wrapper, false);
       break;
-    case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
+    case AXEventGenerator::Event::DESCRIPTION_CHANGED:
       FireDescriptionChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
-      ui::AXNodeID focus_id =
-          ax_tree()->GetUnignoredSelection().focus_object_id;
+    case AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
+      AXNodeID focus_id = ax_tree()->GetUnignoredSelection().focus_object_id;
       BrowserAccessibility* focus_object = GetFromID(focus_id);
       if (focus_object)
         FireEvent(focus_object, ax::mojom::Event::kTextSelectionChanged);
       break;
     }
-    case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
+    case AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       FireEvent(wrapper, ax::mojom::Event::kDocumentTitleChanged);
       break;
-    case ui::AXEventGenerator::Event::ENABLED_CHANGED:
+    case AXEventGenerator::Event::ENABLED_CHANGED:
       FireEnabledChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::EXPANDED:
+    case AXEventGenerator::Event::EXPANDED:
       FireExpandedEvent(wrapper, true);
       break;
-    case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
+    case AXEventGenerator::Event::INVALID_STATUS_CHANGED:
       FireInvalidStatusChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
+    case AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
       FireAriaCurrentChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
+    case AXEventGenerator::Event::MENU_ITEM_SELECTED:
       FireSelectedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::MENU_POPUP_END:
+    case AXEventGenerator::Event::MENU_POPUP_END:
       FireShowingEvent(wrapper, false);
       break;
-    case ui::AXEventGenerator::Event::MENU_POPUP_START:
+    case AXEventGenerator::Event::MENU_POPUP_START:
       FireShowingEvent(wrapper, true);
       break;
-    case ui::AXEventGenerator::Event::NAME_CHANGED:
+    case AXEventGenerator::Event::NAME_CHANGED:
       FireNameChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::PARENT_CHANGED:
+    case AXEventGenerator::Event::PARENT_CHANGED:
       FireParentChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::READONLY_CHANGED:
+    case AXEventGenerator::Event::READONLY_CHANGED:
       FireReadonlyChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
+    case AXEventGenerator::Event::RANGE_VALUE_CHANGED:
       // Before firing the platform event, check to see that the object's
       // properties still support range values, because some of the properties
       // may have been updated after the event was generated.
@@ -313,106 +312,106 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
         FireEvent(wrapper, ax::mojom::Event::kValueChanged);
       }
       break;
-    case ui::AXEventGenerator::Event::ALERT:
-    case ui::AXEventGenerator::Event::ROLE_CHANGED: {
+    case AXEventGenerator::Event::ALERT:
+    case AXEventGenerator::Event::ROLE_CHANGED: {
       // In ATK, there is no role change event, and instead, role changes are
       // mapped to a subtree being removed and re-added. Since the AXNodeID
       // (and therefore the AXNode) in such cases may remain the same, this must
       // be done manually.
-      ui::AXPlatformNodeAuraLinux* platform_node =
+      AXPlatformNodeAuraLinux* platform_node =
           ToBrowserAccessibilityAuraLinux(wrapper)->GetNode();
       platform_node->OnSubtreeWillBeDeleted();
       platform_node->OnSubtreeCreated();
       break;
     }
-    case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
+    case AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
       FireEvent(wrapper, ax::mojom::Event::kSelectedChildrenChanged);
       break;
-    case ui::AXEventGenerator::Event::SELECTED_CHANGED:
+    case AXEventGenerator::Event::SELECTED_CHANGED:
       FireSelectedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
-      DCHECK(ui::IsSelectElement(wrapper->GetRole()));
+    case AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
+      DCHECK(IsSelectElement(wrapper->GetRole()));
       FireEvent(wrapper, ax::mojom::Event::kValueChanged);
       break;
-    case ui::AXEventGenerator::Event::SORT_CHANGED:
+    case AXEventGenerator::Event::SORT_CHANGED:
       FireSortDirectionChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::SUBTREE_CREATED:
+    case AXEventGenerator::Event::SUBTREE_CREATED:
       FireSubtreeCreatedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
+    case AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       FireTextAttributesChangedEvent(wrapper);
       break;
-    case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
+    case AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
       if (!wrapper->IsTextField())
         return;  // node no longer editable since event originally fired.
       FireEvent(wrapper, ax::mojom::Event::kValueChanged);
       break;
 
     // Currently unused events on this platform.
-    case ui::AXEventGenerator::Event::NONE:
-    case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
-    case ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED:
-    case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
-    case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
-    case ui::AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
-    case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
-    case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
-    case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
-    case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
-    case ui::AXEventGenerator::Event::DETAILS_CHANGED:
-    case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
-    case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
-    case ui::AXEventGenerator::Event::FOCUS_CHANGED:
-    case ui::AXEventGenerator::Event::FLOW_FROM_CHANGED:
-    case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
-    case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
-    case ui::AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
-    case ui::AXEventGenerator::Event::IGNORED_CHANGED:
-    case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
-    case ui::AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
-    case ui::AXEventGenerator::Event::LABELED_BY_CHANGED:
-    case ui::AXEventGenerator::Event::LANGUAGE_CHANGED:
-    case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
-    case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED:
-    case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
-    case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
-    case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
-    case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
-    case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::ORIENTATION_CHANGED:
-    case ui::AXEventGenerator::Event::PLACEHOLDER_CHANGED:
-    case ui::AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
-    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
-    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
-    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
-    case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
-    case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
-    case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
-    case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
-    case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
-    case ui::AXEventGenerator::Event::STATE_CHANGED:
-    case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
-    case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
+    case AXEventGenerator::Event::NONE:
+    case AXEventGenerator::Event::ACCESS_KEY_CHANGED:
+    case AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED:
+    case AXEventGenerator::Event::ATOMIC_CHANGED:
+    case AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
+    case AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
+    case AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
+    case AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
+    case AXEventGenerator::Event::CHILDREN_CHANGED:
+    case AXEventGenerator::Event::CONTROLS_CHANGED:
+    case AXEventGenerator::Event::DETAILS_CHANGED:
+    case AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
+    case AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
+    case AXEventGenerator::Event::FOCUS_CHANGED:
+    case AXEventGenerator::Event::FLOW_FROM_CHANGED:
+    case AXEventGenerator::Event::FLOW_TO_CHANGED:
+    case AXEventGenerator::Event::HASPOPUP_CHANGED:
+    case AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
+    case AXEventGenerator::Event::IGNORED_CHANGED:
+    case AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
+    case AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
+    case AXEventGenerator::Event::LABELED_BY_CHANGED:
+    case AXEventGenerator::Event::LANGUAGE_CHANGED:
+    case AXEventGenerator::Event::LAYOUT_INVALIDATED:
+    case AXEventGenerator::Event::LIVE_REGION_CHANGED:
+    case AXEventGenerator::Event::LIVE_REGION_CREATED:
+    case AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
+    case AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
+    case AXEventGenerator::Event::LIVE_STATUS_CHANGED:
+    case AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
+    case AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
+    case AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
+    case AXEventGenerator::Event::ORIENTATION_CHANGED:
+    case AXEventGenerator::Event::PLACEHOLDER_CHANGED:
+    case AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
+    case AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
+    case AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
+    case AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
+    case AXEventGenerator::Event::RELATED_NODE_CHANGED:
+    case AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
+    case AXEventGenerator::Event::ROW_COUNT_CHANGED:
+    case AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
+    case AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
+    case AXEventGenerator::Event::SET_SIZE_CHANGED:
+    case AXEventGenerator::Event::STATE_CHANGED:
+    case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
+    case AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       break;
   }
 }
 
-void BrowserAccessibilityManagerAuraLinux::OnNodeDeleted(ui::AXTree* tree,
+void BrowserAccessibilityManagerAuraLinux::OnNodeDeleted(AXTree* tree,
                                                          int32_t node_id) {
   if (primary_web_contents_for_window_id_ == node_id) {
-    primary_web_contents_for_window_id_ = ui::kInvalidAXNodeID;
+    primary_web_contents_for_window_id_ = kInvalidAXNodeID;
   }
   BrowserAccessibilityManager::OnNodeDeleted(tree, node_id);
 }
 
 void BrowserAccessibilityManagerAuraLinux::OnIgnoredWillChange(
-    ui::AXTree* tree,
-    ui::AXNode* node,
+    AXTree* tree,
+    AXNode* node,
     bool is_ignored_new_value,
     bool is_changing_unignored_parents_children) {
   DCHECK_EQ(ax_tree(), tree);
@@ -434,8 +433,8 @@ void BrowserAccessibilityManagerAuraLinux::OnIgnoredWillChange(
 }
 
 void BrowserAccessibilityManagerAuraLinux::OnSubtreeWillBeDeleted(
-    ui::AXTree* tree,
-    ui::AXNode* node) {
+    AXTree* tree,
+    AXNode* node) {
   BrowserAccessibility* obj = GetFromAXNode(node);
   if (!CanEmitChildrenChanged(obj))
     return;
@@ -443,17 +442,17 @@ void BrowserAccessibilityManagerAuraLinux::OnSubtreeWillBeDeleted(
 }
 
 void BrowserAccessibilityManagerAuraLinux::OnAtomicUpdateFinished(
-    ui::AXTree* tree,
+    AXTree* tree,
     bool root_changed,
-    const std::vector<ui::AXTreeObserver::Change>& changes) {
+    const std::vector<AXTreeObserver::Change>& changes) {
   BrowserAccessibilityManager::OnAtomicUpdateFinished(tree, root_changed,
                                                       changes);
 
-  std::set<ui::AXPlatformNode*> objs_to_update;
+  std::set<AXPlatformNode*> objs_to_update;
   CollectChangedNodesAndParentsForAtomicUpdate(tree, changes, &objs_to_update);
 
   for (auto* node : objs_to_update)
-    static_cast<ui::AXPlatformNodeAuraLinux*>(node)->UpdateHypertext();
+    static_cast<AXPlatformNodeAuraLinux*>(node)->UpdateHypertext();
 }
 
 void BrowserAccessibilityManagerAuraLinux::OnFindInPageResult(int request_id,
@@ -465,7 +464,7 @@ void BrowserAccessibilityManagerAuraLinux::OnFindInPageResult(int request_id,
   BrowserAccessibility* node = GetFromID(start_id);
   if (!node)
     return;
-  ui::AXPlatformNodeAuraLinux* platform_node =
+  AXPlatformNodeAuraLinux* platform_node =
       ToBrowserAccessibilityAuraLinux(node)->GetNode();
 
   // TODO(accessibility): We should support selections that span multiple
@@ -493,4 +492,4 @@ bool BrowserAccessibilityManagerAuraLinux::CanEmitChildrenChanged(
   return true;
 }
 
-}  // namespace content
+}  // namespace ui

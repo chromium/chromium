@@ -15,11 +15,11 @@
 @interface AXPlatformNodeUIKitElement : UIAccessibilityElement
 
 // The accessibility tree node associated with this wrapper.
-@property(nonatomic, readonly) ui::AXPlatformNodeIOS* node;
+@property(nonatomic, readonly) AXPlatformNodeIOS* node;
 
 // This creates a UIKit accessibility element around the given
 // AXPlatformNodeIOS.
-- (instancetype)initWithPlatformNode:(ui::AXPlatformNodeIOS*)platformNode;
+- (instancetype)initWithPlatformNode:(AXPlatformNodeIOS*)platformNode;
 
 // Invalidate children for a non-ignored ancestor (including self).
 - (void)childrenChanged;

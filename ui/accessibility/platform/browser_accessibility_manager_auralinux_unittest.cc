@@ -33,9 +33,9 @@ class BrowserAccessibilityManagerAuraLinuxTest : public ::testing::Test {
   ~BrowserAccessibilityManagerAuraLinuxTest() override = default;
 
  protected:
-  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
+  std::unique_ptr<TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
-  ui::TestAXNodeIdDelegate node_id_delegate_;
+  TestAXNodeIdDelegate node_id_delegate_;
 
  private:
   ScopedAXModeSetter ax_mode_setter;
@@ -50,12 +50,12 @@ BrowserAccessibilityManagerAuraLinuxTest::BrowserAccessibilityManagerAuraLinuxTe
 
 void BrowserAccessibilityManagerAuraLinuxTest::SetUp() {
   test_browser_accessibility_delegate_ =
-      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+      std::make_unique<TestAXPlatformTreeManagerDelegate>();
 }
 
 TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
-  ui::AXTreeUpdate initial_state;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate initial_state;
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   initial_state.tree_data.tree_id = tree_id;
   initial_state.has_tree_data = true;
   initial_state.tree_data.loaded = true;
@@ -77,9 +77,9 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
 
   AtkObject* atk_root =
       manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
-  ui::AXPlatformNodeAuraLinux* root_document_root_node =
-      static_cast<ui::AXPlatformNodeAuraLinux*>(
-          ui::AXPlatformNode::FromNativeViewAccessible(atk_root));
+  AXPlatformNodeAuraLinux* root_document_root_node =
+      static_cast<AXPlatformNodeAuraLinux*>(
+          AXPlatformNode::FromNativeViewAccessible(atk_root));
   {
     ScopedGSignal signal1(
         atk_root, "children-changed::remove",
@@ -137,4 +137,4 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
                                              inline_text_accessible->node());
 }
 
-}  // namespace content
+}  // namespace ui

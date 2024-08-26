@@ -19,7 +19,7 @@ namespace ui {
 
 AXPlatformNodeDelegate::AXPlatformNodeDelegate() : node_(nullptr) {}
 
-AXPlatformNodeDelegate::AXPlatformNodeDelegate(ui::AXNode* node) : node_(node) {
+AXPlatformNodeDelegate::AXPlatformNodeDelegate(AXNode* node) : node_(node) {
   DCHECK(node);
   DCHECK(node->IsDataValid());
 }
@@ -29,7 +29,7 @@ void AXPlatformNodeDelegate::SetNode(AXNode& node) {
   node_ = &node;
 }
 
-ui::AXNodeID AXPlatformNodeDelegate::GetId() const {
+AXNodeID AXPlatformNodeDelegate::GetId() const {
   if (node_)
     return node_->id();
   return kInvalidAXNodeID;
@@ -414,7 +414,7 @@ bool AXPlatformNodeDelegate::SetHypertextSelection(int start_offset,
 
 TextAttributeMap AXPlatformNodeDelegate::ComputeTextAttributeMap(
     const TextAttributeList& default_attributes) const {
-  ui::TextAttributeMap attributes_map;
+  TextAttributeMap attributes_map;
   attributes_map[0] = default_attributes;
   return attributes_map;
 }
@@ -490,7 +490,7 @@ AXPlatformNode* AXPlatformNodeDelegate::GetFromNodeID(int32_t id) {
 }
 
 AXPlatformNode* AXPlatformNodeDelegate::GetFromTreeIDAndNodeID(
-    const ui::AXTreeID& ax_tree_id,
+    const AXTreeID& ax_tree_id,
     int32_t id) {
   return nullptr;
 }
@@ -522,9 +522,9 @@ std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
   // sorted by the id and we will lose the original order which may be of
   // interest to ATs. The number of ids should be small.
 
-  std::vector<ui::AXPlatformNode*> nodes;
+  std::vector<AXPlatformNode*> nodes;
   for (int32_t target_id : target_ids) {
-    ui::AXPlatformNode* target = GetFromNodeID(target_id);
+    AXPlatformNode* target = GetFromNodeID(target_id);
     if (IsValidRelationTarget(target) && !base::Contains(nodes, target)) {
       nodes.push_back(target);
     }
@@ -550,13 +550,12 @@ AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
   return std::vector<AXPlatformNode*>();
 }
 
-std::vector<ui::AXPlatformNode*>
-AXPlatformNodeDelegate::GetNodesFromRelationIdSet(
+std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetNodesFromRelationIdSet(
     const std::set<AXNodeID>& ids) {
-  std::vector<ui::AXPlatformNode*> nodes;
+  std::vector<AXPlatformNode*> nodes;
 
   for (AXNodeID node_id : ids) {
-    ui::AXPlatformNode* node = GetFromNodeID(node_id);
+    AXPlatformNode* node = GetFromNodeID(node_id);
     if (IsValidRelationTarget(node)) {
       nodes.push_back(node);
     }
@@ -594,7 +593,7 @@ AXPlatformNodeId AXPlatformNodeDelegate::GetUniqueId() const {
 
 AXPlatformNodeDelegate* AXPlatformNodeDelegate::GetParentDelegate() const {
   AXPlatformNode* parent_node =
-      ui::AXPlatformNode::FromNativeViewAccessible(GetParent());
+      AXPlatformNode::FromNativeViewAccessible(GetParent());
   if (parent_node)
     return parent_node->GetDelegate();
   return nullptr;
@@ -1134,7 +1133,7 @@ std::optional<int32_t> AXPlatformNodeDelegate::GetCellIdAriaCoords(
 std::optional<int32_t> AXPlatformNodeDelegate::CellIndexToId(
     int cell_index) const {
   if (node_) {
-    ui::AXNode* cell = node()->GetTableCellFromIndex(cell_index);
+    AXNode* cell = node()->GetTableCellFromIndex(cell_index);
     if (!cell)
       return std::nullopt;
     return cell->id();
@@ -1197,7 +1196,7 @@ AXPlatformNodeDelegate::GetTargetForNativeAccessibilityEvent() {
 }
 
 bool AXPlatformNodeDelegate::AccessibilityPerformAction(
-    const ui::AXActionData& data) {
+    const AXActionData& data) {
   return false;
 }
 
@@ -1273,8 +1272,8 @@ bool AXPlatformNodeDelegate::IsUIANodeSelected() const {
 
 const std::vector<gfx::NativeViewAccessible>
 AXPlatformNodeDelegate::GetUIADirectChildrenInRange(
-    ui::AXPlatformNodeDelegate* start,
-    ui::AXPlatformNodeDelegate* end) {
+    AXPlatformNodeDelegate* start,
+    AXPlatformNodeDelegate* end) {
   return {};
 }
 

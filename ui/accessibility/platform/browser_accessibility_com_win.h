@@ -49,13 +49,13 @@ class BrowserAccessibilityWin;
 //
 ////////////////////////////////////////////////////////////////////////////////
 class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
-    BrowserAccessibilityComWin : public ui::AXPlatformNodeWin,
-                                 public IAccessibleApplication,
-                                 public IAccessibleHyperlink,
-                                 public IAccessibleImage,
-                                 public ISimpleDOMDocument,
-                                 public ISimpleDOMNode,
-                                 public ISimpleDOMText {
+BrowserAccessibilityComWin : public AXPlatformNodeWin,
+                             public IAccessibleApplication,
+                             public IAccessibleHyperlink,
+                             public IAccessibleImage,
+                             public ISimpleDOMDocument,
+                             public ISimpleDOMNode,
+                             public ISimpleDOMText {
  public:
   BEGIN_COM_MAP(BrowserAccessibilityComWin)
   COM_INTERFACE_ENTRY(IAccessibleAction)
@@ -65,7 +65,7 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
   COM_INTERFACE_ENTRY(ISimpleDOMDocument)
   COM_INTERFACE_ENTRY(ISimpleDOMNode)
   COM_INTERFACE_ENTRY(ISimpleDOMText)
-  COM_INTERFACE_ENTRY_CHAIN(ui::AXPlatformNodeWin)
+  COM_INTERFACE_ENTRY_CHAIN(AXPlatformNodeWin)
   END_COM_MAP()
 
   // Mappings from roles and states to human readable strings. Initialize
@@ -339,7 +339,7 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
   COMPONENT_EXPORT(AX_PLATFORM) void ComputeStylesIfNeeded();
 
   // Public accessors (these do not have COM accessible accessors)
-  const ui::TextAttributeMap& offset_to_text_attributes() const {
+  const TextAttributeMap& offset_to_text_attributes() const {
     return win_attributes_->offset_to_text_attributes;
   }
 
@@ -356,7 +356,7 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
   BrowserAccessibilityManager* Manager() const;
 
   // Returns the IA2 text attributes for this object.
-  ui::TextAttributeList ComputeTextAttributes() const;
+  TextAttributeList ComputeTextAttributes() const;
 
   // Add one to the reference count and return the same object. Always
   // use this method when returning a BrowserAccessibilityComWin object as
@@ -419,7 +419,7 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
     std::vector<std::wstring> ia2_attributes;
 
     // Maps each style span to its start offset in hypertext.
-    ui::TextAttributeMap offset_to_text_attributes;
+    TextAttributeMap offset_to_text_attributes;
   };
 
   std::unique_ptr<WinAttributes> win_attributes_;
@@ -427,13 +427,13 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
   // Holds transient state needed only while processing a tree update.
   struct UpdateState {
     UpdateState(std::unique_ptr<WinAttributes> old_win_attributes,
-                ui::AXLegacyHypertext old_hypertext);
+                AXLegacyHypertext old_hypertext);
     UpdateState(const UpdateState&) = delete;
     UpdateState& operator=(const UpdateState&) = delete;
     ~UpdateState();
 
     std::unique_ptr<WinAttributes> old_win_attributes;
-    ui::AXLegacyHypertext old_hypertext;
+    AXLegacyHypertext old_hypertext;
   };
 
   // Only valid during the scope of a IA2_EVENT_TEXT_REMOVED or
@@ -452,6 +452,6 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
 COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityComWin* ToBrowserAccessibilityComWin(
     BrowserAccessibility* obj);
 
-}  // namespace content
+}  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_COM_WIN_H_

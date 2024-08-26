@@ -10,17 +10,17 @@ namespace ui {
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    const ui::AXTreeUpdate& initial_tree,
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
+    const AXTreeUpdate& initial_tree,
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerIOS(initial_tree, node_id_delegate,
                                             delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerIOS(
       BrowserAccessibilityManagerIOS::GetEmptyDocument(), node_id_delegate,
       delegate);
@@ -32,9 +32,9 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerIOS() {
 }
 
 BrowserAccessibilityManagerIOS::BrowserAccessibilityManagerIOS(
-    const ui::AXTreeUpdate& initial_tree,
-    ui::AXNodeIdDelegate& node_id_delegate,
-    ui::AXPlatformTreeManagerDelegate* delegate)
+    const AXTreeUpdate& initial_tree,
+    AXNodeIdDelegate& node_id_delegate,
+    AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(node_id_delegate, delegate) {
   Initialize(initial_tree);
 }
@@ -42,18 +42,18 @@ BrowserAccessibilityManagerIOS::BrowserAccessibilityManagerIOS(
 BrowserAccessibilityManagerIOS::~BrowserAccessibilityManagerIOS() = default;
 
 // static
-ui::AXTreeUpdate BrowserAccessibilityManagerIOS::GetEmptyDocument() {
-  ui::AXNodeData empty_document;
-  empty_document.id = ui::kInitialEmptyDocumentRootNodeID;
+AXTreeUpdate BrowserAccessibilityManagerIOS::GetEmptyDocument() {
+  AXNodeData empty_document;
+  empty_document.id = kInitialEmptyDocumentRootNodeID;
   empty_document.role = ax::mojom::Role::kRootWebArea;
-  ui::AXTreeUpdate update;
+  AXTreeUpdate update;
   update.root_id = empty_document.id;
   update.nodes.push_back(empty_document);
   return update;
 }
 
 void BrowserAccessibilityManagerIOS::OnAtomicUpdateFinished(
-    ui::AXTree* tree,
+    AXTree* tree,
     bool root_changed,
     const std::vector<Change>& changes) {
   BrowserAccessibilityManager::OnAtomicUpdateFinished(tree, root_changed,
@@ -69,7 +69,7 @@ void BrowserAccessibilityManagerIOS::OnAtomicUpdateFinished(
 
 gfx::Rect BrowserAccessibilityManagerIOS::GetViewBoundsInScreenCoordinates()
     const {
-  ui::AXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
+  AXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
   if (!delegate) {
     return gfx::Rect();
   }

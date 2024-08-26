@@ -28,9 +28,9 @@ class BrowserAccessibilityCocoaBrowserTest;
 class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
     : public BrowserAccessibilityManager {
  public:
-  BrowserAccessibilityManagerMac(const ui::AXTreeUpdate& initial_tree,
-                                 ui::AXNodeIdDelegate& node_id_delegate,
-                                 ui::AXPlatformTreeManagerDelegate* delegate);
+  BrowserAccessibilityManagerMac(const AXTreeUpdate& initial_tree,
+                                 AXNodeIdDelegate& node_id_delegate,
+                                 AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerMac(const BrowserAccessibilityManagerMac&) =
       delete;
@@ -39,17 +39,17 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
 
   ~BrowserAccessibilityManagerMac() override;
 
-  static ui::AXTreeUpdate GetEmptyDocument();
+  static AXTreeUpdate GetEmptyDocument();
 
   // AXTreeManager overrides.
-  void FireFocusEvent(ui::AXNode* node) override;
+  void FireFocusEvent(AXNode* node) override;
 
   // BrowserAccessibilityManager overrides.
   void FireBlinkEvent(ax::mojom::Event event_type,
                       BrowserAccessibility* node,
                       int action_request_id) override;
-  void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                          const ui::AXNode* node) override;
+  void FireGeneratedEvent(AXEventGenerator::Event event_type,
+                          const AXNode* node) override;
 
   void FireAriaNotificationEvent(
       BrowserAccessibility* node,
@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
       ax::mojom::AriaNotificationInterrupt interrupt_property,
       ax::mojom::AriaNotificationPriority priority_property) override;
 
-  bool OnAccessibilityEvents(const ui::AXUpdatesAndEvents& details) override;
+  bool OnAccessibilityEvents(const AXUpdatesAndEvents& details) override;
 
   id GetParentView();
   id GetWindow();
@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
                                  BrowserAccessibility* node);
 
   // AXTreeObserver methods.
-  void OnAtomicUpdateFinished(ui::AXTree* tree,
+  void OnAtomicUpdateFinished(AXTree* tree,
                               bool root_changed,
                               const std::vector<Change>& changes) override;
 
@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
       const std::u16string& inserted_text,
       id edit_text_marker) const;
 
-  bool IsInGeneratedEventBatch(ui::AXEventGenerator::Event event_type) const;
+  bool IsInGeneratedEventBatch(AXEventGenerator::Event event_type) const;
 
   bool ShouldFireLoadCompleteNotification();
 
@@ -96,6 +96,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
   friend class BrowserAccessibilityCocoaBrowserTest;
 };
 
-}  // namespace content
+}  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_MANAGER_MAC_H_

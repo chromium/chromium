@@ -23,10 +23,9 @@ class BrowserAccessibilityFuchsia;
 class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerFuchsia
     : public BrowserAccessibilityManager {
  public:
-  BrowserAccessibilityManagerFuchsia(
-      const ui::AXTreeUpdate& initial_tree,
-      ui::AXNodeIdDelegate& node_id_delegate,
-      ui::AXPlatformTreeManagerDelegate* delegate);
+  BrowserAccessibilityManagerFuchsia(const AXTreeUpdate& initial_tree,
+                                     AXNodeIdDelegate& node_id_delegate,
+                                     AXPlatformTreeManagerDelegate* delegate);
   ~BrowserAccessibilityManagerFuchsia() override;
 
   BrowserAccessibilityManagerFuchsia(
@@ -34,10 +33,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerFuchsia
   BrowserAccessibilityManagerFuchsia& operator=(
       const BrowserAccessibilityManagerFuchsia&) = delete;
 
-  static ui::AXTreeUpdate GetEmptyDocument();
+  static AXTreeUpdate GetEmptyDocument();
 
   // AXTreeManager override.
-  void FireFocusEvent(ui::AXNode* node) override;
+  void FireFocusEvent(AXNode* node) override;
 
   // BrowserAccessibilityManager overrides.
   void FireBlinkEvent(ax::mojom::Event event_type,
@@ -49,15 +48,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerFuchsia
   void OnHitTestResult(int action_request_id, BrowserAccessibility* node);
 
   // Returns the accessibility bridge instance for this manager's native window.
-  ui::AccessibilityBridgeFuchsia* GetAccessibilityBridge() const;
+  AccessibilityBridgeFuchsia* GetAccessibilityBridge() const;
 
   // Test-only method to set the return value of GetAccessibilityBridge().
   void SetAccessibilityBridgeForTest(
-      ui::AccessibilityBridgeFuchsia* accessibility_bridge_for_test);
+      AccessibilityBridgeFuchsia* accessibility_bridge_for_test);
 
  private:
   // Accessibility bridge instance to use for tests, if set.
-  ui::AccessibilityBridgeFuchsia* accessibility_bridge_for_test_ = nullptr;
+  AccessibilityBridgeFuchsia* accessibility_bridge_for_test_ = nullptr;
 
   // Node to hold this object fuchsia inspect data.
   inspect::Node inspect_node_;
@@ -66,6 +65,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerFuchsia
   inspect::LazyNode tree_dump_node_;
 };
 
-}  // namespace content
+}  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_FUCHSIA_BROWSER_ACCESSIBILITY_MANAGER_FUCHSIA_H_

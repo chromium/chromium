@@ -37,7 +37,7 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   BrowserAccessibility* PlatformGetPreviousSibling() const override;
 
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  ui::AXPlatformNode* GetAXPlatformNode() const override;
+  AXPlatformNode* GetAXPlatformNode() const override;
 
   // The BrowserAccessibilityCocoa associated with us.
   BrowserAccessibilityCocoa* GetNativeWrapper() const;
@@ -47,8 +47,7 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   void ReplaceNativeObject();
 
  protected:
-  BrowserAccessibilityMac(BrowserAccessibilityManager* manager,
-                          ui::AXNode* node);
+  BrowserAccessibilityMac(BrowserAccessibilityManager* manager, AXNode* node);
 
   friend class BrowserAccessibility;  // Needs access to our constructor.
 
@@ -60,9 +59,9 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   BrowserAccessibilityCocoa* CreateNativeWrapper();
 
   // Manager of the native cocoa node. We own this object.
-  raw_ptr<ui::AXPlatformNodeMac> platform_node_ = nullptr;
+  raw_ptr<AXPlatformNodeMac> platform_node_ = nullptr;
 };
 
-}  // namespace content
+}  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_MAC_H_

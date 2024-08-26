@@ -15,7 +15,7 @@ class Arguments;
 
 namespace ui {
 
-// A class that wraps an ui::AXPosition to make available in javascript.
+// A class that wraps an AXPosition to make available in javascript.
 //
 // For new additions, consider whether it should be public to the
 // chrome.automation extension api. If so, please update
@@ -23,7 +23,7 @@ namespace ui {
 class COMPONENT_EXPORT(AX_PLATFORM) AutomationPosition final
     : public gin::Wrappable<AutomationPosition> {
  public:
-  AutomationPosition(const ui::AXNode& node,
+  AutomationPosition(const AXNode& node,
                      AXPositionKind kind,
                      int offset,
                      bool is_upstream);
@@ -104,7 +104,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationPosition final
   bool IsValid(gin::Arguments* arguments);
   std::u16string GetText(gin::Arguments* arguments);
 
-  ui::AXNodePosition::AXPositionInstance position_;
+  AXNodePosition::AXPositionInstance position_;
 };
 
 }  // namespace ui

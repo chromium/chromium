@@ -75,12 +75,12 @@ class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
       AXNodeID node_id,
       int start_offset,
       int end_offset,
-      ui::AXClippingBehavior clipping_behavior,
+      AXClippingBehavior clipping_behavior,
       AXOffscreenResult* offscreen_result) override {
     AXPlatformNodeDelegate* delegate = host_->GetDelegate(tree_id, node_id);
     DCHECK(delegate);
     return delegate->GetInnerTextRangeBoundsRect(
-        start_offset, end_offset, ui::AXCoordinateSystem::kScreenPhysicalPixels,
+        start_offset, end_offset, AXCoordinateSystem::kScreenPhysicalPixels,
         clipping_behavior, offscreen_result);
   }
 
@@ -89,9 +89,9 @@ class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
                           AXOffscreenResult* offscreen_result) override {
     AXPlatformNodeDelegate* delegate = host_->GetDelegate(tree_id, node_id);
     DCHECK(delegate);
-    return delegate->GetBoundsRect(
-        ui::AXCoordinateSystem::kScreenPhysicalPixels,
-        ui::AXClippingBehavior::kClipped, offscreen_result);
+    return delegate->GetBoundsRect(AXCoordinateSystem::kScreenPhysicalPixels,
+                                   AXClippingBehavior::kClipped,
+                                   offscreen_result);
   }
 
  private:
@@ -553,12 +553,12 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
     DCHECK(start_offset <= end_offset && end_offset <= max_end_offset);
 
     AXPositionInstance start =
-        ui::AXNodePosition::CreateTextPosition(
-            *anchor, start_offset, ax::mojom::TextAffinity::kDownstream)
+        AXNodePosition::CreateTextPosition(*anchor, start_offset,
+                                           ax::mojom::TextAffinity::kDownstream)
             ->AsLeafTextPosition();
     AXPositionInstance end =
-        ui::AXNodePosition::CreateTextPosition(
-            *anchor, end_offset, ax::mojom::TextAffinity::kDownstream)
+        AXNodePosition::CreateTextPosition(*anchor, end_offset,
+                                           ax::mojom::TextAffinity::kDownstream)
             ->AsLeafTextPosition();
 
     CreateTextRangeProvider(start->Clone(), end->Clone(), result);
@@ -1541,7 +1541,7 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredTextRange(
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetRootDelegate(
-    const ui::AXTreeID tree_id) {
+    const AXTreeID tree_id) {
   const AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
   DCHECK(ax_tree_manager);
   AXNode* root_node = ax_tree_manager->GetRoot();
