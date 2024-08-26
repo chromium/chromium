@@ -36,6 +36,9 @@ class ASH_EXPORT PickerAsyncPreviewImageView : public views::ImageView {
       delete;
   ~PickerAsyncPreviewImageView() override;
 
+  // views::ImageView:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
  private:
   void OnImageSkiaChanged();
 
