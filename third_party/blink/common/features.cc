@@ -2036,17 +2036,29 @@ BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kProcessHtmlDataImmediatelyChildFrame{
-    &kProcessHtmlDataImmediately, "child", false};
+BASE_FEATURE_PARAM(bool,
+                   kProcessHtmlDataImmediatelyChildFrame,
+                   &kProcessHtmlDataImmediately,
+                   "child",
+                   false);
 
-const base::FeatureParam<bool> kProcessHtmlDataImmediatelyFirstChunk{
-    &kProcessHtmlDataImmediately, "first", false};
+BASE_FEATURE_PARAM(bool,
+                   kProcessHtmlDataImmediatelyFirstChunk,
+                   &kProcessHtmlDataImmediately,
+                   "first",
+                   false);
 
-const base::FeatureParam<bool> kProcessHtmlDataImmediatelyMainFrame{
-    &kProcessHtmlDataImmediately, "main", false};
+BASE_FEATURE_PARAM(bool,
+                   kProcessHtmlDataImmediatelyMainFrame,
+                   &kProcessHtmlDataImmediately,
+                   "main",
+                   false);
 
-const base::FeatureParam<bool> kProcessHtmlDataImmediatelySubsequentChunks{
-    &kProcessHtmlDataImmediately, "rest", false};
+BASE_FEATURE_PARAM(bool,
+                   kProcessHtmlDataImmediatelySubsequentChunks,
+                   &kProcessHtmlDataImmediately,
+                   "rest",
+                   false);
 
 BASE_FEATURE(kProduceCompileHints2,
              "ProduceCompileHints2",

@@ -1360,20 +1360,24 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kProcessHtmlDataImmediately);
 // If set, kProcessHtmlDataImmediately impacts child frames. If not set,
 // kProcessHtmlDataImmediately does not apply to child frames.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kProcessHtmlDataImmediatelyChildFrame;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kProcessHtmlDataImmediatelyChildFrame);
 // If set, the first chunk of data available for html processing is processed
 // immediately.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kProcessHtmlDataImmediatelyFirstChunk;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kProcessHtmlDataImmediatelyFirstChunk);
 // If set, kProcessHtmlDataImmediately impacts the main frame. If not set,
 // kProcessHtmlDataImmediately does not apply to the main frame.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kProcessHtmlDataImmediatelyMainFrame;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kProcessHtmlDataImmediatelyMainFrame);
 // If set, subsequent chunks of data available for html processing are processed
 // immediately.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kProcessHtmlDataImmediatelySubsequentChunks;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kProcessHtmlDataImmediatelySubsequentChunks);
 
 // Data producer side for the V8 Crowdsourced Compile hints feature.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kProduceCompileHints2);
