@@ -600,8 +600,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Disabled by the administrator of this device
       </message>
       <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Chrome." formatter_data="android_java">
-        Disabled because a different password manager must be set up in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph> to use this setting.
+      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_DISABLED" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Chrome." formatter_data="android_java">
+        Disabled because a different autofill service must be set up in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph> to use this setting.
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_READY" desc="Explanation that third-party autofill in Chrome will defer to the 3P password manager as selected in Android settings." formatter_data="android_java">
+        Ready to use the autofill service that is configured in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog where the user confirms their intention to delete their saved CVCs.">
         Delete saved security codes?

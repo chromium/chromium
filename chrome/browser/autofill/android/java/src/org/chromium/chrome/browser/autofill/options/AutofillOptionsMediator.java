@@ -173,28 +173,20 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     }
 
     private SpannableString getHintSummary() {
-        switch (AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(prefs())) {
-            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE:
-                return SpanApplier.applySpans(
-                        getString(R.string.autofill_options_hint_3p_setting),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new NoUnderlineClickableSpan(
-                                        mContext, this::onLinkToAndroidSettingsClicked)));
-            case AndroidAutofillAvailabilityStatus.NOT_ALLOWED_BY_POLICY:
-                return SpannableString.valueOf(getString(R.string.autofill_options_hint_policy));
-            case AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF: // Pref may be changed!
-            case AndroidAutofillAvailabilityStatus.AVAILABLE:
-                return null; // No hint needed.
-            case AndroidAutofillAvailabilityStatus.ANDROID_VERSION_TOO_OLD:
-            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_MANAGER_NOT_AVAILABLE:
-            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_NOT_SUPPORTED:
-            case AndroidAutofillAvailabilityStatus.UNKNOWN_ANDROID_AUTOFILL_SERVICE:
-                return null;
+        if (AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(prefs())
+                == AndroidAutofillAvailabilityStatus.NOT_ALLOWED_BY_POLICY) {
+            return SpannableString.valueOf(getString(R.string.autofill_options_hint_policy));
         }
-        assert false : "Unhandled AndroidAutofillFrameworkAvailability state!";
-        return null;
+        return SpanApplier.applySpans(
+                getString(
+                        should3pToggleBeReadOnly()
+                                ? R.string.autofill_options_hint_3p_setting_disabled
+                                : R.string.autofill_options_hint_3p_setting_ready),
+                new SpanApplier.SpanInfo(
+                        "<link>",
+                        "</link>",
+                        new NoUnderlineClickableSpan(
+                                mContext, this::onLinkToAndroidSettingsClicked)));
     }
 
     private void onLinkToAndroidSettingsClicked(View unusedView) {

@@ -49,9 +49,9 @@ class AutofillOptionsViewBinder {
         } else if (key == THIRD_PARTY_TOGGLE_IS_READ_ONLY) {
             view.getThirdPartyFillingOption()
                     .setEnabled(!model.get(THIRD_PARTY_TOGGLE_IS_READ_ONLY));
-            view.getHint().setVisible(model.get(THIRD_PARTY_TOGGLE_IS_READ_ONLY));
         } else if (key == THIRD_PARTY_TOGGLE_HINT) {
             view.getHint().setSummary(model.get(THIRD_PARTY_TOGGLE_HINT));
+            view.getHint().setVisible(model.get(THIRD_PARTY_TOGGLE_HINT) != null);
         } else {
             assert false : "Unhandled property: " + key;
         }
