@@ -88,6 +88,7 @@ public class ToolbarTablet extends ToolbarLayout
     private ImageButton mReloadButton;
     private ImageButton mBookmarkButton;
     private ImageButton mSaveOfflineButton;
+    private View mIncognitoIndicator;
 
     private OnClickListener mBookmarkListener;
 
@@ -170,6 +171,7 @@ public class ToolbarTablet extends ToolbarLayout
 
         mBookmarkButton = findViewById(R.id.bookmark_button);
         mSaveOfflineButton = findViewById(R.id.save_offline_button);
+        setIncognitoIndicatorVisibility();
 
         // Initialize values needed for showing/hiding toolbar buttons when the activity size
         // changes.
@@ -519,6 +521,7 @@ public class ToolbarTablet extends ToolbarLayout
 
             mIsIncognitoBranded = incognitoBranded;
         }
+        setIncognitoIndicatorVisibility();
 
         updateNtp();
     }
@@ -800,6 +803,19 @@ public class ToolbarTablet extends ToolbarLayout
         return mHomeButton;
     }
 
+    private void setIncognitoIndicatorVisibility() {
+        if (mIsIncognitoBranded == null
+                || !ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) return;
+        if (mIncognitoIndicator == null && mIsIncognitoBranded) {
+            ViewStub stub = findViewById(R.id.incognito_indicator_stub);
+            mIncognitoIndicator = stub.inflate();
+        }
+        if (mIncognitoIndicator != null) {
+            mIncognitoIndicator.setVisibility(
+                    mIsIncognitoBranded && mToolbarButtonsVisible ? VISIBLE : GONE);
+        }
+    }
+
     private void setToolbarButtonsVisible(boolean visible) {
         if (mToolbarButtonsVisible == visible) return;
 
@@ -813,6 +829,7 @@ public class ToolbarTablet extends ToolbarLayout
             }
             mLocationBar.setShouldShowButtonsWhenUnfocusedForTablet(visible);
             setStartPaddingBasedOnButtonVisibility(visible);
+            setIncognitoIndicatorVisibility();
         }
     }
 
@@ -877,6 +894,7 @@ public class ToolbarTablet extends ToolbarLayout
                         // Set the padding at the start of the animation so the toolbar buttons
                         // don't jump when the animation ends.
                         setStartPaddingBasedOnButtonVisibility(true);
+                        setIncognitoIndicatorVisibility();
                     }
 
                     @Override
@@ -914,6 +932,8 @@ public class ToolbarTablet extends ToolbarLayout
                     @Override
                     public void onAnimationStart(Animator animation) {
                         keepControlsShownForAnimation();
+
+                        setIncognitoIndicatorVisibility();
                     }
 
                     @Override

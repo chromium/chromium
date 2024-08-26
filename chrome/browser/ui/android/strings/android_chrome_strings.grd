@@ -4774,6 +4774,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_INCOGNITO_BADGE" desc="Content description for the badge indicating that the user is in Incognito mode.">
         Incognito mode
       </message>
+      <message name="IDS_INCOGNITO_BADGE" desc="Text appearing in the incognito badge on toolbar indicating that the user is in Incognito mode.">
+        Incognito
+      </message>
 
       <message name="IDS_TABSWITCHER_NO_TABS_EMPTY_STATE" desc="Text appearing on an empty tab switcher that indicates that tabs opened will appear here.">
         You’ll find your tabs here
