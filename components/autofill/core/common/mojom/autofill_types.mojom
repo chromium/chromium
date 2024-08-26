@@ -166,7 +166,10 @@ enum SubmissionSource {
   // Normal form submission (i.e. user presses the submit button and no
   // JavaScript is involved). Observed via RenderFrameObserver::WillSubmitForm.
   FORM_SUBMISSION = 5,
-  // The form or field was hidden or removed after autofilling it.
+  // The form or field was hidden or removed after autofilling it. Autofill
+  // ignores such submissions on non-WebView because mutations of the form can
+  // happen for other reasons than submission. PWM however considers this a
+  // valid source since mutations of password forms are more rare.
   DOM_MUTATION_AFTER_AUTOFILL = 6,
 };
 
