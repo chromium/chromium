@@ -190,10 +190,6 @@ class CORE_EXPORT LineBreaker {
                                    const InlineItem&,
                                    const ShapeResult&,
                                    LineInfo*);
-  bool HandleTextForFastMinContentOld(InlineItemResult*,
-                                      const InlineItem&,
-                                      const ShapeResult&,
-                                      LineInfo*);
   void HandleEmptyText(const InlineItem& item, LineInfo*);
 
   const ShapeResultView* TruncateLineEndResult(const LineInfo&,
@@ -401,9 +397,6 @@ class CORE_EXPORT LineBreaker {
   // True if the block-in-inline broke inside, and it is to be resumed in the
   // same flow.
   bool resume_block_in_inline_in_same_flow_ = false;
-
-  // TODO(crbug.com/333630754): Remove when `FasterMinContent` is stabilized.
-  bool use_faster_min_content_ = false;
 
 #if DCHECK_IS_ON()
   bool has_considered_creating_break_token_ = false;

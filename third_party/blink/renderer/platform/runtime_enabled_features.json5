@@ -1718,11 +1718,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/333630754
-      name: "FasterMinContent",
-      status: "stable",
-    },
-    {
       name: "FastNonCompositedScrollHitTest",
       depends_on: ["HitTestOpaqueness", "RasterInducingScroll"],
       status: "test",
