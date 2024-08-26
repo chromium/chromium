@@ -98,6 +98,7 @@ static_library("test_support") {
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/ui",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/scalable_iph:constants",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/services/network_config:in_process_instance",
