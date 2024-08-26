@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.signin;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -24,7 +23,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 public final class SigninUtils {
     private static final String ACCOUNT_SETTINGS_ACTION = "android.settings.ACCOUNT_SYNC_SETTINGS";
     private static final String ACCOUNT_SETTINGS_ACCOUNT_KEY = "account";
-    private static final int DUAL_PANES_HORIZONTAL_LAYOUT_MIN_WIDTH = 600;
 
     private SigninUtils() {}
 
@@ -130,6 +128,7 @@ public final class SigninUtils {
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
     }
 
+    /** Wraps the view into layout that resembles DialogWhenLarge. */
     public static View wrapInDialogWhenLargeLayout(View promoContentView) {
         return DialogWhenLargeContentLayout.wrapInDialogWhenLargeLayout(promoContentView);
     }
@@ -138,22 +137,5 @@ public final class SigninUtils {
     public static boolean isTabletOrAuto(Activity activity) {
         return BuildInfo.getInstance().isAutomotive
                 || DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
-    }
-
-    /**
-     * Returns whether dual panes horizontal layout can be used on full screen views (e.g. FRE or
-     * Upgrade promo sub-views) given the configuration.
-     */
-    public static boolean shouldShowDualPanesHorizontalLayout(Activity activity) {
-        Configuration configuration = activity.getResources().getConfiguration();
-
-        // Since the landscape view has two panes the minimum screenWidth to show it is set to
-        // 600dp for phones.
-        // Also, the landscape layout is disabled on tablet/auto or large phones since the
-        // fullscreen promo is mostly shown as dialog.
-        return configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                && configuration.screenWidthDp >= DUAL_PANES_HORIZONTAL_LAYOUT_MIN_WIDTH
-                && !isTabletOrAuto(activity)
-                && !DialogWhenLargeContentLayout.shouldShowAsDialog(activity);
     }
 }

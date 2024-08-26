@@ -179,6 +179,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
+        when(mFirstRunPageDelegateMock.canUseLandscapeLayout()).thenReturn(true);
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
         ThreadUtils.runOnUiThreadBlocking(

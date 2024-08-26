@@ -77,7 +77,7 @@ public class HistorySyncFirstRunFragment extends Fragment
         }
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
-                        getActivity(),
+                        getContext(),
                         this,
                         profile,
                         SigninAccessPoint.START_PAGE,
@@ -104,6 +104,12 @@ public class HistorySyncFirstRunFragment extends Fragment
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
         }
+    }
+
+    /** Implements {@link HistorySyncDelegate} */
+    @Override
+    public boolean isLargeScreen() {
+        return !getPageDelegate().canUseLandscapeLayout();
     }
 
     /** Implements {@link HistorySyncDelegate} */

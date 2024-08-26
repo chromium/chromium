@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -92,6 +93,7 @@ public class HistorySyncTest {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActivityTestRule.launchActivity(null);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
+        when(mHistorySyncDelegateMock.isLargeScreen()).thenReturn(false);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
     }
 
@@ -634,8 +636,6 @@ public class HistorySyncTest {
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.maybeRecreateView());
                 });
-        // Use the illustration to check the history sync view's appearance, since it's visible
-        // in portrait mode and landscape mode, even on a small screen.
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_illustration), isDisplayed()));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_title), isDisplayed()));
     }
 }

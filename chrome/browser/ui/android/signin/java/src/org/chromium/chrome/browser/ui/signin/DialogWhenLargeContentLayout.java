@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -23,7 +22,7 @@ import org.chromium.base.BuildInfo;
  * automotive, the view is shown in a dialog-like style and takes a fixed percentage of the screen,
  * given by the constants below.
  */
-public class DialogWhenLargeContentLayout extends FrameLayout {
+class DialogWhenLargeContentLayout extends FrameLayout {
     private TypedValue mFixedWidthMajor = new TypedValue();
     private TypedValue mFixedWidthMinor = new TypedValue();
     private TypedValue mFixedHeightMajor = new TypedValue();
@@ -53,15 +52,6 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
                         Gravity.CENTER));
         outerLayout.setBackgroundResource(R.color.modal_dialog_scrim_color);
         return outerLayout;
-    }
-
-    /**
-     * @return True if DialogWhenLargeContentLayout should show as a dialog instead of fullscreen in
-     *     the given context.
-     */
-    public static boolean shouldShowAsDialog(Context context) {
-        Configuration configuration = context.getResources().getConfiguration();
-        return configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
     private DialogWhenLargeContentLayout(Context context) {
