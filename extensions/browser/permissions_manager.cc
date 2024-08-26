@@ -797,7 +797,7 @@ void PermissionsManager::AddSiteAccessRequest(
   if (filter.has_value() && !filter.value().MatchesSecurityOrigin(
                                 web_contents->GetLastCommittedURL())) {
     // Remove the existent request, if any, since the new request overrides it.
-    if (helper->RemoveRequest(extension.id())) {
+    if (helper->RemoveRequest(extension.id(), /*filter=*/std::nullopt)) {
       for (auto& observer : observers_) {
         observer.OnSiteAccessRequestRemoved(extension.id(), tab_id);
       }
@@ -820,13 +820,14 @@ void PermissionsManager::AddSiteAccessRequest(
 
 bool PermissionsManager::RemoveSiteAccessRequest(
     int tab_id,
-    const ExtensionId& extension_id) {
+    const ExtensionId& extension_id,
+    const std::optional<URLPattern>& filter) {
   SiteAccessRequestsHelper* helper = GetSiteAccessRequestsHelperFor(tab_id);
   if (!helper) {
     return false;
   }
 
-  bool request_removed = helper->RemoveRequest(extension_id);
+  bool request_removed = helper->RemoveRequest(extension_id, filter);
   if (!request_removed) {
     return false;
   }

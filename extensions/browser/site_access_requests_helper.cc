@@ -55,15 +55,22 @@ void SiteAccessRequestsHelper::UpdateRequest(
   extensions_with_requests_.at(extension.id()) = filter;
 }
 
-bool SiteAccessRequestsHelper::RemoveRequest(const ExtensionId& extension_id) {
-  if (!extensions_with_requests_.contains(extension_id)) {
+bool SiteAccessRequestsHelper::RemoveRequest(
+    const ExtensionId& extension_id,
+    const std::optional<URLPattern>& filter) {
+  auto requests_iter = extensions_with_requests_.find(extension_id);
+  if (requests_iter == extensions_with_requests_.end()) {
     return false;
   }
 
-  extensions_with_requests_.erase(extension_id);
-  // TODO(crbug.com/330588494): Remove request from dismissed set, if existent,
-  // once dismissed requests are moved to SiteAccessRequestsHelper.
-  return true;
+  // Remove request iff it matches the parameter when given. Otherwise, always
+  // remove the request.
+  if (!filter || requests_iter->second == filter) {
+    extensions_with_requests_.erase(extension_id);
+    return true;
+  }
+
+  return false;
 }
 
 bool SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
@@ -77,7 +84,7 @@ bool SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
     return false;
   }
 
-  return RemoveRequest(extension.id());
+  return RemoveRequest(extension.id(), /*filter=*/std::nullopt);
 }
 
 void SiteAccessRequestsHelper::UserDismissedRequest(
@@ -116,7 +123,7 @@ void SiteAccessRequestsHelper::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  RemoveRequest(extension->id());
+  RemoveRequest(extension->id(), /*filter=*/std::nullopt);
 
   if (!HasRequests()) {
     permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);

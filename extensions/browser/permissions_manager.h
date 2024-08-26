@@ -296,9 +296,12 @@ class PermissionsManager : public KeyedService {
       const Extension& extension,
       const std::optional<URLPattern>& filter = std::nullopt);
 
-  // Removes site access request for `extension` in `tab_id`, if existent.
-  // Returns whether the request was removed.
-  bool RemoveSiteAccessRequest(int tab_id, const ExtensionId& extension);
+  // Removes site access request for `extension` in `tab_id` with an optional
+  // `filter`, if existent. Returns whether the request was removed.
+  bool RemoveSiteAccessRequest(
+      int tab_id,
+      const ExtensionId& extension_id,
+      const std::optional<URLPattern>& filter = std::nullopt);
 
   // Dismisses site access request for `extension` in `tab_id`. Request must be
   // existent for user to be able to dismiss it.

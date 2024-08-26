@@ -194,32 +194,52 @@ TEST_F(SiteAccessRequestsHelperUnittest,
        AddAndRemoveRequestsWithPatternFilter) {
   auto extension =
       InstallExtensionAndWithholdHostPermissions("Extension", "<all_urls>");
+  URLPattern matching_filter(Extension::kValidHostPermissionSchemes,
+                             "http://www.matching.com/");
+  URLPattern non_matching_filter(Extension::kValidHostPermissionSchemes,
+                                 "http://www.non-matching.com/");
 
-  content::WebContents* web_contents = AddTab(GURL("http://www.example.com/"));
+  content::WebContents* web_contents = AddTab(GURL("http://www.matching.com/"));
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
   // Add a site access request with filter that does not match the current web
   // contents. Verify request is not active.
-  URLPattern filter(Extension::kValidHostPermissionSchemes,
-                    "http://www.example.com/path");
   permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension,
-                                              filter);
+                                              non_matching_filter);
   EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
       tab_id, extension->id()));
 
   // Add a site access request with filter that matches the current web
   // contents. Verify request is active.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents, GURL("http://www.example.com/path"));
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension,
+                                              matching_filter);
   EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
       tab_id, extension->id()));
 
-  // TODO(crbug.com/330588494): Once we add `pattern` to
-  // RemoveSiteAccessRequest, verify removing another pattern doesn't affect the
-  // current request.
+  // Remove a site access request with filter that doesn't match the current web
+  // contents. Verify request is active.
+  permissions_manager()->RemoveSiteAccessRequest(tab_id, extension->id(),
+                                                 non_matching_filter);
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
 
-  // Remove site access request for extension. Verify request is no longer
-  // active.
+  // Remove a site access request with filter that matches the current web
+  // contents. Verify request is not active.
+  permissions_manager()->RemoveSiteAccessRequest(tab_id, extension->id(),
+                                                 matching_filter);
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+
+  // Add back a site access request with filter that matches the current web
+  // contents (so we can test removal without filter). Verify request is active.
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension,
+                                              matching_filter);
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+
+  // Remove a site access request for extension without specifying a filter.
+  // Verify request is no longer active, since a request without filter matches
+  // all patterns.
   EXPECT_TRUE(
       permissions_manager()->RemoveSiteAccessRequest(tab_id, extension->id()));
   EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(

@@ -39,7 +39,7 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
   ~SiteAccessRequestsHelper() override;
 
   // Adds `extension` to the set of extensions with site access requests.
-  // Request will be matched to `filter, if existent. Extension must not have
+  // Request will be matched to `filter`, if existent. Extension must not have
   // granted access to the current site.
   void AddRequest(const Extension& extension,
                   const std::optional<URLPattern>& filter);
@@ -50,9 +50,10 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
                      const std::optional<URLPattern>& filter);
 
   // Removes `extension_id` from the set of extensions with site access
-  // requests. Returns whether request was removed.
-  // TODO(crbug.com/330588494): Add `filter` support for request removal.
-  bool RemoveRequest(const ExtensionId& extension_id);
+  // requests. Request will be matches to `filter`, if existent. Returns whether
+  // request was removed.
+  bool RemoveRequest(const ExtensionId& extension_id,
+                     const std::optional<URLPattern>& filter);
 
   // Removes `extension` from the set of extensions with site access requests
   // iff extension has granted access to the current site. Returns whether
