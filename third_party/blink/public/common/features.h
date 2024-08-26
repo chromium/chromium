@@ -123,8 +123,6 @@ BASE_DECLARE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill);
 
 // https://crbug.com/1472970
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutoSpeculationRules);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kAutoSpeculationRulesConfig;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kAutoSpeculationRulesHoldback;
 

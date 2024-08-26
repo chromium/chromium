@@ -175,6 +175,21 @@ std::string GetFieldTrialParamValueByFeature(const Feature& feature,
   return std::string();
 }
 
+std::string GetFieldTrialParamByFeatureAsString(
+    const Feature& feature,
+    const std::string& param_name,
+    const std::string& default_value) {
+  FieldTrialParams params;
+  if (!GetFieldTrialParamsByFeature(feature, &params)) {
+    return default_value;
+  }
+  auto it = params.find(param_name);
+  if (it == params.end()) {
+    return default_value;
+  }
+  return it->second;
+}
+
 int GetFieldTrialParamByFeatureAsInt(const Feature& feature,
                                      const std::string& param_name,
                                      int default_value) {
@@ -252,16 +267,7 @@ std::string FeatureParam<std::string>::Get() const {
 }
 
 std::string FeatureParam<std::string>::GetWithoutCache() const {
-  // We don't use `GetFieldTrialParamValueByFeature()` to handle empty values in
-  // the map.
-  FieldTrialParams params;
-  if (GetFieldTrialParamsByFeature(*feature, &params)) {
-    auto it = params.find(name);
-    if (it != params.end()) {
-      return it->second;
-    }
-  }
-  return default_value;
+  return GetFieldTrialParamByFeatureAsString(*feature, name, default_value);
 }
 
 double FeatureParam<double>::Get() const {

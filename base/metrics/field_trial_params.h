@@ -92,6 +92,14 @@ BASE_EXPORT std::string GetFieldTrialParamValueByFeature(
     const base::Feature& feature,
     const std::string& param_name);
 
+// Same as GetFieldTrialParamValueByFeature(). But internally relies on
+// GetFieldTrialParamsByFeature to handle empty values in the map, and returns
+// |default_value| only if |param_name| is not found in the map.
+BASE_EXPORT std::string GetFieldTrialParamByFeatureAsString(
+    const base::Feature& feature,
+    const std::string& param_name,
+    const std::string& default_value);
+
 // Same as GetFieldTrialParamValueByFeature(). On top of that, it converts the
 // string value into an int using base::StringToInt() and returns it, if
 // successful. Otherwise, it returns |default_value|. If the string value is not

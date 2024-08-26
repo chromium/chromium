@@ -72,8 +72,8 @@ flags_ui::FeatureEntry kWebViewTestFeatureEntries[] = {
 void VerifyFeatureParameters(
     const flags_ui::FeatureEntry::FeatureVariation& variation) {
   for (int i = 0; i < variation.num_params; i++) {
-    base::FeatureParam<std::string> param{
-        &kTestFeature, variation.params[i].param_name, nullptr};
+    base::FeatureParam<std::string> param{&kTestFeature,
+                                          variation.params[i].param_name, ""};
     EXPECT_EQ(variation.params[i].param_value, param.Get());
   }
 }

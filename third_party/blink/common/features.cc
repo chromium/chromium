@@ -180,8 +180,6 @@ BASE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill,
 BASE_FEATURE(kAutoSpeculationRules,
              "AutoSpeculationRules",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kAutoSpeculationRulesConfig{
-    &kAutoSpeculationRules, "config", "{}"};
 const base::FeatureParam<bool> kAutoSpeculationRulesHoldback{
     &kAutoSpeculationRules, "holdback", false};
 
