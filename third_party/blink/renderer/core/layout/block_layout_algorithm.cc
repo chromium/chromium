@@ -1118,8 +1118,6 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
         std::min(container_builder_.Padding().block_end, annotation_overflow);
   }
 
-  LayoutUnit block_end_border_padding = BorderScrollbarPadding().block_end;
-
   // If line clamping occurred, and we're using the legacy behavior, the
   // intrinsic block-size comes from the intrinsic block-size at the time of the
   // clamp, without taking margins, clearance, etc. into account.
@@ -1129,9 +1127,9 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     intrinsic_block_size_ =
         line_clamp_data_.previous_inflow_position_when_clamped
             ->logical_block_offset +
-        block_end_border_padding;
+        BorderScrollbarPadding().block_end;
     end_margin_strut = MarginStrut();
-  } else if (block_end_border_padding ||
+  } else if (BorderScrollbarPadding().block_end ||
              previous_inflow_position->self_collapsing_child_had_clearance ||
              constraint_space.IsNewFormattingContext()) {
     // The end margin strut of an in-flow fragment contributes to the size of
@@ -1206,9 +1204,9 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
       // The block-end edge isn't in this fragment. We either haven't got there
       // yet, or we're past it (and are overflowing). So don't add trailing
       // border/padding.
-      block_end_border_padding = LayoutUnit();
+      container_builder_.ClearBorderScrollbarPaddingBlockEnd();
     }
-    intrinsic_block_size_ += block_end_border_padding;
+    intrinsic_block_size_ += BorderScrollbarPadding().block_end;
     end_margin_strut = MarginStrut();
   } else {
     // Update our intrinsic block size to be just past the block-end border edge
@@ -1317,7 +1315,7 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
   }
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    BreakStatus status = FinalizeForFragmentation(block_end_border_padding);
+    BreakStatus status = FinalizeForFragmentation();
     if (status != BreakStatus::kContinue) {
       if (status == BreakStatus::kNeedsEarlierBreak) {
         return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
@@ -2789,8 +2787,7 @@ void BlockLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
   }
 }
 
-BreakStatus BlockLayoutAlgorithm::FinalizeForFragmentation(
-    LayoutUnit block_end_border_padding_added) {
+BreakStatus BlockLayoutAlgorithm::FinalizeForFragmentation() {
   if (Node().IsInlineFormattingContextRoot() && !early_break_ &&
       GetConstraintSpace().HasBlockFragmentation()) {
     if (container_builder_.HasInflowChildBreakInside() ||
@@ -2826,8 +2823,7 @@ BreakStatus BlockLayoutAlgorithm::FinalizeForFragmentation(
     return FinishFragmentationForFragmentainer(&container_builder_);
   }
 
-  return FinishFragmentation(block_end_border_padding_added,
-                             &container_builder_);
+  return FinishFragmentation(&container_builder_);
 }
 
 BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(

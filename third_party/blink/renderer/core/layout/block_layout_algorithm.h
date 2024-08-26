@@ -427,8 +427,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // clipped box gets overflowed past the fragmentation line). The return value
   // can be checked for this. Only if kContinue is returned, can a fragment be
   // created.
-  BreakStatus FinalizeForFragmentation(
-      LayoutUnit block_end_border_padding_added);
+  BreakStatus FinalizeForFragmentation();
 
   // Insert a fragmentainer break before the child if necessary.
   // See |::blink::BreakBeforeChildIfNeeded()| for more documentation.

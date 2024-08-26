@@ -321,8 +321,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    auto status = FinishFragmentation(BorderScrollbarPadding().block_end,
-                                      &container_builder_);
+    auto status = FinishFragmentation(&container_builder_);
     if (status == BreakStatus::kDisableFragmentation) {
       return container_builder_.Abort(LayoutResult::kDisableFragmentation);
     }

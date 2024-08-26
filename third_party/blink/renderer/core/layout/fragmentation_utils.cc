@@ -538,8 +538,7 @@ bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder& builder) {
   return !builder.HasInflowChildBreakInside();
 }
 
-BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
-                                BoxFragmentBuilder* builder) {
+BreakStatus FinishFragmentation(BoxFragmentBuilder* builder) {
   const BlockNode& node = builder->Node();
   const ConstraintSpace& space = builder->GetConstraintSpace();
   LayoutUnit space_left = FragmentainerSpaceLeft(*builder,
@@ -565,6 +564,8 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
 
   LayoutUnit final_block_size = desired_block_size;
 
+  LayoutUnit trailing_border_padding =
+      builder->BorderScrollbarPadding().block_end;
   LayoutUnit subtractable_border_padding;
   if ((desired_block_size > trailing_border_padding && !node.IsTableCell()) ||
       (previous_break_token && previous_break_token->MonolithicOverflow())) {

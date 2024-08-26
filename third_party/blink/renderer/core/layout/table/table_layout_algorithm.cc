@@ -1640,8 +1640,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
   container_builder_.SetIsTablePart();
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    BreakStatus status =
-        FinishFragmentation(border_padding.block_end, &container_builder_);
+    BreakStatus status = FinishFragmentation(&container_builder_);
     if (status == BreakStatus::kNeedsEarlierBreak) {
       return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
     }

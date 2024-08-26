@@ -125,6 +125,7 @@ class CORE_EXPORT LayoutInputNode {
 
   bool IsTableCaption() const { return IsBlock() && box_->IsTableCaption(); }
   bool IsTableSection() const { return IsBlock() && box_->IsTableSection(); }
+  bool IsTableRow() const { return IsBlock() && box_->IsTableRow(); }
   bool IsTableCell() const { return IsBlock() && box_->IsTableCell(); }
 
   // Section with empty rows is considered empty.

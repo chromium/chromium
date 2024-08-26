@@ -74,12 +74,16 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
     border_padding_ =
         initial_fragment_geometry.border + initial_fragment_geometry.padding;
-    border_scrollbar_padding_ =
-        initial_fragment_geometry.border + initial_fragment_geometry.scrollbar;
-    // Padding doesn't take up layout space in fieldset containers (that's done
-    // inside the anonymous child wrapper).
-    if (!node_ || !node_.IsFieldsetContainer()) {
-      border_scrollbar_padding_ += initial_fragment_geometry.padding;
+
+    // Box decorations don't take up layout space in table rows / sections.
+    if (!node_ || (!node_.IsTableSection() && !node_.IsTableRow())) {
+      border_scrollbar_padding_ = initial_fragment_geometry.border +
+                                  initial_fragment_geometry.scrollbar;
+      // Padding doesn't take up layout space in fieldset containers (that's
+      // done inside the anonymous child wrapper).
+      if (!node_ || !node_.IsFieldsetContainer()) {
+        border_scrollbar_padding_ += initial_fragment_geometry.padding;
+      }
     }
     original_border_scrollbar_padding_block_start_ =
         border_scrollbar_padding_.block_start;
@@ -229,6 +233,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   void ClearBorderScrollbarPaddingBlockStart() {
     border_scrollbar_padding_.block_start = LayoutUnit();
+  }
+  void ClearBorderScrollbarPaddingBlockEnd() {
+    border_scrollbar_padding_.block_end = LayoutUnit();
   }
   void UpdateBorderPaddingForClonedBoxDecorations();
 
