@@ -28,7 +28,7 @@
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"  // nogncheck
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_default.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
 #include "chrome/common/buildflags.h"
@@ -152,7 +152,7 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
     host_resolver()->AddRule("www.example.com", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
     base::AutoReset<bool> disable_ui =
-        ExtensionInstallUIDefault::disable_ui_for_tests(true);
+        ExtensionInstallUI::disable_ui_for_tests(true);
 
     auto_confirm_install_ = std::make_unique<ScopedTestDialogAutoConfirm>(
         ScopedTestDialogAutoConfirm::ACCEPT);

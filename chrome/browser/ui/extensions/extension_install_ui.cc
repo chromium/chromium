@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/extensions/extension_install_ui_default.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
@@ -62,12 +62,14 @@ static bool g_disable_ui_for_tests = false;
 Browser* FindOrCreateVisibleBrowser(Profile* profile) {
   // TODO(mpcomplete): remove this workaround for http://crbug.com/244246
   // after fixing http://crbug.com/38676.
-  if (!IncognitoModePrefs::CanOpenBrowser(profile))
+  if (!IncognitoModePrefs::CanOpenBrowser(profile)) {
     return nullptr;
+  }
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   Browser* browser = displayer.browser();
-  if (browser->tab_strip_model()->count() == 0)
+  if (browser->tab_strip_model()->count() == 0) {
     chrome::AddTabAt(browser, GURL(), -1, true);
+  }
   return browser;
 }
 
@@ -137,15 +139,14 @@ void ShowAppInstalledNotification(
 
 }  // namespace
 
-ExtensionInstallUIDefault::ExtensionInstallUIDefault(
-    content::BrowserContext* context)
+ExtensionInstallUI::ExtensionInstallUI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
       skip_post_install_ui_(false),
       use_app_installed_bubble_(false) {}
 
-ExtensionInstallUIDefault::~ExtensionInstallUIDefault() {}
+ExtensionInstallUI::~ExtensionInstallUI() {}
 
-void ExtensionInstallUIDefault::OnInstallSuccess(
+void ExtensionInstallUI::OnInstallSuccess(
     scoped_refptr<const extensions::Extension> extension,
     const SkBitmap* icon) {
   if (g_disable_ui_for_tests || skip_post_install_ui_ ||
@@ -180,7 +181,7 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
   }
 }
 
-void ExtensionInstallUIDefault::OnInstallFailure(
+void ExtensionInstallUI::OnInstallFailure(
     const extensions::CrxInstallError& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (g_disable_ui_for_tests || skip_post_install_ui_) {
@@ -188,27 +189,28 @@ void ExtensionInstallUIDefault::OnInstallFailure(
   }
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
-  if (!browser)  // Can be nullptr in unittests.
+  if (!browser) {  // Can be nullptr in unittests.
     return;
+  }
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   InstallationErrorInfoBarDelegate::Create(
       infobars::ContentInfoBarManager::FromWebContents(web_contents), error);
 }
 
-void ExtensionInstallUIDefault::SetUseAppInstalledBubble(bool use_bubble) {
+void ExtensionInstallUI::SetUseAppInstalledBubble(bool use_bubble) {
   use_app_installed_bubble_ = use_bubble;
 }
 
-void ExtensionInstallUIDefault::SetSkipPostInstallUI(bool skip_ui) {
+void ExtensionInstallUI::SetSkipPostInstallUI(bool skip_ui) {
   skip_post_install_ui_ = skip_ui;
 }
 
 // static
-base::AutoReset<bool> ExtensionInstallUIDefault::disable_ui_for_tests(
-    bool disable) {
+base::AutoReset<bool> ExtensionInstallUI::disable_ui_for_tests(bool disable) {
   CHECK_IS_TEST();
   return base::AutoReset<bool>(&g_disable_ui_for_tests, disable);
 }

@@ -18,8 +18,7 @@
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_default.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_factory.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -428,7 +427,7 @@ ExtensionInstallPrompt::ExtensionInstallPrompt(content::WebContents* contents)
                    ? Profile::FromBrowserContext(contents->GetBrowserContext())
                    : nullptr),
       extension_(nullptr),
-      install_ui_(extensions::CreateExtensionInstallUI(profile_)),
+      install_ui_(std::make_unique<ExtensionInstallUI>(profile_)),
       show_params_(new ExtensionInstallPromptShowParams(contents)),
       did_call_show_dialog_(false) {}
 
@@ -436,7 +435,7 @@ ExtensionInstallPrompt::ExtensionInstallPrompt(Profile* profile,
                                                gfx::NativeWindow native_window)
     : profile_(profile),
       extension_(nullptr),
-      install_ui_(extensions::CreateExtensionInstallUI(profile)),
+      install_ui_(std::make_unique<ExtensionInstallUI>(profile_)),
       show_params_(
           new ExtensionInstallPromptShowParams(profile, native_window)),
       did_call_show_dialog_(false) {}

@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_default.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
 #include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
@@ -274,7 +274,7 @@ void ShowUiOnToolbarMenu(scoped_refptr<const extensions::Extension> extension,
                    browser->profile(), extension.get(), icon));
 }
 
-void ExtensionInstallUIDefault::ShowPlatformBubble(
+void ExtensionInstallUI::ShowPlatformBubble(
     scoped_refptr<const extensions::Extension> extension,
     Browser* browser,
     const SkBitmap& icon) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_
-#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_
+#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_H_
+#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_H_
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
@@ -22,15 +22,14 @@ class Browser;
 class Profile;
 class SkBitmap;
 
-class ExtensionInstallUIDefault {
+class ExtensionInstallUI {
  public:
-  explicit ExtensionInstallUIDefault(content::BrowserContext* context);
+  explicit ExtensionInstallUI(content::BrowserContext* context);
 
-  ExtensionInstallUIDefault(const ExtensionInstallUIDefault&) = delete;
-  ExtensionInstallUIDefault& operator=(const ExtensionInstallUIDefault&) =
-      delete;
+  ExtensionInstallUI(const ExtensionInstallUI&) = delete;
+  ExtensionInstallUI& operator=(const ExtensionInstallUI&) = delete;
 
-  ~ExtensionInstallUIDefault();
+  ~ExtensionInstallUI();
 
   // Called when an extension was installed.
   void OnInstallSuccess(scoped_refptr<const extensions::Extension> extension,
@@ -72,4 +71,4 @@ class ExtensionInstallUIDefault {
   bool use_app_installed_bubble_;
 };
 
-#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_
+#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_H_
