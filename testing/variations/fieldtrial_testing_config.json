@@ -17207,13 +17207,11 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PlusAddressAffiliations",
                         "PlusAddressAndSingleFieldFormFill",
                         "PlusAddressBlocklistEnabled",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressOfferCreationOnSingleUsernameForms",
-                        "PlusAddressesEnabled",
-                        "SyncPlusAddress"
+                        "PlusAddressesEnabled"
                     ]
                 }
             ]

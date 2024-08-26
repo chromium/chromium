@@ -26,7 +26,7 @@ constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
 // addresses for affiliated domains.
 BASE_FEATURE(kPlusAddressAffiliations,
              "PlusAddressAffiliations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, mobile manual fallbacks for addresses and passwords show plus

@@ -167,6 +167,17 @@ class PlusAddressServiceTest : public ::testing::Test {
       const FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source,
       const auto& matcher) {
+    // Empty psl extension by default.
+    ON_CALL(affiliation_service(), GetPSLExtensions)
+        .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
+
+    affiliations::GroupedFacets group;
+    group.facets.emplace_back(
+        FacetURI::FromPotentiallyInvalidSpec(origin.Serialize()));
+    ON_CALL(affiliation_service(), GetGroupingInfo)
+        .WillByDefault(RunOnceCallback<1>(
+            std::vector<affiliations::GroupedFacets>{group}));
+
     base::MockCallback<PlusAddressService::GetSuggestionsCallback> callback;
     int calls = 0;
     ON_CALL(callback, Run)
@@ -1622,15 +1633,8 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLSuggestions) {
       url::Origin::Create(GURL(profile1.facet.canonical_spec()));
 
   // Note that `profile3` is not a PSL match due to the PSL extensions list.
-  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
-      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
-      FormFieldData(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      UnorderedElementsAre(
-          // Exact match.
-          EqualsFillPlusAddressSuggestion(*profile1.plus_address),
-          // PSL match.
-          EqualsFillPlusAddressSuggestion(*profile2.plus_address))));
+  ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(profile1, profile2));
 }
 
 // Verifies that affiliated group suggestions are returned.
@@ -1655,11 +1659,8 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedGroupSuggestions) {
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
-      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
-      FormFieldData(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      IsSingleFillPlusAddressSuggestion(*group_profile.plus_address)));
+  ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(group_profile));
 }
 
 // Tests that filling suggestions are returned even if they are affiliated
@@ -1680,11 +1681,8 @@ TEST_F(PlusAddressAffiliationsTest,
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
-      origin, /*is_off_the_record=*/true, PasswordFormClassification(),
-      FormFieldData(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      IsSingleFillPlusAddressSuggestion(*group_profile.plus_address)));
+  ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(group_profile));
 }
 
 // Tests that no creation suggestion is offered when the profile is off the
@@ -1699,10 +1697,7 @@ TEST_F(PlusAddressAffiliationsTest,
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
-      origin, /*is_off_the_record=*/true, PasswordFormClassification(),
-      FormFieldData(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked, IsEmpty()));
+  ExpectServiceToReturnAffiliatedPlusProfiles(origin, IsEmpty());
 }
 
 // Tests that no creation suggestion is offered when the global toggle is off.
@@ -1719,10 +1714,7 @@ TEST_F(PlusAddressAffiliationsTest,
   setting_service().set_is_plus_addresses_enabled(false);
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
-      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
-      FormFieldData(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked, IsEmpty()));
+  ExpectServiceToReturnAffiliatedPlusProfiles(origin, IsEmpty());
 }
 
 // Tests that filling suggestions are returned even if they are affiliated
@@ -1746,11 +1738,8 @@ TEST_F(PlusAddressAffiliationsTest,
   setting_service().set_is_plus_addresses_enabled(false);
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
-      origin, /*is_off_the_record=*/true, PasswordFormClassification(),
-      FormFieldData(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      IsSingleFillPlusAddressSuggestion(*group_profile.plus_address)));
+  ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(group_profile));
 }
 
 // Verifies that no affiliated suggestions are returned when there are no
