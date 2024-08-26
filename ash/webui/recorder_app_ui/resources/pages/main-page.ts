@@ -4,9 +4,10 @@
 
 import 'chrome://resources/mwc/@material/web/iconbutton/filled-icon-button.js';
 import '../components/cra/cra-icon-button.js';
+import '../components/cra/cra-icon-dropdown.js';
 import '../components/cra/cra-icon.js';
 import '../components/delete-recording-dialog.js';
-import '../components/mic-selection-menu.js';
+import '../components/mic-selection-button.js';
 import '../components/onboarding-dialog.js';
 import '../components/recording-file-list.js';
 import '../components/recording-info-dialog.js';
@@ -23,7 +24,6 @@ import {
 
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
-import {MicSelectionMenu} from '../components/mic-selection-menu.js';
 import {RecordingFileList} from '../components/recording-file-list.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {SettingsMenu} from '../components/settings-menu.js';
@@ -35,7 +35,7 @@ import {
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {navigateTo} from '../core/state/route.js';
 import {settings} from '../core/state/settings.js';
-import {assertExists, assertInstanceof} from '../core/utils/assert.js';
+import {assertExists} from '../core/utils/assert.js';
 import {isObjectEmpty} from '../core/utils/utils.js';
 
 /**
@@ -148,10 +148,6 @@ export class MainPage extends ReactiveLitElement {
 
   private lastDeleteId: string|null = null;
 
-  private get micSelectionMenu(): MicSelectionMenu|null {
-    return this.shadowRoot?.querySelector('mic-selection-menu') ?? null;
-  }
-
   private get settingsMenu(): SettingsMenu|null {
     return this.shadowRoot?.querySelector('settings-menu') ?? null;
   }
@@ -236,17 +232,6 @@ export class MainPage extends ReactiveLitElement {
     ];
   }
 
-  private renderMicSelectionButton() {
-    const onClick = (ev: Event) => {
-      this.micSelectionMenu?.show(assertInstanceof(ev.target, HTMLElement));
-    };
-    // TODO: b/336963138 - This should be a new icon-dropdown component that
-    // combines button with a dropdown.
-    return html`<secondary-button @click=${onClick} id="mic-selection-button">
-      <cra-icon slot="icon" name="mic"></cra-icon>
-    </secondary-button>`;
-  }
-
   private renderSettingsButton() {
     const onClick = () => {
       this.settingsMenu?.show();
@@ -287,10 +272,9 @@ export class MainPage extends ReactiveLitElement {
         >
         </recording-file-list>
         <div id="actions">
-          ${this.renderMicSelectionButton()}${this.renderRecordButton()}
-          ${this.renderSettingsButton()}
+          <mic-selection-button></mic-selection-button>
+          ${this.renderRecordButton()}${this.renderSettingsButton()}
         </div>
-        <mic-selection-menu></mic-selection-menu>
         <settings-menu></settings-menu>
       </div>
     `;

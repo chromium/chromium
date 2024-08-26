@@ -2,19 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import
+  'chrome://resources/cros_components/icon_dropdown/icon-dropdown-option.js';
 import 'chrome://resources/cros_components/menu/menu_separator.js';
 import './cra/cra-icon.js';
-import './cra/cra-menu.js';
-import './cra/cra-menu-item.js';
+import './cra/cra-icon-dropdown.js';
 
-import {Menu} from 'chrome://resources/cros_components/menu/menu.js';
-import {
-  createRef,
-  css,
-  html,
-  map,
-  ref,
-} from 'chrome://resources/mwc/lit/index.js';
+import {css, html, map} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {useMicrophoneManager} from '../core/lit/context.js';
@@ -23,26 +17,20 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings} from '../core/state/settings.js';
 
 /**
- * A menu that allows the user to select the input mic of the app.
+ * A button that allows the user to select the input mic of the app.
  */
-export class MicSelectionMenu extends ReactiveLitElement {
+export class MicSelectionButton extends ReactiveLitElement {
   static override styles = css`
-    cra-menu {
+    :host {
+      display: contents;
+    }
+
+    cra-icon-dropdown::part(menu) {
       --cros-menu-width: 320px;
     }
   `;
 
   private readonly microphoneManager = useMicrophoneManager();
-
-  private readonly menuRef = createRef<Menu>();
-
-  show(anchorElement: HTMLElement): void {
-    if (this.menuRef.value !== undefined) {
-      const menu = this.menuRef.value;
-      menu.anchorElement = anchorElement;
-      menu.show();
-    }
-  }
 
   private toggleSystemAudio(): void {
     settings.mutate((d) => {
@@ -50,22 +38,25 @@ export class MicSelectionMenu extends ReactiveLitElement {
     });
   }
 
-  private renderMicrophone(mic: MicrophoneInfo, selectedMic: string|null):
-    RenderResult {
+  private renderMicrophone(
+    mic: MicrophoneInfo,
+    selectedMic: string|null,
+  ): RenderResult {
     const micIcon = mic.isInternal ? 'mic' : 'mic_external_on';
     const isSelectedMic = mic.deviceId === selectedMic;
+    const onSelectMic = () => {
+      this.microphoneManager.setSelectedMicId(mic.deviceId);
+    };
     // TODO(kamchonlathorn): Get status and render noise cancellation warning.
     return html`
-      <cra-menu-item
+      <cros-icon-dropdown-option
         headline=${mic.label}
         itemStart="icon"
         ?checked=${isSelectedMic}
-        @cros-menu-item-triggered=${() => {
-      this.microphoneManager.setSelectedMicId(mic.deviceId);
-    }}
+        @cros-icon-dropdown-option-triggered=${onSelectMic}
       >
         <cra-icon slot="start" name=${micIcon}></cra-icon>
-      </cra-menu-item>
+      </cros-icon-dropdown-option>
     `;
   }
 
@@ -74,27 +65,34 @@ export class MicSelectionMenu extends ReactiveLitElement {
     const microphones = this.microphoneManager.getMicrophoneList().value;
     const selectedMic = this.microphoneManager.getSelectedMicId().value;
 
-    return html`<cra-menu ${ref(this.menuRef)}>
-      ${map(microphones, (mic) => this.renderMicrophone(mic, selectedMic))}
-      </cra-menu-item>
-      <cros-menu-separator></cros-menu-separator>
-      <cra-menu-item
+    return html`
+      <cra-icon-dropdown
+        id="mic-selection-button"
+        shape="circle"
+        anchor-corner="start-start"
+        menu-corner="end-start"
+      >
+        <cra-icon slot="button-icon" name="mic"></cra-icon>
+        ${map(microphones, (mic) => this.renderMicrophone(mic, selectedMic))}
+        <cros-menu-separator></cros-menu-separator>
+        <cros-icon-dropdown-option
           headline=${i18n.micSelectionMenuChromebookAudioOption}
           itemStart="icon"
           itemEnd="switch"
           .switchSelected=${includeSystemAudio}
-          @cros-menu-item-triggered=${this.toggleSystemAudio}
+          @cros-icon-dropdown-option-triggered=${this.toggleSystemAudio}
         >
           <cra-icon slot="start" name="laptop_chromebook"></cra-icon>
-        </cra-menu-item>
-    </cra-menu>`;
+        </cros-icon-dropdown-option>
+      </cra-icon-dropdown>
+    `;
   }
 }
 
-window.customElements.define('mic-selection-menu', MicSelectionMenu);
+window.customElements.define('mic-selection-button', MicSelectionButton);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'mic-selection-menu': MicSelectionMenu;
+    'mic-selection-button': MicSelectionButton;
   }
 }
