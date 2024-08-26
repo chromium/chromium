@@ -196,6 +196,7 @@ autofill::ElementExpr GetElementById(const std::string& id) {
 struct FieldValue {
   std::string id;
   std::string value;
+  FormControlType form_control_type = FormControlType::kInputText;
 };
 
 std::ostream& operator<<(std::ostream& os, const FieldValue& field) {
@@ -3432,10 +3433,17 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
       return text_field_change_waiter_;
     }
 
+    TestAutofillManagerWaiter& select_field_change_waiter() {
+      return select_field_change_waiter_;
+    }
+
    private:
     TestAutofillManagerWaiter text_field_change_waiter_{
         *this,
         {AutofillManagerEvent::kTextFieldDidChange}};
+    TestAutofillManagerWaiter select_field_change_waiter_{
+        *this,
+        {AutofillManagerEvent::kSelectControlDidChange}};
   };
 
   MockAutofillManager* autofill_manager() {
@@ -3478,23 +3486,34 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
   }
 
   void EnterValues() {
-    // Normally we would enter the "US state" last, but we don't have a
-    // kSelectElementDidChange event, yet. Use multi-arg version of
-    // EnterValues() to wait until the last field was reported to the autofill
-    // manager.
-    EnterValues(
-        {{"name", "Sarah"}, {"state", "WA"}, {"address", "123 Main Road"}},
-        /*num_modified_textfields=*/2u);
+    EnterValues({{"name", "Sarah"},
+                 {"address", "123 Main Road"},
+                 {"state", "WA", FormControlType::kSelectOne}});
   }
 
-  void EnterValues(const std::vector<FieldValue>& values,
-                   size_t num_modified_textfields) {
+  void EnterValues(const std::vector<FieldValue>& values) {
     for (const FieldValue& value : values) {
       ASSERT_TRUE(EnterTextIntoField(GetElementById(value.id), value.value,
                                      this, GetWebContents()));
+      using enum FormControlType;
+      switch (value.form_control_type) {
+        case kInputText: {
+          auto& waiter = autofill_manager()->text_field_change_waiter();
+          ASSERT_TRUE(waiter.Wait(1));
+          waiter.Reset();
+          break;
+        }
+        case kSelectOne:
+        case kSelectMultiple: {
+          auto& waiter = autofill_manager()->select_field_change_waiter();
+          ASSERT_TRUE(waiter.Wait(1));
+          waiter.Reset();
+          break;
+        }
+        default:
+          NOTREACHED();
+      }
     }
-    ASSERT_TRUE(autofill_manager()->text_field_change_waiter().Wait(
-        num_modified_textfields));
   }
 
   struct NameValue {
@@ -3792,8 +3811,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
                        TreatAutofillAsUserInput) {
   CreateTestProfile();
 
-  EnterValues({{"address", "User Entered Address"}},
-              /*num_modified_textfields=*/1u);
+  EnterValues({{"address", "User Entered Address"}});
   ExecuteScript("document.getElementById('address').value = '';");
 
   ASSERT_TRUE(AutofillFlow(GetElementById("name"), this,
@@ -3871,7 +3889,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormlessFormSubmissionTest,
   const std::vector<FieldValue> kEnteredValues = {
       {"name", "Sarah"}, {"address", "123 Main Road"}, {"city", "Moonbeam"}};
 
-  EnterValues(kEnteredValues, /*num_modified_textfields=*/3u);
+  EnterValues(kEnteredValues);
 
   base::RunLoop run_loop;
   // Ensure that only expected form submissions are recorded.
