@@ -299,9 +299,9 @@ TEST_P(ParseExpFieldTest, ParseExpField) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
   AddFormFieldData(test_case().cc_fields_form_control_type, "card_number",
                    "Card Number", CREDIT_CARD_NUMBER);
-  AddFormFieldDataWithLength(test_case().cc_fields_form_control_type, "cc_exp",
-                             test_case().label, test_case().max_length,
-                             test_case().expected_prediction);
+  AddFormFieldData(test_case().cc_fields_form_control_type, "cc_exp",
+                   test_case().label, /*placeholder=*/"",
+                   test_case().max_length, test_case().expected_prediction);
 
   // Assists in identifying which case has failed.
   SCOPED_TRACE(test_case().expected_prediction);
@@ -515,9 +515,8 @@ TEST_P(CreditCardFieldParserTest, ParseMonthControl) {
 TEST_P(CreditCardFieldParserTest, ParseCreditCardExpYear_2DigitMaxLength) {
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ccmonth", "Expiration Date", CREDIT_CARD_EXP_MONTH);
-  AddFormFieldDataWithLength(FormControlType::kInputText, "ccyear",
-                             "Expiration Date", 2,
-                             CREDIT_CARD_EXP_2_DIGIT_YEAR);
+  AddFormFieldData(FormControlType::kInputText, "ccyear", "Expiration Date",
+                   /*placeholder=*/"", 2, CREDIT_CARD_EXP_2_DIGIT_YEAR);
 
   ClassifyAndVerify(ParseResult::kParsed);
 }

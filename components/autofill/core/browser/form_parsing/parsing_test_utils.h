@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
@@ -48,28 +49,30 @@ class FormFieldParserTestBase {
   ~FormFieldParserTestBase();
 
  protected:
-  // Add a field with |control_type|, the |name|, the |label| the expected
-  // parsed type |expected_type|.
+  // Add a field with `control_type`, `name`, `label`, `placeholder`, and
+  // `max_length` that is expected to be of `expected_type`.
   void AddFormFieldData(FormControlType control_type,
-                        std::string name,
-                        std::string label,
+                        std::string_view name,
+                        std::string_view label,
+                        std::string_view placeholder,
+                        int max_length,
                         FieldType expected_type);
 
-  // Convenience wrapper for text control elements with a maximal length.
-  void AddFormFieldDataWithLength(FormControlType control_type,
-                                  std::string name,
-                                  std::string label,
-                                  int max_length,
-                                  FieldType expected_type);
+  // Add a field with `control_type`, `name`, and `label` that is expected to be
+  // of `expected_type`.
+  void AddFormFieldData(FormControlType control_type,
+                        std::string_view name,
+                        std::string_view label,
+                        FieldType expected_type);
 
   // Convenience wrapper for text control elements.
-  void AddTextFormFieldData(std::string name,
-                            std::string label,
+  void AddTextFormFieldData(std::string_view name,
+                            std::string_view label,
                             FieldType expected_type);
 
   // Convenience wrapper for 'select-one' elements.
-  void AddSelectOneFormFieldData(std::string name,
-                                 std::string label,
+  void AddSelectOneFormFieldData(std::string_view name,
+                                 std::string_view label,
                                  const std::vector<SelectOption>& options,
                                  FieldType expected_type);
 

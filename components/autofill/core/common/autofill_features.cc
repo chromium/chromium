@@ -496,6 +496,14 @@ BASE_FEATURE(kAutofillPageLanguageDetection,
              "AutofillPageLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, we check whether a field's label or placeholder has the format
+// of a valid email address. If it does, we use that as a signal that the field
+// is of type EMAIL_ADDRESS.
+// TODO(crbug.com/361560365): Clean up when launched.
+BASE_FEATURE(kAutofillParseEmailLabelAndPlaceholder,
+             "AutofillParseEmailLabelAndPlaceholder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the placeholder is not used as a fallback during label inference.
 // Instead, local heuristics treat it as a separate source in addition to the
 // label. The placeholder is matched against the same regex as the label.

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -43,23 +45,16 @@ FormFieldParserTestBase::FormFieldParserTestBase(
 FormFieldParserTestBase::~FormFieldParserTestBase() = default;
 
 void FormFieldParserTestBase::AddFormFieldData(FormControlType control_type,
-                                               std::string name,
-                                               std::string label,
+                                               std::string_view name,
+                                               std::string_view label,
+                                               std::string_view placeholder,
+                                               int max_length,
                                                FieldType expected_type) {
-  AddFormFieldDataWithLength(control_type, name, label, /*max_length=*/0,
-                             expected_type);
-}
-
-void FormFieldParserTestBase::AddFormFieldDataWithLength(
-    FormControlType control_type,
-    std::string name,
-    std::string label,
-    int max_length,
-    FieldType expected_type) {
   FormFieldData field_data;
   field_data.set_form_control_type(control_type);
   field_data.set_name(base::UTF8ToUTF16(name));
   field_data.set_label(base::UTF8ToUTF16(label));
+  field_data.set_placeholder(base::UTF8ToUTF16(placeholder));
   field_data.set_max_length(max_length);
   field_data.set_renderer_id(MakeFieldRendererId());
   fields_.push_back(std::make_unique<AutofillField>(field_data));
@@ -67,9 +62,17 @@ void FormFieldParserTestBase::AddFormFieldDataWithLength(
       std::make_pair(field_data.global_id(), expected_type));
 }
 
+void FormFieldParserTestBase::AddFormFieldData(FormControlType control_type,
+                                               std::string_view name,
+                                               std::string_view label,
+                                               FieldType expected_type) {
+  AddFormFieldData(control_type, name, label, /*placeholder=*/"",
+                   /*max_length=*/0, expected_type);
+}
+
 void FormFieldParserTestBase::AddSelectOneFormFieldData(
-    std::string name,
-    std::string label,
+    std::string_view name,
+    std::string_view label,
     const std::vector<SelectOption>& options,
     FieldType expected_type) {
   AddFormFieldData(FormControlType::kSelectOne, name, label, expected_type);
@@ -77,9 +80,8 @@ void FormFieldParserTestBase::AddSelectOneFormFieldData(
   field_data->set_options(options);
 }
 
-// Convenience wrapper for text control elements.
-void FormFieldParserTestBase::AddTextFormFieldData(std::string name,
-                                                   std::string label,
+void FormFieldParserTestBase::AddTextFormFieldData(std::string_view name,
+                                                   std::string_view label,
                                                    FieldType expected_type) {
   AddFormFieldData(FormControlType::kInputText, name, label, expected_type);
 }
@@ -99,7 +101,8 @@ void FormFieldParserTestBase::ClassifyAndVerify(
   std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
 
   if (parse_result == ParseResult::kNotParsed) {
-    ASSERT_EQ(nullptr, field.get());
+    ASSERT_EQ(nullptr, field.get())
+        << "Expected field not to be parsed, but it was.";
     return;
   }
   ASSERT_NE(nullptr, field.get());
