@@ -303,7 +303,7 @@ END_METADATA
 struct MenuBoundsOptions {
   gfx::Rect anchor_bounds = gfx::Rect(500, 500, 10, 10);
   gfx::Rect monitor_bounds = gfx::Rect(0, 0, 1000, 1000);
-  gfx::Size menu_size = gfx::Size(100, 100);
+  gfx::Size menu_size = gfx::Size(100, 150);
   MenuAnchorPosition menu_anchor = MenuAnchorPosition::kTopLeft;
   MenuItemView::MenuPosition menu_position =
       MenuItemView::MenuPosition::kBestFit;
@@ -2133,15 +2133,14 @@ TEST_F(MenuControllerTest, CalculateMenuBoundsAnchorTest) {
   EXPECT_EQ(expected, CalculateMenuBounds(options));
 
   // Menu does not fit above -> placed below.
-  options.anchor_bounds = gfx::Rect(options.menu_size.height() / 2,
-                                    options.menu_size.width(), 0, 0);
+  options.anchor_bounds = gfx::Rect(options.menu_size.width(),
+                                    options.menu_size.height() / 2, 0, 0);
   expected.set_origin(
       {options.anchor_bounds.x() +
            (options.anchor_bounds.width() - options.menu_size.width()) / 2,
-       options.anchor_bounds.y() +
-           (ShouldIgnoreScreenBoundsForMenus()
-                ? (-options.anchor_bounds.bottom() - kTouchYPadding)
-                : kTouchYPadding)});
+       (ShouldIgnoreScreenBoundsForMenus()
+            ? (-options.anchor_bounds.bottom() - kTouchYPadding)
+            : options.anchor_bounds.y() + kTouchYPadding)});
   EXPECT_EQ(expected, CalculateMenuBounds(options));
 }
 
