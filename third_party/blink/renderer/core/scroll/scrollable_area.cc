@@ -1059,10 +1059,8 @@ void ScrollableArea::SetScrollbarsHiddenIfOverlayInternal(bool hidden) {
 void ScrollableArea::FadeOverlayScrollbarsTimerFired(TimerBase*) {
   // Scrollbars can become composited in the time it takes the timer set in
   // ShowNonMacOverlayScrollbars to be fired.
-  if (RuntimeEnabledFeatures::
-          InterruptComposedScrollbarDisappearanceEnabled() &&
-      (RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
-       UsesCompositedScrolling())) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
+      UsesCompositedScrolling()) {
     return;
   }
   SetScrollbarsHiddenIfOverlay(true);
