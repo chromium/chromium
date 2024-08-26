@@ -3176,6 +3176,10 @@ void RenderWidgetHostImpl::NotifyUISchedulerOfGestureEventUpdate(
       GetScrollStateUpdateFromGestureEvent(gesture_event));
 }
 
+void RenderWidgetHostImpl::OnInputIgnored(const blink::WebInputEvent& event) {
+  delegate_->OnInputIgnored(event);
+}
+
 void RenderWidgetHostImpl::DecrementInFlightEventCount(
     blink::mojom::InputEventResultSource ack_source) {
   --in_flight_event_count_;

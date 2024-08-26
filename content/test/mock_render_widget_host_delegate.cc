@@ -102,6 +102,9 @@ MockRenderWidgetHostDelegate::GetDelegatedInkRenderer(
   return delegated_ink_point_renderer_.get();
 }
 
+void MockRenderWidgetHostDelegate::OnInputIgnored(
+    const blink::WebInputEvent& event) {}
+
 input::TouchEmulator* MockRenderWidgetHostDelegate::GetTouchEmulator(
     bool create_if_necessary) {
   NOTIMPLEMENTED();

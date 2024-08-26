@@ -272,6 +272,7 @@ blink::mojom::InputEventResultState RenderInputRouter::FilterInputEvent(
   // confused about how many touches are active.
   if (delegate_->IsIgnoringWebInputEvents(event) &&
       event.GetType() != WebInputEvent::Type::kTouchCancel) {
+    delegate_->OnInputIgnored(event);
     return blink::mojom::InputEventResultState::kNoConsumerExists;
   }
 

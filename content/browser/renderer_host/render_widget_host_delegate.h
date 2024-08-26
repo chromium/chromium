@@ -355,6 +355,9 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // shouldn't be used to improve typing suggestions for the user.
   virtual bool ShouldDoLearning();
 
+  // Notifies when an input event is ignored.
+  virtual void OnInputIgnored(const blink::WebInputEvent& event) {}
+
  protected:
   virtual ~RenderWidgetHostDelegate() {}
 };

@@ -252,6 +252,10 @@ SkBitmap BackForwardTransitionAnimationManagerAndroid::
       ->MaybeCopyContentAreaAsBitmapSync();
 }
 
+// TODO(baranerf): Implement this.
+void BackForwardTransitionAnimationManagerAndroid::MaybeRecordIgnoredInput(
+    const blink::WebInputEvent& event) {}
+
 void BackForwardTransitionAnimationManagerAndroid::MaybeDestroyAnimator() {
   CHECK(animator_);
   if (animator_->IsTerminalState()) {

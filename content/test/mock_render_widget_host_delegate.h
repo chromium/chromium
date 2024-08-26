@@ -71,6 +71,7 @@ class MockRenderWidgetHostDelegate
   VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() override;
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
       ui::Compositor* compositor) override;
+  void OnInputIgnored(const blink::WebInputEvent& event) override;
 
   //  RenderWidgetHostInputEventRouter::Delegate
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
