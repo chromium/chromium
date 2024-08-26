@@ -118,6 +118,39 @@ class BuilderPropsTests(unittest.TestCase):
     self.assertEqual(props['some-key'], 'some-internal-val')
     self.assertEqual(project, 'chrome')
 
+  @mock.patch("subprocess.run")
+  def testBuildbucketFallback(self, mock_subprocess_run):
+    mock_p = mock.MagicMock()
+    mock_subprocess_run.return_value = mock_p
+
+    # Failed bb RPC.
+    mock_p.returncode = 1
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket',
+                                           project_name='some-project')
+    self.assertIsNone(props)
+
+    # Empty json from bb RPC.
+    mock_p.returncode = 0
+    mock_p.stdout = '{}'
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket',
+                                           project_name='some-project')
+    self.assertIsNone(props)
+
+    # Successful bb RPC.
+    props = {'key1': 1, 'key2': 'val2'}
+    mock_p.returncode = 0
+    mock_p.stdout = json.dumps({
+        'config': {
+            'properties': json.dumps(props),
+        },
+    })
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket',
+                                           project_name='some-project')
+    self.assertEqual(props, {'key1': 1, 'key2': 'val2'})
+
 
 if __name__ == '__main__':
   unittest.main()
