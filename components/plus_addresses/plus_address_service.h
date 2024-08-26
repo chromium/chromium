@@ -151,11 +151,11 @@ class PlusAddressService : public KeyedService,
 
   // Gets a plus address, if one exists, for the passed-in facet.
   std::optional<PlusAddress> GetPlusAddress(
-      const PlusProfile::facet_t& facet) const;
+      const affiliations::FacetURI& facet) const;
 
   // Same as `GetPlusAddress()`, but returns the entire profile.
   std::optional<PlusProfile> GetPlusProfile(
-      const PlusProfile::facet_t& facet) const;
+      const affiliations::FacetURI& facet) const;
 
   // Returns a list of plus profiles for the `origin` and all affiliated
   // domains.

@@ -225,7 +225,9 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
   std::string PlusAddressResponseContent(bool confirmed,
                                          std::string plus_address) {
     return plus_addresses::test::MakeCreationResponse(PlusProfile(
-        /*profile_id=*/"123", facet.Serialize(),
+        /*profile_id=*/"123",
+        affiliations::FacetURI::FromPotentiallyInvalidSpec(
+            facet.GetURL().spec()),
         PlusAddress(std::move(plus_address)), confirmed));
   }
 

@@ -269,8 +269,8 @@ class PlusAddressCreationRequests
   }
   void MakeCreationRequest(const PlusProfile& profile,
                            PlusAddressRequestCallback callback) {
-    url::Origin origin = url::Origin::Create(GURL(
-        absl::get<affiliations::FacetURI>(profile.facet).canonical_spec()));
+    url::Origin origin =
+        url::Origin::Create(GURL(profile.facet.canonical_spec()));
     if (GetParam() == PlusAddressNetworkRequestType::kReserve) {
       client().ReservePlusAddress(origin, /*refresh=*/false,
                                   std::move(callback));

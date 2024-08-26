@@ -171,8 +171,7 @@ bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
       "INSERT OR REPLACE INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
       kPlusAddressTable, kProfileId, kFacet, kPlusAddress)));
   query.BindString(0, profile.profile_id.value());
-  query.BindString(
-      1, absl::get<affiliations::FacetURI>(profile.facet).canonical_spec());
+  query.BindString(1, profile.facet.canonical_spec());
   query.BindString(2, *profile.plus_address);
   return query.Run();
 }

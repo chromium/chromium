@@ -76,15 +76,6 @@ std::vector<UserInfo> UserInfosForProfiles(
   return infos;
 }
 
-std::string GetOriginFromPlusProfile(
-    const plus_addresses::PlusProfile& profile) {
-  if (absl::holds_alternative<std::string>(profile.facet)) {
-    return absl::get<std::string>(profile.facet);
-  } else {
-    return absl::get<affiliations::FacetURI>(profile.facet).canonical_spec();
-  }
-}
-
 }  // namespace
 
 AddressAccessoryControllerImpl::~AddressAccessoryControllerImpl() {
@@ -128,7 +119,7 @@ AddressAccessoryControllerImpl::GetSheetData() const {
       UserInfosForProfiles(profiles), CreateManageAddressesFooter());
   for (const plus_addresses::PlusProfile& plus_profile : plus_profiles) {
     sheet_data.add_plus_address_section(
-        PlusAddressSection(GetOriginFromPlusProfile(plus_profile),
+        PlusAddressSection(plus_profile.facet.canonical_spec(),
                            base::UTF8ToUTF16(*plus_profile.plus_address)));
   }
   return sheet_data;

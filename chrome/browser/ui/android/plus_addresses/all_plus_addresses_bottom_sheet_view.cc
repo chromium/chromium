@@ -23,16 +23,6 @@
 
 namespace plus_addresses {
 
-namespace {
-std::string GetOriginFromPlusProfile(const PlusProfile& profile) {
-  if (absl::holds_alternative<std::string>(profile.facet)) {
-    return absl::get<std::string>(profile.facet);
-  } else {
-    return absl::get<affiliations::FacetURI>(profile.facet).canonical_spec();
-  }
-}
-}  // namespace
-
 AllPlusAddressesBottomSheetView::AllPlusAddressesBottomSheetView(
     AllPlusAddressesBottomSheetController* controller)
     : controller_(CHECK_DEREF(controller)) {}
@@ -58,7 +48,7 @@ void AllPlusAddressesBottomSheetView::Show(
 
   for (const PlusProfile& profile : profiles) {
     java_profiles.emplace_back(Java_PlusProfile_Constructor(
-        env, *profile.plus_address, GetOriginFromPlusProfile(profile)));
+        env, *profile.plus_address, profile.facet.canonical_spec()));
   }
 
   base::android::ScopedJavaLocalRef<jobject> ui_info =

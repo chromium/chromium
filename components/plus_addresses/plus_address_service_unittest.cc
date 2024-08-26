@@ -134,9 +134,8 @@ MATCHER_P(IsPreallocatedPlusAddress, address, "") {
   return plus_address && *plus_address == address;
 }
 
-url::Origin OriginFromFacet(const plus_addresses::PlusProfile::facet_t& facet) {
-  return url::Origin::Create(
-      GURL(absl::get<affiliations::FacetURI>(facet).canonical_spec()));
+url::Origin OriginFromFacet(const affiliations::FacetURI& facet) {
+  return url::Origin::Create(GURL(facet.canonical_spec()));
 }
 
 }  // namespace
@@ -257,9 +256,7 @@ TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
       service().GetPlusProfile(
           affiliations::FacetURI::FromPotentiallyInvalidSpec("invalid facet")),
       std::nullopt);
-  EXPECT_EQ(service().GetPlusProfile(
-                absl::get<affiliations::FacetURI>(profile.facet)),
-            profile);
+  EXPECT_EQ(service().GetPlusProfile(profile.facet), profile);
 }
 
 TEST_F(PlusAddressServiceTest, DefaultShouldShowManualFallbackState) {
@@ -1621,8 +1618,8 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLSuggestions) {
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   // Request the same URL as the `profile1.facet`.
-  const url::Origin origin = url::Origin::Create(
-      GURL(absl::get<FacetURI>(profile1.facet).canonical_spec()));
+  const url::Origin origin =
+      url::Origin::Create(GURL(profile1.facet.canonical_spec()));
 
   // Note that `profile3` is not a PSL match due to the PSL extensions list.
   EXPECT_TRUE(ExpectServiceToReturnSuggestions(
@@ -1651,7 +1648,7 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedGroupSuggestions) {
   // Prepares the `group_profile` facet to be returned as part of the
   // affiliation group.
   affiliations::GroupedFacets group;
-  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  group.facets.emplace_back(group_profile.facet);
 
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
       .WillOnce(
@@ -1677,7 +1674,7 @@ TEST_F(PlusAddressAffiliationsTest,
   ON_CALL(affiliation_service(), GetPSLExtensions)
       .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
   affiliations::GroupedFacets group;
-  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  group.facets.emplace_back(group_profile.facet);
   ON_CALL(affiliation_service(), GetGroupingInfo)
       .WillByDefault(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
@@ -1742,7 +1739,7 @@ TEST_F(PlusAddressAffiliationsTest,
   ON_CALL(affiliation_service(), GetPSLExtensions)
       .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
   affiliations::GroupedFacets group;
-  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  group.facets.emplace_back(group_profile.facet);
   ON_CALL(affiliation_service(), GetGroupingInfo)
       .WillByDefault(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
@@ -1815,8 +1812,8 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLProfiles) {
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   // Request the same URL as the `profile1.facet`.
-  const url::Origin origin = url::Origin::Create(
-      GURL(absl::get<FacetURI>(profile1.facet).canonical_spec()));
+  const url::Origin origin =
+      url::Origin::Create(GURL(profile1.facet.canonical_spec()));
 
   // Note that `profile3` is not a PSL match due to the PSL extensions list.
   ExpectServiceToReturnAffiliatedPlusProfiles(
@@ -1839,7 +1836,7 @@ TEST_F(PlusAddressAffiliationsTest,
   // Prepares the `group_profile` facet to be returned as part of the
   // affiliation group.
   affiliations::GroupedFacets group;
-  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  group.facets.emplace_back(group_profile.facet);
 
   const url::Origin origin =
       url::Origin::Create(GURL("https://bar.example.com"));

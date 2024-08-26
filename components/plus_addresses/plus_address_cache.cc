@@ -31,7 +31,7 @@ bool PlusAddressCache::EraseProfile(const PlusProfile& profile) {
 }
 
 std::optional<PlusProfile> PlusAddressCache::FindByFacet(
-    const PlusProfile::facet_t& facet) const {
+    const affiliations::FacetURI& facet) const {
   // `facet` is used as the comparator, so the other fields don't matter.
   if (auto it =
           plus_profiles_.find(PlusProfile("", facet, PlusAddress(), false));

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/plus_addresses/plus_address_types.h"
@@ -21,7 +22,9 @@
       PlusAddressServiceFactory::GetForBrowserState(browserState);
 
   plusAddressService->SavePlusProfile(plus_addresses::PlusProfile(
-      /*profile_id=*/"234", base::SysNSStringToUTF8(url),
+      /*profile_id=*/"234",
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(
+          base::SysNSStringToUTF8(url)),
       plus_addresses::PlusAddress(plus_addresses::test::kFakePlusAddress),
       /*is_confirmed=*/true));
 }

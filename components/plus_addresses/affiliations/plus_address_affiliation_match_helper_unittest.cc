@@ -185,15 +185,15 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, ExactAndPslMatchesTest) {
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"example.com"}));
   // Simulate no grouping affiliations, only the requested facet is returned.
   affiliations::GroupedFacets group;
-  group.facets.emplace_back(absl::get<FacetURI>(profile1.facet));
+  group.facets.emplace_back(profile1.facet);
   EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   // `profile3` is not a PSL match because it is an Android facet.
   // `profile4` is not a match due to the PSL extension list exception.
-  EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(
-      absl::get<FacetURI>(profile1.facet), {profile1, profile2}));
+  EXPECT_TRUE(
+      ExpectMatchHelperToReturnProfiles(profile1.facet, {profile1, profile2}));
 }
 
 // Verifies that group affiliation matches are returned.
@@ -215,17 +215,16 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, GroupedMatchesTest) {
   EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   affiliations::GroupedFacets group;
-  group.facets.emplace_back(absl::get<FacetURI>(profile1.facet));
-  group.facets.emplace_back(absl::get<FacetURI>(android_profile.facet));
-  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  group.facets.emplace_back(profile1.facet);
+  group.facets.emplace_back(android_profile.facet);
+  group.facets.emplace_back(group_profile.facet);
   EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   // `profile2` was not a PSL match nor group affiliated.
   EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(
-      absl::get<FacetURI>(profile1.facet),
-      {profile1, android_profile, group_profile}));
+      profile1.facet, {profile1, android_profile, group_profile}));
 }
 
 // Verifies that elements in both group and PSL matches are returned only once.
@@ -246,18 +245,17 @@ TEST_F(PlusAddressAffiliationMatchHelperTest,
   EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   affiliations::GroupedFacets group;
-  group.facets.emplace_back(absl::get<FacetURI>(profile1.facet));
-  group.facets.emplace_back(absl::get<FacetURI>(psl_match.facet));
-  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  group.facets.emplace_back(profile1.facet);
+  group.facets.emplace_back(psl_match.facet);
+  group.facets.emplace_back(group_profile.facet);
   EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   // `psl_match` is part of both group and PSL matches but must be returned only
   // once.
-  EXPECT_TRUE(
-      ExpectMatchHelperToReturnProfiles(absl::get<FacetURI>(profile1.facet),
-                                        {profile1, psl_match, group_profile}));
+  EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(
+      profile1.facet, {profile1, psl_match, group_profile}));
 }
 
 }  // namespace plus_addresses

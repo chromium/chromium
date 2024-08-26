@@ -150,15 +150,6 @@ ShouldShowAction ShouldShowCredManReentryAction(
   NOTREACHED() << "Showing undefined for " << focused_field_type;
 }
 
-std::string GetOriginFromPlusProfile(
-    const plus_addresses::PlusProfile& profile) {
-  if (absl::holds_alternative<std::string>(profile.facet)) {
-    return absl::get<std::string>(profile.facet);
-  } else {
-    return absl::get<affiliations::FacetURI>(profile.facet).canonical_spec();
-  }
-}
-
 }  // namespace
 
 PasswordAccessoryControllerImpl::~PasswordAccessoryControllerImpl() {
@@ -256,7 +247,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
   for (const PlusProfile& profile : plus_profiles) {
     if (!plus_addresses_used_as_usernames[*profile.plus_address]) {
       data.add_plus_address_section(autofill::PlusAddressSection(
-          GetOriginFromPlusProfile(profile),
+          profile.facet.canonical_spec(),
           base::UTF8ToUTF16(*profile.plus_address)));
     }
   }

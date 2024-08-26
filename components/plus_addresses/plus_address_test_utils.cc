@@ -18,7 +18,7 @@
 namespace plus_addresses::test {
 
 PlusProfile CreatePlusProfile(std::string plus_address, bool is_confirmed) {
-  PlusProfile::facet_t facet =
+  affiliations::FacetURI facet =
       affiliations::FacetURI::FromCanonicalSpec("https://foo.com");
   return PlusProfile(/*profile_id=*/"123", facet,
                      PlusAddress(std::move(plus_address)),
@@ -30,7 +30,7 @@ PlusProfile CreatePlusProfile() {
 }
 
 PlusProfile CreatePlusProfile2() {
-  PlusProfile::facet_t facet =
+  affiliations::FacetURI facet =
       affiliations::FacetURI::FromCanonicalSpec("https://bar.com");
   return PlusProfile(/*profile_id=*/"234", facet,
                      PlusAddress("plus+bar@plus.plus"),
@@ -88,13 +88,6 @@ std::string MakePreallocateResponse(
 std::string MakePlusProfile(const PlusProfile& profile) {
   // Note: the below must be kept in-line with the PlusAddressParser behavior.
   std::string mode = profile.is_confirmed ? "anyMode" : "UNSPECIFIED";
-  std::string facet;
-
-  if (absl::holds_alternative<std::string>(profile.facet)) {
-    facet = absl::get<std::string>(profile.facet);
-  } else {
-    facet = absl::get<affiliations::FacetURI>(profile.facet).canonical_spec();
-  }
   std::string json = base::ReplaceStringPlaceholders(
       R"(
           {
@@ -106,7 +99,9 @@ std::string MakePlusProfile(const PlusProfile& profile) {
             }
           }
         )",
-      {*profile.profile_id, facet, *profile.plus_address, mode}, nullptr);
+      {*profile.profile_id, profile.facet.canonical_spec(),
+       *profile.plus_address, mode},
+      nullptr);
   DCHECK(base::JSONReader::Read(json));
   return json;
 }

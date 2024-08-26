@@ -73,7 +73,7 @@ base::flat_set<std::string> GetAndParseExcludedSites() {
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 }
 
-PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
+affiliations::FacetURI OriginToFacet(const url::Origin& origin) {
   // For a valid `origin`, `origin.GetURL().spec()` is always a valid spec.
   // However, using `FacetURI::FromCanonicalSpec(spec)` can lead to mismatches
   // in the underlying representation, since it uses the spec verbatim. E.g.,
@@ -252,7 +252,7 @@ bool PlusAddressService::ShouldShowManualFallback(
 }
 
 std::optional<PlusAddress> PlusAddressService::GetPlusAddress(
-    const PlusProfile::facet_t& facet) const {
+    const affiliations::FacetURI& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<PlusProfile> profile = GetPlusProfile(facet);
   return profile ? std::make_optional(std::move(profile->plus_address))
@@ -274,14 +274,11 @@ base::span<const PlusProfile> PlusAddressService::GetPlusProfiles() const {
 }
 
 std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
-    const PlusProfile::facet_t& facet) const {
+    const affiliations::FacetURI& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (auto* facet_uri = absl::get_if<affiliations::FacetURI>(&facet)) {
-    if (!facet_uri->is_valid()) {
-      return std::nullopt;
-    }
+  if (!facet.is_valid()) {
+    return std::nullopt;
   }
-
   return plus_address_cache_.FindByFacet(facet);
 }
 

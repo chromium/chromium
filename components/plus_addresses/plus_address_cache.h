@@ -33,7 +33,7 @@ class PlusAddressCache {
   // Searches the cache for an element with an equivalent facet and returns a
   // profile if found, otherwise it returns `std::nullopt`.
   std::optional<PlusProfile> FindByFacet(
-      const PlusProfile::facet_t& facet) const;
+      const affiliations::FacetURI& facet) const;
 
   // Clears the cache.
   void Clear();

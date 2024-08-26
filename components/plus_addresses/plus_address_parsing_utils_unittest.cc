@@ -60,7 +60,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
       ParsePlusProfileFromV1Create(std::move(value));
   ASSERT_TRUE(valid_result.has_value());
   EXPECT_EQ(valid_result->profile_id, kProfileId);
-  EXPECT_EQ(absl::get<affiliations::FacetURI>(valid_result->facet), kFacet);
+  EXPECT_EQ(valid_result->facet, kFacet);
   EXPECT_EQ(valid_result->plus_address, PlusAddress(kPlusAddress));
   EXPECT_EQ(valid_result->is_confirmed, true);
 
@@ -91,7 +91,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
       ParsePlusProfileFromV1Create(std::move(decoded));
   ASSERT_TRUE(invalid_result.has_value());
   EXPECT_EQ(invalid_result->profile_id, kProfileId);
-  EXPECT_EQ(absl::get<affiliations::FacetURI>(invalid_result->facet), kFacet);
+  EXPECT_EQ(invalid_result->facet, kFacet);
   EXPECT_EQ(invalid_result->plus_address, PlusAddress(kPlusAddress));
   EXPECT_EQ(invalid_result->is_confirmed, false);
 }

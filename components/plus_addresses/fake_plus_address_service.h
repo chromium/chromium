@@ -35,7 +35,7 @@ class FakePlusAddressService : public PlusAddressService {
 
   static constexpr char kFakeProfileId[] = "123";
   static constexpr char kFakePlusAddress[] = "plus+remote@plus.plus";
-  static constexpr char kFacet[] = "facet.bar";
+  static constexpr char kFacet[] = "https://facet.bar";
 
   // PlusAddressService:
   bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;

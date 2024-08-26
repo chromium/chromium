@@ -30,7 +30,7 @@ PlusAddressAffiliationMatchHelper::~PlusAddressAffiliationMatchHelper() =
     default;
 
 void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
-    const PlusProfile::facet_t& facet,
+    const affiliations::FacetURI& facet,
     AffiliatedPlusProfilesCallback result_callback) {
   if (!base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressAffiliations)) {
@@ -43,8 +43,7 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
     return;
   }
 
-  FacetURI facet_uri = absl::get<FacetURI>(facet);
-  DCHECK(facet_uri.IsValidWebFacetURI());
+  DCHECK(facet.IsValidWebFacetURI());
   // The barrier is used to collect affiliated plus addresses from multiple
   // sources (i.e. grouped affiliations, PSL matches), combine and return them.
   const int kCallsNumber = 2;
@@ -55,10 +54,10 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
 
   GetPSLExtensions(base::BindOnce(
       &PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches,
-      weak_factory_.GetWeakPtr(), barrier_callback, facet_uri));
+      weak_factory_.GetWeakPtr(), barrier_callback, facet));
 
   affiliation_service_->GetGroupingInfo(
-      {facet_uri},
+      {facet},
       base::BindOnce(&PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived,
                      weak_factory_.GetWeakPtr(), barrier_callback));
 }
@@ -101,10 +100,9 @@ void PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches(
   std::vector<PlusProfile> matches;
   for (const PlusProfile& stored_profile :
        plus_address_service_->GetPlusProfiles()) {
-    FacetURI stored_profile_facet = absl::get<FacetURI>(stored_profile.facet);
     // Note that exact matches are also PSL matches.
     if (affiliations::IsExtendedPublicSuffixDomainMatch(
-            GURL(stored_profile_facet.canonical_spec()),
+            GURL(stored_profile.facet.canonical_spec()),
             GURL(facet.canonical_spec()), psl_extensions)) {
       matches.push_back(std::move(stored_profile));
     }

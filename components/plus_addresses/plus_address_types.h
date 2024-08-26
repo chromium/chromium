@@ -17,7 +17,6 @@
 #include "base/types/strong_alias.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
@@ -44,12 +43,8 @@ struct PreallocatedPlusAddress final {
 };
 
 struct PlusProfile {
-  // The facet is stored as a `FacetURI`.
-  // TODO(b/322147254): Remove unnecessary variant.
-  using facet_t = absl::variant<std::string, affiliations::FacetURI>;
-
   PlusProfile(std::optional<std::string> profile_id,
-              facet_t facet,
+              affiliations::FacetURI facet,
               PlusAddress plus_address,
               bool is_confirmed);
   PlusProfile(const PlusProfile&);
@@ -65,7 +60,7 @@ struct PlusProfile {
   std::optional<std::string> profile_id;
 
   // The domain facet to which the plus address is bound.
-  facet_t facet;
+  affiliations::FacetURI facet;
 
   // The plus address.
   PlusAddress plus_address;
