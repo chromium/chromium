@@ -844,7 +844,9 @@ TEST_F(HttpCacheTest, GetBackend) {
   EXPECT_THAT(cb.GetResult(result).first, IsOk());
 }
 
-TEST_F(HttpCacheTest, SimpleGET) {
+using HttpCacheSimpleGetTest = HttpCacheTest;
+
+TEST_F(HttpCacheSimpleGetTest, Basic) {
   MockHttpCache cache;
   LoadTimingInfo load_timing_info;
 
@@ -861,7 +863,7 @@ TEST_F(HttpCacheTest, SimpleGET) {
 
 // This test verifies that the callback passed to SetConnectedCallback() is
 // called once for simple GET calls that traverse the cache.
-TEST_F(HttpCacheTest, SimpleGET_ConnectedCallback) {
+TEST_F(HttpCacheSimpleGetTest, ConnectedCallback) {
   MockHttpCache cache;
 
   ScopedMockTransaction mock_transaction(kSimpleGET_Transaction);
@@ -887,7 +889,7 @@ TEST_F(HttpCacheTest, SimpleGET_ConnectedCallback) {
 
 // This test verifies that when the callback passed to SetConnectedCallback()
 // returns an error, the transaction fails with that error.
-TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackReturnError) {
+TEST_F(HttpCacheSimpleGetTest, ConnectedCallbackReturnError) {
   MockHttpCache cache;
   MockHttpRequest request(kSimpleGET_Transaction);
   ConnectedHandler connected_handler;
@@ -910,7 +912,7 @@ TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackReturnError) {
 
 // This test verifies that the callback passed to SetConnectedCallback() is
 // called once for requests that hit the cache.
-TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackOnCacheHit) {
+TEST_F(HttpCacheSimpleGetTest, ConnectedCallbackOnCacheHit) {
   MockHttpCache cache;
 
   {
@@ -951,7 +953,7 @@ TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackOnCacheHit) {
 // This test verifies that when the callback passed to SetConnectedCallback()
 // is called for a request that hit the cache and returns an error, the cache
 // entry is reusable.
-TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackOnCacheHitReturnError) {
+TEST_F(HttpCacheSimpleGetTest, ConnectedCallbackOnCacheHitReturnError) {
   MockHttpCache cache;
 
   {
@@ -1010,8 +1012,8 @@ TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackOnCacheHitReturnError) {
 
 // This test verifies that when the callback passed to SetConnectedCallback()
 // returns `ERR_INCONSISTENT_IP_ADDRESS_SPACE`, the cache entry is invalidated.
-TEST_F(HttpCacheTest,
-       SimpleGET_ConnectedCallbackOnCacheHitReturnInconsistentIpError) {
+TEST_F(HttpCacheSimpleGetTest,
+       ConnectedCallbackOnCacheHitReturnInconsistentIpError) {
   MockHttpCache cache;
 
   ScopedMockTransaction mock_transaction(kSimpleGET_Transaction);
@@ -1073,9 +1075,8 @@ TEST_F(HttpCacheTest,
 // returns
 // `ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY`, the
 // cache entry is invalidated, and we'll retry the connection from the network.
-TEST_F(
-    HttpCacheTest,
-    SimpleGET_ConnectedCallbackOnCacheHitReturnPrivateNetworkAccessBlockedError) {
+TEST_F(HttpCacheSimpleGetTest,
+       ConnectedCallbackOnCacheHitReturnPrivateNetworkAccessBlockedError) {
   MockHttpCache cache;
 
   ScopedMockTransaction mock_transaction(kSimpleGET_Transaction);
@@ -1139,7 +1140,7 @@ TEST_F(
 // This test verifies that the callback passed to SetConnectedCallback() is
 // called with the right transport type when the cached entry was originally
 // fetched via proxy.
-TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackOnCacheHitFromProxy) {
+TEST_F(HttpCacheSimpleGetTest, ConnectedCallbackOnCacheHitFromProxy) {
   MockHttpCache cache;
 
   TransportInfo proxied_transport_info = TestTransportInfo();
@@ -1184,7 +1185,7 @@ TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackOnCacheHitFromProxy) {
               ElementsAre(expected_transport_info));
 }
 
-TEST_F(HttpCacheTest, SimpleGET_DelayedCacheLock) {
+TEST_F(HttpCacheSimpleGetTest, DelayedCacheLock) {
   MockHttpCache cache;
   LoadTimingInfo load_timing_info;
 
@@ -1315,7 +1316,7 @@ class HttpCacheTestSplitCacheFeature
   base::test::ScopedFeatureList split_cache_enabled_feature_list_;
 };
 
-TEST_P(HttpCacheTestSplitCacheFeature, SimpleGETVerifyGoogleFontMetrics) {
+TEST_P(HttpCacheTestSplitCacheFeature, SimpleGetVerifyGoogleFontMetrics) {
   SchemefulSite site_a(GURL("http://www.a.com"));
 
   MockHttpCache cache;
@@ -1370,7 +1371,7 @@ class HttpCacheTestSplitCacheFeatureEnabled : public HttpCacheTest {
   base::test::ScopedFeatureList split_cache_always_enabled_feature_list_;
 };
 
-TEST_F(HttpCacheTest, SimpleGETNoDiskCache) {
+TEST_F(HttpCacheSimpleGetTest, NoDiskCache) {
   MockHttpCache cache;
 
   cache.disk_cache()->set_fail_requests(true);
@@ -1403,7 +1404,7 @@ TEST_F(HttpCacheTest, SimpleGETNoDiskCache) {
   TestLoadTimingNetworkRequest(load_timing_info);
 }
 
-TEST_F(HttpCacheTest, SimpleGETNoDiskCache2) {
+TEST_F(HttpCacheSimpleGetTest, NoDiskCache2) {
   // This will initialize a cache object with NULL backend.
   auto factory = std::make_unique<MockBlockingBackendFactory>();
   factory->set_fail(true);
@@ -1439,7 +1440,7 @@ TEST_F(HttpCacheTest, ReleaseBuffer) {
   EXPECT_EQ(kBufferSize, cb.GetResult(rv));
 }
 
-TEST_F(HttpCacheTest, SimpleGETWithDiskFailures) {
+TEST_F(HttpCacheSimpleGetTest, WithDiskFailures) {
   MockHttpCache cache;
 
   cache.disk_cache()->set_soft_failures_mask(MockDiskEntry::FAIL_ALL);
@@ -1461,7 +1462,7 @@ TEST_F(HttpCacheTest, SimpleGETWithDiskFailures) {
 
 // Tests that disk failures after the transaction has started don't cause the
 // request to fail.
-TEST_F(HttpCacheTest, SimpleGETWithDiskFailures2) {
+TEST_F(HttpCacheSimpleGetTest, WithDiskFailures2) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -1498,7 +1499,7 @@ TEST_F(HttpCacheTest, SimpleGETWithDiskFailures2) {
 }
 
 // Tests that we handle failures to read from the cache.
-TEST_F(HttpCacheTest, SimpleGETWithDiskFailures3) {
+TEST_F(HttpCacheSimpleGetTest, WithDiskFailures3) {
   MockHttpCache cache;
 
   // Read from the network, and write to the cache.
@@ -1534,7 +1535,7 @@ TEST_F(HttpCacheTest, SimpleGETWithDiskFailures3) {
   EXPECT_EQ(3, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, SimpleGET_LoadOnlyFromCache_Hit) {
+TEST_F(HttpCacheSimpleGetTest, LoadOnlyFromCacheHit) {
   MockHttpCache cache;
 
   RecordingNetLogObserver net_log_observer;
@@ -1601,7 +1602,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadOnlyFromCache_Hit) {
   TestLoadTimingCachedResponse(load_timing_info);
 }
 
-TEST_F(HttpCacheTest, SimpleGET_LoadOnlyFromCache_Miss) {
+TEST_F(HttpCacheSimpleGetTest, LoadOnlyFromCacheMiss) {
   MockHttpCache cache;
 
   // force this transaction to read from the cache
@@ -1627,7 +1628,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadOnlyFromCache_Miss) {
   EXPECT_EQ(0, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, SimpleGET_LoadPreferringCache_Hit) {
+TEST_F(HttpCacheSimpleGetTest, LoadPreferringCacheHit) {
   MockHttpCache cache;
 
   // write to the cache
@@ -1644,7 +1645,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadPreferringCache_Hit) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, SimpleGET_LoadPreferringCache_Miss) {
+TEST_F(HttpCacheSimpleGetTest, LoadPreferringCacheMiss) {
   MockHttpCache cache;
 
   // force this transaction to read from the cache if valid
@@ -1659,7 +1660,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadPreferringCache_Miss) {
 }
 
 // Tests LOAD_SKIP_CACHE_VALIDATION in the presence of vary headers.
-TEST_F(HttpCacheTest, SimpleGET_LoadPreferringCache_VaryMatch) {
+TEST_F(HttpCacheSimpleGetTest, LoadPreferringCacheVaryMatch) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -1680,7 +1681,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadPreferringCache_VaryMatch) {
 }
 
 // Tests LOAD_SKIP_CACHE_VALIDATION in the presence of vary headers.
-TEST_F(HttpCacheTest, SimpleGET_LoadPreferringCache_VaryMismatch) {
+TEST_F(HttpCacheSimpleGetTest, LoadPreferringCacheVaryMismatch) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -1707,7 +1708,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadPreferringCache_VaryMismatch) {
 }
 
 // Tests that we honor Vary: * with LOAD_SKIP_CACHE_VALIDATION (crbug/778681)
-TEST_F(HttpCacheTest, SimpleGET_LoadSkipCacheValidation_VaryStar) {
+TEST_F(HttpCacheSimpleGetTest, LoadSkipCacheValidationVaryStar) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -1732,7 +1733,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadSkipCacheValidation_VaryStar) {
 
 // Tests that was_cached was set properly on a failure, even if the cached
 // response wasn't returned.
-TEST_F(HttpCacheTest, SimpleGET_CacheSignal_Failure) {
+TEST_F(HttpCacheSimpleGetTest, CacheSignalFailure) {
   for (bool use_memory_entry_data : {false, true}) {
     MockHttpCache cache;
     cache.disk_cache()->set_support_in_memory_entry_data(use_memory_entry_data);
@@ -1807,7 +1808,7 @@ TEST_F(HttpCacheTest, RecordHistogramsCantConditionalize) {
 }
 
 // Confirm if we have an empty cache, a read is marked as network verified.
-TEST_F(HttpCacheTest, SimpleGET_NetworkAccessed_Network) {
+TEST_F(HttpCacheSimpleGetTest, NetworkAccessedNetwork) {
   MockHttpCache cache;
 
   // write to the cache
@@ -1825,7 +1826,7 @@ TEST_F(HttpCacheTest, SimpleGET_NetworkAccessed_Network) {
 
 // Confirm if we have a fresh entry in cache, it isn't marked as
 // network verified.
-TEST_F(HttpCacheTest, SimpleGET_NetworkAccessed_Cache) {
+TEST_F(HttpCacheSimpleGetTest, NetworkAccessedCache) {
   MockHttpCache cache;
 
   // Prime cache.
@@ -1845,7 +1846,7 @@ TEST_F(HttpCacheTest, SimpleGET_NetworkAccessed_Cache) {
   EXPECT_EQ(CacheEntryStatus::ENTRY_USED, response_info.cache_entry_status);
 }
 
-TEST_F(HttpCacheTest, SimpleGET_LoadBypassCache) {
+TEST_F(HttpCacheSimpleGetTest, LoadBypassCache) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -1890,7 +1891,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadBypassCache) {
   TestLoadTimingNetworkRequest(load_timing_info);
 }
 
-TEST_F(HttpCacheTest, SimpleGET_LoadBypassCache_Implicit) {
+TEST_F(HttpCacheSimpleGetTest, LoadBypassCacheImplicit) {
   MockHttpCache cache;
 
   // write to the cache
@@ -1907,7 +1908,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadBypassCache_Implicit) {
   EXPECT_EQ(2, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, SimpleGET_LoadBypassCache_Implicit2) {
+TEST_F(HttpCacheSimpleGetTest, LoadBypassCacheImplicit2) {
   MockHttpCache cache;
 
   // write to the cache
@@ -1924,7 +1925,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadBypassCache_Implicit2) {
   EXPECT_EQ(2, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, SimpleGET_LoadValidateCache) {
+TEST_F(HttpCacheSimpleGetTest, LoadValidateCache) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -1950,7 +1951,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadValidateCache) {
   TestLoadTimingNetworkRequest(load_timing_info);
 }
 
-TEST_F(HttpCacheTest, SimpleGET_LoadValidateCache_Implicit) {
+TEST_F(HttpCacheSimpleGetTest, LoadValidateCacheImplicit) {
   MockHttpCache cache;
 
   // write to the cache
@@ -1972,7 +1973,7 @@ TEST_F(HttpCacheTest, SimpleGET_LoadValidateCache_Implicit) {
 
 // Tests that |unused_since_prefetch| is updated accordingly (e.g. it is set to
 // true after a prefetch and set back to false when the prefetch is used).
-TEST_F(HttpCacheTest, SimpleGET_UnusedSincePrefetch) {
+TEST_F(HttpCacheSimpleGetTest, UnusedSincePrefetch) {
   MockHttpCache cache;
   HttpResponseInfo response_info;
 
@@ -2019,7 +2020,7 @@ TEST_F(HttpCacheTest, SimpleGET_UnusedSincePrefetch) {
 // flag set. Also tests that responses with |restricted_prefetch| flag set can
 // only be used by requests that have the
 // LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME load flag.
-TEST_F(HttpCacheTest, SimpleGET_RestrictedPrefetchIsRestrictedUntilReuse) {
+TEST_F(HttpCacheSimpleGetTest, RestrictedPrefetchIsRestrictedUntilReuse) {
   MockHttpCache cache;
   HttpResponseInfo response_info;
 
@@ -2065,7 +2066,7 @@ TEST_F(HttpCacheTest, SimpleGET_RestrictedPrefetchIsRestrictedUntilReuse) {
   EXPECT_FALSE(response_info.network_accessed);
 }
 
-TEST_F(HttpCacheTest, SimpleGET_RestrictedPrefetchReuseIsLimited) {
+TEST_F(HttpCacheSimpleGetTest, RestrictedPrefetchReuseIsLimited) {
   MockHttpCache cache;
   HttpResponseInfo response_info;
 
@@ -2101,7 +2102,7 @@ TEST_F(HttpCacheTest, SimpleGET_RestrictedPrefetchReuseIsLimited) {
   EXPECT_FALSE(response_info.network_accessed);
 }
 
-TEST_F(HttpCacheTest, SimpleGET_UnusedSincePrefetchWriteError) {
+TEST_F(HttpCacheSimpleGetTest, UnusedSincePrefetchWriteError) {
   MockHttpCache cache;
   HttpResponseInfo response_info;
 
@@ -2284,7 +2285,7 @@ static const auto kPreserveRequestHeaders =
     });
 
 // Tests that we don't remove extra headers for simple requests.
-TEST_F(HttpCacheTest, SimpleGET_PreserveRequestHeaders) {
+TEST_F(HttpCacheSimpleGetTest, PreserveRequestHeaders) {
   for (bool use_memory_entry_data : {false, true}) {
     MockHttpCache cache;
     cache.disk_cache()->set_support_in_memory_entry_data(use_memory_entry_data);
@@ -2313,7 +2314,7 @@ TEST_F(HttpCacheTest, SimpleGET_PreserveRequestHeaders) {
 }
 
 // Tests that we don't remove extra headers for conditionalized requests.
-TEST_F(HttpCacheTest, ConditionalizedGET_PreserveRequestHeaders) {
+TEST_F(HttpCacheTest, ConditionalizedGetPreserveRequestHeaders) {
   for (bool use_memory_entry_data : {false, true}) {
     MockHttpCache cache;
     // Unlike in SimpleGET_PreserveRequestHeaders, this entry can be
@@ -2335,7 +2336,7 @@ TEST_F(HttpCacheTest, ConditionalizedGET_PreserveRequestHeaders) {
   }
 }
 
-TEST_F(HttpCacheTest, SimpleGET_ManyReaders) {
+TEST_F(HttpCacheSimpleGetTest, ManyReaders) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -2398,7 +2399,9 @@ TEST_F(HttpCacheTest, SimpleGET_ManyReaders) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, RangeGET_FullAfterPartial) {
+using HttpCacheRangeGetTest = HttpCacheTest;
+
+TEST_F(HttpCacheRangeGetTest, FullAfterPartial) {
   MockHttpCache cache;
 
   // Request a prefix.
@@ -2445,7 +2448,7 @@ TEST_F(HttpCacheTest, RangeGET_FullAfterPartial) {
 // Tests that when a range request transaction becomes a writer for the first
 // range and then fails conditionalization for the next range and decides to
 // doom the entry, then there should not be a dcheck assertion hit.
-TEST_F(HttpCacheTest, RangeGET_OverlappingRangesCouldntConditionalize) {
+TEST_F(HttpCacheRangeGetTest, OverlappingRangesCouldntConditionalize) {
   MockHttpCache cache;
 
   {
@@ -2486,7 +2489,7 @@ TEST_F(HttpCacheTest, RangeGET_OverlappingRangesCouldntConditionalize) {
   }
 }
 
-TEST_F(HttpCacheTest, RangeGET_FullAfterPartialReuse) {
+TEST_F(HttpCacheRangeGetTest, FullAfterPartialReuse) {
   MockHttpCache cache;
 
   // Request a prefix.
@@ -2552,7 +2555,7 @@ TEST_F(HttpCacheTest, RangeGET_FullAfterPartialReuse) {
 // This test verifies that the ConnectedCallback passed to a cache transaction
 // is called once per subrange in the case of a range request with a partial
 // cache hit.
-TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackCalledForEachRange) {
+TEST_F(HttpCacheRangeGetTest, ConnectedCallbackCalledForEachRange) {
   MockHttpCache cache;
 
   // Request an infix range and populate the cache with it.
@@ -2614,7 +2617,7 @@ TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackCalledForEachRange) {
 // This test verifies that when the ConnectedCallback passed to a cache range
 // transaction returns an `ERR_INCONSISTENT_IP_ADDRESS_SPACE` error during a
 // partial read from cache, then the cache entry is invalidated.
-TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackReturnInconsistentIpError) {
+TEST_F(HttpCacheRangeGetTest, ConnectedCallbackReturnInconsistentIpError) {
   MockHttpCache cache;
 
   // Request an infix range and populate the cache with it.
@@ -2705,8 +2708,8 @@ TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackReturnInconsistentIpError) {
 // This test verifies that when the ConnectedCallback passed to a cache range
 // transaction returns an `ERR_INCONSISTENT_IP_ADDRESS_SPACE` error during a
 // network transaction, then the cache entry is invalidated.
-TEST_F(HttpCacheTest,
-       RangeGET_ConnectedCallbackReturnInconsistentIpErrorForNetwork) {
+TEST_F(HttpCacheRangeGetTest,
+       ConnectedCallbackReturnInconsistentIpErrorForNetwork) {
   MockHttpCache cache;
 
   // Request a prefix range and populate the cache with it.
@@ -2793,7 +2796,7 @@ TEST_F(HttpCacheTest,
 // transaction returns an error for the second (or third) subrange transaction,
 // the overall cache transaction fails with that error. The cache entry is still
 // usable after that.
-TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackReturnErrorSecondTime) {
+TEST_F(HttpCacheRangeGetTest, ConnectedCallbackReturnErrorSecondTime) {
   MockHttpCache cache;
 
   // Request an infix range and populate the cache with it.
@@ -2889,7 +2892,7 @@ TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackReturnErrorSecondTime) {
 // This test verifies that the ConnectedCallback passed to a cache transaction
 // is called once per subrange in the case of a range request with a partial
 // cache hit, even when a prefix of the range is cached.
-TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackCalledForEachRangeWithPrefix) {
+TEST_F(HttpCacheRangeGetTest, ConnectedCallbackCalledForEachRangeWithPrefix) {
   MockHttpCache cache;
 
   // Request a prefix range and populate the cache with it.
@@ -2941,7 +2944,7 @@ TEST_F(HttpCacheTest, RangeGET_ConnectedCallbackCalledForEachRangeWithPrefix) {
 
 // Tests that a range transaction is still usable even if it's unable to access
 // the cache.
-TEST_F(HttpCacheTest, RangeGET_FailedCacheAccess) {
+TEST_F(HttpCacheRangeGetTest, FailedCacheAccess) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -2975,7 +2978,7 @@ TEST_F(HttpCacheTest, RangeGET_FailedCacheAccess) {
 }
 
 // Tests that we can have parallel validation on range requests.
-TEST_F(HttpCacheTest, RangeGET_ParallelValidationNoMatch) {
+TEST_F(HttpCacheRangeGetTest, ParallelValidationNoMatch) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -3039,7 +3042,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationNoMatch) {
 // Tests that if a transaction is dooming the entry and the entry was doomed by
 // another transaction that was not part of the entry and created a new entry,
 // the new entry should not be incorrectly doomed. (crbug.com/736993)
-TEST_F(HttpCacheTest, RangeGET_ParallelValidationNoMatchDoomEntry) {
+TEST_F(HttpCacheRangeGetTest, ParallelValidationNoMatchDoomEntry) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -3126,7 +3129,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationNoMatchDoomEntry) {
 
 // Same as above but tests that the 2nd transaction does not do anything if
 // there is nothing to doom. (crbug.com/736993)
-TEST_F(HttpCacheTest, RangeGET_ParallelValidationNoMatchDoomEntry1) {
+TEST_F(HttpCacheRangeGetTest, ParallelValidationNoMatchDoomEntry1) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -3214,7 +3217,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationNoMatchDoomEntry1) {
 }
 
 // Tests parallel validation on range requests with non-overlapping ranges.
-TEST_F(HttpCacheTest, RangeGET_ParallelValidationDifferentRanges) {
+TEST_F(HttpCacheRangeGetTest, ParallelValidationDifferentRanges) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -3317,7 +3320,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationDifferentRanges) {
 }
 
 // Tests that a request does not create Writers when readers is not empty.
-TEST_F(HttpCacheTest, RangeGET_DoNotCreateWritersWhenReaderExists) {
+TEST_F(HttpCacheRangeGetTest, DoNotCreateWritersWhenReaderExists) {
   MockHttpCache cache;
 
   // Save a request in the cache so that the next request can become a
@@ -3357,7 +3360,7 @@ TEST_F(HttpCacheTest, RangeGET_DoNotCreateWritersWhenReaderExists) {
 
 // Tests parallel validation on range requests can be successfully restarted
 // when there is a cache lock timeout.
-TEST_F(HttpCacheTest, RangeGET_ParallelValidationCacheLockTimeout) {
+TEST_F(HttpCacheRangeGetTest, ParallelValidationCacheLockTimeout) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -3446,7 +3449,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationCacheLockTimeout) {
 // Tests a full request and a simultaneous range request and the range request
 // dooms the entry created by the full request due to not being able to
 // conditionalize.
-TEST_F(HttpCacheTest, RangeGET_ParallelValidationCouldntConditionalize) {
+TEST_F(HttpCacheRangeGetTest, ParallelValidationCouldntConditionalize) {
   MockHttpCache cache;
 
   MockTransaction mock_transaction(kSimpleGET_Transaction);
@@ -3531,7 +3534,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationCouldntConditionalize) {
 
 // Tests a 200 request and a simultaneous range request where conditionalization
 // is possible.
-TEST_F(HttpCacheTest, RangeGET_ParallelValidationCouldConditionalize) {
+TEST_F(HttpCacheRangeGetTest, ParallelValidationCouldConditionalize) {
   MockHttpCache cache;
 
   MockTransaction mock_transaction(kSimpleGET_Transaction);
@@ -3614,7 +3617,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationCouldConditionalize) {
 }
 
 // Tests parallel validation on range requests with overlapping ranges.
-TEST_F(HttpCacheTest, RangeGET_ParallelValidationOverlappingRanges) {
+TEST_F(HttpCacheRangeGetTest, ParallelValidationOverlappingRanges) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -3717,7 +3720,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationOverlappingRanges) {
 
 // Tests parallel validation on range requests with overlapping ranges and the
 // impact of deleting the writer on transactions that have validated.
-TEST_F(HttpCacheTest, RangeGET_ParallelValidationRestartDoneHeaders) {
+TEST_F(HttpCacheRangeGetTest, ParallelValidationRestartDoneHeaders) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -3814,7 +3817,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationRestartDoneHeaders) {
 }
 
 // A test of doing a range request to a cached 301 response
-TEST_F(HttpCacheTest, RangeGET_CachedRedirect) {
+TEST_F(HttpCacheRangeGetTest, CachedRedirect) {
   RangeTransactionServer handler;
   handler.set_redirect(true);
 
@@ -3917,7 +3920,7 @@ TEST_F(HttpCacheTest, RangeGET_CachedRedirect) {
 // A transaction that fails to validate an entry, while attempting to write
 // the response, should still get data to its consumer even if the attempt to
 // create a new entry fails.
-TEST_F(HttpCacheTest, SimpleGET_ValidationFailureWithCreateFailure) {
+TEST_F(HttpCacheSimpleGetTest, ValidationFailureWithCreateFailure) {
   MockHttpCache cache;
   MockHttpRequest request(kSimpleGET_Transaction);
   request.load_flags |= LOAD_VALIDATE_CACHE;
@@ -3979,7 +3982,7 @@ TEST_F(HttpCacheTest, SimpleGET_ValidationFailureWithCreateFailure) {
 }
 
 // Parallel validation results in 200.
-TEST_F(HttpCacheTest, SimpleGET_ParallelValidationNoMatch) {
+TEST_F(HttpCacheSimpleGetTest, ParallelValidationNoMatch) {
   MockHttpCache cache;
   MockHttpRequest request(kSimpleGET_Transaction);
   request.load_flags |= LOAD_VALIDATE_CACHE;
@@ -4030,7 +4033,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationNoMatch) {
   EXPECT_EQ(5, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, RangeGET_Enormous) {
+TEST_F(HttpCacheRangeGetTest, Enormous) {
   // Test for how blockfile's limit on range namespace interacts with
   // HttpCache::Transaction.
   // See https://crbug.com/770694
@@ -4099,7 +4102,7 @@ TEST_F(HttpCacheTest, RangeGET_Enormous) {
 
 // Parallel validation results in 200 for 1 transaction and validation matches
 // for subsequent transactions.
-TEST_F(HttpCacheTest, SimpleGET_ParallelValidationNoMatch1) {
+TEST_F(HttpCacheSimpleGetTest, ParallelValidationNoMatch1) {
   MockHttpCache cache;
   MockHttpRequest request(kSimpleGET_Transaction);
 
@@ -4162,7 +4165,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationNoMatch1) {
 
 // Tests that a GET followed by a DELETE results in DELETE immediately starting
 // the headers phase and the entry is doomed.
-TEST_F(HttpCacheTest, SimpleGET_ParallelValidationDelete) {
+TEST_F(HttpCacheSimpleGetTest, ParallelValidationDelete) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -4228,7 +4231,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationDelete) {
 
 // Tests that a transaction which is in validated queue can be destroyed without
 // any impact to other transactions.
-TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelValidated) {
+TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelValidated) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -4283,7 +4286,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelValidated) {
 
 // Tests that an idle writer transaction can be deleted without impacting the
 // existing writers.
-TEST_F(HttpCacheTest, SimpleGET_ParallelWritingCancelIdleTransaction) {
+TEST_F(HttpCacheSimpleGetTest, ParallelWritingCancelIdleTransaction) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -4332,7 +4335,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingCancelIdleTransaction) {
 
 // Tests that a transaction which is in validated queue can timeout and start
 // the headers phase again.
-TEST_F(HttpCacheTest, SimpleGET_ParallelValidationValidatedTimeout) {
+TEST_F(HttpCacheSimpleGetTest, ParallelValidationValidatedTimeout) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -4387,7 +4390,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationValidatedTimeout) {
 
 // Tests that a transaction which is in readers can be destroyed without
 // any impact to other transactions.
-TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelReader) {
+TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelReader) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -4484,7 +4487,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelReader) {
 
 // Tests that when the only writer goes away, it immediately cleans up rather
 // than wait for the network request to finish. See https://crbug.com/804868.
-TEST_F(HttpCacheTest, SimpleGET_HangingCacheWriteCleanup) {
+TEST_F(HttpCacheSimpleGetTest, HangingCacheWriteCleanup) {
   MockHttpCache mock_cache;
   MockHttpRequest request(kSimpleGET_Transaction);
 
@@ -4527,7 +4530,7 @@ TEST_F(HttpCacheTest, SimpleGET_HangingCacheWriteCleanup) {
 // Tests that a transaction writer can be destroyed mid-read.
 // A waiting for read transaction should be able to read the data that was
 // driven by the Read started by the cancelled writer.
-TEST_F(HttpCacheTest, SimpleGET_ParallelWritingCancelWriter) {
+TEST_F(HttpCacheSimpleGetTest, ParallelWritingCancelWriter) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -4617,7 +4620,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingCancelWriter) {
 
 // Tests the case when network read failure happens. Idle and waiting
 // transactions should fail and headers transaction should be restarted.
-TEST_F(HttpCacheTest, SimpleGET_ParallelWritingNetworkReadFailed) {
+TEST_F(HttpCacheSimpleGetTest, ParallelWritingNetworkReadFailed) {
   MockHttpCache cache;
 
   ScopedMockTransaction fail_transaction(kSimpleGET_Transaction);
@@ -4698,7 +4701,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingNetworkReadFailed) {
 
 // Tests the case when cache write failure happens. Idle and waiting
 // transactions should fail and headers transaction should be restarted.
-TEST_F(HttpCacheTest, SimpleGET_ParallelWritingCacheWriteFailed) {
+TEST_F(HttpCacheSimpleGetTest, ParallelWritingCacheWriteFailed) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -4788,6 +4791,8 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingCacheWriteFailed) {
                                     kSimpleGET_Transaction);
 }
 
+using HttpCacheSimplePostTest = HttpCacheTest;
+
 // Tests that POST requests do not join existing transactions for parallel
 // writing to the cache. Note that two POSTs only map to the same entry if their
 // upload data identifier is same and that should happen for back-forward case
@@ -4796,7 +4801,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingCacheWriteFailed) {
 // TODO(shivanisha) Testing this because it is allowed by the code but looks
 // like the code should disallow two POSTs without LOAD_ONLY_FROM_CACHE with the
 // same upload data identifier to map to the same entry.
-TEST_F(HttpCacheTest, SimplePOST_ParallelWritingDisallowed) {
+TEST_F(HttpCacheSimplePostTest, ParallelWritingDisallowed) {
   MockHttpCache cache;
 
   MockTransaction transaction(kSimplePOST_Transaction);
@@ -4857,7 +4862,7 @@ TEST_F(HttpCacheTest, SimplePOST_ParallelWritingDisallowed) {
 
 // Tests the case when parallel writing succeeds. Tests both idle and waiting
 // transactions.
-TEST_F(HttpCacheTest, SimpleGET_ParallelWritingSuccess) {
+TEST_F(HttpCacheSimpleGetTest, ParallelWritingSuccess) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -4941,7 +4946,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingSuccess) {
 
 // Tests the case when parallel writing involves things bigger than what cache
 // can store. In this case, the best we can do is re-fetch it.
-TEST_F(HttpCacheTest, SimpleGET_ParallelWritingHuge) {
+TEST_F(HttpCacheSimpleGetTest, ParallelWritingHuge) {
   MockHttpCache cache;
   cache.disk_cache()->set_max_file_size(10);
 
@@ -5012,7 +5017,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingHuge) {
 // transaction that created the network transaction becomes a reader. Also
 // verifies that the network bytes are only attributed to the transaction that
 // created the network transaction.
-TEST_F(HttpCacheTest, SimpleGET_ParallelWritingVerifyNetworkBytes) {
+TEST_F(HttpCacheSimpleGetTest, ParallelWritingVerifyNetworkBytes) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5065,7 +5070,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingVerifyNetworkBytes) {
 }
 
 // Tests than extra Read from the consumer should not hang/crash the browser.
-TEST_F(HttpCacheTest, SimpleGET_ExtraRead) {
+TEST_F(HttpCacheSimpleGetTest, ExtraRead) {
   MockHttpCache cache;
   MockHttpRequest request(kSimpleGET_Transaction);
   Context c;
@@ -5097,7 +5102,7 @@ TEST_F(HttpCacheTest, SimpleGET_ExtraRead) {
 
 // Tests when a writer is destroyed mid-read, all the other writer transactions
 // can continue writing to the entry.
-TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelWriter) {
+TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelWriter) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -5162,7 +5167,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelWriter) {
 
 // Tests that when StopCaching is invoked on a writer, dependent transactions
 // are restarted.
-TEST_F(HttpCacheTest, SimpleGET_ParallelValidationStopCaching) {
+TEST_F(HttpCacheSimpleGetTest, ParallelValidationStopCaching) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5217,7 +5222,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationStopCaching) {
 
 // Tests that when StopCaching is invoked on a writer transaction, it is a
 // no-op if there are other writer transactions.
-TEST_F(HttpCacheTest, SimpleGET_ParallelWritersStopCachingNoOp) {
+TEST_F(HttpCacheSimpleGetTest, ParallelWritersStopCachingNoOp) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5284,7 +5289,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritersStopCachingNoOp) {
 
 // Tests that a transaction is currently in headers phase and is destroyed
 // leading to destroying the entry.
-TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelHeaders) {
+TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelHeaders) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5337,7 +5342,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelHeaders) {
 
 // Similar to the above test, except here cache write fails and the
 // validated transactions should be restarted.
-TEST_F(HttpCacheTest, SimpleGET_ParallelWritersFailWrite) {
+TEST_F(HttpCacheSimpleGetTest, ParallelWritersFailWrite) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5414,7 +5419,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritersFailWrite) {
 // If cancelling a request is racing with another request for the same resource
 // finishing, we have to make sure that we remove both transactions from the
 // entry.
-TEST_F(HttpCacheTest, SimpleGET_RacingReaders) {
+TEST_F(HttpCacheSimpleGetTest, RacingReaders) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5497,7 +5502,7 @@ TEST_F(HttpCacheTest, SimpleGET_RacingReaders) {
 // Tests that we can doom an entry with pending transactions and delete one of
 // the pending transactions before the first one completes.
 // See http://code.google.com/p/chromium/issues/detail?id=25588
-TEST_F(HttpCacheTest, SimpleGET_DoomWithPending) {
+TEST_F(HttpCacheSimpleGetTest, DoomWithPending) {
   // We need simultaneous doomed / not_doomed entries so let's use a real cache.
   MockHttpCache cache(HttpCache::DefaultBackend::InMemory(1024 * 1024));
 
@@ -5620,7 +5625,7 @@ TEST_F(HttpCacheTest, DoomDoesNotSetHints) {
 // This is a test for http://code.google.com/p/chromium/issues/detail?id=4731.
 // We may attempt to delete an entry synchronously with the act of adding a new
 // transaction to said entry.
-TEST_F(HttpCacheTest, FastNoStoreGET_DoneWithPending) {
+TEST_F(HttpCacheTest, FastNoStoreGetDoneWithPending) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kFastNoStoreGET_Transaction);
@@ -5670,7 +5675,7 @@ TEST_F(HttpCacheTest, FastNoStoreGET_DoneWithPending) {
   EXPECT_EQ(3, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, SimpleGET_ManyWriters_CancelFirst) {
+TEST_F(HttpCacheSimpleGetTest, ManyWritersCancelFirst) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5727,7 +5732,7 @@ TEST_F(HttpCacheTest, SimpleGET_ManyWriters_CancelFirst) {
 
 // Tests that we can cancel requests that are queued waiting to open the disk
 // cache entry.
-TEST_F(HttpCacheTest, SimpleGET_ManyWriters_CancelCreate) {
+TEST_F(HttpCacheSimpleGetTest, ManyWritersCancelCreate) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5777,7 +5782,7 @@ TEST_F(HttpCacheTest, SimpleGET_ManyWriters_CancelCreate) {
 }
 
 // Tests that we can cancel a single request to open a disk cache entry.
-TEST_F(HttpCacheTest, SimpleGET_CancelCreate) {
+TEST_F(HttpCacheSimpleGetTest, CancelCreate) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5801,7 +5806,7 @@ TEST_F(HttpCacheTest, SimpleGET_CancelCreate) {
 }
 
 // Tests that we delete/create entries even if multiple requests are queued.
-TEST_F(HttpCacheTest, SimpleGET_ManyWriters_BypassCache) {
+TEST_F(HttpCacheSimpleGetTest, ManyWritersBypassCache) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -5844,7 +5849,7 @@ TEST_F(HttpCacheTest, SimpleGET_ManyWriters_BypassCache) {
 
 // Tests that a (simulated) timeout allows transactions waiting on the cache
 // lock to continue.
-TEST_F(HttpCacheTest, SimpleGET_WriterTimeout) {
+TEST_F(HttpCacheSimpleGetTest, WriterTimeout) {
   MockHttpCache cache;
   cache.SimulateCacheLockTimeout();
 
@@ -5869,7 +5874,7 @@ TEST_F(HttpCacheTest, SimpleGET_WriterTimeout) {
 
 // Tests that a (simulated) timeout allows transactions waiting on the cache
 // lock to continue but read only transactions to error out.
-TEST_F(HttpCacheTest, SimpleGET_WriterTimeoutReadOnlyError) {
+TEST_F(HttpCacheSimpleGetTest, WriterTimeoutReadOnlyError) {
   MockHttpCache cache;
 
   // Simulate timeout.
@@ -5895,7 +5900,7 @@ TEST_F(HttpCacheTest, SimpleGET_WriterTimeoutReadOnlyError) {
   ReadAndVerifyTransaction(c1.trans.get(), kSimpleGET_Transaction);
 }
 
-TEST_F(HttpCacheTest, SimpleGET_AbandonedCacheRead) {
+TEST_F(HttpCacheSimpleGetTest, AbandonedCacheRead) {
   MockHttpCache cache;
 
   // write to the cache
@@ -5927,7 +5932,7 @@ TEST_F(HttpCacheTest, SimpleGET_AbandonedCacheRead) {
 
 // Tests that we can delete the HttpCache and deal with queued transactions
 // ("waiting for the backend" as opposed to Active or Doomed entries).
-TEST_F(HttpCacheTest, SimpleGET_ManyWriters_DeleteCache) {
+TEST_F(HttpCacheSimpleGetTest, ManyWritersDeleteCache) {
   auto cache = std::make_unique<MockHttpCache>(
       std::make_unique<MockBackendNoCbFactory>());
 
@@ -5958,7 +5963,7 @@ TEST_F(HttpCacheTest, SimpleGET_ManyWriters_DeleteCache) {
 }
 
 // Tests that we queue requests when initializing the backend.
-TEST_F(HttpCacheTest, SimpleGET_WaitForBackend) {
+TEST_F(HttpCacheSimpleGetTest, WaitForBackend) {
   auto factory = std::make_unique<MockBlockingBackendFactory>();
   MockBlockingBackendFactory* factory_ptr = factory.get();
   MockHttpCache cache(std::move(factory));
@@ -6005,7 +6010,7 @@ TEST_F(HttpCacheTest, SimpleGET_WaitForBackend) {
 
 // Tests that we can cancel requests that are queued waiting for the backend
 // to be initialized.
-TEST_F(HttpCacheTest, SimpleGET_WaitForBackend_CancelCreate) {
+TEST_F(HttpCacheSimpleGetTest, WaitForBackend_CancelCreate) {
   auto factory = std::make_unique<MockBlockingBackendFactory>();
   MockBlockingBackendFactory* factory_ptr = factory.get();
   MockHttpCache cache(std::move(factory));
@@ -6129,7 +6134,7 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
   EXPECT_FALSE(cb2.have_result());
 }
 
-TEST_F(HttpCacheTest, TypicalGET_ConditionalRequest) {
+TEST_F(HttpCacheTest, TypicalGetConditionalRequest) {
   MockHttpCache cache;
 
   // write to the cache
@@ -6164,7 +6169,9 @@ static const auto kETagGetConditionalRequestHandler =
       response_data->clear();
     });
 
-TEST_F(HttpCacheTest, ETagGET_ConditionalRequest_304) {
+using HttpCacheETagGetTest = HttpCacheTest;
+
+TEST_F(HttpCacheETagGetTest, ConditionalRequest304) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kETagGET_Transaction);
@@ -6233,8 +6240,10 @@ class RevalidationServer {
   bool last_modified_used_ = false;
 };
 
+using HttpCacheGetTest = HttpCacheTest;
+
 // Tests revalidation after a vary match.
-TEST_F(HttpCacheTest, GET_ValidateCache_VaryMatch) {
+TEST_F(HttpCacheGetTest, ValidateCacheVaryMatch) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -6265,7 +6274,7 @@ TEST_F(HttpCacheTest, GET_ValidateCache_VaryMatch) {
 }
 
 // Tests revalidation after a vary mismatch if etag is present.
-TEST_F(HttpCacheTest, GET_ValidateCache_VaryMismatch) {
+TEST_F(HttpCacheGetTest, ValidateCacheVaryMismatch) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -6297,7 +6306,7 @@ TEST_F(HttpCacheTest, GET_ValidateCache_VaryMismatch) {
 }
 
 // Tests revalidation after a vary mismatch due to vary: * if etag is present.
-TEST_F(HttpCacheTest, GET_ValidateCache_VaryMismatchStar) {
+TEST_F(HttpCacheGetTest, ValidateCacheVaryMismatchStar) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -6327,7 +6336,7 @@ TEST_F(HttpCacheTest, GET_ValidateCache_VaryMismatchStar) {
 }
 
 // Tests lack of revalidation after a vary mismatch and no etag.
-TEST_F(HttpCacheTest, GET_DontValidateCache_VaryMismatch) {
+TEST_F(HttpCacheGetTest, DontValidateCacheVaryMismatch) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -6358,7 +6367,7 @@ TEST_F(HttpCacheTest, GET_DontValidateCache_VaryMismatch) {
 }
 
 // Tests that a new vary header provided when revalidating an entry is saved.
-TEST_F(HttpCacheTest, GET_ValidateCache_VaryMatch_UpdateVary) {
+TEST_F(HttpCacheGetTest, ValidateCacheVaryMatchUpdateVary) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -6397,7 +6406,7 @@ TEST_F(HttpCacheTest, GET_ValidateCache_VaryMatch_UpdateVary) {
 
 // Tests that new request headers causing a vary mismatch are paired with the
 // new response when the server says the old response can be used.
-TEST_F(HttpCacheTest, GET_ValidateCache_VaryMismatch_UpdateRequestHeader) {
+TEST_F(HttpCacheGetTest, ValidateCacheVaryMismatchUpdateRequestHeader) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -6432,7 +6441,7 @@ TEST_F(HttpCacheTest, GET_ValidateCache_VaryMismatch_UpdateRequestHeader) {
 
 // Tests that a 304 without vary headers doesn't delete the previously stored
 // vary data after a vary match revalidation.
-TEST_F(HttpCacheTest, GET_ValidateCache_VaryMatch_DontDeleteVary) {
+TEST_F(HttpCacheGetTest, ValidateCacheVaryMatchDontDeleteVary) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -6469,7 +6478,7 @@ TEST_F(HttpCacheTest, GET_ValidateCache_VaryMatch_DontDeleteVary) {
 
 // Tests that a 304 without vary headers doesn't delete the previously stored
 // vary data after a vary mismatch.
-TEST_F(HttpCacheTest, GET_ValidateCache_VaryMismatch_DontDeleteVary) {
+TEST_F(HttpCacheGetTest, ValidateCacheVaryMismatchDontDeleteVary) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -6513,7 +6522,7 @@ static void ETagGet_UnconditionalRequest_Handler(const HttpRequestInfo* request,
       request->extra_headers.HasHeader(HttpRequestHeaders::kIfNoneMatch));
 }
 
-TEST_F(HttpCacheTest, ETagGET_Http10) {
+TEST_F(HttpCacheETagGetTest, Http10) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kETagGET_Transaction);
@@ -6537,7 +6546,7 @@ TEST_F(HttpCacheTest, ETagGET_Http10) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, ETagGET_Http10_Range) {
+TEST_F(HttpCacheETagGetTest, Http10Range) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kETagGET_Transaction);
@@ -6574,7 +6583,7 @@ static void ETagGet_ConditionalRequest_NoStore_Handler(
   response_data->clear();
 }
 
-TEST_F(HttpCacheTest, ETagGET_ConditionalRequest_304_NoStore) {
+TEST_F(HttpCacheETagGetTest, ConditionalRequest304NoStore) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kETagGET_Transaction);
@@ -7035,7 +7044,7 @@ TEST_F(HttpCacheTest, UrlContainingHash) {
 
 // Tests that we skip the cache for POST requests that do not have an upload
 // identifier.
-TEST_F(HttpCacheTest, SimplePOST_SkipsCache) {
+TEST_F(HttpCacheSimplePostTest, SkipsCache) {
   MockHttpCache cache;
 
   RunTransactionTest(cache.http_cache(), kSimplePOST_Transaction);
@@ -7046,7 +7055,7 @@ TEST_F(HttpCacheTest, SimplePOST_SkipsCache) {
 }
 
 // Tests POST handling with a disabled cache (no DCHECK).
-TEST_F(HttpCacheTest, SimplePOST_DisabledCache) {
+TEST_F(HttpCacheSimplePostTest, DisabledCache) {
   MockHttpCache cache;
   cache.http_cache()->set_mode(HttpCache::Mode::DISABLE);
 
@@ -7057,7 +7066,7 @@ TEST_F(HttpCacheTest, SimplePOST_DisabledCache) {
   EXPECT_EQ(0, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, SimplePOST_LoadOnlyFromCache_Miss) {
+TEST_F(HttpCacheSimplePostTest, LoadOnlyFromCacheMiss) {
   MockHttpCache cache;
 
   MockTransaction transaction(kSimplePOST_Transaction);
@@ -7080,7 +7089,9 @@ TEST_F(HttpCacheTest, SimplePOST_LoadOnlyFromCache_Miss) {
   EXPECT_EQ(0, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, SimplePOST_LoadOnlyFromCache_Hit) {
+using HttpCacheSimplePostTest = HttpCacheTest;
+
+TEST_F(HttpCacheSimplePostTest, LoadOnlyFromCacheHit) {
   MockHttpCache cache;
 
   // Test that we hit the cache for POST requests.
@@ -7116,7 +7127,7 @@ TEST_F(HttpCacheTest, SimplePOST_LoadOnlyFromCache_Hit) {
 }
 
 // Test that we don't hit the cache for POST requests if there is a byte range.
-TEST_F(HttpCacheTest, SimplePOST_WithRanges) {
+TEST_F(HttpCacheSimplePostTest, WithRanges) {
   MockHttpCache cache;
 
   MockTransaction transaction(kSimplePOST_Transaction);
@@ -7143,7 +7154,7 @@ TEST_F(HttpCacheTest, SimplePOST_WithRanges) {
 }
 
 // Tests that a POST is cached separately from a GET.
-TEST_F(HttpCacheTest, SimplePOST_SeparateCache) {
+TEST_F(HttpCacheSimplePostTest, SeparateCache) {
   MockHttpCache cache;
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
@@ -7172,7 +7183,7 @@ TEST_F(HttpCacheTest, SimplePOST_SeparateCache) {
 }
 
 // Tests that a successful POST invalidates a previously cached GET.
-TEST_F(HttpCacheTest, SimplePOST_Invalidate_205) {
+TEST_F(HttpCacheSimplePostTest, Invalidate205) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -7211,7 +7222,7 @@ TEST_F(HttpCacheTest, SimplePOST_Invalidate_205) {
 // Tests that a successful POST invalidates a previously cached GET,
 // with cache split by top-frame origin.
 TEST_F(HttpCacheTestSplitCacheFeatureEnabled,
-       SimplePOST_Invalidate_205_SplitCache) {
+       SimplePostInvalidate205SplitCache) {
   SchemefulSite site_a(GURL("http://a.com"));
   SchemefulSite site_b(GURL("http://b.com"));
 
@@ -7274,7 +7285,7 @@ TEST_F(HttpCacheTestSplitCacheFeatureEnabled,
 
 // Tests that a successful POST invalidates a previously cached GET, even when
 // there is no upload identifier.
-TEST_F(HttpCacheTest, SimplePOST_NoUploadId_Invalidate_205) {
+TEST_F(HttpCacheSimplePostTest, NoUploadIdInvalidate205) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -7311,7 +7322,7 @@ TEST_F(HttpCacheTest, SimplePOST_NoUploadId_Invalidate_205) {
 }
 
 // Tests that processing a POST before creating the backend doesn't crash.
-TEST_F(HttpCacheTest, SimplePOST_NoUploadId_NoBackend) {
+TEST_F(HttpCacheSimplePostTest, NoUploadIdNoBackend) {
   // This will initialize a cache object with NULL backend.
   auto factory = std::make_unique<MockBlockingBackendFactory>();
   factory->set_fail(true);
@@ -7331,7 +7342,7 @@ TEST_F(HttpCacheTest, SimplePOST_NoUploadId_NoBackend) {
 }
 
 // Tests that we don't invalidate entries as a result of a failed POST.
-TEST_F(HttpCacheTest, SimplePOST_DontInvalidate_100) {
+TEST_F(HttpCacheSimplePostTest, DontInvalidate100) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -7367,8 +7378,10 @@ TEST_F(HttpCacheTest, SimplePOST_DontInvalidate_100) {
   EXPECT_EQ(2, cache.disk_cache()->create_count());
 }
 
+using HttpCacheSimpleHeadTest = HttpCacheTest;
+
 // Tests that a HEAD request is not cached by itself.
-TEST_F(HttpCacheTest, SimpleHEAD_LoadOnlyFromCache_Miss) {
+TEST_F(HttpCacheSimpleHeadTest, LoadOnlyFromCacheMiss) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kSimplePOST_Transaction);
   transaction.load_flags |= LOAD_ONLY_FROM_CACHE | LOAD_SKIP_CACHE_VALIDATION;
@@ -7392,7 +7405,7 @@ TEST_F(HttpCacheTest, SimpleHEAD_LoadOnlyFromCache_Miss) {
 }
 
 // Tests that a HEAD request is served from a cached GET.
-TEST_F(HttpCacheTest, SimpleHEAD_LoadOnlyFromCache_Hit) {
+TEST_F(HttpCacheSimpleHeadTest, LoadOnlyFromCacheHit) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
 
@@ -7415,7 +7428,7 @@ TEST_F(HttpCacheTest, SimpleHEAD_LoadOnlyFromCache_Hit) {
 }
 
 // Tests that a read-only request served from the cache preserves CL.
-TEST_F(HttpCacheTest, SimpleHEAD_ContentLengthOnHit_Read) {
+TEST_F(HttpCacheSimpleHeadTest, ContentLengthOnHitRead) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
   transaction.response_headers = "Content-Length: 42\n";
@@ -7435,7 +7448,7 @@ TEST_F(HttpCacheTest, SimpleHEAD_ContentLengthOnHit_Read) {
 }
 
 // Tests that a read-write request served from the cache preserves CL.
-TEST_F(HttpCacheTest, ETagHEAD_ContentLengthOnHit_ReadWrite) {
+TEST_F(HttpCacheTest, ETagHeadContentLengthOnHitReadWrite) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kETagGET_Transaction);
   std::string server_headers(kETagGET_Transaction.response_headers);
@@ -7456,7 +7469,7 @@ TEST_F(HttpCacheTest, ETagHEAD_ContentLengthOnHit_ReadWrite) {
 }
 
 // Tests that a HEAD request that includes byte ranges bypasses the cache.
-TEST_F(HttpCacheTest, SimpleHEAD_WithRanges) {
+TEST_F(HttpCacheSimpleHeadTest, WithRanges) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
 
@@ -7475,7 +7488,7 @@ TEST_F(HttpCacheTest, SimpleHEAD_WithRanges) {
 }
 
 // Tests that a HEAD request can be served from a partially cached resource.
-TEST_F(HttpCacheTest, SimpleHEAD_WithCachedRanges) {
+TEST_F(HttpCacheSimpleHeadTest, WithCachedRanges) {
   MockHttpCache cache;
   {
     ScopedMockTransaction scoped_mock_transaction(kRangeGET_TransactionOK);
@@ -7501,7 +7514,7 @@ TEST_F(HttpCacheTest, SimpleHEAD_WithCachedRanges) {
 }
 
 // Tests that a HEAD request can be served from a truncated resource.
-TEST_F(HttpCacheTest, SimpleHEAD_WithTruncatedEntry) {
+TEST_F(HttpCacheSimpleHeadTest, WithTruncatedEntry) {
   MockHttpCache cache;
   {
     ScopedMockTransaction scoped_mock_transaction(kRangeGET_TransactionOK);
@@ -7531,8 +7544,10 @@ TEST_F(HttpCacheTest, SimpleHEAD_WithTruncatedEntry) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
+using HttpCacheTypicalHeadTest = HttpCacheTest;
+
 // Tests that a HEAD request updates the cached response.
-TEST_F(HttpCacheTest, TypicalHEAD_UpdatesResponse) {
+TEST_F(HttpCacheTypicalHeadTest, UpdatesResponse) {
   MockHttpCache cache;
   std::string headers;
   {
@@ -7568,7 +7583,7 @@ TEST_F(HttpCacheTest, TypicalHEAD_UpdatesResponse) {
 }
 
 // Tests that an externally conditionalized HEAD request updates the cache.
-TEST_F(HttpCacheTest, TypicalHEAD_ConditionalizedRequestUpdatesResponse) {
+TEST_F(HttpCacheTypicalHeadTest, ConditionalizedRequestUpdatesResponse) {
   MockHttpCache cache;
   std::string headers;
 
@@ -7609,7 +7624,7 @@ TEST_F(HttpCacheTest, TypicalHEAD_ConditionalizedRequestUpdatesResponse) {
 }
 
 // Tests that a HEAD request invalidates an old cached entry.
-TEST_F(HttpCacheTest, SimpleHEAD_InvalidatesEntry) {
+TEST_F(HttpCacheSimpleHeadTest, InvalidatesEntry) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kTypicalGET_Transaction);
 
@@ -7629,8 +7644,10 @@ TEST_F(HttpCacheTest, SimpleHEAD_InvalidatesEntry) {
   RunTransactionTest(cache.http_cache(), transaction);
 }
 
+using HttpCacheSimplePutTest = HttpCacheTest;
+
 // Tests that we do not cache the response of a PUT.
-TEST_F(HttpCacheTest, SimplePUT_Miss) {
+TEST_F(HttpCacheSimplePutTest, Miss) {
   MockHttpCache cache;
 
   MockTransaction transaction(kSimplePOST_Transaction);
@@ -7654,7 +7671,7 @@ TEST_F(HttpCacheTest, SimplePUT_Miss) {
 }
 
 // Tests that we invalidate entries as a result of a PUT.
-TEST_F(HttpCacheTest, SimplePUT_Invalidate) {
+TEST_F(HttpCacheSimplePutTest, Invalidate) {
   MockHttpCache cache;
 
   MockTransaction transaction(kSimpleGET_Transaction);
@@ -7690,7 +7707,7 @@ TEST_F(HttpCacheTest, SimplePUT_Invalidate) {
 }
 
 // Tests that we invalidate entries as a result of a PUT.
-TEST_F(HttpCacheTest, SimplePUT_Invalidate_305) {
+TEST_F(HttpCacheSimplePutTest, Invalidate305) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -7727,7 +7744,7 @@ TEST_F(HttpCacheTest, SimplePUT_Invalidate_305) {
 }
 
 // Tests that we don't invalidate entries as a result of a failed PUT.
-TEST_F(HttpCacheTest, SimplePUT_DontInvalidate_404) {
+TEST_F(HttpCacheSimplePutTest, DontInvalidate404) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -7763,8 +7780,10 @@ TEST_F(HttpCacheTest, SimplePUT_DontInvalidate_404) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
+using HttpCacheSimpleDeleteTest = HttpCacheTest;
+
 // Tests that we do not cache the response of a DELETE.
-TEST_F(HttpCacheTest, SimpleDELETE_Miss) {
+TEST_F(HttpCacheSimpleDeleteTest, Miss) {
   MockHttpCache cache;
 
   MockTransaction transaction(kSimplePOST_Transaction);
@@ -7788,7 +7807,7 @@ TEST_F(HttpCacheTest, SimpleDELETE_Miss) {
 }
 
 // Tests that we invalidate entries as a result of a DELETE.
-TEST_F(HttpCacheTest, SimpleDELETE_Invalidate) {
+TEST_F(HttpCacheSimpleDeleteTest, Invalidate) {
   MockHttpCache cache;
 
   MockTransaction transaction(kSimpleGET_Transaction);
@@ -7824,7 +7843,7 @@ TEST_F(HttpCacheTest, SimpleDELETE_Invalidate) {
 }
 
 // Tests that we invalidate entries as a result of a DELETE.
-TEST_F(HttpCacheTest, SimpleDELETE_Invalidate_301) {
+TEST_F(HttpCacheSimpleDeleteTest, Invalidate301) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -7854,7 +7873,7 @@ TEST_F(HttpCacheTest, SimpleDELETE_Invalidate_301) {
 }
 
 // Tests that we don't invalidate entries as a result of a failed DELETE.
-TEST_F(HttpCacheTest, SimpleDELETE_DontInvalidate_416) {
+TEST_F(HttpCacheSimpleDeleteTest, DontInvalidate416) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -7884,8 +7903,10 @@ TEST_F(HttpCacheTest, SimpleDELETE_DontInvalidate_416) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
+using HttpCacheSimplePatchTest = HttpCacheTest;
+
 // Tests that we invalidate entries as a result of a PATCH.
-TEST_F(HttpCacheTest, SimplePATCH_Invalidate) {
+TEST_F(HttpCacheSimplePatchTest, Invalidate) {
   MockHttpCache cache;
 
   MockTransaction transaction(kSimpleGET_Transaction);
@@ -7921,7 +7942,7 @@ TEST_F(HttpCacheTest, SimplePATCH_Invalidate) {
 }
 
 // Tests that we invalidate entries as a result of a PATCH.
-TEST_F(HttpCacheTest, SimplePATCH_Invalidate_301) {
+TEST_F(HttpCacheSimplePatchTest, Invalidate301) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -7951,7 +7972,7 @@ TEST_F(HttpCacheTest, SimplePATCH_Invalidate_301) {
 }
 
 // Tests that we don't invalidate entries as a result of a failed PATCH.
-TEST_F(HttpCacheTest, SimplePATCH_DontInvalidate_416) {
+TEST_F(HttpCacheSimplePatchTest, DontInvalidate416) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -7982,7 +8003,7 @@ TEST_F(HttpCacheTest, SimplePATCH_DontInvalidate_416) {
 }
 
 // Tests that we don't invalidate entries after a failed network transaction.
-TEST_F(HttpCacheTest, SimpleGET_DontInvalidateOnFailure) {
+TEST_F(HttpCacheSimpleGetTest, DontInvalidateOnFailure) {
   MockHttpCache cache;
 
   // Populate the cache.
@@ -8005,7 +8026,7 @@ TEST_F(HttpCacheTest, SimpleGET_DontInvalidateOnFailure) {
   EXPECT_EQ(2, cache.network_layer()->transaction_count());
 }
 
-TEST_F(HttpCacheTest, RangeGET_SkipsCache) {
+TEST_F(HttpCacheRangeGetTest, SkipsCache) {
   MockHttpCache cache;
 
   // Test that we skip the cache for range GET requests.  Eventually, we will
@@ -8037,7 +8058,7 @@ TEST_F(HttpCacheTest, RangeGET_SkipsCache) {
 
 // Test that we skip the cache for range requests that include a validation
 // header.
-TEST_F(HttpCacheTest, RangeGET_SkipsCache2) {
+TEST_F(HttpCacheRangeGetTest, SkipsCache2) {
   MockHttpCache cache;
 
   MockTransaction transaction(kRangeGET_Transaction);
@@ -8067,7 +8088,7 @@ TEST_F(HttpCacheTest, RangeGET_SkipsCache2) {
   EXPECT_EQ(0, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, SimpleGET_DoesntLogHeaders) {
+TEST_F(HttpCacheSimpleGetTest, DoesntLogHeaders) {
   MockHttpCache cache;
 
   RecordingNetLogObserver net_log_observer;
@@ -8078,7 +8099,7 @@ TEST_F(HttpCacheTest, SimpleGET_DoesntLogHeaders) {
       net_log_observer, NetLogEventType::HTTP_CACHE_CALLER_REQUEST_HEADERS));
 }
 
-TEST_F(HttpCacheTest, RangeGET_LogsHeaders) {
+TEST_F(HttpCacheRangeGetTest, LogsHeaders) {
   MockHttpCache cache;
 
   RecordingNetLogObserver net_log_observer;
@@ -8089,7 +8110,7 @@ TEST_F(HttpCacheTest, RangeGET_LogsHeaders) {
       net_log_observer, NetLogEventType::HTTP_CACHE_CALLER_REQUEST_HEADERS));
 }
 
-TEST_F(HttpCacheTest, ExternalValidation_LogsHeaders) {
+TEST_F(HttpCacheTest, ExternalValidationLogsHeaders) {
   MockHttpCache cache;
 
   RecordingNetLogObserver net_log_observer;
@@ -8102,7 +8123,7 @@ TEST_F(HttpCacheTest, ExternalValidation_LogsHeaders) {
       net_log_observer, NetLogEventType::HTTP_CACHE_CALLER_REQUEST_HEADERS));
 }
 
-TEST_F(HttpCacheTest, SpecialHeaders_LogsHeaders) {
+TEST_F(HttpCacheTest, SpecialHeadersLogsHeaders) {
   MockHttpCache cache;
 
   RecordingNetLogObserver net_log_observer;
@@ -8116,7 +8137,7 @@ TEST_F(HttpCacheTest, SpecialHeaders_LogsHeaders) {
 }
 
 // Tests that receiving 206 for a regular request is handled correctly.
-TEST_F(HttpCacheTest, GET_Crazy206) {
+TEST_F(HttpCacheGetTest, Crazy206) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -8138,7 +8159,7 @@ TEST_F(HttpCacheTest, GET_Crazy206) {
 }
 
 // Tests that receiving 416 for a regular request is handled correctly.
-TEST_F(HttpCacheTest, GET_Crazy416) {
+TEST_F(HttpCacheGetTest, Crazy416) {
   MockHttpCache cache;
 
   // Write to the cache.
@@ -8152,7 +8173,7 @@ TEST_F(HttpCacheTest, GET_Crazy416) {
 }
 
 // Tests that we don't store partial responses that can't be validated.
-TEST_F(HttpCacheTest, RangeGET_NoStrongValidators) {
+TEST_F(HttpCacheRangeGetTest, NoStrongValidators) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8180,7 +8201,7 @@ TEST_F(HttpCacheTest, RangeGET_NoStrongValidators) {
 }
 
 // Tests failures to conditionalize byte range requests.
-TEST_F(HttpCacheTest, RangeGET_NoConditionalization) {
+TEST_F(HttpCacheRangeGetTest, NoConditionalization) {
   MockHttpCache cache;
   cache.FailConditionalizations();
   std::string headers;
@@ -8209,7 +8230,7 @@ TEST_F(HttpCacheTest, RangeGET_NoConditionalization) {
 
 // Tests that restarting a partial request when the cached data cannot be
 // revalidated logs an event.
-TEST_F(HttpCacheTest, RangeGET_NoValidation_LogsRestart) {
+TEST_F(HttpCacheRangeGetTest, NoValidationLogsRestart) {
   MockHttpCache cache;
   cache.FailConditionalizations();
 
@@ -8231,7 +8252,7 @@ TEST_F(HttpCacheTest, RangeGET_NoValidation_LogsRestart) {
 
 // Tests that a failure to conditionalize a regular request (no range) with a
 // sparse entry results in a full response.
-TEST_F(HttpCacheTest, GET_NoConditionalization) {
+TEST_F(HttpCacheGetTest, NoConditionalization) {
   for (bool use_memory_entry_data : {false, true}) {
     MockHttpCache cache;
     cache.disk_cache()->set_support_in_memory_entry_data(use_memory_entry_data);
@@ -8285,7 +8306,7 @@ TEST_F(HttpCacheTest, GET_NoConditionalization) {
 // Verifies that conditionalization failures when asking for a range that would
 // require the cache to modify the range to ask, result in a network request
 // that matches the user's one.
-TEST_F(HttpCacheTest, RangeGET_NoConditionalization2) {
+TEST_F(HttpCacheRangeGetTest, NoConditionalization2) {
   MockHttpCache cache;
   cache.FailConditionalizations();
   std::string headers;
@@ -8324,7 +8345,7 @@ TEST_F(HttpCacheTest, RangeGET_NoConditionalization2) {
 }
 
 // Tests that we cache partial responses that lack content-length.
-TEST_F(HttpCacheTest, RangeGET_NoContentLength) {
+TEST_F(HttpCacheRangeGetTest, NoContentLength) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8355,7 +8376,7 @@ TEST_F(HttpCacheTest, RangeGET_NoContentLength) {
 
 // Tests that we can cache range requests and fetch random blocks from the
 // cache and the network.
-TEST_F(HttpCacheTest, RangeGET_OK) {
+TEST_F(HttpCacheRangeGetTest, OK) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
   std::string headers;
@@ -8410,7 +8431,7 @@ TEST_F(HttpCacheTest, RangeGET_OK) {
   TestLoadTimingNetworkRequest(load_timing_info);
 }
 
-TEST_F(HttpCacheTest, RangeGET_CacheReadError) {
+TEST_F(HttpCacheRangeGetTest, CacheReadError) {
   // Tests recovery on cache read error on range request.
   MockHttpCache cache;
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -8441,7 +8462,7 @@ TEST_F(HttpCacheTest, RangeGET_CacheReadError) {
 
 // Tests that range requests with no-store get correct content-length
 // (https://crbug.com/700197).
-TEST_F(HttpCacheTest, RangeGET_NoStore) {
+TEST_F(HttpCacheRangeGetTest, NoStore) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -8459,7 +8480,7 @@ TEST_F(HttpCacheTest, RangeGET_NoStore) {
 }
 
 // Tests a 304 setting no-store on existing 206 entry.
-TEST_F(HttpCacheTest, RangeGET_NoStore304) {
+TEST_F(HttpCacheRangeGetTest, NoStore304) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -8497,7 +8518,7 @@ TEST_F(HttpCacheTest, RangeGET_NoStore304) {
 
 // Tests that we can cache range requests and fetch random blocks from the
 // cache and the network, with synchronous responses.
-TEST_F(HttpCacheTest, RangeGET_SyncOK) {
+TEST_F(HttpCacheRangeGetTest, SyncOK) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -8554,7 +8575,7 @@ TEST_F(HttpCacheTest, RangeGET_SyncOK) {
 // Tests that if the previous transaction is cancelled while busy (doing sparse
 // IO), a new transaction (that reuses that same ActiveEntry) waits until the
 // entry is ready again.
-TEST_F(HttpCacheTest, Sparse_WaitForEntry) {
+TEST_F(HttpCacheTest, SparseWaitForEntry) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -8582,7 +8603,7 @@ TEST_F(HttpCacheTest, Sparse_WaitForEntry) {
 }
 
 // Tests that we don't revalidate an entry unless we are required to do so.
-TEST_F(HttpCacheTest, RangeGET_Revalidate1) {
+TEST_F(HttpCacheRangeGetTest, Revalidate1) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8629,7 +8650,7 @@ TEST_F(HttpCacheTest, RangeGET_Revalidate1) {
 }
 
 // Checks that we revalidate an entry when the headers say so.
-TEST_F(HttpCacheTest, RangeGET_Revalidate2) {
+TEST_F(HttpCacheRangeGetTest, Revalidate2) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8658,7 +8679,7 @@ TEST_F(HttpCacheTest, RangeGET_Revalidate2) {
 }
 
 // Tests that we deal with 304s for range requests.
-TEST_F(HttpCacheTest, RangeGET_304) {
+TEST_F(HttpCacheRangeGetTest, 304) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
   std::string headers;
@@ -8686,7 +8707,7 @@ TEST_F(HttpCacheTest, RangeGET_304) {
 }
 
 // Tests that we deal with 206s when revalidating range requests.
-TEST_F(HttpCacheTest, RangeGET_ModifiedResult) {
+TEST_F(HttpCacheRangeGetTest, ModifiedResult) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
   std::string headers;
@@ -8724,7 +8745,7 @@ TEST_F(HttpCacheTest, RangeGET_ModifiedResult) {
 // the caller as is. In this context, a subrange means a response that starts
 // with the same byte that was requested, but that is not the whole range that
 // was requested.
-TEST_F(HttpCacheTest, RangeGET_206ReturnsSubrangeRange_NoCachedContent) {
+TEST_F(HttpCacheRangeGetTest, 206ReturnsSubrangeRangeNoCachedContent) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8748,7 +8769,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsSubrangeRange_NoCachedContent) {
 
 // Tests that when a server returns 206 with a sub-range of the requested range,
 // and there was an entry stored in the cache, the cache gets out of the way.
-TEST_F(HttpCacheTest, RangeGET_206ReturnsSubrangeRange_CachedContent) {
+TEST_F(HttpCacheRangeGetTest, 206ReturnsSubrangeRangeCachedContent) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8789,7 +8810,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsSubrangeRange_CachedContent) {
 // Tests that when a server returns 206 with a sub-range of the requested range,
 // and there was an entry stored in the cache, the cache gets out of the way,
 // when the caller is not using ranges.
-TEST_F(HttpCacheTest, GET_206ReturnsSubrangeRange_CachedContent) {
+TEST_F(HttpCacheGetTest, 206ReturnsSubrangeRangeCachedContent) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8827,7 +8848,7 @@ TEST_F(HttpCacheTest, GET_206ReturnsSubrangeRange_CachedContent) {
 // not have any relationship with the requested range (may or may not be
 // contained). The important part is that the first byte doesn't match the first
 // requested byte.
-TEST_F(HttpCacheTest, RangeGET_206ReturnsWrongRange_NoCachedContent) {
+TEST_F(HttpCacheRangeGetTest, 206ReturnsWrongRangeNoCachedContent) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8857,7 +8878,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsWrongRange_NoCachedContent) {
 
 // Tests that when a server returns 206 with a random range and there is
 // an entry stored in the cache, the cache gets out of the way.
-TEST_F(HttpCacheTest, RangeGET_206ReturnsWrongRange_CachedContent) {
+TEST_F(HttpCacheRangeGetTest, 206ReturnsWrongRangeCachedContent) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8895,7 +8916,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsWrongRange_CachedContent) {
 
 // Tests that when a caller asks for a range beyond EOF, with an empty cache,
 // the response matches the one provided by the server.
-TEST_F(HttpCacheTest, RangeGET_206ReturnsSmallerFile_NoCachedContent) {
+TEST_F(HttpCacheRangeGetTest, 206ReturnsSmallerFileNoCachedContent) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8916,7 +8937,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsSmallerFile_NoCachedContent) {
 
 // Tests that when a caller asks for a range beyond EOF, with a cached entry,
 // the cache automatically fixes the request.
-TEST_F(HttpCacheTest, RangeGET_206ReturnsSmallerFile_CachedContent) {
+TEST_F(HttpCacheRangeGetTest, 206ReturnsSmallerFileCachedContent) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8943,7 +8964,7 @@ TEST_F(HttpCacheTest, RangeGET_206ReturnsSmallerFile_CachedContent) {
 
 // Tests that when a caller asks for a not-satisfiable range, the server's
 // response is forwarded to the caller.
-TEST_F(HttpCacheTest, RangeGET_416_NoCachedContent) {
+TEST_F(HttpCacheRangeGetTest, 416NoCachedContent) {
   MockHttpCache cache;
   std::string headers;
 
@@ -8965,7 +8986,7 @@ TEST_F(HttpCacheTest, RangeGET_416_NoCachedContent) {
 }
 
 // Tests that we cache 301s for range requests.
-TEST_F(HttpCacheTest, RangeGET_301) {
+TEST_F(HttpCacheRangeGetTest, MovedPermanently301) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
   transaction.status = "HTTP/1.1 301 Moved Permanently";
@@ -8986,9 +9007,11 @@ TEST_F(HttpCacheTest, RangeGET_301) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
+using HttpCacheUnknownRangeGetTest = HttpCacheTest;
+
 // Tests that we can cache range requests when the start or end is unknown.
 // We start with one suffix request, followed by a request from a given point.
-TEST_F(HttpCacheTest, UnknownRangeGET_1) {
+TEST_F(HttpCacheUnknownRangeGetTest, SuffixRangeThenIntRange) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
   std::string headers;
@@ -9021,7 +9044,7 @@ TEST_F(HttpCacheTest, UnknownRangeGET_1) {
 // Tests that we can cache range requests when the start or end is unknown.
 // We start with one request from a given point, followed by a suffix request.
 // We'll also verify that synchronous cache responses work as intended.
-TEST_F(HttpCacheTest, UnknownRangeGET_2) {
+TEST_F(HttpCacheUnknownRangeGetTest, IntRangeThenSuffixRange) {
   MockHttpCache cache;
   std::string headers;
 
@@ -9056,7 +9079,7 @@ TEST_F(HttpCacheTest, UnknownRangeGET_2) {
 
 // Similar to UnknownRangeGET_2, except that the resource size is empty.
 // Regression test for crbug.com/813061, and probably https://crbug.com/1375128
-TEST_F(HttpCacheTest, UnknownRangeGET_3) {
+TEST_F(HttpCacheUnknownRangeGetTest, SuffixRangeEmptyResponse) {
   MockHttpCache cache;
   std::string headers;
 
@@ -9097,7 +9120,7 @@ TEST_F(HttpCacheTest, UnknownRangeGET_3) {
 
 // Testcase for https://crbug.com/1433305, validation of range request to a
 // cache 302, which is notably bodiless.
-TEST_F(HttpCacheTest, UnknownRangeGET_302) {
+TEST_F(HttpCacheUnknownRangeGetTest, Empty302) {
   MockHttpCache cache;
   std::string headers;
 
@@ -9153,7 +9176,7 @@ TEST_F(HttpCacheTest, UnknownRangeGET_302) {
 // Testcase for https://crbug.com/1433305, validation of range request to a
 // cache 302, which is notably bodiless, where the 302 is replaced with an
 // actual body.
-TEST_F(HttpCacheTest, UnknownRangeGET_302_Replaced) {
+TEST_F(HttpCacheUnknownRangeGetTest, Empty302Replaced) {
   MockHttpCache cache;
   std::string headers;
 
@@ -9209,7 +9232,7 @@ TEST_F(HttpCacheTest, UnknownRangeGET_302_Replaced) {
 
 // Tests that receiving Not Modified when asking for an open range doesn't mess
 // up things.
-TEST_F(HttpCacheTest, UnknownRangeGET_304) {
+TEST_F(HttpCacheUnknownRangeGetTest, Basic304) {
   MockHttpCache cache;
   std::string headers;
 
@@ -9234,7 +9257,7 @@ TEST_F(HttpCacheTest, UnknownRangeGET_304) {
 }
 
 // Tests that we can handle non-range requests when we have cached a range.
-TEST_F(HttpCacheTest, GET_Previous206) {
+TEST_F(HttpCacheGetTest, Previous206) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
   std::string headers;
@@ -9270,7 +9293,7 @@ TEST_F(HttpCacheTest, GET_Previous206) {
 
 // Tests that we can handle non-range requests when we have cached the first
 // part of the object and the server replies with 304 (Not Modified).
-TEST_F(HttpCacheTest, GET_Previous206_NotModified) {
+TEST_F(HttpCacheGetTest, Previous206NotModified) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -9319,7 +9342,7 @@ TEST_F(HttpCacheTest, GET_Previous206_NotModified) {
 
 // Tests that we can handle a regular request to a sparse entry, that results in
 // new content provided by the server (206).
-TEST_F(HttpCacheTest, GET_Previous206_NewContent) {
+TEST_F(HttpCacheGetTest, Previous206NewContent) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
   std::string headers;
@@ -9362,7 +9385,7 @@ TEST_F(HttpCacheTest, GET_Previous206_NewContent) {
 }
 
 // Tests that we can handle cached 206 responses that are not sparse.
-TEST_F(HttpCacheTest, GET_Previous206_NotSparse) {
+TEST_F(HttpCacheGetTest, Previous206NotSparse) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -9407,7 +9430,7 @@ TEST_F(HttpCacheTest, GET_Previous206_NotSparse) {
 
 // Tests that we can handle cached 206 responses that are not sparse. This time
 // we issue a range request and expect to receive a range.
-TEST_F(HttpCacheTest, RangeGET_Previous206_NotSparse_2) {
+TEST_F(HttpCacheRangeGetTest, Previous206NotSparser2) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
 
@@ -9446,7 +9469,7 @@ TEST_F(HttpCacheTest, RangeGET_Previous206_NotSparse_2) {
 }
 
 // Tests that we can handle cached 206 responses that can't be validated.
-TEST_F(HttpCacheTest, GET_Previous206_NotValidation) {
+TEST_F(HttpCacheGetTest, Previous206NotValidation) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -9488,7 +9511,7 @@ TEST_F(HttpCacheTest, GET_Previous206_NotValidation) {
 }
 
 // Tests that we can handle range requests with cached 200 responses.
-TEST_F(HttpCacheTest, RangeGET_Previous200) {
+TEST_F(HttpCacheRangeGetTest, Previous200) {
   MockHttpCache cache;
 
   {
@@ -9590,7 +9613,7 @@ TEST_F(HttpCacheTest, RangeRequestResultsIn200) {
 
 // Tests that a range request that falls outside of the size that we know about
 // only deletes the entry if the resource has indeed changed.
-TEST_F(HttpCacheTest, RangeGET_MoreThanCurrentSize) {
+TEST_F(HttpCacheRangeGetTest, MoreThanCurrentSize) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
   std::string headers;
@@ -9621,7 +9644,7 @@ TEST_F(HttpCacheTest, RangeGET_MoreThanCurrentSize) {
 }
 
 // Tests that we don't delete a sparse entry when we cancel a request.
-TEST_F(HttpCacheTest, RangeGET_Cancel) {
+TEST_F(HttpCacheRangeGetTest, Cancel) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
 
@@ -9660,7 +9683,7 @@ TEST_F(HttpCacheTest, RangeGET_Cancel) {
 
 // Tests that we don't mark an entry as truncated if it is partial and not
 // already truncated.
-TEST_F(HttpCacheTest, RangeGET_CancelWhileReading) {
+TEST_F(HttpCacheRangeGetTest, CancelWhileReading) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
 
@@ -9699,7 +9722,7 @@ TEST_F(HttpCacheTest, RangeGET_CancelWhileReading) {
 
 // Tests that we don't delete a sparse entry when we start a new request after
 // cancelling the previous one.
-TEST_F(HttpCacheTest, RangeGET_Cancel2) {
+TEST_F(HttpCacheRangeGetTest, Cancel2) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
 
@@ -9745,7 +9768,7 @@ TEST_F(HttpCacheTest, RangeGET_Cancel2) {
 
 // A slight variation of the previous test, this time we cancel two requests in
 // a row, making sure that the second is waiting for the entry to be ready.
-TEST_F(HttpCacheTest, RangeGET_Cancel3) {
+TEST_F(HttpCacheRangeGetTest, Cancel3) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
 
@@ -9804,7 +9827,7 @@ TEST_F(HttpCacheTest, RangeGET_Cancel3) {
 }
 
 // Tests that an invalid range response results in no cached entry.
-TEST_F(HttpCacheTest, RangeGET_InvalidResponse1) {
+TEST_F(HttpCacheRangeGetTest, InvalidResponse1) {
   MockHttpCache cache;
   std::string headers;
 
@@ -9831,7 +9854,7 @@ TEST_F(HttpCacheTest, RangeGET_InvalidResponse1) {
 }
 
 // Tests that we reject a range that doesn't match the content-length.
-TEST_F(HttpCacheTest, RangeGET_InvalidResponse2) {
+TEST_F(HttpCacheRangeGetTest, InvalidResponse2) {
   MockHttpCache cache;
   std::string headers;
 
@@ -9859,7 +9882,7 @@ TEST_F(HttpCacheTest, RangeGET_InvalidResponse2) {
 
 // Tests that if a server tells us conflicting information about a resource we
 // drop the entry.
-TEST_F(HttpCacheTest, RangeGET_InvalidResponse3) {
+TEST_F(HttpCacheRangeGetTest, InvalidResponse3) {
   MockHttpCache cache;
   std::string headers;
   {
@@ -9895,7 +9918,7 @@ TEST_F(HttpCacheTest, RangeGET_InvalidResponse3) {
 }
 
 // Tests that we handle large range values properly.
-TEST_F(HttpCacheTest, RangeGET_LargeValues) {
+TEST_F(HttpCacheRangeGetTest, LargeValues) {
   // We need a real sparse cache for this test.
   MockHttpCache cache(HttpCache::DefaultBackend::InMemory(1024 * 1024));
   std::string headers;
@@ -9926,7 +9949,7 @@ TEST_F(HttpCacheTest, RangeGET_LargeValues) {
 
 // Tests that we don't crash with a range request if the disk cache was not
 // initialized properly.
-TEST_F(HttpCacheTest, RangeGET_NoDiskCache) {
+TEST_F(HttpCacheRangeGetTest, NoDiskCache) {
   auto factory = std::make_unique<MockBlockingBackendFactory>();
   factory->set_fail(true);
   factory->FinishCreation();  // We'll complete synchronously.
@@ -9939,7 +9962,7 @@ TEST_F(HttpCacheTest, RangeGET_NoDiskCache) {
 }
 
 // Tests that we handle byte range requests that skip the cache.
-TEST_F(HttpCacheTest, RangeHEAD) {
+TEST_F(HttpCacheTest, RangeHead) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
   transaction.request_headers = "Range: bytes = -10\r\n" EXTRA_HEADER;
@@ -9957,7 +9980,7 @@ TEST_F(HttpCacheTest, RangeHEAD) {
 
 // Tests that we don't crash when after reading from the cache we issue a
 // request for the next range and the server gives us a 200 synchronously.
-TEST_F(HttpCacheTest, RangeGET_FastFlakyServer) {
+TEST_F(HttpCacheRangeGetTest, FastFlakyServer) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -9985,7 +10008,7 @@ TEST_F(HttpCacheTest, RangeGET_FastFlakyServer) {
 
 // Tests that when the server gives us less data than expected, we don't keep
 // asking for more data.
-TEST_F(HttpCacheTest, RangeGET_FastFlakyServer2) {
+TEST_F(HttpCacheRangeGetTest, FastFlakyServer2) {
   MockHttpCache cache;
 
   // First, check with an empty cache (WRITE mode).
@@ -10019,7 +10042,7 @@ TEST_F(HttpCacheTest, RangeGET_FastFlakyServer2) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
-TEST_F(HttpCacheTest, RangeGET_OK_LoadOnlyFromCache) {
+TEST_F(HttpCacheRangeGetTest, OkLoadOnlyFromCache) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
 
@@ -10054,7 +10077,7 @@ TEST_F(HttpCacheTest, RangeGET_OK_LoadOnlyFromCache) {
 }
 
 // Tests the handling of the "truncation" flag.
-TEST_F(HttpCacheTest, WriteResponseInfo_Truncated) {
+TEST_F(HttpCacheTest, WriteResponseInfoTruncated) {
   MockHttpCache cache;
   disk_cache::Entry* entry;
   ASSERT_TRUE(cache.CreateBackendEntry(
@@ -10364,7 +10387,7 @@ TEST_F(HttpCacheTest, DontSetTruncatedFlag) {
 }
 
 // Tests that sparse entries don't set the truncate flag.
-TEST_F(HttpCacheTest, RangeGET_DontTruncate) {
+TEST_F(HttpCacheRangeGetTest, DontTruncate) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -10391,7 +10414,7 @@ TEST_F(HttpCacheTest, RangeGET_DontTruncate) {
 
 // Tests that sparse entries don't set the truncate flag (when the byte range
 //  starts after 0).
-TEST_F(HttpCacheTest, RangeGET_DontTruncate2) {
+TEST_F(HttpCacheRangeGetTest, DontTruncate2) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
@@ -10417,7 +10440,7 @@ TEST_F(HttpCacheTest, RangeGET_DontTruncate2) {
 }
 
 // Tests that we can continue with a request that was interrupted.
-TEST_F(HttpCacheTest, GET_IncompleteResource) {
+TEST_F(HttpCacheGetTest, IncompleteResource) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
 
@@ -10454,7 +10477,7 @@ TEST_F(HttpCacheTest, GET_IncompleteResource) {
 }
 
 // Tests the handling of no-store when revalidating a truncated entry.
-TEST_F(HttpCacheTest, GET_IncompleteResource_NoStore) {
+TEST_F(HttpCacheGetTest, IncompleteResourceNoStore) {
   MockHttpCache cache;
   {
     ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
@@ -10500,7 +10523,7 @@ TEST_F(HttpCacheTest, GET_IncompleteResource_NoStore) {
 }
 
 // Tests cancelling a request after the server sent no-store.
-TEST_F(HttpCacheTest, GET_IncompleteResource_Cancel) {
+TEST_F(HttpCacheGetTest, IncompleteResourceCancel) {
   MockHttpCache cache;
   {
     ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
@@ -10559,7 +10582,7 @@ TEST_F(HttpCacheTest, GET_IncompleteResource_Cancel) {
 }
 
 // Tests that we delete truncated entries if the server changes its mind midway.
-TEST_F(HttpCacheTest, GET_IncompleteResource2) {
+TEST_F(HttpCacheGetTest, IncompleteResource2) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
   // Content-length will be intentionally bad.
@@ -10596,7 +10619,7 @@ TEST_F(HttpCacheTest, GET_IncompleteResource2) {
 }
 
 // Tests that we always validate a truncated request.
-TEST_F(HttpCacheTest, GET_IncompleteResource3) {
+TEST_F(HttpCacheGetTest, IncompleteResource3) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
 
@@ -10631,7 +10654,7 @@ TEST_F(HttpCacheTest, GET_IncompleteResource3) {
 }
 
 // Tests that we handle 401s for truncated resources.
-TEST_F(HttpCacheTest, GET_IncompleteResourceWithAuth) {
+TEST_F(HttpCacheGetTest, IncompleteResourceWithAuth) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
 
@@ -10714,7 +10737,7 @@ TEST_F(HttpCacheTest, TransactionRetryLimit) {
 }
 
 // Tests that we cache a 200 response to the validation request.
-TEST_F(HttpCacheTest, GET_IncompleteResource4) {
+TEST_F(HttpCacheGetTest, IncompleteResource4) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
 
@@ -10745,7 +10768,7 @@ TEST_F(HttpCacheTest, GET_IncompleteResource4) {
 
 // Tests that when we cancel a request that was interrupted, we mark it again
 // as truncated.
-TEST_F(HttpCacheTest, GET_CancelIncompleteResource) {
+TEST_F(HttpCacheGetTest, CancelIncompleteResource) {
   MockHttpCache cache;
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
 
@@ -10788,7 +10811,7 @@ TEST_F(HttpCacheTest, GET_CancelIncompleteResource) {
 }
 
 // Tests that we can handle range requests when we have a truncated entry.
-TEST_F(HttpCacheTest, RangeGET_IncompleteResource) {
+TEST_F(HttpCacheRangeGetTest, IncompleteResource) {
   MockHttpCache cache;
   ScopedMockTransaction scoped_transaction(kRangeGET_TransactionOK);
 
@@ -11090,7 +11113,7 @@ TEST_F(HttpCacheTest, CacheControlNoStore3) {
 }
 
 // Ensure that we don't cache requests served over bad HTTPS.
-TEST_F(HttpCacheTest, SimpleGET_SSLError) {
+TEST_F(HttpCacheSimpleGetTest, SSLError) {
   MockHttpCache cache;
 
   MockTransaction transaction = kSimpleGET_Transaction;
@@ -12902,7 +12925,7 @@ TEST_F(HttpCacheTest, StaleContentWriteError) {
 
 // Tests that we allow multiple simultaneous, non-overlapping transactions to
 // take place on a sparse entry.
-TEST_F(HttpCacheTest, RangeGET_MultipleRequests) {
+TEST_F(HttpCacheRangeGetTest, MultipleRequests) {
   MockHttpCache cache;
 
   // Create a transaction for bytes 0-9.
@@ -12934,7 +12957,7 @@ TEST_F(HttpCacheTest, RangeGET_MultipleRequests) {
 // implemented so it returns ERR_CACHE_MISS. See also
 // HttpCacheTest.RangeGET_OK_LoadOnlyFromCache.
 // TODO(ricea): Update this test if it is implemented in future.
-TEST_F(HttpCacheTest, RangeGET_Previous200_LoadOnlyFromCache) {
+TEST_F(HttpCacheRangeGetTest, Previous200LoadOnlyFromCache) {
   MockHttpCache cache;
 
   // Store the whole thing with status 200.
@@ -13973,7 +13996,9 @@ TEST_F(HttpCacheTest, DnsAliasesRevalidation) {
   EXPECT_THAT(response.dns_aliases, testing::ElementsAre("alias3", "alias4"));
 }
 
-TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldBypass_NoId) {
+using HttpCacheFirstPartySetsBypassCacheTest = HttpCacheTest;
+
+TEST_F(HttpCacheFirstPartySetsBypassCacheTest, ShouldBypassNoId) {
   MockHttpCache cache;
   HttpResponseInfo response;
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -13988,7 +14013,7 @@ TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldBypass_NoId) {
   EXPECT_FALSE(response.was_cached);
 }
 
-TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldBypass_IdTooSmall) {
+TEST_F(HttpCacheFirstPartySetsBypassCacheTest, ShouldBypassIdTooSmall) {
   MockHttpCache cache;
   HttpResponseInfo response;
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -14006,7 +14031,7 @@ TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldBypass_IdTooSmall) {
   EXPECT_FALSE(response.was_cached);
 }
 
-TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldNotBypass) {
+TEST_F(HttpCacheFirstPartySetsBypassCacheTest, ShouldNotBypass) {
   MockHttpCache cache;
   HttpResponseInfo response;
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
@@ -14024,7 +14049,7 @@ TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldNotBypass) {
   EXPECT_TRUE(response.was_cached);
 }
 
-TEST_F(HttpCacheTest, FirstPartySetsBypassCache_ShouldNotBypass_NoFilter) {
+TEST_F(HttpCacheFirstPartySetsBypassCacheTest, ShouldNotBypassNoFilter) {
   MockHttpCache cache;
   HttpResponseInfo response;
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
