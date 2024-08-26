@@ -2266,10 +2266,6 @@
       status: "experimental",
     },
     {
-      name: "HTMLSearchElement",
-      status: "stable",
-    },
-    {
       name: "HTMLSelectElementShowPicker",
       status: "stable",
     },
