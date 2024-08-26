@@ -72,8 +72,9 @@ GetInstanceForRequestActivityIcons() {
 
   auto* instance =
       ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, RequestActivityIcons);
-  if (!instance)
+  if (!instance) {
     return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
+  }
   return instance;
 }
 #else  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -199,8 +200,9 @@ std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeAndEncodeIcons(
 
     SkBitmap bitmap;
     bitmap.allocPixels(SkImageInfo::MakeN32Premul(icon->width, icon->height));
-    if (!bitmap.getPixels())
+    if (!bitmap.getPixels()) {
       continue;
+    }
     DCHECK_GE(bitmap.computeByteSize(), icon->icon.size());
     memcpy(bitmap.getPixels(), &icon->icon.front(), icon->icon.size());
 
@@ -264,10 +266,11 @@ void ActivityIconLoader::SetAdaptiveIconDelegate(
 void ActivityIconLoader::InvalidateIcons(const std::string& package_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   for (auto it = cached_icons_.begin(); it != cached_icons_.end();) {
-    if (it->first.package_name == package_name)
+    if (it->first.package_name == package_name) {
       it = cached_icons_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
 }
 

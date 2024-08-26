@@ -28,8 +28,9 @@ CustomTab::CustomTab(aura::Window* arc_app_window)
 }
 
 CustomTab::~CustomTab() {
-  if (host_->GetWidget())
+  if (host_->GetWidget()) {
     host_->GetWidget()->GetContentsView()->RemoveChildView(host_.get());
+  }
 }
 
 void CustomTab::Attach(gfx::NativeView view) {
@@ -79,8 +80,9 @@ void CustomTab::OnWindowDestroying(aura::Window* window) {
 void CustomTab::UpdateHostBounds(aura::Window* arc_app_window) {
   DCHECK(arc_app_window);
   auto* surface = exo::GetShellRootSurface(arc_app_window);
-  if (!surface)
+  if (!surface) {
     return;
+  }
 
   aura::Window* surface_window = surface->window();
   gfx::Point origin(0, 0);
@@ -94,8 +96,9 @@ void CustomTab::UpdateHostBounds(aura::Window* arc_app_window) {
 
 void CustomTab::EnsureWindowOrders() {
   aura::Window* const container = host_->GetNativeViewContainer();
-  if (container)
+  if (container) {
     container->parent()->StackChildAtTop(container);
+  }
 }
 
 void CustomTab::ConvertPointFromWindow(aura::Window* window,
