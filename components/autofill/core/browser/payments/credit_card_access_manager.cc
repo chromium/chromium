@@ -1654,8 +1654,11 @@ CreditCardAccessManager::GetCardUnmaskChallengeOptionForChallengeId(
 
 bool CreditCardAccessManager::ShouldLogServerCardUnmaskAttemptMetrics(
     CreditCard::RecordType record_type) {
+  // Full server cards exist only in a temporarily cached state and should never
+  // be attempted to be unmasked.
+  CHECK_NE(record_type, CreditCard::RecordType::kFullServerCard);
+
   return record_type == CreditCard::RecordType::kMaskedServerCard ||
-      record_type == CreditCard::RecordType::kFullServerCard ||
       record_type == CreditCard::RecordType::kVirtualCard;
 }
 

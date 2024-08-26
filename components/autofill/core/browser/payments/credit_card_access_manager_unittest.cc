@@ -3065,16 +3065,17 @@ TEST_F(CreditCardAccessManagerTest, AuthenticationInProgress) {
 // Ensures that the use of |unmasked_card_cache_| is set and logged correctly.
 TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
   base::HistogramTester histogram_tester;
-  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false);
-  CreditCard* unmasked_card =
-      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  credit_card_access_manager().CacheUnmaskedCardInfo(*unmasked_card,
-                                                     kTestCvc16);
-
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true);
   CreditCard* masked_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
+  // Mock out that the card has become unmasked and cached.
+  CreditCard unmasked_card = *masked_card;
+  unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  credit_card_access_manager().CacheUnmaskedCardInfo(unmasked_card, kTestCvc16);
+
+  // Now fetch the masked credit card - this should use the cached unmasked
+  // version.
   credit_card_access_manager().FetchCreditCard(
       masked_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                                   accessor_->GetWeakPtr()));
