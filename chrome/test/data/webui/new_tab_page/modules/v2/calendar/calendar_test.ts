@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CalendarEvent} from 'chrome://new-tab-page/google_calendar.mojom-webui.js';
+import type {CalendarEvent} from 'chrome://new-tab-page/calendar_data.mojom-webui.js';
 import {CalendarAction, CalendarElement} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

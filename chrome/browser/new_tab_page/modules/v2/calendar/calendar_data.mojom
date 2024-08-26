@@ -1,0 +1,40 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ntp.calendar.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// Attachments associated with an event.
+struct Attachment {
+  // Name of attachment.
+  string title;
+  // Url to attachment.
+  url.mojom.Url resource_url;
+  // Url to attachment icon.
+  url.mojom.Url icon_url;
+};
+
+// An event from the user's Calendar.
+struct CalendarEvent {
+  // Title of event.
+  string title;
+  // Start time of event.
+  mojo_base.mojom.Time start_time;
+  // End time of event.
+  mojo_base.mojom.Time end_time;
+  // Url to event in the user's calendar.
+  url.mojom.Url url;
+  // Location of the event. Optional.
+  string? location;
+  // List of attachments for the event.
+  array<Attachment> attachments;
+  // Url to video conference, if the event has one.
+  url.mojom.Url? conference_url;
+  // If the user has accepted the calendar event.
+  bool is_accepted;
+  // If there is another attendee for the event other than the user.
+  bool has_other_attendee;
+};

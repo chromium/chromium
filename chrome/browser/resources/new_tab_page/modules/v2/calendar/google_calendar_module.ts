@@ -7,7 +7,8 @@ import '../../module_header.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {CalendarEvent, GoogleCalendarPageHandlerRemote} from '../../../google_calendar.mojom-webui.js';
+import type {CalendarEvent} from '../../../calendar_data.mojom-webui.js';
+import type {GoogleCalendarPageHandlerRemote} from '../../../google_calendar.mojom-webui.js';
 import {I18nMixinLit} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';

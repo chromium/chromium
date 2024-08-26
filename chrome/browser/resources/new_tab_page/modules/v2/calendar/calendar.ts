@@ -6,7 +6,7 @@ import './calendar_event.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
+import type {CalendarEvent} from '../../../calendar_data.mojom-webui.js';
 import {WindowProxy} from '../../../window_proxy.js';
 
 import {getCss} from './calendar.css.js';
