@@ -94,7 +94,9 @@ TEST_F(FrameNodeImplTest, NavigationCommitted_SameDocument) {
   EXPECT_FALSE(frame_node->GetOrigin().has_value());
   const GURL kUrl("http://www.foo.com/");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
-  frame_node->OnNavigationCommitted(kUrl, kOrigin, /* same_document */ true);
+  frame_node->OnNavigationCommitted(
+      kUrl, kOrigin, /*same_document=*/true,
+      /*is_served_from_back_forward_cache=*/false);
   EXPECT_EQ(kUrl, frame_node->GetURL());
   // Origin argument is ignored for same-document navigation.
   EXPECT_FALSE(frame_node->GetOrigin().has_value());
@@ -108,7 +110,9 @@ TEST_F(FrameNodeImplTest, NavigationCommitted_DifferentDocument) {
   EXPECT_FALSE(frame_node->GetOrigin().has_value());
   const GURL kUrl("http://www.foo.com/");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
-  frame_node->OnNavigationCommitted(kUrl, kOrigin, /* same_document */ false);
+  frame_node->OnNavigationCommitted(
+      kUrl, kOrigin, /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   EXPECT_EQ(kUrl, frame_node->GetURL());
   EXPECT_EQ(kOrigin, frame_node->GetOrigin());
 }
@@ -294,15 +298,18 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
         EXPECT_EQ(frame_node->GetOrigin(), kOrigin);
       });
   EXPECT_CALL(obs, OnNetworkAlmostIdleChanged(raw_frame_node));
-  frame_node->OnNavigationCommitted(kUrl, kOrigin, /*same_document=*/false);
+  frame_node->OnNavigationCommitted(
+      kUrl, kOrigin, /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   testing::Mock::VerifyAndClear(&obs);
 
   // Invoke "OnNavigationCommitted" for a same-document navigation. Origin isn't
   // affected.
   const GURL kSameDocumentUrl("http://www.foo.com#same-document");
   EXPECT_CALL(obs, OnURLChanged(raw_frame_node, kUrl));
-  frame_node->OnNavigationCommitted(kSameDocumentUrl, kOrigin,
-                                    /*same_document=*/true);
+  frame_node->OnNavigationCommitted(
+      kSameDocumentUrl, kOrigin,
+      /*same_document=*/true, /*is_served_from_back_forward_cache=*/false);
   testing::Mock::VerifyAndClear(&obs);
 
   // Re-entrant iteration should work.

@@ -262,13 +262,15 @@ TEST_P(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
   auto frame1 =
       CreateFrameNodeAutoId(process3.get(), page1.get(),
                             /*parent_frame_node=*/nullptr, kBrowsingInstance);
-  frame1->OnNavigationCommitted(kUrl1, kOrigin1, /*same_document=*/false);
+  frame1->OnNavigationCommitted(kUrl1, kOrigin1, /*same_document=*/false,
+                                /*is_served_from_back_forward_cache=*/false);
   const GURL kUrl2("https://b.com");
   const url::Origin kOrigin2 = url::Origin::Create(kUrl2);
   auto frame2 =
       CreateFrameNodeAutoId(process3.get(), page1.get(),
                             /*parent_frame_node=*/nullptr, kBrowsingInstance);
-  frame2->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
+  frame2->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false,
+                                /*is_served_from_back_forward_cache=*/false);
 
   const auto page_context1 = page1->GetResourceContext();
   const auto frame_context1 = frame1->GetResourceContext();

@@ -425,9 +425,11 @@ void FrameNodeImpl::SetPrivateFootprintKbEstimate(
   private_footprint_kb_estimate_ = private_footprint_estimate;
 }
 
-void FrameNodeImpl::OnNavigationCommitted(GURL url,
-                                          url::Origin origin,
-                                          bool same_document) {
+void FrameNodeImpl::OnNavigationCommitted(
+    GURL url,
+    url::Origin origin,
+    bool same_document,
+    bool is_served_from_back_forward_cache) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (same_document) {
@@ -439,6 +441,14 @@ void FrameNodeImpl::OnNavigationCommitted(GURL url,
       }
     }
 
+    return;
+  }
+
+  // If this frame is being served from the back-forward cache, then this frame
+  // does not host a new document. We don't need to reset the document's
+  // properties, and more importantly, we can't reset the `receiver_` as there
+  // won't be another Bind() request to rebind it.
+  if (is_served_from_back_forward_cache) {
     return;
   }
 

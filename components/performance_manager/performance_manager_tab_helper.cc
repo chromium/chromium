@@ -216,9 +216,10 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
           base::BindOnce(
               [](GURL url, url::Origin origin, FrameNodeImpl* frame_node) {
                 if (!url.is_empty())
-                  frame_node->OnNavigationCommitted(std::move(url),
-                                                    std::move(origin),
-                                                    /*same_document=*/false);
+                  frame_node->OnNavigationCommitted(
+                      std::move(url), std::move(origin),
+                      /*same_document=*/false,
+                      /*is_served_from_back_forward_cache=*/false);
               },
               render_frame_host->GetLastCommittedURL(),
               render_frame_host->GetLastCommittedOrigin()));
@@ -393,11 +394,13 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
 
   // Notify the frame of the committed URL.
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&FrameNodeImpl::OnNavigationCommitted,
-                                base::Unretained(frame_node),
-                                render_frame_host->GetLastCommittedURL(),
-                                render_frame_host->GetLastCommittedOrigin(),
-                                navigation_handle->IsSameDocument()));
+      FROM_HERE,
+      base::BindOnce(&FrameNodeImpl::OnNavigationCommitted,
+                     base::Unretained(frame_node),
+                     render_frame_host->GetLastCommittedURL(),
+                     render_frame_host->GetLastCommittedOrigin(),
+                     navigation_handle->IsSameDocument(),
+                     navigation_handle->IsServedFromBackForwardCache()));
 
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;

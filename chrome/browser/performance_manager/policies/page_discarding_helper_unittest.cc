@@ -70,7 +70,9 @@ class PageDiscardingHelperTest
         false, base::TimeTicks::Now(), page->GetNavigationID() + 1, url,
         mime_type, /* notification_permission_status=*/
         blink::mojom::PermissionStatus::ASK);
-    frame->OnNavigationCommitted(url, url::Origin::Create(url), false);
+    frame->OnNavigationCommitted(url, url::Origin::Create(url),
+                                 /*same_document=*/false,
+                                 /*is_served_from_back_forward_cache=*/false);
   }
 
   // Convenience wrappers for PageNodeHelper::CanDiscard().
@@ -188,7 +190,9 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardNeverAudiblePage) {
   new_page_node->OnMainFrameNavigationCommitted(
       false, base::TimeTicks::Now(), 42, kUrl, "text/html",
       /* notification_permission_status=*/blink::mojom::PermissionStatus::ASK);
-  new_frame_node->OnNavigationCommitted(kUrl, url::Origin::Create(kUrl), false);
+  new_frame_node->OnNavigationCommitted(
+      kUrl, url::Origin::Create(kUrl), /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
 
   EXPECT_FALSE(new_page_node->IsAudible());
 

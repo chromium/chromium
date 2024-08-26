@@ -144,7 +144,10 @@ class FrameNodeImpl
   void SetPrivateFootprintKbEstimate(uint64_t private_footprint_estimate);
 
   // Invoked when a navigation is committed in the frame.
-  void OnNavigationCommitted(GURL url, url::Origin origin, bool same_document);
+  void OnNavigationCommitted(GURL url,
+                             url::Origin origin,
+                             bool same_document,
+                             bool is_served_from_back_forward_cache);
 
   // Invoked by |worker_node| when it starts/stops being a child of this frame.
   void AddChildWorker(WorkerNodeImpl* worker_node);
