@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <input>
+<script src="rendering-utils.js"></script>
 <script>
 const input = document.querySelector('input');
 input.setCustomValidity('foo'.repeat(85) + 'f...');
 input.reportValidity();
+waitForAtLeastOneFrame().then(() => {
+  parent.postMessage('bubble_displayed', '*');
+});
 </script>

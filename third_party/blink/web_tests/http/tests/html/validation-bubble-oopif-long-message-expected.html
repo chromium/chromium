@@ -1,3 +1,16 @@
 <!DOCTYPE html>
+
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+
+  addEventListener('message', (e) => {
+    if (window.testRunner && e.data === 'bubble_displayed') {
+      testRunner.notifyDone();
+    }
+  }, false);
+</script>
+
 <p>Cross origin validation bubbles should be truncated.</p>
-<iframe src="http://127.0.0.1:8000/html/resources/validation-bubble-oopif-long-message-iframe-truncated.html"></iframe>
+<iframe src="http://localhost:8000/html/resources/validation-bubble-oopif-long-message-iframe-truncated.html"></iframe>
