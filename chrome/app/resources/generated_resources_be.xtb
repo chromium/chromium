@@ -3887,6 +3887,7 @@
 <translation id="3760460896538743390">Праглядзець &amp;фонавую старонку</translation>
 <translation id="37613671848467444">Адкрыць у &amp;акне ў рэжыме інкогніта</translation>
 <translation id="3761556954875533505">Дазволіць сайту змяняць файлы?</translation>
+<translation id="3761560059647741692">Пейзаж</translation>
 <translation id="3761733456040768239">Іншыя дзеянні для карткі <ph name="CARD_DESCRIPTION" />, код CVC захаваны</translation>
 <translation id="3763433740586298940">Вы можаце блакіраваць непажаданыя сайты. Chrome таксама аўтаматычна выдаляе сайты са спіса, унесеныя ў яго больш чым за 30 дзён таму.</translation>
 <translation id="3763549179847864476">Кнопка "Назад" у Дапаможніку па прыватнасці</translation>
@@ -7413,6 +7414,7 @@
 <translation id="6351178441572658285">Мовы праграм</translation>
 <translation id="6354918092619878358">SECG эліптычны secp256r1 (іншая назва – ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Не выключайце прыладу.</translation>
+<translation id="6356537493253478650">Ціхамірны</translation>
 <translation id="63566973648609420">Толькі карыстальнікі, якія ведаюць фразу-пароль, могуць чытаць вашы зашыфраваныя даныя. Google не адпраўляе і не захоўвае фразу-пароль. Калі вы не памятаеце фразу-пароль або хочаце змяніць гэту наладу, вам трэба <ph name="BEGIN_LINK" />скінуць сінхранізацыю<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Калі прагортваць уверх, старонка будзе перамяшчацца ўніз</translation>
 <translation id="6356893102071098867">Упэўніцеся, што вы выбралі патрэбны ўліковы запіс</translation>
@@ -8174,6 +8176,7 @@
 <translation id="6909422577741440844">Атрымаць файл з гэтай прылады?</translation>
 <translation id="6910190732484284349">Выдаліць ключ доступу для карыстальніка <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Выдалена</translation>
+<translation id="6910274140210351823">Цёмны</translation>
 <translation id="6911734910326569517">Выкарыстанне памяці</translation>
 <translation id="6912007319859991306">PIN-код SIM-карты</translation>
 <translation id="6912380255120084882">Паспрабуйце выкарыстаць іншую прыладу</translation>

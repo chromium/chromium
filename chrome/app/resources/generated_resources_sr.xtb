@@ -3886,6 +3886,7 @@
 <translation id="3760460896538743390">Провери страницу &amp;позадине</translation>
 <translation id="37613671848467444">Отвори у &amp;прозору без архивирања</translation>
 <translation id="3761556954875533505">Желите ли да дозволите сајту да мења датотеке?</translation>
+<translation id="3761560059647741692">Пејзаж</translation>
 <translation id="3761733456040768239">Још радњи за картицу <ph name="CARD_DESCRIPTION" />, CVC је сачуван</translation>
 <translation id="3763433740586298940">Можете да блокирате сајтове које не желите. Chrome такође аутоматски са листе брише сајтове који су старији од 30 дана.</translation>
 <translation id="3763549179847864476">Дугме Назад за Водич за приватност</translation>
@@ -7412,6 +7413,7 @@
 <translation id="6351178441572658285">Језици апликација</translation>
 <translation id="6354918092619878358">Елиптична крива SECG secp256r1 (такође позната као ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Не искључујте уређај</translation>
+<translation id="6356537493253478650">Спокојно</translation>
 <translation id="63566973648609420">Само неко ко има приступну фразу може да чита шифроване податке. Google не шаље нити чува приступну фразу. Ако заборавите приступну фразу или желите да промените ово подешавање, мораћете да <ph name="BEGIN_LINK" />ресетујете синхронизацију<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Скролујте нагоре да бисте померили страницу надоле</translation>
 <translation id="6356893102071098867">Проверите да ли сте изабрали одговарајући налог</translation>
@@ -8172,6 +8174,7 @@
 <translation id="6909422577741440844">Да ли желите да примите садржај са овог уређаја?</translation>
 <translation id="6910190732484284349">Избришите приступни кључ за корисничко име: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Избрисано</translation>
+<translation id="6910274140210351823">Тамно</translation>
 <translation id="6911734910326569517">Меморијски простор у употреби</translation>
 <translation id="6912007319859991306">PIN SIM-а за мобилну мрежу</translation>
 <translation id="6912380255120084882">Пробајте са другим уређајем</translation>

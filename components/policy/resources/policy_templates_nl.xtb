@@ -155,6 +155,7 @@ Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NA
 
 Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1068801725746725727">Ontvangst van Safe Browsing-enquêtes aanzetten</translation>
+<translation id="107045325503547419">Afhankelijk van het releaseproces voor de functie.</translation>
 <translation id="1073983258515362346">Informatie rapporteren over de schermverlichting van een apparaat.
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
@@ -3055,6 +3056,7 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="3308724602356134956">Als je het beleid instelt, downloadt en gebruikt <ph name="PRODUCT_OS_NAME" /> de door jou ingestelde achtergrondafbeelding voor de achtergrond van het bureaublad van de gebruiker en het inlogscherm. Gebruikers kunnen de afbeelding niet wijzigen. Specificeer de URL (die toegankelijk moet zijn zonder verificatie) waar <ph name="PRODUCT_OS_NAME" /> de achtergrondafbeelding kan downloaden, evenals een cryptografische hash (in jpeg-indeling met een bestandsgrootte van maximaal 16 MB) om de integriteit daarvan te verifiëren.
 
       Als je het beleid niet instelt, kiezen gebruikers de afbeelding voor de achtergrond van het bureaublad en het inlogscherm.</translation>
+<translation id="3313395530427546108">Geen ad-hoc-codehandtekeningen gebruiken.</translation>
 <translation id="3315324240256767419">De functie voor ghostvenster aanzetten.</translation>
 <translation id="3321099611644751329">TLS-certificaten die moeten worden vertrouwd door <ph name="PRODUCT_NAME" /> voor serververificatie met beperkingen</translation>
 <translation id="3323819750604111729">Import van bookmarks bij eerste uitvoering aanzetten</translation>
@@ -4281,6 +4283,7 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 
 Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alleen effect als je <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> hebt ingesteld op False.</translation>
 <translation id="4298476374822550051">Post-quantum sleutelovereenkomst van Kyber voor TLS aanzetten</translation>
+<translation id="4301478455179579340">Ondertekening van systeemeigen app bij installatie van progressive web-app</translation>
 <translation id="4303167373847512281">Ontwikkelaarsmodus toestaan</translation>
 <translation id="4307116964468610577">Het beleid verlengt de bruikbare levensduur van de systeembatterijen door ze maar één keer per dag volledig op te laden. De rest van de dag worden de batterijen in een lagere oplaadstatus gehouden, wat beter is voor opslag, ook als het systeem is aangesloten op een voedingsbron.
 
@@ -8123,6 +8126,7 @@ Als je dit beleid niet toepast, worden wachtwoorden nooit onthouden en worden al
 <translation id="7146198347561863646">Als je het beleid toepast of niet instelt, zijn wake locks voor stroombeheer toegestaan. Extensies kunnen wake locks aanvragen via de API voor de stroombeheerextensie en via ARC-apps.
 
       Als je het beleid niet toepast, worden wake lock-verzoeken genegeerd.</translation>
+<translation id="7146363485174988200">Ad-hoc-codehandtekeningen gebruiken.</translation>
 <translation id="7148958378210448356">Een vooraf bepaalde lijst met snelkoppelingen via de Launcher-toets voert nooit een actie uit.</translation>
 <translation id="7149042336307555519"> De typen verbindingen die mogen worden gebruikt voor OS-updates. Grote OS-updates kunnen belastend zijn voor de verbinding, wat kan leiden tot extra kosten. Daarom zijn ze standaard uitgezet voor verbindingstypen die als duur worden beschouwd (momenteel alleen verbindingen van het type 'mobiel').
 
@@ -9044,6 +9048,11 @@ Als je het beleid <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> niet toepast, he
 <translation id="793473937901685727">Certificaatbeschikbaarheid instellen voor ARC-apps</translation>
 <translation id="7936302526928951356">De tekenreeks voor User-agent zet de hoofdversie niet vast.</translation>
 <translation id="7937766917976512374">Het opnemen van video's toestaan of weigeren</translation>
+<translation id="7937825205289116563">Als je het beleid toepast of niet instelt, wordt het gebruik van ad-hoc-handtekeningen aangezet voor de systeemeigen app die wordt gemaakt bij de installatie van een progressive web-app (PWA). Hierdoor heeft elke geïnstalleerde app een unieke identiteit voor <ph name="MAC_OS_NAME" />-systeemcomponenten.
+
+Als je het beleid niet toepast, heeft elke systeemeigen app die wordt gemaakt bij het installeren van progressive web-apps dezelfde identiteit. Dit kan de <ph name="MAC_OS_NAME" />-functionaliteit verstoren.
+
+Zet het beleid alleen uit als je een oplossing voor beveiliging van eindpunten gebruikt die apps met een ad-hoc-handtekening blokkeert.</translation>
 <translation id="7941528208359969119">Toestaan dat online <ph name="OCSP_CRL_LABEL" />-checks worden uitgevoerd</translation>
 <translation id="7941975817681987555">Geen netwerkacties voorspellen voor een netwerkverbinding</translation>
 <translation id="7945445169067895719">Vergrendeling aanzetten als het apparaat in de slaapstand wordt gezet of de klep wordt gesloten</translation>

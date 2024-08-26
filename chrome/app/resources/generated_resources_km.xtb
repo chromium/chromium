@@ -3899,6 +3899,7 @@
 <translation id="3760460896538743390">តាមដានទំព័រផ្ទៃខាងក្រោយ</translation>
 <translation id="37613671848467444">បើកនៅក្នុងផ្ទាំងអនាមិក</translation>
 <translation id="3761556954875533505">អនុញ្ញាតឱ្យ​គេហទំព័រ​កែឯកសារ​ឬ?</translation>
+<translation id="3761560059647741692">ផ្ដេក</translation>
 <translation id="3761733456040768239">សកម្មភាព​ច្រើនទៀត​សម្រាប់ <ph name="CARD_DESCRIPTION" />, បានរក្សាទុក CVC</translation>
 <translation id="3763433740586298940">អ្នក​អាច​ទប់ស្កាត់​គេហទំព័រ​ដែល​អ្នកមិន​ចង់​បាន។ Chrome ក៏លុប​គេហទំព័រ​ដែលចាស់ជាង 30 ថ្ងៃ​ចេញពីបញ្ជី​ដោយស្វ័យប្រវត្តិ​ផងដែរ។</translation>
 <translation id="3763549179847864476">ប៊ូតុងថយក្រោយរបស់ការណែនាំអំពី​ឯកជនភាព</translation>
@@ -7425,6 +7426,7 @@
 <translation id="6351178441572658285">ភាសាកម្មវិធី</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">បន្តបើក​ឧបករណ៍</translation>
+<translation id="6356537493253478650">ស្ងប់ស្ងាត់</translation>
 <translation id="63566973648609420">មានតែបុគ្គលដែលមានឃ្លាសម្ងាត់របស់អ្នកប៉ុណ្ណោះ ដែលអាចអានទិន្នន័យដែលបានអ៊ិនគ្រីបរបស់អ្នក។ ឃ្លាសម្ងាត់នេះមិនត្រូវបានផ្ញើទៅ ឬផ្ទុកដោយ Google ឡើយ។ ប្រសិនបើអ្នកភ្លេចឃ្លាសម្ងាត់របស់អ្នក ឬចង់ប្តូរការកំណត់នេះ អ្នកត្រូវ<ph name="BEGIN_LINK" />កំណត់សមកាលកម្មឡើងវិញ<ph name="END_LINK" />។</translation>
 <translation id="6356718524173428713">រំកិល​ឡើងលើ ដើម្បីផ្លាស់ទី​ទំព័រចុះក្រោម</translation>
 <translation id="6356893102071098867">ពិនិត្យមើលថា​អ្នកបាន​ជ្រើសរើស​គណនី​ដែលត្រឹមត្រូវ</translation>
@@ -8181,6 +8183,7 @@
 <translation id="6909422577741440844">ទទួលពីឧបករណ៍នេះឬ?</translation>
 <translation id="6910190732484284349">លុបកូដសម្ងាត់សម្រាប់ឈ្មោះអ្នកប្រើប្រាស់៖ <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">បានលុប</translation>
+<translation id="6910274140210351823">ងងឹត</translation>
 <translation id="6911734910326569517">បរិមាណអង្គចងចាំដែលកំពុងដំណើរការ</translation>
 <translation id="6912007319859991306">កូដ PIN ស៊ីម​បណ្ដាញចល័ត</translation>
 <translation id="6912380255120084882">​សាកល្បងប្រើ​ឧបករណ៍​ផ្សេង</translation>

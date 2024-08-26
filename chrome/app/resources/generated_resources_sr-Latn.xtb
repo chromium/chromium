@@ -3886,6 +3886,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3760460896538743390">Proveri stranicu &amp;pozadine</translation>
 <translation id="37613671848467444">Otvori u &amp;prozoru bez arhiviranja</translation>
 <translation id="3761556954875533505">Želite li da dozvolite sajtu da menja datoteke?</translation>
+<translation id="3761560059647741692">Pejzaž</translation>
 <translation id="3761733456040768239">Još radnji za karticu <ph name="CARD_DESCRIPTION" />, CVC je sačuvan</translation>
 <translation id="3763433740586298940">Možete da blokirate sajtove koje ne želite. Chrome takođe automatski sa liste briše sajtove koji su stariji od 30 dana.</translation>
 <translation id="3763549179847864476">Dugme Nazad za Vodič za privatnost</translation>
@@ -7412,6 +7413,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6351178441572658285">Jezici aplikacija</translation>
 <translation id="6354918092619878358">Eliptična kriva SECG secp256r1 (takođe poznata kao ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Ne isključujte uređaj</translation>
+<translation id="6356537493253478650">Spokojno</translation>
 <translation id="63566973648609420">Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Google ne šalje niti čuva pristupnu frazu. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, moraćete da <ph name="BEGIN_LINK" />resetujete sinhronizaciju<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Skrolujte nagore da biste pomerili stranicu nadole</translation>
 <translation id="6356893102071098867">Proverite da li ste izabrali odgovarajući nalog</translation>
@@ -8172,6 +8174,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6909422577741440844">Da li želite da primite sadržaj sa ovog uređaja?</translation>
 <translation id="6910190732484284349">Izbrišite pristupni ključ za korisničko ime: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Izbrisano</translation>
+<translation id="6910274140210351823">Tamno</translation>
 <translation id="6911734910326569517">Memorijski prostor u upotrebi</translation>
 <translation id="6912007319859991306">PIN SIM-a za mobilnu mrežu</translation>
 <translation id="6912380255120084882">Probajte sa drugim uređajem</translation>
