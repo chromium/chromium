@@ -59,9 +59,11 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
   ASSERT_TRUE(launch_future.Get());
 
-  // Also verify the new app window is the active window.
+  // Also verify the new app window is the active window and is set up for
+  // locked mode transition.
   Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
   ASSERT_THAT(boca_app_browser, NotNull());
+  EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
   EXPECT_EQ(boca_app_browser->session_id(),
             system_web_app_manager.GetActiveSystemWebAppWindowID());
 }

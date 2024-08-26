@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
@@ -59,11 +60,23 @@ void OnTaskSystemWebAppManagerImpl::LaunchSystemWebAppAsync(
       /*window_info=*/nullptr,
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
+             base::WeakPtr<OnTaskSystemWebAppManagerImpl> instance,
              apps::LaunchResult&& launch_result) {
+            if (instance) {
+              // Configure the browser window for OnTask. This is required to
+              // ensure downstream components (especially UI controls) are setup
+              // for locked mode transitions.
+              const SessionID active_window_id =
+                  instance->GetActiveSystemWebAppWindowID();
+              Browser* const browser = GetBrowserWindowWithID(active_window_id);
+              if (browser) {
+                browser->SetLockedForOnTask(true);
+              }
+            }
             std::move(callback).Run(launch_result.state ==
                                     apps::LaunchResult::State::kSuccess);
           },
-          std::move(callback)));
+          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(

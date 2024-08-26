@@ -36,7 +36,7 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
  private:
   raw_ptr<Profile> profile_;
 
-  base::WeakPtrFactory<OnTaskSystemWebAppManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OnTaskSystemWebAppManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::boca
