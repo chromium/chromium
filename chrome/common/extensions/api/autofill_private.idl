@@ -154,9 +154,6 @@ namespace autofillPrivate {
     // being synced down from the server). Non-local entries may not be editable.
     boolean? isLocal;
 
-    // For credit cards, whether this is a full copy of the card
-    boolean? isCached;
-
     // For credit cards, whether this is migratable (both the card number and
     // expiration date valid and does not have the duplicated server card).
     boolean? isMigratable;

@@ -334,8 +334,6 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   card.metadata->summary_sublabel = base::UTF16ToUTF8(label_pieces.second);
   card.metadata->is_local =
       credit_card.record_type() == autofill::CreditCard::RecordType::kLocalCard;
-  card.metadata->is_cached = credit_card.record_type() ==
-                             autofill::CreditCard::RecordType::kFullServerCard;
   // IsValid() checks if both card number and expiration date are valid.
   // IsServerCard() checks whether there is a duplicated server card in
   // |personal_data|.
