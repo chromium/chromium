@@ -11,11 +11,11 @@
 #include "ui/display/mac/display_link_mac.h"
 
 namespace ui {
-class Wrapper;
+class CASharedState;
 
 class CADisplayLinkMac : public DisplayLinkMac {
  public:
-  // Create a CVDisplayLinkMac for the specified display.
+  // Create a CADisplayLinkMac for the specified display.
   static scoped_refptr<CADisplayLinkMac> GetForDisplayOnCurrentThread(
       CGDirectDisplayID display_id);
 
@@ -41,7 +41,7 @@ class CADisplayLinkMac : public DisplayLinkMac {
   base::TimeTicks GetCurrentTime() const override;
 
  private:
-  explicit CADisplayLinkMac(Wrapper* wrapper);
+  explicit CADisplayLinkMac(CASharedState* share_state);
   ~CADisplayLinkMac() override;
 
   CADisplayLinkMac(const CADisplayLinkMac&) = delete;
@@ -55,7 +55,7 @@ class CADisplayLinkMac : public DisplayLinkMac {
 
   // A single Wrapper is shared between all CADisplayLinkMac instances that have
   // same display ID on the same thread. This is manually retained and released.
-  raw_ptr<Wrapper> wrapper_;
+  raw_ptr<CASharedState> shared_state_;
 
   base::WeakPtrFactory<CADisplayLinkMac> weak_factory_{this};
 };
