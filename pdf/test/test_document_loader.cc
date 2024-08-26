@@ -73,8 +73,7 @@ bool TestDocumentLoader::SimulateLoadData(uint32_t max_bytes) {
 
 bool TestDocumentLoader::Init(std::unique_ptr<URLLoaderWrapper> loader,
                               const std::string& url) {
-  NOTREACHED_IN_MIGRATION() << "PDFiumEngine skips this call when testing";
-  return false;
+  NOTREACHED() << "PDFiumEngine skips this call when testing";
 }
 
 bool TestDocumentLoader::GetBlock(uint32_t position,

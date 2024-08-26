@@ -186,7 +186,7 @@ bool UrlLoader::WillFollowRedirect(
 void UrlLoader::DidSendData(uint64_t bytes_sent,
                             uint64_t total_bytes_to_be_sent) {
   // Doesn't apply to PDF viewer requests.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Modeled on `content::PepperURLLoaderHost::DidReceiveResponse()`.
@@ -205,7 +205,7 @@ void UrlLoader::DidReceiveResponse(const blink::WebURLResponse& response) {
 
 void UrlLoader::DidDownloadData(uint64_t data_length) {
   // Doesn't apply to PDF viewer requests.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Modeled on `content::PepperURLLoaderHost::DidReceiveData()`.
