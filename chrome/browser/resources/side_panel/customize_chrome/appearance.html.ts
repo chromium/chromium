@@ -51,6 +51,8 @@ export function getHtml(this: AppearanceElement) {
 <hr class="sp-hr" ?hidden="${!this.isSourceTabFirstPartyNtp_}">
 ${(!this.isSourceTabFirstPartyNtp_ && this.ntpManagedByName_ !== '') ? html`
   <customize-chrome-hover-button id="thirdPartyManageLinkButton"
+      aria-label="${this.i18n('newTabPageManagedByA11yLabel',
+                           this.ntpManagedByName_)}"
       class="link-out-button theme-button"
       @click="${this.onNewTabPageManageByButtonClicked_}"
       label-description="${this.i18n('newTabPageManagedBy',
