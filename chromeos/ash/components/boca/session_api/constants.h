@@ -21,6 +21,41 @@ inline constexpr char kMainStudentGroupName[] = "main";
 inline constexpr char kSchoolToolsAuthScope[] =
     "https://www.googleapis.com/auth/chromeosschooltools";
 
+inline constexpr char kGetSessionUrlTemplate[] =
+    "v1/users/$1/sessions:getActive";
+
+inline constexpr char kSessionId[] = "sessionId";
+inline constexpr char kTeacher[] = "teacher";
+inline constexpr char kRoster[] = "roster";
+inline constexpr char kRosterTitle[] = "title";
+inline constexpr char kStudentGroupTitle[] = "title";
+inline constexpr char kStudentGroups[] = "studentGroups";
+inline constexpr char kStudents[] = "students";
+inline constexpr char kGaiaId[] = "gaiaId";
+inline constexpr char kEmail[] = "email";
+inline constexpr char kFullName[] = "fullName";
+inline constexpr char kPhotoUrl[] = "photoUrl";
+inline constexpr char kStudentGroupsConfig[] = "studentGroupConfigs";
+inline constexpr char kStartTime[] = "startTime";
+inline constexpr char kDuration[] = "duration";
+inline constexpr char kSessionState[] = "sessionState";
+inline constexpr char kOnTaskConfig[] = "onTaskConfig";
+inline constexpr char kCaptionsConfig[] = "captionsConfig";
+inline constexpr char kCaptionsEnabled[] = "captionsEnabled";
+inline constexpr char kTranslationsEnabled[] = "translationsEnabled";
+inline constexpr char kStudentStatus[] = "studentStatuses";
+inline constexpr char kStudentStatusState[] = "state";
+inline constexpr char kUrl[] = "url";
+inline constexpr char kTitle[] = "title";
+inline constexpr char kFavIcon[] = "faviconUrl";
+inline constexpr char kContentConfigs[] = "contentConfigs";
+inline constexpr char kActiveBundle[] = "activeBundle";
+inline constexpr char kLocked[] = "locked";
+inline constexpr char kLockedNavigationOptions[] = "lockedNavigationOptions";
+inline constexpr char kNavigationType[] = "navigationType";
+inline constexpr char kSeconds[] = "seconds";
+inline constexpr char kNanos[] = "nanos";
+
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(
           semantics: {

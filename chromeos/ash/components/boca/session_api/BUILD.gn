@@ -12,6 +12,8 @@ source_set("session_api") {
     "constants.h",
     "create_session_request.cc",
     "create_session_request.h",
+    "get_session_request.cc",
+    "get_session_request.h",
     "session_client_impl.cc",
     "session_client_impl.h",
   ]
@@ -30,7 +32,10 @@ source_set("session_api") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "create_session_request_unittest.cc" ]
+  sources = [
+    "create_session_request_unittest.cc",
+    "get_session_request_unittest.cc",
+  ]
 
   deps = [
     ":session_api",

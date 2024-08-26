@@ -48,4 +48,8 @@ void SessionClientImpl::CreateSession(
   sender_->StartRequestWithAuthRetry(std::move(request));
 }
 
+void SessionClientImpl::GetSession(std::unique_ptr<GetSessionRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+
 }  // namespace ash::boca

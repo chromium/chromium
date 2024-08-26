@@ -45,7 +45,6 @@ using ::testing::Truly;
 
 namespace {
 const char kTestUserAgent[] = "test-user-agent";
-}
 
 class MockRequestHandler {
  public:
@@ -65,6 +64,8 @@ class MockRequestHandler {
               HandleRequest,
               (const HttpRequest&));
 };
+
+}  // namespace
 
 namespace ash::boca {
 
