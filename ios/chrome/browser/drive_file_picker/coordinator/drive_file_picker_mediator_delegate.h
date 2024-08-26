@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class DriveFilePickerMediator;
+@class DriveItemIdentifier;
 
 // Handles the browsing and searching a drive folder.
 @protocol DriveFilePickerMediatorDelegate
@@ -15,12 +16,12 @@
 // Browses a given drive folder.
 - (void)browseDriveFolderWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                          driveFolder:(NSString*)driveFolder;
+                        driveFolderID:(DriveItemIdentifier*)driveFolderID;
 
 // Searches in a given drive folder.
 - (void)searchDriveFolderWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                          driveFolder:(NSString*)driveFolder;
+                        driveFolderID:(DriveItemIdentifier*)driveFolderID;
 
 @end
 

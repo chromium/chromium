@@ -280,4 +280,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _selectedEmail = selectedUserIdentityEmail;
 }
 
+- (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle {
+}
+
 @end

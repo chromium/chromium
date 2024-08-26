@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -40,6 +41,9 @@
 
   // Account chooser button.
   UIBarButtonItem* _accountButton;
+
+  // The currently represented folder.
+  NSString* _driveFolderTitle;
 }
 
 - (instancetype)init {
@@ -78,24 +82,22 @@
   // TODO(crbug.com/344812548): Add a data source to the table view.
 }
 
-#pragma mark - Public
-
-- (void)setFolderTitle:(NSString*)folderTitle {
-  _folderTitle = folderTitle;
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  titleLabel.text = _folderTitle;
-  titleLabel.textAlignment = NSTextAlignmentLeft;
-  titleLabel.adjustsFontSizeToFitWidth = YES;
-  titleLabel.minimumScaleFactor = 0.1;
-  self.navigationItem.titleView = titleLabel;
-}
-
 #pragma mark - DriveFilePickerConsumer
 
 - (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
   _selectedEmail = selectedUserIdentityEmail;
+}
+
+- (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle {
+  _driveFolderTitle = currentDriveFolderTitle;
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  titleLabel.text = _driveFolderTitle;
+  titleLabel.textAlignment = NSTextAlignmentLeft;
+  titleLabel.adjustsFontSizeToFitWidth = YES;
+  titleLabel.minimumScaleFactor = 0.1;
+  self.navigationItem.titleView = titleLabel;
 }
 
 #pragma mark - UI actions

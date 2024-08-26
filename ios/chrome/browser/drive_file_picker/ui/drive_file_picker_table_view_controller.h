@@ -10,6 +10,7 @@
 
 @protocol DriveFilePickerCommands;
 @protocol DriveFilePickerMutator;
+@class DriveItemIdentifier;
 
 // TableViewController presenting a list of Drive files and folders. This should
 // be pushed onto the DriveFilePickerNavigationController.
@@ -20,8 +21,6 @@
 @property(nonatomic, weak) id<DriveFilePickerMutator> mutator;
 // Drive file picker handler.
 @property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
-// The title of the currently represented folder.
-@property(nonatomic, strong) NSString* folderTitle;
 
 @end
 

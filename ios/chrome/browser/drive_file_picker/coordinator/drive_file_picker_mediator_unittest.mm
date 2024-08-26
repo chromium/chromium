@@ -18,7 +18,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     web_state_ = std::make_unique<web::FakeWebState>();
     mediator_ = [[DriveFilePickerMediator alloc]
         initWithWebState:web_state_.get()
-                identity:[FakeSystemIdentity fakeIdentity1]];
+                identity:[FakeSystemIdentity fakeIdentity1]
+           driveFolderID:nil];
     // Start file selection in `web_state_`.
     choose_file_tab_helper_ =
         ChooseFileTabHelper::GetOrCreateForWebState(web_state_.get());

@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
@@ -33,7 +34,7 @@
   BrowseDriveFilePickerCoordinator* _childBrowseCoordinator;
 
   // The folder associated to the current `BrowseDriveFilePickerCoordinator`.
-  NSString* _folder;
+  DriveItemIdentifier* _driveFolderID;
 
   // Identity whose Drive is being browsed.
   id<SystemIdentity> _identity;
@@ -46,7 +47,7 @@
         (UINavigationController*)baseNavigationController
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
-                                  folder:(NSString*)folder
+                           driveFolderID:(DriveItemIdentifier*)driveFolderID
                                 identity:(id<SystemIdentity>)identity {
   self = [super initWithBaseViewController:baseNavigationController
                                    browser:browser];
@@ -55,7 +56,7 @@
     CHECK(identity);
     _baseNavigationController = baseNavigationController;
     _webState = webState;
-    _folder = folder;
+    _driveFolderID = driveFolderID;
     _identity = identity;
   }
   return self;
@@ -63,9 +64,9 @@
 
 - (void)start {
   _viewController = [[DriveFilePickerTableViewController alloc] init];
-  _viewController.folderTitle = _folder;
   _mediator = [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
-                                                       identity:_identity];
+                                                       identity:_identity
+                                                  driveFolderID:_driveFolderID];
 
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
@@ -86,25 +87,26 @@
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
   _identity = nil;
+  _driveFolderID = nil;
 }
 
 #pragma mark - DriveFilePickerMediatorDelegate
 
 - (void)browseDriveFolderWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                          driveFolder:(NSString*)driveFolder {
+                        driveFolderID:(DriveItemIdentifier*)driveFolderID {
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_baseNavigationController
                                    browser:self.browser
                                   webState:_webState
-                                    folder:driveFolder
+                             driveFolderID:driveFolderID
                                   identity:_identity];
   [_childBrowseCoordinator start];
 }
 
 - (void)searchDriveFolderWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                          driveFolder:(NSString*)driveFolder {
+                        driveFolderID:(DriveItemIdentifier*)driveFolderID {
   // TODO(crbug.com/344812548): Start the `SearchDriveFilePickerCoordinator` and
   // add it as child coordinator.
 }

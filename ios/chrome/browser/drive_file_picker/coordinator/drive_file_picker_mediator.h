@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 
+@class DriveItemIdentifier;
+
 @protocol DriveFilePickerMediatorDelegate;
 @protocol SystemIdentity;
 @protocol DriveFilePickerConsumer;
@@ -26,6 +28,7 @@ class WebState;
 // Initializes the mediator with a given `webState`.
 - (instancetype)initWithWebState:(web::WebState*)webState
                         identity:(id<SystemIdentity>)identity
+                   driveFolderID:(DriveItemIdentifier*)driveFolderID
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

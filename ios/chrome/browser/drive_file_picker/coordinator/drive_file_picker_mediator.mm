@@ -14,16 +14,20 @@
 @implementation DriveFilePickerMediator {
   base::WeakPtr<web::WebState> _webState;
   id<SystemIdentity> _identity;
+  // The folder associated to the current `BrowseDriveFilePickerCoordinator`.
+  DriveItemIdentifier* _driveFolderID;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
-                        identity:(id<SystemIdentity>)identity {
+                        identity:(id<SystemIdentity>)identity
+                   driveFolderID:(DriveItemIdentifier*)driveFolderID {
   self = [super init];
   if (self) {
     CHECK(webState);
     CHECK(identity);
     _webState = webState->GetWeakPtr();
     _identity = identity;
+    _driveFolderID = driveFolderID;
   }
   return self;
 }
@@ -42,6 +46,9 @@
 - (void)setConsumer:(id<DriveFilePickerConsumer>)consumer {
   _consumer = consumer;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
+  if (_driveFolderID) {
+    [_consumer setCurrentDriveFolderTitle:_driveFolderID.title];
+  }
 }
 
 - (void)selectDriveItem:(DriveItemIdentifier*)driveItem {
@@ -49,7 +56,7 @@
     case DriveItemType::kFile:
     case DriveItemType::kFolder:
       [self.delegate browseDriveFolderWithMediator:self
-                                       driveFolder:driveItem.title];
+                                     driveFolderID:driveItem];
   }
 }
 
