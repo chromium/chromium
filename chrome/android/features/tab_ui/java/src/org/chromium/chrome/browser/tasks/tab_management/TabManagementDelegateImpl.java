@@ -180,4 +180,10 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabGroupUiActionHandlerSupplier,
                 modalDialogManagerSupplier);
     }
+
+    @Override
+    public Pane createCrossDevicePane(
+            @NonNull Context context, @NonNull DoubleConsumer onToolbarAlphaChange) {
+        return new CrossDevicePane(context, onToolbarAlphaChange);
+    }
 }

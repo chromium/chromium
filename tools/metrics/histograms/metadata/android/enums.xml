@@ -986,12 +986,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Got JPEG thumbnail on refetch"/>
 </enum>
 
+<!-- LINT.IfChange(HubPaneId) -->
+
 <enum name="HubPaneId">
   <int value="0" label="Regular tab switcher"/>
   <int value="1" label="Incognito tab switcher"/>
   <int value="2" label="Bookmarks"/>
   <int value="3" label="Tab groups"/>
+  <int value="4" label="Cross device"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/hub/android/java/src/org/chromium/chrome/browser/hub/PaneId.java:PaneId) -->
 
 <enum name="IncognitoReauthPromoActionType">
   <int value="0" label="Promo accepted"/>

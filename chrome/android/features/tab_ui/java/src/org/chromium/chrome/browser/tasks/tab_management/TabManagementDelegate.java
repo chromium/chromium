@@ -122,7 +122,7 @@ public interface TabManagementDelegate {
             @NonNull BackPressManager backPressManager);
 
     /**
-     * *
+     * Create a {@link TabGroupsPane} for the Hub.
      *
      * @param context Used to inflate UI.
      * @param tabModelSelector Used to pull tab data from.
@@ -142,4 +142,14 @@ public interface TabManagementDelegate {
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier);
+
+    /**
+     * Create a {@link CrossDevicePane} for the Hub.
+     *
+     * @param context Used to inflate UI.
+     * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
+     * @return The pane implementation that displays and allows interactions with cross device tabs.
+     */
+    Pane createCrossDevicePane(
+            @NonNull Context context, @NonNull DoubleConsumer onToolbarAlphaChange);
 }

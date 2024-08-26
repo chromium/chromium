@@ -595,6 +595,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
     public static final CachedFlag sCommandLineOnNonRooted =
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
+    public static final CachedFlag sCrossDeviceTabPaneAndroid =
+            newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final CachedFlag sDelayTempStripRemoval =
             newCachedFlag(DELAY_TEMP_STRIP_REMOVAL, false);
     public static final CachedFlag sDisableInstanceLimit =
@@ -739,6 +741,7 @@ public abstract class ChromeFeatureList {
                     sCctTabModalDialog,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
+                    sCrossDeviceTabPaneAndroid,
                     sDelayTempStripRemoval,
                     sDisableInstanceLimit,
                     sDragDropIntoOmnibox,
@@ -832,8 +835,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
-    public static final MutableFlagWithSafeDefault sCrossDeviceTabPaneAndroid =
-            newMutableFlagWithSafeDefault(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final MutableFlagWithSafeDefault sGtsCloseTabAnimation =
             newMutableFlagWithSafeDefault(GTS_CLOSE_TAB_ANIMATION, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =

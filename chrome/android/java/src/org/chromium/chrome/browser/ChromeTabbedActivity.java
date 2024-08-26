@@ -860,6 +860,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             builder.registerPane(
                     PaneId.TAB_GROUPS, LazyOneshotSupplier.fromSupplier(this::createTabGroupsPane));
         }
+        if (ChromeFeatureList.sCrossDeviceTabPaneAndroid.isEnabled()) {
+            builder.registerPane(
+                    PaneId.CROSS_DEVICE,
+                    LazyOneshotSupplier.fromSupplier(this::createCrossDevicePane));
+        }
         mHubProvider
                 .getHubManagerSupplier()
                 .onAvailable(manager -> mHubManagerSupplier.set(manager));
@@ -930,6 +935,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                         .getTabGroupSyncController(),
                         getModalDialogManagerSupplier());
+    }
+
+    private Pane createCrossDevicePane() {
+        return TabManagementDelegateProvider.getDelegate()
+                .createCrossDevicePane(this, adaptOnToolbarAlphaChange());
     }
 
     private void setupCompositorContent() {

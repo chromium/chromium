@@ -14,6 +14,7 @@ public class DefaultPaneOrderController implements PaneOrderController {
                 PaneId.TAB_SWITCHER,
                 PaneId.INCOGNITO_TAB_SWITCHER,
                 PaneId.TAB_GROUPS,
+                PaneId.CROSS_DEVICE,
                 PaneId.BOOKMARKS);
     }
 }
