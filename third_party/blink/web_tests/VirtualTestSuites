@@ -2037,6 +2037,7 @@
   "which is effectively a no-op.",
   {
     "prefix": "webgl-oversized-printing",
+    "owners": ["kbr@chromium.org", "romanl@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [
       "printing/webgl-oversized-printing.html"
