@@ -223,6 +223,13 @@ const char* ProtoEnumToString(
     sync_pb::SharingMessageSpecifics::ChannelConfiguration::
         ChimeChannelConfiguration::ChimeChannelType channel_type);
 
+const char* ProtoEnumToString(
+    sync_pb::ThemeSpecifics::UserColorTheme::BrowserColorVariant
+        browser_color_variant);
+
+const char* ProtoEnumToString(
+    sync_pb::ThemeSpecifics::BrowserColorScheme browser_color_scheme);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_PROTOCOL_PROTO_ENUM_CONVERSIONS_H_

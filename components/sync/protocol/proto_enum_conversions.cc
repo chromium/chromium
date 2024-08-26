@@ -1036,6 +1036,37 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(
+    sync_pb::ThemeSpecifics::UserColorTheme::BrowserColorVariant
+        browser_color_variant) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ThemeSpecifics::UserColorTheme,
+                     BrowserColorVariant, BROWSER_COLOR_VARIANT_UNSPECIFIED,
+                     EXPRESSIVE);
+  switch (browser_color_variant) {
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme,
+              BROWSER_COLOR_VARIANT_UNSPECIFIED);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, SYSTEM);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, TONAL_SPOT);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, NEUTRAL);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, VIBRANT);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, EXPRESSIVE);
+  }
+  NOTREACHED_IN_MIGRATION();
+  return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::ThemeSpecifics::BrowserColorScheme browser_color_scheme) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ThemeSpecifics, BrowserColorScheme,
+                     BROWSER_COLOR_SCHEME_UNSPECIFIED, DARK);
+  switch (browser_color_scheme) {
+    ENUM_CASE(sync_pb::ThemeSpecifics, BROWSER_COLOR_SCHEME_UNSPECIFIED);
+    ENUM_CASE(sync_pb::ThemeSpecifics, SYSTEM);
+    ENUM_CASE(sync_pb::ThemeSpecifics, LIGHT);
+    ENUM_CASE(sync_pb::ThemeSpecifics, DARK);
+  }
+}
+
 #undef ASSERT_ENUM_BOUNDS
 #undef ENUM_CASE
 

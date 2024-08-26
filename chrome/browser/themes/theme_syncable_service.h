@@ -102,7 +102,7 @@ class ThemeSyncableService final : public syncer::SyncableService,
   static const char kSyncEntityTitle[];
 
  private:
-  static bool AreThemeSpecificsEqual(
+  static bool AreThemeSpecificsEquivalent(
       const sync_pb::ThemeSpecifics& a,
       const sync_pb::ThemeSpecifics& b,
       bool is_system_theme_distinct_from_default_theme);
@@ -147,7 +147,14 @@ class ThemeSyncableService final : public syncer::SyncableService,
 
   base::WeakPtrFactory<ThemeSyncableService> weak_ptr_factory_{this};
 
-  FRIEND_TEST_ALL_PREFIXES(ThemeSyncableServiceTest, AreThemeSpecificsEqual);
+  FRIEND_TEST_ALL_PREFIXES(ThemeSyncableServiceTest,
+                           AreThemeSpecificsEquivalent);
+  FRIEND_TEST_ALL_PREFIXES(
+      ThemeSyncableServiceWithMigrationFlagEnabledTest,
+      ShouldPrioritizeExtensionThemeInAreThemeSpecificsEquivalent);
+  FRIEND_TEST_ALL_PREFIXES(
+      ThemeSyncableServiceWithMigrationFlagEnabledTest,
+      ShouldConsiderBrowserColorSchemeInAreThemeSpecificsEquivalent);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SYNCABLE_SERVICE_H_
