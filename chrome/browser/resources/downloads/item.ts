@@ -114,8 +114,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       },
 
       isActive_: {
-        computed: 'computeIsActive_(' +
-            'data.state, data.fileExternallyRemoved)',
+        computed: 'computeIsActive_(data.fileExternallyRemoved, completelyOnDisk_)',
         type: Boolean,
         value: true,
       },
@@ -834,25 +833,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeIsActive_(): boolean {
-    if (this.data.fileExternallyRemoved) {
+    if (this.data && this.data.fileExternallyRemoved) {
       return false;
     }
-    switch (this.data.state) {
-      case State.kCancelled:
-      case State.kInterrupted:
-        return false;
-      case State.kInProgress:
-      case State.kComplete:
-      case State.kPaused:
-      case State.kDangerous:
-      case State.kInsecure:
-      case State.kAsyncScanning:
-      case State.kPromptForScanning:
-      case State.kPromptForLocalPasswordScanning:
-        return true;
-      default:
-        assertNotReached('Unhandled State encountered');
-    }
+    return this.completelyOnDisk_;
   }
 
   private computeIsDangerous_(): boolean {
