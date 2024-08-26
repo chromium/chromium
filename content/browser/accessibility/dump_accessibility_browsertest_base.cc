@@ -19,8 +19,6 @@
 #include "base/test/scoped_command_line.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/public/browser/ax_inspect_factory.h"
@@ -41,6 +39,8 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -143,7 +143,7 @@ void WaitForChildTrees(const ui::AXNode& node,
   }
 }
 
-bool IsLoadedDocWithUrl(const BrowserAccessibility* node,
+bool IsLoadedDocWithUrl(const ui::BrowserAccessibility* node,
                         const std::string& url) {
   return node->GetRole() == ax::mojom::Role::kRootWebArea &&
          node->GetStringAttribute(ax::mojom::StringAttribute::kUrl) == url &&
@@ -155,7 +155,7 @@ bool IsLoadedDocWithUrl(const BrowserAccessibility* node,
 // |num_expected| occurrences are found, it returns the remainder. Otherwise,
 // it stops searching when reaching |num_expected| occurrences, and returns 0.
 unsigned SearchLoadedDocsWithUrlInAccessibilityTree(
-    const BrowserAccessibility* node,
+    const ui::BrowserAccessibility* node,
     const std::string& url,
     unsigned num_expected) {
   if (!num_expected)
@@ -316,7 +316,7 @@ void DumpAccessibilityTestBase::PerformAndWaitForDefaultActions(
     // the name to something more like kAccessibilityClean).
     AccessibilityNotificationWaiter waiter(GetWebContents(), mode,
                                            ax::mojom::Event::kClicked);
-    BrowserAccessibility* action_element;
+    ui::BrowserAccessibility* action_element;
 
     // TODO(accessibility) base/strings/string_split.h might be cleaner here.
     size_t parent_node_delimiter_index = str.find(",");
@@ -324,7 +324,7 @@ void DumpAccessibilityTestBase::PerformAndWaitForDefaultActions(
       auto node_name = str.substr(0, parent_node_delimiter_index);
       auto parent_node_name = str.substr(parent_node_delimiter_index + 1);
 
-      BrowserAccessibility* parent_node = FindNode(parent_node_name);
+      ui::BrowserAccessibility* parent_node = FindNode(parent_node_name);
       DCHECK(parent_node) << "Parent node name provided but not found";
       action_element = FindNode(node_name, parent_node);
     } else {
@@ -390,7 +390,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     const base::FilePath::StringType& expectations_qualifier) {
   // Ignore the hovered state (set when the mouse is hovering over
   // an object) because it makes test output change based on the mouse position.
-  BrowserAccessibility::ignore_hovered_state_for_testing_ = true;
+  ui::BrowserAccessibility::ignore_hovered_state_for_testing_ = true;
 
   // For Android, set a consistent user preference for how password display.
 #if BUILDFLAG(IS_ANDROID)
@@ -401,7 +401,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   // delayed, depending on what has focus or the type of event. For testing,
   // we want all events to fire immediately to make tests predictable and not
   // flaky.
-  BrowserAccessibilityManager::NeverSuppressOrDelayEventsForTesting();
+  ui::BrowserAccessibilityManager::NeverSuppressOrDelayEventsForTesting();
 
   // Enable the behavior whereby all focused nodes will be exposed to the
   // platform accessibility layer. This behavior is currently disabled in
@@ -454,8 +454,8 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
 
-  static_cast<content::BrowserAccessibilityStateImpl*>(
-      content::BrowserAccessibilityState::GetInstance())
+  static_cast<BrowserAccessibilityStateImpl*>(
+      BrowserAccessibilityState::GetInstance())
       ->SetAXModeChangeAllowed(false);
   WaitForAllFramesLoaded(mode);
 
@@ -540,10 +540,10 @@ void DumpAccessibilityTestBase::WaitForAllFramesLoaded(ui::AXMode mode) {
     VLOG(1) << "Top of WaitForAllFramesLoaded() loop";
     RenderFrameHostImpl* main_frame =
         static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
-    BrowserAccessibilityManager* manager =
+    ui::BrowserAccessibilityManager* manager =
         main_frame->browser_accessibility_manager();
     if (manager) {
-      BrowserAccessibility* accessibility_root =
+      ui::BrowserAccessibility* accessibility_root =
           manager->GetBrowserAccessibilityRoot();
 
       WaitForChildTrees(*accessibility_root->node(),
@@ -575,18 +575,18 @@ void DumpAccessibilityTestBase::WaitForAllFramesLoaded(ui::AXMode mode) {
   }
 }
 
-BrowserAccessibility* DumpAccessibilityTestBase::FindNode(
+ui::BrowserAccessibility* DumpAccessibilityTestBase::FindNode(
     const std::string& name,
-    BrowserAccessibility* search_root) const {
+    ui::BrowserAccessibility* search_root) const {
   if (!search_root)
     search_root = GetManager()->GetBrowserAccessibilityRoot();
 
   CHECK(search_root);
-  BrowserAccessibility* node = FindNodeInSubtree(*search_root, name);
+  ui::BrowserAccessibility* node = FindNodeInSubtree(*search_root, name);
   return node;
 }
 
-BrowserAccessibilityManager* DumpAccessibilityTestBase::GetManager() const {
+ui::BrowserAccessibilityManager* DumpAccessibilityTestBase::GetManager() const {
   return GetWebContents()->GetRootBrowserAccessibilityManager();
 }
 
@@ -603,7 +603,7 @@ std::pair<EvalJsResult, std::vector<std::string>>
 DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action,
                                          ui::AXMode mode) {
   // Create a new Event Recorder for the run.
-  BrowserAccessibilityManager* manager = GetManager();
+  ui::BrowserAccessibilityManager* manager = GetManager();
   ui::AXTreeSelector selector(manager->GetBrowserAccessibilityRoot()
                                   ->GetTargetForNativeAccessibilityEvent());
   std::unique_ptr<ui::AXEventRecorder> event_recorder =
@@ -660,14 +660,14 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action,
   return std::make_pair(std::move(action_result), std::move(event_logs));
 }
 
-BrowserAccessibility* DumpAccessibilityTestBase::FindNodeInSubtree(
-    BrowserAccessibility& node,
+ui::BrowserAccessibility* DumpAccessibilityTestBase::FindNodeInSubtree(
+    ui::BrowserAccessibility& node,
     const std::string& name) const {
   if (node.GetStringAttribute(ax::mojom::StringAttribute::kName) == name)
     return &node;
 
   for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-    BrowserAccessibility* result =
+    ui::BrowserAccessibility* result =
         FindNodeInSubtree(*node.PlatformGetChild(i), name);
     if (result)
       return result;
@@ -675,18 +675,18 @@ BrowserAccessibility* DumpAccessibilityTestBase::FindNodeInSubtree(
   return nullptr;
 }
 
-BrowserAccessibility* DumpAccessibilityTestBase::FindNodeByStringAttribute(
+ui::BrowserAccessibility* DumpAccessibilityTestBase::FindNodeByStringAttribute(
     const ax::mojom::StringAttribute attr,
     const std::string& value) const {
-  BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
 
   CHECK(root);
   return FindNodeByStringAttributeInSubtree(*root, attr, value);
 }
 
-BrowserAccessibility*
+ui::BrowserAccessibility*
 DumpAccessibilityTestBase::FindNodeByStringAttributeInSubtree(
-    BrowserAccessibility& node,
+    ui::BrowserAccessibility& node,
     const ax::mojom::StringAttribute attr,
     const std::string& value) const {
   if (node.GetStringAttribute(attr) == value) {
@@ -694,7 +694,7 @@ DumpAccessibilityTestBase::FindNodeByStringAttributeInSubtree(
   }
 
   for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-    if (BrowserAccessibility* result = FindNodeByStringAttributeInSubtree(
+    if (ui::BrowserAccessibility* result = FindNodeByStringAttributeInSubtree(
             *node.PlatformGetChild(i), attr, value)) {
       return result;
     }

@@ -59,7 +59,6 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -194,6 +193,7 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_combiner.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_types.h"
@@ -5296,7 +5296,8 @@ void WebContentsImpl::AccessibilityLocationChangesReceived(
 }
 
 ui::AXNode* WebContentsImpl::GetAccessibilityRootNode() {
-  BrowserAccessibilityManager* manager = GetRootBrowserAccessibilityManager();
+  ui::BrowserAccessibilityManager* manager =
+      GetRootBrowserAccessibilityManager();
   if (!manager || !manager->ax_tree()) {
     return nullptr;
   }
@@ -5469,14 +5470,14 @@ bool WebContentsImpl::IsWidgetForPrimaryMainFrame(
   return render_widget_host == GetPrimaryMainFrame()->GetRenderWidgetHost();
 }
 
-BrowserAccessibilityManager*
+ui::BrowserAccessibilityManager*
 WebContentsImpl::GetRootBrowserAccessibilityManager() {
   RenderFrameHostImpl* rfh =
       static_cast<RenderFrameHostImpl*>(GetPrimaryMainFrame());
   return rfh ? rfh->browser_accessibility_manager() : nullptr;
 }
 
-BrowserAccessibilityManager*
+ui::BrowserAccessibilityManager*
 WebContentsImpl::GetOrCreateRootBrowserAccessibilityManager() {
   RenderFrameHostImpl* rfh =
       static_cast<RenderFrameHostImpl*>(GetPrimaryMainFrame());
@@ -6609,7 +6610,7 @@ void WebContentsImpl::DidRedirectNavigation(
   // BrowserAccessibilityManager associated with the old RFHI.
   if (navigation_handle->GetReloadType() != ReloadType::NONE) {
     NavigationRequest* request = NavigationRequest::From(navigation_handle);
-    BrowserAccessibilityManager* manager =
+    ui::BrowserAccessibilityManager* manager =
         request->frame_tree_node()
             ->current_frame_host()
             ->browser_accessibility_manager();
@@ -6698,7 +6699,7 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (navigation_handle->HasCommitted()) {
     // TODO(domfarolino, dmazzoni): Do this using WebContentsObserver. See
     // https://crbug.com/981271.
-    BrowserAccessibilityManager* manager =
+    ui::BrowserAccessibilityManager* manager =
         static_cast<RenderFrameHostImpl*>(
             navigation_handle->GetRenderFrameHost())
             ->browser_accessibility_manager();
@@ -8664,7 +8665,7 @@ void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node) {
   // current document.
   // TODO(domfarolino, dmazzoni): Do this using WebContentsObserver. See
   // https://crbug.com/981271.
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       frame_tree_node->current_frame_host()->browser_accessibility_manager();
   if (manager) {
     manager->UserIsNavigatingAway();
@@ -8692,7 +8693,7 @@ void WebContentsImpl::DidStopLoading() {
 
   GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [](RenderFrameHostImpl* render_frame_host) {
-        BrowserAccessibilityManager* manager =
+        ui::BrowserAccessibilityManager* manager =
             render_frame_host->browser_accessibility_manager();
         if (manager) {
           manager->DidStopLoading();

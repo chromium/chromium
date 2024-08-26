@@ -6,7 +6,7 @@
 
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_fuchsia.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_fuchsia.h"
 
 namespace content {

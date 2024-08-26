@@ -27,7 +27,6 @@
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
-#include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -38,6 +37,7 @@
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
+#include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
 #include "ui/events/android/motion_event_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -54,7 +54,7 @@ namespace content {
 namespace {
 
 using SearchKeyToPredicateMap =
-    std::unordered_map<std::u16string, AccessibilityMatchPredicate>;
+    std::unordered_map<std::u16string, ui::AccessibilityMatchPredicate>;
 base::LazyInstance<SearchKeyToPredicateMap>::Leaky
     g_search_key_to_predicate_map = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<std::u16string>::Leaky g_all_search_keys =
@@ -66,20 +66,20 @@ static const char kHtmlTypeRowBounds[] = "ROW_BOUNDS";
 static const char kHtmlTypeColumnBounds[] = "COLUMN_BOUNDS";
 static const char kHtmlTypeTableBounds[] = "TABLE_BOUNDS";
 
-bool AllInterestingNodesPredicate(BrowserAccessibility* start,
-                                  BrowserAccessibility* node) {
+bool AllInterestingNodesPredicate(ui::BrowserAccessibility* start,
+                                  ui::BrowserAccessibility* node) {
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(node);
   return android_node->IsInterestingOnAndroid();
 }
 
-bool AccessibilityNoOpPredicate(BrowserAccessibility* start,
-                                BrowserAccessibility* node) {
+bool AccessibilityNoOpPredicate(ui::BrowserAccessibility* start,
+                                ui::BrowserAccessibility* node) {
   return true;
 }
 
 void AddToPredicateMap(const char* search_key_ascii,
-                       AccessibilityMatchPredicate predicate) {
+                       ui::AccessibilityMatchPredicate predicate) {
   std::u16string search_key_utf16 = base::ASCIIToUTF16(search_key_ascii);
   g_search_key_to_predicate_map.Get()[search_key_utf16] = predicate;
   if (!g_all_search_keys.Get().empty())
@@ -93,42 +93,43 @@ void InitSearchKeyToPredicateMapIfNeeded() {
   if (!g_search_key_to_predicate_map.Get().empty())
     return;
 
-  AddToPredicateMap("ARTICLE", AccessibilityArticlePredicate);
-  AddToPredicateMap("BLOCKQUOTE", AccessibilityBlockquotePredicate);
-  AddToPredicateMap("BUTTON", AccessibilityButtonPredicate);
-  AddToPredicateMap("CHECKBOX", AccessibilityCheckboxPredicate);
-  AddToPredicateMap("COMBOBOX", AccessibilityComboboxPredicate);
-  AddToPredicateMap("CONTROL", AccessibilityControlPredicate);
-  AddToPredicateMap("FOCUSABLE", AccessibilityFocusablePredicate);
-  AddToPredicateMap("FRAME", AccessibilityFramePredicate);
-  AddToPredicateMap("GRAPHIC", AccessibilityGraphicPredicate);
-  AddToPredicateMap("H1", AccessibilityH1Predicate);
-  AddToPredicateMap("H2", AccessibilityH2Predicate);
-  AddToPredicateMap("H3", AccessibilityH3Predicate);
-  AddToPredicateMap("H4", AccessibilityH4Predicate);
-  AddToPredicateMap("H5", AccessibilityH5Predicate);
-  AddToPredicateMap("H6", AccessibilityH6Predicate);
-  AddToPredicateMap("HEADING", AccessibilityHeadingPredicate);
-  AddToPredicateMap("HEADING_SAME", AccessibilityHeadingSameLevelPredicate);
-  AddToPredicateMap("LANDMARK", AccessibilityLandmarkPredicate);
-  AddToPredicateMap("LINK", AccessibilityLinkPredicate);
-  AddToPredicateMap("LIST", AccessibilityListPredicate);
-  AddToPredicateMap("LIST_ITEM", AccessibilityListItemPredicate);
-  AddToPredicateMap("LIVE", AccessibilityLiveRegionPredicate);
-  AddToPredicateMap("MAIN", AccessibilityMainPredicate);
-  AddToPredicateMap("MEDIA", AccessibilityMediaPredicate);
-  AddToPredicateMap("PARAGRAPH", AccessibilityParagraphPredicate);
-  AddToPredicateMap("RADIO", AccessibilityRadioButtonPredicate);
-  AddToPredicateMap("RADIO_GROUP", AccessibilityRadioGroupPredicate);
-  AddToPredicateMap("SECTION", AccessibilitySectionPredicate);
-  AddToPredicateMap("TABLE", AccessibilityTablePredicate);
-  AddToPredicateMap("TEXT_FIELD", AccessibilityTextfieldPredicate);
-  AddToPredicateMap("TEXT_BOLD", AccessibilityTextStyleBoldPredicate);
-  AddToPredicateMap("TEXT_ITALIC", AccessibilityTextStyleItalicPredicate);
-  AddToPredicateMap("TEXT_UNDERLINE", AccessibilityTextStyleUnderlinePredicate);
-  AddToPredicateMap("TREE", AccessibilityTreePredicate);
-  AddToPredicateMap("UNVISITED_LINK", AccessibilityUnvisitedLinkPredicate);
-  AddToPredicateMap("VISITED_LINK", AccessibilityVisitedLinkPredicate);
+  AddToPredicateMap("ARTICLE", ui::AccessibilityArticlePredicate);
+  AddToPredicateMap("BLOCKQUOTE", ui::AccessibilityBlockquotePredicate);
+  AddToPredicateMap("BUTTON", ui::AccessibilityButtonPredicate);
+  AddToPredicateMap("CHECKBOX", ui::AccessibilityCheckboxPredicate);
+  AddToPredicateMap("COMBOBOX", ui::AccessibilityComboboxPredicate);
+  AddToPredicateMap("CONTROL", ui::AccessibilityControlPredicate);
+  AddToPredicateMap("FOCUSABLE", ui::AccessibilityFocusablePredicate);
+  AddToPredicateMap("FRAME", ui::AccessibilityFramePredicate);
+  AddToPredicateMap("GRAPHIC", ui::AccessibilityGraphicPredicate);
+  AddToPredicateMap("H1", ui::AccessibilityH1Predicate);
+  AddToPredicateMap("H2", ui::AccessibilityH2Predicate);
+  AddToPredicateMap("H3", ui::AccessibilityH3Predicate);
+  AddToPredicateMap("H4", ui::AccessibilityH4Predicate);
+  AddToPredicateMap("H5", ui::AccessibilityH5Predicate);
+  AddToPredicateMap("H6", ui::AccessibilityH6Predicate);
+  AddToPredicateMap("HEADING", ui::AccessibilityHeadingPredicate);
+  AddToPredicateMap("HEADING_SAME", ui::AccessibilityHeadingSameLevelPredicate);
+  AddToPredicateMap("LANDMARK", ui::AccessibilityLandmarkPredicate);
+  AddToPredicateMap("LINK", ui::AccessibilityLinkPredicate);
+  AddToPredicateMap("LIST", ui::AccessibilityListPredicate);
+  AddToPredicateMap("LIST_ITEM", ui::AccessibilityListItemPredicate);
+  AddToPredicateMap("LIVE", ui::AccessibilityLiveRegionPredicate);
+  AddToPredicateMap("MAIN", ui::AccessibilityMainPredicate);
+  AddToPredicateMap("MEDIA", ui::AccessibilityMediaPredicate);
+  AddToPredicateMap("PARAGRAPH", ui::AccessibilityParagraphPredicate);
+  AddToPredicateMap("RADIO", ui::AccessibilityRadioButtonPredicate);
+  AddToPredicateMap("RADIO_GROUP", ui::AccessibilityRadioGroupPredicate);
+  AddToPredicateMap("SECTION", ui::AccessibilitySectionPredicate);
+  AddToPredicateMap("TABLE", ui::AccessibilityTablePredicate);
+  AddToPredicateMap("TEXT_FIELD", ui::AccessibilityTextfieldPredicate);
+  AddToPredicateMap("TEXT_BOLD", ui::AccessibilityTextStyleBoldPredicate);
+  AddToPredicateMap("TEXT_ITALIC", ui::AccessibilityTextStyleItalicPredicate);
+  AddToPredicateMap("TEXT_UNDERLINE",
+                    ui::AccessibilityTextStyleUnderlinePredicate);
+  AddToPredicateMap("TREE", ui::AccessibilityTreePredicate);
+  AddToPredicateMap("UNVISITED_LINK", ui::AccessibilityUnvisitedLinkPredicate);
+  AddToPredicateMap("VISITED_LINK", ui::AccessibilityVisitedLinkPredicate);
 
   // These are surfaced simply to document the html types, but do not do a
   // tree/predicate search.
@@ -140,7 +141,7 @@ void InitSearchKeyToPredicateMapIfNeeded() {
   AddToPredicateMap(kHtmlTypeTableBounds, AccessibilityNoOpPredicate);
 }
 
-AccessibilityMatchPredicate PredicateForSearchKey(
+ui::AccessibilityMatchPredicate PredicateForSearchKey(
     const std::u16string& element_type) {
   InitSearchKeyToPredicateMapIfNeeded();
   const auto& iter = g_search_key_to_predicate_map.Get().find(element_type);
@@ -162,7 +163,7 @@ int32_t g_element_after_element_hosting_autofill_popup_unique_id =
 
 // Autofill popup will not be part of the |AXTree| that is sent by renderer.
 // Hence, we need a proxy |AXNode| to represent the autofill popup.
-BrowserAccessibility* g_autofill_popup_proxy_node = nullptr;
+ui::BrowserAccessibility* g_autofill_popup_proxy_node = nullptr;
 ui::AXNode* g_autofill_popup_proxy_node_ax_node = nullptr;
 
 void DeleteAutofillPopupProxy() {
@@ -180,7 +181,7 @@ void DeleteAutofillPopupProxy() {
 // but small enough to prevent wasting memory and cpu if abused.
 const int kMaxCharacterBoundingBoxLen = 1024;
 
-std::optional<int> MaybeFindRowColumn(BrowserAccessibility* start_node,
+std::optional<int> MaybeFindRowColumn(ui::BrowserAccessibility* start_node,
                                       std::u16string element_type,
                                       jboolean forwards) {
   bool want_row = base::EqualsASCII(element_type, kHtmlTypeRow);
@@ -196,7 +197,7 @@ std::optional<int> MaybeFindRowColumn(BrowserAccessibility* start_node,
   }
 
   // See if we're in a table and grab the cell-like node we're under on the way.
-  BrowserAccessibility* table_node = start_node;
+  ui::BrowserAccessibility* table_node = start_node;
   ui::AXNode* cell_node = nullptr;
   int cur_row_index, cur_col_index;
   while (table_node) {
@@ -616,7 +617,7 @@ void WebContentsAccessibilityAndroid::HandleEditableTextChanged(
 }
 
 void WebContentsAccessibilityAndroid::SignalEndOfTestForTesting(JNIEnv* env) {
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       web_contents_->GetRootBrowserAccessibilityManager();
   manager->SignalEndOfTest();
 }
@@ -1143,9 +1144,9 @@ void WebContentsAccessibilityAndroid::SetSelection(JNIEnv* env,
                                                    jint end) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (node) {
-    node->manager()->SetSelection(
-        BrowserAccessibility::AXRange(node->CreatePositionForSelectionAt(start),
-                                      node->CreatePositionForSelectionAt(end)));
+    node->manager()->SetSelection(ui::BrowserAccessibility::AXRange(
+        node->CreatePositionForSelectionAt(start),
+        node->CreatePositionForSelectionAt(end)));
   }
 }
 
@@ -1215,12 +1216,12 @@ jint WebContentsAccessibilityAndroid::FindElementType(
   if (!root_manager)
     return ui::kInvalidAXNodeID;
 
-  BrowserAccessibility* root = root_manager->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root = root_manager->GetBrowserAccessibilityRoot();
   if (!root)
     return ui::kInvalidAXNodeID;
 
   // If |element_type_str| was empty, we can skip to the default predicate.
-  AccessibilityMatchPredicate predicate;
+  ui::AccessibilityMatchPredicate predicate;
   if (use_default_predicate) {
     predicate = AllInterestingNodesPredicate;
   } else {
@@ -1229,7 +1230,7 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     if (std::optional<int> ret =
             MaybeFindRowColumn(start_node, element_type, forwards);
         ret) {
-      BrowserAccessibility* node = start_node->manager()->GetFromID(*ret);
+      ui::BrowserAccessibility* node = start_node->manager()->GetFromID(*ret);
       return node ? static_cast<BrowserAccessibilityAndroid*>(node)
                         ->GetUniqueId()
                   : ui::kInvalidAXNodeID;
@@ -1238,11 +1239,11 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     predicate = PredicateForSearchKey(element_type);
   }
 
-  OneShotAccessibilityTreeSearch tree_search(root);
+  ui::OneShotAccessibilityTreeSearch tree_search(root);
   tree_search.SetStartNode(start_node);
   tree_search.SetDirection(forwards
-                               ? OneShotAccessibilityTreeSearch::FORWARDS
-                               : OneShotAccessibilityTreeSearch::BACKWARDS);
+                               ? ui::OneShotAccessibilityTreeSearch::FORWARDS
+                               : ui::OneShotAccessibilityTreeSearch::BACKWARDS);
   tree_search.SetResultLimit(1);
   tree_search.SetImmediateDescendantsOnly(false);
   tree_search.SetCanWrapToLastElement(can_wrap_to_last_element);
@@ -1318,7 +1319,7 @@ void WebContentsAccessibilityAndroid::AddSpellingErrorForTesting(
     jint unique_id,
     jint start_offset,
     jint end_offset) {
-  BrowserAccessibility* node = GetAXFromUniqueID(unique_id);
+  ui::BrowserAccessibility* node = GetAXFromUniqueID(unique_id);
   CHECK(node);
 
   while (node->GetRole() != ax::mojom::Role::kStaticText &&
@@ -1409,7 +1410,7 @@ void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(JNIEnv* env) {
   if (!root_manager)
     return;
 
-  BrowserAccessibility* current_focus = root_manager->GetFocus();
+  ui::BrowserAccessibility* current_focus = root_manager->GetFocus();
   if (!current_focus) {
     return;
   }
@@ -1429,8 +1430,8 @@ void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(JNIEnv* env) {
   ax_node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
   g_autofill_popup_proxy_node_ax_node->SetData(ax_node_data);
   g_autofill_popup_proxy_node =
-      BrowserAccessibility::Create(root_manager,
-                                   g_autofill_popup_proxy_node_ax_node)
+      ui::BrowserAccessibility::Create(root_manager,
+                                       g_autofill_popup_proxy_node_ax_node)
           .release();
 
   auto* android_node = static_cast<BrowserAccessibilityAndroid*>(current_focus);

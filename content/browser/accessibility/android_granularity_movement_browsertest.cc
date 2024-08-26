@@ -35,7 +35,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
   AndroidGranularityMovementBrowserTest() {}
   ~AndroidGranularityMovementBrowserTest() override {}
 
-  BrowserAccessibility* LoadUrlAndGetAccessibilityRoot(const GURL& url) {
+  ui::BrowserAccessibility* LoadUrlAndGetAccessibilityRoot(const GURL& url) {
     EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
     // Load the page.
@@ -67,7 +67,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
   // and fails (by logging an error and returning the empty string) if
   // the result when traversing backwards is not the same
   // (but in reverse order).
-  std::u16string TraverseNodeAtGranularity(BrowserAccessibility* node,
+  std::u16string TraverseNodeAtGranularity(ui::BrowserAccessibility* node,
                                            int granularity) {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
@@ -149,13 +149,13 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest,
       "<button aria-label='Seven, eight, nine!'>Four, five, six!</button>"
       "</p>"
       "</body></html>");
-  BrowserAccessibility* root = LoadUrlAndGetAccessibilityRoot(url);
+  ui::BrowserAccessibility* root = LoadUrlAndGetAccessibilityRoot(url);
   ASSERT_EQ(2U, root->PlatformChildCount());
-  BrowserAccessibility* para = root->PlatformGetChild(0);
+  ui::BrowserAccessibility* para = root->PlatformGetChild(0);
   ASSERT_EQ(0U, para->PlatformChildCount());
-  BrowserAccessibility* button_container = root->PlatformGetChild(1);
+  ui::BrowserAccessibility* button_container = root->PlatformGetChild(1);
   ASSERT_EQ(1U, button_container->PlatformChildCount());
-  BrowserAccessibility* button = button_container->PlatformGetChild(0);
+  ui::BrowserAccessibility* button = button_container->PlatformGetChild(0);
   ASSERT_EQ(0U, button->PlatformChildCount());
 
   EXPECT_EQ(
@@ -177,13 +177,13 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest, NavigateByWords) {
       "<button aria-label='Seven, eight, nine!'>Four, five, six!</button>"
       "</p>"
       "</body></html>");
-  BrowserAccessibility* root = LoadUrlAndGetAccessibilityRoot(url);
+  ui::BrowserAccessibility* root = LoadUrlAndGetAccessibilityRoot(url);
   ASSERT_EQ(2U, root->PlatformChildCount());
-  BrowserAccessibility* para = root->PlatformGetChild(0);
+  ui::BrowserAccessibility* para = root->PlatformGetChild(0);
   ASSERT_EQ(0U, para->PlatformChildCount());
-  BrowserAccessibility* button_container = root->PlatformGetChild(1);
+  ui::BrowserAccessibility* button_container = root->PlatformGetChild(1);
   ASSERT_EQ(1U, button_container->PlatformChildCount());
-  BrowserAccessibility* button = button_container->PlatformGetChild(0);
+  ui::BrowserAccessibility* button = button_container->PlatformGetChild(0);
   ASSERT_EQ(0U, button->PlatformChildCount());
 
   EXPECT_EQ(u"'One', ',', 'two', ',', 'three', '!'",
@@ -198,9 +198,9 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest, NavigateByLine) {
       "<body>"
       "<pre>One,%0dtwo,%0dthree!</pre>"
       "</body>");
-  BrowserAccessibility* root = LoadUrlAndGetAccessibilityRoot(url);
+  ui::BrowserAccessibility* root = LoadUrlAndGetAccessibilityRoot(url);
   ASSERT_EQ(1U, root->PlatformChildCount());
-  BrowserAccessibility* pre = root->PlatformGetChild(0);
+  ui::BrowserAccessibility* pre = root->PlatformGetChild(0);
   ASSERT_EQ(0U, pre->PlatformChildCount());
 
   EXPECT_EQ(u"'One,', 'two,', 'three!'",

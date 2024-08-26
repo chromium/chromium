@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
@@ -15,8 +16,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
+#include "content/public/common/content_client.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/android/accessibility_state.h"
@@ -26,6 +27,7 @@
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
 #include "ui/strings/grit/ax_strings.h"
 
@@ -68,6 +70,16 @@ enum {
 
 }  // namespace
 
+namespace ui {
+// static
+std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
+    BrowserAccessibilityManager* manager,
+    AXNode* node) {
+  return base::WrapUnique(
+      new content::BrowserAccessibilityAndroid(manager, node));
+}
+}  // namespace ui
+
 namespace content {
 
 namespace {
@@ -75,13 +87,6 @@ namespace {
 // AT will communicate invalid content to the user.
 constexpr int kMinimumCharacterCountForInvalid = 7;
 }  // namespace
-
-// static
-std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
-    BrowserAccessibilityManager* manager,
-    ui::AXNode* node) {
-  return base::WrapUnique(new BrowserAccessibilityAndroid(manager, node));
-}
 
 using UniqueIdMap = std::unordered_map<int32_t, BrowserAccessibilityAndroid*>;
 // Map from each AXPlatformNode's unique id to its instance.
@@ -110,7 +115,7 @@ void BrowserAccessibilityAndroid::ResetLeafCache() {
 }
 
 BrowserAccessibilityAndroid::BrowserAccessibilityAndroid(
-    BrowserAccessibilityManager* manager,
+    ui::BrowserAccessibilityManager* manager,
     ui::AXNode* node)
     : BrowserAccessibility(manager, node) {
   g_unique_id_map.Get()[GetUniqueId()] = this;
@@ -120,6 +125,11 @@ BrowserAccessibilityAndroid::~BrowserAccessibilityAndroid() {
   if (auto id = GetUniqueId()) {
     g_unique_id_map.Get().erase(id);
   }
+}
+
+std::u16string BrowserAccessibilityAndroid::GetLocalizedString(
+    int message_id) const {
+  return CHECK_DEREF(GetContentClient()).GetLocalizedString(message_id);
 }
 
 void BrowserAccessibilityAndroid::OnLocationChanged() {
@@ -1887,11 +1897,11 @@ bool BrowserAccessibilityAndroid::HasImage() const {
   return false;
 }
 
-BrowserAccessibility*
+ui::BrowserAccessibility*
 BrowserAccessibilityAndroid::PlatformGetLowestPlatformAncestor() const {
-  BrowserAccessibility* current_object =
+  ui::BrowserAccessibility* current_object =
       const_cast<BrowserAccessibilityAndroid*>(this);
-  BrowserAccessibility* lowest_unignored_node = current_object;
+  ui::BrowserAccessibility* lowest_unignored_node = current_object;
   if (lowest_unignored_node->IsIgnored())
     lowest_unignored_node = lowest_unignored_node->PlatformGetParent();
   DCHECK(!lowest_unignored_node || !lowest_unignored_node->IsIgnored())
@@ -1899,10 +1909,10 @@ BrowserAccessibilityAndroid::PlatformGetLowestPlatformAncestor() const {
          "unignored object or nullptr.";
 
   // `highest_leaf_node` could be nullptr.
-  BrowserAccessibility* highest_leaf_node = lowest_unignored_node;
+  ui::BrowserAccessibility* highest_leaf_node = lowest_unignored_node;
   // For the purposes of this method, a leaf node does not include leaves in the
   // internal accessibility tree, only in the platform exposed tree.
-  for (BrowserAccessibility* ancestor_node = lowest_unignored_node;
+  for (ui::BrowserAccessibility* ancestor_node = lowest_unignored_node;
        ancestor_node; ancestor_node = ancestor_node->PlatformGetParent()) {
     if (ancestor_node->IsLeaf())
       highest_leaf_node = ancestor_node;

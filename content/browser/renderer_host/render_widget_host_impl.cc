@@ -52,7 +52,6 @@
 #include "components/input/utils.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
@@ -120,6 +119,7 @@
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -3462,12 +3462,12 @@ void RenderWidgetHostImpl::OnSnapshotReceived(int snapshot_id,
 #endif
 }
 
-BrowserAccessibilityManager*
+ui::BrowserAccessibilityManager*
 RenderWidgetHostImpl::GetRootBrowserAccessibilityManager() {
   return delegate_ ? delegate_->GetRootBrowserAccessibilityManager() : nullptr;
 }
 
-BrowserAccessibilityManager*
+ui::BrowserAccessibilityManager*
 RenderWidgetHostImpl::GetOrCreateRootBrowserAccessibilityManager() {
   return delegate_ ? delegate_->GetOrCreateRootBrowserAccessibilityManager()
                    : nullptr;
@@ -3715,7 +3715,7 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
 
   // The root BrowserAccessibilityManager only is reachable if there's a
   // delegate() still, ie we're not in shutdown. This can be null in tests.
-  BrowserAccessibilityManager* accessibility_manager =
+  ui::BrowserAccessibilityManager* accessibility_manager =
       GetRootBrowserAccessibilityManager();
   if (accessibility_manager) {
     accessibility_manager->SetPageScaleFactor(metadata.page_scale_factor);

@@ -4,8 +4,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -18,6 +16,8 @@
 #include "net/base/data_url.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -35,28 +35,29 @@ class AccessibilityObjectModelBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  BrowserAccessibility* FindNode(ax::mojom::Role role,
-                                 const std::string& name) {
-    BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* FindNode(ax::mojom::Role role,
+                                     const std::string& name) {
+    ui::BrowserAccessibility* root =
+        GetManager()->GetBrowserAccessibilityRoot();
     CHECK(root);
     return FindNodeInSubtree(*root, role, name);
   }
 
-  BrowserAccessibilityManager* GetManager() {
+  ui::BrowserAccessibilityManager* GetManager() {
     WebContentsImpl* web_contents =
         static_cast<WebContentsImpl*>(shell()->web_contents());
     return web_contents->GetRootBrowserAccessibilityManager();
   }
 
  private:
-  BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
-                                          ax::mojom::Role role,
-                                          const std::string& name) {
+  ui::BrowserAccessibility* FindNodeInSubtree(ui::BrowserAccessibility& node,
+                                              ax::mojom::Role role,
+                                              const std::string& name) {
     if (node.GetRole() == role &&
         node.GetStringAttribute(ax::mojom::StringAttribute::kName) == name)
       return &node;
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-      BrowserAccessibility* result =
+      ui::BrowserAccessibility* result =
           FindNodeInSubtree(*node.PlatformGetChild(i), role, name);
       if (result)
         return result;
@@ -81,10 +82,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityObjectModelBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(waiter.WaitForNotification());
 
-  BrowserAccessibility* button = FindNode(ax::mojom::Role::kButton, "FocusMe");
+  ui::BrowserAccessibility* button =
+      FindNode(ax::mojom::Role::kButton, "FocusMe");
   ASSERT_NE(nullptr, button);
 
-  BrowserAccessibility* link = FindNode(ax::mojom::Role::kLink, "ClickMe");
+  ui::BrowserAccessibility* link = FindNode(ax::mojom::Role::kLink, "ClickMe");
   ASSERT_NE(nullptr, link);
 
   AccessibilityNotificationWaiter waiter2(
@@ -92,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityObjectModelBrowserTest,
   GetManager()->DoDefaultAction(*link);
   ASSERT_TRUE(waiter2.WaitForNotification());
 
-  BrowserAccessibility* focus = GetManager()->GetFocus();
+  ui::BrowserAccessibility* focus = GetManager()->GetFocus();
   ASSERT_NE(nullptr, focus);
   EXPECT_EQ(button->GetId(), focus->GetId());
 }

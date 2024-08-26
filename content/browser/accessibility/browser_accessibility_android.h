@@ -12,15 +12,16 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 
 namespace content {
 
-class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
+class CONTENT_EXPORT BrowserAccessibilityAndroid
+    : public ui::BrowserAccessibility {
  public:
   static BrowserAccessibilityAndroid* GetFromUniqueId(int32_t unique_id);
   static void ResetLeafCache();
@@ -231,8 +232,10 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   std::u16string GenerateAccessibilityNodeInfoString() const;
 
  protected:
-  BrowserAccessibilityAndroid(BrowserAccessibilityManager* manager,
+  BrowserAccessibilityAndroid(ui::BrowserAccessibilityManager* manager,
                               ui::AXNode* node);
+
+  std::u16string GetLocalizedString(int message_id) const override;
 
   friend class BrowserAccessibility;  // Needs access to our constructor.
 

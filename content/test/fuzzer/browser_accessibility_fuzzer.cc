@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
 
@@ -10,13 +10,13 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
-#include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_content_client.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
@@ -177,11 +177,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   ui::TestAXPlatformTreeManagerDelegate delegate;
   ui::TestAXNodeIdDelegate node_id_delegate;
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(tree, node_id_delegate, &delegate));
-  std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(child_tree, node_id_delegate,
-                                          &delegate));
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      ui::BrowserAccessibilityManager::Create(tree, node_id_delegate,
+                                              &delegate));
+  std::unique_ptr<ui::BrowserAccessibilityManager> child_manager(
+      ui::BrowserAccessibilityManager::Create(child_tree, node_id_delegate,
+                                              &delegate));
 
   // We want to call a bunch of functions but we don't care what the
   // return values are. To ensure the compiler doesn't optimize the calls
@@ -190,22 +191,23 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<void*> results;
 
   // Test some tree-walking functions.
-  BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
   results.push_back(root->PlatformDeepestFirstChild());
   results.push_back(root->PlatformDeepestLastChild());
   results.push_back(root->InternalDeepestFirstChild());
   results.push_back(root->InternalDeepestLastChild());
 
   // Test OneShotAccessibilityTreeSearch.
-  OneShotAccessibilityTreeSearch search(manager->GetBrowserAccessibilityRoot());
+  ui::OneShotAccessibilityTreeSearch search(
+      manager->GetBrowserAccessibilityRoot());
   search.SetDirection(fdp.ConsumeBool()
-                          ? OneShotAccessibilityTreeSearch::FORWARDS
-                          : OneShotAccessibilityTreeSearch::BACKWARDS);
+                          ? ui::OneShotAccessibilityTreeSearch::FORWARDS
+                          : ui::OneShotAccessibilityTreeSearch::BACKWARDS);
   search.SetImmediateDescendantsOnly(fdp.ConsumeBool());
   search.SetCanWrapToLastElement(fdp.ConsumeBool());
   search.SetOnscreenOnly(fdp.ConsumeBool());
   if (fdp.ConsumeBool())
-    search.AddPredicate(AccessibilityButtonPredicate);
+    search.AddPredicate(ui::AccessibilityButtonPredicate);
   if (fdp.ConsumeBool())
     search.SetSearchText(fdp.ConsumeRandomLengthString(5));
   size_t matches = search.CountMatches();

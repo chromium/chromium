@@ -50,13 +50,13 @@ double RenderWidgetHostDelegate::GetPendingPageZoomLevel() {
   return 0.0;
 }
 
-BrowserAccessibilityManager*
-    RenderWidgetHostDelegate::GetRootBrowserAccessibilityManager() {
+ui::BrowserAccessibilityManager*
+RenderWidgetHostDelegate::GetRootBrowserAccessibilityManager() {
   return nullptr;
 }
 
-BrowserAccessibilityManager*
-    RenderWidgetHostDelegate::GetOrCreateRootBrowserAccessibilityManager() {
+ui::BrowserAccessibilityManager*
+RenderWidgetHostDelegate::GetOrCreateRootBrowserAccessibilityManager() {
   return nullptr;
 }
 

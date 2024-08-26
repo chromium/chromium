@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/base/buildflags.h"
 
 namespace content {

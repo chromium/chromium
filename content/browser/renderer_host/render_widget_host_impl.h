@@ -112,7 +112,6 @@ enum class DomCode : uint32_t;
 }
 
 namespace content {
-class BrowserAccessibilityManager;
 class FrameTree;
 class MockRenderWidgetHost;
 class MockRenderWidgetHostImpl;
@@ -704,11 +703,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetForceEnableZoom(bool);
 
   // Get the BrowserAccessibilityManager for the root of the frame tree,
-  BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
+  ui::BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
 
   // Get the BrowserAccessibilityManager for the root of the frame tree,
   // or create it if it doesn't already exist.
-  BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager();
+  ui::BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager();
 
   void RejectPointerLockOrUnlockIfNecessary(
       blink::mojom::PointerLockResult reason);

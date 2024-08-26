@@ -59,7 +59,6 @@
 #include "components/input/timeout_monitor.h"
 #include "components/viz/common/features.h"
 #include "content/browser/about_url_loader_factory.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/file_backed_blob_factory_frame_impl.h"
@@ -281,6 +280,7 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/ax_updates_and_events.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -7599,7 +7599,7 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(
   if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       GetOrCreateBrowserAccessibilityManager();
   if (manager) {
     manager->OnFindInPageResult(params->request_id, params->match_index,
@@ -7615,7 +7615,7 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageTermination() {
   if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       GetOrCreateBrowserAccessibilityManager();
   if (manager)
     manager->OnFindInPageTermination();
@@ -10430,7 +10430,7 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     detail.new_location = change->new_location;
     details.push_back(detail);
   }
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       GetOrCreateBrowserAccessibilityManager();
   if (manager) {
     manager->OnLocationChanges(details);
@@ -12088,7 +12088,7 @@ RenderFrameHostImpl::UpdateAXFocusDeferScope::~UpdateAXFocusDeferScope() {
   }
 }
 
-BrowserAccessibilityManager*
+ui::BrowserAccessibilityManager*
 RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
   // Never create a BrowserAccessibilityManager unless needed for the AXMode.
   // At least basic mode is required; it contains kWebContents and KNativeAPIs.
@@ -12107,14 +12107,14 @@ RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
       BrowserAccessibilityManagerAndroid::Create(*this, this));
 #else
   browser_accessibility_manager_.reset(
-      BrowserAccessibilityManager::Create(*this, this));
+      ui::BrowserAccessibilityManager::Create(*this, this));
 #endif
   return browser_accessibility_manager_.get();
 }
 
 void RenderFrameHostImpl::ActivateFindInPageResultForAccessibility(
     int request_id) {
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       GetOrCreateBrowserAccessibilityManager();
   if (manager)
     manager->ActivateFindInPageResult(request_id);

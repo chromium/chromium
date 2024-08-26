@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "base/win/com_init_util.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win_uia.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_uia_win.h"

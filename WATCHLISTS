@@ -37,7 +37,7 @@
                   '|ui/accessibility/platform/ax_platform_node_(base|mac|win)' \
                   '|third_party/(WebKit|blink)/.*(accessibility|ax_object|web_ax|ax_node|ax_layout)' \
                   '|content/renderer/accessibility/render_accessibility_impl' \
-                  '|content/browser/accessibility/browser_accessibility(\.|_manager|_win|_com|_cocoa)'
+                  '|ui/accessibility/platform/browser_accessibility(\.|_manager|_win|_com|_cocoa)'
     },
     'accessibility_reading': {
       'filepath': 'read_anything/|'\

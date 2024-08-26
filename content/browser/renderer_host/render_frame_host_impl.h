@@ -44,7 +44,6 @@
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
@@ -185,6 +184,7 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -1464,14 +1464,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   };
 
   // Access the BrowserAccessibilityManager if it already exists.
-  BrowserAccessibilityManager* browser_accessibility_manager() const {
+  ui::BrowserAccessibilityManager* browser_accessibility_manager() const {
     return browser_accessibility_manager_.get();
   }
 
   // If accessibility is enabled, get the BrowserAccessibilityManager for
   // this frame, or create one if it doesn't exist yet, otherwise return
   // null.
-  BrowserAccessibilityManager* GetOrCreateBrowserAccessibilityManager();
+  ui::BrowserAccessibilityManager* GetOrCreateBrowserAccessibilityManager();
 
   void set_no_create_browser_accessibility_manager_for_testing(bool flag) {
     no_create_browser_accessibility_manager_for_testing_ = flag;
@@ -4544,7 +4544,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<service_manager::InterfaceProvider> remote_interfaces_;
 
   // The object managing the accessibility tree for this frame.
-  std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager_;
+  std::unique_ptr<ui::BrowserAccessibilityManager>
+      browser_accessibility_manager_;
 
   // A mapping of each AXNodeID managed by `browser_accessibility_manager_`,
   // which is only unique within its renderer, to an AXUniqueId, which is unique

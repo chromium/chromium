@@ -2170,7 +2170,6 @@ test("content_browsertests") {
     sources += [
       "../app_shim_remote_cocoa/window_occlusion_browsertest_mac.mm",
       "../browser/accessibility/ax_tree_formatter_mac_browsertest.mm",
-      "../browser/accessibility/browser_accessibility_cocoa_browsertest.mm",
       "../browser/accessibility/hit_testing_mac_browsertest.mm",
       "../browser/gpu/browser_child_process_backgrounded_bridge_browsertest.mm",
       "../browser/keyboard_lock_browsertest_mac.mm",
@@ -2876,7 +2875,6 @@ test("content_unittests") {
 
   if (is_mac) {
     sources += [
-      "../browser/accessibility/browser_accessibility_mac_unittest.mm",
       "../browser/child_process_task_port_provider_mac_unittest.cc",
       "../browser/cocoa/system_hotkey_map_unittest.mm",
       "../browser/media/capture/screen_capture_kit_fullscreen_module_unittest.mm",
@@ -2900,20 +2898,8 @@ test("content_unittests") {
     ]
   }
 
-  if (use_atk) {
-    sources += [
-      "../browser/accessibility/browser_accessibility_auralinux_unittest.cc",
-      "../browser/accessibility/browser_accessibility_manager_auralinux_unittest.cc",
-    ]
-    configs += [ "//build/config/linux/atk" ]
-  }
-
   if (is_fuchsia) {
-    sources += [
-      "../browser/accessibility/browser_accessibility_fuchsia_unittest.cc",
-      "../browser/accessibility/browser_accessibility_manager_fuchsia_unittest.cc",
-      "../browser/renderer_host/media/fuchsia_media_codec_provider_impl_unittest.cc",
-    ]
+    sources += [ "../browser/renderer_host/media/fuchsia_media_codec_provider_impl_unittest.cc" ]
 
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/fonts.shard.test-cml",
@@ -3273,8 +3259,6 @@ test("content_unittests") {
   }
   if (is_win) {
     sources += [
-      "../browser/accessibility/browser_accessibility_manager_win_unittest.cc",
-      "../browser/accessibility/browser_accessibility_win_unittest.cc",
       "../browser/device_posture/device_posture_registry_watcher_win_unittest.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.h",

@@ -19,7 +19,7 @@
 namespace content {
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
+ui::BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
     const ui::AXTreeUpdate& initial_tree,
     ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
@@ -39,7 +39,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
 }
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
+ui::BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
     ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
   return BrowserAccessibilityManagerAndroid::Create(
@@ -52,7 +52,7 @@ BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
     base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
     ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate)
-    : BrowserAccessibilityManager(node_id_delegate, delegate),
+    : ui::BrowserAccessibilityManager(node_id_delegate, delegate),
       web_contents_accessibility_(std::move(web_contents_accessibility)),
       prune_tree_for_screen_reader_(true) {
   // The Java layer handles the root scroll offset.
@@ -86,7 +86,7 @@ bool BrowserAccessibilityManagerAndroid::ShouldAllowImageDescriptions() {
          allow_image_descriptions_for_testing_;
 }
 
-BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
+ui::BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
   // On Android, don't follow active descendant when focus is in a textfield,
   // otherwise editable comboboxes such as the search field on google.com do
   // not work with Talkback. See crbug.com/761501.
@@ -94,11 +94,11 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
   // This fix came in crrev.com/c/647339 but said that a more comprehensive fix
   // was landing in in crrev.com/c/642056, so is this override still necessary?
   ui::AXNodeID focus_id = GetTreeData().focus_id;
-  BrowserAccessibility* focus = GetFromID(focus_id);
+  ui::BrowserAccessibility* focus = GetFromID(focus_id);
   if (focus && focus->IsAtomicTextField())
     return focus;
 
-  return BrowserAccessibilityManager::GetFocus();
+  return ui::BrowserAccessibilityManager::GetFocus();
 }
 
 ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
@@ -119,8 +119,9 @@ ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
   // Sometimes we get events on nodes in our internal accessibility tree
   // that aren't exposed on Android. Get |updated| to point to the lowest
   // ancestor that is exposed.
-  BrowserAccessibility* wrapper = GetFromAXNode(node);
-  BrowserAccessibility* updated = wrapper->PlatformGetLowestPlatformAncestor();
+  ui::BrowserAccessibility* wrapper = GetFromAXNode(node);
+  ui::BrowserAccessibility* updated =
+      wrapper->PlatformGetLowestPlatformAncestor();
   DCHECK(updated);
 
   switch (type) {
@@ -172,7 +173,7 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
 
   // When focusing a node on Android, we want to ensure that we clear the
   // Java-side cache for the previously focused node as well.
-  if (BrowserAccessibility* last_focused_node =
+  if (ui::BrowserAccessibility* last_focused_node =
           GetFromAXNode(GetLastFocusedNode())) {
     BrowserAccessibilityAndroid* android_last_focused_node =
         static_cast<BrowserAccessibilityAndroid*>(last_focused_node);
@@ -186,7 +187,7 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
 }
 
 void BrowserAccessibilityManagerAndroid::FireLocationChanged(
-    BrowserAccessibility* node) {
+    ui::BrowserAccessibility* node) {
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax)
     return;
@@ -198,10 +199,10 @@ void BrowserAccessibilityManagerAndroid::FireLocationChanged(
 
 void BrowserAccessibilityManagerAndroid::FireBlinkEvent(
     ax::mojom::Event event_type,
-    BrowserAccessibility* node,
+    ui::BrowserAccessibility* node,
     int action_request_id) {
-  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
-                                              action_request_id);
+  ui::BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
+                                                  action_request_id);
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax)
     return;
@@ -235,7 +236,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
   if (!wcax)
     return;
 
-  BrowserAccessibility* wrapper = GetFromAXNode(node);
+  ui::BrowserAccessibility* wrapper = GetFromAXNode(node);
   DCHECK(wrapper);
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(wrapper);
@@ -273,7 +274,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
       ui::AXNodeID focus_id =
           ax_tree()->GetUnignoredSelection().focus_object_id;
-      BrowserAccessibility* focus_object = GetFromID(focus_id);
+      ui::BrowserAccessibility* focus_object = GetFromID(focus_id);
       if (focus_object) {
         BrowserAccessibilityAndroid* android_focus_object =
             static_cast<BrowserAccessibilityAndroid*>(focus_object);
@@ -404,7 +405,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
 }
 
 void BrowserAccessibilityManagerAndroid::FireAriaNotificationEvent(
-    BrowserAccessibility* node,
+    ui::BrowserAccessibility* node,
     const std::string& announcement,
     const std::string& notification_id,
     ax::mojom::AriaNotificationInterrupt interrupt_property,
@@ -552,7 +553,7 @@ bool BrowserAccessibilityManagerAndroid::OnHoverEvent(
 }
 
 void BrowserAccessibilityManagerAndroid::HandleHoverEvent(
-    BrowserAccessibility* node) {
+    ui::BrowserAccessibility* node) {
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax)
     return;
@@ -570,7 +571,7 @@ void BrowserAccessibilityManagerAndroid::OnNodeWillBeDeleted(ui::AXTree* tree,
   // that ui::AXTree would pass a null node to an observer, and that the
   // manager would not have a BrowserAccessibility wrapper for it.
   DUMP_WILL_BE_CHECK(node);
-  BrowserAccessibility* wrapper = GetFromAXNode(node);
+  ui::BrowserAccessibility* wrapper = GetFromAXNode(node);
   DUMP_WILL_BE_CHECK(wrapper);
 
   BrowserAccessibilityAndroid* android_node =
@@ -590,10 +591,10 @@ void BrowserAccessibilityManagerAndroid::OnNodeWillBeDeleted(ui::AXTree* tree,
   BrowserAccessibilityManager::OnNodeWillBeDeleted(tree, node);
 }
 
-std::unique_ptr<BrowserAccessibility>
+std::unique_ptr<ui::BrowserAccessibility>
 BrowserAccessibilityManagerAndroid::CreateBrowserAccessibility(
     ui::AXNode* node) {
-  return BrowserAccessibility::Create(this, node);
+  return ui::BrowserAccessibility::Create(this, node);
 }
 
 void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
@@ -632,7 +633,7 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
 
 WebContentsAccessibilityAndroid*
 BrowserAccessibilityManagerAndroid::GetWebContentsAXFromRootManager() {
-  BrowserAccessibility* parent_node =
+  ui::BrowserAccessibility* parent_node =
       GetParentNodeFromParentTreeAsBrowserAccessibility();
   if (!parent_node)
     return web_contents_accessibility_.get();

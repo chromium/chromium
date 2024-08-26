@@ -5,8 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -27,6 +25,8 @@
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/ime/virtual_keyboard_controller_observer.h"
@@ -150,14 +150,15 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
         GetRenderViewHost()->GetWidget()->GetView());
   }
 
-  BrowserAccessibility* FindNode(ax::mojom::Role role,
-                                 const std::string& name_or_value) {
-    BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* FindNode(ax::mojom::Role role,
+                                     const std::string& name_or_value) {
+    ui::BrowserAccessibility* root =
+        GetManager()->GetBrowserAccessibilityRoot();
     CHECK(root);
     return FindNodeInSubtree(*root, role, name_or_value);
   }
 
-  BrowserAccessibilityManager* GetManager() {
+  ui::BrowserAccessibilityManager* GetManager() {
     WebContentsImpl* web_contents =
         static_cast<WebContentsImpl*>(shell()->web_contents());
     return web_contents->GetRootBrowserAccessibilityManager();
@@ -175,9 +176,10 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
  private:
-  BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
-                                          ax::mojom::Role role,
-                                          const std::string& name_or_value) {
+  ui::BrowserAccessibility* FindNodeInSubtree(
+      ui::BrowserAccessibility& node,
+      ax::mojom::Role role,
+      const std::string& name_or_value) {
     const std::string& name =
         node.GetStringAttribute(ax::mojom::StringAttribute::kName);
     const std::string value = base::UTF16ToUTF8(node.GetValueForControl());
@@ -187,7 +189,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
     }
 
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-      BrowserAccessibility* result =
+      ui::BrowserAccessibility* result =
           FindNodeInSubtree(*node.PlatformGetChild(i), role, name_or_value);
       if (result)
         return result;
@@ -205,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       <div><button>After</button></div>
       )HTML");
 
-  BrowserAccessibility* target =
+  ui::BrowserAccessibility* target =
       FindNode(ax::mojom::Role::kGenericContainer, "Editable text");
   ASSERT_NE(nullptr, target);
   WebContentsImpl* web_contents =
@@ -220,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   GetManager()->DoDefaultAction(*target);
   ASSERT_TRUE(waiter2.WaitForNotification());
 
-  BrowserAccessibility* focus = GetManager()->GetFocus();
+  ui::BrowserAccessibility* focus = GetManager()->GetFocus();
   EXPECT_EQ(focus->GetId(), target->GetId());
 }
 

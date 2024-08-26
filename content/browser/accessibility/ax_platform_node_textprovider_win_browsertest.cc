@@ -7,9 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "content/public/test/browser_test.h"
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
-#include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,16 +15,18 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_com_win.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/accessibility_notification_waiter.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_com_win.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -84,44 +84,44 @@ class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
         accessibility_mode);
   }
 
-  BrowserAccessibilityManager* GetManagerAndAssertNonNull() {
+  ui::BrowserAccessibilityManager* GetManagerAndAssertNonNull() {
     auto GetManagerAndAssertNonNull =
-        [this](BrowserAccessibilityManager** result) {
+        [this](ui::BrowserAccessibilityManager** result) {
           WebContentsImpl* web_contents_impl =
               static_cast<WebContentsImpl*>(shell()->web_contents());
           ASSERT_NE(nullptr, web_contents_impl);
-          BrowserAccessibilityManager* browser_accessibility_manager =
+          ui::BrowserAccessibilityManager* browser_accessibility_manager =
               web_contents_impl->GetRootBrowserAccessibilityManager();
           ASSERT_NE(nullptr, browser_accessibility_manager);
           *result = browser_accessibility_manager;
         };
 
-    BrowserAccessibilityManager* browser_accessibility_manager;
+    ui::BrowserAccessibilityManager* browser_accessibility_manager;
     GetManagerAndAssertNonNull(&browser_accessibility_manager);
     return browser_accessibility_manager;
   }
 
-  BrowserAccessibility* GetRootAndAssertNonNull() {
-    auto GetRootAndAssertNonNull = [this](BrowserAccessibility** result) {
-      BrowserAccessibility* root_browser_accessibility =
+  ui::BrowserAccessibility* GetRootAndAssertNonNull() {
+    auto GetRootAndAssertNonNull = [this](ui::BrowserAccessibility** result) {
+      ui::BrowserAccessibility* root_browser_accessibility =
           GetManagerAndAssertNonNull()->GetBrowserAccessibilityRoot();
       ASSERT_NE(nullptr, result);
       *result = root_browser_accessibility;
     };
 
-    BrowserAccessibility* root_browser_accessibility;
+    ui::BrowserAccessibility* root_browser_accessibility;
     GetRootAndAssertNonNull(&root_browser_accessibility);
     return root_browser_accessibility;
   }
 
-  BrowserAccessibility* FindNode(ax::mojom::Role role,
-                                 const std::string& name_or_value) {
+  ui::BrowserAccessibility* FindNode(ax::mojom::Role role,
+                                     const std::string& name_or_value) {
     return FindNodeInSubtree(*GetRootAndAssertNonNull(), role, name_or_value);
   }
 
   void GetTextProviderFromTextNode(
       ComPtr<ITextProvider>& text_provider,
-      BrowserAccessibility* target_browser_accessibility) {
+      ui::BrowserAccessibility* target_browser_accessibility) {
     auto* provider_simple =
         ToBrowserAccessibilityWin(target_browser_accessibility)->GetCOM();
     ASSERT_NE(nullptr, provider_simple);
@@ -132,9 +132,10 @@ class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
-                                          ax::mojom::Role role,
-                                          const std::string& name_or_value) {
+  ui::BrowserAccessibility* FindNodeInSubtree(
+      ui::BrowserAccessibility& node,
+      ax::mojom::Role role,
+      const std::string& name_or_value) {
     const std::string& name =
         node.GetStringAttribute(ax::mojom::StringAttribute::kName);
     // Note that in the case of a text field,
@@ -151,7 +152,7 @@ class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
     }
 
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-      BrowserAccessibility* result =
+      ui::BrowserAccessibility* result =
           FindNodeInSubtree(*node.PlatformGetChild(i), role, name_or_value);
       if (result)
         return result;

@@ -5,7 +5,6 @@
 #include <tuple>
 
 #include "base/strings/string_number_conversions.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -19,6 +18,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   // Get the BrowserAccessibilityManager.
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       web_contents->GetRootBrowserAccessibilityManager();
   ASSERT_NE(nullptr, manager);
 
@@ -115,8 +115,8 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
       do {
         ASSERT_TRUE(waiter.WaitForNotification());
         int target_id = waiter.event_target_id();
-        BrowserAccessibility* hit = manager->GetFromID(target_id);
-        BrowserAccessibility* child = hit->PlatformGetChild(0);
+        ui::BrowserAccessibility* hit = manager->GetFromID(target_id);
+        ui::BrowserAccessibility* child = hit->PlatformGetChild(0);
         ASSERT_NE(nullptr, child);
         cell_text =
             child->GetStringAttribute(ax::mojom::StringAttribute::kName);
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
       shell()->web_contents()->GetPrimaryMainFrame());
   RenderFrameHostImpl* child_frame =
       main_frame->frame_tree_node()->child_at(0)->current_frame_host();
-  BrowserAccessibilityManager* child_manager =
+  ui::BrowserAccessibilityManager* child_manager =
       child_frame->GetOrCreateBrowserAccessibilityManager();
   ASSERT_NE(nullptr, child_manager);
 
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   SendTouchExplorationEvent(50, 350);
   ASSERT_TRUE(waiter.WaitForNotification());
   int target_id = waiter.event_target_id();
-  BrowserAccessibility* hit = child_manager->GetFromID(target_id);
+  ui::BrowserAccessibility* hit = child_manager->GetFromID(target_id);
   EXPECT_EQ(ax::mojom::Role::kButton, hit->GetRole());
   std::string text = hit->GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("Ordinary Button", text);
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
       shell()->web_contents()->GetPrimaryMainFrame());
   RenderFrameHostImpl* child_frame =
       main_frame->frame_tree_node()->child_at(0)->current_frame_host();
-  BrowserAccessibilityManager* child_manager =
+  ui::BrowserAccessibilityManager* child_manager =
       child_frame->GetOrCreateBrowserAccessibilityManager();
   ASSERT_NE(nullptr, child_manager);
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   SendTouchExplorationEvent(50, 350);
   ASSERT_TRUE(waiter.WaitForNotification());
   int target_id = waiter.event_target_id();
-  BrowserAccessibility* hit = child_manager->GetFromID(target_id);
+  ui::BrowserAccessibility* hit = child_manager->GetFromID(target_id);
   EXPECT_EQ(ax::mojom::Role::kButton, hit->GetRole());
   std::string text = hit->GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("Ordinary Button", text);

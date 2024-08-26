@@ -51,7 +51,7 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
     formatter->SetPropertyFilters(scenario_.property_filters,
                                   AXTreeFormatter::kFiltersDefaultSet);
 
-    BrowserAccessibility* test_node =
+    ui::BrowserAccessibility* test_node =
         FindNodeByStringAttribute(ax::mojom::StringAttribute::kHtmlId, "test");
     if (!test_node)
       test_node = FindNodeByStringAttribute(

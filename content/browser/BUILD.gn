@@ -395,14 +395,8 @@ source_set("browser") {
     "about_url_loader_factory.h",
     "accessibility/accessibility_tree_formatter_blink.cc",
     "accessibility/accessibility_tree_formatter_blink.h",
-    "accessibility/browser_accessibility.cc",
-    "accessibility/browser_accessibility.h",
-    "accessibility/browser_accessibility_manager.cc",
-    "accessibility/browser_accessibility_manager.h",
     "accessibility/browser_accessibility_state_impl.cc",
     "accessibility/browser_accessibility_state_impl.h",
-    "accessibility/one_shot_accessibility_tree_search.cc",
-    "accessibility/one_shot_accessibility_tree_search.h",
     "accessibility/render_accessibility_host.cc",
     "accessibility/render_accessibility_host.h",
     "accessibility/scoped_mode_collection.cc",
@@ -2550,10 +2544,6 @@ source_set("browser") {
     sources += [
       "accessibility/accessibility_tree_formatter_fuchsia.cc",
       "accessibility/accessibility_tree_formatter_fuchsia.h",
-      "accessibility/browser_accessibility_fuchsia.cc",
-      "accessibility/browser_accessibility_fuchsia.h",
-      "accessibility/browser_accessibility_manager_fuchsia.cc",
-      "accessibility/browser_accessibility_manager_fuchsia.h",
       "child_process_launcher_helper_fuchsia.cc",
       "file_system_access/file_path_watcher/file_path_watcher_stub.cc",  # See
                                                                          # crbug.com/42050618
@@ -2627,12 +2617,6 @@ source_set("browser") {
       "../app_shim_remote_cocoa/web_drag_source_mac.mm",
       "../app_shim_remote_cocoa/web_menu_runner_mac.h",
       "../app_shim_remote_cocoa/web_menu_runner_mac.mm",
-      "accessibility/browser_accessibility_cocoa.h",
-      "accessibility/browser_accessibility_cocoa.mm",
-      "accessibility/browser_accessibility_mac.h",
-      "accessibility/browser_accessibility_mac.mm",
-      "accessibility/browser_accessibility_manager_mac.h",
-      "accessibility/browser_accessibility_manager_mac.mm",
       "accessibility/browser_accessibility_state_impl_mac.mm",
       "child_process_launcher_helper_mac.cc",
       "cocoa/system_hotkey_helper_mac.h",
@@ -2709,10 +2693,6 @@ source_set("browser") {
     ]
   } else if (is_ios) {
     sources += [
-      "accessibility/browser_accessibility_ios.h",
-      "accessibility/browser_accessibility_ios.mm",
-      "accessibility/browser_accessibility_manager_ios.h",
-      "accessibility/browser_accessibility_manager_ios.mm",
       "child_process_launcher_helper_ios.mm",
       "date_time_chooser/ios/date_time_chooser_coordinator.h",
       "date_time_chooser/ios/date_time_chooser_coordinator.mm",
@@ -2860,13 +2840,7 @@ source_set("browser") {
 
   if (is_win) {
     sources += [
-      "accessibility/browser_accessibility_com_win.cc",
-      "accessibility/browser_accessibility_com_win.h",
-      "accessibility/browser_accessibility_manager_win.cc",
-      "accessibility/browser_accessibility_manager_win.h",
       "accessibility/browser_accessibility_state_impl_win.cc",
-      "accessibility/browser_accessibility_win.cc",
-      "accessibility/browser_accessibility_win.h",
       "child_process_launcher_helper_win.cc",
       "device_posture/device_posture_platform_provider_win.cc",
       "device_posture/device_posture_platform_provider_win.h",
@@ -3066,13 +3040,6 @@ source_set("browser") {
   }
 
   if (use_atk) {
-    sources += [
-      "accessibility/browser_accessibility_auralinux.cc",
-      "accessibility/browser_accessibility_auralinux.h",
-      "accessibility/browser_accessibility_manager_auralinux.cc",
-      "accessibility/browser_accessibility_manager_auralinux.h",
-    ]
-
     configs += [
       "//build/config/linux/atk",
       "//build/config/linux/atspi2",

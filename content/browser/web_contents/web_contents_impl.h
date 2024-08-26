@@ -1050,8 +1050,9 @@ class CONTENT_EXPORT WebContentsImpl
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
   bool HandleWheelEvent(const blink::WebMouseWheelEvent& event) override;
   bool PreHandleGestureEvent(const blink::WebGestureEvent& event) override;
-  BrowserAccessibilityManager* GetRootBrowserAccessibilityManager() override;
-  BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager()
+  ui::BrowserAccessibilityManager* GetRootBrowserAccessibilityManager()
+      override;
+  ui::BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager()
       override;
   // The following 4 functions are already listed under WebContents overrides:
   // void Cut() override;

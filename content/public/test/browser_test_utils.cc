@@ -49,8 +49,6 @@
 #include "cc/test/pixel_test_utils.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/viz/client/frame_evictor.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -135,6 +133,8 @@
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
@@ -2189,7 +2189,7 @@ bool WaitForRenderFrameReady(RenderFrameHost* rfh) {
 
 void WaitForAccessibilityFocusChange() {
   base::RunLoop run_loop;
-  BrowserAccessibilityManager::SetFocusChangeCallbackForTesting(
+  ui::BrowserAccessibilityManager::SetFocusChangeCallbackForTesting(
       run_loop.QuitClosure());
   run_loop.Run();
 }
@@ -2197,15 +2197,15 @@ void WaitForAccessibilityFocusChange() {
 ui::AXNodeData GetFocusedAccessibilityNodeInfo(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       web_contents_impl->GetRootBrowserAccessibilityManager();
   if (!manager)
     return ui::AXNodeData();
-  BrowserAccessibility* focused_node = manager->GetFocus();
+  ui::BrowserAccessibility* focused_node = manager->GetFocus();
   return focused_node->GetData();
 }
 
-bool AccessibilityTreeContainsNodeWithName(BrowserAccessibility* node,
+bool AccessibilityTreeContainsNodeWithName(ui::BrowserAccessibility* node,
                                            std::string_view name) {
   // If an image annotation is set, it plays the same role as a name, so it
   // makes sense to check both in the same test helper.
@@ -2232,7 +2232,7 @@ void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
       static_cast<WebContentsImpl*>(web_contents);
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
       web_contents_impl->GetPrimaryMainFrame());
-  BrowserAccessibilityManager* main_frame_manager =
+  ui::BrowserAccessibilityManager* main_frame_manager =
       main_frame->browser_accessibility_manager();
   while (!main_frame_manager ||
          !AccessibilityTreeContainsNodeWithName(
@@ -2245,7 +2245,7 @@ void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
 ui::AXTreeUpdate GetAccessibilityTreeSnapshot(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       web_contents_impl->GetRootBrowserAccessibilityManager();
   if (!manager)
     return ui::AXTreeUpdate();
@@ -2254,8 +2254,8 @@ ui::AXTreeUpdate GetAccessibilityTreeSnapshot(WebContents* web_contents) {
 
 ui::AXTreeUpdate GetAccessibilityTreeSnapshotFromId(
     const ui::AXTreeID& tree_id) {
-  BrowserAccessibilityManager* manager =
-      BrowserAccessibilityManager::FromID(tree_id);
+  ui::BrowserAccessibilityManager* manager =
+      ui::BrowserAccessibilityManager::FromID(tree_id);
   return manager ? manager->SnapshotAXTreeForTesting() : ui::AXTreeUpdate();
 }
 
@@ -2263,7 +2263,7 @@ ui::AXPlatformNodeDelegate* GetRootAccessibilityNode(
     WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       web_contents_impl->GetRootBrowserAccessibilityManager();
   return manager ? manager->GetBrowserAccessibilityRoot() : nullptr;
 }
@@ -2283,7 +2283,8 @@ ui::AXPlatformNodeDelegate* FindAccessibilityNode(
 ui::AXPlatformNodeDelegate* FindAccessibilityNodeInSubtree(
     ui::AXPlatformNodeDelegate* node,
     const FindAccessibilityNodeCriteria& criteria) {
-  auto* node_internal = BrowserAccessibility::FromAXPlatformNodeDelegate(node);
+  auto* node_internal =
+      ui::BrowserAccessibility::FromAXPlatformNodeDelegate(node);
   DCHECK(node_internal);
   if ((!criteria.name ||
        node_internal->GetStringAttribute(ax::mojom::StringAttribute::kName) ==
@@ -2293,7 +2294,7 @@ ui::AXPlatformNodeDelegate* FindAccessibilityNodeInSubtree(
   }
 
   for (unsigned int i = 0; i < node_internal->PlatformChildCount(); ++i) {
-    BrowserAccessibility* child = node_internal->PlatformGetChild(i);
+    ui::BrowserAccessibility* child = node_internal->PlatformGetChild(i);
     ui::AXPlatformNodeDelegate* result =
         FindAccessibilityNodeInSubtree(child, criteria);
     if (result)

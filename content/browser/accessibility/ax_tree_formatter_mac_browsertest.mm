@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -16,6 +14,8 @@
 #include "net/base/data_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 #include "url/gurl.h"
 
@@ -57,7 +57,7 @@ class AXTreeFormatterMacBrowserTest : public ContentBrowserTest {
                            const char* expected_pattern) const;
 
  protected:
-  BrowserAccessibilityManager* GetManager() const {
+  ui::BrowserAccessibilityManager* GetManager() const {
     WebContentsImpl* web_contents =
         static_cast<WebContentsImpl*>(shell()->web_contents());
     return web_contents->GetRootBrowserAccessibilityManager();
@@ -89,7 +89,7 @@ void AXTreeFormatterMacBrowserTest::TestFormat(
                                 ui::AXTreeFormatter::kFiltersEmptySet);
   formatter->SetNodeFilters(node_filters);
 
-  BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root);
 
   std::string actual = formatter->Format(root);
@@ -123,7 +123,7 @@ void AXTreeFormatterMacBrowserTest::TestScript(
   std::unique_ptr<ui::AXTreeFormatter> formatter =
       AXInspectFactory::CreatePlatformFormatter();
 
-  BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root);
 
   std::vector<ui::AXScriptInstruction> instructions;

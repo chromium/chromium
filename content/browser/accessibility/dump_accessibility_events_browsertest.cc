@@ -19,8 +19,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -32,10 +30,12 @@
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 #if BUILDFLAG(IS_WIN)
-#include "content/browser/accessibility/browser_accessibility_manager_win.h"
+#include "ui/accessibility/platform/browser_accessibility_manager_win.h"
 #endif
 
 namespace content {
@@ -1044,9 +1044,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsSamePageLinkNavigation) {
 #if BUILDFLAG(IS_WIN)
-  if (!BrowserAccessibilityManagerWin::
-          IsUiaActiveTextPositionChangedEventSupported())
+  if (!ui::BrowserAccessibilityManagerWin::
+          IsUiaActiveTextPositionChangedEventSupported()) {
     return;
+  }
 #endif
   RunEventTest(FILE_PATH_LITERAL("same-page-link-navigation.html"));
 }

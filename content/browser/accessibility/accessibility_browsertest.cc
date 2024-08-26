@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -16,6 +15,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 
 namespace content {
 
