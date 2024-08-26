@@ -188,6 +188,45 @@ suite('DisclosureAppTest', () => {
     chrome.send = chromeSend;
   });
 
+  test('click accept button to create set with default name', async () => {
+    const setValue = {
+      name: '',
+      uuid: {value: '123'},
+      urls: [],
+    };
+    const set = setValue as ProductSpecificationsSet;
+    shoppingServiceApi.setResultFor(
+        'addProductSpecificationsSet', Promise.resolve({createdSet: set}));
+    // Overwrite `chrome.getVariableValue` for testing.
+    const chromeGetVariableValue = chrome.getVariableValue;
+    const testObject = {
+      in_new_tab: false,
+      name: '',
+      urls: ['https://foo.com', 'https://bar.com'],
+    };
+    const testJson = JSON.stringify(testObject);
+    chrome.getVariableValue = (message) => {
+      if (message === 'dialogArguments') {
+        return testJson;
+      }
+      return '';
+    };
+
+    const acceptButton = $$<HTMLElement>(app, 'cr-button.action-button');
+    assertTrue(!!acceptButton);
+    acceptButton.click();
+
+    // Create product spec set with the default name.
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
+    const addSetArgs =
+        shoppingServiceApi.getArgs('addProductSpecificationsSet');
+    assertEquals(loadTimeData.getString('defaultTableTitle'), addSetArgs[0][0]);
+
+    // Restore chrome.getVariableValue.
+    chrome.getVariableValue = chromeGetVariableValue;
+  });
+
   test('decline button shows the correct text', async () => {
     const declineButton = $$<HTMLElement>(app, 'cr-button.tonal-button');
     assertTrue(!!declineButton);

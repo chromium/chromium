@@ -75,7 +75,10 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
 
     // On accept, continue to create and show the product spec set.
     const args = JSON.parse(chrome.getVariableValue('dialogArguments'));
-    const name: string = args['name'];
+    let name: string = args['name'];
+    if (name.length === 0) {
+      name = loadTimeData.getString('defaultTableTitle');
+    }
     const urls: string[] = args['urls'];
     const inNewTab: boolean = args['in_new_tab'];
     const {createdSet} = await this.shoppingApi_.addProductSpecificationsSet(
