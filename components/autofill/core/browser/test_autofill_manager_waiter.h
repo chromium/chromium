@@ -28,14 +28,17 @@ namespace autofill {
 enum class AutofillManagerEvent {
   kLanguageDetermined,
   kFormsSeen,
+  kCaretMovedInFormField,
   kTextFieldDidChange,
   kTextFieldDidScroll,
   kSelectControlDidChange,
   kAskForValuesToFill,
+  kFocusOnFormField,
   kDidFillAutofillFormData,
   kJavaScriptChangedAutofilledValue,
   kFormSubmitted,
-  kMaxValue = kFormSubmitted
+  kLoadedServerPredictions,
+  kMaxValue = kLoadedServerPredictions
 };
 
 // Records AutofillManager::Observer::OnBeforeFoo() events and blocks until the
@@ -164,6 +167,17 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                         base::span<const FormGlobalId> updated_forms,
                         base::span<const FormGlobalId> removed_forms) override;
 
+  void OnBeforeCaretMovedInFormField(AutofillManager& manager,
+                                     const FormGlobalId& form,
+                                     const FieldGlobalId& field_id,
+                                     const std::u16string& selection,
+                                     const gfx::Rect& caret_bounds) override;
+  void OnAfterCaretMovedInFormField(AutofillManager& manager,
+                                    const FormGlobalId& form,
+                                    const FieldGlobalId& field_id,
+                                    const std::u16string& selection,
+                                    const gfx::Rect& caret_bounds) override;
+
   void OnBeforeTextFieldDidChange(AutofillManager& manager,
                                   FormGlobalId form,
                                   FieldGlobalId field) override;
@@ -190,10 +204,17 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                   FormGlobalId form,
                                   FieldGlobalId field,
                                   const FormData& form_data) override;
-
   void OnAfterAskForValuesToFill(AutofillManager& manager,
                                  FormGlobalId form,
                                  FieldGlobalId field) override;
+
+  void OnBeforeFocusOnFormField(AutofillManager& manager,
+                                FormGlobalId form,
+                                FieldGlobalId field,
+                                const FormData& form_data) override;
+  void OnAfterFocusOnFormField(AutofillManager& manager,
+                               FormGlobalId form,
+                               FieldGlobalId field) override;
 
   void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
                                        FormGlobalId form) override;
@@ -208,6 +229,9 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                                FieldGlobalId field) override;
 
   void OnFormSubmitted(AutofillManager& manager, const FormData& form) override;
+
+  void OnBeforeLoadedServerPredictions(AutofillManager& manager) override;
+  void OnAfterLoadedServerPredictions(AutofillManager& manager) override;
 
   DenseSet<Event> relevant_events_;
   std::unique_ptr<State> state_ = std::make_unique<State>();
@@ -299,6 +323,22 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
     MaybeQuit(&Observer::OnAfterFormsSeen, manager, updated_forms,
               removed_forms);
   }
+  void OnBeforeCaretMovedInFormField(AutofillManager& manager,
+                                     const FormGlobalId& form,
+                                     const FieldGlobalId& field_id,
+                                     const std::u16string& selection,
+                                     const gfx::Rect& caret_bounds) override {
+    MaybeQuit(&Observer::OnBeforeCaretMovedInFormField, manager, form, field_id,
+              selection, caret_bounds);
+  }
+  void OnAfterCaretMovedInFormField(AutofillManager& manager,
+                                    const FormGlobalId& form,
+                                    const FieldGlobalId& field_id,
+                                    const std::u16string& selection,
+                                    const gfx::Rect& caret_bounds) override {
+    MaybeQuit(&Observer::OnAfterCaretMovedInFormField, manager, form, field_id,
+              selection, caret_bounds);
+  }
   void OnBeforeTextFieldDidChange(AutofillManager& manager,
                                   FormGlobalId form,
                                   FieldGlobalId field) override {
@@ -343,6 +383,18 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
                                  FieldGlobalId field) override {
     MaybeQuit(&Observer::OnAfterAskForValuesToFill, manager, form, field);
   }
+  void OnBeforeFocusOnFormField(AutofillManager& manager,
+                                FormGlobalId form,
+                                FieldGlobalId field,
+                                const FormData& form_data) override {
+    MaybeQuit(&Observer::OnBeforeFocusOnFormField, manager, form, field,
+              form_data);
+  }
+  void OnAfterFocusOnFormField(AutofillManager& manager,
+                               FormGlobalId form,
+                               FieldGlobalId field) override {
+    MaybeQuit(&Observer::OnAfterFocusOnFormField, manager, form, field);
+  }
   void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
                                        FormGlobalId form) override {
     MaybeQuit(&Observer::OnBeforeDidFillAutofillFormData, manager, form);
@@ -360,12 +412,6 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
                                                FormGlobalId form,
                                                FieldGlobalId field) override {
     MaybeQuit(&Observer::OnAfterDidFillAutofillFormData, manager, form, field);
-  }
-  void OnBeforeLoadedServerPredictions(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnBeforeLoadedServerPredictions, manager);
-  }
-  void OnAfterLoadedServerPredictions(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnAfterLoadedServerPredictions, manager);
   }
   void OnFieldTypesDetermined(AutofillManager& manager,
                               FormGlobalId form,
@@ -391,6 +437,12 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
   void OnFormSubmitted(AutofillManager& manager,
                        const FormData& form) override {
     MaybeQuit(&Observer::OnFormSubmitted, manager, form);
+  }
+  void OnBeforeLoadedServerPredictions(AutofillManager& manager) override {
+    MaybeQuit(&Observer::OnBeforeLoadedServerPredictions, manager);
+  }
+  void OnAfterLoadedServerPredictions(AutofillManager& manager) override {
+    MaybeQuit(&Observer::OnAfterLoadedServerPredictions, manager);
   }
 
   // Quits the `run_loop_` if `event` matches `event_`.

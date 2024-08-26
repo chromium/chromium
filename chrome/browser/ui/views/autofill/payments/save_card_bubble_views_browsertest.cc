@@ -763,6 +763,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   std::unique_ptr<views::AnyWidgetObserver> any_widget_observer_;
 
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;

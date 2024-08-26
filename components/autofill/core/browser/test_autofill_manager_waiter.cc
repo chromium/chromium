@@ -118,6 +118,24 @@ void TestAutofillManagerWaiter::OnAfterFormsSeen(
   OnAfter(Event::kFormsSeen);
 }
 
+void TestAutofillManagerWaiter::OnBeforeCaretMovedInFormField(
+    AutofillManager& manager,
+    const FormGlobalId& form,
+    const FieldGlobalId& field_id,
+    const std::u16string& selection,
+    const gfx::Rect& caret_bounds) {
+  OnBefore(Event::kCaretMovedInFormField);
+}
+
+void TestAutofillManagerWaiter::OnAfterCaretMovedInFormField(
+    AutofillManager& manager,
+    const FormGlobalId& form,
+    const FieldGlobalId& field_id,
+    const std::u16string& selection,
+    const gfx::Rect& caret_bounds) {
+  OnAfter(Event::kCaretMovedInFormField);
+}
+
 void TestAutofillManagerWaiter::OnBeforeTextFieldDidChange(
     AutofillManager& manager,
     FormGlobalId form,
@@ -176,6 +194,21 @@ void TestAutofillManagerWaiter::OnAfterAskForValuesToFill(
   OnAfter(Event::kAskForValuesToFill);
 }
 
+void TestAutofillManagerWaiter::OnBeforeFocusOnFormField(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field,
+    const FormData& form_data) {
+  OnBefore(Event::kFocusOnFormField);
+}
+
+void TestAutofillManagerWaiter::OnAfterFocusOnFormField(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  OnAfter(Event::kFocusOnFormField);
+}
+
 void TestAutofillManagerWaiter::OnBeforeDidFillAutofillFormData(
     AutofillManager& manager,
     FormGlobalId form) {
@@ -206,6 +239,16 @@ void TestAutofillManagerWaiter::OnFormSubmitted(AutofillManager& manager,
                                                 const FormData& form) {
   OnBefore(Event::kFormSubmitted);
   OnAfter(Event::kFormSubmitted);
+}
+
+void TestAutofillManagerWaiter::OnBeforeLoadedServerPredictions(
+    AutofillManager& manager) {
+  OnBefore(Event::kLoadedServerPredictions);
+}
+
+void TestAutofillManagerWaiter::OnAfterLoadedServerPredictions(
+    AutofillManager& manager) {
+  OnAfter(Event::kLoadedServerPredictions);
 }
 
 void TestAutofillManagerWaiter::Reset() {

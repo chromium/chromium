@@ -12,7 +12,15 @@ MockAutofillCrowdsourcingManager::MockAutofillCrowdsourcingManager(
     AutofillClient* client)
     : AutofillCrowdsourcingManager(client,
                                    /*api_key=*/"",
-                                   /*log_manager=*/nullptr) {}
+                                   /*log_manager=*/nullptr) {
+  ON_CALL(*this, StartQueryRequest)
+      .WillByDefault(
+          [](const auto&, const auto&,
+             base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
+            std::move(callback).Run(std::nullopt);
+            return false;
+          });
+}
 
 MockAutofillCrowdsourcingManager::~MockAutofillCrowdsourcingManager() = default;
 
