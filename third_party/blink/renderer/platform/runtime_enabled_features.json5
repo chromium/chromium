@@ -4417,11 +4417,6 @@
       status: "stable",
     },
     {
-      // Kill switch for the regexp flag update from "u" to "v".
-      name: "URLPatternRegexpUnicodeSetsMode",
-      status: "stable",
-    },
-    {
       name: "URLPatternWildcardMoreOften",
       status: "stable",
     },
