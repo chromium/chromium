@@ -1144,7 +1144,7 @@ void Page::SettingsChanged(ChangeType change_type) {
         // objects for layout.
         if (LocalFrameView* view = local_frame->View()) {
           if (const auto* scrollable_areas = view->UserScrollableAreas()) {
-            for (const auto& scrollable_area : *scrollable_areas) {
+            for (const auto& scrollable_area : scrollable_areas->Values()) {
               if (scrollable_area->ScrollsOverflow()) {
                 if (auto* layout_box = scrollable_area->GetLayoutBox()) {
                   layout_box->SetNeedsLayout(
@@ -1230,7 +1230,7 @@ void Page::UpdateAcceleratedCompositingSettings() {
     // compositing reasons may have changed.
     if (LocalFrameView* view = local_frame->View()) {
       if (const auto* areas = view->UserScrollableAreas()) {
-        for (const auto& scrollable_area : *areas) {
+        for (const auto& scrollable_area : areas->Values()) {
           if (scrollable_area->ScrollsOverflow()) {
             if (auto* layout_box = scrollable_area->GetLayoutBox()) {
               layout_box->SetNeedsPaintPropertyUpdate();

@@ -2547,7 +2547,8 @@ unsigned Internals::numberOfScrollableAreas(Document* document) {
   unsigned count = 0;
   LocalFrame* frame = document->GetFrame();
   if (frame->View()->UserScrollableAreas()) {
-    for (const auto& scrollable_area : *frame->View()->UserScrollableAreas()) {
+    for (const auto& scrollable_area :
+         frame->View()->UserScrollableAreas()->Values()) {
       if (scrollable_area->ScrollsOverflow())
         count++;
     }
@@ -2559,7 +2560,7 @@ unsigned Internals::numberOfScrollableAreas(Document* document) {
     if (child_local_frame && child_local_frame->View() &&
         child_local_frame->View()->UserScrollableAreas()) {
       for (const auto& scrollable_area :
-           *child_local_frame->View()->UserScrollableAreas()) {
+           child_local_frame->View()->UserScrollableAreas()->Values()) {
         if (scrollable_area->ScrollsOverflow())
           count++;
       }

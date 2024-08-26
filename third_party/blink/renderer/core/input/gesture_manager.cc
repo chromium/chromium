@@ -560,10 +560,10 @@ WebInputEventResult GestureManager::HandleGestureShowPress() {
   LocalFrameView* view = frame_->View();
   if (!view)
     return WebInputEventResult::kNotHandled;
-  const LocalFrameView::ScrollableAreaSet* areas = view->UserScrollableAreas();
+  const LocalFrameView::ScrollableAreaMap* areas = view->UserScrollableAreas();
   if (!areas)
     return WebInputEventResult::kNotHandled;
-  for (PaintLayerScrollableArea* scrollable_area : *areas) {
+  for (PaintLayerScrollableArea* scrollable_area : areas->Values()) {
     if (scrollable_area->ScrollsOverflow())
       scrollable_area->CancelScrollAnimation();
   }

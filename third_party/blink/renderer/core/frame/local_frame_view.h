@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -477,6 +478,8 @@ class CORE_EXPORT LocalFrameView final
     return is_tracking_raster_invalidations_;
   }
 
+  using ScrollableAreaMap =
+      HeapHashMap<CompositorElementId, Member<PaintLayerScrollableArea>>;
   using ScrollableAreaSet = HeapHashSet<Member<PaintLayerScrollableArea>>;
   void AddScrollAnchoringScrollableArea(PaintLayerScrollableArea*);
   void RemoveScrollAnchoringScrollableArea(PaintLayerScrollableArea*);
@@ -492,7 +495,7 @@ class CORE_EXPORT LocalFrameView final
 
   void AddUserScrollableArea(PaintLayerScrollableArea*);
   void RemoveUserScrollableArea(PaintLayerScrollableArea*);
-  const ScrollableAreaSet* UserScrollableAreas() const {
+  const ScrollableAreaMap* UserScrollableAreas() const {
     return user_scrollable_areas_.Get();
   }
 
@@ -1095,7 +1098,7 @@ class CORE_EXPORT LocalFrameView final
   Member<ScrollableAreaSet> scroll_anchoring_scrollable_areas_;
   Member<ScrollableAreaSet> animating_scrollable_areas_;
   // Scrollable areas which are user-scrollable, whether they overflow or not.
-  Member<ScrollableAreaSet> user_scrollable_areas_;
+  Member<ScrollableAreaMap> user_scrollable_areas_;
   BoxModelObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 

@@ -533,7 +533,7 @@ void LocalFrameView::InvalidateAllCustomScrollbarsOnActiveChanged() {
 void LocalFrameView::UsesOverlayScrollbarsChanged() {
   if (!user_scrollable_areas_)
     return;
-  for (const auto& scrollable_area : *user_scrollable_areas_) {
+  for (const auto& scrollable_area : user_scrollable_areas_->Values()) {
     if (scrollable_area->ScrollsOverflow() || scrollable_area->HasScrollbar()) {
       scrollable_area->RemoveScrollbarsForReconstruction();
       if (auto* layout_box = scrollable_area->GetLayoutBox()) {
@@ -1719,7 +1719,7 @@ void LocalFrameView::NotifyPageThatContentAreaWillPaint() const {
   if (!user_scrollable_areas_)
     return;
 
-  for (const auto& scrollable_area : *user_scrollable_areas_) {
+  for (const auto& scrollable_area : user_scrollable_areas_->Values()) {
     if (!scrollable_area->ScrollbarsCanBeActive())
       continue;
 
@@ -2463,7 +2463,7 @@ void LocalFrameView::EnqueueScrollSnapChangingFromImplIfNecessary() {
     if (!scrollable_areas) {
       return;
     }
-    for (const auto& area : *scrollable_areas) {
+    for (const auto& area : scrollable_areas->Values()) {
       area->EnqueueScrollSnapChangingEventFromImplIfNeeded();
     }
   });
@@ -2985,7 +2985,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   ForAllNonThrottledLocalFrameViews(
       [&scroll_translation_nodes](LocalFrameView& frame_view) {
         if (const auto* scrollable_areas = frame_view.UserScrollableAreas()) {
-          for (const auto& area : *scrollable_areas) {
+          for (const auto& area : scrollable_areas->Values()) {
             const auto* paint_properties =
                 area->GetLayoutBox()->FirstFragment().PaintProperties();
             if (paint_properties && paint_properties->Scroll()) {
@@ -3585,14 +3585,15 @@ void LocalFrameView::AddUserScrollableArea(
     PaintLayerScrollableArea* scrollable_area) {
   DCHECK(scrollable_area);
   if (!user_scrollable_areas_)
-    user_scrollable_areas_ = MakeGarbageCollected<ScrollableAreaSet>();
-  user_scrollable_areas_->insert(scrollable_area);
+    user_scrollable_areas_ = MakeGarbageCollected<ScrollableAreaMap>();
+  user_scrollable_areas_->insert(scrollable_area->GetScrollElementId(),
+                                 scrollable_area);
 }
 
 void LocalFrameView::RemoveUserScrollableArea(
     PaintLayerScrollableArea* scrollable_area) {
   if (user_scrollable_areas_) {
-    user_scrollable_areas_->erase(scrollable_area);
+    user_scrollable_areas_->erase(scrollable_area->GetScrollElementId());
   }
 }
 
@@ -3746,12 +3747,9 @@ ScrollableArea* LocalFrameView::ScrollableAreaWithElementId(
     return viewport;
 
   if (user_scrollable_areas_) {
-    // This requires iterating over all user-scrollable areas. We may want to
-    // store a map of ElementId to ScrollableArea if this is an issue for
-    // performance.
-    for (ScrollableArea* scrollable_area : *user_scrollable_areas_) {
-      if (id == scrollable_area->GetScrollElementId())
-        return scrollable_area;
+    auto it = user_scrollable_areas_->find(id);
+    if (it != user_scrollable_areas_->end()) {
+      return it->value;
     }
   }
   return nullptr;
@@ -4841,7 +4839,7 @@ void LocalFrameView::SetCullRectNeedsUpdateForFrames(bool disable_expansion) {
         // invalidate all cull rects affected by disable_expansion but it
         // doesn't affect correctness.
         if (disable_expansion && frame_view.UserScrollableAreas()) {
-          for (const auto& area : *frame_view.UserScrollableAreas()) {
+          for (const auto& area : frame_view.UserScrollableAreas()->Values()) {
             area->Layer()->SetNeedsCullRectUpdate();
           }
         }
