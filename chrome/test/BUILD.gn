@@ -8103,7 +8103,6 @@ test("unit_tests") {
       "../browser/new_tab_page/chrome_colors/chrome_colors_service_unittest.cc",
       "../browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper_unittest.cc",
       "../browser/new_tab_page/modules/file_suggestion/drive_service_unittest.cc",
-      "../browser/new_tab_page/modules/history_clusters/history_clusters_module_util_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals_unittest.cc",
       "../browser/new_tab_page/modules/new_tab_page_modules_unittest.cc",
       "../browser/new_tab_page/modules/safe_browsing/safe_browsing_handler_unittest.cc",

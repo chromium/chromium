@@ -3850,8 +3850,6 @@ static_library("browser") {
       "new_tab_page/modules/file_suggestion/drive_service_factory.h",
       "new_tab_page/modules/file_suggestion/file_suggestion_handler.cc",
       "new_tab_page/modules/file_suggestion/file_suggestion_handler.h",
-      "new_tab_page/modules/history_clusters/history_clusters_module_util.cc",
-      "new_tab_page/modules/history_clusters/history_clusters_module_util.h",
       "new_tab_page/modules/history_clusters/ranking/history_cluster_metrics.h",
       "new_tab_page/modules/history_clusters/ranking/history_clusters_category_metrics.cc",
       "new_tab_page/modules/history_clusters/ranking/history_clusters_category_metrics.h",

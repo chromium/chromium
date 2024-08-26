@@ -68,18 +68,10 @@ BASE_DECLARE_FEATURE(kNtpSharepointModule);
 BASE_DECLARE_FEATURE(kNtpShortcuts);
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModule);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumVisitsRequired);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleCategories);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMaxClusters);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleTextOnly);
 BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
-BASE_DECLARE_FEATURE(kNtpChromeCartInHistoryClusterModule);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleUseModelRanking);
-BASE_DECLARE_FEATURE(kNtpChromeCartHistoryClusterCoexist);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering);
@@ -152,27 +144,6 @@ extern const char kNtpSafeBrowsingModuleCountMaxParam[];
 extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 // Parameter determining the variation of the omnibox theme matching.
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
-// Parameter for determining the maximum number of hours to look back to show a
-// history cluster.
-extern const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[];
-// Parameter for determining the minimum number of visits that are required in
-// order to show a history cluster.
-extern const char kNtpHistoryClustersModuleMinimumVisitsRequiredParam[];
-// Parameter for determining the minimum number of visits with an image that are
-// required in order to show a history cluster.
-extern const char kNtpHistoryClustersModuleMinimumImagesRequiredParam[];
-// Parameter for determining the categories a history cluster must fall into to
-// be shown.
-extern const char kNtpHistoryClustersModuleCategoriesAllowlistParam[];
-// Parameter for determining the categories a history cluster must not fall into
-// to be shown.
-extern const char kNtpHistoryClustersModuleCategoriesBlocklistParam[];
-// Parameter for determining the categories a history cluster falls into to be
-// boosted for showing on the New Tab Page.
-extern const char kNtpHistoryClustersModuleCategoriesBoostlistParam[];
-// Parameter for setting the maximum number of candidate clusters for the
-// History Clusters Service to return.
-extern const char kNtpHistoryClustersModuleMaxClustersParam[];
 // Parameter for setting the maximum number of category ids associated with a
 // cluster that will be recorded and queried to determine if a cluster belongs
 // to the most frequently seen or used category.

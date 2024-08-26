@@ -264,31 +264,11 @@ BASE_FEATURE(kNtpHistoryClustersModule,
              "NtpHistoryClustersModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Dummy feature to set kNtpHistoryClustersModuleMinimumVisitsRequiredParam.
-BASE_FEATURE(kNtpHistoryClustersModuleMinimumVisitsRequired,
-             "NtpHistoryClustersModuleMinimumVisitsRequired",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set kNtpHistoryClustersModuleMinimumImagesRequiredParam.
-BASE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired,
-             "NtpHistoryClustersModuleMinimumImagesRequired",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set kNtpHistoryClustersModuleCategoriesParam.
-BASE_FEATURE(kNtpHistoryClustersModuleCategories,
-             "NtpHistoryClustersModuleCategories",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the history clusters module will be loaded but not shown. This is
 // useful to determine if a user would have seen modules in order to
 // counterfactually log or trigger.
 BASE_FEATURE(kNtpHistoryClustersModuleLoad,
              "NtpHistoryClustersModuleLoad",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set kNtpHistoryClustersModuleMaxClustersParam.
-BASE_FEATURE(kNtpHistoryClustersModuleMaxClusters,
-             "NtpHistoryClustersMaxClusters",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set the history clusters rankers' metrics data query time
@@ -302,30 +282,9 @@ BASE_FEATURE(kNtpModulesHeaderIcon,
              "NtpModulesHeaderIcon",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled a suggestion chip will show in the header for Quests V2.
-BASE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader,
-             "NtpHistoryClustersModuleSuggestionChipHeader",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, ChromeCart tile will show in the History clusters module when
-// available.
-BASE_FEATURE(kNtpChromeCartInHistoryClusterModule,
-             "NtpChromeCartInHistoryClusterModule",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNtpHistoryClustersModuleUseModelRanking,
              "NtpHistoryClustersModuleUseModelRanking",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNtpHistoryClustersModuleTextOnly,
-             "NtpHistoryClustersModuleTextOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, ChromeCart module will show together with ChromeCart+History
-// cluster module when available.
-BASE_FEATURE(kNtpChromeCartHistoryClusterCoexist,
-             "NtpChromeCartHistoryClusterCoexist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the History Clusters module will attempt to fetch clusters until
 // it has enough clusters for the module or the History Clusters service says
@@ -422,22 +381,6 @@ const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[] =
     "NtpSafeBrowsingModuleCooldownPeriodDaysParam";
 const char kNtpSafeBrowsingModuleCountMaxParam[] =
     "NtpSafeBrowsingModuleCountMaxParam";
-const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[] =
-    "NtpHistoryClustersModuleBeginTimeDurationHoursParam";
-const char kNtpHistoryClustersModuleMinimumVisitsRequiredParam[] =
-    "NtpHistoryClustersModuleMinimumVisitsRequiredParam";
-const char kNtpHistoryClustersModuleMinimumImagesRequiredParam[] =
-    "NtpHistoryClustersModuleMinimumImagesRequiredParam";
-const char kNtpHistoryClustersModuleCategoriesAllowlistParam[] =
-    "NtpHistoryClustersModuleCategoriesParam";
-const char kNtpHistoryClustersModuleCategoriesBlocklistParam[] =
-    "NtpHistoryClustersModuleCategoriesBlocklistParam";
-const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
-    "NtpHistoryClustersModuleCategoriesBoostlistParam";
-const char kNtpHistoryClustersModuleMaxClustersParam[] =
-    "NtpHistoryClustersModuleMaxClustersParam";
-const char kNtpHistoryClustersModuleMaxCategoriesToRecordParam[] =
-    "NtpHistoryClustersModuleMaxCategoriesToRecordParam";
 const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[] =
     "NtpHistoryClustersModuleMinCategoryWeightToRecordParam";
 const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
