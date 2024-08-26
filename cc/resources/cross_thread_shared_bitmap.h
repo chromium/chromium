@@ -25,7 +25,8 @@ class CC_EXPORT CrossThreadSharedBitmap
     : public base::RefCountedThreadSafe<CrossThreadSharedBitmap> {
  public:
   CrossThreadSharedBitmap(const viz::SharedBitmapId& id,
-                          base::MappedReadOnlyRegion shm,
+                          const base::ReadOnlySharedMemoryRegion region,
+                          base::WritableSharedMemoryMapping mapping,
                           const gfx::Size& size,
                           viz::SharedImageFormat format);
 

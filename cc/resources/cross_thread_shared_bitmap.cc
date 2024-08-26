@@ -5,15 +5,18 @@
 #include "cc/resources/cross_thread_shared_bitmap.h"
 
 #include <utility>
+
 namespace cc {
 
-CrossThreadSharedBitmap::CrossThreadSharedBitmap(const viz::SharedBitmapId& id,
-                                                 base::MappedReadOnlyRegion shm,
-                                                 const gfx::Size& size,
-                                                 viz::SharedImageFormat format)
+CrossThreadSharedBitmap::CrossThreadSharedBitmap(
+    const viz::SharedBitmapId& id,
+    base::ReadOnlySharedMemoryRegion region,
+    base::WritableSharedMemoryMapping mapping,
+    const gfx::Size& size,
+    viz::SharedImageFormat format)
     : id_(id),
-      region_(std::move(shm.region)),
-      mapping_(std::move(shm.mapping)),
+      region_(std::move(region)),
+      mapping_(std::move(mapping)),
       size_(size),
       format_(format) {}
 
