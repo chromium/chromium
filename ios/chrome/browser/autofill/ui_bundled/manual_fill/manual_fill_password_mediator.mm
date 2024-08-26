@@ -314,7 +314,7 @@ BOOL AreCredentialsAtIndicesConnected(
                           cellIndex:i
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
              showAutofillFormButton:_showAutofillFormButton
-             shouldReauthToAutofill:![self isFromAllPasswordsContext]];
+            fromAllPasswordsContext:[self isFromAllPasswordsContext]];
     [items addObject:item];
   }
   return items;

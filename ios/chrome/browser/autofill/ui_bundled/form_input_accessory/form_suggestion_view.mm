@@ -8,6 +8,7 @@
 #import "base/check.h"
 #import "base/i18n/rtl.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/strcat.h"
 #import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
@@ -183,6 +184,8 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   DCHECK(index != NSNotFound);
   FormSuggestion* suggestion = [self.suggestions objectAtIndex:index];
   LogSelectedSuggestionIndexMetric(suggestion.type, index);
+  base::RecordAction(
+      base::UserMetricsAction("KeyboardAccessory_SuggestionAccepted"));
   [self.formSuggestionViewDelegate formSuggestionView:self
                                   didAcceptSuggestion:suggestion
                                               atIndex:index];

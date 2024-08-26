@@ -735,6 +735,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   base::UmaHistogramSparse(
       "Autofill.UserAcceptedSuggestionAtIndex.Address.ManualFallback",
       _cellIndex);
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_Profiles_SuggestionAccepted"));
 
   FormSuggestion* suggestion = [FormSuggestion
              suggestionWithValue:nil

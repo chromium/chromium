@@ -75,9 +75,9 @@ CGFloat GetFaviconSize() {
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
 
-  // If `YES`, the user should be asked to re-authenticate before autofilling
-  // the entire form.
-  BOOL _shouldReauthToAutofill;
+  // If `YES`, the cell represented by this item is displayed in the all
+  // password list.
+  BOOL _fromAllPasswordsContext;
 }
 
 - (instancetype)initWithCredential:(ManualFillCredential*)credential
@@ -89,7 +89,7 @@ CGFloat GetFaviconSize() {
                          cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
-            shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
+           fromAllPasswordsContext:(BOOL)fromAllPasswordsContext {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _credential = credential;
@@ -100,7 +100,7 @@ CGFloat GetFaviconSize() {
     _cellIndex = cellIndex;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
     _showAutofillFormButton = showAutofillFormButton;
-    _shouldReauthToAutofill = shouldReauthToAutofill;
+    _fromAllPasswordsContext = fromAllPasswordsContext;
     self.cellClass = [ManualFillPasswordCell class];
   }
   return self;
@@ -117,7 +117,7 @@ CGFloat GetFaviconSize() {
                         cellIndex:_cellIndex
       cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel
            showAutofillFormButton:_showAutofillFormButton
-           shouldReauthToAutofill:_shouldReauthToAutofill];
+          fromAllPasswordsContext:_fromAllPasswordsContext];
 }
 
 - (const GURL&)faviconURL {
@@ -191,9 +191,8 @@ static const CGFloat kOffsetForConnectedCell = 16;
   // show.
   NSInteger _cellIndex;
 
-  // If `YES`, the user should be asked to re-authenticate before autofilling
-  // the entire form.
-  BOOL _shouldReauthToAutofill;
+  // If `YES`, the cell is displayed in the all password list.
+  BOOL _fromAllPasswordsContext;
 }
 
 #pragma mark - Public
@@ -231,9 +230,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
                       cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
-         shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
+        fromAllPasswordsContext:(BOOL)fromAllPasswordsContext {
   _cellIndex = cellIndex;
-  _shouldReauthToAutofill = shouldReauthToAutofill;
+  _fromAllPasswordsContext = fromAllPasswordsContext;
 
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
@@ -457,13 +456,18 @@ static const CGFloat kOffsetForConnectedCell = 16;
 - (void)onAutofillFormButtonTapped {
   std::string histogram =
       "Autofill.UserAcceptedSuggestionAtIndex.Password.ManualFallback";
-  if (!_shouldReauthToAutofill) {
+  if (_fromAllPasswordsContext) {
     histogram = base::StrCat({histogram, ".AllPasswords"});
+    base::RecordAction(base::UserMetricsAction(
+        "ManualFallback_AllPasswords_SuggestionAccepted"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("ManualFallback_Password_SuggestionAccepted"));
   }
-
   base::UmaHistogramSparse(histogram, _cellIndex);
+
   [self.contentInjector autofillFormWithCredential:self.credential
-                                      shouldReauth:_shouldReauthToAutofill];
+                                      shouldReauth:!_fromAllPasswordsContext];
 }
 
 // Configure the favicon with the given `attributes`.
