@@ -366,6 +366,20 @@ TEST(LayoutUnitTest, LayoutUnitDivision) {
             (LayoutUnit(LayoutUnit::kIntMax) / LayoutUnit(0.5)).ToInt());
 }
 
+TEST(LayoutUnitTest, LayoutUnitDivisionByInt) {
+  EXPECT_EQ(LayoutUnit(1), LayoutUnit(1) / 1);
+  EXPECT_EQ(LayoutUnit(0.5), LayoutUnit(1) / 2);
+  EXPECT_EQ(LayoutUnit(-0.5), LayoutUnit(1) / -2);
+  EXPECT_EQ(LayoutUnit(-0.5), LayoutUnit(-1) / 2);
+  EXPECT_EQ(LayoutUnit(0.5), LayoutUnit(-1) / -2);
+
+  EXPECT_DOUBLE_EQ(LayoutUnit::kIntMax / 2.0,
+                   (LayoutUnit(LayoutUnit::kIntMax) / 2).ToDouble());
+  EXPECT_DOUBLE_EQ(
+      InlineLayoutUnit::kIntMax / 2.0,
+      (InlineLayoutUnit(InlineLayoutUnit::kIntMax) / 2).ToDouble());
+}
+
 TEST(LayoutUnitTest, LayoutUnitMulDiv) {
   const LayoutUnit kMaxValue = LayoutUnit::Max();
   const LayoutUnit kMinValue = LayoutUnit::Min();

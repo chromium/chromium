@@ -595,7 +595,7 @@ template <unsigned fractional_bits, typename RawValue>
 inline FixedPoint<fractional_bits, RawValue> operator/(
     const FixedPoint<fractional_bits, RawValue>& a,
     std::integral auto b) {
-  return a / FixedPoint<fractional_bits, RawValue>(b);
+  return FixedPoint<fractional_bits, RawValue>::FromRawValue(a.RawValue() / b);
 }
 
 constexpr float operator/(const float a, const LayoutUnit& b) {
