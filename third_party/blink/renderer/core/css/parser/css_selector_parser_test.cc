@@ -575,19 +575,19 @@ static const SelectorTestCase is_where_nesting_data[] = {
     {"::cue(:is(.a .b))", "::cue(:is())"},
     {"::cue(:is(.a + .b))", "::cue(:is())"},
     {"::cue(:is(.a, .b + .c))", "::cue(:is(.a))"},
-    // Only user-action pseudos + :state() are allowed after kPseudoPart:
+    // Structural pseudos are not allowed after ::part().
     {"::part(foo):is(.a)", "::part(foo):is()"},
     {"::part(foo):is(.a:hover)", "::part(foo):is()"},
     {"::part(foo):is(:hover.a)", "::part(foo):is()"},
     {"::part(foo):is(:hover + .a)", "::part(foo):is()"},
     {"::part(foo):is(.a + :hover)", "::part(foo):is()"},
-    {"::part(foo):is(:hover:enabled)", "::part(foo):is()"},
-    {"::part(foo):is(:enabled:hover)", "::part(foo):is()"},
+    {"::part(foo):is(:hover:first-child)", "::part(foo):is()"},
+    {"::part(foo):is(:first-child:hover)", "::part(foo):is()"},
     {"::part(foo):is(:hover, :where(.a))",
      "::part(foo):is(:hover, :where())"},
     {"::part(foo):is(:hover, .a)", "::part(foo):is(:hover)"},
     {"::part(foo):is(:state(bar), .a)", "::part(foo):is(:state(bar))"},
-    {"::part(foo):is(:enabled)", "::part(foo):is()"},
+    {"::part(foo):is(:first-child)", "::part(foo):is()"},
     // Only scrollbar pseudos after kPseudoScrollbar:
     {"::-webkit-scrollbar:is(:focus)", "::-webkit-scrollbar:is()"},
     // Only :window-inactive after kPseudoSelection:

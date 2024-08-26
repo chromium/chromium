@@ -1610,53 +1610,36 @@ bool CSSSelector::IsAllowedAfterPart() const {
       return true;
 
     case kPseudoActive:
-    case kPseudoActiveViewTransition:
-    case kPseudoActiveViewTransitionType:
     case kPseudoAnyLink:
     case kPseudoChecked:
-    case kPseudoCornerPresent:
-    case kPseudoCurrent:
-    case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDialogInTopLayer:
     case kPseudoDisabled:
-    case kPseudoDoubleButton:
     case kPseudoDrag:
     case kPseudoEnabled:
-    case kPseudoEnd:
-    case kPseudoFirstPage:
     case kPseudoFocus:
     case kPseudoFocusVisible:
     case kPseudoFocusWithin:
     case kPseudoFullPageMedia:
-    case kPseudoHorizontal:
     case kPseudoHover:
-    case kPseudoIncrement:
     case kPseudoIndeterminate:
     case kPseudoInvalid:
     case kPseudoLang:
-    case kPseudoLeftPage:
     case kPseudoLink:
     case kPseudoModal:
-    case kPseudoNoButton:
     case kPseudoOptional:
     case kPseudoPermissionGranted:
     case kPseudoPlaceholderShown:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRequired:
-    case kPseudoRightPage:
     case kPseudoSelectorFragmentAnchor:
-    case kPseudoSingleButton:
-    case kPseudoStart:
     case kPseudoState:
     case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
-    case kPseudoUnparsed:
     case kPseudoUserInvalid:
     case kPseudoUserValid:
     case kPseudoValid:
-    case kPseudoVertical:
     case kPseudoVisited:
     case kPseudoWebkitAnyLink:
     case kPseudoWindowInactive:
@@ -1682,10 +1665,9 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoPopoverOpen:
     case kPseudoRelativeAnchor:
     case kPseudoSpatialNavigationFocus:
-    case kPseudoTrue:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
-      return false;
+      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
 
     // TODO(https://crbug.com/40623497): Be careful with allowing these
     // pseudo-classes since we need to consider what happens when
@@ -1700,6 +1682,28 @@ bool CSSSelector::IsAllowedAfterPart() const {
 
     // TODO(https://crbug.com/40623497): Figure out what to do with this.
     case kPseudoParent:
+      return false;
+
+    // These are supported only after ::webkit-scrollbar, which *maybe* makes
+    // them structural?  Leave them unsupported for now
+    case kPseudoHorizontal:
+    case kPseudoVertical:
+    case kPseudoDecrement:
+    case kPseudoIncrement:
+    case kPseudoStart:
+    case kPseudoEnd:
+    case kPseudoDoubleButton:
+    case kPseudoSingleButton:
+    case kPseudoNoButton:
+    case kPseudoCornerPresent:
+    // Likewise, this matches only after ::search-text.
+    case kPseudoCurrent:
+      return false;
+
+    // These are supported only on @page, so not allowed after ::part().
+    case kPseudoFirstPage:
+    case kPseudoLeftPage:
+    case kPseudoRightPage:
       return false;
 
     // These are structural pseudo-classes, which should not be allowed.
@@ -1717,6 +1721,12 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoRoot:
       return false;
 
+    // These specifically match only the root element, which makes them
+    // structural or matching based on tree information.
+    case kPseudoActiveViewTransition:
+    case kPseudoActiveViewTransitionType:
+      return false;
+
     // These are other pseudo-classes that match based on tree information
     // rather than local element information, which should not be allowed.
     case kPseudoHas:
@@ -1727,6 +1737,8 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoScope:
       return false;
 
+    case kPseudoTrue:
+    case kPseudoUnparsed:
     case kPseudoUnknown:
       return false;
   }

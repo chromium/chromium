@@ -1060,6 +1060,10 @@
       name: "CSSParserIgnoreCharsetForURLs",
     },
     {
+      name: "CSSPartAllowsMoreSelectorsAfter",
+      status: "experimental",
+    },
+    {
       // The `inset-area` CSS property has been renamed to `position-area`. This
       // feature (CSSPositionAreaProperty) enables the new `position-area`
       // property. This is shipped in M129, and (depending on the status of the
