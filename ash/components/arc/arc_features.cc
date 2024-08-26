@@ -118,13 +118,6 @@ const base::FeatureParam<int> kEnableArcIdleManagerDelayMs{
 const base::FeatureParam<bool> kEnableArcIdleManagerPendingIdleReactivate{
     &kEnableArcIdleManager, "pending_idle_reactivate", false};
 
-// Controls whether files shared to ARC Nearby Share are shared through the
-// FuseBox filesystem, instead of the default method (through a temporary path
-// managed by file manager).
-BASE_FEATURE(kEnableArcNearbyShareFuseBox,
-             "ArcNearbyShareFuseBox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to enable support for s2idle in ARCVM.
 BASE_FEATURE(kEnableArcS2Idle, "ArcS2Idle", base::FEATURE_DISABLED_BY_DEFAULT);
 

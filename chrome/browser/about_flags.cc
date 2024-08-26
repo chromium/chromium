@@ -10192,12 +10192,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"arc-nearby-share-fuse-box", flag_descriptions::kArcNearbyShareFuseBoxName,
-     flag_descriptions::kArcNearbyShareFuseBoxDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kEnableArcNearbyShareFuseBox)},
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"arc-vm-memory-size", flag_descriptions::kArcVmMemorySizeName,
      flag_descriptions::kArcVmMemorySizeDesc, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(arc::kVmMemorySize,

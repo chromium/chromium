@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_mounter.h"
-#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -101,70 +100,6 @@ TEST_F(NearbyShareSessionImplTest, TextShareIntent) {
 
   ASSERT_EQ(shared_intent->share_title, "Test share title");
   ASSERT_EQ(shared_intent->share_text, "Test share content");
-}
-
-class NearbyShareSessionImplFuseBoxTest : public NearbyShareSessionImplTest {
-  void SetUp() override {
-    NearbyShareSessionImplTest::SetUp();
-
-    // Set up ArcFileSystemMounter, which is necessary for decoding ArcContent
-    // FileSystemURLs.
-    arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-    arc_service_manager_->set_browser_context(profile());
-    EXPECT_TRUE(arc::ArcFileSystemMounter::GetForBrowserContext(profile()));
-    fusebox_server_ = std::make_unique<fusebox::Server>(/*delegate=*/nullptr);
-  }
-
-  void TearDown() override {
-    arc_service_manager_->set_browser_context(nullptr);
-  }
-
- private:
-  std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
-  std::unique_ptr<fusebox::Server> fusebox_server_;
-
-  base::test::ScopedFeatureList feature_list_{
-      arc::kEnableArcNearbyShareFuseBox};
-};
-
-TEST_F(NearbyShareSessionImplFuseBoxTest, FileIntent) {
-  mojom::ShareIntentInfoPtr share_info = mojom::ShareIntentInfo::New();
-
-  std::vector<mojom::FileInfoPtr> files;
-  files.emplace_back(std::in_place,
-                     GURL("content://com.example/provider/file.jpg"),
-                     "image/jpeg", "file.jpg", 100);
-  files.emplace_back(std::in_place,
-                     GURL("content://com.example/provider/some_opaque_name"),
-                     "text/plain", "test.txt", 100);
-  share_info->files = std::move(files);
-  auto* session = MakeSession(std::move(share_info));
-
-  base::RunLoop run_loop;
-  apps::IntentPtr shared_intent;
-  session->SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
-      [&](gfx::NativeWindow native_window, apps::IntentPtr intent,
-          sharesheet::LaunchSource source,
-          sharesheet::DeliveredCallback delivered_callback,
-          sharesheet::CloseCallback close_callback,
-          sharesheet::ActionCleanupCallback cleanup_callback) {
-        run_loop.Quit();
-        shared_intent = std::move(intent);
-      }));
-  ShowArcWindow();
-  run_loop.Run();
-
-  ASSERT_EQ(shared_intent->files.size(), 2u);
-
-  ASSERT_TRUE(base::StartsWith(shared_intent->files[0]->url.spec(),
-                               "file:///media/fuse/fusebox"));
-  ASSERT_EQ(shared_intent->files[0]->file_name->path().AsUTF8Unsafe(),
-            "file.jpg");
-  ASSERT_EQ(shared_intent->files[0]->mime_type, "image/jpeg");
-
-  ASSERT_EQ(shared_intent->files[1]->file_name->path().AsUTF8Unsafe(),
-            "test.txt");
-  ASSERT_EQ(shared_intent->files[1]->mime_type, "text/plain");
 }
 
 }  // namespace arc

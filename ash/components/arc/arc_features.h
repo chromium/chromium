@@ -34,7 +34,6 @@ extern const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT;
 extern const base::FeatureParam<int> kEnableArcIdleManagerDelayMs;
 extern const base::FeatureParam<bool>
     kEnableArcIdleManagerPendingIdleReactivate;
-BASE_DECLARE_FEATURE(kEnableArcNearbyShareFuseBox);
 BASE_DECLARE_FEATURE(kEnableArcS2Idle);
 BASE_DECLARE_FEATURE(kEnableArcVmDataMigration);
 BASE_DECLARE_FEATURE(kEnableFriendlierErrorDialog);

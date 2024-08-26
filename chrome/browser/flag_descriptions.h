@@ -3469,9 +3469,6 @@ extern const char kArcKeyboardShortcutHelperIntegrationDescription[];
 extern const char kArcNativeBridgeToggleName[];
 extern const char kArcNativeBridgeToggleDescription[];
 
-extern const char kArcNearbyShareFuseBoxName[];
-extern const char kArcNearbyShareFuseBoxDescription[];
-
 extern const char kArcPerAppLanguageName[];
 extern const char kArcPerAppLanguageDescription[];
 

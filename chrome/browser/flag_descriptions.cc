@@ -6013,11 +6013,6 @@ const char kArcNativeBridgeToggleName[] =
 const char kArcNativeBridgeToggleDescription[] =
     "Toggle between native bridge implementations for ARC.";
 
-const char kArcNearbyShareFuseBoxName[] = "ARC Nearby Sharing through FuseBox";
-const char kArcNearbyShareFuseBoxDescription[] =
-    "When enabled, files shared through ARC Nearby Sharing will be shared "
-    "through the ChromeOS FuseBox Service.";
-
 const char kArcPerAppLanguageName[] =
     "Enable ARC Per-App Language setting integration";
 const char kArcPerAppLanguageDescription[] =
