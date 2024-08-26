@@ -1214,10 +1214,11 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="KeyPermissionsManagerMigrationStatus">
-  <int value="0" label="kStarted"/>
-  <int value="1" label="kSucceeded"/>
-  <int value="2" label="kFailed"/>
-  <int value="3" label="kNecessary"/>
+  <int value="0" label="Started"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="Necessary"/>
+  <int value="4" label="FailedToUpdatePermissions"/>
 </enum>
 
 <enum name="KeyUsageCategory">
