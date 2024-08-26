@@ -74,6 +74,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_network_resources.h"
+#include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -608,8 +609,12 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     }
 
     // This will return after a transition to the state previously specified by
-    // `SetStepToObserver`.
+    // `SetStepToObserver`. Returns immediately if the current step matches.
     void WaitForStep() {
+      if (!observe_next_step_ && model_->step() == step_) {
+        run_loop_.reset();
+        return;
+      }
       ASSERT_TRUE(run_loop_);
       run_loop_->Run();
       // When waiting for `kClosed` the model is deleted at this point.
@@ -981,8 +986,11 @@ class EnclaveAuthenticatorWithPinBrowserTest
  public:
   EnclaveAuthenticatorWithPinBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{device::kWebAuthnEnclaveAuthenticator,
-          {{device::kWebAuthnGpmPin.name, "true"}}},
+        {{
+             device::kWebAuthnEnclaveAuthenticator,
+             {{device::kWebAuthnGpmPin.name, "true"}},
+         },
+         {device::kWebAuthnRecoverFromICloudRecoveryKey, {}},
          {device::kWebAuthnICloudRecoveryKey, {}}},
         /*disabled_features=*/{
             device::kWebAuthnUseInsecureSoftwareUnexportableKeys});
@@ -1706,11 +1714,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
                 webauthn::pref_names::kEnclaveFailedPINAttemptsCount),
             0);
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+  model_observer()->ObserveNextStep();
   dialog_model()->OnGPMPinEntered(u"111111");
   model_observer()->WaitForStep();
 
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
                 webauthn::pref_names::kEnclaveFailedPINAttemptsCount),
             1);
@@ -1733,11 +1742,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
                 webauthn::pref_names::kEnclaveFailedPINAttemptsCount),
             0);
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+  model_observer()->ObserveNextStep();
   dialog_model()->OnGPMPinEntered(u"111111");
   model_observer()->WaitForStep();
 
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
                 webauthn::pref_names::kEnclaveFailedPINAttemptsCount),
             1);
@@ -2637,9 +2647,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   content::DOMMessageQueue message_queue(web_contents);
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvPreferred);
   delegate_observer()->WaitForUI();
-
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  model_observer()->WaitForStep();
 
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
@@ -2654,8 +2664,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   // During this second get() request, Touch ID will be disabled.
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvPreferred);
   delegate_observer()->WaitForUI();
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+  model_observer()->WaitForStep();
   SetBiometricsEnabled(false);
   // Disable Touch ID. The request should still resolve with uv=true.
   request_delegate()->dialog_model()->OnTouchIDComplete(false);
@@ -2811,9 +2822,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
   EXPECT_EQ(recovery_keys.size(), 1u);
 }
 
-// Tests enrolling an iCloud recovery key, then recovering from it. Recovery is
-// not implemented yet, so this test verifies that Chrome does not try enrolling
-// a new iCloud recovery key if one is already enrolled.
+// Tests enrolling an iCloud recovery key, then recovering from it.
 IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
   {
     // Do a make credential request and enroll a PIN.
@@ -2865,22 +2874,47 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
   // Expire any cache.
   clock_.Advance(base::Hours(10));
 
-  // Do a make credential request and recover with a PIN.
+  // Do a make credential request and recover with the iCloud key.
   {
+    // Set up the mock trusted vault connection to download the iCloud recovery
+    // factor that should have been added.
     trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
         registration_state_result;
-    registration_state_result.state =
-        trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
-            State::kRecoverable;
-    registration_state_result.key_version = kSecretVersion;
     registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
         "public key",
         EnclaveManager::MakeWrappedPINForTesting(kSecurityDomainSecret,
                                                  "123456"),
         /*expiry=*/base::Time::Now() + base::Seconds(10000));
+    registration_state_result.state =
+        trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
+            State::kRecoverable;
+    registration_state_result.key_version = kSecretVersion;
+    const auto icloud_member = std::ranges::find_if(
+        security_domain_service_->members(),
+        [](const trusted_vault_pb::SecurityDomainMember& member) {
+          return member.member_type() ==
+                 trusted_vault_pb::SecurityDomainMember::
+                     MEMBER_TYPE_ICLOUD_KEYCHAIN;
+        });
+    ASSERT_NE(icloud_member, security_domain_service_->members().end());
+    std::vector<trusted_vault::MemberKeys> member_keys;
+    auto member_key = icloud_member->memberships().at(0).keys().at(0);
+    member_keys.emplace_back(
+        member_key.epoch(),
+        std::vector<uint8_t>(member_key.wrapped_key().begin(),
+                             member_key.wrapped_key().end()),
+        std::vector<uint8_t>(member_key.member_proof().begin(),
+                             member_key.member_proof().end()));
+    registration_state_result.icloud_keys.emplace_back(
+        trusted_vault::SecureBoxPublicKey::CreateByImport(
+            std::vector<uint8_t>(icloud_member->public_key().begin(),
+                                 icloud_member->public_key().end())),
+        std::move(member_keys));
     SetMockVaultConnectionOnRequestDelegate(
         std::move(registration_state_result));
 
+    // Running the request should result in recovering automatically after the
+    // "Trust this computer" screen.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::DOMMessageQueue message_queue(web_contents);
@@ -2894,22 +2928,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
                   ->enclave_controller_for_testing()
                   ->account_state_for_testing(),
               GPMEnclaveController::AccountState::kRecoverable);
-    model_observer()->SetStepToObserve(
-        AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
     dialog_model()->OnTrustThisComputer();
-    model_observer()->WaitForStep();
 
-    EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
-        ->StoreKeys(kGaiaId,
-                    {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
-                                          std::end(kSecurityDomainSecret))},
-                    kSecretVersion);
     std::string script_result;
     ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
     EXPECT_EQ(script_result, "\"webauthn: OK\"");
 
     delegate_observer()->WaitForDelegateDestruction();
-    // Make sure a no new recovery key was enrolled.
+
+    // Make sure no new recovery key was enrolled.
     base::test::TestFuture<
         std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
         future;

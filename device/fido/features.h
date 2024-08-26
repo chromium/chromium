@@ -117,6 +117,11 @@ BASE_DECLARE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnICloudRecoveryKey);
 
+// Retrieve and recover from recovery keys on iCloud keychain for the enclave
+// authenticator.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnRecoverFromICloudRecoveryKey);
+
 // Cache responses from the security domain. To be used if we're overloading the
 // security domain service.
 COMPONENT_EXPORT(DEVICE_FIDO)

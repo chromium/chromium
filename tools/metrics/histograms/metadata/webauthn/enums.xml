@@ -229,6 +229,7 @@ chromium-metrics-reviews@google.com.
              mechanism"/>
   <int value="8"
       label="User backed out of create passkey priority mechanism screen"/>
+  <int value="9" label="User recovered from an iCloud Keychain recovery key"/>
 </enum>
 
 <enum name="WebAuthenticationFidoTransport">
