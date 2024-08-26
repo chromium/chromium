@@ -274,7 +274,7 @@ TEST_P(HTMLVideoElementTest,
       "has sufficiently visible video: {True}, occluded area: {0.00}, "
       "occluding rects: {None}, intersection rect: {x: 8, y: 8, width: 300, "
       "height: 150}, video element rect: {x: 8, y: 8, width: 300, height: "
-      "150}, visibility threshold: {0.80}";
+      "150}, visibility threshold: {10000}";
   EXPECT_CALL((*MockMediaPlayer()),
               RecordVideoOcclusionState(expected_occlusion_state));
   RequestVisibility(base::DoNothing());
@@ -333,7 +333,7 @@ TEST_P(HTMLVideoElementTest,
   const std::string expected_occlusion_state =
       "has sufficiently visible video: {False}, occluded area: {0.00}, "
       "occluding rects: {None}, intersection rect: {None}, video element rect: "
-      "{None}, visibility threshold: {0.80}";
+      "{None}, visibility threshold: {10000}";
   EXPECT_CALL((*MockMediaPlayer()),
               RecordVideoOcclusionState(expected_occlusion_state));
   RequestVisibility(base::DoNothing());

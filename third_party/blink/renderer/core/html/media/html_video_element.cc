@@ -78,9 +78,10 @@ namespace {
 // with the viewport and not occluded by other html elements within the page,
 // with the exception of MediaControls.
 //
-// An HTMLVideoElement with visibility greater or equal than
-// |kVisibilityThreshold| is considered visible, and not visible otherwise.
-constexpr float kVisibilityThreshold = 0.80f;
+// An HTMLVideoElement with visibility greater or equal than a given area
+// measured in square CSS pixels (`kVisibilityThreshold`) is considered visible,
+// and not visible otherwise.
+constexpr int kVisibilityThreshold = 10000;
 }  // namespace
 
 HTMLVideoElement::HTMLVideoElement(Document& document)

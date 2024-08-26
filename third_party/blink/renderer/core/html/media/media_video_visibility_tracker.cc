@@ -52,9 +52,9 @@ float ComputeArea(const PhysicalRect& rect) {
 
 bool HasEnoughVisibleAreaRemaining(float occluded_area,
                                    const PhysicalRect& video_element_rect,
-                                   float visibility_threshold) {
-  return occluded_area / ComputeArea(video_element_rect) <
-         (1 - visibility_threshold);
+                                   const int visibility_threshold) {
+  return ComputeArea(video_element_rect) - occluded_area >=
+         visibility_threshold;
 }
 
 float ComputeOccludingArea(const Vector<SkIRect>& occluding_rects,
@@ -261,7 +261,7 @@ void RecordVideoOcclusionState(
     const HTMLVideoElement& video_element,
     const MediaVideoVisibilityTracker::OcclusionState& occlusion_state,
     bool has_sufficiently_visible_video,
-    float visibility_threshold) {
+    const int visibility_threshold) {
   std::ostringstream occluding_rects_stream;
   const auto& occluding_rects = occlusion_state.occluding_rects;
 
@@ -302,7 +302,7 @@ void RecordVideoOcclusionState(
   const String occlusion_state_string = String::Format(
       "has sufficiently visible video: {%s}, occluded area: {%.2f}, occluding "
       "rects: {%s}, intersection rect: {%s}, video element rect: {%s}, "
-      "visibility threshold: {%.2f}",
+      "visibility threshold: {%d}",
       has_sufficiently_visible_video ? "True" : "False",
       occlusion_state.occluded_area, occluding_rects_stream.str().c_str(),
       intersection_rect_string.Ascii().c_str(),
@@ -316,7 +316,7 @@ void RecordVideoOcclusionState(
 
 MediaVideoVisibilityTracker::MediaVideoVisibilityTracker(
     HTMLVideoElement& video,
-    float visibility_threshold,
+    const int visibility_threshold,
     ReportVisibilityCb report_visibility_cb,
     base::TimeDelta hit_test_interval)
     : video_element_(video),
@@ -324,7 +324,7 @@ MediaVideoVisibilityTracker::MediaVideoVisibilityTracker(
       report_visibility_cb_(std::move(report_visibility_cb)),
       hit_test_interval_(hit_test_interval) {
   DCHECK(report_visibility_cb_);
-  DCHECK(visibility_threshold_ > 0.0 && visibility_threshold_ <= 1.0)
+  DCHECK_GT(visibility_threshold_, 0)
       << "Invalid threshold: " << visibility_threshold_;
   DCHECK_GE(hit_test_interval_, kMinimumAllowedHitTestInterval);
 }
@@ -636,16 +636,12 @@ bool MediaVideoVisibilityTracker::ComputeVisibility() {
   occlusion_state_.occluded_area =
       ComputeOccludingArea(occlusion_state_.occluding_rects,
                            ComputeArea(occlusion_state_.video_element_rect));
-
-  LayoutBox* box = To<LayoutBox>(VideoElement().GetLayoutObject());
-  PhysicalRect bounds(box->PhysicalBorderBoxRect());
-  auto intersection_ratio =
-      ComputeArea(occlusion_state_.intersection_rect) / ComputeArea(bounds);
+  auto intersection_area = ComputeArea(occlusion_state_.intersection_rect);
 
   auto* layout = VideoElement().GetLayoutObject();
   // Return early if the area of the video that intersects with the view is
   // below |visibility_threshold_|.
-  if (!layout || intersection_ratio < visibility_threshold_) {
+  if (!layout || intersection_area < visibility_threshold_) {
     return false;
   }
 
