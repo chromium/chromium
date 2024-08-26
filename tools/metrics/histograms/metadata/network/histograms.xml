@@ -339,6 +339,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.Ash.Cellular.ESim.HermesInstallationAttempt.Step"
+    enum="InstallationAttemptStep" expires_after="2025-08-14">
+  <owner>chadduffin@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records when a step in the installation of an eSIM profile is reached. Each
+    installation attempt is expected to emit to multiple buckets, e.g.
+    installation started and installation succeeed, and may emit to particular
+    buckets more than once, e.g. installation retried.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.Cellular.ESim.PolicyInstall.Method"
     enum="ESimPolicyInstallMethod" expires_after="2025-02-20">
   <owner>chadduffin@chromium.org</owner>

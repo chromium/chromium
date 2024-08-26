@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -40,6 +41,16 @@ std::string PrepareActivationCodeForHermes(const std::string& activation_code) {
   base::TrimWhitespaceASCII(activation_code, base::TrimPositions::TRIM_ALL,
                             &trimmed);
   return trimmed;
+}
+
+void MaybeEmitHermesInstallationAttemptStep(
+    HermesEuiccClient::InstallationAttemptStep step,
+    size_t attempt) {
+  if (attempt > 0) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      HermesEuiccClient::kHermesInstallationAttemptStepsHistogram, step);
 }
 
 }  // namespace
@@ -80,6 +91,9 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
         &HermesEuiccClientImpl::InstallProfileFromActivationCodeImpl,
         weak_ptr_factory_.GetWeakPtr(), std::move(euicc_path), activation_code,
         confirmation_code, std::move(callback), /*attempt=*/0));
+    base::UmaHistogramEnumeration(
+        HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+        InstallationAttemptStep::kInstallationRequested);
   }
 
   void InstallProfileFromActivationCodeImpl(
@@ -93,6 +107,8 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
       NET_LOG(ERROR) << "Failed to wait for D-Bus service to become available";
       std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
                               dbus::DBusResult::kErrorServiceUnknown, nullptr);
+      MaybeEmitHermesInstallationAttemptStep(
+          InstallationAttemptStep::kHermesUnavailable, attempt);
       return;
     }
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
@@ -108,6 +124,8 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(euicc_path),
                        activation_code, confirmation_code, std::move(callback),
                        attempt));
+    MaybeEmitHermesInstallationAttemptStep(
+        InstallationAttemptStep::kInstallationStarted, attempt);
   }
 
   void InstallPendingProfile(const dbus::ObjectPath& euicc_path,
@@ -262,6 +280,9 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
       std::move(callback).Run(
           HermesResponseStatusFromErrorName(error_response->GetErrorName()),
           GetResult(error_response), nullptr);
+      base::UmaHistogramEnumeration(
+          HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+          InstallationAttemptStep::kInstallationFailed);
       return;
     }
 
@@ -271,6 +292,9 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                         "response received.";
       std::move(callback).Run(HermesResponseStatus::kErrorNoResponse,
                               dbus::DBusResult::kErrorNoReply, nullptr);
+      base::UmaHistogramEnumeration(
+          HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+          InstallationAttemptStep::kInstallationNoResponse);
       return;
     }
 
@@ -279,6 +303,9 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     reader.PopObjectPath(&profile_path);
     std::move(callback).Run(HermesResponseStatus::kSuccess,
                             dbus::DBusResult::kSuccess, &profile_path);
+    base::UmaHistogramEnumeration(
+        HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+        InstallationAttemptStep::kInstallationSucceeded);
   }
 
   void OnRefreshSmdxProfilesResponse(RefreshSmdxProfilesCallback callback,

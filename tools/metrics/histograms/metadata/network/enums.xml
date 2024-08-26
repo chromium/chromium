@@ -595,6 +595,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kWifiWithCellularNotConnected"/>
 </enum>
 
+<enum name="InstallationAttemptStep">
+  <int value="0" label="kInstallationRequested"/>
+  <int value="1" label="kHermesUnavailable"/>
+  <int value="2" label="kInstallationStarted"/>
+  <int value="3" label="kInstallationSucceeded"/>
+  <int value="4" label="kInstallationNoResponse"/>
+  <int value="5" label="kInstallationFailed"/>
+</enum>
+
 <enum name="IpProtectionEligibility">
   <int value="0" label="Unknown"/>
   <int value="1" label="Ineligible"/>
