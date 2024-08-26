@@ -7921,7 +7921,6 @@ crbug.com/352093460 external/wpt/webtransport/stats.https.any.serviceworker.html
 
 # Gardener 2024-07-19
 crbug.com/354060896 [ Release Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/media/track/track-css-window-color.html [ Failure Pass Timeout ]
-crbug.com/354061998 [ Release Win11-arm64 ] http/tests/cookies/partitioned-cookies/ancestor-chain-same-site-subresource-to-cross-site.https.html [ Failure Pass Timeout ]
 
 # Disable to land crrev.com/c/5563488
 crbug.com/325441197 http/tests/devtools/elements/elements-tab-stops.js [ Failure Pass ]
