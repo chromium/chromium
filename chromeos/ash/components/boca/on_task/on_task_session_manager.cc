@@ -67,7 +67,7 @@ void OnTaskSessionManager::OnBocaSWALaunched(bool success) {
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
         /*pinned=*/true, window_id);
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
-        /*pinned-*/ false, window_id);
+        /*pinned=*/false, window_id);
   }
 }
 
