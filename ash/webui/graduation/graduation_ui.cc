@@ -13,6 +13,9 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/edusumer/graduation_utils.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_graduation_resources.h"
 #include "ash/webui/grit/ash_graduation_resources_map.h"
@@ -37,8 +40,10 @@ void AddResources(content::WebUIDataSource* source) {
 
 bool GraduationUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  // TODO(b/357883712): Check Graduation policy status
-  return features::IsGraduationEnabled();
+  return features::IsGraduationEnabled() &&
+         IsEligibleForGraduation(Shell::Get()
+                                     ->session_controller()
+                                     ->GetLastActiveUserPrefService());
 }
 
 GraduationUI::GraduationUI(content::WebUI* web_ui)

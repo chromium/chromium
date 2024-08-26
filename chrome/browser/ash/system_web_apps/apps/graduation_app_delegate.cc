@@ -7,14 +7,17 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/edusumer/graduation_utils.h"
 #include "ash/webui/graduation/url_constants.h"
 #include "ash/webui/grit/ash_graduation_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -25,7 +28,10 @@ GraduationAppDelegate::GraduationAppDelegate(Profile* profile)
     : SystemWebAppDelegate(SystemWebAppType::GRADUATION,
                            "Graduation",
                            GURL(kChromeUIGraduationAppURL),
-                           profile) {}
+                           profile),
+      pref_service_(profile->GetPrefs()) {
+  CHECK(pref_service_);
+}
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 GraduationAppDelegate::GetWebAppInfo() const {
@@ -61,7 +67,8 @@ bool GraduationAppDelegate::ShouldShowInSearchAndShelf() const {
 }
 
 bool GraduationAppDelegate::IsAppEnabled() const {
-  return features::IsGraduationEnabled();
+  return features::IsGraduationEnabled() &&
+         IsEligibleForGraduation(pref_service_);
 }
 
 }  // namespace ash::graduation
