@@ -1764,23 +1764,7 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'names': ['glShaderSource'],
   'arguments': 'GLuint shader, GLsizei count, const char* const* str, '
-               'const GLint* length',
-  'logging_code': """
-  GL_SERVICE_LOG_CODE_BLOCK({
-    for (GLsizei ii = 0; ii < count; ++ii) {
-      if (str[ii]) {
-        if (length && length[ii] >= 0) {
-          std::string source(str[ii], length[ii]);
-          GL_SERVICE_LOG("  " << ii << ": ---\\n" << source << "\\n---");
-        } else {
-          GL_SERVICE_LOG("  " << ii << ": ---\\n" << str[ii] << "\\n---");
-        }
-      } else {
-        GL_SERVICE_LOG("  " << ii << ": NULL");
-      }
-    }
-  });
-""", },
+               'const GLint* length', },
 { 'return_type': 'void',
   'names': ['glSignalSemaphoreEXT'],
  'arguments': 'GLuint semaphore, GLuint numBufferBarriers, '
@@ -2967,7 +2951,8 @@ def GenerateSource(file, functions, set_name, used_extensions,
   """Generates gl_bindings_autogen_x.cc"""
 
   set_header_name = "ui/gl/gl_" + set_name.lower() + "_api_implementation.h"
-  include_list = [ 'base/trace_event/trace_event.h',
+  include_list = [ 'base/containers/span.h',
+                   'base/trace_event/trace_event.h',
                    'ui/gl/gl_enums.h',
                    'ui/gl/gl_bindings.h',
                    'ui/gl/gl_context.h',
@@ -2981,11 +2966,6 @@ def GenerateSource(file, functions, set_name, used_extensions,
   # Write file header.
   file.write(LICENSE_AND_HEADER +
 """
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <string>
 
@@ -3021,11 +3001,13 @@ namespace gl {
   file.write('\n')
   file.write('void Driver%s::InitializeStaticBindings() {\n' %
              set_name.upper())
+  file.write('#if DCHECK_IS_ON()\n')
   file.write('  // Ensure struct has been zero-initialized.\n')
-  file.write('  char* this_bytes = reinterpret_cast<char*>(this);\n')
-  file.write('  DCHECK(this_bytes[0] == 0);\n');
-  file.write('  DCHECK('
-             'memcmp(this_bytes, this_bytes + 1, sizeof(*this) - 1) == 0);\n');
+  file.write('  auto bytes = base::byte_span_from_ref(*this);\n')
+  file.write('  for (auto byte : bytes) {\n');
+  file.write('    DCHECK_EQ(0, byte);\n')
+  file.write('  };\n')
+  file.write('#endif\n')
   file.write('\n')
 
   def BindingsAreAllStatic(api_set_name):
@@ -3174,7 +3156,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
   # Write function to clear all function pointers.
   file.write('\n')
   file.write("""void Driver%s::ClearBindings() {
-  memset(this, 0, sizeof(*this));
+  auto bytes = base::byte_span_from_ref(*this);
+  std::ranges::fill(bytes, 0);
 }
 """ % set_name.upper())
 

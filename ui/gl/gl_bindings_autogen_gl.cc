@@ -8,13 +8,9 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -26,10 +22,13 @@
 namespace gl {
 
 void DriverGL::InitializeStaticBindings() {
+#if DCHECK_IS_ON()
   // Ensure struct has been zero-initialized.
-  char* this_bytes = reinterpret_cast<char*>(this);
-  DCHECK(this_bytes[0] == 0);
-  DCHECK(memcmp(this_bytes, this_bytes + 1, sizeof(*this) - 1) == 0);
+  auto bytes = base::byte_span_from_ref(*this);
+  for (auto byte : bytes) {
+    DCHECK_EQ(0, byte);
+  };
+#endif
 
   fn.glActiveTextureFn = reinterpret_cast<glActiveTextureProc>(
       GetGLProcAddress("glActiveTexture"));
@@ -2559,7 +2558,8 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
 }
 
 void DriverGL::ClearBindings() {
-  memset(this, 0, sizeof(*this));
+  auto bytes = base::byte_span_from_ref(*this);
+  std::ranges::fill(bytes, 0);
 }
 
 void GLApiBase::glAcquireTexturesANGLEFn(GLuint numTextures,
@@ -13539,21 +13539,6 @@ void LogGLApi::glShaderSourceFn(GLuint shader,
                                   << static_cast<const void*>(str) << ", "
                                   << static_cast<const void*>(length) << ")");
   gl_api_->glShaderSourceFn(shader, count, str, length);
-
-  GL_SERVICE_LOG_CODE_BLOCK({
-    for (GLsizei ii = 0; ii < count; ++ii) {
-      if (str[ii]) {
-        if (length && length[ii] >= 0) {
-          std::string source(str[ii], length[ii]);
-          GL_SERVICE_LOG("  " << ii << ": ---\n" << source << "\n---");
-        } else {
-          GL_SERVICE_LOG("  " << ii << ": ---\n" << str[ii] << "\n---");
-        }
-      } else {
-        GL_SERVICE_LOG("  " << ii << ": NULL");
-      }
-    }
-  });
 }
 
 void LogGLApi::glSignalSemaphoreEXTFn(GLuint semaphore,
