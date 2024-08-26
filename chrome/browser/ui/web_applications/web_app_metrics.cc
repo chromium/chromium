@@ -254,13 +254,6 @@ void WebAppMetrics::OnTabStripModelChanged(
     foreground_web_contents_ = nullptr;
   }
 
-  // Contents being replaced should never be the new selection.
-  if (change.type() == TabStripModelChange::kReplaced &&
-      change.GetReplace()->old_contents == foreground_web_contents_) {
-    base::debug::DumpWithoutCrashing();
-    foreground_web_contents_ = nullptr;
-  }
-
   if (change.type() == TabStripModelChange::kRemoved) {
     for (const TabStripModelChange::RemovedTab& contents :
          change.GetRemove()->contents) {
@@ -404,8 +397,11 @@ void WebAppMetrics::CountUserInstalledApps() {
 
 void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
                                   TabSwitching mode) {
-  if (!web_contents)
+  // TODO(crbug.com/362130525): The discarded check can be removed once
+  // TabStripModelChange::kReplaced has been removed.
+  if (!web_contents || web_contents->WasDiscarded()) {
     return;
+  }
   auto* app_banner_manager =
       webapps::AppBannerManager::FromWebContents(web_contents);
   // May be null in unit tests.
