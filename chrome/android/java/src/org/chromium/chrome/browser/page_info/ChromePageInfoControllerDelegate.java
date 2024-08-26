@@ -352,7 +352,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return new ChromeSiteSettingsDelegate(mContext, mProfile);
     }
 
-    @NonNull
     @Override
     public void getFavicon(GURL url, Callback<Drawable> callback) {
         Resources resources = mContext.getResources();
