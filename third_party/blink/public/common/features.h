@@ -750,8 +750,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLCPCriticalPathAdjustImageLoadPriority;
 
 // The maximum element locator length for LCPP.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPCriticalPathPredictorMaxElementLocatorLength;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kLCPCriticalPathPredictorMaxElementLocatorLength);
 
 // If true, LCP critical path predictor mechanism overrides the first N image
 // prioritization when there is LCP hint.

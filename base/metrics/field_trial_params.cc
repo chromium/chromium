@@ -292,6 +292,18 @@ int FeatureParam<int>::GetWithoutCache() const {
   return GetFieldTrialParamByFeatureAsInt(*feature, name, default_value);
 }
 
+size_t FeatureParam<size_t>::Get() const {
+  if (IsCacheEnabled() && cache_getter) {
+    return cache_getter(this);
+  }
+  return GetWithoutCache();
+}
+
+size_t FeatureParam<size_t>::GetWithoutCache() const {
+  return checked_cast<size_t>(GetFieldTrialParamByFeatureAsInt(
+      *feature, name, checked_cast<int>(default_value)));
+}
+
 bool FeatureParam<bool>::Get() const {
   if (IsCacheEnabled() && cache_getter) {
     return cache_getter(this);

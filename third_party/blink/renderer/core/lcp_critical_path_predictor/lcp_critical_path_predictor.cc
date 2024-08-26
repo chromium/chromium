@@ -194,9 +194,7 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
           base::checked_cast<int>(lcp_element_locator_string.size()));
 
       if (lcp_element_locator_string.size() <=
-          base::checked_cast<size_t>(
-              features::kLCPCriticalPathPredictorMaxElementLocatorLength
-                  .Get())) {
+          features::kLCPCriticalPathPredictorMaxElementLocatorLength.Get()) {
         GetHost().SetLcpElementLocator(
             lcp_element_locator_string,
             predicted_lcp_index == kNotFound

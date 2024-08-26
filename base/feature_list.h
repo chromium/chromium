@@ -101,7 +101,7 @@ enum FeatureState {
 //
 //   BASE_FEATURE_PARAM(int, kMyFeatureParam, kMyFeature, "MyFeatureParam", 0);
 //
-// `T` is a parameter type, one of bool, int, double, std::string, and
+// `T` is a parameter type, one of bool, int, size_t, double, std::string, and
 // base::TimeDelta. Enum types are not supported for now.
 //
 // For now, ScopedFeatureList doesn't work to change the value dynamically when

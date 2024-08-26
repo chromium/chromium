@@ -1263,8 +1263,11 @@ BASE_FEATURE(kLCPCriticalPathPredictor,
 const base::FeatureParam<bool> kLCPCriticalPathAdjustImageLoadPriority{
     &kLCPCriticalPathPredictor, "lcpp_adjust_image_load_priority", false};
 
-const base::FeatureParam<int> kLCPCriticalPathPredictorMaxElementLocatorLength{
-    &kLCPCriticalPathPredictor, "lcpp_max_element_locator_length", 1024};
+BASE_FEATURE_PARAM(size_t,
+                   kLCPCriticalPathPredictorMaxElementLocatorLength,
+                   &kLCPCriticalPathPredictor,
+                   "lcpp_max_element_locator_length",
+                   1024);
 
 const base::FeatureParam<bool>
     kLCPCriticalPathAdjustImageLoadPriorityOverrideFirstNBoost{
