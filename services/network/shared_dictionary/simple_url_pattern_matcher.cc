@@ -197,9 +197,7 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   // input.
   // https://urlpattern.spec.whatwg.org/#parse-a-constructor-string
   liburlpattern::ConstructorStringParser constructor_string_parser(
-      constructor_string,
-      liburlpattern::ConstructorStringParser::StringParserOptions{
-          .more_wildcards = true});
+      constructor_string);
   std::optional<Component> protocol_component;
   bool protocol_matches_a_special_scheme_flag = false;
   absl::Status result = constructor_string_parser.Parse(

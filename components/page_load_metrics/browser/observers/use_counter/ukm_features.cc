@@ -298,8 +298,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebGPUQueueSubmit,
           WebFeature::kWebGPUCanvasContextGetCurrentTexture,
           WebFeature::kLinkRelPreloadAsFont,
-          WebFeature::kURLPatternReliantOnImplicitURLComponentsInString,
-          WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL,
           WebFeature::kV8Window_GetScreenDetails_Method,
           WebFeature::kV8Window_ShowSaveFilePicker_Method,
           WebFeature::kChromeCSIUnknown,

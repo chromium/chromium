@@ -5496,6 +5496,8 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="Failed"/>
 </enum>
 
+<!-- LINT.IfChange(FeatureObserver) -->
+
 <enum name="FeatureObserver">
 <!-- Generated from third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.
 Called by update_use_counter_feature_enum.py.-->
@@ -10322,8 +10324,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4607" label="PaymentRequestActivationlessShow"/>
   <int value="4608" label="WebAppTabbed"/>
   <int value="4609" label="FetchLater"/>
-  <int value="4610" label="URLPatternReliantOnImplicitURLComponentsInString"/>
-  <int value="4611" label="URLPatternReliantOnLaterComponentFromBaseURL"/>
+  <int value="4610"
+      label="OBSOLETE_URLPatternReliantOnImplicitURLComponentsInString"/>
+  <int value="4611"
+      label="OBSOLETE_URLPatternReliantOnLaterComponentFromBaseURL"/>
   <int value="4612" label="V8Navigator_CreateAuctionNonce_Method"/>
   <int value="4613" label="CrossOriginWindowFrameElement"/>
   <int value="4614" label="QuirksModeAboutBlankDocument"/>
@@ -10850,6 +10854,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5074" label="PartitionedPopin_OpenAttempt"/>
   <int value="5075" label="PartitionedPopin_Opened"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
 
 <enum name="FeaturePolicyFeature">
 <!-- Generated from third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.

@@ -4372,10 +4372,6 @@
       status: "experimental",
     },
     {
-      name: "URLPatternWildcardMoreOften",
-      status: "stable",
-    },
-    {
       name: "URLSearchParamsHasAndDeleteMultipleArgs",
       status: "stable",
     },
