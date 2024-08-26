@@ -26,7 +26,7 @@ constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 100, 10);
 using PickerSubmenuViewTest = views::ViewsTestBase;
 
 TEST_F(PickerSubmenuViewTest, GetsTopItem) {
-  std::vector<std::unique_ptr<PickerItemView>> items;
+  std::vector<std::unique_ptr<PickerListItemView>> items;
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   auto* top_item_ptr = items.front().get();
@@ -36,7 +36,7 @@ TEST_F(PickerSubmenuViewTest, GetsTopItem) {
 }
 
 TEST_F(PickerSubmenuViewTest, GetsBottomItem) {
-  std::vector<std::unique_ptr<PickerItemView>> items;
+  std::vector<std::unique_ptr<PickerListItemView>> items;
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   auto* bottom_item_ptr = items.back().get();
@@ -46,7 +46,7 @@ TEST_F(PickerSubmenuViewTest, GetsBottomItem) {
 }
 
 TEST_F(PickerSubmenuViewTest, GetsItemAbove) {
-  std::vector<std::unique_ptr<PickerItemView>> items;
+  std::vector<std::unique_ptr<PickerListItemView>> items;
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   auto* top_item_ptr = items.front().get();
@@ -58,7 +58,7 @@ TEST_F(PickerSubmenuViewTest, GetsItemAbove) {
 }
 
 TEST_F(PickerSubmenuViewTest, GetItemBelow) {
-  std::vector<std::unique_ptr<PickerItemView>> items;
+  std::vector<std::unique_ptr<PickerListItemView>> items;
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   auto* top_item_ptr = items.front().get();
@@ -70,7 +70,7 @@ TEST_F(PickerSubmenuViewTest, GetItemBelow) {
 }
 
 TEST_F(PickerSubmenuViewTest, TriggersItemCallbackOnPseudoFocusAction) {
-  std::vector<std::unique_ptr<PickerItemView>> items;
+  std::vector<std::unique_ptr<PickerListItemView>> items;
   base::test::TestFuture<void> select_item_future;
   items.push_back(std::make_unique<PickerListItemView>(
       select_item_future.GetRepeatingCallback()));

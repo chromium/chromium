@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_style.h"
 #include "base/functional/bind.h"
@@ -44,7 +44,7 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
 
 PickerSubmenuView::PickerSubmenuView(
     const gfx::Rect& anchor_rect,
-    std::vector<std::unique_ptr<PickerItemView>> items) {
+    std::vector<std::unique_ptr<PickerListItemView>> items) {
   SetShowCloseButton(false);
   set_desired_bounds_delegate(
       base::BindRepeating(&PickerSubmenuView::GetDesiredBounds,
@@ -62,8 +62,8 @@ PickerSubmenuView::PickerSubmenuView(
       kSubmenuWidth, /*asset_fetcher=*/nullptr,
       /*submenu_controller=*/nullptr));
 
-  for (std::unique_ptr<PickerItemView>& item : items) {
-    section_view_->AddItem(std::move(item));
+  for (std::unique_ptr<PickerListItemView>& item : items) {
+    section_view_->AddListItem(std::move(item));
   }
 }
 
