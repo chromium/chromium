@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/extensions/extension_install_ui_default.h"
 
+#include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -54,6 +56,8 @@ using content::WebContents;
 using extensions::Extension;
 
 namespace {
+
+static bool g_disable_ui_for_tests = false;
 
 Browser* FindOrCreateVisibleBrowser(Profile* profile) {
   // TODO(mpcomplete): remove this workaround for http://crbug.com/244246
@@ -144,8 +148,10 @@ ExtensionInstallUIDefault::~ExtensionInstallUIDefault() {}
 void ExtensionInstallUIDefault::OnInstallSuccess(
     scoped_refptr<const extensions::Extension> extension,
     const SkBitmap* icon) {
-  if (disable_ui_for_tests() || skip_post_install_ui_ || extension->is_theme())
+  if (g_disable_ui_for_tests || skip_post_install_ui_ ||
+      extension->is_theme()) {
     return;
+  }
 
   if (!profile_) {
     // TODO(zelidrag): Figure out what exact conditions cause crash
@@ -177,8 +183,9 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
 void ExtensionInstallUIDefault::OnInstallFailure(
     const extensions::CrxInstallError& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (disable_ui_for_tests() || skip_post_install_ui_)
+  if (g_disable_ui_for_tests || skip_post_install_ui_) {
     return;
+  }
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser)  // Can be nullptr in unittests.
@@ -197,4 +204,11 @@ void ExtensionInstallUIDefault::SetUseAppInstalledBubble(bool use_bubble) {
 
 void ExtensionInstallUIDefault::SetSkipPostInstallUI(bool skip_ui) {
   skip_post_install_ui_ = skip_ui;
+}
+
+// static
+base::AutoReset<bool> ExtensionInstallUIDefault::disable_ui_for_tests(
+    bool disable) {
+  CHECK_IS_TEST();
+  return base::AutoReset<bool>(&g_disable_ui_for_tests, disable);
 }

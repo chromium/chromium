@@ -5,17 +5,24 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
-#include "extensions/browser/install/extension_install_ui.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace content {
 class BrowserContext;
 }
 
+namespace extensions {
+class CrxInstallError;
+class Extension;
+}  // namespace extensions
+
 class Browser;
 class Profile;
+class SkBitmap;
 
-class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
+class ExtensionInstallUIDefault {
  public:
   explicit ExtensionInstallUIDefault(content::BrowserContext* context);
 
@@ -23,21 +30,36 @@ class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
   ExtensionInstallUIDefault& operator=(const ExtensionInstallUIDefault&) =
       delete;
 
-  ~ExtensionInstallUIDefault() override;
+  ~ExtensionInstallUIDefault();
 
-  // ExtensionInstallUI:
+  // Called when an extension was installed.
   void OnInstallSuccess(scoped_refptr<const extensions::Extension> extension,
-                        const SkBitmap* icon) override;
-  void OnInstallFailure(const extensions::CrxInstallError& error) override;
-  void SetUseAppInstalledBubble(bool use_bubble) override;
-  void SetSkipPostInstallUI(bool skip_ui) override;
+                        const SkBitmap* icon);
+
+  // Called when an extension failed to install.
+  void OnInstallFailure(const extensions::CrxInstallError& error);
+
+  // TODO(asargent) Normally we navigate to the new tab page when an app is
+  // installed, but we're experimenting with instead showing a bubble when
+  // an app is installed which points to the new tab button. This may become
+  // the default behavior in the future.
+  void SetUseAppInstalledBubble(bool use_bubble);
+
+  // Sets whether to show the default UI after completing the installation.
+  void SetSkipPostInstallUI(bool skip_ui);
 
   // Show the platform-specific bubble UI. This method has different
   // implementations on different platforms, controlled by build flags.
+  // TODO(crbug.com/330588494): There are no longer platform-specific bubbles.
+  // Rename this to ShowBubble and move the implementation here (it doesn't need
+  // to be on extension_installed_bubble_view.cc).
   static void ShowPlatformBubble(
       scoped_refptr<const extensions::Extension> extension,
       Browser* browser,
       const SkBitmap& icon);
+
+  // For testing:
+  static base::AutoReset<bool> disable_ui_for_tests(bool disable);
 
  private:
   raw_ptr<Profile, DanglingUntriaged> profile_;

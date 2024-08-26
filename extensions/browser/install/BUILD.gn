@@ -10,8 +10,6 @@ source_set("install") {
   sources = [
     "crx_install_error.cc",
     "crx_install_error.h",
-    "extension_install_ui.cc",
-    "extension_install_ui.h",
     "sandboxed_unpacker_failure_reason.h",
   ]
 

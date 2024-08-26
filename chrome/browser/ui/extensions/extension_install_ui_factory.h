@@ -11,10 +11,11 @@ namespace content {
 class BrowserContext;
 }
 
-namespace extensions {
-class ExtensionInstallUI;
+class ExtensionInstallUIDefault;
 
-std::unique_ptr<extensions::ExtensionInstallUI> CreateExtensionInstallUI(
+namespace extensions {
+
+std::unique_ptr<ExtensionInstallUIDefault> CreateExtensionInstallUI(
     content::BrowserContext* context);
 
 }  // namespace extensions
