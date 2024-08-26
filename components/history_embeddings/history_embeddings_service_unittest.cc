@@ -78,7 +78,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
            {"SearchPassageMinimumWordCount", "3"},
            {"UseMlAnswerer", "false"},
            {"EnableAnswers", "true"},
-           {"FilterTerms", "term1,term2,Filter Phrase,TeRm3"}}},
+           {"FilterTerms", "term1,term2,Filter Phrase,TeRm3"},
+           {"FilterHashes", "3962775614,4220142007,430397466"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -430,6 +431,12 @@ TEST_F(HistoryEmbeddingsServiceTest, CountWords) {
   EXPECT_EQ(3u, CountWords("a  bc  def "));
 }
 
+TEST_F(HistoryEmbeddingsServiceTest, StaticHashVerificationTest) {
+  EXPECT_EQ(history_embeddings::HashString("special"), 3962775614u);
+  EXPECT_EQ(history_embeddings::HashString("something something"), 4220142007u);
+  EXPECT_EQ(history_embeddings::HashString("hello world"), 430397466u);
+}
+
 TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
   AddTestHistoryPage("http://test1.com");
   OnPassagesEmbeddingsComputed(UrlPassages(1, 1, base::Time::Now()),
@@ -456,6 +463,11 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
       {"query with inexact te'rm3 in the middle", 0.99},
       {"query with 'term3', surrounded by punctuation", 0.99},
       {"query with non-ASCII ∅ character but no terms", 0.99},
+      {"the word 'special' has its hash filtered", 0.99},
+      {"the phrase 'something something' is also hash filtered", 0.99},
+      {"this    Hello,   World!   is also hash filtered", 0.99},
+      {"Hello | World is also filtered due to trimmed empty removal", 0.99},
+      {"hellow orld is not filtered since its hash differs", 0.99},
   });
   {
     base::test::TestFuture<SearchResult> future;
@@ -563,6 +575,55 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query, "query with non-ASCII ∅ character but no terms");
     EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("the word 'special' has its hash filtered", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "the word 'special' has its hash filtered");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("the phrase 'something something' is also hash filtered",
+                     {}, 3, future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query,
+              "the phrase 'something something' is also hash filtered");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("this    Hello,   World!   is also hash filtered", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "this    Hello,   World!   is also hash filtered");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search(
+        "Hello | World is also filtered due to trimmed empty removal", {}, 3,
+        future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query,
+              "Hello | World is also filtered due to trimmed empty removal");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("hellow orld is not filtered since its hash differs", {},
+                     3, future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query,
+              "hellow orld is not filtered since its hash differs");
+    EXPECT_GT(result.count, 0u);
   }
 }
 

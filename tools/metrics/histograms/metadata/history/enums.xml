@@ -173,6 +173,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Filtered non-ASCII"/>
   <int value="2" label="Filtered phrase match"/>
   <int value="3" label="Filtered term match"/>
+  <int value="4" label="Filtered one-word hash match"/>
+  <int value="5" label="Filtered two-word hash match"/>
 </enum>
 
 <enum name="EmbeddingsUserActions">
