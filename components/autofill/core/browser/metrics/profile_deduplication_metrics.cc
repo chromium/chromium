@@ -40,9 +40,6 @@ void LogTypeOfQuasiDuplicateTokenMetric(
     std::string_view metric_name_prefix,
     int duplication_rank,
     base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
-  if (duplication_rank < 1 || duplication_rank > 5) {
-    return;
-  }
   const std::string metric_name =
       base::StrCat({metric_name_prefix, "TypeOfQuasiDuplicateToken.",
                     base::NumberToString(duplication_rank)});
@@ -99,6 +96,9 @@ void LogDeduplicationStartupMetricsForProfile(
     std::string_view app_locale) {
   const int duplication_rank =
       GetDuplicationRank(min_incompatible_differing_sets);
+  if (duplication_rank < 1 || duplication_rank > 5) {
+    return;
+  }
   base::UmaHistogramCounts100(
       base::StrCat(
           {kStartupHistogramPrefix, "RankOfStoredQuasiDuplicateProfiles"}),
@@ -195,6 +195,9 @@ void LogDeduplicationImportMetrics(
           import_candidate, existing_profiles,
           AutofillProfileComparator(app_locale));
   const int duplication_rank = GetDuplicationRank(min_incompatible_sets);
+  if (duplication_rank < 1 || duplication_rank > 5) {
+    return;
+  }
 
   // Emit the actual metrics, based on the user decision.
   const std::string metric_name_prefix = base::StrCat(
