@@ -9336,7 +9336,7 @@
   {
     "name": "web-authentication-enclave-authenticator",
     "owners": [ "kenrb@chromium.org", "chrome-webauthn@google.com" ],
-    "expiry_milestone": 129
+    "expiry_milestone": 132
   },
   {
     "name": "web-authentication-permit-enterprise-attestation",
