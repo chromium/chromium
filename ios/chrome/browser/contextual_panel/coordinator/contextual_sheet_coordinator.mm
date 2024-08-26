@@ -61,6 +61,7 @@
 
 - (void)stop {
   [_panelContentCoordinator stop];
+  _panelContentCoordinator = nil;
 
   if (_viewController) {
     [self removeViewControllerFromBaseViewController];

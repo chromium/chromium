@@ -266,28 +266,6 @@ UIImage* CloseButtonImage(BOOL highlighted) {
                                   _headerView);
 }
 
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-
-  [self addAccessibilityTransparencyWorkaround];
-
-  [self setCollectionViewContentInset];
-  [self setCollectionViewScrollIndicatorInsets];
-}
-
-- (void)accessibilityReduceTransparencySettingDidChange {
-  [self addAccessibilityTransparencyWorkaround];
-
-  _headerViewAccessibilityBackground.hidden =
-      !UIAccessibilityIsReduceTransparencyEnabled();
-}
-
-- (void)viewSafeAreaInsetsDidChange {
-  [super viewSafeAreaInsetsDidChange];
-
-  [self setCollectionViewScrollIndicatorInsets];
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
 
@@ -346,6 +324,28 @@ UIImage* CloseButtonImage(BOOL highlighted) {
     base::UmaHistogramEnumeration(impressionTypeHistogramName,
                                   blockImpressionType);
   }
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  [self addAccessibilityTransparencyWorkaround];
+
+  [self setCollectionViewContentInset];
+  [self setCollectionViewScrollIndicatorInsets];
+}
+
+- (void)accessibilityReduceTransparencySettingDidChange {
+  [self addAccessibilityTransparencyWorkaround];
+
+  _headerViewAccessibilityBackground.hidden =
+      !UIAccessibilityIsReduceTransparencyEnabled();
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+
+  [self setCollectionViewScrollIndicatorInsets];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -634,6 +634,14 @@ UIImage* CloseButtonImage(BOOL highlighted) {
 #pragma mark - Keyboard notifications
 
 - (void)handleKeyboardWillShow:(NSNotification*)notification {
+  // Sometimes, this triggers during dismissal (maybe if the website had the
+  // keyboard open before presenting?), and re-entering closeContextualSheet
+  // crashes because all the coordinators get deallocated during the inner
+  // close.
+  if (self.isBeingDismissed) {
+    return;
+  }
+
   base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
                                 ContextualPanelDismissedReason::KeyboardOpened);
   [self.contextualSheetCommandHandler closeContextualSheet];
