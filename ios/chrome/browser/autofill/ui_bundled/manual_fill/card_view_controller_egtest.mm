@@ -1259,21 +1259,21 @@ void DismissPaymentBottomSheet() {
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
 
-  // Check that the GPay icon is not visible in the local card cell.
-  [[EarlGrey selectElementWithMatcher:GPayIcon(local_card_last_digits)]
-      assertWithMatcher:grey_notVisible()];
-
-  // Scroll down to show the masked card.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
-
   // Check that the GPay icon is only visible in the masked card cell when the
   // Keyboard Accessory Upgrade feature is enabled.
   [[EarlGrey selectElementWithMatcher:GPayIcon(masked_card_last_digits)]
       assertWithMatcher:[AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
                             ? grey_sufficientlyVisible()
                             : grey_notVisible()];
+
+  // Scroll down to show the local card.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
+
+  // Check that the GPay icon is not visible in the local card cell.
+  [[EarlGrey selectElementWithMatcher:GPayIcon(local_card_last_digits)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Private
