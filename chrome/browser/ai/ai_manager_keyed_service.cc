@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,6 +17,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/pass_key.h"
+#include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_rewriter.h"
 #include "chrome/browser/ai/ai_summarizer.h"
@@ -28,6 +31,7 @@
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -105,19 +109,248 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
   NOTREACHED();
 }
 
-std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-CreateComposeSession(content::BrowserContext& browser_context) {
-  OptimizationGuideKeyedService* service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(&browser_context));
-  if (!service) {
-    return nullptr;
+// Currently, the following errors, which are used when a model may have been
+// installed but not yet loaded, are treated as waitable.
+// TODO(crbug.com/361537114): Consider making the kModelToBeInstalled error
+// waitable as well.
+static constexpr auto kWaitableReasons =
+    base::MakeFixedFlatSet<optimization_guide::OnDeviceModelEligibilityReason>({
+        optimization_guide::OnDeviceModelEligibilityReason::
+            kConfigNotAvailableForFeature,
+        optimization_guide::OnDeviceModelEligibilityReason::
+            kSafetyModelNotAvailable,
+        optimization_guide::OnDeviceModelEligibilityReason::
+            kLanguageDetectionModelNotAvailable,
+    });
+
+// A base class for tasks which create a Compose session. See the method comment
+// of `Run()` for the details.
+class CreateComposeSessionTask
+    : public AIContextBoundObject,
+      public optimization_guide::OnDeviceModelAvailabilityObserver {
+ public:
+  explicit CreateComposeSessionTask(content::BrowserContext& browser_context)
+      : service_(OptimizationGuideKeyedServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(&browser_context))) {}
+  ~CreateComposeSessionTask() override {
+    if (observing_availability_) {
+      service_->RemoveOnDeviceModelAvailabilityChangeObserver(
+          optimization_guide::ModelBasedCapabilityKey::kCompose, this);
+    }
   }
-  optimization_guide::SessionConfigParams config_params =
-      optimization_guide::SessionConfigParams{.disable_server_fallback = true};
-  return service->StartSession(
-      optimization_guide::ModelBasedCapabilityKey::kCompose, config_params);
-}
+  CreateComposeSessionTask(const CreateComposeSessionTask&) = delete;
+  CreateComposeSessionTask& operator=(const CreateComposeSessionTask&) = delete;
+
+ protected:
+  bool observing_availability() const { return observing_availability_; }
+
+  // Attempts to create a Compose session.
+  //
+  // * If `service_` is null, immediately calls `OnFinish()` with a nullptr,
+  //   indicating failure.
+  // * If creation succeeds, calls `OnFinish()` with the newly created session.
+  // * If creation fails:
+  //   * If the failure reason is in `kWaitableReasons` (indicating a
+  //     potentially temporary issue):
+  //     * Registers itself to observe model availability changes in `service_`.
+  //     * Waits until the `reason` is no longer in `kWaitableReasons`, then
+  //       retries session creation.
+  //   * Otherwise (for non-recoverable errors), calls `OnFinish()` with a
+  //     nullptr.
+  void Run() {
+    if (!service_) {
+      OnFinish(nullptr);
+      return;
+    }
+    if (auto session = StartSession()) {
+      OnFinish(std::move(session));
+      return;
+    }
+    optimization_guide::OnDeviceModelEligibilityReason reason;
+    bool can_create = service_->CanCreateOnDeviceSession(
+        optimization_guide::ModelBasedCapabilityKey::kCompose, &reason);
+    CHECK(!can_create);
+    if (!kWaitableReasons.contains(reason)) {
+      OnFinish(nullptr);
+      return;
+    }
+    observing_availability_ = true;
+    service_->AddOnDeviceModelAvailabilityChangeObserver(
+        optimization_guide::ModelBasedCapabilityKey::kCompose, this);
+  }
+
+  // Cancels the creation task, and deletes itself.
+  void Cancel() {
+    CHECK(observing_availability_);
+    CHECK(deletion_callback_);
+    std::move(deletion_callback_).Run();
+  }
+
+  virtual void OnFinish(
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session>
+          session) = 0;
+
+ private:
+  // `AIContextBoundObject` implementation.
+  void SetDeletionCallback(base::OnceClosure deletion_callback) override {
+    deletion_callback_ = std::move(deletion_callback);
+  }
+
+  // optimization_guide::OnDeviceModelAvailabilityObserver
+  void OnDeviceModelAvailablityChanged(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::OnDeviceModelEligibilityReason reason) override {
+    if (kWaitableReasons.contains(reason)) {
+      return;
+    }
+    OnFinish(StartSession());
+    std::move(deletion_callback_).Run();
+  }
+
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+  StartSession() {
+    optimization_guide::SessionConfigParams config_params =
+        optimization_guide::SessionConfigParams{.disable_server_fallback =
+                                                    true};
+    return service_->StartSession(
+        optimization_guide::ModelBasedCapabilityKey::kCompose, config_params);
+  }
+
+  const raw_ptr<OptimizationGuideKeyedService> service_;
+  bool observing_availability_ = false;
+  base::OnceClosure deletion_callback_;
+};
+
+// This class runs a task to create a AIWriter. This is inheriting
+// CreateComposeSessionTask class to create a Compose session.
+class CreateWriterTask : public CreateComposeSessionTask {
+ public:
+  static void Start(
+      content::BrowserContext& browser_context,
+      AIContextBoundObjectSet::ReceiverContext context,
+      const std::optional<std::string>& shared_context,
+      mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client) {
+    auto task = std::make_unique<CreateWriterTask>(
+        base::PassKey<CreateWriterTask>(), browser_context, context,
+        shared_context, std::move(client));
+    task->Run();
+    if (task->observing_availability()) {
+      // Put `task` to AIContextBoundObjectSet to continue observing the model
+      // availability.
+      AIContextBoundObjectSet::GetFromContext(context)->AddContextBoundObject(
+          std::move(task));
+    }
+  }
+
+  CreateWriterTask(
+      base::PassKey<CreateWriterTask>,
+      content::BrowserContext& browser_context,
+      AIContextBoundObjectSet::ReceiverContext context,
+      const std::optional<std::string>& shared_context,
+      mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client)
+      : CreateComposeSessionTask(browser_context),
+        context_(AIContextBoundObjectSet::ToReceiverContextRawRef(context)),
+        shared_context_(shared_context),
+        client_remote_(std::move(client)) {
+    client_remote_.set_disconnect_handler(
+        base::BindOnce(&CreateWriterTask::Cancel, base::Unretained(this)));
+  }
+  ~CreateWriterTask() override = default;
+
+ protected:
+  void OnFinish(std::unique_ptr<
+                optimization_guide::OptimizationGuideModelExecutor::Session>
+                    session) override {
+    if (!session) {
+      // TODO(crbug.com/357967382): Return an error enum and throw a clear
+      // exception from the blink side.
+      client_remote_->OnResult(mojo::PendingRemote<blink::mojom::AIWriter>());
+      return;
+    }
+    mojo::PendingRemote<blink::mojom::AIWriter> pending_remote;
+    AIContextBoundObjectSet::GetFromContext(
+        AIContextBoundObjectSet::ToReceiverContext(context_))
+        ->AddContextBoundObject(std::make_unique<AIWriter>(
+            std::move(session), pending_remote.InitWithNewPipeAndPassReceiver(),
+            shared_context_));
+    client_remote_->OnResult(std::move(pending_remote));
+  }
+
+ private:
+  const AIContextBoundObjectSet::ReceiverContextRawRef context_;
+  const std::optional<std::string> shared_context_;
+  mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote_;
+};
+
+// This class runs a task to create a AIRewriter. This is inheriting
+// CreateComposeSessionTask class to create a Compose session.
+class CreateRewriterTask : public CreateComposeSessionTask {
+ public:
+  static void Start(
+      content::BrowserContext& browser_context,
+      AIContextBoundObjectSet::ReceiverContext context,
+      const std::optional<std::string>& shared_context,
+      blink::mojom::AIRewriterTone tone,
+      blink::mojom::AIRewriterLength length,
+      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client) {
+    auto task = std::make_unique<CreateRewriterTask>(
+        base::PassKey<CreateRewriterTask>(), browser_context, context,
+        shared_context, tone, length, std::move(client));
+    task->Run();
+    if (task->observing_availability()) {
+      // Put `task` to AIContextBoundObjectSet to continue observing the model
+      // availability.
+      AIContextBoundObjectSet::GetFromContext(context)->AddContextBoundObject(
+          std::move(task));
+    }
+  }
+
+  CreateRewriterTask(
+      base::PassKey<CreateRewriterTask>,
+      content::BrowserContext& browser_context,
+      AIContextBoundObjectSet::ReceiverContext context,
+      const std::optional<std::string>& shared_context,
+      blink::mojom::AIRewriterTone tone,
+      blink::mojom::AIRewriterLength length,
+      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client)
+      : CreateComposeSessionTask(browser_context),
+        context_(AIContextBoundObjectSet::ToReceiverContextRawRef(context)),
+        shared_context_(shared_context),
+        tone_(tone),
+        length_(length),
+        client_remote_(std::move(client)) {
+    client_remote_.set_disconnect_handler(
+        base::BindOnce(&CreateRewriterTask::Cancel, base::Unretained(this)));
+  }
+  ~CreateRewriterTask() override = default;
+
+ protected:
+  void OnFinish(std::unique_ptr<
+                optimization_guide::OptimizationGuideModelExecutor::Session>
+                    session) override {
+    if (!session) {
+      // TODO(crbug.com/358214322): Return an error enum and throw a clear
+      // exception from the blink side.
+      client_remote_->OnResult(mojo::PendingRemote<blink::mojom::AIRewriter>());
+      return;
+    }
+    mojo::PendingRemote<blink::mojom::AIRewriter> pending_remote;
+    AIContextBoundObjectSet::GetFromContext(
+        AIContextBoundObjectSet::ToReceiverContext(context_))
+        ->AddContextBoundObject(std::make_unique<AIRewriter>(
+            std::move(session), pending_remote.InitWithNewPipeAndPassReceiver(),
+            shared_context_, tone_, length_));
+    client_remote_->OnResult(std::move(pending_remote));
+  }
+
+ private:
+  const AIContextBoundObjectSet::ReceiverContextRawRef context_;
+  const std::optional<std::string> shared_context_;
+  const blink::mojom::AIRewriterTone tone_;
+  const blink::mojom::AIRewriterLength length_;
+  mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote_;
+};
 
 }  // namespace
 
@@ -268,24 +501,8 @@ void AIManagerKeyedService::GetTextModelInfo(
 void AIManagerKeyedService::CreateWriter(
     const std::optional<std::string>& shared_context,
     mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client) {
-  mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
-      std::move(client));
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session = CreateComposeSession(*browser_context_);
-  if (!session) {
-    // TODO(crbug.com/357967382): Return an error enum and throw a clear
-    // exception from the blink side.
-    // TODO(crbug.com/357967382): Consider retrying for
-    // kConfigNotAvailableForFeature case.
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIWriter>());
-    return;
-  }
-  mojo::PendingRemote<blink::mojom::AIWriter> pending_remote;
-  AIContextBoundObjectSet::GetFromContext(receivers_.current_context())
-      ->AddContextBoundObject(std::make_unique<AIWriter>(
-          std::move(session), pending_remote.InitWithNewPipeAndPassReceiver(),
-          shared_context));
-  client_remote->OnResult(std::move(pending_remote));
+  CreateWriterTask::Start(*browser_context_, receivers_.current_context(),
+                          shared_context, std::move(client));
 }
 
 void AIManagerKeyedService::CreateRewriter(
@@ -293,33 +510,19 @@ void AIManagerKeyedService::CreateRewriter(
     blink::mojom::AIRewriterTone tone,
     blink::mojom::AIRewriterLength length,
     mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client) {
-  mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
-      std::move(client));
   if (tone != blink::mojom::AIRewriterTone::kAsIs &&
       length != blink::mojom::AIRewriterLength::kAsIs) {
     // TODO(crbug.com/358214322): Currently the combination of the tone and the
     // length option is not supported.
     // TODO(crbug.com/358214322): Return an error enum and throw a clear
     // exception from the blink side.
+    mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
+        std::move(client));
     client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIRewriter>());
     return;
   }
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session = CreateComposeSession(*browser_context_);
-  if (!session) {
-    // TODO(crbug.com/358214322): Return an error enum and throw a clear
-    // exception from the blink side.
-    // TODO(crbug.com/358214322): Consider retrying for
-    // kConfigNotAvailableForFeature case.
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIRewriter>());
-    return;
-  }
-  mojo::PendingRemote<blink::mojom::AIRewriter> pending_remote;
-  AIContextBoundObjectSet::GetFromContext(receivers_.current_context())
-      ->AddContextBoundObject(std::make_unique<AIRewriter>(
-          std::move(session), pending_remote.InitWithNewPipeAndPassReceiver(),
-          shared_context, tone, length));
-  client_remote->OnResult(std::move(pending_remote));
+  CreateRewriterTask::Start(*browser_context_, receivers_.current_context(),
+                            shared_context, tone, length, std::move(client));
 }
 
 void AIManagerKeyedService::CheckModelPathOverrideCanCreateSession(

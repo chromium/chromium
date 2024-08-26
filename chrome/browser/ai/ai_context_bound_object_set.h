@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_AI_AI_CONTEXT_BOUND_OBJECT_SET_H_
 #define CHROME_BROWSER_AI_AI_CONTEXT_BOUND_OBJECT_SET_H_
 
+#include <variant>
+
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "content/public/browser/document_user_data.h"
@@ -23,6 +26,12 @@ class AIContextBoundObjectSet {
  public:
   using ReceiverContext =
       std::variant<content::RenderFrameHost*, base::SupportsUserData*>;
+  using ReceiverContextRawRef = std::variant<raw_ref<content::RenderFrameHost>,
+                                             raw_ref<base::SupportsUserData>>;
+
+  static ReceiverContextRawRef ToReceiverContextRawRef(ReceiverContext context);
+  static ReceiverContext ToReceiverContext(
+      ReceiverContextRawRef context_raw_ref);
 
   AIContextBoundObjectSet(const AIContextBoundObjectSet&) = delete;
   AIContextBoundObjectSet& operator=(const AIContextBoundObjectSet&) = delete;

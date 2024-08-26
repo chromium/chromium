@@ -201,13 +201,23 @@ TEST_F(AIWriterTest, CreateWriterNoService) {
   run_loop.Run();
 }
 
-TEST_F(AIWriterTest, CreateWriterStartSessionError) {
+TEST_F(AIWriterTest, CreateWriterModelNotAvailable) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              CanCreateOnDeviceSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
+                  debug_reason) {
+            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
+                kModelNotAvailable;
+            return false;
+          }));
 
   MockCreateWriterClient mock_create_writer_client;
   base::RunLoop run_loop;
@@ -223,6 +233,141 @@ TEST_F(AIWriterTest, CreateWriterStartSessionError) {
       kSharedContextString,
       mock_create_writer_client.BindNewPipeAndPassRemote());
   run_loop.Run();
+}
+
+TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
+  SetupMockOptimizationGuideKeyedService();
+
+  // StartSession must be called twice.
+  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            // Returns a nullptr for the first call.
+            return nullptr;
+          }))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            // Returns a MockSession for the second call.
+            return std::make_unique<optimization_guide::MockSession>();
+          }));
+
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              CanCreateOnDeviceSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
+                  debug_reason) {
+            // Setting kConfigNotAvailableForFeature should trigger retry.
+            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
+                kConfigNotAvailableForFeature;
+            return false;
+          }));
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  mojo::Remote<blink::mojom::AIWriter> writer_remote;
+  MockCreateWriterClient mock_create_writer_client;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_create_writer_client, OnResult(_))
+      .WillOnce(testing::Invoke(
+          [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
+            // Create writer should succeed.
+            EXPECT_TRUE(writer);
+            run_loop.Quit();
+          }));
+
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  ai_manager->CreateWriter(
+      kSharedContextString,
+      mock_create_writer_client.BindNewPipeAndPassRemote());
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+  // Send `kConfigNotAvailableForFeature` first to the observer.
+  availability_observer->OnDeviceModelAvailablityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kCompose,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  // And then send `kConfigNotAvailableForFeature` to the observer.
+  availability_observer->OnDeviceModelAvailablityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kCompose,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  // OnResult() should be called.
+  run_loop.Run();
+}
+
+TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
+  SetupMockOptimizationGuideKeyedService();
+
+  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; }));
+
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              CanCreateOnDeviceSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
+                  debug_reason) {
+            // Setting kConfigNotAvailableForFeature should trigger retry.
+            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
+                kConfigNotAvailableForFeature;
+            return false;
+          }));
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  base::RunLoop run_loop_for_remove_observer;
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              RemoveOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            EXPECT_EQ(availability_observer, observer);
+            run_loop_for_remove_observer.Quit();
+          }));
+
+  auto mock_create_writer_client = std::make_unique<MockCreateWriterClient>();
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  ai_manager->CreateWriter(
+      kSharedContextString,
+      mock_create_writer_client->BindNewPipeAndPassRemote());
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Reset `mock_create_writer_client` to abort the task of CreateWriter().
+  mock_create_writer_client.reset();
+
+  // RemoveOnDeviceModelAvailabilityChangeObserver should be called.
+  run_loop_for_remove_observer.Run();
 }
 
 TEST_F(AIWriterTest, ContextDestroyed) {

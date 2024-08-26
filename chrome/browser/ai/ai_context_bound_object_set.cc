@@ -75,6 +75,31 @@ class AIContextBoundObjectSetDocumentUserData
 
 DOCUMENT_USER_DATA_KEY_IMPL(AIContextBoundObjectSetDocumentUserData);
 
+// static
+AIContextBoundObjectSet::ReceiverContextRawRef
+AIContextBoundObjectSet::ToReceiverContextRawRef(ReceiverContext context) {
+  if (std::holds_alternative<content::RenderFrameHost*>(context)) {
+    return raw_ref<content::RenderFrameHost>(
+        *std::get<content::RenderFrameHost*>(context));
+  }
+  CHECK(std::holds_alternative<base::SupportsUserData*>(context));
+  return raw_ref<base::SupportsUserData>(
+      *std::get<base::SupportsUserData*>(context));
+}
+
+// static
+AIContextBoundObjectSet::ReceiverContext
+AIContextBoundObjectSet::ToReceiverContext(
+    ReceiverContextRawRef context_raw_ref) {
+  if (std::holds_alternative<raw_ref<content::RenderFrameHost>>(
+          context_raw_ref)) {
+    return &std::get<raw_ref<content::RenderFrameHost>>(context_raw_ref).get();
+  }
+  CHECK(
+      std::holds_alternative<raw_ref<base::SupportsUserData>>(context_raw_ref));
+  return &std::get<raw_ref<base::SupportsUserData>>(context_raw_ref).get();
+}
+
 AIContextBoundObjectSet::AIContextBoundObjectSet() = default;
 AIContextBoundObjectSet::~AIContextBoundObjectSet() = default;
 
