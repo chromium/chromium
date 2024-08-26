@@ -668,6 +668,9 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HAND_TRACKING_A11Y" desc="The screen reader announcement describing a toggle with two option, controling whether sites can request permission to use hand tracking. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can ask to track your hands. When off, sites can’t track your hands.
   </message>
+  <message name="IDS_ANDROID_HAND_TRACKING_PERMISSION_OFF" desc="The message to show when the hand tracking permission needs to be turned on in Android settings.">
+    To let <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> use hand tracking, also turn on hand tracking in <ph name="BEGIN_LINK">&lt;link&gt;</ph>system settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+  </message>
 
   <!-- Idle Detection -->
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_IDLE_DETECTION_ASK" desc="The description for the option to allow sites to ask for permission to access your activity state">

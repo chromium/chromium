@@ -125,7 +125,8 @@ public class SiteSettings extends BaseSiteSettingsFragment
             if ((Type.CAMERA == prefCategory
                             || Type.MICROPHONE == prefCategory
                             || Type.NOTIFICATIONS == prefCategory
-                            || Type.AUGMENTED_REALITY == prefCategory)
+                            || Type.AUGMENTED_REALITY == prefCategory
+                            || Type.HAND_TRACKING == prefCategory)
                     && SiteSettingsCategory.createFromType(
                                     getSiteSettingsDelegate().getBrowserContextHandle(),
                                     prefCategory)

@@ -116,6 +116,9 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
             message_id = IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT;
           }
 #endif
+        } else if (content_settings_type ==
+                   ContentSettingsType::HAND_TRACKING) {
+          message_id = IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TEXT;
         } else {
           NOTREACHED_IN_MIGRATION();
         }
@@ -160,6 +163,10 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
       return std::make_tuple(IDR_ANDROID_MESSAGE_PERMISSION_XR,
                              IDS_MESSAGE_MISSING_XR_PERMISSION_TITLE,
                              IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT);
+    case IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TEXT:
+      return std::make_tuple(IDR_ANDROID_MESSAGE_PERMISSION_HAND_TRACKING,
+                             IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TITLE,
+                             IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TEXT);
     default:
       NOTREACHED_IN_MIGRATION();
       break;

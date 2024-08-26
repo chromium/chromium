@@ -1030,6 +1030,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         } else if (showWarningFor(SiteSettingsCategory.Type.NFC)) {
             return SiteSettingsCategory.createFromType(
                     browserContextHandle, SiteSettingsCategory.Type.NFC);
+        } else if (showWarningFor(SiteSettingsCategory.Type.HAND_TRACKING)) {
+            return SiteSettingsCategory.createFromType(
+                    browserContextHandle, SiteSettingsCategory.Type.HAND_TRACKING);
         } else if (showWarningFor(SiteSettingsCategory.Type.AUGMENTED_REALITY)) {
             return SiteSettingsCategory.createFromType(
                     browserContextHandle, SiteSettingsCategory.Type.AUGMENTED_REALITY);

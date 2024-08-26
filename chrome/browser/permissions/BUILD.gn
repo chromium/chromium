@@ -4,6 +4,7 @@
 
 import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -131,6 +132,10 @@ source_set("permissions") {
       "//components/messages/android:feature_flags",
       "//ui/android",
     ]
+
+    if (enable_openxr) {
+      deps += [ "//device/vr/public/cpp:features" ]
+    }
   }
   allow_circular_includes_from = []
 

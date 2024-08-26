@@ -76,6 +76,9 @@
     <message name="IDS_MESSAGE_MISSING_XR_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android scene understanding and hand tracking permission when a website has requested access to scene understanding and hand tracking, but Chrome is missing the Android scene understanding and hand tracking permission.">
       Allow an immersive experience?
     </message>
+    <message name="IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android hand tracking permission when a website has requested access to scene understanding and hand tracking, but Chrome is missing the Android scene understanding and hand tracking permission.">
+      Allow hand tracking?
+    </message>
     <message name="IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android storage access permission when a website has requested access to storage access, but Chrome is missing the Android storage access permission.">
       Allow storage access?
     </message>
