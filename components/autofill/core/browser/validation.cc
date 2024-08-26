@@ -40,21 +40,21 @@ bool IsValidCreditCardExpirationYear(int year, base::Time now) {
   return year >= now_exploded.year;
 }
 
-bool IsValidCreditCardSecurityCode(const std::u16string& code,
-                                   const std::string_view card_network,
+bool IsValidCreditCardSecurityCode(std::u16string_view code,
+                                   std::string_view card_network,
                                    CvcType cvc_type) {
   return code.length() == GetCvcLengthForCardNetwork(card_network, cvc_type) &&
          base::ContainsOnlyChars(code, u"0123456789");
 }
 
-bool IsValidEmailAddress(const std::u16string& text) {
+bool IsValidEmailAddress(std::u16string_view text) {
   // E-Mail pattern as defined by the WhatWG. (4.10.7.1.5 E-Mail state)
   static constexpr char16_t kEmailPattern[] =
       u"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
   return MatchesRegex<kEmailPattern>(text);
 }
 
-bool IsValidState(const std::u16string& text) {
+bool IsValidState(std::u16string_view text) {
   return !state_names::GetAbbreviationForName(text).empty() ||
          !state_names::GetNameForAbbreviation(text).empty();
 }
@@ -64,12 +64,12 @@ bool IsPossiblePhoneNumber(const std::u16string& text,
   return i18n::IsPossiblePhoneNumber(base::UTF16ToUTF8(text), country_code);
 }
 
-bool IsValidZip(const std::u16string& text) {
+bool IsValidZip(std::u16string_view text) {
   static constexpr char16_t kZipPattern[] = u"^\\d{5}(-\\d{4})?$";
   return MatchesRegex<kZipPattern>(text);
 }
 
-bool IsSSN(const std::u16string& text) {
+bool IsSSN(std::u16string_view text) {
   std::u16string number_string;
   base::RemoveChars(text, u"- ", &number_string);
 
@@ -129,7 +129,7 @@ bool IsSSN(const std::u16string& text) {
   return true;
 }
 
-size_t GetCvcLengthForCardNetwork(const std::string_view card_network,
+size_t GetCvcLengthForCardNetwork(std::string_view card_network,
                                   CvcType cvc_type) {
   if (card_network == kAmericanExpressCard &&
       cvc_type == CvcType::kRegularCvc) {
@@ -139,21 +139,21 @@ size_t GetCvcLengthForCardNetwork(const std::string_view card_network,
   return GENERAL_CVC_LENGTH;
 }
 
-bool IsUPIVirtualPaymentAddress(const std::u16string& value) {
+bool IsUPIVirtualPaymentAddress(std::u16string_view value) {
   return MatchesRegex<kUPIVirtualPaymentAddressRe>(value);
 }
 
-bool IsInternationalBankAccountNumber(const std::u16string& value) {
+bool IsInternationalBankAccountNumber(std::u16string_view value) {
   std::u16string no_spaces;
   base::RemoveChars(value, u" ", &no_spaces);
   return MatchesRegex<kInternationalBankAccountNumberValueRe>(no_spaces);
 }
 
-bool IsPlausibleCreditCardCVCNumber(const std::u16string& value) {
+bool IsPlausibleCreditCardCVCNumber(std::u16string_view value) {
   return MatchesRegex<kCreditCardCVCPattern>(value);
 }
 
-bool IsPlausible4DigitExpirationYear(const std::u16string& value) {
+bool IsPlausible4DigitExpirationYear(std::u16string_view value) {
   return MatchesRegex<kCreditCard4DigitExpYearPattern>(value);
 }
 }  // namespace autofill
