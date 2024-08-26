@@ -565,8 +565,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
           else if (overflow > LayoutUnit())
             has_under_annotation = true;
         }
-      } else if (RuntimeEnabledFeatures::RubyAnnotationSpaceFixEnabled() &&
-                 fragment && box && box->IsAtomicInlineLevel() &&
+      } else if (fragment && box && box->IsAtomicInlineLevel() &&
                  !box->IsInitialLetterBox()) {
         item_under = ComputeEmHeight(item).LineHeight();
       } else if (item.IsInlineBox()) {

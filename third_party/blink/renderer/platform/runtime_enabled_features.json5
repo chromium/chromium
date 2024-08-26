@@ -3648,11 +3648,6 @@
       status: "stable",
     },
     {
-      // crbug.com/336592423
-      name: "RubyAnnotationSpaceFix",
-      status: "stable",
-    },
-    {
       // crbug.com/324111880
       name: "RubyLineBreakable",
       status: "stable",
