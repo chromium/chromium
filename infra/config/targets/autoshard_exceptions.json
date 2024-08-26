@@ -711,6 +711,21 @@
                 },
                 "shards": 63
             },
+            "content_unittests": {
+                "debug": {
+                    "avg_num_builds_per_peak_hour": 101,
+                    "estimated_bot_hour_delta": 1.68,
+                    "prev_avg_pending_time_sec": 27.3,
+                    "prev_p50_pending_time_sec": 0.0,
+                    "prev_p90_pending_time_sec": 99.0,
+                    "prev_percentile_duration_minutes": 16.01,
+                    "prev_shard_count": 1,
+                    "simulated_max_shard_duration": 8.51,
+                    "test_overhead_min": 1.0,
+                    "try_builder": "linux_chromium_tsan_rel_ng"
+                },
+                "shards": 2
+            },
             "interactive_ui_tests": {
                 "debug": {
                     "avg_num_builds_per_peak_hour": 103,
