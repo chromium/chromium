@@ -122,7 +122,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/ash/browser_data_migration_error_dialog.h"
+#include "chrome/browser/ui/ash/browser_data_migration/browser_data_migration_error_dialog.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"

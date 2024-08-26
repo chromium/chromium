@@ -18,8 +18,6 @@ static_library("ash") {
     "arc_open_url_delegate_impl.h",
     "arc_vm_data_migration_confirmation_dialog.cc",
     "arc_vm_data_migration_confirmation_dialog.h",
-    "browser_data_migration_error_dialog.cc",
-    "browser_data_migration_error_dialog.h",
     "chrome_accelerator_prefs_delegate.cc",
     "chrome_accelerator_prefs_delegate.h",
     "chrome_accessibility_delegate.cc",

@@ -1,0 +1,8 @@
+include_rules = [
+  "-chrome",
+
+  "+chrome/browser/ui/ash/browser_data_migration",
+
+  "+chrome/browser/ui/simple_message_box.h",
+  "+chrome/grit",
+]
