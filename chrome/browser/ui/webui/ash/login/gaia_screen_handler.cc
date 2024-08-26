@@ -872,8 +872,7 @@ void GaiaScreenHandler::RecordCompleteAuthenticationMetrics(
   const bool is_enterprise_managed = g_browser_process->platform_part()
                                          ->browser_policy_connector_ash()
                                          ->IsDeviceEnterpriseManaged();
-  if (features::IsPasswordlessGaiaEnabledForConsumers() &&
-      !is_gaia_password_required_ && !is_enterprise_managed) {
+  if (!is_gaia_password_required_ && !is_enterprise_managed) {
     base::UmaHistogramBoolean(
         "OOBE.GaiaScreen.PasswordlessLoginRequests",
         signin_artifacts.password.value_or(std::string()).empty());
