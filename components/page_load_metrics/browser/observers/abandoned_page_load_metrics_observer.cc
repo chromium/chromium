@@ -66,7 +66,7 @@ const char kAbandonedPageLoadMetricsHistogramPrefix[] =
 const char kMilestoneToAbandon[] = "ToAbandon";
 const char kLastMilestoneBeforeAbandon[] = "LastMilestoneBeforeAbandon";
 const char kTimeToAbandonFromNavigationStart[] =
-    "TimeToAbandonFromNavigationStart";
+    "TimeToAbandonFromNavigationStart.";
 
 const char kAbandonReasonNewReloadNavigation[] = "NewReloadNavigation";
 const char kAbandonReasonNewHistoryNavigation[] = "NewHistoryNavigation";
