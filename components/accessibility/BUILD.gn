@@ -4,6 +4,10 @@
 
 import("//build/config/features.gni")
 
+# TODO(b/358211208): Re-enable when shared_library is properly used.
+# allow_internal = is_chrome_branded
+allow_internal = false
+
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
@@ -12,7 +16,7 @@ if (is_android) {
 source_set("reading") {
   sources = [ "reading/distillable_pages.h" ]
 
-  if (is_chrome_branded) {
+  if (allow_internal) {
     sources += [ "internal/reading/distillable_pages.cc" ]
   } else {
     sources += [ "reading/distillable_pages.cc" ]
