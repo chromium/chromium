@@ -168,43 +168,8 @@ void OrderChildWindow(NSWindow* child_window,
 }
 @end
 
-@implementation NativeWidgetMacNSWindowBorderlessFrame {
- @private
-  base::debug::StackTrace _initStackTrace;
-  NSUInteger _initStyleMask;
-}
+@implementation NativeWidgetMacNSWindowBorderlessFrame
 
-// TODO(crbug.com/348713769): remove after debug.
-- (instancetype)initWithFrame:(NSRect)frame
-                    styleMask:(NSUInteger)styleMask
-                        owner:(id)owner {
-  _initStackTrace = base::debug::StackTrace();
-  _initStyleMask = styleMask;
-  return [super initWithFrame:frame styleMask:styleMask owner:owner];
-}
-- (void)_surrenderToolbarViewForFullScreenWindow {
-  static crash_reporter::CrashKeyString<1024> initStackTraceKey(
-      "NativeWidgetMacNSWindowBorderlessFrame_initStackTrace");
-  static crash_reporter::CrashKeyString<11> initStyleMaskKey(
-      "NativeWidgetMacNSWindowBorderlessFrame_initStyleMask");
-  static crash_reporter::CrashKeyString<11> currentStyleMaskKey(
-      "NativeWidgetMacNSWindowBorderlessFrame_currentStyleMask");
-  static crash_reporter::CrashKeyString<11> collectionBehaviorKey(
-      "NativeWidgetMacNSWindowBorderlessFrame_collectionBehavior");
-  static crash_reporter::CrashKeyString<1024> windowDebugDescriptionKey(
-      "NativeWidgetMacNSWindowBorderlessFrame_windowDebugDescription");
-  static crash_reporter::CrashKeyString<5> initHasParentWindowKey(
-      "NativeWidgetMacNSWindowBorderlessFrame_hasParentWindow");
-  crash_reporter::SetCrashKeyStringToStackTrace(&initStackTraceKey,
-                                                _initStackTrace);
-  initStyleMaskKey.Set(base::NumberToString(_initStyleMask));
-  currentStyleMaskKey.Set(base::NumberToString(self.window.styleMask));
-  collectionBehaviorKey.Set(
-      base::NumberToString(self.window.collectionBehavior));
-  windowDebugDescriptionKey.Set(self.window.debugDescription.UTF8String);
-  initHasParentWindowKey.Set(self.window.parentWindow ? "true" : "false");
-  NOTREACHED();
-}
 - (void)mouseDown:(NSEvent*)event {
   [self cr_mouseDownOnFrameView:event];
   [super mouseDown:event];
