@@ -417,8 +417,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
   EXPECT_EQ(close_button->GetTooltipText(), u"");
 }
 
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // TODO(crbug.com/361780162): This test has been flaky on Windows ASan testers.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_CaptionButtonHitTest DISABLED_CaptionButtonHitTest
 #else
 #define MAYBE_CaptionButtonHitTest CaptionButtonHitTest
