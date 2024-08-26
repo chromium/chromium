@@ -403,6 +403,16 @@ MATCHER_P(SourceRegistrationIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.registration(), result_listener);
 }
 
+MATCHER_P(RegistrationAttributionScopesDataIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.registration().attribution_scopes_data,
+                            result_listener);
+}
+
+MATCHER_P(RegistrationSourceEventIdIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.registration().source_event_id,
+                            result_listener);
+}
+
 MATCHER_P(SourceEventIdIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.source_event_id(), result_listener);
 }

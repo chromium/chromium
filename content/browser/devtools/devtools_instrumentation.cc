@@ -213,6 +213,10 @@ BuildAttributionReportingIssueViolationType(
     case blink::mojom::AttributionReportingIssueType::
         kNoRegisterOsTriggerHeader:
       return AttributionReportingIssueTypeEnum::NoRegisterOsTriggerHeader;
+    case blink::mojom::AttributionReportingIssueType::
+        kNavigationRegistrationUniqueScopeAlreadySet:
+      return AttributionReportingIssueTypeEnum::
+          NavigationRegistrationUniqueScopeAlreadySet;
   }
 }
 

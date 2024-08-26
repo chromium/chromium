@@ -1,0 +1,12 @@
+Test that registering two sources with different scopes in the same navigation triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : {"limit":3,"max_event_states":10,"values":["2"]}
+            request : <object>
+            violationType : NavigationRegistrationUniqueScopeAlreadySet
+        }
+    }
+}
+

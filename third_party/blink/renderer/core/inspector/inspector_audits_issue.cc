@@ -247,6 +247,10 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kNoRegisterOsTriggerHeader:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           NoRegisterOsTriggerHeader;
+    case AttributionReportingIssueType::
+        kNavigationRegistrationUniqueScopeAlreadySet:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          NavigationRegistrationUniqueScopeAlreadySet;
   }
 }
 

@@ -784,6 +784,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.NavigationSourceRegistrationsWithScopesAllowed"
+    enum="Boolean" expires_after="2024-12-08">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many parsable navigation source registrations containing
+    attribution scopes were accepted or rejected. A `false` outcome in this case
+    is fired if a previous successful source registration within the same
+    navigation contained a different set of attribution scopes. Records
+    immediately after the source registration is successfully parsed.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.NavigationUnexpectedRegistration"
     enum="ConversionNavigationUnexpectedRegistration"
     expires_after="2025-02-02">

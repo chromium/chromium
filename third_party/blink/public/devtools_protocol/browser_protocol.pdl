@@ -743,6 +743,7 @@ experimental domain Audits
       NoRegisterTriggerHeader
       NoRegisterOsSourceHeader
       NoRegisterOsTriggerHeader
+      NavigationRegistrationUniqueScopeAlreadySet
 
   type SharedDictionaryError extends string
     enum

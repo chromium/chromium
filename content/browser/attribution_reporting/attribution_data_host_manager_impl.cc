@@ -33,6 +33,8 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/data_host.mojom.h"
 #include "components/attribution_reporting/features.h"
@@ -57,6 +59,7 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-shared.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -197,6 +200,11 @@ enum class BackgroundNavigationOutcome {
 void RecordBackgroundNavigationOutcome(BackgroundNavigationOutcome outcome) {
   base::UmaHistogramEnumeration("Conversions.BackgroundNavigation.Outcome",
                                 outcome);
+}
+
+void RecordSourceRegistrationWithScopesOutcome(bool allowed) {
+  base::UmaHistogramBoolean(
+      "Conversions.NavigationSourceRegistrationsWithScopesAllowed", allowed);
 }
 
 bool BackgroundRegistrationsEnabled() {
@@ -1051,6 +1059,12 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
   std::vector<attribution_reporting::OsRegistrationItem> registrations_;
 };
 
+struct AttributionDataHostManagerImpl::
+    ScopesAndCountForReportingOriginPerNavigation {
+  int count = 0;
+  attribution_reporting::AttributionScopesSet scopes;
+};
+
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
     AttributionManager* attribution_manager)
     : attribution_manager_(
@@ -1765,8 +1779,11 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   RecordRegistrationMethod(
       context->GetRegistrationMethod(was_fetched_via_service_worker));
 
-  if (navigation_id.has_value()) {
-    AddNavigationSourceRegistrationToBatchMap(*navigation_id, reporting_origin);
+  if (navigation_id.has_value() &&
+      !AddNavigationSourceRegistrationToBatchMap(
+          *navigation_id, reporting_origin, data, context->render_frame_id(),
+          context->devtools_request_id())) {
+    return;
   }
   attribution_manager_->HandleSource(
       StorableSource(std::move(reporting_origin), std::move(data),
@@ -1979,18 +1996,21 @@ void AttributionDataHostManagerImpl::HandleParsedWebSource(
                      attribution_reporting::SourceRegistration::Parse(
                          *std::move(result), source_type));
 
-    if (auto navigation_id = registrations.navigation_id()) {
-      AddNavigationSourceRegistrationToBatchMap(
-          *navigation_id, pending_decode.reporting_origin);
-    }
-
     return StorableSource(std::move(pending_decode.reporting_origin),
                           std::move(registration),
                           registrations.context_origin(), source_type,
                           registrations.is_within_fenced_frame());
   }();
-
   if (source.has_value()) {
+    if (auto navigation_id = registrations.navigation_id();
+        navigation_id.has_value() &&
+        !AddNavigationSourceRegistrationToBatchMap(
+            *navigation_id, source->common_info().reporting_origin(),
+            source->registration(), registrations.render_frame_id(),
+            registrations.devtools_request_id())) {
+      return;
+    }
+
     RecordRegistrationMethod(registrations.context().GetRegistrationMethod(
         /*was_fetched_via_service_worker=*/false));
     attribution_manager_->HandleSource(*std::move(source),
@@ -2228,28 +2248,56 @@ void AttributionDataHostManagerImpl::MaybeDoneWithNavigation(
   ClearRegistrationsDeferUntilNavigation(navigation_id);
 }
 
-void AttributionDataHostManagerImpl::AddNavigationSourceRegistrationToBatchMap(
+bool AttributionDataHostManagerImpl::AddNavigationSourceRegistrationToBatchMap(
     int64_t navigation_id,
-    const SuitableOrigin& reporting_origin) {
-  auto [it, inserted] = registrations_per_navigation_.try_emplace(
-      navigation_id, base::flat_map<SuitableOrigin, int>());
-  auto [it_inner, inserted_inner] = it->second.try_emplace(reporting_origin, 0);
-  it_inner->second++;
+    const SuitableOrigin& reporting_origin,
+    const attribution_reporting::SourceRegistration& reg,
+    const GlobalRenderFrameHostId& render_frame_id,
+    const std::optional<std::string>& devtools_request_id) {
+  const auto& scopes_data = reg.attribution_scopes_data;
+  auto [it, inserted] =
+      registrations_count_and_set_scopes_per_navigation_.try_emplace(
+          navigation_id,
+          base::flat_map<SuitableOrigin,
+                         ScopesAndCountForReportingOriginPerNavigation>());
+  auto [it_inner, inserted_inner] = it->second.try_emplace(
+      reporting_origin, ScopesAndCountForReportingOriginPerNavigation());
+  it_inner->second.count++;
+  if (!scopes_data.has_value()) {
+    return true;
+  } else if (it_inner->second.scopes == scopes_data->attribution_scopes_set()) {
+    RecordSourceRegistrationWithScopesOutcome(true);
+    return true;
+  } else if (it_inner->second.scopes.scopes().empty()) {
+    it_inner->second.scopes = scopes_data->attribution_scopes_set();
+    RecordSourceRegistrationWithScopesOutcome(true);
+    return true;
+  } else {
+    MaybeLogAuditIssue(
+        render_frame_id,
+        /*request_url=*/reporting_origin->GetURL(), devtools_request_id,
+        /*invalid_parameter=*/SerializeAttributionJson(scopes_data->ToJson()),
+        AttributionReportingIssueType::
+            kNavigationRegistrationUniqueScopeAlreadySet);
+    RecordSourceRegistrationWithScopesOutcome(false);
+    return false;
+  }
 }
 
 void AttributionDataHostManagerImpl::ClearRegistrationsForNavigationBatch(
     int64_t navigation_id) {
-  auto it = registrations_per_navigation_.find(navigation_id);
-  if (it == registrations_per_navigation_.end()) {
+  auto it =
+      registrations_count_and_set_scopes_per_navigation_.find(navigation_id);
+  if (it == registrations_count_and_set_scopes_per_navigation_.end()) {
     return;
   }
 
-  for (const auto& [_, count] : it->second) {
+  for (const auto& [_, object] : it->second) {
     base::UmaHistogramExactLinear(
         "Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch",
-        count, /*exclusive_max=*/50);
+        object.count, /*exclusive_max=*/50);
   }
-  registrations_per_navigation_.erase(it);
+  registrations_count_and_set_scopes_per_navigation_.erase(it);
 }
 
 void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(
