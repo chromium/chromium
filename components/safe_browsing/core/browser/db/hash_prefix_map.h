@@ -141,33 +141,6 @@ class HashPrefixMap {
           prefix_sets) = 0;
 };
 
-// An in-memory implementation of HashPrefixMap.
-class InMemoryHashPrefixMap : public HashPrefixMap {
- public:
-  InMemoryHashPrefixMap();
-  ~InMemoryHashPrefixMap() override;
-
-  // HashPrefixMap implementation:
-  void Clear() override;
-  HashPrefixMapView view() const override;
-  HashPrefixesView at(PrefixSize size) const override;
-  void Append(PrefixSize size, HashPrefixesView prefix) override;
-  void Reserve(PrefixSize size, size_t capacity) override;
-  ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
-  std::unique_ptr<WriteSession> WriteToDisk(
-      V4StoreFileFormat* file_format) override;
-  ApplyUpdateResult IsValid() const override;
-  HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash) override;
-  MigrateResult MigrateFileFormat(const base::FilePath& store_path,
-                                  V4StoreFileFormat* file_format) override;
-  void GetPrefixInfo(google::protobuf::RepeatedPtrField<
-                     DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
-                         prefix_sets) override;
-
- private:
-  std::unordered_map<PrefixSize, HashPrefixes> map_;
-};
-
 // A HashPrefixMap which will write separate files for hash prefix lists of each
 // prefix size. These will be mapped into memory on initialization.
 class MmapHashPrefixMap : public HashPrefixMap {

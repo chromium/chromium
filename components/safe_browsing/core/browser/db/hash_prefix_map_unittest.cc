@@ -444,70 +444,9 @@ TEST_F(HashPrefixMapTest, NoOffsetMap) {
             HashPrefixMap::MigrateResult::kNotNeeded);
 }
 
-// A test fixture for running tests against all supported HashPrefixMap
-// implementations.
-template <typename T>
-class HashPrefixMapTypedTest : public ::testing::Test {
- protected:
-  void SetUp() override {
-    ASSERT_TRUE(hash_prefix_map_ = CreateHashPrefixMap());
-  }
-
-  HashPrefixMap& hash_prefix_map() { return *hash_prefix_map_; }
-
- private:
-  // Returns a new HashPrefixMap of the type under test, or nullptr in case of
-  // error. In the latter case, the test will have a non-fatal failure.
-  std::unique_ptr<HashPrefixMap> CreateHashPrefixMap();
-
-  std::optional<base::ScopedTempDir> temp_dir_;
-  std::unique_ptr<HashPrefixMap> hash_prefix_map_;
-  base::test::SingleThreadTaskEnvironment task_env_;
-};
-
-template <>
-std::unique_ptr<HashPrefixMap>
-HashPrefixMapTypedTest<InMemoryHashPrefixMap>::CreateHashPrefixMap() {
-  return std::make_unique<InMemoryHashPrefixMap>();
-}
-
-template <>
-std::unique_ptr<HashPrefixMap>
-HashPrefixMapTypedTest<MmapHashPrefixMap>::CreateHashPrefixMap() {
-  // HashPrefixMap needs to write files to disk, so create a temp directory and
-  // point the instance at it.
-  if (!temp_dir_) {
-    temp_dir_.emplace();
-    EXPECT_TRUE(temp_dir_->CreateUniqueTempDir());
-  }
-  return temp_dir_->IsValid() ? std::make_unique<MmapHashPrefixMap>(
-                                    temp_dir_->GetPath().AppendASCII("Test"))
-                              : nullptr;
-}
-
-using HashPrefixMapTypes =
-    ::testing::Types<InMemoryHashPrefixMap, MmapHashPrefixMap>;
-
-class HashPrefixTypeNames {
- public:
-  template <typename T>
-  static std::string GetName(int i) {
-    if (std::is_same<T, InMemoryHashPrefixMap>::value) {
-      return "InMemoryHashPrefixMap";
-    }
-    if (std::is_same<T, MmapHashPrefixMap>::value) {
-      return "MmapHashPrefixMap";
-    }
-  }
-};
-
-TYPED_TEST_SUITE(HashPrefixMapTypedTest,
-                 HashPrefixMapTypes,
-                 HashPrefixTypeNames);
-
 // Tests that the data in a map is still valid after writing it.
-TYPED_TEST(HashPrefixMapTypedTest, ValidAfterWrite) {
-  auto& hash_prefix_map = this->hash_prefix_map();
+TEST_F(HashPrefixMapTest, ValidAfterWrite) {
+  MmapHashPrefixMap hash_prefix_map(GetBasePath());
   hash_prefix_map.Append(4, "fooo");
 
   V4StoreFileFormat file_format;
