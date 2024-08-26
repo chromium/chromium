@@ -144,6 +144,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
     source->AddBoolean("HelpAppAutoTriggerInstallDialog",
                        base::FeatureList::IsEnabled(
                            features::kHelpAppAutoTriggerInstallDialog));
+    source->AddBoolean(
+        "HelpAppOnboardingRevamp",
+        base::FeatureList::IsEnabled(ash::features::kHelpAppOnboardingRevamp));
     // Only use the action URL if the install URI is enabled.
     // TODO(b/346687914): Clean up flag in Showoff code.
     source->AddBoolean("UseActionUrl", true);

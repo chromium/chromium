@@ -1540,6 +1540,11 @@ BASE_FEATURE(kHelpAppLauncherSearch,
              "HelpAppLauncherSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables a new onboarding experience in the Help App.
+BASE_FEATURE(kHelpAppOnboardingRevamp,
+             "HelpAppOnboardingRevamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables opening the Help App's What's New page immediately instead of showing
 // a notification to open the help app.
 BASE_FEATURE(kHelpAppOpensInsteadOfReleaseNotesNotification,

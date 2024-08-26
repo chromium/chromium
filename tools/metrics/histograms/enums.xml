@@ -16195,6 +16195,7 @@ from previous Chrome versions.
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
   <int value="-1825184776" label="TangibleSync:disabled"/>
+  <int value="-1824647193" label="HelpAppOnboardingRevamp:disabled"/>
   <int value="-1824540307" label="NotificationWidthIncrease:enabled"/>
   <int value="-1824539611" label="U2fPermissionPrompt:disabled"/>
   <int value="-1824166290"
@@ -21709,6 +21710,7 @@ from previous Chrome versions.
   <int value="482577697" label="PdfOcr:enabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
   <int value="483173979" label="SecurePaymentConfirmationExtensions:disabled"/>
+  <int value="483473934" label="HelpAppOnboardingRevamp:enabled"/>
   <int value="483629979" label="AccessibilityExtraLargeCursor:enabled"/>
   <int value="484581911" label="ServiceWorkerSubresourceFilter:disabled"/>
   <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>

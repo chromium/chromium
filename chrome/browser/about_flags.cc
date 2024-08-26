@@ -8525,6 +8525,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"help-app-launcher-search", flag_descriptions::kHelpAppLauncherSearchName,
      flag_descriptions::kHelpAppLauncherSearchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHelpAppLauncherSearch)},
+    {"help-app-onboarding-revamp",
+     flag_descriptions::kHelpAppOnboardingRevampName,
+     flag_descriptions::kHelpAppOnboardingRevampDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kHelpAppOnboardingRevamp)},
     {"help-app-opens-instead-of-release-notes-notification",
      flag_descriptions::kHelpAppOpensInsteadOfReleaseNotesNotificationName,
      flag_descriptions::

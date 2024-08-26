@@ -4086,6 +4086,9 @@ extern const char kHelpAppHomePageAppArticlesDescription[];
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 
+extern const char kHelpAppOnboardingRevampName[];
+extern const char kHelpAppOnboardingRevampDescription[];
+
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationName[];
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[];
 

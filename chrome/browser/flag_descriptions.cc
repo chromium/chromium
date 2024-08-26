@@ -7071,6 +7071,10 @@ const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";
 
+const char kHelpAppOnboardingRevampName[] = "Help App onboarding revamp";
+const char kHelpAppOnboardingRevampDescription[] =
+    "Enables a new onboarding flow in the Help App";
+
 const char kHelpAppOpensInsteadOfReleaseNotesNotificationName[] =
     "Help App opens instead of release notes notification";
 const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[] =
