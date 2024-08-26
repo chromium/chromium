@@ -102,7 +102,7 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
            // Binder.
            kBinderWriteRead32, kBinderWriteRead64, BINDER_SET_MAX_THREADS,
            BINDER_THREAD_EXIT, BINDER_VERSION,
-           BINDER_ENABLE_ONEWAY_SPAM_DETECTION,
+           BINDER_ENABLE_ONEWAY_SPAM_DETECTION, BINDER_GET_EXTENDED_ERROR,
            // incfs read ops.
            INCFS_IOC_READ_FILE_SIGNATURE, INCFS_IOC_GET_FILLED_BLOCKS,
            INCFS_IOC_GET_READ_TIMEOUTS, INCFS_IOC_GET_LAST_READ_ERROR,
