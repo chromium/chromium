@@ -2895,7 +2895,7 @@ config("symbols") {
     configs += [ "//build/config:compress_debug_sections" ]
   }
 
-  if (is_clang && !is_nacl && !is_chromeos) {
+  if (is_clang && !is_nacl && target_os != "chromeos") {
     # Remove unreferenced methods to reduce type info in symbols.
     # See: https://github.com/llvm/llvm-project/pull/87018.
     cflags += [ "-gomit-unreferenced-methods" ]
