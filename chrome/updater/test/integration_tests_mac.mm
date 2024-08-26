@@ -719,4 +719,39 @@ void ExpectCRURegistrationCannotRegister(const std::string& app_id,
   }
 }
 
+std::optional<base::FilePath> GetRegistrationTestAppPath() {
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
+    return std::nullopt;
+  }
+  const base::FilePath test_app_path =
+      exe_path.AppendASCII("registration_test_app_bundle.app/Contents/MacOS/"
+                           "registration_test_app_bundle");
+  if (test_app_path.empty() || !base::PathExists(test_app_path)) {
+    return std::nullopt;
+  }
+  return test_app_path;
+}
+
+void ExpectRegistrationTestAppSuccess(const std::string& arg) {
+  std::optional<base::FilePath> test_app_path = GetRegistrationTestAppPath();
+  ASSERT_TRUE(test_app_path);
+  base::CommandLine command_line(*test_app_path);
+  command_line.AppendArg(arg);
+
+  ExpectCliResult(command_line, false, {}, 0);
+}
+
+void ExpectRegistrationTestAppUserUpdaterInstallSuccess() {
+  ExpectRegistrationTestAppSuccess("--install");
+}
+
+void ExpectRegistrationTestAppRegisterSuccess() {
+  ExpectRegistrationTestAppSuccess("--register");
+}
+
+void ExpectRegistrationTestAppInstallAndRegisterSuccess() {
+  ExpectRegistrationTestAppSuccess("--install_and_register");
+}
+
 }  // namespace updater::test

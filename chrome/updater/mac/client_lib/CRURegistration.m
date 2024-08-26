@@ -326,16 +326,35 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
   ];
   registerItem.resultCallback =
       ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
-        dispatch_async(self->_parentQueue, ^{
           if (reply) {
-            reply([self wrapError:gotFailure
-                       withStdout:gotStdout
-                        andStderr:gotStderr]);
+            dispatch_async(self->_parentQueue, ^{
+              reply([self wrapError:gotFailure
+                         withStdout:gotStdout
+                          andStderr:gotStderr]);
+            });
           }
-        });
       };
 
   [self addWorkItems:@[ registerItem ]];
+}
+
+- (void)installUpdaterWithReply:(void (^)(NSError* _Nullable))reply {
+  CRURegistrationWorkItem* installItem = [[CRURegistrationWorkItem alloc] init];
+  installItem.binPathCallback = ^{
+    return [self syncBundledHelperPath];
+  };
+  installItem.args = @[ @"--install" ];
+  installItem.resultCallback =
+      ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
+        if (reply) {
+          dispatch_async(self->_parentQueue, ^{
+            reply([self wrapError:gotFailure
+                       withStdout:gotStdout
+                        andStderr:gotStderr]);
+          });
+        }
+      };
+  [self addWorkItems:@[ installItem ]];
 }
 
 #pragma mark - CRURegistration private methods
@@ -376,6 +395,30 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
         });
         [self syncMaybeStartMoreWork];
       }];
+}
+
+- (NSURL*)syncBundledHelperPath {
+  NSURL* bundleURL = NSBundle.mainBundle.bundleURL;
+  NSString* helperPathInBundle = [NSString
+      stringWithFormat:@"Contents/Helpers/%1$s.app/Contents/MacOS/%1$s",
+                       PRODUCT_FULLNAME_STRING];
+  NSURL* helperURL = [bundleURL URLByAppendingPathComponent:helperPathInBundle
+                                                isDirectory:NO];
+  NSFileManager* fm = [NSFileManager defaultManager];
+  if ([fm isExecutableFileAtPath:helperURL.path]) {
+    return helperURL;
+  }
+  // Look for a test updater bundle instead.
+  helperPathInBundle =
+      [NSString stringWithFormat:
+                    @"Contents/Helpers/%1$s_test.app/Contents/MacOS/%1$s_test",
+                    PRODUCT_FULLNAME_STRING];
+  helperURL = [bundleURL URLByAppendingPathComponent:helperPathInBundle
+                                         isDirectory:NO];
+  if ([fm isExecutableFileAtPath:helperURL.path]) {
+    return helperURL;
+  }
+  return nil;
 }
 
 @end

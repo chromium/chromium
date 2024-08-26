@@ -181,6 +181,19 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
 - (void)fetchTagWithReply:(void (^)(NSString* _Nullable,
                                     NSError* _Nullable))reply;
 
+/**
+ * Asynchronously install the updater, as the current user.
+ *
+ * `reply` will be dispatched to the target queue when installation has
+ * completed or failed. If the installation is skipped because there is already
+ * an updater present at the same or higher version, it is considered to have
+ * completed successfully.
+ *
+ * If installation succeeds (or is skipped), the `NSError*` argument to `reply`
+ * will be nil. If it fails, the argument will contain a descriptive error.
+ */
+- (void)installUpdaterWithReply:(void (^_Nullable)(NSError* _Nullable))reply;
+
 @end
 
 NS_ASSUME_NONNULL_END
