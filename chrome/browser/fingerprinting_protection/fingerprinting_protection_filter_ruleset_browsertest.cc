@@ -108,4 +108,30 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(service->GetRulesetDealer(), nullptr);
 }
 
+class
+    FingerprintingProtectionFilterRulesetBrowserTestFingerprintingProtectionEnabledDryRun
+    : public FingerprintingProtectionFilterBrowserTest {
+ public:
+  FingerprintingProtectionFilterRulesetBrowserTestFingerprintingProtectionEnabledDryRun() {
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{features::kEnableFingerprintingProtectionFilter,
+            {{"activation_level", "dry_run"}}}},
+          /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    FingerprintingProtectionFilterRulesetBrowserTestFingerprintingProtectionEnabledDryRun,
+    RulesetServiceCreated) {
+  // Ruleset still gets created in Dry Run mode
+  subresource_filter::RulesetService* service =
+      g_browser_process->fingerprinting_protection_ruleset_service();
+  ASSERT_NE(service, nullptr);
+  EXPECT_NE(service->GetRulesetDealer(), nullptr);
+}
+
 }  // namespace fingerprinting_protection_filter
