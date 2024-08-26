@@ -9414,15 +9414,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCbdTimeframeRequired)},
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
-    {"policy-indication-for-managed-default-search",
-     flag_descriptions::kPolicyIndicationForManagedDefaultSearchName,
-     flag_descriptions::kPolicyIndicationForManagedDefaultSearchDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kPolicyIndicationForManagedDefaultSearch)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"privacy-guide-android-3", flag_descriptions::kPrivacyGuideAndroid3Name,
      flag_descriptions::kPrivacyGuideAndroid3Description, kOsAndroid,

@@ -7096,11 +7096,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "policy-indication-for-managed-default-search",
-    "owners": [ "ftirelo@chromium.org", "pastarmovj@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "power-bookmark-backend",
     "owners": [ "wylieb@chromium.org", "skym@chromium.org" ],
     "expiry_milestone": 125

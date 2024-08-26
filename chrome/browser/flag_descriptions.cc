@@ -3099,15 +3099,6 @@ const char kCbdTimeframeRequiredDescription[] =
     "in the clear browsing data dialog. It also adds a new 'Last 15 minutes' "
     "value to the list.";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
-const char kPolicyIndicationForManagedDefaultSearchName[] =
-    "Enable policy indication for managed Default Search provider";
-const char kPolicyIndicationForManagedDefaultSearchDescription[] =
-    "Modify the UI for Default Search Provider set by policy to be consistent "
-    "with the UI used for managed site search";
-#endif
-
 const char kPriceChangeModuleName[] = "Price Change Module";
 const char kPriceChangeModuleDescription[] =
     "Show a module with price drops of open tabs on new tab page.";

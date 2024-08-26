@@ -115,33 +115,12 @@ class KeywordEditorControllerNoWebDataTest
 };
 
 class KeywordEditorControllerManagedDSPTest
-    : public KeywordEditorControllerTest,
-      public testing::WithParamInterface<bool> {
+    : public KeywordEditorControllerTest {
  public:
-  KeywordEditorControllerManagedDSPTest() : KeywordEditorControllerTest(false) {
-    feature_list_.InitWithFeatureState(
-        omnibox::kPolicyIndicationForManagedDefaultSearch,
-        IsPolicyIndicationForManagedDefaultSearchEnabled());
-  }
-  ~KeywordEditorControllerManagedDSPTest() = default;
-
-  bool IsPolicyIndicationForManagedDefaultSearchEnabled() const {
-    return GetParam();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  KeywordEditorControllerManagedDSPTest()
+      : KeywordEditorControllerTest(false) {}
+  ~KeywordEditorControllerManagedDSPTest() override = default;
 };
-
-std::string ParamToTestSuffix(const ::testing::TestParamInfo<bool>& info) {
-  return info.param ? "DSPPolicyIndicationEnabled"
-                    : "DSPPolicyIndicationDisabled";
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         KeywordEditorControllerManagedDSPTest,
-                         ::testing::Bool(),
-                         &ParamToTestSuffix);
 
 // Tests adding a TemplateURL.
 TEST_F(KeywordEditorControllerTest, Add) {
@@ -201,7 +180,7 @@ TEST_F(KeywordEditorControllerTest, MakeDefault) {
 
 // Tests that a TemplateURL can't be made the default if the default search
 // provider is managed via policy.
-TEST_P(KeywordEditorControllerManagedDSPTest, CannotSetDefaultWhileManaged) {
+TEST_F(KeywordEditorControllerManagedDSPTest, CannotSetDefaultWhileManaged) {
   controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
   controller()->AddTemplateURL(kA1, kB1, "http://d{searchTerms}");
   ClearChangeCount();
@@ -222,14 +201,13 @@ TEST_P(KeywordEditorControllerManagedDSPTest, CannotSetDefaultWhileManaged) {
   EXPECT_FALSE(controller()->CanMakeDefault(turl1));
   EXPECT_FALSE(controller()->IsManaged(turl1));
   EXPECT_FALSE(controller()->CanMakeDefault(turl2));
-  EXPECT_EQ(
-      controller()->IsManaged(util()->model()->GetDefaultSearchProvider()),
-      IsPolicyIndicationForManagedDefaultSearchEnabled());
+  EXPECT_TRUE(
+      controller()->IsManaged(util()->model()->GetDefaultSearchProvider()));
 }
 
 // Tests that a TemplateURL can be made the default if the default search
 // provider is recommended via policy.
-TEST_P(KeywordEditorControllerManagedDSPTest, SetDefaultWhileRecommended) {
+TEST_F(KeywordEditorControllerManagedDSPTest, SetDefaultWhileRecommended) {
   controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
   ClearChangeCount();
   const TemplateURL* turl1 = util()->model()->GetTemplateURLForKeyword(kB);
@@ -265,7 +243,7 @@ TEST_P(KeywordEditorControllerManagedDSPTest, SetDefaultWhileRecommended) {
 
 // Tests that a recomended search provider does not persist when a different
 // recommended provider is applied via policy.
-TEST_P(KeywordEditorControllerManagedDSPTest, UpdateRecommended) {
+TEST_F(KeywordEditorControllerManagedDSPTest, UpdateRecommended) {
   // Simulate setting a recommended default provider.
   SimulateDefaultSearchIsManaged("url1", /*is_mandatory=*/false);
   EXPECT_EQ(kManaged,
@@ -289,7 +267,7 @@ TEST_P(KeywordEditorControllerManagedDSPTest, UpdateRecommended) {
 
 // Tests that a recomended search provider does not persist when a managed
 // provider is applied via policy.
-TEST_P(KeywordEditorControllerManagedDSPTest, SetManagedWhileRecommended) {
+TEST_F(KeywordEditorControllerManagedDSPTest, SetManagedWhileRecommended) {
   // Simulate setting a recommended default provider.
   SimulateDefaultSearchIsManaged("url1", /*is_mandatory=*/false);
   EXPECT_EQ(kManaged,
@@ -306,15 +284,14 @@ TEST_P(KeywordEditorControllerManagedDSPTest, SetManagedWhileRecommended) {
   EXPECT_TRUE(util()->model()->is_default_search_managed());
   EXPECT_TRUE(
       util()->model()->GetDefaultSearchProvider()->enforced_by_policy());
-  EXPECT_EQ(
-      controller()->IsManaged(util()->model()->GetDefaultSearchProvider()),
-      IsPolicyIndicationForManagedDefaultSearchEnabled());
+  EXPECT_TRUE(
+      controller()->IsManaged(util()->model()->GetDefaultSearchProvider()));
   EXPECT_EQ(original_size, util()->model()->GetTemplateURLs().size());
 }
 
 // Tests that a TemplateURL can't be edited if it is the managed default search
 // provider.
-TEST_P(KeywordEditorControllerManagedDSPTest, EditManagedDefault) {
+TEST_F(KeywordEditorControllerManagedDSPTest, EditManagedDefault) {
   controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
   controller()->AddTemplateURL(kA1, kB1, "http://d{searchTerms}");
   ClearChangeCount();
@@ -335,14 +312,13 @@ TEST_P(KeywordEditorControllerManagedDSPTest, EditManagedDefault) {
   EXPECT_TRUE(controller()->CanEdit(turl2));
   EXPECT_FALSE(
       controller()->CanEdit(util()->model()->GetDefaultSearchProvider()));
-  EXPECT_EQ(
-      controller()->IsManaged(util()->model()->GetDefaultSearchProvider()),
-      IsPolicyIndicationForManagedDefaultSearchEnabled());
+  EXPECT_TRUE(
+      controller()->IsManaged(util()->model()->GetDefaultSearchProvider()));
 }
 
 // Tests that a `TemplateURL` can be edited if it is the recommended default
 // search provider.
-TEST_P(KeywordEditorControllerManagedDSPTest, EditRecommendedDefault) {
+TEST_F(KeywordEditorControllerManagedDSPTest, EditRecommendedDefault) {
   controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
   controller()->AddTemplateURL(kA1, kB1, "http://d{searchTerms}");
   ClearChangeCount();
