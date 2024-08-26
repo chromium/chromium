@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
@@ -63,12 +64,21 @@ TEST_F(V4StorePerftest, StressTest) {
     prefixes.push_back(full_hashes.substr(index, kMinHashPrefixLength));
   }
 
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath store_path =
+      temp_dir.GetPath().AppendASCII("V4StoreTest.store");
+
+  auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   auto store = std::make_unique<V4Store>(
-      base::MakeRefCounted<base::TestSimpleTaskRunner>(), base::FilePath(),
-      std::make_unique<InMemoryHashPrefixMap>());
+      task_runner, store_path,
+      std::make_unique<MmapHashPrefixMap>(store_path, task_runner));
   std::sort(prefixes.begin(), prefixes.end());
   store->hash_prefix_map_->Clear();
   store->hash_prefix_map_->Append(kMinHashPrefixLength, base::StrCat(prefixes));
+
+  V4StoreFileFormat file_format;
+  ASSERT_EQ(WRITE_SUCCESS, store->WriteToDisk(&file_format));
 
   size_t matches = 0;
   auto reporter = SetUpV4StoreReporter("stress_test");
