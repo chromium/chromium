@@ -4389,10 +4389,6 @@
       status: "experimental",
     },
     {
-      name: "URLPatternHasRegExpGroups",
-      status: "stable",
-    },
-    {
       name: "URLPatternWildcardMoreOften",
       status: "stable",
     },
