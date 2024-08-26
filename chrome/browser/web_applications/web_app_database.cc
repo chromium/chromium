@@ -1093,6 +1093,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                   << scope.possibly_invalid_spec();
       return nullptr;
     }
+
+    // WebApp::SetScope() takes care of removing the queries and fragments from
+    // the scope before storing it in memory.
     web_app->SetScope(scope);
   }
 
