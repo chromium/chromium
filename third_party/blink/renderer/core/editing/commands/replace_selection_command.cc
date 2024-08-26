@@ -2089,6 +2089,11 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
       !fragment.FirstChild()->IsTextNode())
     return false;
 
+  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled()) {
+    // Save the text to set event data for input events.
+    input_event_data_ = To<Text>(fragment.FirstChild())->data();
+  }
+
   // FIXME: Would be nice to handle smart replace in the fast path.
   if (smart_replace_ || fragment.HasInterchangeNewlineAtStart() ||
       fragment.HasInterchangeNewlineAtEnd())
@@ -2127,10 +2132,6 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
       return false;
   }
 
-  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled()) {
-    // Save the text to set event data for input events.
-    input_event_data_ = text_node->data();
-  }
 
   start_of_inserted_range_ = start;
   end_of_inserted_range_ = end;
