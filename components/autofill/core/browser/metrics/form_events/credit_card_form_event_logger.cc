@@ -337,12 +337,16 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, form);
       latest_filled_card_was_masked_server_card_ = true;
       break;
-    case CreditCard::RecordType::kFullServerCard:
-      Log(FORM_EVENT_SERVER_SUGGESTION_FILLED, form);
-      break;
     case CreditCard::RecordType::kVirtualCard:
       Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, form);
       break;
+    case CreditCard::RecordType::kFullServerCard:
+      // Full server cards are a temporary cached state that do not exist as
+      // suggestions, and so should never be passed to this method. Even when a
+      // card is being re-filled in a page, the suggestion itself is a
+      // kMaskedServerCard and its corresponding kFullServerCard is looked up in
+      // a cache later in the fill.
+      NOTREACHED();
   }
 
   // Log if a standalone CVC field was filled with Autofill suggestion for a
@@ -406,10 +410,6 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
 
   if (!has_logged_form_filling_suggestion_filled_) {
     has_logged_form_filling_suggestion_filled_ = true;
-    logged_suggestion_filled_was_server_data_ =
-        record_type == CreditCard::RecordType::kMaskedServerCard ||
-        record_type == CreditCard::RecordType::kFullServerCard ||
-        record_type == CreditCard::RecordType::kVirtualCard;
     logged_suggestion_filled_was_masked_server_card_ =
         record_type == CreditCard::RecordType::kMaskedServerCard;
     logged_suggestion_filled_was_virtual_card_ =
@@ -434,12 +434,16 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
           server_card_with_local_duplicate_filled_ = true;
         }
         break;
-      case CreditCard::RecordType::kFullServerCard:
-        Log(FORM_EVENT_SERVER_SUGGESTION_FILLED_ONCE, form);
-        break;
       case CreditCard::RecordType::kVirtualCard:
         Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, form);
         break;
+      case CreditCard::RecordType::kFullServerCard:
+        // Full server cards are a temporary cached state that do not exist as
+        // suggestions, and so should never be passed to this method. Even when
+        // a card is being re-filled in a page, the suggestion itself is a
+        // kMaskedServerCard and its corresponding kFullServerCard is looked up
+        // in a cache later in the fill.
+        NOTREACHED();
     }
     // Log if filled suggestions had metadata. Logged once per page load.
     Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
@@ -524,8 +528,6 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
     Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, form);
   } else if (logged_suggestion_filled_was_virtual_card_) {
     Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, form);
-  } else if (logged_suggestion_filled_was_server_data_) {
-    Log(FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, form);
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, form);
   }
@@ -581,8 +583,6 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
                               UnmaskAuthFlowEvent::kFormSubmitted);
     autofill_metrics::LogServerCardUnmaskFormSubmission(
         payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
-  } else if (logged_suggestion_filled_was_server_data_) {
-    Log(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, form);
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, form);
   }
