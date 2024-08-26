@@ -49,13 +49,19 @@ class CreditCard : public AutofillDataModel {
     // something on the server).
     kLocalCard,
 
-    // A card from Wallet with masked information. Such cards will only have
-    // the last 4 digits of the card number, and require an extra download to
-    // convert to a kFullServerCard.
+    // A card from Wallet with masked information. Such cards only have the last
+    // 4 digits of the card number, and require an extra download to fetch the
+    // full number.
     kMaskedServerCard,
 
-    // A card from the Wallet server with full information store locally. This
-    // card is not locally editable.
+    // A cached form of kMaskedServerCard, with a full number. Historically
+    // these could be persisted in Chrome, however that is no longer possible.
+    // They exist only in an in-memory cache used for card filling, to avoid
+    // another authentication when re-filling a card on the same page.
+    //
+    // TODO(crbug.com/40939195): Consolidate kMaskedServerCard and
+    // kFullServerCard to a single RecordType, and have the cached/full-card
+    // status for a given CreditCard be tracked independently.
     kFullServerCard,
 
     // A card generated from a server card by the card issuer. This card is not
