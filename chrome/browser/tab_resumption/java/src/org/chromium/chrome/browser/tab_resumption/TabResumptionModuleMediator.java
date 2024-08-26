@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtil
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.visited_url_ranking.ScoredURLUserAction;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -126,6 +128,9 @@ public class TabResumptionModuleMediator {
                         }
                     };
 
+            mModel.set(
+                    TabResumptionModuleProperties.TAB_OBSERVER_CALLBACK,
+                    (tab) -> mLocalTabClosureObserver.add(tab));
             mStrength = ResultStrength.TENTATIVE;
             mIsAlive = true;
         }
@@ -333,9 +338,10 @@ public class TabResumptionModuleMediator {
 
             if (mBundle != null) {
                 mLocalTabClosureObserver.clear();
+                TabModel tabModel = mTabModelSelectorSupplier.get().getModel(false);
                 for (SuggestionEntry entry : mBundle.entries) {
                     if (entry.isLocalTab()) {
-                        Tab tab = mTabModel.getTabById(entry.getLocalTabId());
+                        Tab tab = tabModel.getTabById(entry.getLocalTabId());
                         assert tab != null; // isSuggestionValid() filtering ensures this.
                         mLocalTabClosureObserver.add(tab);
                     }
@@ -350,8 +356,8 @@ public class TabResumptionModuleMediator {
 
     private final Context mContext;
     private final ModuleDelegate mModuleDelegate;
-    private final TabModel mTabModel;
     private final PropertyModel mModel;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     protected final UrlImageProvider mUrlImageProvider;
     protected final Runnable mReloadSessionCallback;
@@ -364,7 +370,7 @@ public class TabResumptionModuleMediator {
     public TabResumptionModuleMediator(
             @NonNull Context context,
             @NonNull ModuleDelegate moduleDelegate,
-            @NonNull TabModel tabModel,
+            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull PropertyModel model,
             @NonNull UrlImageProvider urlImageProvider,
             @NonNull Runnable reloadSessionCallback,
@@ -373,7 +379,7 @@ public class TabResumptionModuleMediator {
             @NonNull SuggestionClickCallback suggestionClickCallback) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
-        mTabModel = tabModel;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mModel = model;
         mUrlImageProvider = urlImageProvider;
         mReloadSessionCallback = reloadSessionCallback;
@@ -385,6 +391,9 @@ public class TabResumptionModuleMediator {
                 };
         mShowHideHelper = new ShowHideHelper();
 
+        mModel.set(
+                TabResumptionModuleProperties.TAB_MODEL_SELECTOR_SUPPLIER,
+                mTabModelSelectorSupplier);
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
         mModel.set(
                 TabResumptionModuleProperties.SEE_MORE_LINK_CLICK_CALLBACK,
@@ -416,6 +425,7 @@ public class TabResumptionModuleMediator {
      * available then hides the module. See onSuggestionReceived() for details.
      */
     void loadModule() {
+        mModel.set(TabResumptionModuleProperties.TRACKING_TAB, mModuleDelegate.getTrackingTab());
         mSession.maybeFetchSuggestionsAndRenderResults();
     }
 
@@ -427,7 +437,10 @@ public class TabResumptionModuleMediator {
             // We already detect closure the of a suggested Local Tab, and perform refresh. Below
             // guards against glitches where a Local Tab somehow gets closed, or is in the closing
             // state, but still get suggested.
-            Tab tab = mTabModel.getTabById(entry.getLocalTabId());
+            assert mTabModelSelectorSupplier.hasValue();
+            TabModel tabModel = mTabModelSelectorSupplier.get().getModel(false);
+            assert tabModel != null;
+            Tab tab = tabModel.getTabById(entry.getLocalTabId());
             return tab != null && !tab.isClosing();
         }
 

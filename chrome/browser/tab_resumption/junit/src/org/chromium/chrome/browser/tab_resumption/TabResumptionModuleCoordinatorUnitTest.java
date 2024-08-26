@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_resumption;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -22,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.Resu
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
@@ -44,8 +47,10 @@ public class TabResumptionModuleCoordinatorUnitTest extends TestSupportExtended 
 
     @Mock private UrlImageProvider mUrlImageProvide;
     @Mock private TabResumptionDataProvider mProvider;
+    @Mock private TabModelSelector mTabModelSelector;
 
     private TabResumptionDataProviderFactory mDataProviderFactory;
+    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
 
     private TabResumptionModuleCoordinator mCoordinator;
 
@@ -56,6 +61,9 @@ public class TabResumptionModuleCoordinatorUnitTest extends TestSupportExtended 
         mContext = ApplicationProvider.getApplicationContext();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
+        mTabModelSelectorSupplier = new ObservableSupplierImpl<>();
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(() -> CURRENT_TIME_MS);
 
         mProvider =
@@ -75,7 +83,7 @@ public class TabResumptionModuleCoordinatorUnitTest extends TestSupportExtended 
                 new TabResumptionModuleCoordinator(
                         /* context= */ mContext,
                         /* moduleDelegate= */ mModuleDelegate,
-                        /* tabModel= */ mTabModel,
+                        /* tabModelSelectorSupplier= */ mTabModelSelectorSupplier,
                         /* dataProviderFactory= */ mDataProviderFactory,
                         /* urlImageProvider= */ mUrlImageProvide);
         mModel = mCoordinator.getModelForTesting();

@@ -26,9 +26,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 /** The view containing suggestion tiles on the tab resumption module. */
 public class TabResumptionTileContainerView extends LinearLayout {
@@ -85,7 +89,10 @@ public class TabResumptionTileContainerView extends LinearLayout {
             SuggestionBundle bundle,
             UrlImageProvider urlImageProvider,
             SuggestionClickCallback suggestionClickCallback,
-            boolean useSalientImage) {
+            boolean useSalientImage,
+            TabModelSelector tabModelSelector,
+            Tab trackingTab,
+            Callback<Tab> tabObserverCallback) {
         reset();
 
         @ModuleShowConfig
@@ -122,6 +129,17 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         suggestionClickCallback.onSuggestionClicked(clickedEntry);
                     };
 
+            if (entry.needMatchLocalTab && entry.getLocalTabId() == Tab.INVALID_TAB_ID) {
+                if (trackingTab != null && entry.url.equals(trackingTab.getUrl())) {
+                    // If the shown Tab matches the tracking Tab, updates the entry with assigned
+                    // Tab Id.
+                    entry.setLocalTabId(trackingTab.getId());
+                    // Registers to listen to the tab's closing event, so the tab resumption module
+                    // will update if the current shown Tab is closed.
+                    tabObserverCallback.onResult(trackingTab);
+                }
+            }
+
             if (entry.isLocalTab() && isSingle) {
                 allTilesTexts +=
                         loadLocalTabSingle(
@@ -149,10 +167,54 @@ public class TabResumptionTileContainerView extends LinearLayout {
                 bindSuggestionClickCallback(
                         tileView, suggestionClickCallbackWithLogging, entry, clickInfo);
                 addView(tileView);
+
+                if (entry.needMatchLocalTab && entry.getLocalTabId() == Tab.INVALID_TAB_ID) {
+                    // For any history or foreign session suggestion which doesn't match the
+                    // tracking Tab but still need to check, creates a callback to update the tile
+                    // if a match of a local Tab is found after the tab state is initialized.
+                    Callback<TabModelSelector> callback =
+                            mCallbackController.makeCancelable(
+                                    (tms) -> {
+                                        updateTile(
+                                                entry,
+                                                tileView,
+                                                suggestionClickCallback,
+                                                tms,
+                                                tabObserverCallback);
+                                    });
+                    TabModelUtils.runOnTabStateInitialized(tabModelSelector, callback);
+                }
             }
             ++entryIndex;
         }
         return allTilesTexts;
+    }
+
+    /**
+     * Called to update a TabResumptionTileView to track a local Tab. It updates the click listener
+     * for the view, and register to observe the Tab's closure state.
+     */
+    private void updateTile(
+            SuggestionEntry entry,
+            TabResumptionTileView tileView,
+            SuggestionClickCallback suggestionClickCallback,
+            TabModelSelector tabModelSelector,
+            Callback<Tab> tabObserverCallback) {
+        TabModel tabModel = tabModelSelector.getModel(false);
+        int index = TabModelUtils.getTabIndexByUrl(tabModel, entry.url.getSpec());
+
+        if (index != TabModel.INVALID_TAB_INDEX) {
+            Tab tab = tabModel.getTabAt(index);
+            if (tab.getId() != Tab.INVALID_TAB_ID) {
+                entry.setLocalTabId(tab.getId());
+                // Registers to listen to the tab's closing event.
+                tabObserverCallback.onResult(tab);
+                // Updates the click listener of the tile to allow switching to an existing Tab,
+                // rather than navigates within the same NTP.
+                bindSuggestionClickCallback(
+                        tileView, suggestionClickCallback, entry, ClickInfo.LOCAL_SINGLE_FIRST);
+            }
+        }
     }
 
     /** Renders and returns the texts of a {@link TabResumptionTileView}. */

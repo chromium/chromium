@@ -10,6 +10,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -30,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -39,6 +41,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.visited_url_ranking.ScoredURLUserAction;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
@@ -91,6 +94,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
     @Mock private SuggestionClickCallback mClickCallback;
+    @Mock private TabModelSelector mTabModelSelector;
 
     @Captor private ArgumentCaptor<Callback<SuggestionsResult>> mFetchSuggestionCallbackCaptor;
 
@@ -101,6 +105,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
 
     private int mReloadSessionCounter;
     private CallbackHelper mReloadSessionCallbackHelper;
+    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
 
     @Before
     public void setUp() {
@@ -108,6 +113,9 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mTabObserverMap = new HashMap<Integer, TabObserver>();
+        mTabModelSelectorSupplier = new ObservableSupplierImpl<>();
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
 
         TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(() -> CURRENT_TIME_MS);
         mModel = new PropertyModel(TabResumptionModuleProperties.ALL_KEYS);
@@ -116,7 +124,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
                 new TabResumptionModuleMediator(
                         /* context= */ mContext,
                         /* moduleDelegate= */ mModuleDelegate,
-                        /* tabModel= */ mTabModel,
+                        /* tabModelSelectorSupplier= */ mTabModelSelectorSupplier,
                         /* model= */ mModel,
                         /* urlImageProvider= */ mUrlImageProvider,
                         /* reloadSessionCallback= */ () -> {

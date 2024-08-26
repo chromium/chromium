@@ -19,10 +19,12 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
     public final GURL url;
     public final String title;
     public final long lastActiveTime;
+    public final boolean needMatchLocalTab;
 
     @Nullable public final String appId;
     @Nullable public String reasonToShowTab;
     @Nullable public TrainingInfo trainingInfo;
+
     private int mLocalTabId;
 
     /**
@@ -35,6 +37,7 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
      * @param appId The ID of the app that opened this entry. {@code null} if the type is not {@link
      *     SuggestionEntryType.HISTORY} or it was opened by BrApp.
      * @param reasonToShowTab The reason why a Tab is chosen.
+     * @param needMatchLocalTab Whether to check a matched local Tab for the suggestion.
      */
     SuggestionEntry(
             int type,
@@ -44,8 +47,10 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
             long lastActiveTime,
             int localTabId,
             String appId,
-            @Nullable String reasonToShowTab) {
+            @Nullable String reasonToShowTab,
+            boolean needMatchLocalTab) {
         this.type = type;
+        this.needMatchLocalTab = needMatchLocalTab;
         this.sourceName = sourceName;
         this.url = url;
         this.title = title;
@@ -68,7 +73,8 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
                 lastActiveTime,
                 Tab.INVALID_TAB_ID,
                 null,
-                null);
+                null,
+                /* needMatchLocalTab= */ false);
     }
 
     /** Instantiates from `sourceName` and ForeignSessionTab. */
@@ -91,7 +97,8 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
                 /* lastActiveTime= */ localTab.getTimestampMillis(),
                 /* localTabId= */ localTab.getId(),
                 /* appId= */ null,
-                /* reasonToShowTab= */ null);
+                /* reasonToShowTab= */ null,
+                /* needMatchLocalTab= */ false);
     }
 
     /** Suggestion comparator that favors recency, and uses other fields for tie-breaking. */
@@ -114,9 +121,7 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
 
     /** Returns whether the entry represents a Local Tab suggestion. */
     public boolean isLocalTab() {
-        return (this.type == SuggestionEntryType.LOCAL_TAB
-                        || this.type == SuggestionEntryType.HISTORY)
-                && mLocalTabId != Tab.INVALID_TAB_ID;
+        return mLocalTabId != Tab.INVALID_TAB_ID;
     }
 
     /** Gets the local Tab Id. */
