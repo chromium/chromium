@@ -238,9 +238,8 @@ TEST_F(PlusAddressAffiliationMatchHelperTest,
       FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
 
   SaveProfiles({profile1, psl_match, group_profile});
-  ASSERT_THAT(
-      plus_address_service()->GetPlusProfiles(),
-      testing::UnorderedElementsAreArray({profile1, psl_match, group_profile}));
+  ASSERT_THAT(plus_address_service()->GetPlusProfiles(),
+              UnorderedElementsAreArray({profile1, psl_match, group_profile}));
 
   EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
@@ -256,6 +255,32 @@ TEST_F(PlusAddressAffiliationMatchHelperTest,
   // once.
   EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(
       profile1.facet, {profile1, psl_match, group_profile}));
+}
+
+// Verifies a case where affiliations are requested on an http domain, and
+// client has existing plus addresses for PSL matched (https) domains.
+TEST_F(PlusAddressAffiliationMatchHelperTest, SupportHttpPSLMatchedDomains) {
+  PlusProfile http_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("http://example.com"));
+  PlusProfile https_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://one.example.com"));
+
+  SaveProfiles({https_profile});
+  ASSERT_THAT(plus_address_service()->GetPlusProfiles(),
+              UnorderedElementsAreArray({https_profile}));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(http_profile.facet);
+  group.facets.emplace_back(https_profile.facet);
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  EXPECT_TRUE(
+      ExpectMatchHelperToReturnProfiles(http_profile.facet, {https_profile}));
 }
 
 }  // namespace plus_addresses

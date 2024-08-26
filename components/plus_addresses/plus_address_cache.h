@@ -53,6 +53,9 @@ class PlusAddressCache {
  private:
   // The user's existing set of `PlusProfile`s, ordered by facet. Since only a
   // single address per facet is supported, this can be used as the comparator.
+  // The facets related to stored profiles are always valid web or Android
+  // `FacetURI`s. This is guaranteed by the PlusAddress server. Notably, this
+  // excludes facets related to http domains.
   base::flat_set<PlusProfile, PlusProfileFacetComparator> plus_profiles_;
 
   // Used to drive the `IsPlusAddress` function, and derived from the values of

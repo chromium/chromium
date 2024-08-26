@@ -43,7 +43,6 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
     return;
   }
 
-  DCHECK(facet.IsValidWebFacetURI());
   // The barrier is used to collect affiliated plus addresses from multiple
   // sources (i.e. grouped affiliations, PSL matches), combine and return them.
   const int kCallsNumber = 2;
@@ -101,9 +100,12 @@ void PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches(
   for (const PlusProfile& stored_profile :
        plus_address_service_->GetPlusProfiles()) {
     // Note that exact matches are also PSL matches.
+    // The use of `potentially_invalid_spec()` is due to potential `http`
+    // facets which are considered invalid by the FacetURI class. Note that
+    // `IsExtendedPublicSuffixDomainMatch` excludes truly invalid URLs.
     if (affiliations::IsExtendedPublicSuffixDomainMatch(
-            GURL(stored_profile.facet.canonical_spec()),
-            GURL(facet.canonical_spec()), psl_extensions)) {
+            GURL(stored_profile.facet.potentially_invalid_spec()),
+            GURL(facet.potentially_invalid_spec()), psl_extensions)) {
       matches.push_back(std::move(stored_profile));
     }
   }
@@ -121,6 +123,8 @@ void PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived(
 
   std::vector<PlusProfile> matches;
   for (const affiliations::Facet& facet : results[0].facets) {
+    // TODO(crbug.com/360180378): Add PSL matching on group results. This will
+    // also add filling support on the group's http facets.
     std::optional<PlusProfile> profile =
         plus_address_service_->GetPlusProfile(facet.uri);
     if (profile) {
