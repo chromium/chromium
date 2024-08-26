@@ -220,8 +220,7 @@ std::optional<CSSParserToken> GetAttrSubstitutionValue(
   }
 
   CSSTokenizer tokenizer(attribute_value);
-  auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(tokenizer);
 
   std::optional<CSSSyntaxDefinition> syntax_definition =
       attribute_type.ConvertToCSSSyntaxDefinition();
@@ -233,18 +232,18 @@ std::optional<CSSParserToken> GetAttrSubstitutionValue(
     // <flex> has special handling because it's not supported
     // by CSSSyntaxDefinition.
     CHECK_EQ(attribute_type.category, CSSAttrType::Category::kFlex);
-    range.ConsumeWhitespace();
-    CSSParserToken token = range.ConsumeIncludingWhitespace();
-    if (!range.AtEnd() || token.GetType() != kDimensionToken ||
+    stream.ConsumeWhitespace();
+    CSSParserToken token = stream.ConsumeIncludingWhitespace();
+    if (!stream.AtEnd() || token.GetType() != kDimensionToken ||
         token.GetUnitType() != CSSPrimitiveValue::UnitType::kFlex) {
       return std::nullopt;
     }
     return token;
   }
 
-  range.ConsumeWhitespace();
-  CSSParserToken token = range.ConsumeIncludingWhitespace();
-  if (!range.AtEnd()) {
+  stream.ConsumeWhitespace();
+  CSSParserToken token = stream.ConsumeIncludingWhitespaceRaw();
+  if (!stream.AtEnd()) {
     // Only single token is allowed, see
     // https://drafts.csswg.org/css-values-5/#attr-notation.
     return std::nullopt;
