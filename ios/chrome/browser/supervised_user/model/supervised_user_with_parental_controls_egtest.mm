@@ -320,17 +320,9 @@ static const char* kInterstitialFirstTimeBanner =
   [self checkInterstitalIsShown];
 }
 
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted \
-  DISABLED_testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted
-#else
-#define MAYBE_testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted \
-  testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted
-#endif
-// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that users with "Allow All" filtering are shown the interstitial
 // when they navigate to a site that ClassifyUrl classifies as unsafe.
-- (void)MAYBE_testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted {
+- (void)testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
   [SupervisedUserSettingsAppInterface
@@ -406,9 +398,8 @@ static const char* kInterstitialFirstTimeBanner =
 
 // Tests that when an interstitial is displayed for a blocked site,
 // allow-listing it triggers an intestitial refresh and unblocks the page.
-// TODO(crbug.com/346923501): This test is flaky.
 - (void)
-    FLAKY_testSupervisedUserWithAllowApprovedFilteringIsUnblockedOnURLAllowListing {
+    testSupervisedUserWithAllowApprovedFilteringIsUnblockedOnURLAllowListing {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
@@ -460,9 +451,7 @@ static const char* kInterstitialFirstTimeBanner =
 // Tests that for users who have the filtering behaviour changed from "Allow
 // approved" to "Allow all" websites, a blocked pages will be refreshed and
 // unblocks as soon as the filtering behaviour changes.
-// TODO(crbug.com/346923501): This test is flaky.
-- (void)
-    FLAKY_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
+- (void)testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
@@ -586,17 +575,9 @@ static const char* kInterstitialFirstTimeBanner =
   [self checkHideDetailsLinkVisibility:NO];
 }
 
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSupervisedUserInterstitialShowBlockReasonAndDetails \
-  DISABLED_testSupervisedUserInterstitialShowBlockReasonAndDetails
-#else
-#define MAYBE_testSupervisedUserInterstitialShowBlockReasonAndDetails \
-  testSupervisedUserInterstitialShowBlockReasonAndDetails
-#endif
-// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the that the Details link / Block reason is displayed on the
 // interstitial "Ask your parent" screen depending on the screen width.
-- (void)MAYBE_testSupervisedUserInterstitialShowBlockReasonAndDetails {
+- (void)testSupervisedUserInterstitialShowBlockReasonAndDetails {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
@@ -620,16 +601,8 @@ static const char* kInterstitialFirstTimeBanner =
   }
 }
 
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSupervisedUserInterstitialOnBackButton \
-  DISABLED_testSupervisedUserInterstitialOnBackButton
-#else
-#define MAYBE_testSupervisedUserInterstitialOnBackButton \
-  testSupervisedUserInterstitialOnBackButton
-#endif
-// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the Back Button of the interstitial gets us to the previous page.
-- (void)MAYBE_testSupervisedUserInterstitialOnBackButton {
+- (void)testSupervisedUserInterstitialOnBackButton {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
@@ -705,16 +678,8 @@ static const char* kInterstitialFirstTimeBanner =
   [self checkElementDisplayStyleVisibility:@"banner" isVisible:NO];
 }
 
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSupervisedUserInterstitialSupportsZoom \
-  DISABLED_testSupervisedUserInterstitialSupportsZoom
-#else
-#define MAYBE_testSupervisedUserInterstitialSupportsZoom \
-  testSupervisedUserInterstitialSupportsZoom
-#endif
-// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the Zoom Text option is available for the interstitial.
-- (void)MAYBE_testSupervisedUserInterstitialSupportsZoom {
+- (void)testSupervisedUserInterstitialSupportsZoom {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
