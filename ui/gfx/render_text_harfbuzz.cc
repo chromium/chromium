@@ -1982,6 +1982,7 @@ void RenderTextHarfBuzz::ItemizeAndShapeText(const std::u16string& text,
 
     // Resolved typefaces are no longer used and can be cleared.
     layout_resolved_typefaces().Reset();
+    resolved_typefaces().Reset();
   }
 
   run_list->InitIndexMap();

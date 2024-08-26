@@ -429,12 +429,7 @@ StyleIterator::StyleIterator(
   baseline_ = baselines_->breaks().begin();
   font_size_override_ = font_size_overrides_->breaks().begin();
   weight_ = weights_->breaks().begin();
-
-  // Resolved typefaces may be nullptr.
-  if (resolved_typefaces_) {
-    resolved_typeface_ = resolved_typefaces_->breaks().begin();
-  }
-
+  resolved_typeface_ = resolved_typefaces_->breaks().begin();
   fill_style_ = fill_styles_->breaks().begin();
   stroke_width_ = stroke_widths_->breaks().begin();
   for (size_t i = 0; i < styles_->size(); ++i)
@@ -453,9 +448,7 @@ Range StyleIterator::GetTextBreakingRange() const {
   Range range = baselines_->GetRange(baseline_);
   range = range.Intersect(font_size_overrides_->GetRange(font_size_override_));
   range = range.Intersect(weights_->GetRange(weight_));
-  if (resolved_typefaces_) {
-    range = range.Intersect(resolved_typefaces_->GetRange(resolved_typeface_));
-  }
+  range = range.Intersect(resolved_typefaces_->GetRange(resolved_typeface_));
   range = range.Intersect(fill_styles_->GetRange(fill_style_));
   range = range.Intersect(stroke_widths_->GetRange(stroke_width_));
   for (size_t i = 0; i < styles_->size(); ++i)
@@ -470,10 +463,8 @@ void StyleIterator::IncrementToPosition(size_t position) {
   font_size_override_ = IncrementBreakListIteratorToPosition(
       *font_size_overrides_, font_size_override_, position);
   weight_ = IncrementBreakListIteratorToPosition(*weights_, weight_, position);
-  if (resolved_typefaces_) {
-    resolved_typeface_ = IncrementBreakListIteratorToPosition(
-        *resolved_typefaces_, resolved_typeface_, position);
-  }
+  resolved_typeface_ = IncrementBreakListIteratorToPosition(
+      *resolved_typefaces_, resolved_typeface_, position);
   fill_style_ = IncrementBreakListIteratorToPosition(*fill_styles_, fill_style_,
                                                      position);
   stroke_width_ = IncrementBreakListIteratorToPosition(*stroke_widths_,
@@ -544,6 +535,7 @@ std::unique_ptr<RenderText> RenderText::CreateInstanceOfSameStyle(
   render_text->font_size_overrides_ = font_size_overrides_;
   render_text->colors_ = colors_;
   render_text->weights_ = weights_;
+  render_text->resolved_typefaces_ = resolved_typefaces_;
   render_text->fill_styles_ = fill_styles_;
   render_text->stroke_widths_ = stroke_widths_;
   render_text->glyph_width_for_test_ = glyph_width_for_test_;
@@ -563,6 +555,7 @@ void RenderText::SetText(std::u16string text) {
   baselines_.Reset();
   font_size_overrides_.Reset();
   weights_.Reset();
+  resolved_typefaces_.Reset();
   fill_styles_.Reset();
   stroke_widths_.Reset();
   for (auto& style : styles_)
@@ -1540,10 +1533,8 @@ Range RenderText::GetLineRange(const std::u16string& text,
 RenderText::RenderText() = default;
 
 internal::StyleIterator RenderText::GetTextStyleIterator() const {
-  // There is only a single BreakList for resolved typefaces, and it's only used
-  // for the layout iterator, so use nullptr in this case.
   return internal::StyleIterator(&colors_, &baselines_, &font_size_overrides_,
-                                 &weights_, nullptr, &fill_styles_,
+                                 &weights_, &resolved_typefaces_, &fill_styles_,
                                  &stroke_widths_, &styles_);
 }
 
@@ -1779,16 +1770,13 @@ void RenderText::EnsureLayoutTextUpdated() const {
       layout_baselines_.ApplyValue(styles.baseline(), range);
       layout_font_size_overrides_.ApplyValue(styles.font_size_override(),
                                              range);
+      layout_resolved_typefaces_.ApplyValue(styles.resolved_typeface(), range);
       layout_fill_styles_.ApplyValue(styles.fill_style(), range);
       layout_stroke_widths_.ApplyValue(styles.stroke_width(), range);
       layout_weights_.ApplyValue(styles.weight(), range);
       for (size_t i = 0; i < layout_styles_.size(); ++i) {
         layout_styles_[i].ApplyValue(styles.style(static_cast<TextStyle>(i)),
                                      range);
-      }
-      if (styles.resolved_typeface()) {
-        layout_resolved_typefaces_.ApplyValue(styles.resolved_typeface(),
-                                              range);
       }
 
       // Apply an underline to the composition range in |underlines|.
@@ -2043,6 +2031,7 @@ void RenderText::UpdateStyleLengths() {
   baselines_.SetMax(text_length);
   font_size_overrides_.SetMax(text_length);
   weights_.SetMax(text_length);
+  resolved_typefaces_.SetMax(text_length);
   fill_styles_.SetMax(text_length);
   stroke_widths_.SetMax(text_length);
   for (auto& style : styles_)
@@ -2276,6 +2265,7 @@ std::u16string RenderText::Elide(const std::u16string& text,
     RestoreBreakList(render_text.get(), &render_text->font_size_overrides_);
     render_text->weights_ = weights_;
     RestoreBreakList(render_text.get(), &render_text->weights_);
+    RestoreBreakList(render_text.get(), &render_text->resolved_typefaces_);
     RestoreBreakList(render_text.get(), &render_text->fill_styles_);
     RestoreBreakList(render_text.get(), &render_text->stroke_widths_);
 

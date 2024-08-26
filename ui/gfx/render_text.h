@@ -123,15 +123,9 @@ class StyleIterator {
   int font_size_override() const { return font_size_override_->second; }
   bool style(TextStyle s) const { return style_[s]->second; }
   Font::Weight weight() const { return weight_->second; }
+  SkTypefaceID resolved_typeface() const { return resolved_typeface_->second; }
   cc::PaintFlags::Style fill_style() const { return fill_style_->second; }
   SkScalar stroke_width() const { return stroke_width_->second; }
-
-  // resolved_typefaces_ is optional; use an invalid ID if not present.
-  static constexpr SkTypefaceID kInvalidTypefaceID = 0U;
-  SkTypefaceID resolved_typeface() const {
-    return resolved_typefaces_ ? resolved_typeface_->second
-                               : kInvalidTypefaceID;
-  }
 
   // Get the intersecting range of the current iterator set.
   Range GetRange() const;
@@ -718,6 +712,9 @@ class GFX_EXPORT RenderText {
   const BreakList<SkColor>& layout_colors() const { return layout_colors_; }
   BreakList<SkTypefaceID>& layout_resolved_typefaces() const {
     return layout_resolved_typefaces_;
+  }
+  BreakList<SkTypefaceID>& resolved_typefaces() const {
+    return resolved_typefaces_;
   }
 
   // Whether all the BreakLists have only one break.
