@@ -1767,6 +1767,7 @@
 
   {
     "prefix": "webauthn-remote-desktop-client-override",
+    "owners": ["martinkr@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/webauthn/remote-desktop-client-override.tentative.https.html" ],
     "args": [
