@@ -204,21 +204,35 @@ class UploadingCompletionObserver
       public BytesUploader::Client {
  public:
   explicit UploadingCompletionObserver(
-      ScriptPromiseResolver<IDLUndefined>* resolver)
-      : resolver_(resolver) {}
+      int fetch_event_id,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
+      ServiceWorkerGlobalScope* service_worker_global_scope)
+      : fetch_event_id_(fetch_event_id),
+        resolver_(resolver),
+        service_worker_global_scope_(service_worker_global_scope) {}
+
   ~UploadingCompletionObserver() override = default;
 
-  void OnComplete() override { resolver_->Resolve(); }
+  void OnComplete() override {
+    resolver_->Resolve();
+    service_worker_global_scope_->OnStreamingUploadCompletion(fetch_event_id_);
+  }
 
-  void OnError() override { resolver_->Reject(); }
+  void OnError() override {
+    resolver_->Reject();
+    service_worker_global_scope_->OnStreamingUploadCompletion(fetch_event_id_);
+  }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(resolver_);
+    visitor->Trace(service_worker_global_scope_);
     BytesUploader::Client::Trace(visitor);
   }
 
  private:
+  const int fetch_event_id_;
   const Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
+  Member<ServiceWorkerGlobalScope> service_worker_global_scope_;
 };
 
 }  // namespace
@@ -409,6 +423,8 @@ void FetchRespondWithObserver::OnNoResponse(ScriptState* script_state) {
         WebFeature::kFetchRespondWithNoResponseWithUsedRequestBody);
   }
 
+  ServiceWorkerGlobalScope* service_worker_global_scope =
+      To<ServiceWorkerGlobalScope>(GetExecutionContext());
   auto* body_buffer = event_->request()->BodyBuffer();
   std::optional<network::DataElementChunkedDataPipe> request_body_to_pass;
   if (body_buffer && !request_body_has_source_) {
@@ -424,8 +440,8 @@ void FetchRespondWithObserver::OnNoResponse(ScriptState* script_state) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
     WaitUntil(script_state, resolver->Promise(), ASSERT_NO_EXCEPTION);
-    auto* observer =
-        MakeGarbageCollected<UploadingCompletionObserver>(resolver);
+    auto* observer = MakeGarbageCollected<UploadingCompletionObserver>(
+        event_id_, resolver, service_worker_global_scope);
     mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter> remote;
     body_buffer->DrainAsChunkedDataPipeGetter(
         script_state, remote.InitWithNewPipeAndPassReceiver(), observer);
@@ -434,11 +450,10 @@ void FetchRespondWithObserver::OnNoResponse(ScriptState* script_state) {
         network::DataElementChunkedDataPipe::ReadOnlyOnce(true));
   }
 
-  ServiceWorkerGlobalScope* service_worker_global_scope =
-      To<ServiceWorkerGlobalScope>(GetExecutionContext());
   service_worker_global_scope->RespondToFetchEventWithNoResponse(
-      event_id_, request_url_, range_request_, std::move(request_body_to_pass),
-      event_dispatch_time_, base::TimeTicks::Now());
+      event_id_, event_.Get(), request_url_, range_request_,
+      std::move(request_body_to_pass), event_dispatch_time_,
+      base::TimeTicks::Now());
   event_->ResolveHandledPromise();
 }
 
