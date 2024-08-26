@@ -3020,7 +3020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.iOS.FormActivity.SendRatio" units="%"
-    expires_after="2024-09-01">
+    expires_after="2025-03-01">
   <owner>vincb@google.com</owner>
   <owner>eic@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -3032,7 +3032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.iOS.FormActivity.{Outcome}Count" units="count"
-    expires_after="2024-09-01">
+    expires_after="2025-03-01">
   <owner>vincb@google.com</owner>
   <owner>eic@google.com</owner>
   <owner>bling-transactions@google.com</owner>
