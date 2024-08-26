@@ -1135,11 +1135,10 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   // https://drafts.csswg.org/css-variables/#substitute-a-var
   {
     CSSTokenizer tokenizer(data->OriginalText());
-    Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    range.ConsumeWhitespace();
-    CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range);
-    if (value && range.AtEnd()) {
+    CSSParserTokenStream stream(tokenizer);
+    stream.ConsumeWhitespace();
+    CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
+    if (value && stream.AtEnd()) {
       return value;
     }
   }

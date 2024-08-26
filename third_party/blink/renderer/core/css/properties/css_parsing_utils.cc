@@ -4258,27 +4258,6 @@ bool IsDashedIdent(const CSSParserToken& token) {
   return token.Value().ToString().StartsWith(kTwoDashes);
 }
 
-CSSValue* ConsumeCSSWideKeyword(CSSParserTokenRange& range) {
-  if (!IsCSSWideKeyword(range.Peek().Id())) {
-    return nullptr;
-  }
-  switch (range.ConsumeIncludingWhitespace().Id()) {
-    case CSSValueID::kInitial:
-      return CSSInitialValue::Create();
-    case CSSValueID::kInherit:
-      return CSSInheritedValue::Create();
-    case CSSValueID::kUnset:
-      return cssvalue::CSSUnsetValue::Create();
-    case CSSValueID::kRevert:
-      return cssvalue::CSSRevertValue::Create();
-    case CSSValueID::kRevertLayer:
-      return cssvalue::CSSRevertLayerValue::Create();
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
-  }
-}
-
 CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream) {
   if (!IsCSSWideKeyword(stream.Peek().Id())) {
     return nullptr;
