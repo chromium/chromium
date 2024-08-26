@@ -716,7 +716,11 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
 }
 
 void FocusModeDetailedView::HandleTextfieldActivationChange() {
-  if (!timer_textfield_->IsActive() && timer_textfield_->HasFocus()) {
+  if (timer_textfield_->IsActive()) {
+    return;
+  }
+
+  if (timer_textfield_->HasFocus()) {
     auto* focus_manager = timer_textfield_->GetWidget()->GetFocusManager();
     focus_manager->ClearFocus();
     focus_manager->SetStoredFocusView(nullptr);
@@ -725,14 +729,14 @@ void FocusModeDetailedView::HandleTextfieldActivationChange() {
     // timer_textfield_ after the bug resolved. The reason for calling it can be
     // found from the description of the bug.
     timer_textfield_->UpdateBackground();
-
-    // Once we clear the focus for the `timer_textfield_`, we need to call the
-    // function below manually to update the UI according to the latest session
-    // duration, since the `OnViewBlurred` for the textfield controller doesn't
-    // automatically call it to avoid the bug b/315358227.
-    SetInactiveSessionDuration(base::Minutes(
-        focus_mode_util::GetTimerTextfieldInputInMinutes(timer_textfield_)));
   }
+
+  // Once we clear the focus for the `timer_textfield_`, we need to call the
+  // function below manually to update the UI according to the latest session
+  // duration, since the `OnViewBlurred` for the textfield controller doesn't
+  // automatically call it to avoid the bug b/315358227.
+  SetInactiveSessionDuration(base::Minutes(
+      focus_mode_util::GetTimerTextfieldInputInMinutes(timer_textfield_)));
 }
 
 void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {

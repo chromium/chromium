@@ -40,6 +40,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base/test:test_support",
+    "//chrome/browser/ash/accessibility:browser_tests",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/ui/ash",
     "//chrome/test:test_support",
