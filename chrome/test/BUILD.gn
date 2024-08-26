@@ -1214,7 +1214,7 @@ if (is_chromeos && is_chromeos_device) {
         ":test_support",
         "//base",
         "//build:branding_buildflags",
-        "//chrome/browser/ui/ash",
+        "//chrome/browser/ui/ash/main_extra_parts",
         "//chrome/common:non_code_constants",
         "//chrome/test/base/ash/interactive:test_support",
         "//chromeos/ash/components/standalone_browser",

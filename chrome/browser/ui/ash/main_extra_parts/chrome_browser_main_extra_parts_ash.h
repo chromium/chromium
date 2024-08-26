@@ -2,28 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_
-#define CHROME_BROWSER_UI_ASH_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_
+#ifndef CHROME_BROWSER_UI_ASH_MAIN_EXTRA_PARTS_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_
+#define CHROME_BROWSER_UI_ASH_MAIN_EXTRA_PARTS_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_
 
 #include <memory>
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/boca/boca_app_client_impl.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/browser/ui/ash/in_session_auth/in_session_auth_token_provider_impl.h"
 #include "chrome/common/buildflags.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 
 namespace ash {
 class ArcWindowWatcher;
+class InSessionAuthTokenProviderImpl;
 class MagicBoostStateAsh;
 class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
 class OobeDialogUtil;
 class PeripheralsAppDelegateImpl;
 class VideoConferenceTrayController;
+
+namespace boca {
+class BocaAppClientImpl;
+}
 }  // namespace ash
 
 namespace chromeos {
@@ -191,4 +193,4 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   base::OnceClosure post_browser_start_callback_;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_
+#endif  // CHROME_BROWSER_UI_ASH_MAIN_EXTRA_PARTS_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_
