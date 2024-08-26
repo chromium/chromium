@@ -238,6 +238,8 @@ bool ThemePainter::PaintBorderOnly(const Node* node,
     case kSquareButtonPart:
       // Supported appearance values don't need CSS border painting.
       return false;
+    case kBaseSelectPart:
+      return true;
     default:
       UseCounter::Count(
           element.GetDocument(),
