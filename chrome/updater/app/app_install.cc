@@ -42,9 +42,13 @@ namespace {
 
 class AppInstallControllerImpl : public AppInstallController {
  public:
-  explicit AppInstallControllerImpl(scoped_refptr<UpdateService> update_service)
-      : update_service_(update_service) {}
+  AppInstallControllerImpl() = default;
+
   // Override for AppInstallController.
+  void Initialize(base::OnceClosure initialize_done) override {
+    std::move(initialize_done).Run();
+  }
+
   void InstallApp(const std::string& app_id,
                   const std::string& /*app_name*/,
                   base::OnceCallback<void(int)> callback) override {
@@ -77,6 +81,13 @@ class AppInstallControllerImpl : public AppInstallController {
         FROM_HERE, base::BindOnce(std::move(callback), 0));
   }
 
+  void Exit() override {}
+
+  void set_update_service(
+      scoped_refptr<UpdateService> update_service) override {
+    update_service_ = update_service;
+  }
+
  protected:
   ~AppInstallControllerImpl() override = default;
 
@@ -88,9 +99,8 @@ class AppInstallControllerImpl : public AppInstallController {
 
 scoped_refptr<App> MakeAppInstall(bool /*is_silent_install*/) {
   return base::MakeRefCounted<AppInstall>(
-      base::BindRepeating([](scoped_refptr<UpdateService> update_service)
-                              -> scoped_refptr<AppInstallController> {
-        return base::MakeRefCounted<AppInstallControllerImpl>(update_service);
+      base::BindRepeating([]() -> scoped_refptr<AppInstallController> {
+        return base::MakeRefCounted<AppInstallControllerImpl>();
       }));
 }
 #endif  // !BUILDFLAG(IS_WIN)
@@ -102,6 +112,11 @@ AppInstall::AppInstall(AppInstallController::Maker app_install_controller_maker)
 }
 
 AppInstall::~AppInstall() = default;
+
+void AppInstall::Shutdown(int exit_code) {
+  app_install_controller_->Exit();
+  App::Shutdown(exit_code);
+}
 
 int AppInstall::Initialize() {
   setup_lock_ =
@@ -147,14 +162,20 @@ void AppInstall::FirstTaskRun() {
         kAppIdSwitch);
   }
 
-  CreateUpdateServiceProxy();
-  update_service_->GetVersion(
-      base::BindOnce(&AppInstall::GetVersionDone, this));
+  app_install_controller_ = app_install_controller_maker_.Run();
+  app_install_controller_->Initialize(base::BindOnce(
+      [](scoped_refptr<AppInstall> self) {
+        self->CreateUpdateServiceProxy();
+        self->update_service_->GetVersion(
+            base::BindOnce(&AppInstall::GetVersionDone, self));
+      },
+      base::WrapRefCounted(this)));
 }
 
 void AppInstall::CreateUpdateServiceProxy() {
   update_service_ = updater::CreateUpdateServiceProxy(
       updater_scope(), external_constants_->OverinstallTimeout());
+  app_install_controller_->set_update_service(update_service_);
 }
 
 void AppInstall::GetVersionDone(const base::Version& version) {
@@ -260,8 +281,6 @@ void AppInstall::MaybeInstallApp() {
     Shutdown(kErrorOk);
     return;
   }
-  app_install_controller_ = app_install_controller_maker_.Run(update_service_);
-
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch(kOfflineDirSwitch)) {
     // Presence of "offlinedir" in command line indicates this is an offline
