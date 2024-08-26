@@ -3830,13 +3830,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "isDarkModeEnabled") {
-    *output = ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-                  ? "true"
-                  : "false";
-    return;
-  }
-
   if (name == "isMirrorSyncEnabled") {
     *output = options.enable_mirrorsync ? "true" : "false";
     return;
