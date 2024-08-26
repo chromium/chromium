@@ -9388,9 +9388,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"local-printer-observing", flag_descriptions::kLocalPrinterObservingName,
-     flag_descriptions::kLocalPrinterObservingDescription, kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kLocalPrinterObserving)},
     {"print-preview-cros-primary",
      flag_descriptions::kPrintPreviewCrosPrimaryName,
      flag_descriptions::kPrintPreviewCrosPrimaryDescription,

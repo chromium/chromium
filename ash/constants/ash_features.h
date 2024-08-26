@@ -1374,7 +1374,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPickerUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitBackfillFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipDoubleTapToResizeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipTuckEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLocalPrinterObservingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrinterPreviewCrosAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherImageSearchEnabled();

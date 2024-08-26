@@ -8,7 +8,6 @@ import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager,
 import {CrInputElement, CrSearchableDropDownElement, CrToastElement, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -642,9 +641,6 @@ suite('CupsSavedPrintersTests', () => {
   // Verify the printer statuses received from the 'local-printers-updated'
   // event are added to the printer status cache.
   test('LocalPrintersUpdatedPrinterStatusCache', async () => {
-    loadTimeData.overrideValues({
-      isLocalPrinterObservingEnabled: true,
-    });
     createCupsPrinterPage([]);
     await flushTasks();
     const element =
@@ -700,10 +696,6 @@ suite('CupsSavedPrintersTests', () => {
     assertTrue(printerStatusReasonCache.has(id1));
     assertTrue(printerStatusReasonCache.has(id2));
     assertFalse(printerStatusReasonCache.has(id3));
-
-    // This verifies that no printer status query timers are scheduled when the
-    // "local-printer-observing" flag is enabled.
-    assertEquals(0, savedPrintersElement.getTimeoutIdsForTesting().length);
   });
 
   test('ShowMoreButtonIsInitiallyHiddenAndANewPrinterIsAdded', async () => {

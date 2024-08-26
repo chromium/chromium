@@ -5814,13 +5814,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "local-printer-observing",
-    "owners": [
-      "//ash/webui/print_management/OWNERS"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "mac-address-randomization",
     "owners": [ "chadduffin@chromium.org", "cros-connectivity@google.com"],
     "expiry_milestone": 135

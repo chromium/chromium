@@ -1046,11 +1046,6 @@ BASE_FEATURE(kPrintPreviewCrosPrimary,
 BASE_FEATURE(kPrintPreviewSetupAssistance,
              "PrintPreviewSetupAssistance",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Enables the observing of local printers to provide UI surfaces with live
-// updates.
-BASE_FEATURE(kLocalPrinterObserving,
-             "LocalPrinterObserving",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables or disables push subscriptions keeping Chrome running in the

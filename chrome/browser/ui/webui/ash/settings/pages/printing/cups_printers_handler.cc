@@ -372,17 +372,13 @@ void CupsPrintersHandler::RegisterMessages() {
 void CupsPrintersHandler::OnJavascriptAllowed() {
   DCHECK(!printers_manager_observation_.IsObserving());
   printers_manager_observation_.Observe(printers_manager_.get());
-  if (base::FeatureList::IsEnabled(::features::kLocalPrinterObserving)) {
-    DCHECK(!local_printers_observation_.IsObserving());
-    local_printers_observation_.Observe(printers_manager_.get());
-  }
+  DCHECK(!local_printers_observation_.IsObserving());
+  local_printers_observation_.Observe(printers_manager_.get());
 }
 
 void CupsPrintersHandler::OnJavascriptDisallowed() {
   printers_manager_observation_.Reset();
-  if (base::FeatureList::IsEnabled(::features::kLocalPrinterObserving)) {
-    local_printers_observation_.Reset();
-  }
+  local_printers_observation_.Reset();
 }
 
 void CupsPrintersHandler::SetWebUIForTest(content::WebUI* web_ui) {
@@ -1223,8 +1219,6 @@ void CupsPrintersHandler::OnPrintersChanged(
 }
 
 void CupsPrintersHandler::OnLocalPrintersUpdated() {
-  CHECK(base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
-
   const std::vector<chromeos::Printer> printers =
       printers_manager_->GetPrinters(PrinterClass::kSaved);
   base::Value::List printers_as_values =

@@ -327,9 +327,6 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
   source->AddBoolean(
       "isPrintPreviewSetupAssistanceEnabled",
       base::FeatureList::IsEnabled(::features::kPrintPreviewSetupAssistance));
-  source->AddBoolean(
-      "isLocalPrinterObservingEnabled",
-      base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
 #else
   bool system_default_printer = profile->GetPrefs()->GetBoolean(
       prefs::kPrintPreviewUseSystemDefaultPrinter);

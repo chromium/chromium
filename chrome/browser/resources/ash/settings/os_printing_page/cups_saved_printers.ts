@@ -19,7 +19,6 @@ import './cups_printers_entry.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -32,36 +31,13 @@ import {PrinterSettingsUserAction, recordPrinterSettingsUserAction} from './cups
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListMixin} from './cups_printers_entry_list_mixin.js';
 import {getTemplate} from './cups_saved_printers.html.js';
-import {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatus, PrinterStatusReason} from './printer_status.js';
+import {getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason} from './printer_status.js';
 
 /**
  * If the Show more button is visible, the minimum number of printers we show
  * is 3.
  */
 const MIN_VISIBLE_PRINTERS = 3;
-
-/**
- * The amount of time Printer settings is open until it switches to a longer
- * delay between each printer status query.
- */
-
-/**
- * The inclusive ranges for the delay between printer status queries. Each
- * interval is selected based on the conditions defined in
- *`startPrinterStatusQueryTimer_()`.
- */
-const ERROR_SHORT_INTERVAL_IN_SECONDS: number[] = [10, 15];
-const ERROR_MEDIUM_INTERVAL_IN_SECONDS: number[] = [25, 30];
-const ERROR_LONG_INTERVAL_IN_SECONDS: number[] = [45, 60];
-const GOOD_SHORT_INTERVAL_IN_SECONDS: number[] = [25, 30];
-const GOOD_MEDIUM_INTERVAL_IN_SECONDS: number[] = [60, 80];
-const GOOD_LONG_INTERVAL_IN_SECONDS: number[] = [60, 80];
-
-/**
- * Printers should be only be queried for status for up to this duration of
- * Printer Settings be open.
- */
-const MAX_PRINTER_QUERYING_TIME_IN_SECONDS = 300;
 
 /**
  * Move a printer's position in |printerArr| from |fromIndex| to |toIndex|.
@@ -159,34 +135,6 @@ export class SettingsCupsSavedPrintersElement extends
           return new Map();
         },
       },
-
-      /**
-       * Used for tracking how long Printer Settings has been open.
-       */
-      pageStartTime_: {
-        type: Number,
-        value: Date.now(),
-      },
-
-      /**
-       * Stores the timeout ID from each invocation of setTimeout().
-       */
-      timeoutIds_: {
-        type: Array,
-        value: () => [],
-      },
-
-
-      /**
-       * True when the "local-printer-observing" feature flag is enabled.
-       */
-      isLocalPrinterObservingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isLocalPrinterObservingEnabled');
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -211,10 +159,6 @@ export class SettingsCupsSavedPrintersElement extends
   private newPrinters_: PrinterListEntry[];
   private visiblePrinterCounter_: number;
   private printerStatusReasonCache_: Map<string, PrinterStatusReason>;
-  private pageStartTime_: number;
-  private timeoutIds_: number[];
-  private onFocusListener_: () => void;
-  private isLocalPrinterObservingEnabled_: boolean;
 
   constructor() {
     super();
@@ -226,16 +170,10 @@ export class SettingsCupsSavedPrintersElement extends
     // printers if the Show more button is visible.
     this.visiblePrinterCounter_ = MIN_VISIBLE_PRINTERS;
 
-    this.onFocusListener_ = () => this.resetPrinterStatusQueryTimers();
-
-    // Listen for updates of local printers from the 'local-printers-updated'
-    // event to consume their updated printer statuses.
-    if (this.isLocalPrinterObservingEnabled_) {
-      addWebUiListener(
-          'local-printers-updated',
-          (printers: CupsPrinterInfo[]) => printers.forEach(
-              printer => this.onPrinterStatusReceived_(printer.printerStatus)));
-    }
+    addWebUiListener(
+        'local-printers-updated',
+        (printers: CupsPrinterInfo[]) => printers.forEach(
+            printer => this.onPrinterStatusReceived_(printer.printerStatus)));
   }
 
   override ready(): void {
@@ -246,22 +184,6 @@ export class SettingsCupsSavedPrintersElement extends
         (event: CustomEvent<{target: HTMLElement, item: PrinterListEntry}>) => {
           this.onOpenActionMenu_(event);
         });
-
-    // When `isLocalPrinterObservingEnabled_` is enabled printer statuses get
-    // pushed from the backend so printer statuses don't need to be
-    // individually requested.
-    if (!this.isLocalPrinterObservingEnabled_) {
-      this.startPrinterStatusQueryTimer_(/*forErrorStatePrinters=*/ true);
-      this.startPrinterStatusQueryTimer_(/*forErrorStatePrinters=*/ false);
-    }
-  }
-
-  addFocusListener(): void {
-    window.addEventListener('focus', this.onFocusListener_);
-  }
-
-  removeFocusListener(): void {
-    window.removeEventListener('focus', this.onFocusListener_);
   }
 
   /**
@@ -487,92 +409,8 @@ export class SettingsCupsSavedPrintersElement extends
     this.notifyPath(`filteredPrinters_.${filteredIndex}.printerInfo.printerId`);
   }
 
-  /**
-   * Starts the printer status query timer which sets the next query interval
-   * based on the page and printers conditions. `forErrorStatePrinters`
-   * represents printers in a critical error state (i.e. unreachable) which
-   * should be queried more often.
-   */
-  private startPrinterStatusQueryTimer_(forErrorStatePrinters: boolean): void {
-    const pageOpenTimeInSeconds = (Date.now() - this.pageStartTime_) / 1000;
-    if (pageOpenTimeInSeconds >= MAX_PRINTER_QUERYING_TIME_IN_SECONDS) {
-      return;
-    }
-
-    let currentInterval;
-    // Increase the querying intervals to "long" after 2 minutes has elapsed,
-    // increase the querying intervals to "medium" if user has many saved
-    // printers or use "short" interval when Printer Settings first opens.
-    if (pageOpenTimeInSeconds >= 120) {
-      currentInterval = forErrorStatePrinters ? ERROR_LONG_INTERVAL_IN_SECONDS :
-                                                GOOD_LONG_INTERVAL_IN_SECONDS;
-    } else if (this.savedPrinters.length > 3) {
-      currentInterval = forErrorStatePrinters ?
-          ERROR_MEDIUM_INTERVAL_IN_SECONDS :
-          GOOD_MEDIUM_INTERVAL_IN_SECONDS;
-    } else {
-      currentInterval = forErrorStatePrinters ?
-          ERROR_SHORT_INTERVAL_IN_SECONDS :
-          GOOD_SHORT_INTERVAL_IN_SECONDS;
-    }
-
-    // Chooses a random number between the delay interval.
-    const minDelay = currentInterval[0];
-    const maxDelay = currentInterval[1];
-    const randomizedDelayMs =
-        ((Math.random() * (maxDelay - minDelay)) + minDelay) * 1000;
-    const timeoutId = setTimeout(
-        () => this.onPrinterStatusQueryTimerElapsed_(forErrorStatePrinters),
-        randomizedDelayMs);
-    this.timeoutIds_.push(timeoutId);
-  }
-
-  /**
-   * Invoked once the timer is elapsed. Starts the printer status queries then
-   * resets the timer. `forErrorStatePrinters` determines which type of saved
-   * printers are queried.
-   */
-  private onPrinterStatusQueryTimerElapsed_(forErrorStatePrinters: boolean):
-      void {
-    this.savedPrinters
-        .filter(
-            printer =>
-                this.isPrinterInErrorState_(printer.printerInfo.printerId) ===
-                forErrorStatePrinters)
-        .forEach(
-            printer => this.fetchPrinterStatus_(printer.printerInfo.printerId));
-
-    // Restart the printer status query timer.
-    this.startPrinterStatusQueryTimer_(forErrorStatePrinters);
-  }
-
-  /**
-   * Returns true if the printer's most recent status was a high severity error.
-   */
-  private isPrinterInErrorState_(printerId: string): boolean {
-    const printerStatusReason = this.printerStatusReasonCache_.get(printerId);
-    return printerStatusReason !== undefined && printerStatusReason !== null &&
-        computePrinterState(printerStatusReason) ===
-        PrinterState.HIGH_SEVERITY_ERROR;
-  }
-
-  // Used to reset any existing timers for printer status querying and restart
-  // querying printers when the Saved printers section regains focus.
-  // TODO(b/298474359): Add browser test for below logic.
-  private resetPrinterStatusQueryTimers(): void {
-    this.timeoutIds_.forEach(timeoutId => clearTimeout(timeoutId));
-    this.pageStartTime_ = Date.now();
-
-    this.startPrinterStatusQueryTimer_(/*forErrorStatePrinters=*/ true);
-    this.startPrinterStatusQueryTimer_(/*forErrorStatePrinters=*/ false);
-  }
-
   getPrinterStatusReasonCacheForTesting(): Map<string, PrinterStatusReason> {
     return this.printerStatusReasonCache_;
-  }
-
-  getTimeoutIdsForTesting(): number[] {
-    return this.timeoutIds_;
   }
 }
 

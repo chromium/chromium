@@ -8036,11 +8036,6 @@ const char kPrintPreviewSetupAssistanceName[] =
 const char kPrintPreviewSetupAssistanceDescription[] =
     "Enable improved printer status and error messaging in Print Preview.";
 
-const char kLocalPrinterObservingName[] = "Enable Local Printer Observing";
-const char kLocalPrinterObservingDescription[] =
-    "Allows Print Preview and Printer settings to receive live updates from "
-    "local printers.";
-
 const char kDisableQuickAnswersV2TranslationName[] =
     "Disable Quick Answers Translation";
 const char kDisableQuickAnswersV2TranslationDescription[] =
