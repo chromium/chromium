@@ -241,7 +241,7 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.HAND_TRACKING:
                 return new ResourceItem(
-                        R.drawable.gm_filled_hand_tracking_24,
+                        R.drawable.gm_filled_hand_gesture_24,
                         R.string.hand_tracking_permission_title,
                         ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,

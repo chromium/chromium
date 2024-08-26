@@ -94,7 +94,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kGeolocation:
       return vector_icons::kLocationOnChromeRefreshIcon;
     case RequestType::kHandTracking:
-      return vector_icons::kHandTrackingIcon;
+      return vector_icons::kHandGestureIcon;
     case RequestType::kIdleDetection:
       return vector_icons::kDevicesIcon;
     case RequestType::kKeyboardLock:
@@ -162,7 +162,7 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kClipboard:
       return vector_icons::kContentPasteOffIcon;
     case RequestType::kHandTracking:
-      return vector_icons::kHandTrackingOffIcon;
+      return vector_icons::kHandGestureOffIcon;
     case RequestType::kIdleDetection:
       return vector_icons::kDevicesOffIcon;
     case RequestType::kMicStream:
