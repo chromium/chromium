@@ -33,6 +33,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_real_time_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -702,6 +703,7 @@ void InterestGroupManagerImpl::GetInterestGroupAdAuctionData(
   state.serializer.SetPublisher(top_level_origin.host());
   state.serializer.SetGenerationId(std::move(generation_id));
   state.serializer.SetTimestamp(timestamp);
+  // state.serializer.SetDebugReportInLockout(debug_report_in_lockout);
   state.callback = std::move(callback);
   if (config->per_buyer_configs.size() == 0) {
     state.serializer.SetConfig(std::move(config));
@@ -768,7 +770,7 @@ void InterestGroupManagerImpl::LoadNextInterestGroupAdAuctionData(
     return;
   }
   // Loading is finished.
-  OnAdAuctionDataLoadComplete(std::move(state));
+  OnInterestGroupAdAuctionDataLoadComplete(std::move(state));
 }
 
 void InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData(
@@ -780,8 +782,23 @@ void InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData(
   LoadNextInterestGroupAdAuctionData(std::move(state), std::move(owners));
 }
 
-void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
+void InterestGroupManagerImpl::OnInterestGroupAdAuctionDataLoadComplete(
     AdAuctionDataLoaderState state) {
+  if (blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
+      base::Milliseconds(0)) {
+    GetDebugReportLockout(
+        base::BindOnce(&InterestGroupManagerImpl::OnAdAuctionDataLoadComplete,
+                       weak_factory_.GetWeakPtr(), std::move(state)));
+  } else {
+    OnAdAuctionDataLoadComplete(std::move(state), std::nullopt);
+  }
+}
+
+void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
+    AdAuctionDataLoaderState state,
+    std::optional<base::Time> last_report_sent_time) {
+  state.serializer.SetDebugReportInLockout(
+      IsInDebugReportLockout(last_report_sent_time));
   BiddingAndAuctionData data = state.serializer.Build();
   base::UmaHistogramTimes(
       "Ads.InterestGroup.ServerAuction.AdAuctionDataLoadTime",
@@ -884,6 +901,11 @@ void InterestGroupManagerImpl::GetInterestGroupsForUpdate(
         callback) {
   caching_storage_.GetInterestGroupsForUpdate(owner, groups_limit,
                                               std::move(callback));
+}
+
+void InterestGroupManagerImpl::GetDebugReportLockout(
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
+  caching_storage_.GetDebugReportLockout(std::move(callback));
 }
 
 void InterestGroupManagerImpl::GetDebugReportLockoutAndCooldowns(

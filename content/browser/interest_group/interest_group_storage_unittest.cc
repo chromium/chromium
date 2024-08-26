@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -1251,6 +1252,9 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   EXPECT_FALSE(cooldowns->last_report_sent_time.has_value());
   EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
 
+  std::optional<base::Time> lockout = storage->GetDebugReportLockout();
+  ASSERT_FALSE(lockout.has_value());
+
   base::Time time = base::Time::Now();
   base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
       time.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
@@ -1260,6 +1264,9 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   ASSERT_TRUE(cooldowns->last_report_sent_time.has_value());
   EXPECT_EQ(expected_time, *cooldowns->last_report_sent_time);
   EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
+  lockout = storage->GetDebugReportLockout();
+  ASSERT_TRUE(lockout.has_value());
+  EXPECT_EQ(expected_time, *lockout);
 
   storage->RecordDebugReportCooldown(test_origin, time,
                                      DebugReportCooldownType::kShortCooldown);

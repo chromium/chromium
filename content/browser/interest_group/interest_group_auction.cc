@@ -59,6 +59,7 @@
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
@@ -574,21 +575,10 @@ bool IsOriginInDebugReportCooldownOrLockout(
   if (!debug_report_lockout_and_cooldowns.has_value()) {
     return false;
   }
-  base::Time now = base::Time::Now();
-  base::Time filtering_starting_from = base::Time::FromDeltaSinceWindowsEpoch(
-      blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get()
-          .CeilToMultiple(base::Hours(1)));
-  if (debug_report_lockout_and_cooldowns->last_report_sent_time.has_value()) {
-    bool is_lockout_before_filtering_starting =
-        *debug_report_lockout_and_cooldowns->last_report_sent_time <
-        filtering_starting_from;
-    bool is_in_lockout =
-        *debug_report_lockout_and_cooldowns->last_report_sent_time +
-            blink::features::kFledgeDebugReportLockout.Get() >=
-        now;
-    if (!is_lockout_before_filtering_starting && is_in_lockout) {
-      return true;
-    }
+
+  if (IsInDebugReportLockout(
+          debug_report_lockout_and_cooldowns->last_report_sent_time)) {
+    return true;
   }
 
   const auto cooldown_it =
@@ -600,9 +590,12 @@ bool IsOriginInDebugReportCooldownOrLockout(
         ConvertDebugReportCooldownTypeToDuration(cooldown_it->second.type);
     if (duration.has_value()) {
       bool is_cooldown_before_filtering_starting =
-          cooldown_it->second.starting_time < filtering_starting_from;
+          cooldown_it->second.starting_time <
+          CeilToNearestNextHour(
+              blink::features::kFledgeEnableFilteringDebugReportStartingFrom
+                  .Get());
       bool is_in_cooldown =
-          cooldown_it->second.starting_time + *duration >= now;
+          cooldown_it->second.starting_time + *duration >= base::Time::Now();
       if (!is_cooldown_before_filtering_starting && is_in_cooldown) {
         return true;
       }

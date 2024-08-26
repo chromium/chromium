@@ -105,6 +105,9 @@ class CONTENT_EXPORT BiddingAndAuctionSerializer {
   void SetConfig(blink::mojom::AuctionDataConfigPtr config) {
     config_ = std::move(config);
   }
+  void SetDebugReportInLockout(bool debug_report_in_lockout) {
+    debug_report_in_lockout_ = debug_report_in_lockout;
+  }
   void AddGroups(const url::Origin& owner,
                  scoped_refptr<StorageInterestGroups> groups);
   BiddingAndAuctionData Build();
@@ -114,6 +117,7 @@ class CONTENT_EXPORT BiddingAndAuctionSerializer {
   std::string publisher_;
   base::Time timestamp_;
   blink::mojom::AuctionDataConfigPtr config_;
+  bool debug_report_in_lockout_;
   std::vector<std::pair<url::Origin, std::vector<SingleStorageInterestGroup>>>
       accumulated_groups_;
 };

@@ -431,6 +431,13 @@ void InterestGroupCachingStorage::GetInterestGroupsForUpdate(
       .Then(std::move(callback));
 }
 
+void InterestGroupCachingStorage::GetDebugReportLockout(
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
+  return interest_group_storage_
+      .AsyncCall(&InterestGroupStorage::GetDebugReportLockout)
+      .Then(std::move(callback));
+}
+
 void InterestGroupCachingStorage::GetDebugReportLockoutAndCooldowns(
     base::flat_set<url::Origin> origins,
     base::OnceCallback<void(std::optional<DebugReportLockoutAndCooldowns>)>

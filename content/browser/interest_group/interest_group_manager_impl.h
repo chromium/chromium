@@ -462,6 +462,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                         const base::Time update_time,
                         bool initial_update);
 
+  // Gets lockout for sending forDebuggingOnly reports.
+  void GetDebugReportLockout(
+      base::OnceCallback<void(std::optional<base::Time>)> callback);
+
   // Gets lockout and cooldown for sending forDebuggingOnly reports.
   void GetDebugReportLockoutAndCooldowns(
       base::flat_set<url::Origin> origins,
@@ -661,9 +665,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       url::Origin owner,
       scoped_refptr<StorageInterestGroups> groups);
 
+  // Invoked when loading interest groups is completed. Load debug report
+  // lockout information if sampling debug report is enabled, otherwise invoke
+  // `OnAdAuctionDataLoadComplete()` directly.
+  void OnInterestGroupAdAuctionDataLoadComplete(AdAuctionDataLoaderState state);
+
   // Constructs the AuctionAdata when the load is complete and calls the
   // provided callback.
-  void OnAdAuctionDataLoadComplete(AdAuctionDataLoaderState state);
+  void OnAdAuctionDataLoadComplete(
+      AdAuctionDataLoaderState state,
+      std::optional<base::Time> last_report_sent_time);
 
   // Helper to that returns bound NotifyInterestGroupAccessed() callbacks to
   // allow notifications to be sent after a database update.

@@ -1174,6 +1174,8 @@ source_set("browser") {
     "interest_group/debuggable_auction_worklet_tracker.cc",
     "interest_group/debuggable_auction_worklet_tracker.h",
     "interest_group/devtools_enums.h",
+    "interest_group/for_debugging_only_report_util.cc",
+    "interest_group/for_debugging_only_report_util.h",
     "interest_group/header_direct_from_seller_signals.cc",
     "interest_group/header_direct_from_seller_signals.h",
     "interest_group/interest_group_auction.cc",

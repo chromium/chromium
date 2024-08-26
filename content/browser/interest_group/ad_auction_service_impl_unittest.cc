@@ -11530,6 +11530,59 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithoutDebugReporting) {
                                test_origin, testing::ElementsAre("cars"))));
 }
 
+TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobDebugReportingInLockout) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
+       {blink::features::kFledgeSampleDebugReports,
+        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+      {});
+
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  manager_->RecordDebugReportLockout(base::Time::Now());
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::vector<uint8_t> msg;
+  base::flat_map<url::Origin, std::vector<std::string>> group_names;
+  base::RunLoop run_loop;
+  manager_->GetInterestGroupAdAuctionData(
+      /*top_level_origin=*/test_origin,
+      /*generation_id=*/
+      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
+      /*config=*/blink::mojom::AuctionDataConfig::New(),
+      /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
+        msg = std::move(data.request);
+        group_names = std::move(data.group_names);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  std::string expected =
+      "AgAAAPimZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
+      "YS50ZXN0WF8fiwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeY"
+      "U7wkvSg1OTUvuZIhIykzxTm/"
+      "NK+"
+      "EIaOgKLUsPDOvuCEzKz8zDyzICAAUFTd6TgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJ"
+      "sZURlYnVnUmVwb3J0aW5n9AAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAA";
+  EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
+  EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
+  EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
+                               test_origin, testing::ElementsAre("cars"))));
+}
+
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithDebugToken) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kProtectedAudiencesConsentedDebugToken, "myToken");
@@ -12319,7 +12372,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   std::optional<AdAuctionDataAndId> result =
       GetAdAuctionDataAndFlushForFrame(test_origin);
   ASSERT_TRUE(result.has_value());
-  ASSERT_LT(0u, result.value().request.size());
+  ASSERT_FALSE(result->request.empty());
 
   auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
                         0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
@@ -12381,6 +12434,64 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
       context->group_pagg_coordinators,
       testing::UnorderedElementsAre(testing::Pair(
           blink::InterestGroupKey(test_origin, "cars"), pagg_coordinator)));
+}
+
+TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithDebugReportLockout) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
+       {blink::features::kFledgeSampleDebugReports,
+        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+      {});
+
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds(
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/std::nullopt}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  manager_->RecordDebugReportLockout(base::Time::Now());
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> result =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result->request.empty());
+
+  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+                        .value();
+  auto ohttp_gateway =
+      quiche::ObliviousHttpGateway::Create(
+          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                      sizeof(kTestPrivateKey)),
+          key_config)
+          .value();
+  EXPECT_EQ(0x00, result->request[0]);
+  auto request = ohttp_gateway.DecryptObliviousHttpRequest(
+      result->request.substr(1), kBiddingAndAuctionEncryptionRequestMediaType);
+  ASSERT_TRUE(request.ok()) << request.status();
+  auto plaintext_data = request->GetPlaintextData();
+
+  EXPECT_EQ(0x02, plaintext_data[0]);
+  size_t request_size = 0;
+  for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
+    request_size =
+        (request_size << 8) | static_cast<uint8_t>(plaintext_data[idx + 1]);
+  }
+
+  std::string got_str = cbor::DiagnosticWriter::Write(
+      cbor::Reader::Read(base::as_bytes(base::make_span(
+                             plaintext_data.substr(5, request_size))))
+          .value());
+  EXPECT_THAT(got_str,
+              testing::EndsWith(R"(, "enableDebugReporting": false})"));
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {

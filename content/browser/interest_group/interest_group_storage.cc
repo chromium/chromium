@@ -35,6 +35,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_storage.pb.h"
@@ -4408,10 +4409,9 @@ bool GetBidCount(sql::Database& db,
   return bid_count.Succeeded();
 }
 
-void DoGetDebugReportLockout(
+std::optional<base::Time> DoGetDebugReportLockout(
     sql::Database& db,
-    std::optional<base::Time> ignore_before,
-    DebugReportLockoutAndCooldowns& debug_report_lockout_and_cooldowns) {
+    std::optional<base::Time> ignore_before) {
   sql::Statement sent_time(
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT last_report_sent_time "
@@ -4420,13 +4420,13 @@ void DoGetDebugReportLockout(
   if (!sent_time.is_valid()) {
     DLOG(ERROR) << "GetLastDebugReportSentDate SQL statement did not compile: "
                 << db.GetErrorMessage();
-    return;
+    return std::nullopt;
   }
   sent_time.BindTime(0, ignore_before.value_or(base::Time::Min()));
   if (sent_time.Step()) {
-    debug_report_lockout_and_cooldowns.last_report_sent_time =
-        sent_time.ColumnTime(0);
+    return sent_time.ColumnTime(0);
   }
+  return std::nullopt;
 }
 
 std::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
@@ -5673,6 +5673,14 @@ std::vector<std::string> InterestGroupStorage::ClearOriginJoinedInterestGroups(
   return std::move(left_interest_groups.value());
 }
 
+std::optional<base::Time> InterestGroupStorage::GetDebugReportLockout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return std::nullopt;
+  }
+  return DoGetDebugReportLockout(*db_, GetSampleDebugReportStartingFrom());
+}
+
 std::optional<DebugReportLockoutAndCooldowns>
 InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
     base::flat_set<url::Origin> origins) {
@@ -5681,22 +5689,12 @@ InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
     return std::nullopt;
   }
   DebugReportLockoutAndCooldowns debug_report_lockout_and_cooldowns;
+
   // Ignore lockout and cooldowns whose start time is before
   // kFledgeEnableFilteringDebugReportStartingFrom.
-  std::optional<base::Time> ignore_before;
-  if (blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
-      base::Milliseconds(0)) {
-    // Also ceil kFledgeEnableFilteringDebugReportStartingFrom to its nearest
-    // next hour, in the same way as lockout and cooldown start time are ceiled.
-    // Otherwise, it's possible that the ceiled lockout/cooldowns collected
-    // before this flag being greater than the flag, which caused them not being
-    // ignored when they should be.
-    ignore_before = base::Time::FromDeltaSinceWindowsEpoch(
-        blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get()
-            .CeilToMultiple(base::Hours(1)));
-  }
-  DoGetDebugReportLockout(*db_, ignore_before,
-                          debug_report_lockout_and_cooldowns);
+  std::optional<base::Time> ignore_before = GetSampleDebugReportStartingFrom();
+  debug_report_lockout_and_cooldowns.last_report_sent_time =
+      DoGetDebugReportLockout(*db_, ignore_before);
   DoGetDebugReportCooldowns(*db_, std::move(origins), ignore_before,
                             debug_report_lockout_and_cooldowns);
   return debug_report_lockout_and_cooldowns;

@@ -100,6 +100,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithDefaultConfig) {
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetConfig(blink::mojom::AuctionDataConfig::New());
+  serializer.SetDebugReportInLockout(false);
 
   AddGroupsToSerializer(serializer);
 
@@ -127,6 +128,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithLargeRequestSize) {
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   AddGroupsToSerializer(serializer);
 
@@ -154,6 +156,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithSmallRequestSize) {
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   AddGroupsToSerializer(serializer);
 
@@ -181,6 +184,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   AddGroupsToSerializer(serializer);
 
@@ -217,6 +221,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSize) {
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   AddGroupsToSerializer(serializer);
 
@@ -254,6 +259,7 @@ TEST_F(BiddingAndAuctionSerializerTest,
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   AddGroupsToSerializer(serializer);
 
@@ -291,6 +297,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeExpands) {
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   AddGroupsToSerializer(serializer);
 
@@ -327,6 +334,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeShrinks) {
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   AddGroupsToSerializer(serializer);
 
@@ -365,6 +373,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithFixedSizeGroups) {
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   AddGroupsToSerializer(serializer);
 
@@ -405,6 +414,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithNoGroupsSetBuyersFixed) {
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   BiddingAndAuctionData data = serializer.Build();
   EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
@@ -434,6 +444,7 @@ TEST_F(BiddingAndAuctionSerializerTest,
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
   serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
+  serializer.SetDebugReportInLockout(false);
 
   BiddingAndAuctionData data = serializer.Build();
   EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
