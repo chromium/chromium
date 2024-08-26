@@ -185,7 +185,7 @@ BASE_FEATURE(kEnableVirtioBlkMultipleWorkers,
 // Controls whether to extend the input event ANR timeout time.
 BASE_FEATURE(kExtendInputAnrTimeout,
              "ArcExtendInputAnrTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to extend the broadcast of intent ANR timeout time.
 BASE_FEATURE(kExtendIntentAnrTimeout,
