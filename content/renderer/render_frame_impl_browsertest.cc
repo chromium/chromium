@@ -1468,7 +1468,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnabledBindingsTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         GetMainRenderFrame()->enabled_bindings_.Put(
             BindingsPolicyValue::kMojoWebUi);
@@ -1485,7 +1485,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnableMojoJsBindingsTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         GetMainRenderFrame()->enable_mojo_js_bindings_ = true;
 
@@ -1501,7 +1501,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, MojoJsInterfaceBrokerTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         GetMainRenderFrame()->mojo_js_interface_broker_ =
             TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote();
@@ -1519,8 +1519,8 @@ TEST_F(RenderFrameImplMojoJsDeathTest,
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(ContextFeatureSettingsEnableMojoJsTampered(),
-                    "Check failed: \\*mojo_js_allowed_");
+  EXPECT_CHECK_DEATH_WITH(ContextFeatureSettingsEnableMojoJsTampered(),
+                          "Check failed: \\*mojo_js_allowed_");
 }
 #endif  //  BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 
