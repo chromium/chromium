@@ -131,9 +131,6 @@ WebString WebElement::InnerHTML() const {
 }
 
 bool WebElement::WritingSuggestions() const {
-  if (!RuntimeEnabledFeatures::WritingSuggestionsEnabled()) {
-    return true;
-  }
   const auto* html_element =
       blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());
   return html_element &&

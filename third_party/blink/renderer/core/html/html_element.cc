@@ -3261,7 +3261,6 @@ void HTMLElement::FinishParsingChildren() {
 }
 
 AtomicString HTMLElement::writingSuggestions() const {
-  CHECK(RuntimeEnabledFeatures::WritingSuggestionsEnabled());
   for (const Element* element = this; element;
        element = element->ParentOrShadowHostElement()) {
     const AtomicString& value =
@@ -3280,7 +3279,6 @@ AtomicString HTMLElement::writingSuggestions() const {
 }
 
 void HTMLElement::setWritingSuggestions(const AtomicString& value) {
-  CHECK(RuntimeEnabledFeatures::WritingSuggestionsEnabled());
   setAttribute(html_names::kWritingsuggestionsAttr, value);
 }
 
