@@ -258,6 +258,9 @@ ci.builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
 )
 
 ci.builder(
