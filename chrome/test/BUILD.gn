@@ -3450,8 +3450,6 @@ if (!is_android) {
       sources += [
         "../browser/browser_process_platform_part_chromeos_browsertest.cc",
         "../browser/chromeos/enterprise/incognito_navigation_throttle_browsertest.cc",
-        "../browser/chromeos/policy/default_notifications_setting_browsertest.cc",
-        "../browser/chromeos/policy/dino_easter_egg_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_cros_browsertest.cc",
         "../browser/net/network_annotation_monitor_browsertest.cc",

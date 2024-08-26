@@ -500,6 +500,7 @@ group("browser_tests") {
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
+      "//chrome/browser/chromeos/policy:browser_tests",
       "//chrome/browser/chromeos/policy/dlp:browser_tests",
       "//chrome/browser/chromeos/printing/print_preview:browser_tests",
       "//chrome/browser/chromeos/reporting/network:browser_tests",
