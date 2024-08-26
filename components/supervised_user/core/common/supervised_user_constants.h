@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -116,11 +115,6 @@ extern const char* const kCustodianInfoPrefs[10];
 extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
 
 extern const char kSyncGoogleDashboardURL[];
-
-// URLs for RPCs in the KidsManagement service.
-GURL KidsManagementGetFamilyMembersURL();
-GURL KidsManagementPermissionRequestsURL();
-GURL KidsManagementClassifyURLRequestURL();
 
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];
