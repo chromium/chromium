@@ -40,6 +40,40 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has conflict"/>
 </enum>
 
+<!-- LINT.IfChange(ClassifyUrlThrottleStatus) -->
+
+<enum name="ClassifyUrlThrottleStatus">
+  <summary>Defines throttle interaction type with the navigation flow.</summary>
+  <int value="0" label="Continue">
+    The classification result is not needed yet so the throttle continues.
+  </int>
+  <int value="1" label="Proceed">
+    The classification is completed and allows the throttle to proceed with the
+    navigation.
+  </int>
+  <int value="2" label="Defer">
+    The classification result is needed. Navigation is deferred to allow
+    classification to complete.
+  </int>
+  <int value="3" label="DeferAndScheduleInterstitial">
+    The classification is completed and requires the throttle to show an
+    interstitial. Navigation is deferred to show the interstitial.
+  </int>
+  <int value="4" label="Cancel">
+    The classification not needed because the throttle can't proceed.
+  </int>
+  <int value="5" label="Resume">
+    The classification is completed after the throttle called &quot;Defer&quot;,
+    and now the navigation can proceed.
+  </int>
+  <int value="6" label="Cancel deferred navigation">
+    The classification is completed after the throttle called &quot;Defer&quot;,
+    and now the navigation must show the interstitial.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleStatus) -->
+
 <!-- LINT.IfChange(FamilyInfoLogSourceFetchStatus) -->
 
 <enum name="FamilyInfoLogSourceFetchStatus">

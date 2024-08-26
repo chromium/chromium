@@ -20,6 +20,20 @@
 
 namespace supervised_user {
 
+// LINT.IfChange(ClassifyUrlThrottleStatus)
+enum class ClassifyUrlThrottleStatus : int {
+  kContinue = 0,
+  kProceed = 1,
+  kDefer = 2,
+  kDeferAndScheduleInterstitial = 3,
+  kCancel = 4,
+  kResume = 5,
+  kCancelDeferredNavigation = 6,
+
+  kMaxValue = kCancelDeferredNavigation,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleStatus)
+
 // Returns a new throttle for the given navigation, or nullptr if no
 // throttling is required.
 std::unique_ptr<content::NavigationThrottle>
@@ -39,6 +53,9 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
       const ClassifyUrlNavigationThrottle&) = delete;
 
   ~ClassifyUrlNavigationThrottle() override;
+
+ protected:
+  void CancelDeferredNavigation(ThrottleCheckResult result) override;
 
  private:
   explicit ClassifyUrlNavigationThrottle(
@@ -98,6 +115,14 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
                       FilteringBehavior behavior,
                       FilteringBehaviorReason reason,
                       bool uncertain);
+
+  // Change state of the throttle and record metrics.
+  std::optional<ThrottleCheckResult> NextNavigationState(
+      ClassifyUrlThrottleStatus status);
+
+  // Defers the navigation to accommodate the interstitial and shows that
+  // interstitial.
+  ThrottleCheckResult DeferAndScheduleInterstitial(Check check);
 
   // Interstitial handling
   void ScheduleInterstitial(Check check);
