@@ -838,10 +838,6 @@ bool TemplateURLRef::ParseParameter(size_t start,
     // We don't support these.
     if (!optional)
       url->insert(start, "1");
-  } else if (parameter == "regSearchExt") {
-    replacements->emplace_back(REGULATORY_SEARCH_EXTENSIONS, start);
-  } else if (parameter == "regSuggestExt") {
-    replacements->emplace_back(REGULATORY_SUGGEST_EXTENSIONS, start);
   } else if (!prepopulated_) {
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
                               /* is externally supplied template? */ false);
@@ -1586,53 +1582,6 @@ std::string TemplateURLRef::HandleReplacements(
         break;
       }
 
-      case REGULATORY_SEARCH_EXTENSIONS: {
-        // Note: Regulatory Search extension may or may not offer substitution.
-        // It is up to the person defining the extension to make an educated
-        // decision whether a parameter delimiter is important in a given
-        // context and to add one if so.
-        auto* extension = owner_->GetRegulatoryExtension();
-
-        if (extension != nullptr) {
-          base::UmaHistogramEnumeration(
-              "Omnibox.TemplateUrl.Reconciliation.RegulatoryExtensionVariant",
-              extension->variant);
-        }
-
-        if (extension != nullptr && extension->search_params != nullptr) {
-          std::string search_extension(extension->search_params);
-
-          if (!search_extension.empty()) {
-            HandleReplacement(std::string(), "&" + search_extension,
-                              replacement, &url);
-          }
-        }
-        break;
-      }
-
-      case REGULATORY_SUGGEST_EXTENSIONS: {
-        // Note: Regulatory Suggest extension may or may not offer substitution.
-        // It is up to the person defining the extension to make an educated
-        // decision whether a parameter delimiter is important in a given
-        // context and to add one if so.
-        auto* extension = owner_->GetRegulatoryExtension();
-
-        if (extension != nullptr) {
-          base::UmaHistogramEnumeration(
-              "Omnibox.TemplateUrl.Reconciliation.RegulatoryExtensionVariant",
-              extension->variant);
-        }
-
-        if (extension != nullptr && extension->suggest_params != nullptr) {
-          std::string suggest_extension(extension->suggest_params);
-          if (!suggest_extension.empty()) {
-            HandleReplacement(std::string(), "&" + suggest_extension,
-                              replacement, &url);
-          }
-        }
-        break;
-      }
-
       default:
         NOTREACHED_IN_MIGRATION();
         break;
@@ -1948,6 +1897,7 @@ bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
   TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
   search_terms_args.additional_query_params =
       base::JoinString(query_params, "&");
+
   *out_url =
       GURL(url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data));
   if (out_search_terms) {
@@ -2037,9 +1987,21 @@ GURL TemplateURL::GenerateSearchURL(const SearchTermsData& search_terms_data,
   if (!url_ref().SupportsReplacement(search_terms_data))
     return GURL(url());
 
-  return GURL(url_ref().ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(search_terms), search_terms_data,
-      nullptr));
+  TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
+  auto regulatory_extension_type = GetRegulatoryExtensionType();
+  base::UmaHistogramEnumeration(
+      "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant",
+      regulatory_extension_type);
+
+  auto* regulatory_extension =
+      GetRegulatoryExtension(regulatory_extension_type);
+  if (regulatory_extension && regulatory_extension->search_params) {
+    search_terms_args.additional_query_params =
+        regulatory_extension->search_params;
+  }
+
+  return GURL(url_ref().ReplaceSearchTerms(std::move(search_terms_args),
+                                           search_terms_data, nullptr));
 }
 
 GURL TemplateURL::GenerateSuggestionURL(
@@ -2050,24 +2012,39 @@ GURL TemplateURL::GenerateSuggestionURL(
   if (!suggestions_url_ref().SupportsReplacement(search_terms_data))
     return GURL(suggestions_url());
 
-  return GURL(suggestions_url_ref().ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(), search_terms_data, nullptr));
-}
+  TemplateURLRef::SearchTermsArgs search_terms_args{};
+  auto regulatory_extension_type = GetRegulatoryExtensionType();
+  base::UmaHistogramEnumeration(
+      "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant",
+      regulatory_extension_type);
 
-const TemplateURLData::RegulatoryExtension*
-TemplateURL::GetRegulatoryExtension() const {
-  auto extension = data_.regulatory_extensions.end();
-
-  if (data_.created_from_play_api) {
-    extension =
-        data_.regulatory_extensions.find(RegulatoryExtensionType::kAndroidEEA);
-  } else {
-    extension =
-        data_.regulatory_extensions.find(RegulatoryExtensionType::kDefault);
+  auto* regulatory_extension =
+      GetRegulatoryExtension(regulatory_extension_type);
+  if (regulatory_extension && regulatory_extension->suggest_params) {
+    search_terms_args.additional_query_params =
+        regulatory_extension->suggest_params;
   }
 
-  return extension == data_.regulatory_extensions.end() ? nullptr
-                                                        : extension->second;
+  return GURL(suggestions_url_ref().ReplaceSearchTerms(
+      std::move(search_terms_args), search_terms_data, nullptr));
+}
+
+RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
+  if (data_.created_from_play_api) {
+    return RegulatoryExtensionType::kAndroidEEA;
+  }
+  return RegulatoryExtensionType::kDefault;
+}
+
+const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(
+    RegulatoryExtensionType type) const {
+  auto extension_iter = data_.regulatory_extensions.find(type);
+  auto* extension = extension_iter == data_.regulatory_extensions.end()
+                        ? nullptr
+                        : extension_iter->second;
+
+  DCHECK(extension == nullptr || extension->variant == type);
+  return extension;
 }
 
 bool TemplateURL::IsSideSearchSupported() const {

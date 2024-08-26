@@ -2162,20 +2162,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.TemplateUrl.Reconciliation.RegulatoryExtensionVariant"
-    enum="RegulatoryExtensionVariant" expires_after="2025-09-01">
-  <owner>ender@google.com</owner>
-  <owner>chrome-search@google.com</owner>
-  <summary>
-    Records the type of regulatory extension used to replace the {regSearchExt}
-    or {regSuggestExt} field while handling replacements for a TemplateUrl.
-
-    Recorded only for eligible TemplateURLs that feature extensions mentioned
-    above, once per a replacement, regardless of whether the relevant extension
-    field was populated.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.TemplateUrl.Reconciliation.Type"
     enum="ReconciliationType" expires_after="2025-09-01">
   <owner>ender@google.com</owner>
@@ -2203,6 +2189,31 @@ chromium-metrics-reviews@google.com.
     <variant name="ByID" summary="by ID"/>
     <variant name="ByKeyword" summary="by Keyword"/>
   </token>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant"
+    enum="RegulatoryExtensionVariant" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Records the type of regulatory extension used to formulate the Search URL.
+
+    Recorded for all TemplateURLs every time a Search URL is created, regardless
+    of whether extensions are used, or a specific extension type is populated.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant"
+    enum="RegulatoryExtensionVariant" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Records the type of regulatory extension used to formulate the Suggest URL.
+
+    Recorded for all TemplateURLs every time a Suggest URL is created,
+    regardless of whether extensions are used, or a specific extension type is
+    populated.
+  </summary>
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.RlzPresent" enum="Boolean"

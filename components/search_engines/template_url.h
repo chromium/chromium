@@ -466,9 +466,7 @@ class TemplateURLRef {
     SEARCH_TERMS,
     YANDEX_REFERRAL_ID,
     IMAGE_TRANSLATE_SOURCE_LOCALE,
-    IMAGE_TRANSLATE_TARGET_LOCALE,
-    REGULATORY_SEARCH_EXTENSIONS,
-    REGULATORY_SUGGEST_EXTENSIONS
+    IMAGE_TRANSLATE_TARGET_LOCALE
   };
 
   // Used to identify an element of the raw url that can be replaced.
@@ -977,7 +975,14 @@ class TemplateURL {
   // Returns whether |url| query contains a side image search param.
   bool ContainsSideImageSearchParam(const GURL& url) const;
 
-  const TemplateURLData::RegulatoryExtension* GetRegulatoryExtension() const;
+  // Returns the RegulatoryExtensionType appropriate for this instance of the
+  // TemplateURL.
+  RegulatoryExtensionType GetRegulatoryExtensionType() const;
+
+  // Returns the specific data associated with the supplied
+  // RegulatoryExtensionType.
+  const TemplateURLData::RegulatoryExtension* GetRegulatoryExtension(
+      RegulatoryExtensionType type) const;
 
  private:
   friend class TemplateURLService;
