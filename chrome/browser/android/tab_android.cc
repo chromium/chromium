@@ -516,69 +516,6 @@ bool TabAndroid::IsTrustedWebActivity() {
   return Java_TabImpl_isTrustedWebActivity(env, weak_java_tab_.get(env));
 }
 
-content::WebContents* TabAndroid::GetContents() const {
-  return web_contents_.get();
-}
-
-base::CallbackListSubscription TabAndroid::RegisterWillDiscardContents(
-    WillDiscardContentsCallback callback) {
-  NOTIMPLEMENTED();
-  return {};
-}
-
-bool TabAndroid::IsInForeground() const {
-  return IsUserInteractable();
-}
-
-base::CallbackListSubscription TabAndroid::RegisterDidEnterForeground(
-    DidEnterForegroundCallback callback) {
-  NOTIMPLEMENTED();
-  return {};
-}
-
-base::CallbackListSubscription TabAndroid::RegisterWillEnterBackground(
-    WillEnterBackgroundCallback callback) {
-  NOTIMPLEMENTED();
-  return {};
-}
-
-base::CallbackListSubscription TabAndroid::RegisterWillDetach(
-    WillDetach callback) {
-  NOTIMPLEMENTED();
-  return {};
-}
-
-bool TabAndroid::CanShowModalUI() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-std::unique_ptr<tabs::ScopedTabModalUI> TabAndroid::ShowModalUI() {
-  NOTIMPLEMENTED();
-  return {};
-}
-
-bool TabAndroid::IsInNormalWindow() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-BrowserWindowInterface* TabAndroid::GetBrowserWindowInterface() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-tabs::TabFeatures* TabAndroid::GetTabFeatures() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-// static
-tabs::TabInterface* tabs::TabInterface::GetFromContents(
-    content::WebContents* web_contents) {
-  return TabAndroid::FromWebContents(web_contents);
-}
-
 base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {

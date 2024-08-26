@@ -12,9 +12,6 @@
 namespace content {
 class WebContents;
 }
-namespace tabs {
-class TabInterface;
-}
 class Profile;
 
 // This namespace contains test utilities that function for both Android and
@@ -24,10 +21,6 @@ namespace chrome_test_utils {
 // Returns the active WebContents. On desktop this is in the first browser
 // window created by tests, more specific behaviour requires other means.
 content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test);
-
-// Returns the active tab. This is the tab corresponding to
-// GetActiveWebContents().
-tabs::TabInterface* GetActiveTabInterface(PlatformBrowserTest* browser_test);
 
 // Returns the active Profile. On desktop this is in the first browser
 // window created by tests, more specific behaviour requires other means.
