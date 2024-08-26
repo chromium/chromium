@@ -240,6 +240,24 @@ public class ActionConfirmationManagerUnitTest {
     }
 
     @Test
+    public void testProcessRemoveTabAttempt_NoIdentityManager() {
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(
+                        mProfile, mActivity, mTabGroupModelFilter, mModalDialogManager);
+        actionConfirmationManager.processRemoveTabAttempt(Arrays.asList(TAB1_ID), mOnResult);
+        verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
+
+        View customView =
+                mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
+        assertEquals(
+                "This will permanently delete the group from your device",
+                descriptionTextView.getText());
+    }
+
+    @Test
     public void testProcessRemoveTabAttempt_NoSignIn() {
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
 

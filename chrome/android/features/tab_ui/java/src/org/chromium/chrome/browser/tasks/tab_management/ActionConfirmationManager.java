@@ -225,14 +225,13 @@ public class ActionConfirmationManager {
             @StringRes int actionRes,
             Callback<Integer> onResult) {
 
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        boolean syncingTabGroups =
-                syncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
-        IdentityServicesProvider identityServicesProvider = IdentityServicesProvider.get();
-        IdentityManager identityManager = identityServicesProvider.getIdentityManager(mProfile);
-        @Nullable
-        CoreAccountInfo coreAccountInfo =
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        boolean syncingTabGroups = false;
+        @Nullable SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        if (syncService != null) {
+            syncingTabGroups = syncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
+        }
+
+        @Nullable CoreAccountInfo coreAccountInfo = getCoreAccountInfo();
         final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver;
         if (syncingTabGroups && coreAccountInfo != null) {
@@ -266,6 +265,17 @@ public class ActionConfirmationManager {
                 actionRes,
                 /* supportStopShowing= */ true,
                 onDialogResult);
+    }
+
+    private @Nullable CoreAccountInfo getCoreAccountInfo() {
+        IdentityServicesProvider identityServicesProvider = IdentityServicesProvider.get();
+        @Nullable
+        IdentityManager identityManager = identityServicesProvider.getIdentityManager(mProfile);
+        if (identityManager != null) {
+            return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        } else {
+            return null;
+        }
     }
 
     private void processGroupNameAction(
