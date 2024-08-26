@@ -9,7 +9,6 @@ import("//chrome/browser/buildflags.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/gsa/ContextReporter.java",
-    "java/src/org/chromium/chrome/browser/gsa/GSAAccountChangeListener.java",
     "java/src/org/chromium/chrome/browser/gsa/GSAContextDisplaySelection.java",
     "java/src/org/chromium/chrome/browser/gsa/GSAContextReportDelegate.java",
     "java/src/org/chromium/chrome/browser/gsa/GSAHelper.java",

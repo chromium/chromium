@@ -137,9 +137,7 @@ public class GSAServiceClient {
                 Bundle b = mGsaHelper.getBundleForRegisteringGSAClient(mContext);
                 if (b == null) b = new Bundle();
                 b.putString(KEY_GSA_PACKAGE_NAME, mContext.getPackageName());
-                b.putBoolean(
-                        KEY_GSA_SUPPORTS_BROADCAST,
-                        GSAAccountChangeListener.holdsAccountUpdatePermission());
+                b.putBoolean(KEY_GSA_SUPPORTS_BROADCAST, false);
                 registerClientMessage.setData(b);
                 mService.send(registerClientMessage);
                 // Send prepare overlay message if there is a pending GSA context.

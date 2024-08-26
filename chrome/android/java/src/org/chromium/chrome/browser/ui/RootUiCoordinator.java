@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.gsa.ContextReporter;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -1048,10 +1047,6 @@ public class RootUiCoordinator
                     .get()
                     .hideContextualSearch(OverlayPanel.StateChangeReason.UNKNOWN);
         }
-    }
-
-    public ContextReporter.SelectionReporter getContextReporter() {
-        return null;
     }
 
     /**

@@ -61,7 +61,6 @@ import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
@@ -111,9 +110,6 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.gsa.ContextReporter;
-import org.chromium.chrome.browser.gsa.GSAAccountChangeListener;
-import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
@@ -152,7 +148,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.stylus_handwriting.StylusWritingCoordinator;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -214,7 +209,6 @@ import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.CombinedPolicyProvider.PolicyChangeListener;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.profile_metrics.BrowserProfileType;
-import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
@@ -319,7 +313,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private TabContentManager mTabContentManager;
 
     private final UmaActivityObserver mUmaActivityObserver;
-    private ContextReporter mContextReporter;
 
     private boolean mPartnerBrowserRefreshNeeded;
 
@@ -331,9 +324,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private boolean mNativeInitialized;
     private boolean mRemoveWindowBackgroundDone;
-
-    // Observes when sync becomes ready to create the mContextReporter.
-    private SyncService.SyncStateChangedListener mSyncStateChangedListener;
 
     // The FullscreenVideoPictureInPictureController is initialized lazily https://crbug.com/729738.
     private FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
@@ -385,8 +375,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Nullable private BottomContainer mBottomContainer;
 
     private LaunchCauseMetrics mLaunchCauseMetrics;
-
-    private GSAAccountChangeListener mGSAAccountChangeListener;
 
     // TODO(crbug.com/40631552): Pull MenuOrKeyboardActionController out of ChromeActivity.
     private List<MenuOrKeyboardActionController.MenuOrKeyboardActionHandler> mMenuActionHandlers =
@@ -1144,35 +1132,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return StatusBarColorController.UNDEFINED_STATUS_BAR_COLOR;
     }
 
-    private void createContextReporterIfNeeded() {
-        if (!mStarted) return; // Sync state reporting should work only in started state.
-        if (mContextReporter != null || getActivityTab() == null) return;
-
-        final SyncService syncService = getSyncServiceForOriginalProfile();
-
-        if (syncService != null && syncService.isSyncingUnencryptedUrls()) {
-            mContextReporter =
-                    AppHooks.get()
-                            .createGsaHelper()
-                            .getContextReporter(
-                                    getActivityTabProvider(),
-                                    mTabModelSelectorSupplier,
-                                    mRootUiCoordinator.getContextReporter());
-
-            if (mSyncStateChangedListener != null) {
-                syncService.removeSyncStateChangedListener(mSyncStateChangedListener);
-                mSyncStateChangedListener = null;
-            }
-
-            return;
-        }
-
-        if (mSyncStateChangedListener == null && syncService != null) {
-            mSyncStateChangedListener = () -> createContextReporterIfNeeded();
-            syncService.addSyncStateChangedListener(mSyncStateChangedListener);
-        }
-    }
-
     @Override
     public void onResumeWithNative() {
         startUmaSession();
@@ -1351,19 +1310,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public void onStopWithNative() {
-        if (GSAState.getInstance().isGsaAvailable() && !SysUtils.isLowEndDevice()) {
-            if (mGSAAccountChangeListener != null) mGSAAccountChangeListener.disconnect();
-        }
-        if (mSyncStateChangedListener != null) {
-            SyncService syncService = getSyncServiceForOriginalProfile();
-            if (syncService != null) {
-                syncService.removeSyncStateChangedListener(mSyncStateChangedListener);
-            }
-            mSyncStateChangedListener = null;
-        }
-        if (mContextReporter != null) {
-            mContextReporter.disable();
-        }
         if (mFullscreenVideoPictureInPictureController != null) {
             mFullscreenVideoPictureInPictureController.onStop();
             mFullscreenVideoPictureInPictureController = null;
@@ -1477,26 +1423,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                     ChromeActivity.this,
                                     getProfileProviderSupplier().get().getOriginalProfile());
                         });
-
-        // GSA connection is not needed on low-end devices because Icing is disabled.
-        if (!SysUtils.isLowEndDevice()) {
-            DeferredStartupHandler.getInstance()
-                    .addDeferredTask(
-                            () -> {
-                                if (isActivityFinishingOrDestroyed()
-                                        || !GSAState.getInstance().isGsaAvailable()) {
-                                    return;
-                                }
-
-                                if (mGSAAccountChangeListener == null) {
-                                    mGSAAccountChangeListener =
-                                            GSAAccountChangeListener.create(
-                                                    AppHooks.get().createGsaHelper());
-                                }
-                                mGSAAccountChangeListener.connect();
-                                createContextReporterIfNeeded();
-                            });
-        }
 
         DeferredStartupHandler.getInstance()
                 .addDeferredTask(
@@ -3131,12 +3057,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled()
                 ? AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW
                 : AutomotiveToolbarImplementation.WITH_ACTION_BAR;
-    }
-
-    private @Nullable SyncService getSyncServiceForOriginalProfile() {
-        if (!mTabModelProfileSupplier.hasValue()) return null;
-        return SyncServiceFactory.getForProfile(
-                mTabModelProfileSupplier.get().getOriginalProfile());
     }
 
     /**
