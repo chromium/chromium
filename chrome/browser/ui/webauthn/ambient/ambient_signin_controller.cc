@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "content/public/browser/document_user_data.h"
@@ -47,11 +48,13 @@ void AmbientSigninController::AddAndShowWebAuthnMethods(
     return;
   }
   auto* browser = chrome::FindBrowserWithTab(web_contents);
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  ToolbarButtonProvider* button_provider =
+      BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
+  auto* anchor_view = button_provider->GetAnchorView(std::nullopt);
 
   if (!ambient_signin_bubble_view_) {
-    ambient_signin_bubble_view_ = new AmbientSigninBubbleView(
-        web_contents, browser_view->contents_web_view(), this);
+    ambient_signin_bubble_view_ =
+        new AmbientSigninBubbleView(anchor_view, this);
     ambient_signin_bubble_view_->ShowPasskeys(credentials);
   } else {
     ambient_signin_bubble_view_->Update();

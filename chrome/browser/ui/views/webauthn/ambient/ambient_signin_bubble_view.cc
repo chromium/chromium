@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -25,27 +24,16 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 
-using content::WebContents;
-
 namespace ambient_signin {
-
-namespace {
-
-inline constexpr int kRightMargin = 40;
-inline constexpr int kTopMargin = 16;
-
-}  // namespace
 
 BEGIN_METADATA(AmbientSigninBubbleView)
 END_METADATA
 
 AmbientSigninBubbleView::AmbientSigninBubbleView(
-    WebContents* web_contents,
     View* anchor_view,
     AmbientSigninController* controller)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT),
-      web_contents_(web_contents),
       controller_(controller) {
   set_fixed_width(375);
   set_close_on_deactivate(false);
@@ -107,26 +95,6 @@ std::unique_ptr<views::View> AmbientSigninBubbleView::CreatePasskeyRow(
       /*title=*/base::UTF8ToUTF16(passkey.username()),
       /*subtitle=*/passkey.GetAuthenticatorLabel());
   return row;
-}
-
-// The implementation below is heavily influenced by AccountSelectionBubbleView
-gfx::Rect AmbientSigninBubbleView::GetBubbleBounds() {
-  CHECK(web_contents_);
-
-  gfx::Rect bubble_bounds = BubbleDialogDelegateView::GetBubbleBounds();
-  gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
-  if (base::i18n::IsRTL()) {
-    web_contents_bounds.Inset(
-        gfx::Insets::TLBR(kTopMargin, kRightMargin, 0, 0));
-    bubble_bounds.set_origin(web_contents_->GetViewBounds().origin());
-  } else {
-    web_contents_bounds.Inset(
-        gfx::Insets::TLBR(kTopMargin, 0, 0, kRightMargin));
-    bubble_bounds.set_origin(web_contents_->GetViewBounds().top_right());
-  }
-  bubble_bounds.AdjustToFit(web_contents_bounds);
-
-  return bubble_bounds;
 }
 
 }  // namespace ambient_signin

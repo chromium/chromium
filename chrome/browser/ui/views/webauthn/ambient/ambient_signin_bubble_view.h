@@ -12,10 +12,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace password_manager {
 class PasskeyCredential;
 }
@@ -27,8 +23,7 @@ class AmbientSigninController;
 class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(AmbientSigninBubbleView, views::BubbleDialogDelegateView)
  public:
-  explicit AmbientSigninBubbleView(content::WebContents* web_contents,
-                                   views::View* anchor_view,
+  explicit AmbientSigninBubbleView(views::View* anchor_view,
                                    AmbientSigninController* controller);
   ~AmbientSigninBubbleView() override;
 
@@ -45,17 +40,12 @@ class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
   void Hide();
   void Close();
 
-  // views::BubbleDialogDelegateView:
   void NotifyWidgetDestroyed();
 
  private:
-  // views::BubbleDialogDelegateView:
-  gfx::Rect GetBubbleBounds() override;
-
   std::unique_ptr<views::View> CreatePasskeyRow(
       const password_manager::PasskeyCredential& passkey);
 
-  raw_ptr<content::WebContents> web_contents_;
   raw_ptr<AmbientSigninController> controller_;
   base::WeakPtr<views::Widget> widget_;
 };
