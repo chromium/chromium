@@ -37,8 +37,12 @@
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -119,11 +123,15 @@ class ShoppingServiceTest : public ShoppingServiceTestBase,
                                 syncer::kSyncEnableBookmarksInTransportMode},
           /*disabled_features=*/{});
       bookmark_model_->CreateAccountPermanentFolders();
+      identity_test_env_->MakePrimaryAccountAvailable(
+          "test@example.com", signin::ConsentLevel::kSignin);
     } else {
       // Whether `syncer::kSyncEnableBookmarksInTransportMode` is enabled or not
       // makes no difference in this case.
       scoped_feature_list_.InitAndDisableFeature(
           syncer::kReplaceSyncPromosWithSignInPromos);
+      identity_test_env_->MakePrimaryAccountAvailable(
+          "test@example.com", signin::ConsentLevel::kSync);
     }
 
     sync_service_->SetSignedIn(ShouldEnableReplaceSyncPromosWithSignInPromos()
@@ -739,6 +747,52 @@ TEST_P(ShoppingServiceTest, TestProductSpecificationsSetUrlsRetained) {
   // There should no longer be any references in the cache.
   ASSERT_EQ(0u, GetCache().GetUrlRefCount(url1));
   ASSERT_EQ(0u, GetCache().GetUrlRefCount(url2));
+}
+
+TEST_P(ShoppingServiceTest, TestProductSpecificationsUrlCountMetrics) {
+  test_features_.InitWithFeatures({commerce::kProductSpecifications}, {});
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      true, {syncer::UserSelectableType::kProductComparison});
+
+  pref_service_->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+  SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
+
+  const GURL url1("http://example.com/1");
+  const GURL url2("http://example.com/2");
+
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode, kGpcTitle, kProductCategories);
+  opt_guide_->SetResponse(url1, OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  NiceMockWebWrapper web1(GURL(url1), false);
+  DidNavigatePrimaryMainFrame(&web1);
+
+  NiceMockWebWrapper web2(GURL(url2), false);
+  DidNavigatePrimaryMainFrame(&web2);
+
+  base::HistogramTester histogram_tester;
+  base::RunLoop looper;
+  shopping_service_->GetProductSpecificationsForUrls(
+      {url1, url2},
+      base::BindOnce([](std::vector<uint64_t> urls,
+                        std::optional<ProductSpecifications> specs) {
+      }).Then(looper.QuitClosure()));
+  looper.Run();
+
+  histogram_tester.ExpectTotalCount("Commerce.Compare.Table.ColumnCount", 1);
+  histogram_tester.ExpectUniqueSample("Commerce.Compare.Table.ColumnCount", 2,
+                                      1);
+  histogram_tester.ExpectTotalCount(
+      "Commerce.Compare.Table.PercentageValidProducts", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Commerce.Compare.Table.PercentageValidProducts", 0.5f, 1);
+
+  DidNavigatePrimaryMainFrame(&web1);
+  DidNavigatePrimaryMainFrame(&web2);
 }
 
 // Test that product info is inserted into the cache without a client

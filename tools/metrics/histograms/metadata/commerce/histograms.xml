@@ -143,6 +143,16 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Compare.Table.ColumnCount" units="columns"
+    expires_after="2025-02-15">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the number of columns a user has in a comparison table at the time a
+    new/updated table is requested from the backend.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Compare.Table.ColumnModification"
     enum="CompareTableColumnAction" expires_after="2025-02-15">
   <owner>mdjones@chromium.org</owner>
@@ -150,6 +160,18 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <summary>
     Records the action taken to modify a column in a comparison table from the
     table UI.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Compare.Table.PercentageValidProducts" units="%"
+    expires_after="2025-02-15">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the percentage of URLs in a user's comparison table that map to
+    valid products. This most commonly means the product has a cluster ID
+    associated with it. This is recorded each time a new/updated table is
+    requested from the backend.
   </summary>
 </histogram>
 
