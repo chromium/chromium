@@ -65,6 +65,9 @@ inline constexpr char kManagedOrcaEnabled[] =
 // A boolean pref of whether Help Me Read (HMR) is enabled.
 inline constexpr char kHmrEnabled[] = "settings.mahi_enabled";
 
+// A boolean pref of whether feedback for Help Me Read (HMR) is allowed.
+inline constexpr char kHmrFeedbackAllowed[] = "settings.mahi_feedback_allowed";
+
 // An integer pref used by an admin policy to control the settings of Help Me
 // Read (HMR). See the policy at HelpMeReadSettings.yaml.
 inline constexpr char kHmrManagedSettings[] = "settings.managed.help_me_read";
