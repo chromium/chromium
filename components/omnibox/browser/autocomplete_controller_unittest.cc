@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
+#include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -1102,30 +1103,83 @@ TEST_F(AutocompleteControllerTest, MlRanking_PiecewiseMappedSearchBlending) {
           "history 1100 .186",
       }));
 
-  // Verify that URLs are grouped above searches if their final score is
-  // greater than `grouping_threshold` (i.e. "shortcut boosting").
+  scoped_refptr<FakeAutocompleteProvider> shortcut_provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SHORTCUTS);
+
+  auto shortcut_match = CreateMlScoredMatch(
+      "shortcut 600 0.75", AutocompleteMatchType::HISTORY_URL, true, 600, 0.75);
+  shortcut_match.provider = shortcut_provider.get();
+
+  // Non-boosted shortcut suggestions should be ranked BELOW searches.
+  shortcut_match.scoring_signals->set_visit_count(0);
   EXPECT_THAT(
       controller_.SimulateCleanAutocompletePass({
-          // Final score: 1133
-          CreateHistoryUrlMlScoredMatch("history 1350 .473", true, 1350, .473),
-          CreateSearchMatch("search 1400", false, 1400),
-          CreateSearchMatch("search 800", true, 800),
-          CreateSearchMatch("search 600", false, 600),
           // Final score: 1431
           CreateHistoryUrlMlScoredMatch("history 1200 .914", true, 1200, .914),
-          // Final score: 872
-          CreateHistoryUrlMlScoredMatch("history 1100 .186", false, 1100, .186),
-          // Final score: 1000
-          CreateHistoryUrlMlScoredMatch("history 500 .25", true, 500, .25),
+          // Final score: 700
+          CreateSearchMatch("search 700", true, 700),
+          // Final score: 1300
+          shortcut_match,
       }),
       testing::ElementsAreArray({
           "history 1200 .914",
-          "history 1350 .473",
-          "search 1400",
-          "search 800",
-          "search 600",
-          "history 500 .25",
-          "history 1100 .186",
+          "search 700",
+          "shortcut 600 0.75",
+      }));
+
+  // Boosted shortcut suggestions should be ranked ABOVE searches.
+  shortcut_match.scoring_signals->set_visit_count(5);
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          // Final score: 1431
+          CreateHistoryUrlMlScoredMatch("history 1200 .914", true, 1200, .914),
+          // Final score: 700
+          CreateSearchMatch("search 700", true, 700),
+          // Final score: 1300
+          shortcut_match,
+      }),
+      testing::ElementsAreArray({
+          "history 1200 .914",
+          "shortcut 600 0.75",
+          "search 700",
+      }));
+
+  // ...unless their final relevance score (obtained via piecewise ML scoring)
+  // is below the "grouping threshold".
+  shortcut_match = CreateMlScoredMatch(
+      "shortcut 600 0.25", AutocompleteMatchType::HISTORY_URL, true, 600, 0.25);
+  shortcut_match.provider = shortcut_provider.get();
+  shortcut_match.scoring_signals->set_visit_count(5);
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          // Final score: 1431
+          CreateHistoryUrlMlScoredMatch("history 1200 .914", true, 1200, .914),
+          // Final score: 700
+          CreateSearchMatch("search 700", true, 700),
+          // Final score: 1000
+          shortcut_match,
+      }),
+      testing::ElementsAreArray({
+          "history 1200 .914",
+          "search 700",
+          "shortcut 600 0.25",
+      }));
+
+  // In general, URL suggestions are NOT "shortcut boosted" above searches even
+  // when they're scored higher via ML scoring.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          // Final score: 1431
+          CreateHistoryUrlMlScoredMatch("history 1200 .914", true, 1200, .914),
+          // Final score: 700
+          CreateSearchMatch("search 700", true, 700),
+          // Final score: 1300
+          CreateHistoryUrlMlScoredMatch("history 1100 .75", true, 1100, .75),
+      }),
+      testing::ElementsAreArray({
+          "history 1200 .914",
+          "search 700",
+          "history 1100 .75",
       }));
 
   // When multiple URL suggestions have been assigned the same score by the ML
