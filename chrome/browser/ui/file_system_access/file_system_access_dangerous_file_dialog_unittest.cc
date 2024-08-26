@@ -7,15 +7,16 @@
 #include <optional>
 
 #include "base/test/bind.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/test/test_dialog_model_host.h"
 #include "url/origin.h"
 
 using DangerousFileResult =
     content::FileSystemAccessPermissionContext::SensitiveEntryResult;
 
-using FileSystemAccessDangerousFileDialogTest = BrowserWithTestWindowTest;
+using FileSystemAccessDangerousFileDialogTest = testing::Test;
 
 namespace {
 

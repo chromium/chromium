@@ -8,10 +8,10 @@
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/test/test_dialog_model_host.h"
 #include "url/origin.h"
 
@@ -20,7 +20,7 @@ using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 using RequestData = FileSystemAccessPermissionRequestManager::RequestData;
 using RequestType = FileSystemAccessPermissionRequestManager::RequestType;
 
-using FileSystemAccessPermissionDialogTest = BrowserWithTestWindowTest;
+using FileSystemAccessPermissionDialogTest = testing::Test;
 
 class TestFileSystemAccessPermissionDialog {
  public:
