@@ -1153,6 +1153,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
 void RenderWidgetHostImpl::ClearVisualProperties() {
   old_visual_properties_.reset();
+  visual_properties_ack_pending_ = false;
 }
 
 bool RenderWidgetHostImpl::UpdateVisualProperties(bool propagate) {
