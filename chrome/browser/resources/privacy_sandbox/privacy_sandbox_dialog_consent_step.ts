@@ -49,6 +49,11 @@ export class PrivacySandboxDialogConsentStepElement extends
     this.dispatchEvent(
         new CustomEvent('consent-resolved', {bubbles: true, composed: true}));
   }
+
+  private onPrivacyPolicyLinkClicked_() {
+    this.dispatchEvent(new CustomEvent(
+        'privacy-policy-page', {bubbles: true, composed: true}));
+  }
 }
 
 declare global {

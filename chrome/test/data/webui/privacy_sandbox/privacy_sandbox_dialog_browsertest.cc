@@ -6,12 +6,15 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget.h"
 
 class PrivacySandboxDialogTest : public WebUIMochaBrowserTest {
  protected:
   PrivacySandboxDialogTest() {
+    feature_list()->InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxPrivacyPolicy);
     set_test_loader_host(chrome::kChromeUIPrivacySandboxDialogHost);
   }
 
@@ -20,6 +23,11 @@ class PrivacySandboxDialogTest : public WebUIMochaBrowserTest {
         "privacy_sandbox/privacy_sandbox_dialog_test.js",
         base::StringPrintf("runMochaSuite('%s');", testCase.c_str()));
   }
+
+  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class PrivacySandboxDialogSmallWindowTest : public PrivacySandboxDialogTest {
