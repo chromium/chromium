@@ -8035,3 +8035,9 @@ crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/cs
 
 # Gardener 2024-08-23
 crbug.com/361671577 [ Linux ] fast/forms/validationMessage.html [ Failure Pass ]
+
+# Gardener 2024-08-26
+# Failing on Mac since https://crrev.com/c/5806434. Not sure if it's on the test
+# or on the infra.
+crbug.com/362280773 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Failure Pass ]
+crbug.com/362280773 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Failure Pass ]
