@@ -5,5 +5,3 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN
 ++++++++++UNKNOWN
 ++++++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden
