@@ -29,6 +29,7 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_constants.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -384,12 +385,10 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   // Query the server if at least one of the forms was parsed.
   if (!queryable_forms.empty() && client().GetCrowdsourcingManager()) {
     NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
-    if (!client().GetCrowdsourcingManager()->StartQueryRequest(
-            queryable_forms, driver().GetIsolationInfo(),
-            base::BindOnce(&AutofillManager::OnLoadedServerPredictions,
-                           GetWeakPtr()))) {
-      NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
-    }
+    client().GetCrowdsourcingManager()->StartQueryRequest(
+        queryable_forms, driver().GetIsolationInfo(),
+        base::BindOnce(&AutofillManager::OnLoadedServerPredictions,
+                       GetWeakPtr()));
   }
 }
 
@@ -865,13 +864,20 @@ void AutofillManager::ParseFormAsync(
 }
 
 void AutofillManager::OnLoadedServerPredictions(
-    std::string response,
-    const std::vector<FormSignature>& queried_form_signatures) {
+    std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
+  absl::Cleanup on_after_loaded_server_predictions = [this] {
+    NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
+  };
+
+  if (!response) {
+    return;
+  }
+
   // Get the current valid FormStructures represented by
-  // |queried_form_signatures|.
+  // `response->queried_form_signatures`.
   std::vector<raw_ptr<FormStructure, VectorExperimental>> queried_forms;
-  queried_forms.reserve(queried_form_signatures.size());
-  for (const auto& form_signature : queried_form_signatures) {
+  queried_forms.reserve(response->queried_form_signatures.size());
+  for (const auto& form_signature : response->queried_form_signatures) {
     FindCachedFormsBySignature(form_signature, &queried_forms);
   }
 
@@ -888,14 +894,14 @@ void AutofillManager::OnLoadedServerPredictions(
   // If there are no current forms corresponding to the queried signatures, drop
   // the query response.
   if (queried_forms.empty()) {
-    NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
     return;
   }
 
   // Parse and store the server predictions.
   ParseServerPredictionsQueryResponse(
-      std::move(response), queried_forms, queried_form_signatures,
-      form_interactions_ukm_logger(), log_manager_);
+      std::move(response->response), queried_forms,
+      response->queried_form_signatures, form_interactions_ukm_logger(),
+      log_manager_);
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.
@@ -914,7 +920,6 @@ void AutofillManager::OnLoadedServerPredictions(
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
                     Observer::FieldTypeSource::kAutofillServer);
   }
-  NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
 }
 
 }  // namespace autofill

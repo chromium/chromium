@@ -68,8 +68,6 @@ class AutofillManager
   // OnBeforeFoo() may be called without a corresponding OnAfterFoo() call are:
   // - if the number of cached forms exceeds `kAutofillManagerMaxFormCacheSize`;
   // - if this AutofillManager has been destroyed or reset in the meantime.
-  // - if the request in AutofillCrowdsourcingManager was not successful (i.e.
-  //   no 2XX response code or a null response body).
   //
   // When observing an AutofillManager, make sure to remove the observation
   // before the AutofillManager is destroyed. Pending destruction is signaled
@@ -449,8 +447,7 @@ class AutofillManager
 
   // Invoked by `AutofillCrowdsourcingManager`.
   void OnLoadedServerPredictions(
-      std::string response,
-      const std::vector<FormSignature>& queried_form_signatures);
+      std::optional<AutofillCrowdsourcingManager::QueryResponse> response);
 
   // Invoked when forms from OnFormsSeen() have been parsed to
   // |form_structures|.

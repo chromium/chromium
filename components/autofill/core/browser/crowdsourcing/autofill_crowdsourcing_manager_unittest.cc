@@ -243,12 +243,13 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
   }
 
   void OnLoadedServerPredictions(
-      std::string response_xml,
-      const std::vector<FormSignature>& form_signatures) {
-    ResponseData response;
-    response.response = std::move(response_xml);
-    response.type_of_response = ResponseType::kQuerySuccessful;
-    responses().push_back(response);
+      std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
+    if (!response) {
+      return;
+    }
+    responses().push_back({.type_of_response = ResponseType::kQuerySuccessful,
+                           .signature = {},
+                           .response = std::move(response->response)});
   }
 
   TestAutofillClient& client() { return client_; }
@@ -1097,8 +1098,7 @@ class AutofillServerCommunicationTest
 
   // AutofillCrowdsourcingManager::Observer implementation.
   void OnLoadedServerPredictions(
-      std::string /* response_xml */,
-      const std::vector<FormSignature>& /*form_signatures */) {
+      std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
     ASSERT_TRUE(run_loop_);
     run_loop_->QuitWhenIdle();
   }

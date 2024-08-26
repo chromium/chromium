@@ -154,15 +154,6 @@ class AutofillManagerTest : public testing::Test {
     driver_.reset();
   }
 
-  void SetUpObserverAndCrowdsourcingManager(bool successful_request) {
-    auto crowdsourcing_manager =
-        std::make_unique<MockAutofillCrowdsourcingManager>(&client_);
-    ON_CALL(*crowdsourcing_manager, StartQueryRequest)
-        .WillByDefault(Return(successful_request));
-    client_.set_crowdsourcing_manager(std::move(crowdsourcing_manager));
-    manager().AddObserver(&observer_);
-  }
-
   MockAutofillManager& manager() {
     return static_cast<MockAutofillManager&>(driver_->GetAutofillManager());
   }
@@ -172,7 +163,6 @@ class AutofillManagerTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient client_;
   std::unique_ptr<MockAutofillDriver> driver_;
-  MockAutofillManagerObserver observer_;
 };
 
 // The test parameter sets the number of forms to be generated.
@@ -190,14 +180,26 @@ INSTANTIATE_TEST_SUITE_P(AutofillManagerTest,
 class AutofillManagerTest_OnLoadedServerPredictionsObserver
     : public AutofillManagerTest {
  public:
-  void SetUpObserverAndCrowdsourcingManager(bool successful_request) {
-    auto crowdsourcing_manager =
-        std::make_unique<MockAutofillCrowdsourcingManager>(&client_);
-    ON_CALL(*crowdsourcing_manager, StartQueryRequest)
-        .WillByDefault(Return(successful_request));
-    client_.set_crowdsourcing_manager(std::move(crowdsourcing_manager));
+  using QueryResponse = AutofillCrowdsourcingManager::QueryResponse;
+
+  void SetUp() override {
+    AutofillManagerTest::SetUp();
+    client_.set_crowdsourcing_manager(
+        std::make_unique<MockAutofillCrowdsourcingManager>(&client_));
     manager().AddObserver(&observer_);
   }
+
+  void TearDown() override {
+    manager().RemoveObserver(&observer_);
+    AutofillManagerTest::TearDown();
+  }
+
+  MockAutofillCrowdsourcingManager& crowdsourcing_manager() {
+    return static_cast<MockAutofillCrowdsourcingManager&>(
+        *client_.GetCrowdsourcingManager());
+  }
+
+  MockAutofillManagerObserver observer_;
 };
 
 // Tests that the cache size is bounded by kAutofillManagerMaxFormCacheSize.
@@ -464,64 +466,69 @@ TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_SuccessfulQueryRequest_NotifiesBeforeLoadedServerPredictionsObserver) {
-  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
-
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [](const auto&, const auto&,
+             base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
+            std::move(callback).Run(QueryResponse("", {}));
+            return true;
+          });
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
   task_environment_.RunUntilIdle();
-
-  manager().RemoveObserver(&observer_);
 }
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_FailedQueryRequest_NotifiesBothLoadedServerPredictionsObservers) {
-  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/false);
-
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [](const auto&, const auto&,
+             base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
+            std::move(callback).Run(std::nullopt);
+            return true;
+          });
   EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
   task_environment_.RunUntilIdle();
-
-  manager().RemoveObserver(&observer_);
 }
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_EmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
-  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
-
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [&](const auto&, const auto&,
+              base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
+            std::move(callback).Run(QueryResponse("", {}));
+            return true;
+          });
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
   task_environment_.RunUntilIdle();
-
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
-  test_api(manager()).OnLoadedServerPredictions("", {});
-
-  manager().RemoveObserver(&observer_);
 }
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_NonEmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
-  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
-
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
@@ -531,15 +538,19 @@ TEST_F(
   EXPECT_CALL(observer_,
               OnFieldTypesDetermined(Ref(manager()), forms[0].global_id(),
                                      FieldTypeSource::kAutofillServer));
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [&](const auto&, const auto&,
+              base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
+            std::move(callback).Run(
+                QueryResponse("", {manager()
+                                       .FindCachedFormById(forms[0].global_id())
+                                       ->form_signature()}));
+            return true;
+          });
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
   task_environment_.RunUntilIdle();
-
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
-  test_api(manager()).OnLoadedServerPredictions(
-      "",
-      {manager().FindCachedFormById(forms[0].global_id())->form_signature()});
-
-  manager().RemoveObserver(&observer_);
 }
 
 }  // namespace autofill
