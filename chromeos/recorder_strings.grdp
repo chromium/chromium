@@ -303,6 +303,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Label of each different speaker in the transcription. SPEAKER_LABEL is numbered starting from 1." name="IDS_RECORDER_TRANSCRIPTION_SPEAKER_LABEL_LABEL">
     Speaker <ph name="SPEAKER_LABEL">$1<ex>2</ex></ph>
   </message>
+  <message desc="Label of the generic speaker when speaker label is still pending in the transcription." name="IDS_RECORDER_TRANSCRIPTION_SPEAKER_LABEL_PENDING_LABEL">
+    Speaker
+  </message>
   <message desc="Message when there’s not yet any speech detected when recording." name="IDS_RECORDER_TRANSCRIPTION_WAITING_SPEECH_TEXT">
     Listening for speech…
   </message>

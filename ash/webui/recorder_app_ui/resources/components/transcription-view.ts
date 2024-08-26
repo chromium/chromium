@@ -128,6 +128,10 @@ export class TranscriptionView extends ReactiveLitElement {
         }
       }
 
+      .speaker-pending {
+        --speaker-label-shapes-color: var(--cros-sys-on_surface_variant);
+      }
+
       .sentence {
         border-radius: 4px;
         box-decoration-break: clone;
@@ -341,16 +345,27 @@ export class TranscriptionView extends ReactiveLitElement {
   private renderSpeakerLabel(
     speakerLabels: string[],
     speakerLabel: string|null,
+    partial: boolean,
   ) {
     if (speakerLabel === null) {
       return nothing;
     }
-    const speakerLabelIdx = speakerLabels.indexOf(speakerLabel);
-    assert(speakerLabelIdx !== -1);
-    return html`<div
-      class="speaker-label ${getSpeakerLabelClass(speakerLabelIdx)}"
-    >
-      ${i18n.transcriptionSpeakerLabelLabel(speakerLabel)}
+
+    let speakerLabelClass: string;
+    let speakerLabelLabel: string;
+
+    if (partial) {
+      speakerLabelClass = 'speaker-pending';
+      speakerLabelLabel = i18n.transcriptionSpeakerLabelPendingLabel;
+    } else {
+      const speakerLabelIdx = speakerLabels.indexOf(speakerLabel);
+      assert(speakerLabelIdx !== -1);
+      speakerLabelClass = getSpeakerLabelClass(speakerLabelIdx);
+      speakerLabelLabel = i18n.transcriptionSpeakerLabelLabel(speakerLabel);
+    }
+
+    return html`<div class="speaker-label ${speakerLabelClass}">
+      ${speakerLabelLabel}
     </div>`;
   }
 
@@ -359,9 +374,9 @@ export class TranscriptionView extends ReactiveLitElement {
     const sentences = sliceWhen(parts, ({text}) => {
       return text.endsWith('.') || text.endsWith('?') || text.endsWith('!');
     });
-    const {speakerLabel} = assertExists(parts[0]);
+    const {speakerLabel, partial} = assertExists(parts[0]);
     return [
-      this.renderSpeakerLabel(speakerLabels, speakerLabel),
+      this.renderSpeakerLabel(speakerLabels, speakerLabel, partial ?? false),
       repeat(
         sentences,
         (_v, i) => i,

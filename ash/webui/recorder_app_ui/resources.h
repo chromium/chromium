@@ -179,6 +179,8 @@ const webui::LocalizedString kLocalizedStrings[] = {
     {"transcriptionNoSpeechText", IDS_RECORDER_TRANSCRIPTION_NO_SPEECH_TEXT},
     {"transcriptionSpeakerLabelLabel",
      IDS_RECORDER_TRANSCRIPTION_SPEAKER_LABEL_LABEL},
+    {"transcriptionSpeakerLabelPendingLabel",
+     IDS_RECORDER_TRANSCRIPTION_SPEAKER_LABEL_PENDING_LABEL},
     {"transcriptionWaitingSpeechText",
      IDS_RECORDER_TRANSCRIPTION_WAITING_SPEECH_TEXT},
 };

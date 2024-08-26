@@ -113,6 +113,7 @@ const noArgStrings = [
   'titleSuggestionHeader',
   'transcriptionAutoscrollButton',
   'transcriptionNoSpeechText',
+  'transcriptionSpeakerLabelPendingLabel',
   'transcriptionWaitingSpeechText',
 ] as const;
 
