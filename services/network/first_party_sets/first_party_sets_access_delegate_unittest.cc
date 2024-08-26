@@ -315,7 +315,7 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
       }),
-      /*cache_filter-*/ std::nullopt));
+      /*cache_filter=*/std::nullopt));
 
   net::FirstPartySetEntry primary_entry(kSet3Primary, net::SiteType::kPrimary,
                                         std::nullopt);
@@ -334,7 +334,7 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_FindEntries) {
            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
       }),
-      /*cache_filter-*/ std::nullopt));
+      /*cache_filter=*/std::nullopt));
 
   EXPECT_THAT(FindEntriesAndWait({kSet3Primary}),
               UnorderedElementsAre(Pair(kSet3Primary, _)));
@@ -543,7 +543,7 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
           {{kSet1AssociatedSite1,
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                 kSet2Primary, net::SiteType::kAssociated, 0))}}),
-      /*cache_filter-*/ std::nullopt));
+      /*cache_filter=*/std::nullopt));
   EXPECT_EQ(future.Get(),
             std::make_tuple(
                 net::FirstPartySetMetadata(&primary_entry, &associated_entry),
@@ -566,7 +566,7 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
           {{kSet1AssociatedSite1,
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                 kSet2Primary, net::SiteType::kAssociated, 0))}}),
-      /*cache_filter-*/ std::nullopt));
+      /*cache_filter=*/std::nullopt));
   EXPECT_EQ(future.Get(),
             FirstPartySetsAccessDelegate::EntriesResult(
                 {{kSet1AssociatedSite1,
@@ -680,7 +680,7 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
       }),
-      /*cache_filter-*/ std::nullopt));
+      /*cache_filter=*/std::nullopt));
   base::RunLoop().RunUntilIdle();
 
   net::FirstPartySetEntry primary_entry(kSet3Primary, net::SiteType::kPrimary,
@@ -707,7 +707,7 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
       }),
-      /*cache_filter-*/ std::nullopt));
+      /*cache_filter=*/std::nullopt));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(FindEntriesAndWait({kSet3Primary}),
