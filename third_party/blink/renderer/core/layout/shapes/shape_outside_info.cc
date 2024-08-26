@@ -55,6 +55,28 @@ gfx::Rect ToPixelSnappedLogicalRect(const LogicalRect& rect) {
       SnapSizeToPixel(rect.size.block_size, rect.offset.block_offset));
 }
 
+// Unlike LayoutBoxModelObject::PhysicalBorderToLogical(), this function
+// applies container's WritingDirectionMode.
+PhysicalToLogicalGetter<LayoutUnit, LayoutBox> LogicalBorder(
+    const LayoutBox& layout_box,
+    const ComputedStyle& container_style) {
+  return PhysicalToLogicalGetter<LayoutUnit, LayoutBox>(
+      container_style.GetWritingDirection(), layout_box, &LayoutBox::BorderTop,
+      &LayoutBox::BorderRight, &LayoutBox::BorderBottom,
+      &LayoutBox::BorderLeft);
+}
+
+// Unlike LayoutBoxModelObject::PhysicalPaddingToLogical(), this function
+// applies container's WritingDirectionMode.
+PhysicalToLogicalGetter<LayoutUnit, LayoutBox> LogicalPadding(
+    const LayoutBox& layout_box,
+    const ComputedStyle& container_style) {
+  return PhysicalToLogicalGetter<LayoutUnit, LayoutBox>(
+      container_style.GetWritingDirection(), layout_box, &LayoutBox::PaddingTop,
+      &LayoutBox::PaddingRight, &LayoutBox::PaddingBottom,
+      &LayoutBox::PaddingLeft);
+}
+
 }  // namespace
 
 CSSBoxType ReferenceBox(const ShapeValue& shape_value) {
@@ -315,57 +337,19 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
   return *shape_;
 }
 
-inline LayoutUnit BorderBlockStart(const LayoutBox& layout_box,
-                                   WritingMode writing_mode) {
-  switch (writing_mode) {
-    case WritingMode::kHorizontalTb:
-      return LayoutUnit(layout_box.BorderTop());
-    case WritingMode::kVerticalLr:
-      return LayoutUnit(layout_box.BorderLeft());
-    case WritingMode::kVerticalRl:
-      return LayoutUnit(layout_box.BorderRight());
-    // TODO(layout-dev): Sideways-lr and sideways-rl are not yet supported.
-    default:
-      break;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit(layout_box.BorderBlockStart());
-}
-
-inline LayoutUnit BorderAndPaddingBlockStart(const LayoutBox& layout_box,
-                                             WritingMode writing_mode) {
-  switch (writing_mode) {
-    case WritingMode::kHorizontalTb:
-      return layout_box.BorderTop() + layout_box.PaddingTop();
-    case WritingMode::kVerticalLr:
-      return layout_box.BorderLeft() + layout_box.PaddingLeft();
-    case WritingMode::kVerticalRl:
-      return layout_box.BorderRight() + layout_box.PaddingRight();
-    // TODO(layout-dev): Sideways-lr and sideways-rl are not yet supported.
-    default:
-      break;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return layout_box.BorderAndPaddingBlockStart();
-}
-
 LayoutUnit ShapeOutsideInfo::BlockStartOffset() const {
+  const ComputedStyle& container_style =
+      layout_box_->ContainingBlock()->StyleRef();
   switch (ReferenceBox(*layout_box_->StyleRef().ShapeOutside())) {
     case CSSBoxType::kMargin:
-      return -layout_box_->MarginBlockStart(
-          layout_box_->ContainingBlock()->Style());
+      return -layout_box_->MarginBlockStart(&container_style);
     case CSSBoxType::kBorder:
       return LayoutUnit();
     case CSSBoxType::kPadding:
-      return BorderBlockStart(
-          *layout_box_,
-          layout_box_->ContainingBlock()->StyleRef().GetWritingMode());
+      return LogicalBorder(*layout_box_, container_style).BlockStart();
     case CSSBoxType::kContent:
-      return BorderAndPaddingBlockStart(
-          *layout_box_,
-          layout_box_->ContainingBlock()->StyleRef().GetWritingMode());
+      return LogicalBorder(*layout_box_, container_style).BlockStart() +
+             LogicalPadding(*layout_box_, container_style).BlockStart();
     case CSSBoxType::kMissing:
       break;
   }
@@ -374,47 +358,19 @@ LayoutUnit ShapeOutsideInfo::BlockStartOffset() const {
   return LayoutUnit();
 }
 
-inline LayoutUnit BorderInlineStart(const LayoutBox& layout_box,
-                                    const ComputedStyle* style) {
-  if (style->IsHorizontalWritingMode()) {
-    if (style->IsLeftToRightDirection())
-      return LayoutUnit(layout_box.BorderLeft());
-
-    return LayoutUnit(layout_box.BorderRight());
-  }
-  if (style->IsLeftToRightDirection())
-    return LayoutUnit(layout_box.BorderTop());
-
-  return LayoutUnit(layout_box.BorderBottom());
-}
-
-inline LayoutUnit BorderAndPaddingInlineStart(const LayoutBox& layout_box,
-                                              const ComputedStyle* style) {
-  if (style->IsHorizontalWritingMode()) {
-    if (style->IsLeftToRightDirection())
-      return layout_box.BorderLeft() + layout_box.PaddingLeft();
-
-    return layout_box.BorderRight() + layout_box.PaddingRight();
-  }
-  if (style->IsLeftToRightDirection())
-    return layout_box.BorderTop() + layout_box.PaddingTop();
-
-  return layout_box.BorderBottom() + layout_box.PaddingBottom();
-}
-
 LayoutUnit ShapeOutsideInfo::InlineStartOffset() const {
+  const ComputedStyle& container_style =
+      layout_box_->ContainingBlock()->StyleRef();
   switch (ReferenceBox(*layout_box_->StyleRef().ShapeOutside())) {
     case CSSBoxType::kMargin:
-      return -layout_box_->MarginInlineStart(
-          layout_box_->ContainingBlock()->Style());
+      return -layout_box_->MarginInlineStart(&container_style);
     case CSSBoxType::kBorder:
       return LayoutUnit();
     case CSSBoxType::kPadding:
-      return BorderInlineStart(*layout_box_,
-                               layout_box_->ContainingBlock()->Style());
+      return LogicalBorder(*layout_box_, container_style).InlineStart();
     case CSSBoxType::kContent:
-      return BorderAndPaddingInlineStart(
-          *layout_box_, layout_box_->ContainingBlock()->Style());
+      return LogicalBorder(*layout_box_, container_style).InlineStart() +
+             LogicalPadding(*layout_box_, container_style).InlineStart();
     case CSSBoxType::kMissing:
       break;
   }
