@@ -75,7 +75,6 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/edu_coexistence",

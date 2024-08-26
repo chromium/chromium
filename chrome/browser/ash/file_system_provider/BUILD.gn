@@ -191,7 +191,6 @@ source_set("browser_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ui",
     "//chrome/common",

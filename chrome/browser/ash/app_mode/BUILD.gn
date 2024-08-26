@@ -174,7 +174,6 @@ static_library("test_support") {
     "test_kiosk_extension_builder.h",
   ]
   public_deps = [
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/auto_sleep",
     "//chrome/browser/ash/app_mode/web_app",
@@ -187,6 +186,7 @@ static_library("test_support") {
   ]
   deps = [
     "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

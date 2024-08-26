@@ -157,7 +157,6 @@ source_set("unit_tests") {
     "//ash/components/arc",
     "//ash/components/arc:arc_test_support",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/extensions:test_support",
     "//chrome/browser/ash/arc/fileapi",

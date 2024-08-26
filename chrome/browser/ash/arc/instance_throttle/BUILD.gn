@@ -79,7 +79,6 @@ source_set("unit_tests") {
     "//ash/components/arc/mojom",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/idle_manager",
     "//chrome/browser/ash/arc/idle_manager:test_support",

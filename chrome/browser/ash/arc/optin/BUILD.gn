@@ -48,7 +48,6 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/extensions:test_support",
     "//chrome/browser/ash/ownership",

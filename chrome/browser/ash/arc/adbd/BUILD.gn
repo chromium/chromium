@@ -33,7 +33,6 @@ source_set("unit_tests") {
     "//ash/components/arc",
     "//ash/components/arc:arc_test_support",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/guest_os",

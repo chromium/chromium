@@ -247,7 +247,6 @@ source_set("unit_tests") {
     "//base:i18n",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/demo_mode:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/login/users/avatar",

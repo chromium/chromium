@@ -61,7 +61,6 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",

@@ -97,7 +97,6 @@ static_library("test_support") {
   deps = [
     ":smb_client",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/disks",
@@ -137,7 +136,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/smb_client/discovery",

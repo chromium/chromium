@@ -95,7 +95,6 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc/tracing/test:test_support",

@@ -82,7 +82,6 @@ source_set("unit_tests") {
     "//ash/components/arc:arc_test_support",
     "//ash/components/arc/input_overlay/resources",
     "//ash/public/cpp",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/input_overlay/actions",
     "//chrome/browser/ash/arc/input_overlay/test:test_support",
