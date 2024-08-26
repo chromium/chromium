@@ -88,8 +88,9 @@
   box-sizing: border-box;
   border: none;
   display: flex;
-  height: 28px;
-  padding: 0 20px;
+  max-height: 44px;
+  min-height: 28px;
+  padding: 6px 20px;
 }
 
 .group-item[highlighted],
@@ -135,9 +136,10 @@
 }
 
 .item span {
+  display: inline-block;
+  max-height: 32px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .item:has(img) span {
