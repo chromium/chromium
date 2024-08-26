@@ -5,12 +5,14 @@
 #include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_button_view.h"
 #include "ash/capture_mode/capture_label_view.h"
+#include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/controls/label.h"
@@ -99,6 +101,33 @@ TEST_F(SunfishTest, CaptureLabelView) {
   EXPECT_FALSE(capture_label->GetVisible());
 
   // TODO: Maybe hide the button.
+}
+
+// Tests the sunfish capture mode bar view.
+TEST_F(SunfishTest, CaptureBarView) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* session = controller->capture_mode_session();
+  ASSERT_EQ(BehaviorType::kSunfish,
+            session->active_behavior()->behavior_type());
+
+  CaptureModeSessionTestApi test_api(session);
+  auto* bar_view = test_api.GetCaptureModeBarView();
+  ASSERT_TRUE(bar_view);
+
+  // The bar view should only have a close button.
+  auto* close_button = bar_view->close_button();
+  ASSERT_TRUE(close_button);
+  ASSERT_FALSE(bar_view->settings_button());
+
+  // The sunfish bar does not have a settings button, so trying to set the menu
+  // shown should instead do nothing.
+  bar_view->SetSettingsMenuShown(true);
+  EXPECT_FALSE(bar_view->settings_button());
+
+  // Close the session using the button.
+  LeftClickOn(bar_view->close_button());
+  ASSERT_FALSE(controller->capture_mode_session());
 }
 
 }  // namespace ash

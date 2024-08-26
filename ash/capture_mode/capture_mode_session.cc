@@ -1597,8 +1597,10 @@ void CaptureModeSession::MaybeCreateUserNudge() {
     return;
   }
 
-  user_nudge_controller_ = std::make_unique<UserNudgeController>(
-      this, capture_mode_bar_view_->settings_button());
+  auto* settings_button = capture_mode_bar_view_->settings_button();
+  CHECK(settings_button);
+  user_nudge_controller_ =
+      std::make_unique<UserNudgeController>(this, settings_button);
   user_nudge_controller_->SetVisible(true);
 }
 
@@ -1892,12 +1894,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // press event, we will use it to dismiss the settings menu, unless it's on
   // the settings button (since in this case, the settings button handler will
   // take care of dismissing the menu).
-  const bool is_event_on_settings_button =
-      capture_mode_bar_view_->settings_button()->GetBoundsInScreen().Contains(
-          screen_location);
-  const bool should_close_settings = is_press_event &&
-                                     !is_event_on_settings_button &&
-                                     capture_mode_settings_widget_;
+  const bool should_close_settings =
+      is_press_event &&
+      !capture_mode_bar_view_->IsEventOnSettingsButton(screen_location) &&
+      capture_mode_settings_widget_;
   if (should_close_settings) {
     // All future located events up to and including a released events will be
     // consumed and ignored (i.e. won't be used to update the capture region,

@@ -487,6 +487,8 @@ component("ash") {
     "capture_mode/search_results_panel.h",
     "capture_mode/stop_recording_button_tray.cc",
     "capture_mode/stop_recording_button_tray.h",
+    "capture_mode/sunfish_capture_bar_view.cc",
+    "capture_mode/sunfish_capture_bar_view.h",
     "capture_mode/user_nudge_controller.cc",
     "capture_mode/user_nudge_controller.h",
     "capture_mode/video_recording_watcher.cc",

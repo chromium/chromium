@@ -20,7 +20,8 @@ GameCaptureBarView::GameCaptureBarView()
           l10n_util::GetStringUTF16(
               IDS_ASH_GAME_CAPTURE_START_RECORDING_BUTTON),
           PillButton::kPrimaryWithoutIcon))) {
-  AppendCommonElements();
+  AppendSettingsButton();
+  AppendCloseButton();
 
   CaptureModeSessionFocusCycler::HighlightHelper::Install(
       start_recording_button_);
