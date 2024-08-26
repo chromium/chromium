@@ -1937,6 +1937,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.Deduplication.ExistingProfiles.EditingDistanceOfQuasiDuplicateToken.{N}.{Type}"
+    units="Editing distance" expires_after="2025-06-05">
+  <owner>koerber@chromium.org</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For every stored profile (in every source), calculate the
+    ProfileDuplicationRank (N) and the list of types that are not compatible
+    between the two profiles. Calculate and emit (lower out of normalized and
+    non-normalized) editing distance for every non-compatible type. Emitted on
+    browser startup. Profiles of different countries are not considered, since
+    they can never be merged due to the data model differences. The metric is
+    split by the N and Type.
+  </summary>
+  <token key="N">
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+    <variant name="5"/>
+  </token>
+  <token key="Type" variants="AutofillProfile.StorableTypes"/>
+</histogram>
+
+<histogram
     name="Autofill.Deduplication.ExistingProfiles.LowQualityQuasiDuplicatesRemoved"
     units="Profiles" expires_after="2025-01-05">
   <owner>koerber@chromium.org</owner>

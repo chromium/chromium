@@ -25,6 +25,8 @@ class ProfileDeduplicationMetricsTest : public testing::Test {
 
  protected:
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillLogDeduplicationMetricsFollowup};
 };
 
 TEST_F(ProfileDeduplicationMetricsTest,
@@ -59,8 +61,6 @@ TEST_F(ProfileDeduplicationMetricsTest,
 
 TEST_F(ProfileDeduplicationMetricsTest,
        Startup_PercentageOfNonQuasiDuplicates_NotEnoughProfiles) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillLogDeduplicationMetricsFollowup);
   AutofillProfile a = test::GetFullProfile();
   const std::vector<const AutofillProfile*> profiles = {&a};
 
@@ -89,9 +89,6 @@ TEST_F(ProfileDeduplicationMetricsTest,
 
 TEST_F(ProfileDeduplicationMetricsTest,
        Startup_PercentageOfNonQuasiDuplicates) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillLogDeduplicationMetricsFollowup);
   // Create 4 profiles, c and d have duplication rank 2.
   AutofillProfile a = test::GetFullProfile();
   AutofillProfile b = test::GetFullProfile();
@@ -124,6 +121,35 @@ TEST_F(ProfileDeduplicationMetricsTest,
       "Autofill.Deduplication.ExistingProfiles.PercentageOfNonQuasiDuplicates."
       "5",
       0, 1);
+}
+
+TEST_F(ProfileDeduplicationMetricsTest, Startup_EditDistance) {
+  AutofillProfile a = test::GetFullProfile();
+  a.SetRawInfo(COMPANY_NAME, u"A company");
+  AutofillProfile b = test::GetFullProfile();
+  b.SetRawInfo(COMPANY_NAME, u"B company");
+  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  LogDeduplicationStartupMetrics(profiles, kLocale);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles."
+      "EditingDistanceOfQuasiDuplicateToken.1.COMPANY_NAME",
+      1, 2);
+}
+
+TEST_F(ProfileDeduplicationMetricsTest, Startup_EditDistanceNormalized) {
+  AutofillProfile a = test::GetFullProfile();
+  a.SetRawInfo(COMPANY_NAME, u"Jean- François");
+  AutofillProfile b = test::GetFullProfile();
+  // The normalized distance should be 2 as only the suffix is different.
+  b.SetRawInfo(COMPANY_NAME, u"jean francoiska");
+  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  LogDeduplicationStartupMetrics(profiles, kLocale);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles."
+      "EditingDistanceOfQuasiDuplicateToken.1.COMPANY_NAME",
+      2, 2);
 }
 
 TEST_F(ProfileDeduplicationMetricsTest, Startup_TypeOfQuasiDuplicateToken) {

@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
+#include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -64,7 +65,15 @@ class AddressDataCleaner : public AddressDataManager::Observer,
       base::span<const AutofillProfile> other_profiles,
       const AutofillProfileComparator& comparator);
   static std::vector<FieldTypeSet> CalculateMinimalIncompatibleTypeSets(
-      const AutofillProfile& import_candidate,
+      const AutofillProfile& profile,
+      base::span<const AutofillProfile* const> existing_profiles,
+      const AutofillProfileComparator& comparator);
+
+  // Computes the same sets of types as `CalculateMinimalIncompatibleTypeSets()`
+  // with additional AutofillProfile that was used to get them.
+  static std::vector<autofill_metrics::DifferingProfileWithTypeSet>
+  CalculateMinimalIncompatibleProfileWithTypeSets(
+      const AutofillProfile& profile,
       base::span<const AutofillProfile* const> existing_profiles,
       const AutofillProfileComparator& comparator);
 

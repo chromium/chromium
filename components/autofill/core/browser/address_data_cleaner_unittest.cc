@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
@@ -338,25 +339,33 @@ TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
 TEST_F(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
   const AutofillProfileComparator comparator("en_US");
   AutofillProfile profile = test::GetFullProfile();
-  std::vector<AutofillProfile> other_profiles;
   // FullProfile2 differs from `profile` in numerious ways.
-  other_profiles.push_back(test::GetFullProfile2());
+  AutofillProfile other_profile1 = test::GetFullProfile2();
   // Add a profile that only differs from `profile` in its email address.
-  other_profiles.emplace_back(test::GetFullProfile())
-      .SetRawInfo(EMAIL_ADDRESS, u"other-email@gmail.com");
+  AutofillProfile other_profile2 = test::GetFullProfile();
+  other_profile2.SetRawInfo(EMAIL_ADDRESS, u"other-email@gmail.com");
+  std::vector<const AutofillProfile*> other_profiles = {&other_profile1,
+                                                        &other_profile2};
   // Expect that the only minimal set is the email address.
-  EXPECT_THAT(AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
-                  profile, other_profiles, comparator),
-              testing::UnorderedElementsAre(FieldTypeSet{EMAIL_ADDRESS}));
+  EXPECT_THAT(
+      AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
+          profile, other_profiles, comparator),
+      testing::UnorderedElementsAre(
+          autofill_metrics::DifferingProfileWithTypeSet{&other_profile2,
+                                                        {EMAIL_ADDRESS}}));
   // Add one more profile that only differs from `profile` in its phone number.
-  other_profiles.emplace_back(test::GetFullProfile())
-      .SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+49 1578 7912345");
+  AutofillProfile other_profile3 = test::GetFullProfile();
+  other_profile3.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+49 1578 7912345");
+  other_profiles.push_back(&other_profile3);
   // Expect that both minimal sets are returned.
   EXPECT_THAT(
-      AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+      AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
           profile, other_profiles, comparator),
-      testing::UnorderedElementsAre(FieldTypeSet{EMAIL_ADDRESS},
-                                    FieldTypeSet{PHONE_HOME_WHOLE_NUMBER}));
+      testing::UnorderedElementsAre(
+          autofill_metrics::DifferingProfileWithTypeSet{&other_profile2,
+                                                        {EMAIL_ADDRESS}},
+          autofill_metrics::DifferingProfileWithTypeSet{
+              &other_profile3, {PHONE_HOME_WHOLE_NUMBER}}));
 }
 
 TEST_F(AddressDataCleanerTest, IsTokenLowQualityForDeduplicationPurposes) {

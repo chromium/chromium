@@ -9,14 +9,26 @@
 
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/form_autofill_history.h"
 
 namespace autofill::autofill_metrics {
+
+// Used to store `CalculateMinimalIncompatibleTypeSets() ` result. It contains
+// the `profile` that was being compared and a set of FieldTypes that had
+// different values.
+struct DifferingProfileWithTypeSet {
+  const raw_ptr<const AutofillProfile> profile;
+  const FieldTypeSet field_type_set;
+
+  bool operator==(const DifferingProfileWithTypeSet& other) const = default;
+};
 
 // Given the result of `CalculateMinimalIncompatibleTypeSets()`, returns the
 // minimum number of fields whose removal makes `import_candidate` a duplicate
 // of any entry in `existing_profiles`. Returns
 // `std::numeric_limits<int>::max()` in case `min_incompatible_sets` is empty.
-int GetDuplicationRank(base::span<const FieldTypeSet> min_incompatible_sets);
+int GetDuplicationRank(
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets);
 
 // Logs various metrics around quasi duplicates (= profiles that are duplicates
 // except for a small number of types) for the `profiles` a user has stored at

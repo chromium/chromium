@@ -14,11 +14,13 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/levenshtein_distance.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -37,32 +39,80 @@ constexpr std::string_view kImportHistogramPrefix =
 void LogTypeOfQuasiDuplicateTokenMetric(
     std::string_view metric_name_prefix,
     int duplication_rank,
-    base::span<const FieldTypeSet> min_incompatible_sets) {
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
   if (duplication_rank < 1 || duplication_rank > 5) {
     return;
   }
   const std::string metric_name =
       base::StrCat({metric_name_prefix, "TypeOfQuasiDuplicateToken.",
                     base::NumberToString(duplication_rank)});
-  for (const FieldTypeSet& types : min_incompatible_sets) {
-    for (FieldType type : types) {
+  for (const DifferingProfileWithTypeSet& types : min_incompatible_sets) {
+    for (FieldType type : types.field_type_set) {
       base::UmaHistogramEnumeration(
           metric_name, ConvertSettingsVisibleFieldTypeForMetrics(type));
     }
   }
 }
 
+void LogEditingDistanceOfQuasiDuplicateToken(
+    const AutofillProfile& profile,
+    const int profile_duplication_rank,
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets,
+    const std::string& app_locale) {
+  for (auto& [other_profile, set] : min_incompatible_sets) {
+    for (FieldType type : set) {
+      // It could be that the normalization increases or decreases the editing
+      // distance. It is needed to calculate both(normalized and not) editing
+      // distances and take the minimum. Eg:
+      // Streat vs Street: 1
+      // after normalization:
+      // Streat vs Str:  >1
+      // or
+      // Street vs Strr: >1
+      // after normalization:
+      // Str vs Strr: 1
+      const size_t raw_distance =
+          base::LevenshteinDistance(profile.GetInfo(type, app_locale),
+                                    other_profile->GetInfo(type, app_locale));
+      const size_t normalized_distance = base::LevenshteinDistance(
+          NormalizeAndRewrite(profile.GetAddressCountryCode(),
+                              profile.GetInfo(type, app_locale),
+                              /*keep_white_space=*/false),
+          NormalizeAndRewrite(other_profile->GetAddressCountryCode(),
+                              other_profile->GetInfo(type, app_locale),
+                              /*keep_white_space=*/false));
+
+      base::UmaHistogramCounts1000(
+          base::StrCat({"Autofill.Deduplication.ExistingProfiles."
+                        "EditingDistanceOfQuasiDuplicateToken.",
+                        base::ToString(profile_duplication_rank), ".",
+                        FieldTypeToStringView(type)}),
+          std::min(raw_distance, normalized_distance));
+    }
+  }
+}
+
 void LogDeduplicationStartupMetricsForProfile(
     const AutofillProfile& profile,
-    base::span<const FieldTypeSet> min_incompatible_sets) {
-  const int duplication_rank = GetDuplicationRank(min_incompatible_sets);
+    base::span<const DifferingProfileWithTypeSet>
+        min_incompatible_differing_sets,
+    std::string_view app_locale) {
+  const int duplication_rank =
+      GetDuplicationRank(min_incompatible_differing_sets);
   base::UmaHistogramCounts100(
       base::StrCat(
           {kStartupHistogramPrefix, "RankOfStoredQuasiDuplicateProfiles"}),
       duplication_rank);
   LogTypeOfQuasiDuplicateTokenMetric(kStartupHistogramPrefix, duplication_rank,
-                                     min_incompatible_sets);
-  // TODO(crbug.com/325452461): Implement more metrics.
+                                     min_incompatible_differing_sets);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLogDeduplicationMetricsFollowup)) {
+    // TODO(crbug.com/325452461): Implement more metrics.
+    LogEditingDistanceOfQuasiDuplicateToken(profile, duplication_rank,
+                                            min_incompatible_differing_sets,
+                                            std::string(app_locale));
+  }
 }
 
 void LogPercentageOfNonQuasiDuplicates(
@@ -87,10 +137,12 @@ void LogPercentageOfNonQuasiDuplicates(
 
 }  // namespace
 
-int GetDuplicationRank(base::span<const FieldTypeSet> min_incompatible_sets) {
+int GetDuplicationRank(
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
   // All elements of `min_incompatible_sets` have the same size.
-  return min_incompatible_sets.empty() ? std::numeric_limits<int>::max()
-                                       : min_incompatible_sets.back().size();
+  return min_incompatible_sets.empty()
+             ? std::numeric_limits<int>::max()
+             : min_incompatible_sets.back().field_type_set.size();
 }
 
 void LogDeduplicationStartupMetrics(
@@ -109,12 +161,14 @@ void LogDeduplicationStartupMetrics(
   AutofillProfileComparator comparator(app_locale);
   std::vector<int> profile_duplicaton_ranks;
   for (const AutofillProfile* profile : profiles) {
-    std::vector<FieldTypeSet> min_incompatible_sets =
-        AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
-            *profile, profiles, comparator);
+    std::vector<DifferingProfileWithTypeSet>
+        min_incompatible_differential_sets =
+            AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
+                *profile, profiles, comparator);
     profile_duplicaton_ranks.push_back(
-        GetDuplicationRank(min_incompatible_sets));
-    LogDeduplicationStartupMetricsForProfile(*profile, min_incompatible_sets);
+        GetDuplicationRank(min_incompatible_differential_sets));
+    LogDeduplicationStartupMetricsForProfile(
+        *profile, min_incompatible_differential_sets, app_locale);
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillLogDeduplicationMetricsFollowup)) {
@@ -136,8 +190,8 @@ void LogDeduplicationImportMetrics(
   }
 
   // Calculate the `duplication_rank`.
-  std::vector<FieldTypeSet> min_incompatible_sets =
-      AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+  std::vector<DifferingProfileWithTypeSet> min_incompatible_sets =
+      AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
           import_candidate, existing_profiles,
           AutofillProfileComparator(app_locale));
   const int duplication_rank = GetDuplicationRank(min_incompatible_sets);
