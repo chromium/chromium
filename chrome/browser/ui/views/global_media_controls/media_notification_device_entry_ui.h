@@ -88,8 +88,7 @@ class CastDeviceEntryView : public DeviceEntryUI, public HoverButton {
   global_media_controls::mojom::DevicePtr device_;
 };
 
-// This media cast device entry UI only shows on Chrome OS ash and when
-// media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
+// This media cast device entry UI only shows on Chrome OS ash.
 class CastDeviceEntryViewAsh : public DeviceEntryUI, public HoverButton {
   METADATA_HEADER(CastDeviceEntryViewAsh, HoverButton)
 

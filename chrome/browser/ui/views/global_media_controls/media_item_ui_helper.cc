@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 
-#include <string>
-
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -258,9 +256,7 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     auto media_cast_item =
         static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr();
 #if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            media::kGlobalMediaControlsCrOSUpdatedUI) &&
-        media_color_theme.has_value()) {
+    if (media_color_theme.has_value()) {
       return std::make_unique<MediaItemUICastFooterView>(
           base::BindRepeating(&CastMediaNotificationItem::StopCasting,
                               media_cast_item),
