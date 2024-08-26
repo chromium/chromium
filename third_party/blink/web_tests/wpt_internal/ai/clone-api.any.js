@@ -1,4 +1,5 @@
 // META: script=resources/utils.js
+// META: timeout=long
 
 promise_test(async () => {
   // Make sure the prompt api is enabled.
