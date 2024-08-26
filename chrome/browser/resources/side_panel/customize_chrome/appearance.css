@@ -18,6 +18,12 @@
   width: calc(100% - 32px);
 }
 
+#thirdPartyManageLinkButton {
+  display: block;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
 #editThemeButton {
   flex-grow: 1;
 }
