@@ -3559,6 +3559,8 @@ static_library("ui") {
         "signin/chrome_signout_confirmation_prompt.h",
         "signin/dice_web_signin_interceptor_delegate.cc",
         "signin/dice_web_signin_interceptor_delegate.h",
+        "views/profiles/batch_upload_dialog_view.cc",
+        "views/profiles/batch_upload_dialog_view.h",
         "views/profiles/dice_web_signin_interception_bubble_view.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.h",
         "views/profiles/first_run_flow_controller_dice.cc",

@@ -46,7 +46,8 @@ BatchUploadController::BatchUploadController(
 BatchUploadController::~BatchUploadController() = default;
 
 bool BatchUploadController::ShowDialog(
-    BatchUploadDelegate* delegate,
+    BatchUploadDelegate& delegate,
+    Browser* browser,
     base::OnceCallback<void(bool)> done_callback) {
   CHECK(done_callback);
 
@@ -57,11 +58,11 @@ bool BatchUploadController::ShowDialog(
 
   done_callback_ = std::move(done_callback);
 
-  delegate->ShowBatchUploadDialog(
-      GetOrderedListOfDataProvider(data_providers_),
-      /*complete_callback=*/base::BindOnce(
-          &BatchUploadController::MoveItemsToAccountStorage,
-          base::Unretained(this)));
+  delegate.ShowBatchUploadDialog(
+      browser, GetOrderedListOfDataProvider(data_providers_),
+      /*complete_callback=*/
+      base::BindOnce(&BatchUploadController::MoveItemsToAccountStorage,
+                     base::Unretained(this)));
   return true;
 }
 

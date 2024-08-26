@@ -43,8 +43,6 @@ class BatchUploadService : public KeyedService {
   // the requested one, the entry point should not be shown.
   bool ShouldShowBatchUploadEntryPointForDataType(BatchUploadDataType type);
 
-  void CloseDialogForTesting();
-
  private:
   // Callback on dialog closed. The `move_requested` input determines whether
   // the dialog was closed with a Cancel/Upload request.

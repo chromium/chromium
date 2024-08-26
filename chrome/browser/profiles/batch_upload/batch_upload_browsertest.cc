@@ -37,23 +37,34 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenBatchUpload) {
+  BatchUploadService* batch_upload =
+      BatchUploadServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(batch_upload);
+
+  EXPECT_TRUE(batch_upload->OpenBatchUpload(browser()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BatchUploadBrowserTest,
+    ClosingBrowserWithBatchUploadShouldStillAlowYouToOpenANewOne) {
   Profile* profile = browser()->profile();
+  Browser* browser_2 = CreateBrowser(profile);
+
   BatchUploadService* batch_upload =
       BatchUploadServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(batch_upload);
 
-  EXPECT_TRUE(batch_upload->OpenBatchUpload(browser()));
+  // Second browser opens dialog.
+  EXPECT_TRUE(batch_upload->OpenBatchUpload(browser_2));
 
+  // Trying to open a dialog while it is still opened on another browser fails.
   // Only one batch upload dialog should be shown at a time per profile.
   EXPECT_FALSE(batch_upload->OpenBatchUpload(browser()));
-  Browser* new_browser = CreateBrowser(profile);
-  // Even on other browser windows.
-  EXPECT_FALSE(batch_upload->OpenBatchUpload(new_browser));
 
-  // Notify that the dialog was closed.
-  batch_upload->CloseDialogForTesting();
+  // Closing the browser that is displaying the dialog.
+  CloseBrowserSynchronously(browser_2);
 
-  // Dialog can be opened again.
+  // We can now display the dialog on the other browser.
   EXPECT_TRUE(batch_upload->OpenBatchUpload(browser()));
 }
 

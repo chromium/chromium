@@ -12,6 +12,7 @@ AppInfoDialogBrowserTest.*
 AppMenuBrowserTest*.InvokeUi_*
 AskGoogleForSuggestionsDialogTest.*
 AutofillBubbleSignInPromoInteractiveUITest.*
+BatchUploadDialogViewPixelTest.*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 BubbleFrameViewBrowserTest.*

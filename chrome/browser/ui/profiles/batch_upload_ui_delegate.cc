@@ -11,8 +11,11 @@ BatchUploadUIDelegate::BatchUploadUIDelegate() = default;
 BatchUploadUIDelegate::~BatchUploadUIDelegate() = default;
 
 void BatchUploadUIDelegate::ShowBatchUploadDialog(
+    Browser* browser,
     const std::vector<raw_ptr<const BatchUploadDataProvider>>&
         data_providers_list,
     SelectedDataTypeItemsCallback complete_callback) {
-  // TODO(b/359146413): to implement when implementing the main view.
+  CHECK(browser);
+  ShowBatchUploadDialogInternal(*browser, data_providers_list,
+                                std::move(complete_callback));
 }

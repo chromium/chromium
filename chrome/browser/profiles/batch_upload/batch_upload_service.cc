@@ -98,9 +98,9 @@ bool BatchUploadService::OpenBatchUpload(Browser* browser) {
       GetBatchUploadDataProviderMap(profile_.get()));
 
   return controller_->ShowDialog(
-      delegate_.get(), /*done_callback=*/base::BindOnce(
-          &BatchUploadService::OnBatchUplaodDialogClosed,
-          base::Unretained(this)));
+      *delegate_, browser, /*done_callback=*/
+      base::BindOnce(&BatchUploadService::OnBatchUplaodDialogClosed,
+                     base::Unretained(this)));
 }
 
 void BatchUploadService::OnBatchUplaodDialogClosed(bool move_requested) {
@@ -111,10 +111,6 @@ void BatchUploadService::OnBatchUplaodDialogClosed(bool move_requested) {
 
   // Reset the state of the service.
   controller_.reset();
-}
-
-void BatchUploadService::CloseDialogForTesting() {
-  OnBatchUplaodDialogClosed(/*move_requested=*/false);
 }
 
 bool BatchUploadService::ShouldShowBatchUploadEntryPointForDataType(

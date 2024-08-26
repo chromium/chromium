@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 
 enum class BatchUploadDataType;
+class Browser;
 
 using SelectedDataTypeItemsCallback = base::OnceCallback<void(
     const base::flat_map<BatchUploadDataType,
@@ -24,6 +25,7 @@ class BatchUploadDelegate {
   // If `complete_callback` is called with no elements in the map, then the move
   // request was cancelled.
   virtual void ShowBatchUploadDialog(
+      Browser* browser,
       const std::vector<raw_ptr<const BatchUploadDataProvider>>&
           data_providers_list,
       SelectedDataTypeItemsCallback complete_callback) = 0;

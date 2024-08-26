@@ -49,7 +49,8 @@ class BatchUploadDelegateMock : public BatchUploadDelegate {
  public:
   MOCK_METHOD(void,
               ShowBatchUploadDialog,
-              (const std::vector<raw_ptr<const BatchUploadDataProvider>>&
+              (Browser * browser,
+               const std::vector<raw_ptr<const BatchUploadDataProvider>>&
                    data_providers_list,
                SelectedDataTypeItemsCallback complete_callback),
               (override));
@@ -63,11 +64,12 @@ TEST(BatchUploadControllerTest, EmptyController) {
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
 
   // No providers means no local data; we do not show the dialog.
-  EXPECT_CALL(mock, ShowBatchUploadDialog(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(mock_callback, Run(false)).Times(1);
   // Not showing the bubble should still call the done_callback with no move
   // request.
-  EXPECT_FALSE(controller.ShowDialog(&mock, mock_callback.Get()));
+  EXPECT_FALSE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, ProviderWithLocalData) {
@@ -90,11 +92,12 @@ TEST(BatchUploadControllerTest, ProviderWithLocalData) {
   std::vector<raw_ptr<const BatchUploadDataProvider>> expected_providers_list;
   // Provider has data and should be part of the input.
   expected_providers_list.emplace_back(provider_ptr);
-  EXPECT_CALL(mock, ShowBatchUploadDialog(expected_providers_list, testing::_))
+  EXPECT_CALL(
+      mock, ShowBatchUploadDialog(nullptr, expected_providers_list, testing::_))
       .Times(1);
   // The dialog was not closed yet, the `done_callback` should not be called.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
-  EXPECT_TRUE(controller.ShowDialog(&mock, mock_callback.Get()));
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, ProvideWithoutLocalData) {
@@ -113,11 +116,12 @@ TEST(BatchUploadControllerTest, ProvideWithoutLocalData) {
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
 
   // Even if the provider exists, having no data should not show the dialog.
-  EXPECT_CALL(mock, ShowBatchUploadDialog(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
+      .Times(0);
   // Not showing the bubble should still call the done_callback with no move
   // request.
   EXPECT_CALL(mock_callback, Run(false)).Times(1);
-  EXPECT_FALSE(controller.ShowDialog(&mock, mock_callback.Get()));
+  EXPECT_FALSE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, MultipleProvidersWithAndWithoutLocalData) {
@@ -149,11 +153,12 @@ TEST(BatchUploadControllerTest, MultipleProvidersWithAndWithoutLocalData) {
   std::vector<raw_ptr<const BatchUploadDataProvider>> expected_providers_list;
   // Only provider2 has data and should be part of the input.
   expected_providers_list.push_back(provider2_ptr);
-  EXPECT_CALL(mock, ShowBatchUploadDialog(expected_providers_list, testing::_))
+  EXPECT_CALL(
+      mock, ShowBatchUploadDialog(nullptr, expected_providers_list, testing::_))
       .Times(1);
   // The dialog was not closed yet, the `done_callback` should not be called.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
-  EXPECT_TRUE(controller.ShowDialog(&mock, mock_callback.Get()));
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, MultipleProvidersAllWithLocalData) {
@@ -189,11 +194,12 @@ TEST(BatchUploadControllerTest, MultipleProvidersAllWithLocalData) {
   EXPECT_LT(provider1_ptr->GetDataType(), provider2_ptr->GetDataType());
   expected_providers_list.push_back(provider1_ptr);
   expected_providers_list.push_back(provider2_ptr);
-  EXPECT_CALL(mock, ShowBatchUploadDialog(expected_providers_list, testing::_))
+  EXPECT_CALL(
+      mock, ShowBatchUploadDialog(nullptr, expected_providers_list, testing::_))
       .Times(1);
   // The dialog was not closed yet, the `done_callback` should not be called.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
-  EXPECT_TRUE(controller.ShowDialog(&mock, mock_callback.Get()));
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
@@ -217,8 +223,10 @@ TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
   std::vector<raw_ptr<const BatchUploadDataProvider>> expected_providers_list;
   // Provider has data and should be part of the input.
   expected_providers_list.push_back(provider_ptr);
-  EXPECT_CALL(mock, ShowBatchUploadDialog(expected_providers_list, testing::_))
-      .WillOnce([](const std::vector<raw_ptr<const BatchUploadDataProvider>>&
+  EXPECT_CALL(
+      mock, ShowBatchUploadDialog(nullptr, expected_providers_list, testing::_))
+      .WillOnce([](Browser* browser,
+                   const std::vector<raw_ptr<const BatchUploadDataProvider>>&
                        data_providers_list,
                    SelectedDataTypeItemsCallback complete_callback) {
         ASSERT_EQ(data_providers_list.size(), 1u);
@@ -240,7 +248,7 @@ TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
   EXPECT_CALL(mock_callback, Run(true)).Times(1);
 
   // One provider with data is enough to allow showing the dialog.
-  EXPECT_TRUE(controller.ShowDialog(&mock, mock_callback.Get()));
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, ProviderWithoutItemsToMoveDoneCallback) {
@@ -260,8 +268,9 @@ TEST(BatchUploadControllerTest, ProviderWithoutItemsToMoveDoneCallback) {
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
 
   // Close the dialog directly when shown, without returned items to move.
-  EXPECT_CALL(mock, ShowBatchUploadDialog(testing::_, testing::_))
-      .WillOnce([](const std::vector<raw_ptr<const BatchUploadDataProvider>>&
+  EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
+      .WillOnce([](Browser* browser,
+                   const std::vector<raw_ptr<const BatchUploadDataProvider>>&
                        data_providers_list,
                    SelectedDataTypeItemsCallback complete_callback) {
         // Empty items to move.
@@ -271,5 +280,5 @@ TEST(BatchUploadControllerTest, ProviderWithoutItemsToMoveDoneCallback) {
   // No move request.
   EXPECT_CALL(mock_callback, Run(false)).Times(1);
   // One provider with data is enough to allow showing the dialog.
-  EXPECT_TRUE(controller.ShowDialog(&mock, mock_callback.Get()));
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
 }

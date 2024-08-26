@@ -22,6 +22,7 @@ ProfileSelections CreateBatchUploadProfileSelections() {
 }
 
 }  // namespace
+
 BatchUploadServiceFactory::BatchUploadServiceFactory()
     : ProfileKeyedServiceFactory("BatchUpload",
                                  CreateBatchUploadProfileSelections()) {}

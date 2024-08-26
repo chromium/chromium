@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 
 class BatchUploadDelegate;
+class Browser;
 
 // Data types that integrates with the Batch Upload and can be displayed in the
 // dialog.
@@ -37,7 +38,9 @@ class BatchUploadController {
   // has. `done_callback` is called whenever the dialog is closed. The boolean
   // parameter of the callback indicates whether some data were requested to
   // move to the account storage.
-  bool ShowDialog(BatchUploadDelegate* delegate,
+  // `browser` must not be null, but may be null in some tests.
+  bool ShowDialog(BatchUploadDelegate& delegate,
+                  Browser* browser,
                   base::OnceCallback<void(bool)> done_callback);
 
   ~BatchUploadController();
