@@ -14,7 +14,6 @@ static_library("preferences") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ash",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/language_preferences",
     "//chromeos/crosapi/mojom",

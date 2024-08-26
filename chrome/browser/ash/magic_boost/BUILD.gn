@@ -53,7 +53,6 @@ static_library("test_support") {
   deps = [
     ":magic_boost",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/input_method",
     "//testing/gmock",
   ]

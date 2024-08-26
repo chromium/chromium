@@ -55,7 +55,6 @@ source_set("unit_tests") {
     ":login_screen_extension_ui",
     "//base",
     "//chrome/app:generated_resources",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/extensions/login_screen_ui",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash:test_support",

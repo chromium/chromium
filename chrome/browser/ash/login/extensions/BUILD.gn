@@ -52,7 +52,6 @@ source_set("browser_tests") {
     ":extensions",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/profiles:profile",

@@ -199,7 +199,6 @@ static_library("test_support") {
   ]
 
   deps = [
-    "//chrome/browser/ash",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/login",
     "//components/session_manager/core",
@@ -228,7 +227,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/lock:test_support",

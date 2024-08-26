@@ -108,7 +108,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/handlers:test_support",

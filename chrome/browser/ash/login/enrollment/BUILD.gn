@@ -78,7 +78,6 @@ static_library("test_support") {
   public_deps = [
     ":enrollment",
     "//base",
-    "//chrome/browser/ash",
     "//google_apis",
     "//testing/gmock",
   ]
@@ -108,7 +107,6 @@ source_set("browser_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/app_mode/test:browser_tests",
     "//chrome/browser/ash/login/app_mode/test:test_support",
     "//chrome/browser/ash/login/ui",
@@ -154,7 +152,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/screens:test_support",
     "//chrome/browser/ash/login/ui:test_support",
     "//chrome/browser/ash/policy/enrollment",

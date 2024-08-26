@@ -63,7 +63,6 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/magic_boost:magic_boost",
     "//chrome/browser/ash/mahi/media_app:unit_tests",
     "//chromeos/components/magic_boost/public/cpp:cpp",
