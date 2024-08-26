@@ -2514,10 +2514,6 @@
       status: "experimental",
     },
     {
-      name: "LastSuccessfulPositionOption",
-      status: "stable",
-    },
-    {
       name: "LayoutFlexNewRowAlgorithmV3",
       status: "test",
     },

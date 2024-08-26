@@ -587,7 +587,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void InvalidatePositionTryStyles();
 
   void MarkLastSuccessfulPositionFallbackDirtyForElement(Element& element) {
-    CHECK(RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled());
     last_successful_option_dirty_set_.insert(&element);
   }
 

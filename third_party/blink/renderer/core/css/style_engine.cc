@@ -692,13 +692,11 @@ void StyleEngine::UpdateCounterStyles() {
 
 void StyleEngine::MarkPositionTryStylesDirty(
     const HeapHashSet<Member<RuleSet>>& changed_rule_sets) {
-  if (RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
-    for (RuleSet* rule_set : changed_rule_sets) {
-      CHECK(rule_set);
-      for (StyleRulePositionTry* try_rule : rule_set->PositionTryRules()) {
-        if (try_rule) {
-          dirty_position_try_names_.insert(try_rule->Name());
-        }
+  for (RuleSet* rule_set : changed_rule_sets) {
+    CHECK(rule_set);
+    for (StyleRulePositionTry* try_rule : rule_set->PositionTryRules()) {
+      if (try_rule) {
+        dirty_position_try_names_.insert(try_rule->Name());
       }
     }
   }
@@ -4476,11 +4474,6 @@ bool InvalidatePositionTryNames(Element* root,
 }  // namespace
 
 bool StyleEngine::UpdateLastSuccessfulPositionFallbacks() {
-  if (!RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
-    CHECK(dirty_position_try_names_.empty());
-    CHECK(last_successful_option_dirty_set_.empty());
-    return false;
-  }
   bool invalidated = false;
   if (!dirty_position_try_names_.empty()) {
     // Added, removed, or modified @position-try rules.

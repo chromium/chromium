@@ -231,12 +231,9 @@ class OOFCandidateStyleIterator {
           TrySetFromFallback(fallback);
       CHECK(opt_try_set.has_value());
       try_set = opt_try_set.value();
-      if (RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
-        may_invalidate_last_successful =
-            element_->EnsureOutOfFlowData()
-                .SetPendingSuccessfulPositionFallback(
-                    position_try_fallbacks_, try_set, try_tactics, index);
-      }
+      may_invalidate_last_successful =
+          element_->EnsureOutOfFlowData().SetPendingSuccessfulPositionFallback(
+              position_try_fallbacks_, try_set, try_tactics, index);
     } else if (OutOfFlowData* out_of_flow_data = element_->GetOutOfFlowData()) {
       may_invalidate_last_successful =
           out_of_flow_data->SetPendingSuccessfulPositionFallback(
