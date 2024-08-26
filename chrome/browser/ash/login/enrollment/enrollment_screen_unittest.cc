@@ -666,6 +666,32 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldRetryEnrollmentOnUserAction) {
   EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
+// The add user flow is expected to only affect the manual enrollment.
+// Whenever the enrollment is not manual the tokens should be revoked
+// and no data should be saved wihin the wizard context.
+TEST_P(EnrollmentScreenAttestationFlowTest,
+       ShouldNotPreserveUserContextAndShouldRevokeTokens) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOobeAddUserDuringEnrollment);
+
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+
+  ExpectAttestationBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+  if (!IsRollbackFlow()) {
+    ExpectSuccessScreen();
+  }
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  UserContext* user_context = wizard_context().user_context.get();
+  EXPECT_FALSE(user_context);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     AttestationBasedEnrollment,
     EnrollmentScreenAttestationFlowTest,

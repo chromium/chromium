@@ -253,8 +253,9 @@ class EnrollmentScreen
   void HideOfflineMessage(NetworkStateInformer::State state,
                           NetworkError::ErrorReason reason);
 
-  // Stores the signin artifacts and the refresh token in the wizard context.
-  void StoreUserContextInWizardContext();
+  // Stores the signin artifacts and the refresh token in the wizard context
+  // if the appropriate conditions are met.
+  bool MaybeStoreUserContextInWizardContext();
 
   base::WeakPtr<EnrollmentScreenView> view_;
   raw_ptr<ErrorScreen> error_screen_ = nullptr;

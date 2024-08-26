@@ -617,11 +617,9 @@ void EnrollmentScreen::OnConfirmationClosed() {
 
   bool revoke_oauth2_tokens = true;
 
-  if (features::IsOobeAddUserDuringEnrollmentEnabled()) {
+  if (MaybeStoreUserContextInWizardContext()) {
     // Prevents the oauth2 tokens from being revoked.
     revoke_oauth2_tokens = false;
-
-    StoreUserContextInWizardContext();
   }
 
   // The callback passed to ClearAuth is either called immediately or gets
@@ -1000,10 +998,15 @@ void EnrollmentScreen::HideOfflineMessage(NetworkStateInformer::State state,
   histogram_helper_.OnErrorHide();
 }
 
-void EnrollmentScreen::StoreUserContextInWizardContext() {
-  CHECK(features::IsOobeAddUserDuringEnrollmentEnabled());
+bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
+  if (!features::IsOobeAddUserDuringEnrollmentEnabled() ||
+      effective_config_.mode != policy::EnrollmentConfig::MODE_MANUAL) {
+    return false;
+  }
+
   CHECK(signin_artifacts_);
   CHECK(enrollment_launcher_);
+  CHECK(enrollment_succeeded_);
 
   const AccountId account_id = AccountId::FromNonCanonicalEmail(
       signin_artifacts_->email, signin_artifacts_->gaia_id,
@@ -1025,6 +1028,8 @@ void EnrollmentScreen::StoreUserContextInWizardContext() {
   CHECK(LoginDisplayHost::default_host());
   CHECK_DEREF(LoginDisplayHost::default_host()->GetWizardContext())
       .user_context = std::move(user_context);
+
+  return true;
 }
 
 }  // namespace ash
