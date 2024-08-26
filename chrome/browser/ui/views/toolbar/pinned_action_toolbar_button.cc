@@ -197,6 +197,11 @@ void PinnedActionToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
   skip_execution_ = false;
 }
 
+void PinnedActionToolbarButton::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  Button::GetAccessibleNodeData(node_data);
+}
+
 void PinnedActionToolbarButton::UpdateIcon() {
   const std::optional<VectorIcons>& icons = GetVectorIcons();
   if (!icons.has_value()) {
