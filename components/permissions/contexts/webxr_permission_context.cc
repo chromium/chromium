@@ -51,7 +51,9 @@ void WebXrPermissionContext::NotifyPermissionSet(
     ContentSetting content_setting,
     bool is_one_time,
     bool is_final_decision) {
-  DCHECK(!is_one_time);
+  const bool is_hands =
+      content_settings_type_ == ContentSettingsType::HAND_TRACKING;
+  DCHECK(!is_one_time || is_hands);
   DCHECK(is_final_decision);
 
   // Note that this method calls into base class implementation version of
@@ -68,8 +70,6 @@ void WebXrPermissionContext::NotifyPermissionSet(
   const bool permission_granted =
       content_setting == ContentSetting::CONTENT_SETTING_ALLOW;
   const bool is_ar = content_settings_type_ == ContentSettingsType::AR;
-  const bool is_hands =
-      content_settings_type_ == ContentSettingsType::HAND_TRACKING;
   bool is_openxr = false;
 #if BUILDFLAG(ENABLE_OPENXR)
   is_openxr = content_settings_type_ == ContentSettingsType::VR &&
