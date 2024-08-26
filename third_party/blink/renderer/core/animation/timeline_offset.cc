@@ -238,15 +238,14 @@ CSSValue* TimelineOffset::ParseOffset(Document* document, String css_text) {
   }
 
   CSSTokenizer tokenizer(css_text);
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  range.ConsumeWhitespace();
+  CSSParserTokenStream stream(tokenizer);
+  stream.ConsumeWhitespace();
 
   CSSValue* value = css_parsing_utils::ConsumeLengthOrPercent(
-      range, *document->ElementSheet().Contents()->ParserContext(),
+      stream, *document->ElementSheet().Contents()->ParserContext(),
       CSSPrimitiveValue::ValueRange::kAll);
 
-  if (!range.AtEnd()) {
+  if (!stream.AtEnd()) {
     return nullptr;
   }
 
