@@ -89,7 +89,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/attestation:test_support",
     "//chrome/browser/ash/login/users:test_support",

@@ -100,7 +100,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/policy/reporting/metrics_reporting",
     "//chrome/browser/ash/policy/reporting/metrics_reporting:test_support",
     "//chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers",

@@ -46,7 +46,6 @@ source_set("browser_tests") {
   deps = [
     ":users_private",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/ownership",

@@ -79,7 +79,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/invalidation:test_support",
     "//chrome/browser/ash/settings",

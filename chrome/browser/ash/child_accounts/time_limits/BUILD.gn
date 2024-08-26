@@ -117,7 +117,6 @@ source_set("browser_tests") {
     "//ash/components/arc:notification_test_support",
     "//ash/components/arc/mojom",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/child_accounts",

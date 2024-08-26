@@ -23,7 +23,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",

@@ -108,7 +108,6 @@ if (!is_chromeos_device) {
       "//ash",
       "//ash/webui/print_management:url_constants",
       "//ash/webui/settings/public/constants:mojom",
-      "//chrome/browser/ash",
       "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test/base/ash/interactive:test_support",

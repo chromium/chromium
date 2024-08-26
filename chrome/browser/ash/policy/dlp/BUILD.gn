@@ -114,7 +114,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/dlp/dialogs",

@@ -68,7 +68,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/status_collector",
     "//chrome/browser/ash/settings",

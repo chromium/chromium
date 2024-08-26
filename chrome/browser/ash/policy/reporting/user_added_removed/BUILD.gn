@@ -41,7 +41,6 @@ source_set("unit_tests") {
     ":user_added_removed",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/status_collector",
     "//chrome/browser/ash/profiles",
