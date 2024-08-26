@@ -13,10 +13,7 @@ import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-w
 import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://lens/screenshot_bitmap_browser_proxy.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertNotEquals, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
-// <if expr="not is_linux">
-import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-// </if>
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
@@ -278,7 +275,7 @@ suite('SelectionOverlay', function() {
         verifyRegionRequest(expectedRect, /*expectedIsClick=*/ false);
       });
 
-  // <if expr="not chromeos_lacros and not is_linux">
+  // <if expr="not chromeos_lacros">
   test(
       'verify that region search over text triggers detected text context menu',
       async () => {
@@ -489,7 +486,6 @@ suite('SelectionOverlay', function() {
     assertEquals(67, imageSize.height);
   });
 
-  // <if expr="not is_linux">
   test('verify that you can drag text over post selection', async () => {
     // Add the words
     await addWords();
@@ -609,7 +605,6 @@ suite('SelectionOverlay', function() {
         assertTrue(
             selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
       });
-  // </if>
 
   test(
       'verify that dragging on post selection over an object does not tap that object',
