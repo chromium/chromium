@@ -49,7 +49,7 @@ bool IsChromeUsedInScenario(Scenario scenario) {
 bool IsLowMemory() {
   auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
   auto total_bytes = base::SysInfo::AmountOfPhysicalMemory();
-  return (available_bytes * 1000 / total_bytes) > 57;
+  return (available_bytes * 1000 / total_bytes) < 57;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
