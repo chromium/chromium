@@ -14,7 +14,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace reporting::test {
+namespace reporting {
+namespace test {
 
 class TestStorageModuleStrict : public StorageModuleInterface {
  public:
@@ -50,6 +51,7 @@ class TestStorageModuleStrict : public StorageModuleInterface {
 // Most of the time no need to log uninterested calls to |AddRecord|.
 typedef ::testing::NiceMock<TestStorageModuleStrict> TestStorageModule;
 
-}  // namespace reporting::test
+}  // namespace test
+}  // namespace reporting
 
 #endif  // COMPONENTS_REPORTING_STORAGE_TEST_STORAGE_MODULE_H_

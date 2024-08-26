@@ -5,25 +5,18 @@
 #ifndef COMPONENTS_REPORTING_STORAGE_STORAGE_CONFIGURATION_H_
 #define COMPONENTS_REPORTING_STORAGE_STORAGE_CONFIGURATION_H_
 
-#include <atomic>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 
 namespace reporting {
-
-using DMtoken = std::string;
-
-inline constexpr char kDeviceDMToken[] = "";
 
 // Forward declaration.
 class QueueOptions;
@@ -34,20 +27,12 @@ class QueueOptions;
 //                     .set_max_record_size(4 * 1024u)
 //                     .set_max_total_files_size(64 * 1024u * 1024u)
 //                     .set_max_total_memory_size(256 * 1024u),
-//                  ...}
 //                 callback);
 class StorageOptions {
  public:
-  // Default period for Storage to check for encryption key.
-  static constexpr base::TimeDelta kDefaultKeyCheckPeriod = base::Seconds(1);
-
   using QueuesOptionsList = std::vector<std::pair<Priority, QueueOptions>>;
 
-  // Constructor. `modify_queue_options_for_tests` callback allows to adjust
-  // queue options (used in tests only, Set to DoNothing in prod).
-  explicit StorageOptions(base::RepeatingCallback<void(Priority, QueueOptions&)>
-                              modify_queue_options_for_tests =
-                                  base::DoNothing());
+  StorageOptions();
   StorageOptions(const StorageOptions& options);
   StorageOptions& operator=(const StorageOptions& options) = delete;
   virtual ~StorageOptions();
@@ -56,16 +41,10 @@ class StorageOptions {
     return *this;
   }
 
-  // Generates queue options based on a given priority.
-  // Calls `modify_queue_options_for_tests_` before returning (for tests only).
-  QueueOptions ProduceQueueOptions(Priority priority) const;
-
-  // Generates list queue options. One QueueOption for each priority, in order
-  // of priorities. Used when enumerating storage queue directories only.
-  QueuesOptionsList ProduceQueuesOptionsList() const;
-
-  // Exposes priorities in order.
-  static base::span<const Priority> GetPrioritiesOrder();
+  // Generates list of queues with their priorities, ordered from logically
+  // lowest to the highest (not the order of `Priority` enumerator!)
+  // Can be overridden by tests to modify queues options.
+  virtual QueuesOptionsList ProduceQueuesOptions() const;
 
   StorageOptions& set_signature_verification_public_key(
       std::string_view signature_verification_public_key) {
@@ -87,10 +66,6 @@ class StorageOptions {
         base::MakeRefCounted<ResourceManager>(max_total_memory_size);
     return *this;
   }
-  StorageOptions& set_key_check_period(base::TimeDelta key_check_period) {
-    key_check_period_ = key_check_period;
-    return *this;
-  }
   const base::FilePath& directory() const { return directory_; }
   std::string_view signature_verification_public_key() const {
     return signature_verification_public_key_;
@@ -110,12 +85,7 @@ class StorageOptions {
     return memory_resource_;
   }
 
-  base::TimeDelta key_check_period() const { return key_check_period_; }
-
  private:
-  // Populates queue options for the given priority.
-  QueueOptions PopulateQueueOptions(Priority priority) const;
-
   // Subdirectory of the location assigned for this Storage.
   base::FilePath directory_;
 
@@ -123,20 +93,12 @@ class StorageOptions {
   // is delivered to Storage.
   std::string signature_verification_public_key_;
 
-  // Frequency with which Storage will check to see if a new encryption key
-  // should be requested.
-  base::TimeDelta key_check_period_;
-
   // Maximum record size.
   size_t max_record_size_ = 1U * 1024UL * 1024UL;  // 1 MiB
 
   // Resources managements.
   scoped_refptr<ResourceManager> memory_resource_;
   scoped_refptr<ResourceManager> disk_space_resource_;
-
-  // Callback that can adjust queue options (used in tests only).
-  const base::RepeatingCallback<void(Priority, QueueOptions&)>
-      modify_queue_options_for_tests_;
 };
 
 // Single queue options class allowing to set parameters individually, e.g.:
