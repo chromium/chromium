@@ -7,7 +7,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/sharing_message/sharing_message_bridge.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
