@@ -14,8 +14,8 @@ import './certificate_password_dialog.js';
 import './certificate_subpage_v2.js';
 import './certificate_manager_v2_icons.html.js';
 import './certificate_manager_style_v2.css.js';
+import './crs_section_v2.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
@@ -48,6 +48,7 @@ import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
+import type {CrsSectionV2Element} from './crs_section_v2.js';
 import type {Route} from './navigation_v2.js';
 import {Page, RouteObserverMixin, Router} from './navigation_v2.js';
 
@@ -60,7 +61,6 @@ const CertificateManagerV2ElementBase =
 
 export interface CertificateManagerV2Element {
   $: {
-    crsCerts: CertificateListV2Element,
     toolbar: HTMLElement,
     main: CrPageSelectorElement,
     platformClientCerts: CertificateListV2Element,
@@ -86,7 +86,7 @@ export interface CertificateManagerV2Element {
 
     localCertSection: HTMLElement,
     clientCertSection: HTMLElement,
-    crsCertSection: HTMLElement,
+    crsCertSection: CrsSectionV2Element,
     adminCertsSection: CertificateSubpageV2Element,
     platformCertsSection: CertificateSubpageV2Element,
     platformClientCertsSection: CertificateSubpageV2Element,
@@ -172,7 +172,6 @@ export class CertificateManagerV2Element extends
       toastMessage_: String,
       numSystemCertsString_: String,
       numPolicyCertsString_: String,
-      crsLearnMoreUrl_: String,
 
       showInfoDialog_: Boolean,
       infoDialogTitle_: String,
@@ -217,7 +216,6 @@ export class CertificateManagerV2Element extends
   private passwordEntryResolver_: PromiseResolver<PasswordResult>|null = null;
   private numPolicyCertsString_: string;
   private numSystemCertsString_: string;
-  private crsLearnMoreUrl_: string = loadTimeData.getString('crsLearnMoreUrl');
   private certManagementMetadata_: CertManagementMetadata;
   private importOsCertsEnabled_: boolean;
   private importOsCertsEnabledManaged_: boolean;

@@ -5,10 +5,6 @@
     height: 100%;
   }
 
-  h2 {
-    font-weight: 400;
-  }
-
   #importOsCerts {
     margin-inline-start: auto;
   }
@@ -65,10 +61,6 @@
             var(--cr-toolbar-padding-top, 0px));
   }
 
-  .cr-centered-card-container {
-    padding-bottom: 20px;
-  }
-
   #sidebar {
     position: sticky;
     top: 0;
@@ -112,7 +104,7 @@
 
     <div id="clientCertSection" class="cr-centered-card-container"
         path$="[[pageEnum_.CLIENT_CERTS]]">
-      <h2>[[i18n('certificateManagerV2ClientCerts')]]</h2>
+      <h2 class="page-title">[[i18n('certificateManagerV2ClientCerts')]]</h2>
       [[i18n("certificateManagerV2ClientCertsDescription")]]
 
       <if expr="is_win or is_macosx or is_linux">
@@ -153,7 +145,7 @@
 
     <div id="localCertSection" class="cr-centered-card-container"
         path$="[[pageEnum_.LOCAL_CERTS]]">
-      <h2>[[i18n('certificateManagerV2LocalCerts')]]</h2>
+      <h2 class="page-title">[[i18n('certificateManagerV2LocalCerts')]]</h2>
       [[i18n("certificateManagerV2LocalCertsDescription")]]
 
       <!-- TODO(crbug.com/40928765): Allow user modifications of trust settings
@@ -210,23 +202,9 @@
     </div>
 
     <!-- Chrome Root Store section -->
-    <div id="crsCertSection" class="cr-centered-card-container"
-        path$="[[pageEnum_.CRS_CERTS]]">
-      <h2>[[i18n('certificateManagerV2CRSCerts')]]</h2>
-      [[i18n("certificateManagerV2CRSCertsDescription")]]
-      <a href="[[crsLearnMoreUrl_]]" target="_blank"
-          aria-label="[[i18n('certificateManagerV2CRSLearnMoreLinkAriaLabel')]]">
-        [[i18n("certificateManagerV2CRSLearnMoreLink")]]
-      </a>
-
-      <certificate-list-v2
-          id="crsCerts"
-          no-collapse
-          cert-source="[[certificateSourceEnum_.kChromeRootStore]]"
-          header-text="[[i18n('certificateManagerV2TrustedCertsList')]]"
-          on-hash-copied="onHashCopied_">
-      </certificate-list-v2>
-    </div>
+    <crs-section-v2 id="crsCertSection"
+        path$="[[pageEnum_.CRS_CERTS]]" on-hash-copied="onHashCopied_">
+    </crs-section-v2>
 
     <certificate-subpage-v2 id="adminCertsSection"
         path$="[[pageEnum_.ADMIN_CERTS]]"

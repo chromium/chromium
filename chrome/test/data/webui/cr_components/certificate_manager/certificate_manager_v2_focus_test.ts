@@ -57,7 +57,8 @@ suite('CertificateManagerV2FocusTest', () => {
     assertFalse(certManager.$.toast.open);
 
     const certEntries =
-        certManager.$.crsCerts.$.certs.querySelectorAll('certificate-entry-v2');
+        certManager.$.crsCertSection.$.crsCerts.$.certs.querySelectorAll(
+            'certificate-entry-v2');
     assertEquals(1, certEntries.length, 'no certs displayed');
     assertEquals('', await navigator.clipboard.readText());
     certEntries[0]!.$.copy.click();

@@ -20,8 +20,16 @@
   padding-top: 8px;
 }
 
+.page-title {
+  font-weight: 400;
+}
+
 .card {
   background-color: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
+}
+
+.cr-centered-card-container {
+  padding-bottom: 20px;
 }
