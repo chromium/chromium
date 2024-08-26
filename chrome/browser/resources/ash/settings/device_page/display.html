@@ -103,7 +103,7 @@
           </div>
           <cr-toggle id="mirrorDisplayToggle"
               checked="[[isMirrored(displays)]]"
-              on-click="onMirroredClick_"
+              on-change="onMirroredClick_"
               aria-label="[[getDisplayMirrorText_(displays)]]"
               deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
           </cr-toggle>
@@ -115,7 +115,7 @@
         <div class="secondary self-start">
           <cr-checkbox id="displayMirrorCheckbox"
               checked="[[isMirrored(displays)]]"
-              on-click="onMirroredClick_"
+              on-change="onMirroredClick_"
               aria-label="[[getDisplayMirrorText_(displays)]]"
               deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
             <div class="text-area">[[getDisplayMirrorText_(displays)]]</div>

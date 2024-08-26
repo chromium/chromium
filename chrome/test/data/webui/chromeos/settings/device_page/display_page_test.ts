@@ -457,6 +457,28 @@ suite('<settings-display>', () => {
       }
     });
 
+    test('mirror mode with keyboard', () => {
+      // Mock user toggling mirror mode setting with keyboard.
+      const mirrorDisplayControl =
+          displayPage.shadowRoot!.querySelector<HTMLElement>(
+              isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
+                                          '#displayMirrorCheckbox');
+      assertTrue(!!mirrorDisplayControl);
+
+      mirrorDisplayControl.focus();
+      mirrorDisplayControl.dispatchEvent(new Event('change', {bubbles: true}));
+
+      // Verify histogram count for mirror mode setting.
+      assertEquals(
+          1,
+          displayHistogram.get(
+              displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
+      assertEquals(
+          1,
+          displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
+              /*mirror_mode_status=*/ true));
+    });
+
     test('unified mode', () => {
       // Mock user toggling unified mode setting.
       const displayUnifiedDesktopToggle =
