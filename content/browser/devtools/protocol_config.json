@@ -85,8 +85,8 @@
             },
             {
                 "domain": "Memory",
-                "include": ["getBrowserSamplingProfile", "setPressureNotificationsSuppressed", "simulatePressureNotification", "prepareForLeakDetection"],
-                "async": ["prepareForLeakDetection"]
+                "include": ["getBrowserSamplingProfile", "setPressureNotificationsSuppressed", "simulatePressureNotification", "prepareForLeakDetection", "getDOMCountersForLeakDetection"],
+                "async": ["prepareForLeakDetection", "getDOMCountersForLeakDetection"]
             },
             {
                 "domain": "NativeProfiling",

@@ -5,6 +5,7 @@
 module blink.mojom;
 
 // Result of leak detection - the number of different live Blink objects.
+// LINT.IfChange(LeakDetectionResult)
 struct LeakDetectionResult {
   uint32 number_of_live_audio_nodes;
   uint32 number_of_live_documents;
@@ -18,6 +19,7 @@ struct LeakDetectionResult {
   uint32 number_of_live_ua_css_resources;
   uint32 number_of_live_resource_fetchers;
 };
+// LINT.ThenChange(//content/browser/devtools/protocol/memory_handler.cc:GetDOMCounters)
 
 // Leak detector clears out various global resources and then
 // performs a garbage collection in Blink's managed heaps
