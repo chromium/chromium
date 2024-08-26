@@ -13,12 +13,12 @@ bool operator==(const PaymentInstrument& a,
 
 PaymentInstrument::PaymentInstrument(
     int64_t instrument_id,
-    std::u16string_view nickname,
-    const GURL& display_icon_url,
-    const DenseSet<PaymentInstrument::PaymentRail> supported_rails)
+    std::u16string nickname,
+    GURL display_icon_url,
+    DenseSet<PaymentInstrument::PaymentRail> supported_rails)
     : instrument_id_(instrument_id),
-      nickname_(nickname),
-      display_icon_url_(display_icon_url),
+      nickname_(std::move(nickname)),
+      display_icon_url_(std::move(display_icon_url)),
       supported_rails_(supported_rails) {}
 
 PaymentInstrument::PaymentInstrument(

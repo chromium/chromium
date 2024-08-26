@@ -34,10 +34,10 @@ class BankAccount {
   BankAccount(const BankAccount& other);
   BankAccount& operator=(const BankAccount& other);
   BankAccount(int64_t instrument_id,
-              std::u16string_view nickname,
-              const GURL& display_icon_url,
-              std::u16string_view bank_name,
-              std::u16string_view account_number_suffix,
+              std::u16string nickname,
+              GURL display_icon_url,
+              std::u16string bank_name,
+              std::u16string account_number_suffix,
               AccountType account_type);
   ~BankAccount();
 

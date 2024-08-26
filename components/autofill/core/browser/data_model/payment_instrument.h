@@ -20,7 +20,7 @@ class PaymentInstrument;
 // be any form of payment stored in the GPay backend that can be used to
 // facilitate a payment on a webpage. Examples of derived class: BankAccount,
 // CreditCard etc.
-class PaymentInstrument {
+class PaymentInstrument final {
  public:
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.payments
   // A payment rail can loosely represent the different ways in which Chrome can
@@ -34,12 +34,12 @@ class PaymentInstrument {
   };
 
   PaymentInstrument(int64_t instrument_id,
-                    std::u16string_view nickname,
-                    const GURL& display_icon_url,
+                    std::u16string nickname,
+                    GURL display_icon_url,
                     DenseSet<PaymentInstrument::PaymentRail> supported_rails);
   PaymentInstrument(const PaymentInstrument& other);
   PaymentInstrument& operator=(const PaymentInstrument& other);
-  virtual ~PaymentInstrument();
+  ~PaymentInstrument();
 
   friend std::strong_ordering operator<=>(const PaymentInstrument&,
                                           const PaymentInstrument&);
@@ -47,9 +47,7 @@ class PaymentInstrument {
 
   int64_t instrument_id() const { return instrument_id_; }
 
-  const DenseSet<PaymentRail>& supported_rails() const {
-    return supported_rails_;
-  }
+  DenseSet<PaymentRail> supported_rails() const { return supported_rails_; }
 
   // Check whether the PaymentInstrument is supported for a particular rail.
   bool IsSupported(PaymentRail payment_rail) const;

@@ -581,7 +581,7 @@ PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
     const BankAccount& bank_account) {
   // Create an integer vector of PaymentRails which can be used to create a Java
   // array to be passed via JNI.
-  auto& payment_instrument_supported_rails =
+  DenseSet<PaymentInstrument::PaymentRail> payment_instrument_supported_rails =
       bank_account.payment_instrument().supported_rails();
   std::vector<int> supported_payment_rails_array(
       bank_account.payment_instrument().supported_rails().size());
