@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/policy/ui_bundled/policy_domain_util.h"
+#import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 
 #import "base/strings/string_split.h"
 #import "components/account_id/account_id.h"
@@ -47,8 +47,6 @@ std::optional<std::string> ExtractDomainFromEmail(const std::string& email) {
   return domain;
 }
 
-}  // namespace
-
 std::optional<std::string> GetMachineLevelPolicyDomain() {
   policy::MachineLevelUserCloudPolicyManager* manager =
       GetApplicationContext()
@@ -80,4 +78,22 @@ std::optional<std::string> GetUserPolicyDomain(
   }
 
   return ExtractDomainFromEmail(user_email);
+}
+
+}  // namespace
+
+ManagementState GetManagementState(signin::IdentityManager* identity_manager,
+                                   AuthenticationService* auth_service,
+                                   PrefService* prefs) {
+  ManagementState management_state;
+  management_state.machine_level_domain = GetMachineLevelPolicyDomain();
+  management_state.user_level_domain =
+      GetUserPolicyDomain(identity_manager, auth_service, prefs);
+
+  BrowserPolicyConnectorIOS* policy_connector =
+      GetApplicationContext()->GetBrowserPolicyConnector();
+  management_state.has_machine_level_policy =
+      policy_connector && policy_connector->HasMachineLevelPolicies();
+
+  return management_state;
 }

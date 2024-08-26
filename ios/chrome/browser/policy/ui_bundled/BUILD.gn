@@ -54,10 +54,10 @@ source_set("user_policy_scene_agent") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("policy_domain_util") {
+source_set("management_util") {
   sources = [
-    "policy_domain_util.h",
-    "policy_domain_util.mm",
+    "management_util.h",
+    "management_util.mm",
   ]
   deps = [
     ":user_policy_util",

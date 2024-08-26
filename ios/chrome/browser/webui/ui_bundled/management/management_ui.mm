@@ -15,7 +15,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/ui_bundled/policy_domain_util.h"
+#import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -31,49 +31,43 @@ namespace {
 // Returns the management message depending on the levels of the policies that
 // are applied. Returns std::nullopt if there are no policies.
 std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
-  std::optional<std::string> machine_level_policy_domain =
-      GetMachineLevelPolicyDomain();
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui)->GetOriginalChromeBrowserState();
-  std::optional<std::string> user_policy_domain = GetUserPolicyDomain(
+  ManagementState state = GetManagementState(
       IdentityManagerFactory::GetForBrowserState(browser_state),
       AuthenticationServiceFactory::GetForBrowserState(browser_state),
       browser_state->GetPrefs());
 
-  if (machine_level_policy_domain && user_policy_domain) {
-    if (machine_level_policy_domain == user_policy_domain) {
+  if (state.machine_level_domain && state.user_level_domain) {
+    if (state.machine_level_domain == state.user_level_domain) {
       // Return a message with a single domain for both the profile and the
       // browser when the domains are the same. Any domain can be used in that
       // case.
       return l10n_util::GetStringFUTF16(
           IDS_MANAGEMENT_SUBTITLE_BROWSER_AND_PROFILE_SAME_MANAGED_BY,
-          base::UTF8ToUTF16(*machine_level_policy_domain));
+          base::UTF8ToUTF16(*state.machine_level_domain));
     } else {
       // Return a message with both domains when they are different.
       return l10n_util::GetStringFUTF16(
           IDS_MANAGEMENT_SUBTITLE_BROWSER_AND_PROFILE_DIFFERENT_MANAGED_BY,
-          base::UTF8ToUTF16(*machine_level_policy_domain),
-          base::UTF8ToUTF16(*user_policy_domain));
+          base::UTF8ToUTF16(*state.machine_level_domain),
+          base::UTF8ToUTF16(*state.user_level_domain));
     }
   }
 
-  if (machine_level_policy_domain) {
+  if (state.machine_level_domain) {
     return l10n_util::GetStringFUTF16(
         IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
-        base::UTF8ToUTF16(*machine_level_policy_domain));
+        base::UTF8ToUTF16(*state.machine_level_domain));
   }
 
-  if (user_policy_domain) {
+  if (state.user_level_domain) {
     return l10n_util::GetStringFUTF16(
         IDS_MANAGEMENT_SUBTITLE_PROFILE_MANAGED_BY,
-        base::UTF8ToUTF16(*user_policy_domain));
+        base::UTF8ToUTF16(*state.user_level_domain));
   }
 
-  BrowserPolicyConnectorIOS* policy_connector =
-      GetApplicationContext()->GetBrowserPolicyConnector();
-  bool has_machine_level_policy =
-      policy_connector && policy_connector->HasMachineLevelPolicies();
-  if (has_machine_level_policy) {
+  if (state.is_managed()) {
     // Return a message without the domain if there are policies on the machine
     // but couldn't obtain the domain. This can happen when using MDM.
     return l10n_util::GetStringUTF16(IDS_IOS_MANAGEMENT_UI_MESSAGE);

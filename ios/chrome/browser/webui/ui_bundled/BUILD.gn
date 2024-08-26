@@ -86,7 +86,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ntp_tiles/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/policy/ui_bundled:policy_domain_util",
+    "//ios/chrome/browser/policy/ui_bundled:management_util",
     "//ios/chrome/browser/policy/ui_bundled:user_policy_scene_agent",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

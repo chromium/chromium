@@ -34,6 +34,8 @@ source_set("model") {
     "configuration_policy_handler_list_factory.mm",
     "device_management_service_configuration_ios.h",
     "device_management_service_configuration_ios.mm",
+    "management_state.h",
+    "management_state.mm",
     "new_tab_page_location_policy_handler.cc",
     "new_tab_page_location_policy_handler.h",
     "policy_conversions_client_ios.h",
