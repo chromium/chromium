@@ -571,8 +571,7 @@ FormControlState ElementInternals::SaveFormControlState() const {
     state.Append("Value");
     AppendToFormControlState(*value_, state);
   }
-  if (RuntimeEnabledFeatures::FormStateRestoreCallbackCallWithStateEnabled() &&
-      state_) {
+  if (state_) {
     state.Append("State");
     AppendToFormControlState(*state_, state);
   }
@@ -588,13 +587,6 @@ void ElementInternals::RestoreFormControlState(const FormControlState& state) {
   if (const V8ControlValue* restored_value = RestoreFromFormControlState(
           *execution_context, state, "Value", index)) {
     value_ = restored_value;
-  }
-  if (!RuntimeEnabledFeatures::FormStateRestoreCallbackCallWithStateEnabled()) {
-    if (value_) {
-      CustomElement::EnqueueFormStateRestoreCallback(Target(), value_,
-                                                     "restore");
-    }
-    return;
   }
 
   const V8ControlValue* restored_state =
