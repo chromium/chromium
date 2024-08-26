@@ -342,7 +342,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/input_method:test_support",
     "//chrome/browser/ash/input_method/japanese",

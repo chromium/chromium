@@ -151,10 +151,13 @@ static_library("test_support") {
   deps = [
     ":guest_os",
     "//base",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os/public",
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/cicerone",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/seneschal",
   ]
 }
 
@@ -224,7 +227,6 @@ source_set("browser_tests") {
   deps = [
     ":guest_os",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support",

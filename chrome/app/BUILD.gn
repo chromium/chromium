@@ -202,9 +202,10 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/components/arc:arc_base_utils",
       "//ash/constants",
-      "//chrome/browser/ash",
       "//chrome/browser/ash/boot_times_recorder",
+      "//chrome/browser/ash/dbus",
       "//chrome/browser/ash/locale",
       "//chrome/browser/ash/schedqos",
       "//chromeos",

@@ -183,7 +183,6 @@ static_library("test_support") {
   deps = [
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/profiles:profile",
@@ -254,7 +253,6 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/crostini/ansible:test_support",
     "//chrome/browser/ash/crostini/ansible:unit_tests",
@@ -330,7 +328,6 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:main_extra_parts",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ui",
     "//chrome/common:chrome_features",

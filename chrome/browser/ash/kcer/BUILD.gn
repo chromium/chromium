@@ -64,7 +64,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/saml:test_support",
     "//chrome/browser/ash/login/users:test_support",

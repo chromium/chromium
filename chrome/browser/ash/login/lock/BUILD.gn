@@ -183,7 +183,6 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/lock_screen_apps",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",

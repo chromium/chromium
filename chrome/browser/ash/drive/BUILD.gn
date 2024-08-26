@@ -81,7 +81,6 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
@@ -106,7 +105,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -135,7 +133,6 @@ source_set("unit_tests") {
     ":drive",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
