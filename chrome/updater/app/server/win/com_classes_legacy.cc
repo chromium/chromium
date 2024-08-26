@@ -436,16 +436,18 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
                                             obj, state_update));
             },
             obj);
-    UpdateService::Callback complete_callback = base::BindOnce(
-        [](AppWebImplPtr obj, UpdateService::Result result) {
-          obj->task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(&AppWebImpl::UpdateResultCallback, obj, result));
-        },
-        obj);
+    base::OnceCallback<void(UpdateService::Result)> complete_callback =
+        base::BindOnce(
+            [](AppWebImplPtr obj, UpdateService::Result result) {
+              obj->task_runner_->PostTask(
+                  FROM_HERE, base::BindOnce(&AppWebImpl::UpdateResultCallback,
+                                            obj, result));
+            },
+            obj);
     AppServerWin::PostRpcTask(base::BindOnce(
         [](UpdateService::StateChangeCallback state_change_callback,
-           UpdateService::Callback complete_callback, AppWebImplPtr obj) {
+           base::OnceCallback<void(UpdateService::Result)> complete_callback,
+           AppWebImplPtr obj) {
           scoped_refptr<UpdateService> update_service =
               GetAppServerWinInstance()->update_service();
           if (!update_service) {
@@ -478,17 +480,19 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
                                             obj, state_update));
             },
             obj);
-    UpdateService::Callback complete_callback = base::BindOnce(
-        [](AppWebImplPtr obj, UpdateService::Result result) {
-          obj->task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(&AppWebImpl::UpdateResultCallback, obj, result));
-        },
-        obj);
+    base::OnceCallback<void(UpdateService::Result)> complete_callback =
+        base::BindOnce(
+            [](AppWebImplPtr obj, UpdateService::Result result) {
+              obj->task_runner_->PostTask(
+                  FROM_HERE, base::BindOnce(&AppWebImpl::UpdateResultCallback,
+                                            obj, result));
+            },
+            obj);
 
     AppServerWin::PostRpcTask(base::BindOnce(
         [](UpdateService::StateChangeCallback state_change_callback,
-           UpdateService::Callback complete_callback, AppWebImplPtr obj) {
+           base::OnceCallback<void(UpdateService::Result)> complete_callback,
+           AppWebImplPtr obj) {
           scoped_refptr<UpdateService> update_service =
               GetAppServerWinInstance()->update_service();
           if (!update_service) {
@@ -523,16 +527,18 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
                                             obj, state_update));
             },
             obj);
-    UpdateService::Callback complete_callback = base::BindOnce(
-        [](AppWebImplPtr obj, UpdateService::Result result) {
-          obj->task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(&AppWebImpl::UpdateResultCallback, obj, result));
-        },
-        obj);
+    base::OnceCallback<void(UpdateService::Result)> complete_callback =
+        base::BindOnce(
+            [](AppWebImplPtr obj, UpdateService::Result result) {
+              obj->task_runner_->PostTask(
+                  FROM_HERE, base::BindOnce(&AppWebImpl::UpdateResultCallback,
+                                            obj, result));
+            },
+            obj);
     AppServerWin::PostRpcTask(base::BindOnce(
         [](UpdateService::StateChangeCallback state_change_callback,
-           UpdateService::Callback complete_callback, AppWebImplPtr obj) {
+           base::OnceCallback<void(UpdateService::Result)> complete_callback,
+           AppWebImplPtr obj) {
           scoped_refptr<UpdateService> update_service =
               GetAppServerWinInstance()->update_service();
           if (!update_service) {

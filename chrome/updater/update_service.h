@@ -215,7 +215,6 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     std::string cohort;
   };
 
-  using Callback = base::OnceCallback<void(Result)>;
   using StateChangeCallback = base::RepeatingCallback<void(const UpdateState&)>;
   using InstallerResult = update_client::CrxInstaller::Result;
 
@@ -247,7 +246,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,
       StateChangeCallback state_update,
-      Callback callback) = 0;
+      base::OnceCallback<void(Result)> callback) = 0;
 
   // Updates specified product. This update may be on-demand.
   //
@@ -273,13 +272,13 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
                       Priority priority,
                       PolicySameVersionUpdate policy_same_version_update,
                       StateChangeCallback state_update,
-                      Callback callback) = 0;
+                      base::OnceCallback<void(Result)> callback) = 0;
 
   // Initiates an update check for all registered applications. Receives state
   // change notifications through the repeating `state_update` callback.
   // Calls `callback` once  the operation is complete.
   virtual void UpdateAll(StateChangeCallback state_update,
-                         Callback callback) = 0;
+                         base::OnceCallback<void(Result)> callback) = 0;
 
   // Registers and installs an application from the network.
   //
@@ -306,7 +305,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
                        const std::string& install_data_index,
                        Priority priority,
                        StateChangeCallback state_update,
-                       Callback callback) = 0;
+                       base::OnceCallback<void(Result)> callback) = 0;
 
   // Cancels any ongoing installations of the specified product. This does not
   // interrupt any product installers that are currently running, but does
@@ -336,7 +335,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
                             const std::string& install_data,
                             const std::string& install_settings,
                             StateChangeCallback state_update,
-                            Callback callback) = 0;
+                            base::OnceCallback<void(Result)> callback) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<UpdateService>;

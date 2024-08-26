@@ -114,7 +114,7 @@ class StateChangeObserverImpl : public mojom::StateChangeObserver {
  public:
   explicit StateChangeObserverImpl(
       UpdateService::StateChangeCallback state_change_callback,
-      UpdateService::Callback complete_callback)
+      base::OnceCallback<void(UpdateService::Result)> complete_callback)
       : state_change_callback_(std::move(state_change_callback)),
         complete_callback_(std::move(complete_callback)) {}
   StateChangeObserverImpl(const StateChangeObserverImpl&) = delete;
@@ -138,7 +138,7 @@ class StateChangeObserverImpl : public mojom::StateChangeObserver {
 
  private:
   UpdateService::StateChangeCallback state_change_callback_;
-  UpdateService::Callback complete_callback_;
+  base::OnceCallback<void(UpdateService::Result)> complete_callback_;
 };
 
 template <typename T>
@@ -161,7 +161,7 @@ MakeStateChangeObserver(
         complete_callback) {
   return base::BindOnce(
       [](UpdateService::StateChangeCallback state_change_callback,
-         UpdateService::Callback complete_callback,
+         base::OnceCallback<void(UpdateService::Result)> complete_callback,
          mojo::PendingReceiver<mojom::StateChangeObserver> receiver) {
         mojo::MakeSelfOwnedReceiver(
             std::make_unique<StateChangeObserverImpl>(

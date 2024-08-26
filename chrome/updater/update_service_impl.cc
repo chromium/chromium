@@ -75,7 +75,7 @@ void UpdateServiceImpl::CheckForUpdate(
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
-    Callback callback) {
+    base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsEulaAccepted() || IsOemMode()) {
     VLOG(1) << __func__ << " rejected (EULA required or OEM mode).";
@@ -86,8 +86,8 @@ void UpdateServiceImpl::CheckForUpdate(
       [](scoped_refptr<UpdateServiceImplImpl> delegate,
          const std::string& app_id, Priority priority,
          PolicySameVersionUpdate policy_same_version_update,
-         StateChangeCallback state_update, Callback callback,
-         int policy_fetch_result) {
+         StateChangeCallback state_update,
+         base::OnceCallback<void(Result)> callback, int policy_fetch_result) {
         VLOG(1) << "Policy fetch result: " << policy_fetch_result;
         delegate->CheckForUpdate(app_id, priority, policy_same_version_update,
                                  state_update, std::move(callback));
@@ -102,7 +102,7 @@ void UpdateServiceImpl::Update(
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
-    Callback callback) {
+    base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsEulaAccepted() || IsOemMode()) {
     VLOG(1) << __func__ << " rejected (EULA required or OEM mode).";
@@ -115,7 +115,7 @@ void UpdateServiceImpl::Update(
 }
 
 void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
-                                  Callback callback) {
+                                  base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsEulaAccepted() || IsOemMode()) {
     VLOG(1) << __func__ << " rejected (EULA required or OEM mode).";
@@ -130,7 +130,7 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
                                 const std::string& install_data_index,
                                 Priority priority,
                                 StateChangeCallback state_update,
-                                Callback callback) {
+                                base::OnceCallback<void(Result)> callback) {
   // Online installers can only be downloaded after ToS acceptance.
   AcceptEula();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -143,13 +143,14 @@ void UpdateServiceImpl::CancelInstalls(const std::string& app_id) {
   delegate_->CancelInstalls(app_id);
 }
 
-void UpdateServiceImpl::RunInstaller(const std::string& app_id,
-                                     const base::FilePath& installer_path,
-                                     const std::string& install_args,
-                                     const std::string& install_data,
-                                     const std::string& install_settings,
-                                     StateChangeCallback state_update,
-                                     Callback callback) {
+void UpdateServiceImpl::RunInstaller(
+    const std::string& app_id,
+    const base::FilePath& installer_path,
+    const std::string& install_args,
+    const std::string& install_data,
+    const std::string& install_settings,
+    StateChangeCallback state_update,
+    base::OnceCallback<void(Result)> callback) {
   // Offline installs are always permitted, to support OEM cases.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->RunInstaller(app_id, installer_path, install_args, install_data,

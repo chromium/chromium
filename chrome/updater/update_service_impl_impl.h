@@ -55,20 +55,21 @@ class UpdateServiceImplImpl : public UpdateService {
                       Priority priority,
                       PolicySameVersionUpdate policy_same_version_update,
                       StateChangeCallback state_update,
-                      Callback callback) override;
+                      base::OnceCallback<void(Result)> callback) override;
   void Update(const std::string& app_id,
               const std::string& install_data_index,
               Priority priority,
               PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
-              Callback callback) override;
-  void UpdateAll(StateChangeCallback state_update, Callback callback) override;
+              base::OnceCallback<void(Result)> callback) override;
+  void UpdateAll(StateChangeCallback state_update,
+                 base::OnceCallback<void(Result)> callback) override;
   void Install(const RegistrationRequest& registration,
                const std::string& client_install_data,
                const std::string& install_data_index,
                Priority priority,
                StateChangeCallback state_update,
-               Callback callback) override;
+               base::OnceCallback<void(Result)> callback) override;
   void CancelInstalls(const std::string& app_id) override;
   void RunInstaller(const std::string& app_id,
                     const base::FilePath& installer_path,
@@ -76,7 +77,7 @@ class UpdateServiceImplImpl : public UpdateService {
                     const std::string& install_data,
                     const std::string& install_settings,
                     StateChangeCallback state_update,
-                    Callback callback) override;
+                    base::OnceCallback<void(Result)> callback) override;
 
  private:
   ~UpdateServiceImplImpl() override;
@@ -88,7 +89,8 @@ class UpdateServiceImplImpl : public UpdateService {
   void TaskDone();
 
   // Installs applications in the wake task based on the ForceInstalls policy.
-  void ForceInstall(StateChangeCallback state_update, Callback callback);
+  void ForceInstall(StateChangeCallback state_update,
+                    base::OnceCallback<void(Result)> callback);
 
   bool IsUpdateDisabledByPolicy(const std::string& app_id,
                                 Priority priority,
@@ -98,14 +100,14 @@ class UpdateServiceImplImpl : public UpdateService {
                                     int policy,
                                     bool is_install,
                                     StateChangeCallback state_update,
-                                    Callback callback);
+                                    base::OnceCallback<void(Result)> callback);
 
   void OnShouldBlockCheckForUpdateForMeteredNetwork(
       const std::string& app_id,
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,
       StateChangeCallback state_update,
-      Callback callback,
+      base::OnceCallback<void(Result)> callback,
       bool update_blocked);
 
   void OnShouldBlockUpdateForMeteredNetwork(
@@ -115,7 +117,7 @@ class UpdateServiceImplImpl : public UpdateService {
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,
       StateChangeCallback state_update,
-      Callback callback,
+      base::OnceCallback<void(Result)> callback,
       bool update_blocked);
 
   void OnShouldBlockForceInstallForMeteredNetwork(
@@ -124,7 +126,7 @@ class UpdateServiceImplImpl : public UpdateService {
       const AppInstallDataIndex& app_install_data_index,
       PolicySameVersionUpdate policy_same_version_update,
       StateChangeCallback state_update,
-      Callback callback,
+      base::OnceCallback<void(Result)> callback,
       bool update_blocked);
 
   SEQUENCE_CHECKER(sequence_checker_);

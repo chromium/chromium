@@ -142,7 +142,7 @@ TEST(KSAdminTest, Register) {
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
                  StateChangeCallback state_update,
-                 Callback callback),
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void,
                 Update,
@@ -151,11 +151,12 @@ TEST(KSAdminTest, Register) {
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
                  StateChangeCallback state_update,
-                 Callback callback),
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void,
                 UpdateAll,
-                (StateChangeCallback state_update, Callback callback),
+                (StateChangeCallback state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void,
                 Install,
@@ -164,7 +165,7 @@ TEST(KSAdminTest, Register) {
                  const std::string& install_data_index,
                  Priority priority,
                  StateChangeCallback state_update,
-                 Callback callback),
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void, CancelInstalls, (const std::string& app_id), (override));
     MOCK_METHOD(void,
@@ -175,7 +176,7 @@ TEST(KSAdminTest, Register) {
                  const std::string& install_data,
                  const std::string& install_settings,
                  StateChangeCallback state_update,
-                 Callback callback),
+                 base::OnceCallback<void(Result)> callback),
                 (override));
 
    protected:

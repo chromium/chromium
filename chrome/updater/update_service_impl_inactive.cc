@@ -61,7 +61,7 @@ class UpdateServiceImplInactive : public UpdateService {
                       Priority /*priority*/,
                       PolicySameVersionUpdate /*policy_same_version_update*/,
                       StateChangeCallback /*state_update*/,
-                      Callback callback) override {
+                      base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -73,7 +73,7 @@ class UpdateServiceImplInactive : public UpdateService {
               Priority /*priority*/,
               PolicySameVersionUpdate /*policy_same_version_update*/,
               StateChangeCallback /*state_update*/,
-              Callback callback) override {
+              base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -81,7 +81,7 @@ class UpdateServiceImplInactive : public UpdateService {
   }
 
   void UpdateAll(StateChangeCallback /*state_update*/,
-                 Callback callback) override {
+                 base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -93,7 +93,7 @@ class UpdateServiceImplInactive : public UpdateService {
                const std::string& /*install_data_index*/,
                Priority /*priority*/,
                StateChangeCallback /*state_update*/,
-               Callback callback) override {
+               base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -110,7 +110,7 @@ class UpdateServiceImplInactive : public UpdateService {
                     const std::string& /*install_data*/,
                     const std::string& /*install_settings*/,
                     StateChangeCallback /*state_update*/,
-                    Callback callback) override {
+                    base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

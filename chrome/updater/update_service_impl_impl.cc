@@ -457,9 +457,10 @@ base::Version GetRegisteredInstallerVersion(const std::string& app_id) {
 namespace {
 
 update_client::Callback MakeUpdateClientCallback(
-    UpdateService::Callback callback) {
+    base::OnceCallback<void(UpdateService::Result)> callback) {
   return base::BindOnce(
-      [](UpdateService::Callback callback, update_client::Error error) {
+      [](base::OnceCallback<void(UpdateService::Result)> callback,
+         update_client::Error error) {
         std::move(callback).Run(internal::ToResult(error));
       },
       std::move(callback));
@@ -784,8 +785,9 @@ void UpdateServiceImplImpl::TaskDone() {
   TaskStart();
 }
 
-void UpdateServiceImplImpl::ForceInstall(StateChangeCallback state_update,
-                                         Callback callback) {
+void UpdateServiceImplImpl::ForceInstall(
+    StateChangeCallback state_update,
+    base::OnceCallback<void(Result)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -832,7 +834,7 @@ void UpdateServiceImplImpl::CheckForUpdate(
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
-    Callback callback) {
+    base::OnceCallback<void(Result)> callback) {
   VLOG(1) << __func__ << ": " << app_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -864,7 +866,7 @@ void UpdateServiceImplImpl::Update(
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
-    Callback callback) {
+    base::OnceCallback<void(Result)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -891,8 +893,9 @@ void UpdateServiceImplImpl::Update(
           std::move(callback)));
 }
 
-void UpdateServiceImplImpl::UpdateAll(StateChangeCallback state_update,
-                                      Callback callback) {
+void UpdateServiceImplImpl::UpdateAll(
+    StateChangeCallback state_update,
+    base::OnceCallback<void(Result)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -909,8 +912,8 @@ void UpdateServiceImplImpl::UpdateAll(StateChangeCallback state_update,
           app_ids, AppClientInstallData(), AppInstallDataIndex(), priority,
           UpdateService::PolicySameVersionUpdate::kNotAllowed, state_update,
           base::BindOnce(
-              [](Callback callback, scoped_refptr<PersistedData> persisted_data,
-                 Result result) {
+              [](base::OnceCallback<void(Result)> callback,
+                 scoped_refptr<PersistedData> persisted_data, Result result) {
                 if (result == Result::kSuccess) {
                   persisted_data->SetLastChecked(
                       base::Time::NowFromSystemTime());
@@ -926,7 +929,7 @@ void UpdateServiceImplImpl::Install(const RegistrationRequest& registration,
                                     const std::string& install_data_index,
                                     Priority priority,
                                     StateChangeCallback state_update,
-                                    Callback callback) {
+                                    base::OnceCallback<void(Result)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -989,13 +992,14 @@ void UpdateServiceImplImpl::CancelInstalls(const std::string& app_id) {
                          [](const auto& i) { i.second.Run(); });
 }
 
-void UpdateServiceImplImpl::RunInstaller(const std::string& app_id,
-                                         const base::FilePath& installer_path,
-                                         const std::string& install_args,
-                                         const std::string& install_data,
-                                         const std::string& install_settings,
-                                         StateChangeCallback state_update,
-                                         Callback callback) {
+void UpdateServiceImplImpl::RunInstaller(
+    const std::string& app_id,
+    const base::FilePath& installer_path,
+    const std::string& install_args,
+    const std::string& install_data,
+    const std::string& install_settings,
+    StateChangeCallback state_update,
+    base::OnceCallback<void(Result)> callback) {
   VLOG(1) << __func__ << ": " << app_id << ": " << installer_path << ": "
           << install_args << ": " << install_data << ": " << install_settings;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1092,7 +1096,8 @@ void UpdateServiceImplImpl::RunInstaller(const std::string& app_id,
              scoped_refptr<update_client::UpdateClient> update_client,
              base::Version installer_version, StateChangeCallback state_update,
              const std::string& app_id, const std::string& ap,
-             const std::string& brand, Callback callback,
+             const std::string& brand,
+             base::OnceCallback<void(Result)> callback,
              const InstallerResult& result) {
             // Final state update after installation completes.
             UpdateState state;
@@ -1201,7 +1206,7 @@ void UpdateServiceImplImpl::HandleUpdateDisabledByPolicy(
     int policy,
     bool is_install,
     StateChangeCallback state_update,
-    Callback callback) {
+    base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UpdateState update_state;
@@ -1230,7 +1235,7 @@ void UpdateServiceImplImpl::OnShouldBlockCheckForUpdateForMeteredNetwork(
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
-    Callback callback,
+    base::OnceCallback<void(Result)> callback,
     bool update_blocked) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   main_task_runner_->PostTask(
@@ -1259,7 +1264,7 @@ void UpdateServiceImplImpl::OnShouldBlockUpdateForMeteredNetwork(
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
-    Callback callback,
+    base::OnceCallback<void(Result)> callback,
     bool update_blocked) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   main_task_runner_->PostTask(
@@ -1287,7 +1292,7 @@ void UpdateServiceImplImpl::OnShouldBlockForceInstallForMeteredNetwork(
     const AppInstallDataIndex& app_install_data_index,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
-    Callback callback,
+    base::OnceCallback<void(Result)> callback,
     bool update_blocked) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

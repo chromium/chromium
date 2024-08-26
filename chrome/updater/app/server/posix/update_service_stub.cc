@@ -106,7 +106,7 @@ class StateChangeObserverWrapper
 // Binds a callback that forwards state change callbacks and the OnComplete
 // callback to a StateChangeObserver.
 [[nodiscard]] std::pair<UpdateService::StateChangeCallback,
-                        UpdateService::Callback>
+                        base::OnceCallback<void(UpdateService::Result)>>
 MakeStateChangeObserverCallbacks(
     std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer) {
   auto wrapper =
