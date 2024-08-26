@@ -15,7 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
@@ -41,12 +41,12 @@ int GetImageGridColumnWidth(int grid_width) {
 }
 
 std::unique_ptr<views::View> CreateImageGridColumn() {
-  auto column = views::Builder<views::FlexLayoutView>()
-                    .SetOrientation(views::LayoutOrientation::kVertical)
-                    .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-                    .Build();
-  column->SetDefault(views::kMarginsKey,
-                     gfx::Insets::TLBR(0, 0, kImageGridPadding, 0));
+  auto column =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+          .Build();
+  column->SetBetweenChildSpacing(kImageGridPadding);
   return column;
 }
 
