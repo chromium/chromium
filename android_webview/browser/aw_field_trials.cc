@@ -96,7 +96,7 @@ void AwFieldTrials::OnVariationsSetupComplete() {
   if (base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir)) {
     InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

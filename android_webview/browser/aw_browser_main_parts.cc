@@ -338,7 +338,7 @@ int AwBrowserMainParts::PreMainMessageLoopRun() {
 
 void AwBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AwBrowserMainParts::PostCreateThreads() {

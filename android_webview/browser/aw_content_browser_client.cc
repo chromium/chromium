@@ -520,9 +520,7 @@ base::FilePath AwContentBrowserClient::GetDefaultDownloadDirectory() {
 }
 
 std::string AwContentBrowserClient::GetDefaultDownloadName() {
-  NOTREACHED_IN_MIGRATION()
-      << "Android WebView does not use chromium downloads";
-  return std::string();
+  NOTREACHED() << "Android WebView does not use chromium downloads";
 }
 
 std::optional<base::FilePath>
@@ -538,7 +536,7 @@ AwContentBrowserClient::GetLocalTracesDirectory() {
 
 void AwContentBrowserClient::DidCreatePpapiPlugin(
     content::BrowserPpapiHost* browser_host) {
-  NOTREACHED_IN_MIGRATION() << "Android WebView does not support plugins";
+  NOTREACHED() << "Android WebView does not support plugins";
 }
 
 bool AwContentBrowserClient::AllowPepperSocketAPI(
@@ -546,15 +544,13 @@ bool AwContentBrowserClient::AllowPepperSocketAPI(
     const GURL& url,
     bool private_api,
     const content::SocketPermissionRequest* params) {
-  NOTREACHED_IN_MIGRATION() << "Android WebView does not support plugins";
-  return false;
+  NOTREACHED() << "Android WebView does not support plugins";
 }
 
 bool AwContentBrowserClient::IsPepperVpnProviderAPIAllowed(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  NOTREACHED_IN_MIGRATION() << "Android WebView does not support plugins";
-  return false;
+  NOTREACHED() << "Android WebView does not support plugins";
 }
 
 std::unique_ptr<content::TracingDelegate>

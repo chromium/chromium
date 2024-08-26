@@ -140,7 +140,7 @@ void GetStorageKeysTask::CheckDone() {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&GetStorageKeysTask::DoneOnUIThread, this));
   } else if (num_callbacks_received_ > num_callbacks_to_wait_) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

@@ -102,7 +102,7 @@ class AwBrowserPermissionRequestDelegateForTesting final
       request_.erase(it);
       return;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

@@ -24,8 +24,7 @@ AwWebContentsViewDelegate::~AwWebContentsViewDelegate() {}
 content::WebDragDestDelegate* AwWebContentsViewDelegate::GetDragDestDelegate() {
   // GetDragDestDelegate is a pure virtual method from WebContentsViewDelegate
   // and must have an implementation although android doesn't use it.
-  NOTREACHED_IN_MIGRATION();
-  return NULL;
+  NOTREACHED();
 }
 
 void AwWebContentsViewDelegate::ShowContextMenu(

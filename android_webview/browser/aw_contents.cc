@@ -1426,8 +1426,7 @@ jint AwContents::GetEffectivePriority(JNIEnv* env) {
     case content::ChildProcessImportance::IMPORTANT:
       return static_cast<jint>(RendererPriority::HIGH);
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 JsCommunicationHost* AwContents::GetJsCommunicationHost() {

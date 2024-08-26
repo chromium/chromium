@@ -63,12 +63,10 @@ class LastRequestResultCache {
     }
 
     if (!requesting_origin.is_valid()) {
-      NOTREACHED_IN_MIGRATION() << requesting_origin.possibly_invalid_spec();
-      return;
+      NOTREACHED() << requesting_origin.possibly_invalid_spec();
     }
     if (!embedding_origin.is_valid()) {
-      NOTREACHED_IN_MIGRATION() << embedding_origin.possibly_invalid_spec();
-      return;
+      NOTREACHED() << embedding_origin.possibly_invalid_spec();
     }
 
     switch (permission) {
@@ -83,10 +81,7 @@ class LastRequestResultCache {
 
     std::string key = GetCacheKey(requesting_origin, embedding_origin);
     if (key.empty()) {
-      NOTREACHED_IN_MIGRATION();
-      // Never store an empty key because it could inadvertently be used for
-      // another combination.
-      return;
+      NOTREACHED();
     }
     pmi_result_cache_[key] = status;
   }
@@ -111,9 +106,8 @@ class LastRequestResultCache {
         break;
       // Other permissions are not cached.
       default:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Results are only cached for PROTECTED_MEDIA_IDENTIFIER AND SAA";
-        return PermissionStatus::ASK;
     }
 
     std::string key = GetCacheKey(requesting_origin, embedding_origin);
@@ -191,8 +185,7 @@ class AwPermissionManager::PendingRequest {
   void SetPermissionStatus(PermissionType type, PermissionStatus status) {
     auto result = permission_index_map_.find(type);
     if (result == permission_index_map_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     DCHECK(!IsCompleted());
     results[result->second] = status;
@@ -213,8 +206,7 @@ class AwPermissionManager::PendingRequest {
   PermissionStatus GetPermissionStatus(PermissionType type) {
     auto result = permission_index_map_.find(type);
     if (result == permission_index_map_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return PermissionStatus::DENIED;
+      NOTREACHED();
     }
     return results[result->second];
   }
@@ -429,11 +421,7 @@ void AwPermissionManager::RequestPermissions(
                                                  PermissionStatus::DENIED);
         break;
       case PermissionType::NUM:
-        NOTREACHED_IN_MIGRATION()
-            << "PermissionType::NUM was not expected here.";
-        pending_request_raw->SetPermissionStatus(permissions[i],
-                                                 PermissionStatus::DENIED);
-        break;
+        NOTREACHED() << "PermissionType::NUM was not expected here.";
     }
   }
 
@@ -773,9 +761,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
         // There is nothing to cancel so this is simply ignored.
         break;
       case PermissionType::NUM:
-        NOTREACHED_IN_MIGRATION()
-            << "PermissionType::NUM was not expected here.";
-        break;
+        NOTREACHED() << "PermissionType::NUM was not expected here.";
     }
     pending_request->SetPermissionStatus(permission, PermissionStatus::DENIED);
   }

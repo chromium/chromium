@@ -96,7 +96,7 @@ void AwUrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
 void AwUrlCheckerDelegateImpl::
     StartObservingInteractionsForDelayedBlockingPageHelper(
         const security_interstitials::UnsafeResource& resource) {
-  NOTREACHED_IN_MIGRATION() << "Delayed warnings not implemented for WebView";
+  NOTREACHED() << "Delayed warnings not implemented for WebView";
 }
 
 bool AwUrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
@@ -274,7 +274,7 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
       proceed = false;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (!proceed) {

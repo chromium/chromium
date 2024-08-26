@@ -308,7 +308,7 @@ void AwContentsClientBridge::RunJavaScriptDialog(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
