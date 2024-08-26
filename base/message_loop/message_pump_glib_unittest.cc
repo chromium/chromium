@@ -676,12 +676,8 @@ class BaseWatcher : public MessagePumpGlib::FdWatcher {
   ~BaseWatcher() override = default;
 
   // base:MessagePumpGlib::FdWatcher interface
-  void OnFileCanReadWithoutBlocking(int /* fd */) override {
-    NOTREACHED_IN_MIGRATION();
-  }
-  void OnFileCanWriteWithoutBlocking(int /* fd */) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void OnFileCanReadWithoutBlocking(int /* fd */) override { NOTREACHED(); }
+  void OnFileCanWriteWithoutBlocking(int /* fd */) override { NOTREACHED(); }
 
  protected:
   raw_ptr<MessagePumpGlib::FdWatchController> controller_;

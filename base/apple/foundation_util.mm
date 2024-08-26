@@ -86,7 +86,7 @@ void SetOverrideAmIBundled(bool value) {
 #if BUILDFLAG(IS_IOS)
   // It doesn't make sense not to be bundled on iOS.
   if (!value) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #endif
   g_override_am_i_bundled = true;

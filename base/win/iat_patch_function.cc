@@ -28,8 +28,7 @@ struct InterceptFunctionInformation {
 
 void* GetIATFunction(IMAGE_THUNK_DATA* iat_thunk) {
   if (!iat_thunk) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   // Works around the 64 bit portability warning:
@@ -58,8 +57,7 @@ bool InterceptEnumCallback(const base::win::PEImage& image,
       reinterpret_cast<InterceptFunctionInformation*>(cookie);
 
   if (!intercept_information) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   DCHECK(module);
@@ -114,14 +112,12 @@ DWORD InterceptImportedFunction(HMODULE module_handle,
                                 IMAGE_THUNK_DATA** iat_thunk) {
   if (!module_handle || !imported_from_module || !function_name ||
       !new_function) {
-    NOTREACHED_IN_MIGRATION();
-    return ERROR_INVALID_PARAMETER;
+    NOTREACHED();
   }
 
   base::win::PEImage target_image(module_handle);
   if (!target_image.VerifyMagic()) {
-    NOTREACHED_IN_MIGRATION();
-    return ERROR_INVALID_PARAMETER;
+    NOTREACHED();
   }
 
   InterceptFunctionInformation intercept_information = {false,
@@ -156,15 +152,13 @@ DWORD RestoreImportedFunction(void* intercept_function,
                               void* original_function,
                               IMAGE_THUNK_DATA* iat_thunk) {
   if (!intercept_function || !original_function || !iat_thunk) {
-    NOTREACHED_IN_MIGRATION();
-    return ERROR_INVALID_PARAMETER;
+    NOTREACHED();
   }
 
   if (GetIATFunction(iat_thunk) != intercept_function) {
     // Check if someone else has intercepted on top of us.
     // We cannot unpatch in this case, just raise a red flag.
-    NOTREACHED_IN_MIGRATION();
-    return ERROR_INVALID_FUNCTION;
+    NOTREACHED();
   }
 
   return internal::ModifyCode(&(iat_thunk->u1.Function), &original_function,
@@ -188,8 +182,7 @@ DWORD IATPatchFunction::Patch(const wchar_t* module,
                               void* new_function) {
   HMODULE module_handle = LoadLibraryW(module);
   if (!module_handle) {
-    NOTREACHED_IN_MIGRATION();
-    return GetLastError();
+    NOTREACHED();
   }
 
   DWORD error = PatchFromModule(module_handle, imported_from_module,

@@ -526,8 +526,7 @@ void Histogram::AddCount(int value, int count) {
   if (value < 0)
     value = 0;
   if (count <= 0) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   unlogged_samples_->Accumulate(value, count);
 

@@ -19,8 +19,7 @@ const char* MemoryDumpTypeToString(const MemoryDumpType& dump_type) {
     case MemoryDumpType::kSummaryOnly:
       return "summary_only";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
 }
 
 MemoryDumpType StringToMemoryDumpType(const std::string& str) {
@@ -31,8 +30,7 @@ MemoryDumpType StringToMemoryDumpType(const std::string& str) {
     return MemoryDumpType::kExplicitlyTriggered;
   if (str == "summary_only")
     return MemoryDumpType::kSummaryOnly;
-  NOTREACHED_IN_MIGRATION();
-  return MemoryDumpType::kLast;
+  NOTREACHED();
 }
 
 const char* MemoryDumpLevelOfDetailToString(
@@ -45,8 +43,7 @@ const char* MemoryDumpLevelOfDetailToString(
     case MemoryDumpLevelOfDetail::kDetailed:
       return "detailed";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
 }
 
 MemoryDumpLevelOfDetail StringToMemoryDumpLevelOfDetail(
@@ -57,8 +54,7 @@ MemoryDumpLevelOfDetail StringToMemoryDumpLevelOfDetail(
     return MemoryDumpLevelOfDetail::kLight;
   if (str == "detailed")
     return MemoryDumpLevelOfDetail::kDetailed;
-  NOTREACHED_IN_MIGRATION();
-  return MemoryDumpLevelOfDetail::kLast;
+  NOTREACHED();
 }
 
 }  // namespace trace_event

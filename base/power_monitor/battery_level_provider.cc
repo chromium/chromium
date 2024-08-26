@@ -15,9 +15,10 @@ std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
   // TODO(crbug.com/40871810): ChromeOS doesn't define
   // `HAS_BATTERY_LEVEL_PROVIDER_IMPL` but still supplies its own
   // `BatteryLevelProvider`
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
+#else
   return nullptr;
+#endif
 }
 #endif
 

@@ -39,8 +39,7 @@ constexpr const char* ToCString(AsyncStatus async_status) {
       return "AsyncStatus::Error";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 template <typename T>

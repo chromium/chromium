@@ -389,8 +389,7 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
     }
 
     if (--remaining_attempts == 0) {
-      NOTREACHED_IN_MIGRATION();  // Destructors might not have been called.
-      break;
+      NOTREACHED();  // Destructors might not have been called.
     }
   }
 

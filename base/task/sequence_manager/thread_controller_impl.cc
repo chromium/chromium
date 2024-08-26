@@ -151,7 +151,7 @@ void ThreadControllerImpl::RestoreDefaultTaskRunner() {
 
 void ThreadControllerImpl::BindToCurrentThread(
     std::unique_ptr<MessagePump> message_pump) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ThreadControllerImpl::WillQueueTask(PendingTask* pending_task) {
@@ -339,7 +339,7 @@ void ThreadControllerImpl::SetWorkBatchSize(int work_batch_size) {
 
 void ThreadControllerImpl::SetTaskExecutionAllowedInNativeNestedLoop(
     bool allowed) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool ThreadControllerImpl::IsTaskExecutionAllowed() const {
@@ -357,18 +357,18 @@ MessagePump* ThreadControllerImpl::GetBoundMessagePump() const {
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 void ThreadControllerImpl::AttachToMessagePump() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
 void ThreadControllerImpl::DetachFromMessagePump() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_IOS)
 
 void ThreadControllerImpl::PrioritizeYieldingToNative(base::TimeTicks) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace internal

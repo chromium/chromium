@@ -170,8 +170,7 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
 
   // Prevent initializing twice.
   if (out_) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   print_temp_leaks_ =

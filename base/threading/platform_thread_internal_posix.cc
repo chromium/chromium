@@ -23,8 +23,7 @@ BASE_EXPORT int ThreadTypeToNiceValue(ThreadType thread_type) {
     if (pair.thread_type == thread_type)
       return pair.nice_value;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown ThreadType";
-  return 0;
+  NOTREACHED() << "Unknown ThreadType";
 }
 
 ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value) {

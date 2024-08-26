@@ -332,7 +332,7 @@ void TraceEventETWExport::AddEvent(char phase,
         TlmMbcsStringField((args->names()[0]), (arg_values_string[0].c_str())),
         TlmMbcsStringField((args->names()[1]), (arg_values_string[1].c_str())));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

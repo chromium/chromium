@@ -100,7 +100,7 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
           base::Unretained(this), fd, std::move(callback)));
   task_runner_->PostTask(FROM_HERE, fd_controllers_[fd].callback.callback());
 #else   // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 }
 
@@ -113,7 +113,7 @@ void PerfettoTaskRunner::RemoveFileDescriptorWatch(
   // it's pending.
   fd_controllers_.erase(fd);
 #else   // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 }
 

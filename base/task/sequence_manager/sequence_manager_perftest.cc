@@ -553,8 +553,7 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
         return std::make_unique<SingleThreadInThreadPoolPerfTestDelegate>();
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
   }
 

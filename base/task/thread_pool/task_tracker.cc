@@ -593,8 +593,7 @@ bool TaskTracker::BeforeRunTask(TaskShutdownBehavior shutdown_behavior) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TaskTracker::AfterRunTask(TaskShutdownBehavior shutdown_behavior) {

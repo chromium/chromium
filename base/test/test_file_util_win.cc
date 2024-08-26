@@ -194,7 +194,7 @@ FilePermissionRestorer::FilePermissionRestorer(const FilePath& path)
 
 FilePermissionRestorer::~FilePermissionRestorer() {
   if (!RestorePermissionInfo(path_, info_, length_))
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 }
 
 std::wstring GetFileDacl(const FilePath& path) {

@@ -547,8 +547,7 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, size_t count) {
       scheduled_wakeup_time_ = base::TimeTicks::Max();
       --event_count_;
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected event for filter " << event->filter;
+      NOTREACHED() << "Unexpected event for filter " << event->filter;
     }
   }
 

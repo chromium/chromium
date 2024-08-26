@@ -84,8 +84,7 @@ base::MessagePumpType GetMessagePumpTypeForMainThreadType(
     case TaskEnvironment::MainThreadType::IO:
       return MessagePumpType::IO;
   }
-  NOTREACHED_IN_MIGRATION();
-  return MessagePumpType::DEFAULT;
+  NOTREACHED();
 }
 
 std::unique_ptr<sequence_manager::SequenceManager>

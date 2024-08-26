@@ -105,8 +105,7 @@ const char* TypeToString(unsigned char arg_type) {
     case TRACE_VALUE_TYPE_CONVERTABLE:
       return "convertable";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "UNKNOWN_TYPE";
+      NOTREACHED();
   }
 }
 
@@ -221,8 +220,7 @@ void TraceValue::Append(unsigned char type,
       *out += "\"Unsupported (crbug.com/1225176)\"";
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Don't know how to print this value";
-      break;
+      NOTREACHED() << "Don't know how to print this value";
   }
 }
 

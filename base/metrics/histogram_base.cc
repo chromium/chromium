@@ -45,8 +45,7 @@ std::string HistogramTypeToString(HistogramType type) {
     case DUMMY_HISTOGRAM:
       return "DUMMY_HISTOGRAM";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "UNKNOWN";
+  NOTREACHED();
 }
 
 HistogramBase* DeserializeHistogramInfo(PickleIterator* iter) {

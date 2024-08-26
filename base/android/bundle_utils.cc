@@ -119,8 +119,7 @@ void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace android

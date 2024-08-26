@@ -81,8 +81,7 @@ const char* PowerMonitorSource::DeviceThermalStateToString(
     case PowerThermalObserver::DeviceThermalState::kCritical:
       return "Critical";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 }  // namespace base
