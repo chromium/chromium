@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Course, Identity, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
+import {Config, Course, Identity, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 
-import {ClientApiDelegate} from './boca_app.js';
+import {ClientApiDelegate, ControlledTab, SessionConfig} from './boca_app.js';
 
+const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
 
 /**
  * A delegate implementation that provides API via privileged mojom API
@@ -50,6 +51,31 @@ export class ClientDelegateFactory {
             email: student.email,
           };
         });
+      },
+      createSession: async (sessionConfig: SessionConfig) => {
+        const result = await pageHandler.createSession({
+          sessionDuration: {
+            microseconds: BigInt(sessionConfig.sessionDurationInMinutes) *
+                MICRO_SECS_IN_MINUTES,
+          },
+          students: sessionConfig.students,
+          onTaskConfig: {
+            isLocked: sessionConfig.onTaskConfig?.isLocked,
+            tabs:
+                sessionConfig.onTaskConfig?.tabs.map((item: ControlledTab) => {
+                  return {
+                    tab: {
+                      url: {url: item.tab.url},
+                      title: item.tab.title,
+                      favicon: item.tab.favicon,
+                    },
+                    navigationType: item.navigationType.valueOf(),
+                  };
+                }),
+          },
+          captionConfig: sessionConfig.captionConfig,
+        } as Config);
+        return result.success;
       },
     };
   }

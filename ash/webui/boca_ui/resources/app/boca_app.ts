@@ -44,6 +44,55 @@ export declare interface Course {
 }
 
 /**
+ * Declare navigation enum type
+ */
+export enum NavigationType {
+  UNKNOWN = 0,
+  OPEN = 1,
+  BLOCK = 2,
+  DOMAIN = 3,
+  LIMITED = 4,
+}
+
+/**
+ * Declare controlled tab
+ */
+export declare interface ControlledTab {
+  navigationType: NavigationType;
+  tab: TabInfo;
+}
+
+/**
+ * Declare OnTaskConfig
+ */
+export declare interface OnTaskConfig {
+  isLocked: boolean;
+  tabs: ControlledTab[];
+}
+
+/**
+ * Declare CaptionConfig
+ */
+export declare interface CaptionConfig {
+  captionEnabled: boolean;
+  localOnly: boolean;
+  transcriptionEnabled: boolean;
+}
+
+/**
+ * Declare SessionConfig
+ */
+export declare interface SessionConfig {
+  sessionStartTime?: Date;
+  sessionDurationInMinutes: number;
+  students: Identity[];
+  teacher?: Identity;
+  onTaskConfig: OnTaskConfig;
+  captionConfig: CaptionConfig;
+}
+
+
+/**
  * The delegate which exposes privileged function to App
  */
 export declare interface ClientApiDelegate {
@@ -61,6 +110,11 @@ export declare interface ClientApiDelegate {
    * Get list of students in a course.
    */
   getStudentList(courseId: string): Promise<Identity[]>;
+
+  /**
+   * Create a new session
+   */
+  createSession(sessionConfig: SessionConfig): Promise<boolean>;
 }
 
 /**

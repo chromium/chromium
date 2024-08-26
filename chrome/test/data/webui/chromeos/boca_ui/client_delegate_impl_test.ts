@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import {Course, Identity, PageHandlerRemote, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {Config, Course, Identity, PageHandlerRemote, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
-import {assertDeepEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 class MockRemoteHandler extends PageHandlerRemote {
   override getWindowsTabsList(): Promise<{windowList: Window[]}> {
@@ -32,7 +32,6 @@ class MockRemoteHandler extends PageHandlerRemote {
     return Promise.resolve(
         {courses: [{id: '1', name: 'course1'}, {id: '2', name: 'course2'}]});
   }
-
   override listStudents(id: string): Promise<{students: Identity[]}> {
     // Dummy action get around with unused variable check.
     id;
@@ -43,7 +42,50 @@ class MockRemoteHandler extends PageHandlerRemote {
       ],
     });
   }
+
+  override createSession(config: Config): Promise<{success: boolean}> {
+    assertDeepEquals(
+        {
+          sessionDuration: {
+            // BigInt serialized as string.
+            microseconds: 7200000000n,
+          },
+          students: [
+            {id: '1', name: 'cat', email: 'cat@gmail.com'},
+            {id: '2', name: 'dog', email: 'dog@gmail.com'},
+          ],
+          onTaskConfig: {
+            isLocked: true,
+            tabs: [
+              {
+                tab: {
+                  url: {url: 'http://google.com/'},
+                  title: 'google',
+                  favicon: 'data/image',
+                },
+                navigationType: 0,
+              },
+              {
+                tab: {
+                  url: {url: 'http://youtube.com/'},
+                  title: 'youtube',
+                  favicon: 'data/image',
+                },
+                navigationType: 1,
+              },
+            ],
+          },
+          captionConfig: {
+            captionEnabled: true,
+            transcriptionEnabled: true,
+            localOnly: true,
+          },
+        },
+        config);
+    return Promise.resolve({success: true});
+  }
 }
+
 suite('ClientDelegateTest', function() {
   let clientDelegateImpl: ClientDelegateFactory;
 
@@ -92,16 +134,56 @@ suite('ClientDelegateTest', function() {
       });
 
   test(
-      'client delegate should properly translate mojom layer data for windows' +
+      'client delegate should properly translate mojom layer data for student' +
           'list',
       async () => {
         const result =
             await clientDelegateImpl.getInstance().getStudentList('1');
+
         assertDeepEquals(
             [
               {id: '1', name: 'cat', email: 'email1'},
               {id: '2', name: 'dog', email: 'email2'},
             ],
             result);
+      });
+
+  test(
+      'client delegate should translate data for creating session',
+      async () => {
+        const result = await clientDelegateImpl.getInstance().createSession({
+          sessionDurationInMinutes: 120,
+          students: [
+            {id: '1', name: 'cat', email: 'cat@gmail.com'},
+            {id: '2', name: 'dog', email: 'dog@gmail.com'},
+          ],
+          onTaskConfig: {
+            isLocked: true,
+            tabs: [
+              {
+                tab: {
+                  title: 'google',
+                  url: 'http://google.com/',
+                  favicon: 'data/image',
+                },
+                navigationType: 0,
+              },
+              {
+                tab: {
+                  title: 'youtube',
+                  url: 'http://youtube.com/',
+                  favicon: 'data/image',
+                },
+                navigationType: 1,
+              },
+            ],
+          },
+          captionConfig: {
+            captionEnabled: true,
+            localOnly: true,
+            transcriptionEnabled: true,
+          },
+        });
+        assertTrue(result);
       });
 });

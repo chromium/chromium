@@ -31,6 +31,6 @@ IN_PROC_BROWSER_TEST_F(BocaAppBrowserTest, TestMojoTranslationLayer) {
                            "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(BocaAppBrowserTest, TestMainPageLoadeD) {
+IN_PROC_BROWSER_TEST_F(BocaAppBrowserTest, TestMainPageLoaded) {
   RunTestWithoutTestLoader("chromeos/boca_ui/main_page_test.js", "mocha.run()");
 }
