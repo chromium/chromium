@@ -731,11 +731,6 @@
       status: "stable",
     },
     {
-      // https://html.spec.whatwg.org/multipage/interaction.html#close-requests-and-close-watchers
-      name: "CloseWatcher",
-      status: "stable",
-    },
-    {
       // Avoid queuing a task to fire a selectionchange event when there is already a task scheduled
       // to do that for the target according to the new spec:
       // https://w3c.github.io/selection-api/#scheduling-selectionhange-event

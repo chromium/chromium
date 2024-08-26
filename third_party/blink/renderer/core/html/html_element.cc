@@ -1554,21 +1554,18 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     CHECK(!append_to_stack->Contains(this));
     append_to_stack->push_back(this);
 
-    if (RuntimeEnabledFeatures::CloseWatcherEnabled()) {
-      CloseWatcher* close_watcher = nullptr;
-      if (auto* window = GetDocument().domWindow()) {
-        close_watcher = CloseWatcher::Create(*window);
-      }
-      if (close_watcher) {
-        auto* event_listener =
-            MakeGarbageCollected<PopoverCloseWatcherEventListener>(this);
-        close_watcher->addEventListener(event_type_names::kClose,
-                                        event_listener);
-        close_watcher->addEventListener(event_type_names::kCancel,
-                                        event_listener);
-      }
-      GetPopoverData()->setCloseWatcher(close_watcher);
+    CloseWatcher* close_watcher = nullptr;
+    if (auto* window = GetDocument().domWindow()) {
+      close_watcher = CloseWatcher::Create(*window);
     }
+    if (close_watcher) {
+      auto* event_listener =
+          MakeGarbageCollected<PopoverCloseWatcherEventListener>(this);
+      close_watcher->addEventListener(event_type_names::kClose, event_listener);
+      close_watcher->addEventListener(event_type_names::kCancel,
+                                      event_listener);
+    }
+    GetPopoverData()->setCloseWatcher(close_watcher);
   }
 
   MarkPopoverInvokersDirty(*this);
@@ -2221,21 +2218,6 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
             ancestor_popover, document, HidePopoverFocusBehavior::kNone,
             HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
       }
-    }
-  } else if (event_type == event_type_names::kKeydown) {
-    // TODO(http://crbug.com/1171318): Remove this keydown branch once
-    // CloseWatcher has been fully enabled. CloseWatcher will handle escape key
-    // presses instead of this.
-    DCHECK(!RuntimeEnabledFeatures::CloseWatcherEnabled());
-    const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
-    if (key_event && key_event->key() == keywords::kEscape) {
-      CHECK(!event.GetEventPath().IsEmpty());
-      CHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
-      // Escape key just pops the topmost popover=auto/hint off the stack.
-      document.TopmostPopoverOrHint()->HidePopoverInternal(
-          HidePopoverFocusBehavior::kFocusPreviousElement,
-          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-          /*exception_state=*/nullptr);
     }
   }
 }

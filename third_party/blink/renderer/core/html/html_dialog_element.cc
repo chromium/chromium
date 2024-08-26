@@ -414,8 +414,6 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
-  if (!RuntimeEnabledFeatures::CloseWatcherEnabled())
-    return;
   // https://wicg.github.io/close-watcher/#patch-dialog cancelAction
 
   Event* dialog_event = close_watcher_event->cancelable()
@@ -428,8 +426,6 @@ void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
 }
 
 void HTMLDialogElement::CloseWatcherFiredClose() {
-  if (!RuntimeEnabledFeatures::CloseWatcherEnabled())
-    return;
   // https://wicg.github.io/close-watcher/#patch-dialog closeAction
 
   close();

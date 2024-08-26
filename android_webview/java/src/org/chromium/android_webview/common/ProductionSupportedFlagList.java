@@ -671,10 +671,6 @@ public final class ProductionSupportedFlagList {
                 "Enables showing the cancel dialog by calling preventDefault() "
                         + "on beforeunload event."),
         Flag.baseFeature(
-                BlinkFeatures.CLOSE_WATCHER,
-                "Enables the CloseWatcher JS API and integrates behavior with dialog and popover"
-                        + " elements."),
-        Flag.baseFeature(
                 BlinkFeatures.CSS_LAZY_PARSING_FAST_PATH,
                 "Enables a fast-path for skipping lazily-parsed CSS declaration blocks"),
         Flag.baseFeature(
