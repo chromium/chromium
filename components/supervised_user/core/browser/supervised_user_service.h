@@ -40,8 +40,7 @@ class SupervisedUserSettingsService;
 // This class handles all the information related to a given supervised profile
 // (e.g. the default URL filtering behavior, or manual allowlist/denylist
 // overrides).
-class SupervisedUserService : public KeyedService,
-                              public SupervisedUserURLFilter::Observer {
+class SupervisedUserService : public KeyedService {
  public:
   // Delegate encapsulating platform-specific logic that is invoked from SUS.
   class PlatformDelegate {
@@ -113,9 +112,6 @@ class SupervisedUserService : public KeyedService,
 
   // ProfileKeyedService override:
   void Shutdown() override;
-
-  // SupervisedUserURLFilter::Observer implementation:
-  void OnSiteListUpdated() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool signout_required_after_supervision_enabled() {

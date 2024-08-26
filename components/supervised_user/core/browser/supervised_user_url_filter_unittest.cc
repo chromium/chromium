@@ -39,7 +39,6 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   ~SupervisedUserURLFilterTest() override { filter_.RemoveObserver(this); }
 
   // SupervisedUserURLFilter::Observer:
-  void OnSiteListUpdated() override { run_loop_.Quit(); }
   void OnURLChecked(const GURL& url,
                     supervised_user::FilteringBehavior behavior,
                     supervised_user::FilteringBehaviorReason reason,
@@ -75,7 +74,6 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   }
 
   base::test::TaskEnvironment task_environment_;
-  base::RunLoop run_loop_;
   TestingPrefServiceSimple pref_service_;
   SupervisedUserURLFilter filter_ =
       SupervisedUserURLFilter(pref_service_,

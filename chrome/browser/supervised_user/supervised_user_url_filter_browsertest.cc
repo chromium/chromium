@@ -306,9 +306,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
   // Check that we got the interstitial.
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
 
-  // Trigger a no-op change to the site lists, which will notify observers of
-  // the URL filter.
-  GetSupervisedUserService()->OnSiteListUpdated();
+  // Set the host as blocked through manual blocklisting, should not change the
+  // interstitial state.
+  base::Value::Dict dict;
+  dict.Set(test_url.host(), false);
+  supervised_user_settings_service->SetLocalSetting(
+      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
 
   EXPECT_EQ(tab, tab_strip->GetActiveWebContents());
 }
@@ -649,7 +652,6 @@ class MockSupervisedUserURLFilterObserver
       const MockSupervisedUserURLFilterObserver&) = delete;
 
   // SupervisedUserURLFilter::Observer:
-  void OnSiteListUpdated() override {}
   MOCK_METHOD(void,
               OnURLChecked,
               (const GURL& url,

@@ -259,8 +259,6 @@ void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-void FamilyLinkUserInternalsMessageHandler::OnSiteListUpdated() {}
-
 void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
     const GURL& url,
     supervised_user::FilteringBehavior behavior,

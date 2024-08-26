@@ -101,9 +101,6 @@ class SupervisedUserURLFilter {
 
   class Observer {
    public:
-    // Called whenever the allowlists are updated. This does *not* include
-    // SetManualHosts/SetManualURLs.
-    virtual void OnSiteListUpdated() = 0;
     // Called whenever a check started via
     // GetFilteringBehaviorForURLWithAsyncChecks completes.
     virtual void OnURLChecked(const GURL& url,

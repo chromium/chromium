@@ -41,7 +41,6 @@ namespace supervised_user {
 
 SupervisedUserService::~SupervisedUserService() {
   DCHECK(!did_init_ || did_shutdown_);
-  url_filter_->RemoveObserver(this);
 }
 
 void SupervisedUserService::Init() {
@@ -147,7 +146,6 @@ SupervisedUserService::SupervisedUserService(
           can_show_first_time_interstitial_banner) {
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
       user_prefs, std::move(url_filter_delegate));
-  url_filter_->AddObserver(this);
 }
 
 FirstTimeInterstitialBannerState SupervisedUserService::GetUpdatedBannerState(
@@ -345,12 +343,6 @@ void SupervisedUserService::Shutdown() {
     base::RecordAction(UserMetricsAction("ManagedUsers_QuitBrowser"));
   }
   SetActive(false);
-}
-
-void SupervisedUserService::OnSiteListUpdated() {
-  for (SupervisedUserServiceObserver& observer : observer_list_) {
-    observer.OnURLFilterChanged();
-  }
 }
 
 void SupervisedUserService::MarkFirstTimeInterstitialBannerShown() const {
