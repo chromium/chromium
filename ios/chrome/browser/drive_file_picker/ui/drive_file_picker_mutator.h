@@ -16,6 +16,8 @@
 // item in case of a folder or download it in case of a file.
 - (void)selectDriveItem:(DriveItemIdentifier*)driveItem;
 
+- (void)fetchDriveItemsForFolderID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_MUTATOR_H_

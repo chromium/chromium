@@ -33,17 +33,17 @@ const CGFloat kIconPointSize = 18;
 
 + (instancetype)myDriveItem {
   // TODO(crbug.com/344812548): Add a11y title.
-  return
-      [[DriveItemIdentifier alloc] initWithIdentifier:@"my_drive"
-                                      title:@"TEST My Drive"
-                                       icon:CustomSymbolWithPointSize(
-                                                kMyDriveSymbol, kIconPointSize)
-                               creationDate:nil
-                                       type:DriveItemType::kFolder];
+  return [[DriveItemIdentifier alloc]
+      initWithIdentifier:@"root"
+                   title:@"TEST My Drive"
+                    icon:CustomSymbolWithPointSize(kMyDriveSymbol,
+                                                   kIconPointSize)
+            creationDate:nil
+                    type:DriveItemType::kFolder];
 }
 
 + (instancetype)sharedDrivesItem {
-  // TODO(crbug.com/344812548): Add a11y title.
+  // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"shared_drives"
                    title:@"TEST Shared Drives"
@@ -54,7 +54,7 @@ const CGFloat kIconPointSize = 18;
 }
 
 + (instancetype)computersItem {
-  // TODO(crbug.com/344812548): Add a11y title.
+  // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"computers"
                    title:@"TEST Computers"
@@ -65,7 +65,7 @@ const CGFloat kIconPointSize = 18;
 }
 
 + (instancetype)starredItem {
-  // TODO(crbug.com/344812548): Add a11y title.
+  // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"starred"
                    title:@"TEST Starred"
@@ -76,7 +76,7 @@ const CGFloat kIconPointSize = 18;
 }
 
 + (instancetype)recentItem {
-  // TODO(crbug.com/344812548): Add a11y title.
+  // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc] initWithIdentifier:@"recent"
                                          title:@"TEST Recent"
                                           icon:DefaultSymbolWithPointSize(
@@ -86,7 +86,7 @@ const CGFloat kIconPointSize = 18;
 }
 
 + (instancetype)sharedWithMeItem {
-  // TODO(crbug.com/344812548): Add a11y title.
+  // TODO(crbug.com/344812548): Add a11y title and the corresponding identifier.
   return [[DriveItemIdentifier alloc]
       initWithIdentifier:@"shared_with_me"
                    title:@"TEST Shared With Me"

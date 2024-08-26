@@ -6,6 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
@@ -56,12 +57,15 @@
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   _currentIdentity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  drive::DriveService* driveService =
+      drive::DriveServiceFactory::GetForBrowserState(browserState);
   _viewController = [[RootDriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];
   _mediator = [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
                                                        identity:_currentIdentity
-                                                  driveFolderID:nil];
+                                                  driveFolderID:nil
+                                                   driveService:driveService];
 
   _navigationController.modalInPresentation = YES;
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;

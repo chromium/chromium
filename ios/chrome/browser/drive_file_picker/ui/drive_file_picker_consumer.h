@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class DriveItemIdentifier;
+
 // Consumer interface for the Drive file picker.
 @protocol DriveFilePickerConsumer <NSObject>
 
@@ -15,6 +17,9 @@
 
 // Sets the consumer's title.
 - (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle;
+
+- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSUMER_H_

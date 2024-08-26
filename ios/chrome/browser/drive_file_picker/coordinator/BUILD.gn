@@ -14,6 +14,9 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/drive/model:drive_list",
+    "//ios/chrome/browser/drive/model:drive_service",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
     "//ios/chrome/browser/drive_file_picker/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -32,6 +35,10 @@ source_set("unit_tests") {
   sources = [ "drive_file_picker_mediator_unittest.mm" ]
   deps = [
     ":coordinator",
+    "//base/test:test_support",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/web/model/choose_file",
     "//ios/chrome/browser/web/model/choose_file:test_support",

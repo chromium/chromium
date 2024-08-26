@@ -13,6 +13,10 @@
 @protocol SystemIdentity;
 @protocol DriveFilePickerConsumer;
 
+namespace drive {
+class DriveService;
+}
+
 namespace web {
 class WebState;
 }
@@ -29,6 +33,7 @@ class WebState;
 - (instancetype)initWithWebState:(web::WebState*)webState
                         identity:(id<SystemIdentity>)identity
                    driveFolderID:(DriveItemIdentifier*)driveFolderID
+                    driveService:(drive::DriveService*)driveService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

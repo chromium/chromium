@@ -276,11 +276,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   return cell;
 }
 
+#pragma mark - DriveFilePickerConsumer
+
 - (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
   _selectedEmail = selectedUserIdentityEmail;
 }
 
 - (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle {
+}
+
+- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems {
 }
 
 @end

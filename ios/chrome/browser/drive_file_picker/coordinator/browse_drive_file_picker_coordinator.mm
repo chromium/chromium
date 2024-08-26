@@ -5,12 +5,15 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/drive/model/drive_service.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -38,6 +41,8 @@
 
   // Identity whose Drive is being browsed.
   id<SystemIdentity> _identity;
+
+  drive::DriveService* _driveService;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -63,16 +68,22 @@
 }
 
 - (void)start {
+  ChromeBrowserState* browserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  drive::DriveService* driveService =
+      drive::DriveServiceFactory::GetForBrowserState(browserState);
   _viewController = [[DriveFilePickerTableViewController alloc] init];
   _mediator = [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
                                                        identity:_identity
-                                                  driveFolderID:_driveFolderID];
+                                                  driveFolderID:_driveFolderID
+                                                   driveService:driveService];
 
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   _viewController.driveFilePickerHandler = driveFilePickerHandler;
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
+  _mediator.delegate = self;
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }
 

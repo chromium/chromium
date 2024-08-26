@@ -9,7 +9,9 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -17,6 +19,16 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+constexpr CGFloat kCellIconCornerRadius = 10;
+
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  SectionIdentifierDriveMainFolders = kSectionIdentifierEnumZero,
+};
+
+}  // namespace
 
 @implementation DriveFilePickerTableViewController {
   // The status of file dowload.
@@ -44,6 +56,9 @@
 
   // The currently represented folder.
   NSString* _driveFolderTitle;
+
+  UITableViewDiffableDataSource<NSString*, DriveItemIdentifier*>*
+      _diffableDataSource;
 }
 
 - (instancetype)init {
@@ -79,7 +94,22 @@
       [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
 
   self.navigationController.toolbarHidden = NO;
-  // TODO(crbug.com/344812548): Add a data source to the table view.
+
+  __weak __typeof(self) weakSelf = self;
+  auto cellProvider = ^UITableViewCell*(UITableView* tableView,
+                                        NSIndexPath* indexPath,
+                                        DriveItemIdentifier* itemIdentifier) {
+    return [weakSelf cellForIndexPath:indexPath itemIdentifier:itemIdentifier];
+  };
+  _diffableDataSource =
+      [[UITableViewDiffableDataSource alloc] initWithTableView:self.tableView
+                                                  cellProvider:cellProvider];
+
+  self.tableView.dataSource = _diffableDataSource;
+
+  RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
+
+  [self.mutator fetchDriveItemsForFolderID];
 }
 
 #pragma mark - DriveFilePickerConsumer
@@ -303,6 +333,53 @@
     case DriveItemsSortingType::kOpeningTime:
       return _sortByOpeningTimeAction;
   }
+}
+
+// Deques and sets up a cell for a drive item.
+- (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(DriveItemIdentifier*)itemIdentifier {
+  TableViewDetailIconCell* cell =
+      DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  cell.userInteractionEnabled = YES;
+  [cell.textLabel setText:itemIdentifier.title];
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+  [cell setIconImage:itemIdentifier.icon
+            tintColor:nil
+      backgroundColor:cell.backgroundColor
+         cornerRadius:kCellIconCornerRadius];
+
+  if (itemIdentifier.type == DriveItemType::kFile) {
+    [cell setDetailText:itemIdentifier.creationDate];
+    [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+  }
+  return cell;
+}
+
+#pragma mark - DriveFilePickerConsumer
+
+- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems {
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot
+      appendSectionsWithIdentifiers:@[ @(SectionIdentifierDriveMainFolders) ]];
+  [snapshot appendItemsWithIdentifiers:driveItems];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  DriveItemIdentifier* driveItem =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+  if (driveItem.type == DriveItemType::kFolder) {
+    [self.mutator selectDriveItem:driveItem];
+  }
+  // TODO(crbug.com/344812396): Add the download in case of files.
 }
 
 @end
