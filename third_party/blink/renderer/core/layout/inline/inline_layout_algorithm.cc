@@ -68,8 +68,8 @@ class LineBreakStrategy {
                     const InlineBreakToken* break_token,
                     const ColumnSpannerPath* column_spanner_path) {
     if (!column_spanner_path) {
-      const TextWrap text_wrap = block_style.GetTextWrap();
-      if (text_wrap == TextWrap::kBalance) [[unlikely]] {
+      const TextWrapStyle text_wrap = block_style.GetTextWrapStyle();
+      if (text_wrap == TextWrapStyle::kBalance) [[unlikely]] {
         score_line_break_context_ = context->GetScoreLineBreakContext();
         initiate_balancing_ = !break_token;
         if (initiate_balancing_) {
@@ -77,10 +77,12 @@ class LineBreakStrategy {
                  score_line_break_context_->IsActive());
           use_score_line_break_ = score_line_break_context_;
         }
-      } else if (text_wrap == TextWrap::kPretty) [[unlikely]] {
+      } else if (text_wrap == TextWrapStyle::kPretty) [[unlikely]] {
         score_line_break_context_ = context->GetScoreLineBreakContext();
         use_score_line_break_ =
             score_line_break_context_ && score_line_break_context_->IsActive();
+      } else {
+        DCHECK(ShouldWrapLineGreedy(text_wrap));
       }
     }
 #if EXPENSIVE_DCHECKS_ARE_ON()

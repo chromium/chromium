@@ -575,19 +575,21 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 
 const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     const InlineNode& node) {
-  const TextWrap wrap = node.Style().GetTextWrap();
-  if (wrap == TextWrap::kPretty) [[unlikely]] {
+  const TextWrapStyle wrap = node.Style().GetTextWrapStyle();
+  if (wrap == TextWrapStyle::kPretty) [[unlikely]] {
     UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPretty);
     if (!node.IsScoreLineBreakDisabled()) {
       return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForOptimal>(
           node);
     }
-  } else if (wrap == TextWrap::kBalance) [[unlikely]] {
+  } else if (wrap == TextWrapStyle::kBalance) [[unlikely]] {
     UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalance);
     if (!node.IsScoreLineBreakDisabled()) {
       return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForBalance>(
           node);
     }
+  } else {
+    DCHECK(ShouldWrapLineGreedy(wrap));
   }
   return LayoutWithSimpleInlineChildLayoutContext(node);
 }
@@ -1374,7 +1376,9 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   DCHECK(previous_result_);
 
   // No lines are reusable if this block uses `NGParagraphLineBreaker`.
-  if (Style().GetTextWrap() == TextWrap::kBalance) {
+  // TODO(kojii): This should include other non-stable values; i.e.
+  // `if (!Style().ShouldWrapLineGreedy()) {`.
+  if (Style().GetTextWrapStyle() == TextWrapStyle::kBalance) {
     return false;
   }
 

@@ -2110,7 +2110,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // This function may return values not defined as the enum values. See
   // `EWhiteSpace`. Prefer using semantic functions below.
   EWhiteSpace WhiteSpace() const {
-    return ToWhiteSpace(GetWhiteSpaceCollapse(), GetTextWrap());
+    return ToWhiteSpace(GetWhiteSpaceCollapse(), GetTextWrapMode());
   }
 
   // Semantic functions for the `white-space` property and its longhands.
@@ -2137,7 +2137,12 @@ class ComputedStyle final : public ComputedStyleBase {
     return false;
   }
 
-  bool ShouldWrapLine() const { return blink::ShouldWrapLine(GetTextWrap()); }
+  bool ShouldWrapLine() const {
+    return blink::ShouldWrapLine(GetTextWrapMode());
+  }
+  bool ShouldWrapLineGreedy() const {
+    return blink::ShouldWrapLineGreedy(GetTextWrapStyle());
+  }
   bool ShouldBreakSpaces() const {
     return blink::ShouldBreakSpaces(GetWhiteSpaceCollapse());
   }
@@ -3290,11 +3295,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   EWhiteSpace WhiteSpace() const {
-    return ToWhiteSpace(GetWhiteSpaceCollapse(), GetTextWrap());
+    return ToWhiteSpace(GetWhiteSpaceCollapse(), GetTextWrapMode());
   }
   void SetWhiteSpace(EWhiteSpace whitespace) {
     SetWhiteSpaceCollapse(ToWhiteSpaceCollapse(whitespace));
-    SetTextWrap(ToTextWrap(whitespace));
+    SetTextWrapMode(ToTextWrapMode(whitespace));
   }
 
   // WritingMode

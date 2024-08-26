@@ -11000,12 +11000,20 @@ const CSSValue* WhiteSpaceCollapse::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GetWhiteSpaceCollapse());
 }
 
-const CSSValue* TextWrap::CSSValueFromComputedStyleInternal(
+const CSSValue* TextWrapMode::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.GetTextWrap());
+  return CSSIdentifierValue::Create(style.GetTextWrapMode());
+}
+
+const CSSValue* TextWrapStyle::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.GetTextWrapStyle());
 }
 
 const CSSValue* Widows::ParseSingleValue(CSSParserTokenStream& stream,

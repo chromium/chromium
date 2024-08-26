@@ -73,9 +73,14 @@ inline WhiteSpaceCollapse ToWhiteSpaceCollapse(const CSSValue* value) {
       value, ComputedStyleInitialValues::InitialWhiteSpaceCollapse());
 }
 
-inline TextWrap ToTextWrap(const CSSValue* value) {
-  return ConvertIdentifierTo<TextWrap>(
-      value, ComputedStyleInitialValues::InitialTextWrap());
+inline TextWrapMode ToTextWrapMode(const CSSValue* value) {
+  return ConvertIdentifierTo<TextWrapMode>(
+      value, ComputedStyleInitialValues::InitialTextWrapMode());
+}
+
+inline TextWrapStyle ToTextWrapStyle(const CSSValue* value) {
+  return ConvertIdentifierTo<TextWrapStyle>(
+      value, ComputedStyleInitialValues::InitialTextWrapStyle());
 }
 
 bool IsZeroPercent(const CSSValue* value) {
@@ -425,6 +430,7 @@ static bool AllowInitialInShorthand(CSSPropertyID property_id) {
     case CSSPropertyID::kListStyle:
     case CSSPropertyID::kTextDecoration:
     case CSSPropertyID::kTextEmphasis:
+    case CSSPropertyID::kTextWrap:
     case CSSPropertyID::kMask:
     case CSSPropertyID::kWebkitTextStroke:
     case CSSPropertyID::kWhiteSpace:
@@ -655,6 +661,8 @@ String StylePropertySerializer::SerializeShorthand(
       return TextSpacingValue();
     case CSSPropertyID::kWebkitTextStroke:
       return GetShorthandValue(webkitTextStrokeShorthand());
+    case CSSPropertyID::kTextWrap:
+      return TextWrapValue();
     case CSSPropertyID::kMarker: {
       if (const CSSValue* start =
               property_set_.GetPropertyCSSValue(GetCSSPropertyMarkerStart())) {
@@ -2383,11 +2391,41 @@ String StylePropertySerializer::TextSpacingValue() const {
   return result.ToString();
 }
 
+String StylePropertySerializer::TextWrapValue() const {
+  const CSSValue* mode_value =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextWrapMode());
+  const CSSValue* style_value =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextWrapStyle());
+  if (!mode_value || !style_value) {
+    // If any longhands are missing, don't serialize as a shorthand.
+    return g_empty_string;
+  }
+
+  // If `text-wrap-style` is initial, return `text-wrap-mode`.
+  const TextWrapMode mode = ToTextWrapMode(mode_value);
+  const TextWrapStyle style = ToTextWrapStyle(style_value);
+  if (style == ComputedStyleInitialValues::InitialTextWrapStyle()) {
+    return getValueName(PlatformEnumToCSSValueID(mode));
+  }
+
+  // Otherwise, if `text-wrap-mode` is initial, return `text-wrap-style`.
+  if (mode == ComputedStyleInitialValues::InitialTextWrapMode()) {
+    return getValueName(PlatformEnumToCSSValueID(style));
+  }
+
+  // If neither is initial, return a list.
+  StringBuilder result;
+  result.Append(getValueName(PlatformEnumToCSSValueID(mode)));
+  result.Append(kSpaceCharacter);
+  result.Append(getValueName(PlatformEnumToCSSValueID(style)));
+  return result.ToString();
+}
+
 String StylePropertySerializer::WhiteSpaceValue() const {
   const CSSValue* collapse_value =
       property_set_.GetPropertyCSSValue(GetCSSPropertyWhiteSpaceCollapse());
   const CSSValue* wrap_value =
-      property_set_.GetPropertyCSSValue(GetCSSPropertyTextWrap());
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextWrapMode());
   if (!collapse_value || !wrap_value) {
     // If any longhands are missing, don't serialize as a shorthand.
     return g_empty_string;
@@ -2395,7 +2433,7 @@ String StylePropertySerializer::WhiteSpaceValue() const {
 
   // Check if longhands are one of pre-defined keywords of `white-space`.
   const WhiteSpaceCollapse collapse = ToWhiteSpaceCollapse(collapse_value);
-  const TextWrap wrap = ToTextWrap(wrap_value);
+  const TextWrapMode wrap = ToTextWrapMode(wrap_value);
   const EWhiteSpace whitespace = ToWhiteSpace(collapse, wrap);
   if (IsValidWhiteSpace(whitespace)) {
     return getValueName(PlatformEnumToCSSValueID(whitespace));
@@ -2406,7 +2444,7 @@ String StylePropertySerializer::WhiteSpaceValue() const {
   if (collapse != ComputedStyleInitialValues::InitialWhiteSpaceCollapse()) {
     result.Append(getValueName(PlatformEnumToCSSValueID(collapse)));
   }
-  if (wrap != ComputedStyleInitialValues::InitialTextWrap()) {
+  if (wrap != ComputedStyleInitialValues::InitialTextWrapMode()) {
     if (!result.empty()) {
       result.Append(kSpaceCharacter);
     }

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['white-space'] = "balance" should not set the property value
-  assert_equals: expected "" but got "balance"
-[FAIL] e.style['white-space'] = "pretty" should not set the property value
-  assert_equals: expected "" but got "pretty"
-Harness: the test ran to completion.
-

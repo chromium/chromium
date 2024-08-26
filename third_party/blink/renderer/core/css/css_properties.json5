@@ -6760,7 +6760,7 @@
     {
       name: "white-space",
       longhands: [
-        "white-space-collapse", "text-wrap"
+        "white-space-collapse", "text-wrap-mode"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_page_context: true,
@@ -6783,14 +6783,34 @@
     },
     {
       name: "text-wrap",
+      longhands: [
+        "text-wrap-mode", "text-wrap-style"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
+    },
+    {
+      name: "text-wrap-mode",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
-      field_template: "primitive",
-      field_size: 2,  // Ensure this is in sync with `kTextWrapBits`.
-      keywords: ["wrap", "nowrap", "balance", "pretty"],
-      type_name: "TextWrap",
-      default_value: "TextWrap::kWrap",
-      include_paths: ["third_party/blink/renderer/core/css/white_space.h"],
+      field_template: "keyword",
+      type_name: "TextWrapMode",
+      keywords: ["wrap", "nowrap"],
+      default_value: "wrap",
+      typedom_types: ["Keyword"],
+      valid_for_cue: true,
+      valid_for_marker: true,
+      valid_for_page_context: true,
+      invalidate: ["layout"],
+    },
+    {
+      name: "text-wrap-style",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_template: "keyword",
+      type_name: "TextWrapStyle",
+      keywords: ["auto", "balance", "pretty", "stable"],
+      default_value: "auto",
       typedom_types: ["Keyword"],
       valid_for_cue: true,
       valid_for_marker: true,

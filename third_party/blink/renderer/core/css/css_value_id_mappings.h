@@ -527,39 +527,6 @@ inline CSSValueID PlatformEnumToCSSValueID(TextSpacingTrim v) {
 }
 
 template <>
-inline TextWrap CssValueIDToPlatformEnum(CSSValueID v) {
-  switch (v) {
-    case CSSValueID::kWrap:
-      return TextWrap::kWrap;
-    case CSSValueID::kNowrap:
-      return TextWrap::kNoWrap;
-    case CSSValueID::kBalance:
-      return TextWrap::kBalance;
-    case CSSValueID::kPretty:
-      return TextWrap::kPretty;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return TextWrap::kWrap;
-  }
-}
-
-template <>
-inline CSSValueID PlatformEnumToCSSValueID(TextWrap v) {
-  switch (v) {
-    case TextWrap::kWrap:
-      return CSSValueID::kWrap;
-    case TextWrap::kNoWrap:
-      return CSSValueID::kNowrap;
-    case TextWrap::kBalance:
-      return CSSValueID::kBalance;
-    case TextWrap::kPretty:
-      return CSSValueID::kPretty;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return CSSValueID::kNone;
-}
-
-template <>
 inline TryTactic CssValueIDToPlatformEnum(CSSValueID v) {
   switch (v) {
     case CSSValueID::kFlipBlock:

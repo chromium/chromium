@@ -85,6 +85,7 @@ class CORE_EXPORT StylePropertySerializer {
   String TextBoxValue() const;
   String TextDecorationValue() const;
   String TextSpacingValue() const;
+  String TextWrapValue() const;
   String ContainIntrinsicSizeValue() const;
   String WhiteSpaceValue() const;
   String ScrollStartValue() const;

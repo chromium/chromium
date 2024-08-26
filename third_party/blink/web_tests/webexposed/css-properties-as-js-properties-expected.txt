@@ -482,6 +482,8 @@ textTransform
 textUnderlineOffset
 textUnderlinePosition
 textWrap
+textWrapMode
+textWrapStyle
 timelineScope
 top
 touchAction

@@ -740,8 +740,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.TextUnderlineOffset() == b.TextUnderlineOffset();
     case CSSPropertyID::kTextUnderlinePosition:
       return a.GetTextUnderlinePosition() == b.GetTextUnderlinePosition();
-    case CSSPropertyID::kTextWrap:
-      return a.GetTextWrap() == b.GetTextWrap();
+    case CSSPropertyID::kTextWrapMode:
+      return a.GetTextWrapMode() == b.GetTextWrapMode();
+    case CSSPropertyID::kTextWrapStyle:
+      return a.GetTextWrapStyle() == b.GetTextWrapStyle();
     case CSSPropertyID::kTop:
       return a.Top() == b.Top();
     case CSSPropertyID::kOverlay:
@@ -1258,6 +1260,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kTextDecoration:
     case CSSPropertyID::kTextEmphasis:
     case CSSPropertyID::kTextSpacing:
+    case CSSPropertyID::kTextWrap:
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kViewTimeline:
     case CSSPropertyID::kWebkitColumnBreakAfter:

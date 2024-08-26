@@ -3445,9 +3445,7 @@ bool LineBreaker::IsMonolithicRuby(
   // We don't break rubies in text-wrap:balance and text-wrap:pretty
   // because the sum of broken ruby inline-size can be different from the
   // inline-size of a non-broken ruby.
-  TextWrap container_wrap = node_.Style().GetTextWrap();
-  if (container_wrap != TextWrap::kWrap &&
-      container_wrap != TextWrap::kNoWrap) {
+  if (!node_.Style().ShouldWrapLineGreedy()) {
     return true;
   }
 
