@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+
 #include <memory>
 
 #include "base/check.h"
@@ -21,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
+#include "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -60,18 +62,6 @@ void SupervisedUserService::Init() {
   user_prefs_->SetInteger(prefs::kFirstTimeInterstitialBannerState,
                           static_cast<int>(banner_state));
   SetActive(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
-}
-
-void SupervisedUserService::SetDelegate(Delegate* delegate) {
-  if (delegate) {
-    // Changing delegates isn't allowed.
-    DCHECK(!delegate_);
-  } else {
-    // If the delegate is removed, deactivate first to give the old delegate a
-    // chance to clean up.
-    SetActive(false);
-  }
-  delegate_ = delegate;
 }
 
 SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
@@ -152,7 +142,6 @@ SupervisedUserService::SupervisedUserService(
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
-      delegate_(nullptr),
       platform_delegate_(std::move(platform_delegate)),
       can_show_first_time_interstitial_banner_(
           can_show_first_time_interstitial_banner) {
@@ -183,10 +172,6 @@ void SupervisedUserService::SetActive(bool active) {
     return;
   }
   active_ = active;
-
-  if (delegate_) {
-    delegate_->SetActive(active_);
-  }
 
   settings_service_->SetActive(active_);
 
@@ -233,6 +218,10 @@ void SupervisedUserService::SetActive(bool active) {
           base::BindRepeating(&SupervisedUserService::OnCustodianInfoChanged,
                               base::Unretained(this)));
     }
+
+    remote_web_approvals_manager_.AddApprovalRequestCreator(
+        std::make_unique<PermissionRequestCreatorImpl>(identity_manager_,
+                                                       url_loader_factory_));
 
     // Initialize the filter.
     OnDefaultFilteringBehaviorChanged();

@@ -43,13 +43,6 @@ class SupervisedUserSettingsService;
 class SupervisedUserService : public KeyedService,
                               public SupervisedUserURLFilter::Observer {
  public:
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-    // Allows the delegate to handle the (de)activation in a custom way.
-    virtual void SetActive(bool active) = 0;
-  };
-
   // Delegate encapsulating platform-specific logic that is invoked from SUS.
   class PlatformDelegate {
    public:
@@ -79,8 +72,6 @@ class SupervisedUserService : public KeyedService,
 
   // Initializes this object.
   void Init();
-
-  void SetDelegate(Delegate* delegate);
 
   // Returns the URL filter for filtering navigations and classifying sites in
   // the history view. Both this method and the returned filter may only be used
@@ -218,8 +209,6 @@ class SupervisedUserService : public KeyedService,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   bool active_ = false;
-
-  raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 
