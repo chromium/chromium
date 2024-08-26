@@ -8,9 +8,9 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"
-#include "extensions/common/extension.h"
+#include "extensions/browser/extension_function.h"  // nogncheck
+#include "extensions/browser/extension_function_histogram_value.h"
 #endif
 
 using content::BrowserThread;
@@ -19,7 +19,7 @@ namespace browser_sync {
 
 ExtensionsActivityMonitor::ExtensionsActivityMonitor(
     content::BrowserContext* context)
-    : extensions_activity_(new syncer::ExtensionsActivity()) {
+    : extensions_activity_(base::MakeRefCounted<syncer::ExtensionsActivity>()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // It would be nice if we could specify a Source for each specific function
   // we wanted to observe, but the actual function objects are allocated on
@@ -38,10 +38,9 @@ ExtensionsActivityMonitor::~ExtensionsActivityMonitor() {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void ExtensionsActivityMonitor::OnBookmarksApiInvoked(
-    const extensions::Extension* extension,
-    const extensions::BookmarksFunction* func) {
+    const ExtensionFunction* func) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!extension) {
+  if (!func->extension()) {
     return;
   }
 
@@ -51,7 +50,7 @@ void ExtensionsActivityMonitor::OnBookmarksApiInvoked(
     case extensions::functions::BOOKMARKS_CREATE:
     case extensions::functions::BOOKMARKS_REMOVETREE:
     case extensions::functions::BOOKMARKS_REMOVE:
-      extensions_activity_->UpdateRecord(extension->id());
+      extensions_activity_->UpdateRecord(func->extension_id());
       break;
     default:
       break;

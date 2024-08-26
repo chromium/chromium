@@ -63,11 +63,10 @@ void BookmarksApiWatcher::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void BookmarksApiWatcher::NotifyApiInvoked(
-    const extensions::Extension* extension,
-    const extensions::BookmarksFunction* func) {
-  for (auto& observer : observers_)
-    observer.OnBookmarksApiInvoked(extension, func);
+void BookmarksApiWatcher::NotifyApiInvoked(const ExtensionFunction* func) {
+  for (auto& observer : observers_) {
+    observer.OnBookmarksApiInvoked(func);
+  }
 }
 
 // static
