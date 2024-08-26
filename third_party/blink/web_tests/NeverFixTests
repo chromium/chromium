@@ -120,7 +120,7 @@
 
 # Mac does not support touch, so all touch-related tests are skipped there.
 crbug.com/613672 [ Mac ] compositing/gestures/gesture-tapHighlight-lines-and-float-in-multicol.html [ Skip ]
-crbug.com/613672 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?touch [ Skip ]
+crbug.com/613672 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?touch [ Skip ]
 crbug.com/613672 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_appended.html?touch [ Skip ]
 crbug.com/613672 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_removed.html?touch [ Skip ]
 crbug.com/613672 [ Mac ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Skip ]

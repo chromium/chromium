@@ -1,9 +1,14 @@
 <!doctype html>
-<title>Coalesced events under load</title>
+<title>Event coalescing under load</title>
+<!--
+  This test is optional because event coalescing under load is an optional
+  spec requirement: https://w3c.github.io/pointerevents/#coalesced-events
+-->
 <meta name="variant" content="?mouse">
 <meta name="variant" content="?pen">
 <meta name="variant" content="?touch">
 <meta name="viewport" content="width=device-width">
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -23,6 +28,12 @@
   "use strict";
   const pointer_type = location.search.substring(1);
   const target = document.getElementById("target");
+
+  // Busy-loop load parameters:
+  const load_initial_ms = 1;
+  const load_multiplier = 4;
+  const load_max_ms = 1024;
+  // Max total delay = 1 + 4 + 16 + ... + 1024 = 1365ms
 
   // https://w3c.github.io/pointerevents/#coalesced-events
   function checkCoalescedMoveEventAttributes(event) {
@@ -51,7 +62,7 @@
   let coalesced_event_received = false;
 
   promise_test(async t => {
-    let current_busyloop_ms = 5;
+    let current_busyloop_ms = load_initial_ms;
 
     target.addEventListener("pointerdown", event => {
       // Every pointerdown blocks the main thread for a certain time limit,
@@ -60,7 +71,7 @@
       let start = performance.now();
       while (performance.now() < start + current_busyloop_ms)
         continue;
-      current_busyloop_ms *= 2;
+      current_busyloop_ms *= load_multiplier;
     });
 
     target.addEventListener("pointermove", t.step_func(event => {
@@ -71,14 +82,14 @@
 
     // Repeatedly send a long action sequence until either a coalesced event is
     // encountered or the busyloop becomes too long.
-    while (!coalesced_event_received && current_busyloop_ms < 500) {
+    while (!coalesced_event_received && current_busyloop_ms <= load_max_ms) {
       let pointerup_promise = getEvent("pointerup", target);
 
       let actions = new test_driver.Actions()
           .addPointer("TestPointer", pointer_type)
           .pointerMove(0, 0, { origin: target })
           .pointerDown();
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 50; i++) {
         actions = actions.pointerMove(20, 20, { origin: target })
             .pointerMove(0, 0, { origin: target });
       }
