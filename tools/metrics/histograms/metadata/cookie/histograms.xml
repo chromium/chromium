@@ -137,57 +137,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.CookiePrefix.CaseVariant" enum="CookiePrefix"
-    expires_after="2024-07-21">
-  <owner>bingler@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Number of times a cookie was set with a name prefixed by a case variant of
-    &quot;__Secure-&quot; or &quot;__Host-&quot;.
-
-    This is recorded whenever a cookie is created with a case variant prefix.
-    I.e.: Non-variants will not be recorded in this metric nor will cookies
-    without a prefix.
-
-    Case variant prefixes will case-insensitively match cookie prefixes, but
-    won't case-sensitively match. E.x.: &quot;__SeCuRe-&quot; or
-    &quot;__HOST&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.CookiePrefix.CaseVariantCount" enum="Boolean"
-    expires_after="2024-07-21">
-  <owner>bingler@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Records whether or not a cookie prefix was a case variant or not. True
-    indicates a case variant. This is recorded whenever a cookie is created with
-    a cookie prefix.
-
-    Case variant prefixes will case-insensitively match cookie prefixes, but
-    won't case-sensitively match. E.x.: &quot;__SeCuRe-&quot; or
-    &quot;__HOST&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.CookiePrefix.CaseVariantValid" enum="Boolean"
-    expires_after="2024-07-21">
-  <owner>bingler@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Records whether or not a cookie prefix case variant meets the requirements
-    for a cookie prefix. E.x.: `__SECURE-foo=bar` would be rejected due to the
-    lack of the `Secure` attribute. True indicates the cookie's prefix was valid
-    (the cookie may still be invalid for other reasons).
-
-    This is recorded whenever a cookie is created with a case variant prefix.
-
-    Case variant prefixes will case-insensitively match cookie prefixes, but
-    won't case-sensitively match. E.x.: &quot;__SeCuRe-&quot; or
-    &quot;__HOST&quot;.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.CookieSchemeRequestScheme" enum="CookieRequestScheme"
     expires_after="2025-01-05">
   <owner>bingler@chromium.org</owner>

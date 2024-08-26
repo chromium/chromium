@@ -673,28 +673,19 @@ bool IsOnPath(const std::string& cookie_path, const std::string& url_path) {
   return true;
 }
 
-CookiePrefix GetCookiePrefix(const std::string& name,
-                             bool check_insensitively) {
+CookiePrefix GetCookiePrefix(const std::string& name) {
   const char kSecurePrefix[] = "__Secure-";
   const char kHostPrefix[] = "__Host-";
 
-  base::CompareCase case_sensitivity =
-      check_insensitively ? base::CompareCase::INSENSITIVE_ASCII
-                          : base::CompareCase::SENSITIVE;
-
-  if (base::StartsWith(name, kSecurePrefix, case_sensitivity)) {
+  if (base::StartsWith(name, kSecurePrefix,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
     return COOKIE_PREFIX_SECURE;
   }
-  if (base::StartsWith(name, kHostPrefix, case_sensitivity)) {
+  if (base::StartsWith(name, kHostPrefix,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
     return COOKIE_PREFIX_HOST;
   }
   return COOKIE_PREFIX_NONE;
-}
-
-CookiePrefix GetCookiePrefix(const std::string& name) {
-  return GetCookiePrefix(name,
-                         base::FeatureList::IsEnabled(
-                             net::features::kCaseInsensitiveCookiePrefix));
 }
 
 bool IsCookiePrefixValid(CookiePrefix prefix,

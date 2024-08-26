@@ -286,10 +286,6 @@ BASE_FEATURE(kShouldKillSessionOnAcceptChMalformed,
              "ShouldKillSessionOnAcceptChMalformed",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCaseInsensitiveCookiePrefix,
-             "CaseInsensitiveCookiePrefix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableWebsocketsOverHttp3,
              "EnableWebsocketsOverHttp3",
              base::FEATURE_DISABLED_BY_DEFAULT);

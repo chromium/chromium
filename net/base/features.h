@@ -329,8 +329,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAlpsClientHintParsing);
 // Whether to kill the session on Error::kAcceptChMalformed.
 NET_EXPORT BASE_DECLARE_FEATURE(kShouldKillSessionOnAcceptChMalformed);
 
-NET_EXPORT BASE_DECLARE_FEATURE(kCaseInsensitiveCookiePrefix);
-
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebsocketsOverHttp3);
 
 #if BUILDFLAG(IS_WIN)

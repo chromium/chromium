@@ -165,12 +165,6 @@ NET_EXPORT bool IsOnPath(const std::string& cookie_path,
                          const std::string& url_path);
 
 // Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
-// applies to the given cookie |name|. If `check_insensitively` is true then
-// the string comparison will be performed case insensitively.
-CookiePrefix GetCookiePrefix(const std::string& name, bool check_insensitively);
-
-// As above, but infers `check_insensitively` from a Feature state.
-// Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
 // applies to the given cookie |name|.
 CookiePrefix GetCookiePrefix(const std::string& name);
 

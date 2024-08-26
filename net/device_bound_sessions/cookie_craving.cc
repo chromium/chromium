@@ -128,10 +128,7 @@ std::optional<CookieCraving> CookieCraving::Create(
   std::string path = cookie_util::CanonPathWithString(
       url, parsed_cookie.HasPath() ? parsed_cookie.Path() : "");
 
-  // Note: This is a deviation from CanonicalCookie. In CookieCraving, we do not
-  // honor non-default values for the kCaseInsensitiveCookiePrefix feature.
-  CookiePrefix prefix =
-      cookie_util::GetCookiePrefix(name, /*check_insensitively=*/true);
+  CookiePrefix prefix = cookie_util::GetCookiePrefix(name);
   if (!cookie_util::IsCookiePrefixValid(prefix, url, parsed_cookie)) {
     return std::nullopt;
   }
@@ -197,10 +194,7 @@ bool CookieCraving::IsValid() const {
     return false;
   }
 
-  // Note: This is a deviation from CanonicalCookie. Here, we always check case
-  // insensitively. See comment above in Create().
-  CookiePrefix prefix =
-      cookie_util::GetCookiePrefix(Name(), /*check_insensitively=*/true);
+  CookiePrefix prefix = cookie_util::GetCookiePrefix(Name());
   switch (prefix) {
     case COOKIE_PREFIX_HOST:
       if (!SecureAttribute() || Path() != "/" || !IsHostCookie()) {
