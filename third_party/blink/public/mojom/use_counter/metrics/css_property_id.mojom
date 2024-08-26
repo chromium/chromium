@@ -863,6 +863,7 @@ enum CSSSampleId {
     kMasonryTemplateTracks = 804,
     kTextWrapMode = 805,
     kTextWrapStyle = 806,
+    kMasonryTrack = 807,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

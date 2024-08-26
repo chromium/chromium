@@ -723,6 +723,9 @@ All changes to this list should go through Blink's feature review process: http:
     mask-position
         -webkit-mask-position-x
         -webkit-mask-position-y
+    masonry-track
+        masonry-track-end
+        masonry-track-start
     offset
         offset-anchor
         offset-distance

@@ -26750,6 +26750,7 @@ Called by update_use_counter_css.py.-->
   <int value="804" label="masonry-template-tracks"/>
   <int value="805" label="text-wrap-mode"/>
   <int value="806" label="text-wrap-style"/>
+  <int value="807" label="masonry-track"/>
 </enum>
 
 <enum name="MediaEncryptionType">

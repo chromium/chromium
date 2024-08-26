@@ -8122,6 +8122,12 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
+      name: "masonry-track",
+      longhands: ["masonry-track-start", "masonry-track-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSMasonryLayout",
+    },
+    {
       name: "offset",
       longhands: [
         "offset-position", "offset-path", "offset-distance", "offset-rotate",
