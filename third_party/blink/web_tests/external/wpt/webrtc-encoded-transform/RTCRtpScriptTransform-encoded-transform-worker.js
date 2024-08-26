@@ -26,7 +26,7 @@ function RestoreAndWrite(chunk, transformer) {
             ", expected " + modification +
             "),  frame data length (got " + frameData.byteLength +
             ", expected 0), rtpTimestamp (got " +
-             chunk.value.getMetadata().rtpTimestamp, ", expected null)");
+             chunk.value.getMetadata().rtpTimestamp + ", expected null)");
     }
 }
 onrtctransform = (event) => {
