@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -33,6 +32,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
+import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -205,9 +205,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // the same window background as other tabbed mode activities using the same theme.
         if (SigninUtils.isTabletOrAuto(this)) {
             setTheme(R.style.Theme_Chromium_TabbedMode);
-        } else if (getResources()
-                .getConfiguration()
-                .isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE)) {
+        } else if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
             // For consistency with tablets, the status bar should be black on phones with large
             // screen, where the FRE is shown as dialog.
             StatusBarColorController.setStatusBarColor(getWindow(), Color.BLACK);
@@ -651,14 +649,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Override
     public Promise<Void> getNativeInitializationPromise() {
         return mNativeInitializationPromise;
-    }
-
-    @Override
-    public boolean canUseLandscapeLayout() {
-        return !SigninUtils.isTabletOrAuto(this)
-                && !getResources()
-                        .getConfiguration()
-                        .isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
     public FirstRunFragment getCurrentFragmentForTesting() {

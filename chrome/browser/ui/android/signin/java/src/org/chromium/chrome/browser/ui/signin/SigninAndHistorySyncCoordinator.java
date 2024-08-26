@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -314,13 +313,6 @@ public class SigninAndHistorySyncCoordinator implements SigninAccountPickerCoord
         mHistorySyncCoordinator.destroy();
         mHistorySyncCoordinator = null;
         onFlowComplete();
-    }
-
-    /** Implements {@link HistorySyncDelegate} */
-    @Override
-    public boolean isLargeScreen() {
-        Configuration configuration = mActivity.getResources().getConfiguration();
-        return configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
     private void onProfileAvailable(Profile profile) {

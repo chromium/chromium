@@ -5,8 +5,7 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.accounts.Account;
-import android.content.Context;
-import android.content.res.Configuration;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +81,7 @@ public final class UpgradePromoCoordinator
         int HISTORY_SYNC = 1;
     }
 
-    private final Context mContext;
+    private final Activity mActivity;
     private final ModalDialogManager mModalDialogManager;
     private final OneshotSupplier<ProfileProvider> mProfileSupplier;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
@@ -96,15 +95,15 @@ public final class UpgradePromoCoordinator
     private HistorySyncCoordinator mHistorySyncCoordinator;
 
     public UpgradePromoCoordinator(
-            Context context,
+            Activity activity,
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileSupplier,
             PrivacyPreferencesManager privacyPreferencesManager,
             Delegate delegate) {
-        mContext = context;
+        mActivity = activity;
         mCurrentView = ChildView.SIGNIN;
-        mViewHolder = new FrameLayout(context);
-        mViewHolder.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mContext));
+        mViewHolder = new FrameLayout(activity);
+        mViewHolder.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
         mModalDialogManager = modalDialogManager;
         mProfileSupplier = profileSupplier;
         mPrivacyPreferencesManager = privacyPreferencesManager;
@@ -116,7 +115,7 @@ public final class UpgradePromoCoordinator
         } else {
             mSigninCoordinator =
                     new FullscreenSigninCoordinator(
-                            mContext,
+                            mActivity,
                             mModalDialogManager,
                             this,
                             mPrivacyPreferencesManager,
@@ -223,13 +222,6 @@ public final class UpgradePromoCoordinator
         mDelegate.onFlowComplete();
     }
 
-    /** Implements {@link HistorySyncDelegate} */
-    @Override
-    public boolean isLargeScreen() {
-        Configuration configuration = mContext.getResources().getConfiguration();
-        return configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
-    }
-
     /**
      * Removes existing views from the view switcher and re-inflates them with the correct layout
      * after a configuration change.
@@ -266,13 +258,10 @@ public final class UpgradePromoCoordinator
     }
 
     private void inflateViewBundle() {
-        Configuration configuration = mContext.getResources().getConfiguration();
-        boolean useLandscapeLayout =
-                configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                        && !isLargeScreen();
+        boolean useLandscapeLayout = SigninUtils.shouldShowDualPanesHorizontalLayout(mActivity);
         ViewGroup viewBundle =
                 (ViewGroup)
-                        LayoutInflater.from(mContext)
+                        LayoutInflater.from(mActivity)
                                 .inflate(
                                         useLandscapeLayout
                                                 ? R.layout.upgrade_promo_landscape_view
@@ -300,7 +289,7 @@ public final class UpgradePromoCoordinator
             case ChildView.SIGNIN:
                 mSigninCoordinator =
                         new FullscreenSigninCoordinator(
-                                mContext,
+                                mActivity,
                                 mModalDialogManager,
                                 this,
                                 mPrivacyPreferencesManager,
@@ -313,11 +302,9 @@ public final class UpgradePromoCoordinator
                 break;
             case ChildView.HISTORY_SYNC:
                 maybeCreateHistorySyncCoordinator();
-                Configuration configuration = mContext.getResources().getConfiguration();
                 mHistorySyncCoordinator.setView(
                         (HistorySyncView) mHistorySyncView,
-                        configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                                && !isLargeScreen());
+                        SigninUtils.shouldShowDualPanesHorizontalLayout(mActivity));
 
                 if (mSigninCoordinator != null) {
                     mSigninCoordinator.destroy();
@@ -342,7 +329,7 @@ public final class UpgradePromoCoordinator
 
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
-                        mContext,
+                        mActivity,
                         this,
                         mProfileSupplier.get().getOriginalProfile(),
                         SigninAccessPoint.SIGNIN_PROMO,

@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
-import android.content.Context;
-import android.content.res.Configuration;
+import android.app.Activity;
 import android.view.LayoutInflater;
 
 import androidx.annotation.Nullable;
@@ -16,6 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -25,12 +25,10 @@ public class HistorySyncCoordinator {
     public interface HistorySyncDelegate {
         void dismissHistorySync();
 
-        boolean isLargeScreen();
-
         default void maybeRecordFreProgress(@MobileFreProgress int state) {}
     }
 
-    private final Context mContext;
+    private final Activity mActivity;
     private final HistorySyncDelegate mDelegate;
     private final Profile mProfile;
     private @Nullable HistorySyncView mView;
@@ -41,7 +39,7 @@ public class HistorySyncCoordinator {
     /**
      * Creates an instance of {@link HistorySyncCoordinator} and shows the sign-in bottom sheet.
      *
-     * @param context The Android {@link Context}.
+     * @param activity The Android {@link Activity} holding the fragment.
      * @param delegate The delegate for this coordinator.
      * @param profile The current profile.
      * @param accessPoint The entry point for the opt-in.
@@ -53,25 +51,22 @@ public class HistorySyncCoordinator {
      *     will inflate its own view.
      */
     public HistorySyncCoordinator(
-            Context context,
+            Activity activity,
             HistorySyncDelegate delegate,
             Profile profile,
             @SigninAccessPoint int accessPoint,
             boolean showEmailInFooter,
             boolean shouldSignOutOnDecline,
             @Nullable HistorySyncView view) {
-        mContext = context;
+        mActivity = activity;
         mDelegate = delegate;
         mProfile = profile;
         mView = view;
 
-        mUseLandscapeLayout =
-                !delegate.isLargeScreen()
-                        && context.getResources().getConfiguration().orientation
-                                == Configuration.ORIENTATION_LANDSCAPE;
+        mUseLandscapeLayout = SigninUtils.shouldShowDualPanesHorizontalLayout(activity);
         mMediator =
                 new HistorySyncMediator(
-                        context,
+                        activity,
                         delegate,
                         profile,
                         accessPoint,
@@ -123,29 +118,22 @@ public class HistorySyncCoordinator {
         }
     }
 
-    /**
-     * Creates a view if needed and and sets the view that is controlled by the coordinator.
-     *
-     * @param context The Android Context used to inflate the view
-     */
+    /** Creates a view if needed and and sets the view that is controlled by the coordinator. */
     public @Nullable HistorySyncView maybeRecreateView() {
         HistorySyncView view = null;
-        boolean useLandscapeLayout =
-                !mDelegate.isLargeScreen()
-                        && mContext.getResources().getConfiguration().orientation
-                                == Configuration.ORIENTATION_LANDSCAPE;
+        boolean useLandscapeLayout = SigninUtils.shouldShowDualPanesHorizontalLayout(mActivity);
 
         if (getView() == null || mUseLandscapeLayout != useLandscapeLayout) {
             mUseLandscapeLayout = useLandscapeLayout;
-            view = inflateView(mContext, mUseLandscapeLayout);
+            view = inflateView(mActivity, mUseLandscapeLayout);
             setView(view, mUseLandscapeLayout);
         }
 
         return view;
     }
 
-    private static HistorySyncView inflateView(Context context, boolean useLandscapeLayout) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+    private static HistorySyncView inflateView(Activity activity, boolean useLandscapeLayout) {
+        LayoutInflater inflater = LayoutInflater.from(activity);
         return (HistorySyncView)
                 inflater.inflate(
                         useLandscapeLayout
