@@ -86,9 +86,6 @@ class ASH_EXPORT PickerSectionView : public views::View {
   PickerImageItemView* AddImageItem(
       std::unique_ptr<PickerImageItemView> image_item);
 
-  // Adds a generic item to the section.
-  PickerItemView* AddItem(std::unique_ptr<PickerItemView> item);
-
   // Adds an item with submenu to the section.
   PickerItemWithSubmenuView* AddItemWithSubmenu(
       std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu);

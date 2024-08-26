@@ -431,8 +431,14 @@ PickerItemWithSubmenuView* PickerSectionView::AddItemWithSubmenu(
   return item_ptr;
 }
 
-PickerItemView* PickerSectionView::AddItem(
-    std::unique_ptr<PickerItemView> item) {
+PickerItemView* PickerSectionView::AddResult(
+    const PickerSearchResult& result,
+    PickerPreviewBubbleController* preview_controller,
+    LocalFileResultStyle local_file_result_style,
+    SelectResultCallback select_result_callback) {
+  auto item = CreateItemFromResult(result, preview_controller, asset_fetcher_,
+                                   section_width_, local_file_result_style,
+                                   std::move(select_result_callback));
   if (views::IsViewClass<PickerListItemView>(item.get())) {
     return AddListItem(std::unique_ptr<PickerListItemView>(
         views::AsViewClass<PickerListItemView>(item.release())));
@@ -446,16 +452,6 @@ PickerItemView* PickerSectionView::AddItem(
         views::AsViewClass<PickerItemWithSubmenuView>(item.release())));
   }
   NOTREACHED();
-}
-
-PickerItemView* PickerSectionView::AddResult(
-    const PickerSearchResult& result,
-    PickerPreviewBubbleController* preview_controller,
-    LocalFileResultStyle local_file_result_style,
-    SelectResultCallback select_result_callback) {
-  return AddItem(CreateItemFromResult(
-      result, preview_controller, asset_fetcher_, section_width_,
-      local_file_result_style, std::move(select_result_callback)));
 }
 
 void PickerSectionView::ClearItems() {
