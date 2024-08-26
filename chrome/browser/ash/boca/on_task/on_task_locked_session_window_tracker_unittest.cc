@@ -583,6 +583,8 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, NewBrowserPopupIsRegistered) {
   EXPECT_FALSE(
       static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed());
   EXPECT_TRUE(window_tracker->IsFirstTimePopup());
+  popup_browser->OnWindowClosing();
+  EXPECT_FALSE(window_tracker->IsFirstTimePopup());
 }
 
 TEST_F(OnTaskLockedSessionWindowTrackerTest, BrowserClose) {
