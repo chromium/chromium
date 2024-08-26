@@ -13,7 +13,9 @@ export function getHtml(this: DisclosureAppElement) {
       <cr-icon icon="product-specifications:table-chart-organize">
       </cr-icon>
     </div>
-    <div id="title">${this.i18n('disclosureTitle')}</div>
+    <div id="title" role="heading">
+      ${this.i18n('disclosureTitle')}
+    </div>
   </div>
 
   <div id="summary">
