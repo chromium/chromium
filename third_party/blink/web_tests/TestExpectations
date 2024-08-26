@@ -294,6 +294,8 @@ crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
 crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Skip Timeout ]
 crbug.com/1078927 fast/multicol/table-row-height-increase.html [ Failure ]
 
+crbug.com/40895558 virtual/disable-intersection-optimization/external/wpt/intersection-observer/grow-height-and-scrolled.html [ Failure ]
+
 # View transition failures
 crbug.com/1351556 virtual/threaded/view-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/view-transition-wide-gamut/view-transition/capture-callback-exception.html [ Failure ]
