@@ -10,6 +10,8 @@ static_library("accessibility") {
   sources = [
     "accessibility_controller_client.cc",
     "accessibility_controller_client.h",
+    "chrome_accessibility_delegate.cc",
+    "chrome_accessibility_delegate.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

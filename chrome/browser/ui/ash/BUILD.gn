@@ -20,8 +20,6 @@ static_library("ash") {
     "arc_vm_data_migration_confirmation_dialog.h",
     "chrome_accelerator_prefs_delegate.cc",
     "chrome_accelerator_prefs_delegate.h",
-    "chrome_accessibility_delegate.cc",
-    "chrome_accessibility_delegate.h",
     "crosapi_new_window_delegate.cc",
     "crosapi_new_window_delegate.h",
     "login_screen_shown_observer.h",
