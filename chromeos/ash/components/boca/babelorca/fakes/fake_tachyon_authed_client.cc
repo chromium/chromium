@@ -50,6 +50,12 @@ void FakeTachyonAuthedClient::ExecuteResponseCallback(
         response) {
   CHECK(response_cb_);
   response_cb_->Run(std::move(response));
+  response_cb_.reset();
+}
+
+std::unique_ptr<ResponseCallbackWrapper>
+FakeTachyonAuthedClient::TakeResponseCallback() {
+  return std::move(response_cb_);
 }
 
 std::string FakeTachyonAuthedClient::GetRequestString() {

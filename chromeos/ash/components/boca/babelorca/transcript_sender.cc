@@ -90,24 +90,30 @@ TranscriptSender::TranscriptSender(
     TachyonRequestDataProvider* request_data_provider,
     std::string_view sender_email,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    size_t max_allowed_char)
+    Options options,
+    base::OnceClosure failure_cb)
     : authed_client_(authed_client),
       request_data_provider_(request_data_provider),
       sender_email_(sender_email),
       network_traffic_annotation_(network_traffic_annotation),
-      max_allowed_char_(max_allowed_char),
+      options_(std::move(options)),
+      failure_cb_(std::move(failure_cb)),
       sender_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
 TranscriptSender::~TranscriptSender() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void TranscriptSender::SendTranscriptionUpdate(
+bool TranscriptSender::SendTranscriptionUpdate(
     const media::SpeechRecognitionResult& transcript,
     const std::string& language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int part_index = GetTranscriptPartIndex(
-      current_transcript_text_, transcript.transcription, max_allowed_char_);
+  if (errors_num_ >= options_.max_errors_num) {
+    return false;
+  }
+  const int part_index =
+      GetTranscriptPartIndex(current_transcript_text_, transcript.transcription,
+                             options_.max_allowed_char);
   BabelOrcaMessage message = GenerateMessage(transcript, part_index, language);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -118,6 +124,7 @@ void TranscriptSender::SendTranscriptionUpdate(
                      /*max_retries=*/transcript.is_final ? 1 : 0));
   // Should be called after `GenerateMessage`.
   UpdateTranscripts(transcript, language);
+  return true;
 }
 
 BabelOrcaMessage TranscriptSender::GenerateMessage(
@@ -142,10 +149,11 @@ BabelOrcaMessage TranscriptSender::GenerateMessage(
   current_transcript_part->set_language(language);
 
   // Set previous transcript if message did not reach
-  // `max_allowed_char_`.
-  if (current_text_part_len < max_allowed_char_ &&
+  // `options_.max_allowed_char`.
+  if (current_text_part_len < options_.max_allowed_char &&
       !previous_transcript_text_.empty()) {
-    const size_t max_prev_len = max_allowed_char_ - current_text_part_len;
+    const size_t max_prev_len =
+        options_.max_allowed_char - current_text_part_len;
     const int prev_index =
         previous_transcript_text_.length() < max_prev_len
             ? 0
@@ -195,7 +203,15 @@ void TranscriptSender::Send(int max_retries, std::string request_string) {
 void TranscriptSender::OnSendResponse(
     base::expected<InboxSendResponse,
                    ResponseCallbackWrapper::TachyonRequestError> response) {
-  // TODO(b/358140667): Notify on error.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (response.has_value()) {
+    errors_num_ = 0;
+    return;
+  }
+  ++errors_num_;
+  if (errors_num_ >= options_.max_errors_num && failure_cb_) {
+    std::move(failure_cb_).Run();
+  }
 }
 
 }  // namespace ash::babelorca
