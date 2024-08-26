@@ -11,8 +11,7 @@ namespace content::features {
 
 // When enabled, pages in the BFCache can be evicted when they hold
 // FileSystemAccessLockManager Locks that are contentious with the Locks of an
-// active page. blink::features::kFileSystemAccessLockingScheme must be enabled
-// as well for this to have any effect.
+// active page.
 BASE_FEATURE(kFileSystemAccessBFCache,
              "FileSystemAccessBFCache",
              base::FEATURE_ENABLED_BY_DEFAULT);

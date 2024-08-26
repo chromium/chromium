@@ -4694,11 +4694,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "file-system-access-locking-scheme",
-    "owners": [ "memmott@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "file-system-access-persistent-permission-updated-page-info",
     "owners": [ "christinesm@chromium.org", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 130

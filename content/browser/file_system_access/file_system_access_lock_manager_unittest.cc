@@ -39,13 +39,6 @@ static constexpr char kTestMountPoint[] = "testfs";
 
 class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
  public:
-  FileSystemAccessLockManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kFileSystemAccessBFCache,
-         blink::features::kFileSystemAccessLockingScheme},
-        {});
-  }
-
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 

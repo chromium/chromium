@@ -1086,9 +1086,6 @@ extern const char kWebIdentityDigitalCredentialsDescription[];
 extern const char kFileHandlingIconsName[];
 extern const char kFileHandlingIconsDescription[];
 
-extern const char kFileSystemAccessLockingSchemeName[];
-extern const char kFileSystemAccessLockingSchemeDescription[];
-
 extern const char kFileSystemAccessPersistentPermissionUpdatedPageInfoName[];
 extern const char
     kFileSystemAccessPersistentPermissionUpdatedPageInfoDescription[];

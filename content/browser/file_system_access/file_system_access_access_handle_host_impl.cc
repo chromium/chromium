@@ -32,9 +32,6 @@ FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
       on_close_callback_(std::move(on_close_callback)),
       lock_(std::move(lock)) {
   DCHECK(manager_);
-  CHECK(lock_->IsExclusive() ||
-        base::FeatureList::IsEnabled(
-            blink::features::kFileSystemAccessLockingScheme));
 
   DCHECK(manager_->context()->is_incognito() ==
          file_delegate_receiver.is_valid());
