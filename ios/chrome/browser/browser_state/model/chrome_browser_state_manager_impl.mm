@@ -193,7 +193,7 @@ void ChromeBrowserStateManagerImpl::RemoveObserver(
 void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value::List& last_active_browser_states =
-      local_state_->GetList(prefs::kBrowserStatesLastActive);
+      local_state_->GetList(prefs::kLastActiveProfiles);
 
   std::set<std::string> last_active_browser_states_set;
   for (const base::Value& browser_state_id : last_active_browser_states) {
@@ -394,7 +394,7 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
 std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string last_used_browser_state_name =
-      local_state_->GetString(prefs::kBrowserStateLastUsed);
+      local_state_->GetString(prefs::kLastUsedProfile);
   if (last_used_browser_state_name.empty()) {
     last_used_browser_state_name = kIOSChromeInitialBrowserState;
   }

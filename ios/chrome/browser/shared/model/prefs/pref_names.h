@@ -45,23 +45,19 @@ inline constexpr char kBrowserLockdownModeEnabled[] =
 // to load them.
 inline constexpr char kProfileInfoCache[] = "profile.info_cache";
 
-// Directory of the browser state profile used.
-// TODO(crbug.com/325921947): Remove use of this key, kBrowserStatesLastActive
+// Name of the last used profile.
+// TODO(crbug.com/325921947): Remove use of this key, kLastActiveProfiles
 // should be used.
-inline constexpr char kBrowserStateLastUsed[] = "profile.last_used";
+inline constexpr char kLastUsedProfile[] = "profile.last_used";
 
-// List of directories of the browser states last active.
-// TODO(crbug.com/325923177): Update this key with active BrowserStates.
-inline constexpr char kBrowserStatesLastActive[] =
-    "profile.last_active_profiles";
+// List of names of the profiles used during the last run of Chrome.
+inline constexpr char kLastActiveProfiles[] = "profile.last_active_profiles";
 
-// Total number of browser states created for this Chrome build. Used to tag
-// browser states directories.
-inline constexpr char kBrowserStatesNumCreated[] = "profile.profiles_created";
+// Total number of profile created for this Chrome installation.
+inline constexpr char kNumberOfProfiles[] = "profile.profiles_created";
 
 // A map of a scene and a browser state.
-inline constexpr char kBrowserStateForScene[] =
-    "ios.multiprofile.profile_for_scene";
+inline constexpr char kProfileForScene[] = "ios.multiprofile.profile_for_scene";
 
 // A string of NSUUID used to access the WebKit storage per BrowserState.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";

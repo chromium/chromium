@@ -213,14 +213,14 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates) {
 }
 
 // Tests that LoadBrowserStates() always loads the "last used BrowserState"
-// when `kBrowserStateLastUsed` and `kBrowserStatesLastActive` are out of
+// when `kLastUsedProfile` and `kLastActiveProfiles` are out of
 // sync.
 //
 // See https://crbug.com/345478758 for crashes related to this.
 //
 // Specifically, this test case check that even if both properties are set
-// but `kBrowserStateLastUsed` is not `kIOSChromeInitialBrowserState` and
-// not in `kBrowserStatesLastActive`, then the last used ChromeBrowserState
+// but `kLastUsedProfile` is not `kIOSChromeInitialBrowserState` and
+// not in `kLastActiveProfiles`, then the last used ChromeBrowserState
 // is still loaded.
 TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_1) {
   ASSERT_NE(kProfileName1, kIOSChromeInitialBrowserState);
@@ -230,8 +230,8 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_1) {
   EXPECT_EQ(GetLoadedBrowserStateNames(), (std::set<std::string>{}));
 
   PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetString(prefs::kBrowserStateLastUsed, kProfileName1);
-  local_state->SetList(prefs::kBrowserStatesLastActive,
+  local_state->SetString(prefs::kLastUsedProfile, kProfileName1);
+  local_state->SetList(prefs::kLastActiveProfiles,
                        base::Value::List().Append(kProfileName2));
 
   browser_state_manager().LoadBrowserStates();
@@ -249,13 +249,13 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_1) {
 }
 
 // Tests that LoadBrowserStates() always loads the "last used BrowserState"
-// when `kBrowserStateLastUsed` and `kBrowserStatesLastActive` are out of
+// when `kLastUsedProfile` and `kLastActiveProfiles` are out of
 // sync.
 //
 // See https://crbug.com/345478758 for crashes related to this.
 //
-// Specifically, this test case check that if `kBrowserStatesLastActive` is
-// not set and `kBrowserStateLastUsed` is not `kIOSChromeInitialBrowserState`,
+// Specifically, this test case check that if `kLastActiveProfiles` is
+// not set and `kLastUsedProfile` is not `kIOSChromeInitialBrowserState`,
 // then the last used ChromeBrowserState is still loaded.
 TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_2) {
   ASSERT_NE(kProfileName1, kIOSChromeInitialBrowserState);
@@ -265,8 +265,8 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_2) {
   EXPECT_EQ(GetLoadedBrowserStateNames(), (std::set<std::string>{}));
 
   PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetString(prefs::kBrowserStateLastUsed, kProfileName1);
-  local_state->SetList(prefs::kBrowserStatesLastActive, base::Value::List());
+  local_state->SetString(prefs::kLastUsedProfile, kProfileName1);
+  local_state->SetList(prefs::kLastActiveProfiles, base::Value::List());
 
   browser_state_manager().LoadBrowserStates();
 
@@ -282,14 +282,14 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_2) {
 }
 
 // Tests that LoadBrowserStates() always loads the "last used BrowserState"
-// when `kBrowserStateLastUsed` and `kBrowserStatesLastActive` are out of
+// when `kLastUsedProfile` and `kLastActiveProfiles` are out of
 // sync.
 //
 // See https://crbug.com/345478758 for crashes related to this.
 //
-// Specifically, this test case check that if `kBrowserStatesLastActive` is
+// Specifically, this test case check that if `kLastActiveProfiles` is
 // set but does not contains the value `kIOSChromeInitialBrowserState` and
-// `kBrowserStateLastUsed` is unset, then the last used ChromeBrowserState
+// `kLastUsedProfile` is unset, then the last used ChromeBrowserState
 // is still loaded.
 TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_3) {
   ASSERT_NE(kProfileName1, kIOSChromeInitialBrowserState);
@@ -299,8 +299,8 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_3) {
   EXPECT_EQ(GetLoadedBrowserStateNames(), (std::set<std::string>{}));
 
   PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetString(prefs::kBrowserStateLastUsed, std::string());
-  local_state->SetList(prefs::kBrowserStatesLastActive,
+  local_state->SetString(prefs::kLastUsedProfile, std::string());
+  local_state->SetList(prefs::kLastActiveProfiles,
                        base::Value::List().Append(kProfileName2));
 
   browser_state_manager().LoadBrowserStates();

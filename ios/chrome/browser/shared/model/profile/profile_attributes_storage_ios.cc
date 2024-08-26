@@ -42,11 +42,11 @@ void ProfileAttributesStorageIOS::AddProfile(std::string_view name) {
   }
 
   // Update the number of created profile.
-  prefs_->SetInteger(prefs::kBrowserStatesNumCreated, sorted_keys_.size());
+  prefs_->SetInteger(prefs::kNumberOfProfiles, sorted_keys_.size());
 
   // Insert the newly created profile in the list of last active profiles.
   {
-    ScopedListPrefUpdate update(prefs_, prefs::kBrowserStatesLastActive);
+    ScopedListPrefUpdate update(prefs_, prefs::kLastActiveProfiles);
     update->Append(base::Value(name));
   }
 }
@@ -59,7 +59,7 @@ void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
 
   // Detach any scene that may still be referencing this profile.
   {
-    ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateForScene);
+    ScopedDictPrefUpdate update(prefs_, prefs::kProfileForScene);
 
     base::Value::Dict dict;
     for (auto [key, value] : update.Get()) {
@@ -73,12 +73,12 @@ void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
 
   // Remove the profile from the list of last active profiles (if present).
   {
-    ScopedListPrefUpdate update(prefs_, prefs::kBrowserStatesLastActive);
+    ScopedListPrefUpdate update(prefs_, prefs::kLastActiveProfiles);
     update->EraseValue(base::Value(name));
   }
 
   // Update the number of created profile.
-  prefs_->SetInteger(prefs::kBrowserStatesNumCreated, sorted_keys_.size());
+  prefs_->SetInteger(prefs::kNumberOfProfiles, sorted_keys_.size());
 
   // Remove the information about the profile from the preferences.
   {
@@ -145,29 +145,27 @@ size_t ProfileAttributesStorageIOS::GetIndexOfProfileWithName(
   return std::distance(sorted_keys_.begin(), iterator);
 }
 
-void ProfileAttributesStorageIOS::SetBrowserStateForSceneID(
+void ProfileAttributesStorageIOS::SetProfileNameForSceneID(
     std::string_view scene_id,
-    std::string_view browser_state_name) {
-  DCHECK(!browser_state_name.empty());
-  DCHECK(HasProfileWithName(browser_state_name));
-  ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateForScene);
-  base::Value::Dict& cache = update.Get();
-  cache.Set(scene_id, browser_state_name);
+    std::string_view profile_name) {
+  DCHECK(!profile_name.empty());
+  DCHECK(HasProfileWithName(profile_name));
+  ScopedDictPrefUpdate update(prefs_, prefs::kProfileForScene);
+  update->Set(scene_id, profile_name);
 }
 
-void ProfileAttributesStorageIOS::ClearBrowserStateForSceneID(
+void ProfileAttributesStorageIOS::ClearProfileNameForSceneID(
     std::string_view scene_id) {
-  ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateForScene);
-  base::Value::Dict& cache = update.Get();
-  cache.Remove(scene_id);
+  ScopedDictPrefUpdate update(prefs_, prefs::kProfileForScene);
+  update->Remove(scene_id);
 }
 
-const std::string& ProfileAttributesStorageIOS::GetBrowserStateNameForSceneID(
+const std::string& ProfileAttributesStorageIOS::GetProfileNameForSceneID(
     std::string_view scene_id) {
-  if (const std::string* browser_state_name =
-          prefs_->GetDict(prefs::kBrowserStateForScene).FindString(scene_id)) {
-    DCHECK(HasProfileWithName(*browser_state_name));
-    return *browser_state_name;
+  if (const std::string* profile_name =
+          prefs_->GetDict(prefs::kProfileForScene).FindString(scene_id)) {
+    DCHECK(HasProfileWithName(*profile_name));
+    return *profile_name;
   }
 
   return base::EmptyString();
@@ -176,7 +174,7 @@ const std::string& ProfileAttributesStorageIOS::GetBrowserStateNameForSceneID(
 // static
 void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kProfileInfoCache);
-  registry->RegisterIntegerPref(prefs::kBrowserStatesNumCreated, 0);
-  registry->RegisterListPref(prefs::kBrowserStatesLastActive);
-  registry->RegisterDictionaryPref(prefs::kBrowserStateForScene);
+  registry->RegisterIntegerPref(prefs::kNumberOfProfiles, 0);
+  registry->RegisterListPref(prefs::kLastActiveProfiles);
+  registry->RegisterDictionaryPref(prefs::kProfileForScene);
 }

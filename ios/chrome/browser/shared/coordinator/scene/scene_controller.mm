@@ -1018,7 +1018,7 @@ void OnListFamilyMembersResponse(
   GetApplicationContext()
       ->GetProfileManager()
       ->GetProfileAttributesStorage()
-      ->SetBrowserStateForSceneID(
+      ->SetProfileNameForSceneID(
           base::SysNSStringToUTF8(sceneState.sceneSessionID),
           browserState->GetBrowserStateName());
 

@@ -22,9 +22,6 @@ class PrefService;
 class ProfileAttributesIOS;
 
 // This class saves various information about profiles to local preferences.
-// TODO(crbug.com/359522668): Update the API of this class to refer to "Profile"
-// instead of "BrowserState".
-
 class ProfileAttributesStorageIOS {
  public:
   // Callback that can modify and then return a ProfileAttributesIOS.
@@ -76,15 +73,15 @@ class ProfileAttributesStorageIOS {
   // no longer uses indices to refer to profile to use.
   size_t GetIndexOfProfileWithName(std::string_view name) const;
 
-  // Register the given browser state with the given scene. Browser state name
-  // should not be empty.
-  void SetBrowserStateForSceneID(std::string_view scene_id,
-                                 std::string_view browser_state_name);
-  // Removes the given scene records.
-  void ClearBrowserStateForSceneID(std::string_view scene_id);
+  // Register the given profile with the given scene.
+  void SetProfileNameForSceneID(std::string_view scene_id,
+                                std::string_view profile_name);
 
-  // Returns the name of the browser state associated to the given scene.
-  const std::string& GetBrowserStateNameForSceneID(std::string_view scene_id);
+  // Removes the given scene records.
+  void ClearProfileNameForSceneID(std::string_view scene_id);
+
+  // Returns the name of the profile associated to the given scene.
+  const std::string& GetProfileNameForSceneID(std::string_view scene_id);
 
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);

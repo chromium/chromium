@@ -95,11 +95,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       forSectionWithIdentifier:LoadedProfilesIdentifier];
 
   PrefService* localState = GetApplicationContext()->GetLocalState();
-  // TODO(crbug.com/336767700): kBrowserStatesLastActive should not be used
+  // TODO(crbug.com/336767700): kLastActiveProfiles should not be used
   // here. Use a new prefService key (containing also info of not loaded
   // browserStates) once available.
   const base::Value::List& lastActiveBrowserStates =
-      localState->GetList(prefs::kBrowserStatesLastActive);
+      localState->GetList(prefs::kLastActiveProfiles);
   for (const auto& browserStateName : lastActiveBrowserStates) {
     TableViewAccountItem* accountItemDetail =
         [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];

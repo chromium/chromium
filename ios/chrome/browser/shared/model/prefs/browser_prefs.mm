@@ -482,7 +482,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   TipsNotificationClient::RegisterLocalStatePrefs(registry);
 
   // Preferences related to the browser state manager.
-  registry->RegisterStringPref(prefs::kBrowserStateLastUsed, std::string());
+  registry->RegisterStringPref(prefs::kLastUsedProfile, std::string());
 
   [MemoryDebuggerManager registerLocalState:registry];
   [IncognitoReauthSceneAgent registerLocalState:registry];
