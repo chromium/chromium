@@ -110,7 +110,7 @@ class V4StoreFuzzer {
     V4Store::AddUnlumpedHashes(prefix_size, prefixes, hash_prefix_map);
 #ifndef NDEBUG
     DisplayHashPrefixMapDetails(
-        HashPrefixMapView(hash_prefix_map.begin(), hash_prefix_map.end()));
+        HashPrefixMapView(hash_prefix_map->begin(), hash_prefix_map->end()));
 #endif
   }
 
