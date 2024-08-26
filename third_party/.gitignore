@@ -117,8 +117,6 @@
 /qemu-linux-arm64
 /qemu-linux-x64
 /qemu-mac-x64
-/r8/d8/lib
-/r8/lib
 /robolectric/lib/
 /robolectric/robolectric
 /rust-src

@@ -2387,7 +2387,7 @@ deps = {
   'src/third_party/re2/src':
     Var('chromium_git') + '/external/github.com/google/re2.git' + '@' + '6dcd83d60f7944926bfd308cc13979fc53dd69ca',
 
-  'src/third_party/r8': {
+  'src/third_party/r8/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
@@ -2401,7 +2401,7 @@ deps = {
   # This duplication is intentional, so we avoid updating the r8.jar used by
   # dexing unless necessary, since each update invalidates all incremental
   # dexing and unnecessarily slows down all bots.
-  'src/third_party/r8/d8': {
+  'src/third_party/r8/d8/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/r8',

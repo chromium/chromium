@@ -93,13 +93,13 @@ java_library_patterns = [
 # set of patterns that other targets can use to filter out java targets.
 java_target_patterns = java_library_patterns + java_resource_patterns
 
-_r8_path = "//third_party/r8/lib/r8.jar"
+_r8_path = "//third_party/r8/cipd/lib/r8.jar"
 _custom_r8_path = "//third_party/r8/custom_r8.jar"
 
 # This duplication is intentional, so we avoid updating the r8.jar used by
 # dexing unless necessary, since each update invalidates all incremental dexing
 # and unnecessarily slows down all bots.
-_d8_path = "//third_party/r8/d8/lib/r8.jar"
+_d8_path = "//third_party/r8/d8/cipd/lib/r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
 _custom_lint_jar_path = "//third_party/android_build_tools/lint/custom_lint.jar"
