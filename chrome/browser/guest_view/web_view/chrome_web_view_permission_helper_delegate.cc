@@ -125,6 +125,11 @@ ChromeWebViewPermissionHelperDelegate::~ChromeWebViewPermissionHelperDelegate()
 void ChromeWebViewPermissionHelperDelegate::BlockedUnauthorizedPlugin(
     const std::u16string& name,
     const std::string& identifier) {
+  // `loadplugin` permission is not supported in Controlled Frame.
+  if (web_view_guest()->IsOwnedByControlledFrameEmbedder()) {
+    return;
+  }
+
   const char kPluginName[] = "name";
   const char kPluginIdentifier[] = "identifier";
 
