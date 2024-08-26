@@ -944,24 +944,6 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
         },
     },
-    'mac-m1_mini_2020-perf-local': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'mac',
-        'dimension': {
-            'cpu': 'arm',
-            'mac_model': 'Macmini9,1',
-            'os': 'Mac',
-            'pool': 'chrome.tests.perf',
-        },
-    },
     'mac-m1_mini_2020-perf-pgo': {
         'tests': [
             {

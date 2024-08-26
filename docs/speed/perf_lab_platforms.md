@@ -66,7 +66,6 @@
 
  * mac-laptop_high_end-perf-pgo: MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
  * mac-laptop_low_end-perf-pgo: MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
- * mac-m1_mini_2020-perf-local: Mac M1 Mini 2020 without use_remoteexec (temporary).
 
 ### Win
 

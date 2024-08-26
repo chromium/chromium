@@ -746,13 +746,6 @@ MAC_M1_MINI_2020 = PerfPlatform(
     'mac',
     executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-MAC_M1_MINI_2020_LOCAL = PerfPlatform(
-    'mac-m1_mini_2020-perf-local',
-    'Mac M1 Mini 2020 without use_remoteexec (temporary)',
-    _MAC_M1_MINI_2020_BENCHMARK_CONFIGS,
-    1,
-    'mac',
-    pinpoint_only=True)
 MAC_M1_MINI_2020_PGO = PerfPlatform('mac-m1_mini_2020-perf-pgo',
                                     'Mac M1 Mini 2020',
                                     _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS,
