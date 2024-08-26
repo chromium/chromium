@@ -627,6 +627,7 @@ static_library("test_support") {
       "../browser/printing/browser_printing_context_factory_for_test.cc",
       "../browser/printing/browser_printing_context_factory_for_test.h",
     ]
+
     public_deps += [ "//printing:test_support" ]
   }
 
@@ -880,6 +881,7 @@ static_library("test_support") {
       "base/chromeos/crosier:proto",
       "//base/test:proto_test_support",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/ui/chromeos",
       "//chromeos/components/mgs",
       "//chromeos/dbus/constants",
@@ -2243,6 +2245,8 @@ if (!is_android) {
         "//chrome/browser/chromeos/enterprise/cloud_storage",
         "//chrome/browser/chromeos/network",
         "//chrome/browser/chromeos/platform_keys",
+        "//chrome/browser/chromeos/policy/dlp",
+        "//chrome/browser/chromeos/policy/dlp/test:test_support",
         "//chromeos/dbus/dlp:dlp",
         "//components/onc",
         "//ui/chromeos",
@@ -3428,7 +3432,6 @@ if (!is_android) {
     if (is_chromeos) {
       deps += [
         "//chrome/browser/chromeos",
-        "//chrome/browser/chromeos:test_support",
         "//chrome/browser/chromeos/cros_apps:all_browser_tests",
         "//chrome/browser/chromeos/video_conference",
         "//chrome/browser/ui/chromeos",
@@ -3449,11 +3452,6 @@ if (!is_android) {
         "../browser/chromeos/enterprise/incognito_navigation_throttle_browsertest.cc",
         "../browser/chromeos/policy/default_notifications_setting_browsertest.cc",
         "../browser/chromeos/policy/dino_easter_egg_browsertest.cc",
-        "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
-        "../browser/chromeos/policy/dlp/dlp_content_tab_helper_browsertest.cc",
-        "../browser/chromeos/policy/dlp/dlp_data_transfer_notifier_browsertest.cc",
-        "../browser/chromeos/policy/dlp/dlp_rules_manager_impl_browsertest.cc",
-        "../browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_cros_browsertest.cc",
         "../browser/net/network_annotation_monitor_browsertest.cc",
@@ -4857,7 +4855,6 @@ if (!is_android) {
         "//chrome/browser/ash/settings:test_support",
         "//chrome/browser/ash/system_web_apps/types:types",
         "//chrome/browser/ash/video_conference",
-        "//chrome/browser/chromeos:test_support",
         "//chrome/browser/chromeos/smart_reader:browser_tests",
         "//chrome/browser/chromeos/tablet_mode:browser_tests",
         "//chrome/browser/enterprise/connectors/device_trust:features",
@@ -5178,17 +5175,16 @@ if (!is_android) {
         "../browser/printing/print_browsertest.h",
         "../browser/printing/print_preview_dialog_controller_browsertest.cc",
         "../browser/printing/pwg_raster_converter_browsertest.cc",
-        "../browser/printing/test_print_preview_dialog_cloned_observer.cc",
-        "../browser/printing/test_print_preview_dialog_cloned_observer.h",
         "../browser/printing/test_print_preview_observer.cc",
         "../browser/printing/test_print_preview_observer.h",
         "../browser/printing/test_print_view_manager.cc",
         "../browser/printing/test_print_view_manager.h",
-        "../browser/printing/test_print_view_manager_for_request_preview.cc",
-        "../browser/printing/test_print_view_manager_for_request_preview.h",
         "../browser/ui/webui/print_preview/print_preview_ui_browsertest.cc",
       ]
-      deps += [ "//printing:test_support" ]
+      deps += [
+        ":print_preview_test_support",
+        "//printing:test_support",
+      ]
 
       if (enable_pdf) {
         sources +=
@@ -5348,7 +5344,6 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/extensions/odfs_config_private/odfs_config_private_api_browsertest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
       "../browser/chromeos/extensions/wm/wm_desks_private_apitest_lacros.cc",
-      "../browser/chromeos/policy/dlp/dlp_files_controller_lacros_browsertest.cc",
       "../browser/chromeos/video_conference/video_conference_manager_client_browsertest.cc",
       "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_lacros_apitest.cc",
       "../browser/extensions/api/networking_private/networking_private_chromeos_apitest.cc",
@@ -5454,9 +5449,6 @@ if (is_chromeos_lacros) {
       # test.
       "../browser/lacros/download_controller_client_lacros_browsertest.cc",
 
-      # dlp_content_manager_lacros_browsertest.cc should become a unit test.
-      "../browser/chromeos/policy/dlp/dlp_content_manager_lacros_browsertest.cc",
-
       # ScreenCapturer should work for lacros with crosapi.
       "base/save_desktop_snapshot_browsertest.cc",
     ]
@@ -5482,13 +5474,14 @@ if (is_chromeos_lacros) {
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:lacros_chrome_browsertests",
-      "//chrome/browser/chromeos:test_support",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/enterprise/cloud_storage",
       "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/network",
+      "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/chromeos/policy/dlp/test:test_support",
       "//chrome/browser/chromeos/printing/print_preview",
       "//chrome/browser/chromeos/smart_reader",
       "//chrome/browser/chromeos/video_conference",
@@ -6963,6 +6956,8 @@ test("unit_tests") {
       "//chrome/browser/chromeos/mahi",
       "//chrome/browser/chromeos/mahi/test:test_support",
       "//chrome/browser/chromeos/office_web_app:office_web_app",
+      "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/chromeos/policy/dlp/test:test_support",
       "//chromeos/components/kiosk:test_support",
       "//chromeos/components/mgs:test_support",
       "//chromeos/dbus/tpm_manager:tpm_manager",
@@ -8333,7 +8328,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/chromeos",
-      "//chrome/browser/chromeos:test_support",
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/smart_card:unit_tests",
       "//chrome/browser/ui/chromeos/read_write_cards",
@@ -8510,6 +8504,7 @@ test("unit_tests") {
       "//chrome/browser/ash/app_list/search/ranking:proto",
       "//chrome/browser/ash/app_list/search/test:test_support",
       "//chrome/browser/ash/app_list/search/util:proto",
+      "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc",
@@ -11426,7 +11421,6 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//ash/constants",
         "//chrome/browser/ash/app_list/app_service",
-        "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/ui/ash/privacy_hub:interactive_ui_tests",
         "//chrome/browser/ui/ash/system_web_apps",
@@ -11454,8 +11448,9 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_chromeos) {
       deps += [
+        ":print_preview_test_support",
         "//chrome/browser/chromeos",
-        "//chrome/browser/chromeos:test_support",
+        "//chrome/browser/chromeos:interactive_ui_tests",
         "//chrome/browser/smart_card:interactive_ui_tests",
         "//chrome/browser/ui/chromeos:test_support",
         "//chromeos/constants",
@@ -11468,16 +11463,6 @@ if (!is_android && !is_chromeos_device) {
         "//components/reporting/client:test_support",
         "//components/reporting/storage:test_support",
         "//components/reporting/util:test_callbacks_support",
-      ]
-
-      sources += [
-        "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_browsertest.cc",
-        "../browser/chromeos/policy/dlp/dlp_content_manager_browsertest.cc",
-        "../browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate_interactive_uitest.cc",
-        "../browser/printing/test_print_preview_dialog_cloned_observer.cc",
-        "../browser/printing/test_print_preview_dialog_cloned_observer.h",
-        "../browser/printing/test_print_view_manager_for_request_preview.cc",
-        "../browser/printing/test_print_view_manager_for_request_preview.h",
       ]
 
       if (enable_printing) {
@@ -11495,6 +11480,7 @@ if (!is_android && !is_chromeos_device) {
 
       deps += [
         ":lacros_test_support_ui",
+        "//chromeos/lacros:lacros",
         "//ui/display:managed_display_info",
       ]
     }
@@ -12692,6 +12678,26 @@ if (is_linux || is_mac || is_win) {
       "//testing/scripts/variations_smoke_test_data/",
       "//testing/scripts/variations_smoke_test_data/http_server/",
       "//third_party/webdriver/pylib/",
+    ]
+  }
+}
+
+if (!is_android) {
+  static_library("print_preview_test_support") {
+    testonly = true
+
+    sources = [
+      "../browser/printing/test_print_preview_dialog_cloned_observer.cc",
+      "../browser/printing/test_print_preview_dialog_cloned_observer.h",
+      "../browser/printing/test_print_view_manager_for_request_preview.cc",
+      "../browser/printing/test_print_view_manager_for_request_preview.h",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser",
+      "//components/printing/common:mojo_interfaces",
+      "//content/public/browser",
     ]
   }
 }

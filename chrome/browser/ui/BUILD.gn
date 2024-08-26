@@ -3111,6 +3111,7 @@ static_library("ui") {
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
       "//chrome/browser/chromeos/network",
       "//chrome/browser/chromeos/platform_keys",
+      "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/video_conference",
     ]
     sources += [
@@ -3171,6 +3172,7 @@ static_library("ui") {
       "//chrome/browser/chromeos/mahi",
       "//chrome/browser/chromeos/network",
       "//chrome/browser/chromeos/platform_keys",
+      "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/printing/print_preview",
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/chromeos/upload_office_to_cloud",

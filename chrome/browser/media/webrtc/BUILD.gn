@@ -259,6 +259,10 @@ source_set("webrtc") {
     deps += [ "//chromeos/lacros" ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/chromeos/policy/dlp" ]
+  }
+
   if (is_win) {
     sources += [ "window_icon_util_win.cc" ]
     deps += [ "//ui/views" ]

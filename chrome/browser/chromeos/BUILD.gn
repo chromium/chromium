@@ -42,55 +42,6 @@ source_set("chromeos") {
     "extensions/system_log/system_log_api.h",
     "extensions/web_file_handlers/intent_util.cc",
     "extensions/web_file_handlers/intent_util.h",
-    "policy/dlp/clipboard_bubble.cc",
-    "policy/dlp/clipboard_bubble.h",
-    "policy/dlp/data_transfer_dlp_controller.cc",
-    "policy/dlp/data_transfer_dlp_controller.h",
-    "policy/dlp/dlp_clipboard_bubble_constants.h",
-    "policy/dlp/dlp_clipboard_notifier.cc",
-    "policy/dlp/dlp_clipboard_notifier.h",
-    "policy/dlp/dlp_confidential_contents.cc",
-    "policy/dlp/dlp_confidential_contents.h",
-    "policy/dlp/dlp_confidential_file.cc",
-    "policy/dlp/dlp_confidential_file.h",
-    "policy/dlp/dlp_content_manager.cc",
-    "policy/dlp/dlp_content_manager.h",
-    "policy/dlp/dlp_content_manager_observer.h",
-    "policy/dlp/dlp_content_observer.cc",
-    "policy/dlp/dlp_content_observer.h",
-    "policy/dlp/dlp_content_restriction_set.cc",
-    "policy/dlp/dlp_content_restriction_set.h",
-    "policy/dlp/dlp_content_tab_helper.cc",
-    "policy/dlp/dlp_content_tab_helper.h",
-    "policy/dlp/dlp_copy_or_move_hook_delegate.cc",
-    "policy/dlp/dlp_copy_or_move_hook_delegate.h",
-    "policy/dlp/dlp_data_transfer_notifier.cc",
-    "policy/dlp/dlp_data_transfer_notifier.h",
-    "policy/dlp/dlp_download_observer.cc",
-    "policy/dlp/dlp_download_observer.h",
-    "policy/dlp/dlp_download_observer_factory.cc",
-    "policy/dlp/dlp_download_observer_factory.h",
-    "policy/dlp/dlp_drag_drop_notifier.cc",
-    "policy/dlp/dlp_drag_drop_notifier.h",
-    "policy/dlp/dlp_file_access_copy_or_move_delegate_factory.cc",
-    "policy/dlp/dlp_file_access_copy_or_move_delegate_factory.h",
-    "policy/dlp/dlp_file_destination.cc",
-    "policy/dlp/dlp_file_destination.h",
-    "policy/dlp/dlp_files_controller.cc",
-    "policy/dlp/dlp_files_controller.h",
-    "policy/dlp/dlp_files_utils.cc",
-    "policy/dlp/dlp_files_utils.h",
-    "policy/dlp/dlp_notification_helper.cc",
-    "policy/dlp/dlp_notification_helper.h",
-    "policy/dlp/dlp_policy_constants.h",
-    "policy/dlp/dlp_rules_manager.cc",
-    "policy/dlp/dlp_rules_manager.h",
-    "policy/dlp/dlp_rules_manager_factory.cc",
-    "policy/dlp/dlp_rules_manager_factory.h",
-    "policy/dlp/dlp_rules_manager_impl.cc",
-    "policy/dlp/dlp_rules_manager_impl.h",
-    "policy/dlp/dlp_scoped_file_access_delegate.cc",
-    "policy/dlp/dlp_scoped_file_access_delegate.h",
 
     # Extension API implementations.
     "extensions/login_screen/login/errors.cc",
@@ -365,75 +316,10 @@ source_set("chromeos") {
   }
 
   if (is_chromeos_lacros) {
-    sources += [
-      "policy/dlp/dlp_browser_helper_lacros.cc",
-      "policy/dlp/dlp_browser_helper_lacros.h",
-      "policy/dlp/dlp_content_manager_lacros.cc",
-      "policy/dlp/dlp_content_manager_lacros.h",
-      "policy/dlp/dlp_files_controller_lacros.cc",
-      "policy/dlp/dlp_files_controller_lacros.h",
-    ]
-    public_deps += [
-      "//chromeos/lacros",
-      "//ui/aura",
-    ]
     deps += [
-      "//chrome/browser/chromeos/reporting/network",
+      "//chromeos/lacros",
       "//chromeos/startup",
-      "//ui/platform_window",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/chromeos/tablet_mode" ]
-  }
-}
-
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "policy/dlp/test/dlp_content_manager_test_helper.cc",
-    "policy/dlp/test/dlp_content_manager_test_helper.h",
-    "policy/dlp/test/dlp_files_test_base.cc",
-    "policy/dlp/test/dlp_files_test_base.h",
-    "policy/dlp/test/dlp_rules_manager_test_utils.cc",
-    "policy/dlp/test/dlp_rules_manager_test_utils.h",
-    "policy/dlp/test/mock_dlp_content_manager.cc",
-    "policy/dlp/test/mock_dlp_content_manager.h",
-    "policy/dlp/test/mock_dlp_content_observer.cc",
-    "policy/dlp/test/mock_dlp_content_observer.h",
-    "policy/dlp/test/mock_dlp_crosapi.cc",
-    "policy/dlp/test/mock_dlp_crosapi.h",
-    "policy/dlp/test/mock_dlp_rules_manager.cc",
-    "policy/dlp/test/mock_dlp_rules_manager.h",
-  ]
-
-  public_deps = [
-    ":chromeos",
-    "//base",
-    "//build:chromeos_buildflags",
-    "//chrome/test:test_support",
-    "//content/test:test_support",
-    "//crypto:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/views",
-    "//url",
-  ]
-
-  deps = [
-    "//chrome/browser/chromeos/policy/dlp/dialogs",
-    "//chrome/browser/enterprise/data_controls",
-    "//chromeos/components/mahi/public/cpp:cpp",
-    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
-    "//components/reporting/client:test_support",
-  ]
-
-  if (is_chromeos_ash) {
-    public_deps += [
-      "//chrome/browser/ash",
-      "//chrome/browser/ash/app_mode:test_support",
-      "//chrome/browser/ash/login/users:test_support",
-    ]
-    deps += [ "//chrome/browser/ash/policy/dlp" ]
   }
 }
 
@@ -445,20 +331,6 @@ source_set("unit_tests") {
     "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
     "extensions/login_screen/login_state/login_state_api_unittest.cc",
     "extensions/odfs_config_private/odfs_config_private_api_unittest.cc",
-    "policy/dlp/data_transfer_dlp_controller_unittest.cc",
-    "policy/dlp/dlp_clipboard_notifier_unittest.cc",
-    "policy/dlp/dlp_confidential_contents_unittest.cc",
-    "policy/dlp/dlp_confidential_file_unittest.cc",
-    "policy/dlp/dlp_content_tab_helper_unittest.cc",
-    "policy/dlp/dlp_copy_or_move_hook_delegate_unittest.cc",
-    "policy/dlp/dlp_download_observer_unittest.cc",
-    "policy/dlp/dlp_drag_drop_notifier_unittest.cc",
-    "policy/dlp/dlp_file_access_copy_or_move_delegate_factory_unittest.cc",
-    "policy/dlp/dlp_file_destination_unittest.cc",
-    "policy/dlp/dlp_files_controller_unittest.cc",
-    "policy/dlp/dlp_files_utils_unittest.cc",
-    "policy/dlp/dlp_rules_manager_impl_unittest.cc",
-    "policy/dlp/dlp_scoped_file_access_delegate_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -470,7 +342,6 @@ source_set("unit_tests") {
   deps = [
     ":chromeos",
     ":system_stack_sampled_metrics_status_proto",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
@@ -551,6 +422,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/mahi:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
+    "//chrome/browser/chromeos/policy/dlp:unit_tests",
     "//chrome/browser/chromeos/printing/print_preview:unit_tests",
     "//chrome/browser/chromeos/reporting:unit_tests",
     "//chrome/browser/chromeos/reporting/network:unit_tests",
@@ -613,19 +485,6 @@ source_set("unit_tests") {
       ]
     }
   }
-
-  if (is_chromeos_lacros) {
-    sources += [ "policy/dlp/dlp_files_controller_lacros_unittest.cc" ]
-
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
-      "//components/reporting/metrics:metrics_data_collection",
-      "//components/reporting/metrics/fakes:test_support",
-      "//components/reporting/util:rate_limiter_interface",
-      "//components/reporting/util:rate_limiter_slide_window",
-    ]
-  }
 }
 
 group("browser_tests") {
@@ -641,6 +500,7 @@ group("browser_tests") {
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
+      "//chrome/browser/chromeos/policy/dlp:browser_tests",
       "//chrome/browser/chromeos/printing/print_preview:browser_tests",
       "//chrome/browser/chromeos/reporting/network:browser_tests",
       "//chrome/browser/chromeos/reporting/websites:browser_tests",
@@ -658,10 +518,19 @@ if (is_chromeos_lacros) {
       # Browser tests from subdirectories.
       "//chrome/browser/chromeos/extensions/contact_center_insights:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/network:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/policy/dlp:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/printing/print_preview:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/reporting/network:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/tablet_mode:lacros_chrome_browsertests",
     ]
+  }
+}
+
+if (!is_chromeos_device) {
+  group("interactive_ui_tests") {
+    testonly = true
+
+    deps = [ "//chrome/browser/chromeos/policy/dlp:interactive_ui_tests" ]
   }
 }
 

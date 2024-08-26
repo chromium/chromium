@@ -44,6 +44,7 @@ static_library("vm") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/app_management",
     "//chrome/common",

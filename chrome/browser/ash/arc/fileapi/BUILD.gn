@@ -69,6 +69,7 @@ static_library("fileapi") {
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/dbus/virtual_file_provider",
