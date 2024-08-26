@@ -174,11 +174,34 @@ std::string PlaybackQueuePrepareRequestPayload::ToJson() const {
   return json.value();
 }
 
+ReportPlaybackRequestPayload::Params::Params(
+    const bool initial_report,
+    const std::string& playback_reporting_token,
+    const base::Time client_current_time,
+    const base::TimeDelta playback_start_offset,
+    const base::TimeDelta media_time_current,
+    const ConnectionType connection_type,
+    const PlaybackState playback_state,
+    const std::vector<WatchTimeSegment>& watch_time_segments)
+    : initial_report(initial_report),
+      playback_reporting_token(playback_reporting_token),
+      client_current_time(client_current_time),
+      playback_start_offset(playback_start_offset),
+      media_time_current(media_time_current),
+      connection_type(connection_type),
+      playback_state(playback_state),
+      watch_time_segments(watch_time_segments) {}
+ReportPlaybackRequestPayload::Params::Params(const Params&) = default;
+ReportPlaybackRequestPayload::Params&
+ReportPlaybackRequestPayload::Params::operator=(const Params&) = default;
+ReportPlaybackRequestPayload::Params::~Params() = default;
+
 ReportPlaybackRequestPayload::ReportPlaybackRequestPayload(const Params& params)
     : params(params) {
-  if (params.watch_time_segment) {
-    CHECK_LT(params.watch_time_segment->media_time_start,
-             params.watch_time_segment->media_time_end);
+  for (const WatchTimeSegment& watch_time_segment :
+       params.watch_time_segments) {
+    CHECK_LT(watch_time_segment.media_time_start,
+             watch_time_segment.media_time_end);
   }
 }
 ReportPlaybackRequestPayload::ReportPlaybackRequestPayload(
@@ -199,26 +222,30 @@ std::string ReportPlaybackRequestPayload::ToJson() const {
   root.Set(kMediaTimeCurrentKey, GetTimeDeltaString(params.media_time_current));
   root.Set(kPlaybackStateKey, GetPlaybackStateValue(params.playback_state));
 
-  if (params.watch_time_segment) {
-    root.Set(kWatchTimeSegmentsKey,
-             base::Value::List().Append(
-                 base::Value::Dict()
-                     .Set(kMediaTimeStartKey,
-                          GetTimeDeltaString(
-                              params.watch_time_segment->media_time_start))
-                     .Set(kMediaTimeEndKey,
-                          GetTimeDeltaString(
-                              params.watch_time_segment->media_time_end))
-                     .Set(kClientStartTimeKey,
-                          base::TimeFormatAsIso8601(
-                              params.watch_time_segment->client_start_time))
-                     .Set(kConnectionTypeKey,
-                          GetConnectionTypeValue(params.connection_type))));
-  } else {
+  if (params.initial_report) {
     root.Set(kPlaybackStartDataKey,
              base::Value::Dict().Set(
                  kConnectionTypeKey,
                  GetConnectionTypeValue(params.connection_type)));
+  }
+
+  if (!params.watch_time_segments.empty()) {
+    base::Value::List segment_list = base::Value::List();
+    for (const WatchTimeSegment& watch_time_segment :
+         params.watch_time_segments) {
+      segment_list.Append(
+          base::Value::Dict()
+              .Set(kMediaTimeStartKey,
+                   GetTimeDeltaString(watch_time_segment.media_time_start))
+              .Set(kMediaTimeEndKey,
+                   GetTimeDeltaString(watch_time_segment.media_time_end))
+              .Set(kClientStartTimeKey,
+                   base::TimeFormatAsIso8601(
+                       watch_time_segment.client_start_time))
+              .Set(kConnectionTypeKey,
+                   GetConnectionTypeValue(params.connection_type)));
+    }
+    root.Set(kWatchTimeSegmentsKey, std::move(segment_list));
   }
 
   const std::optional<std::string> json = base::WriteJson(root);

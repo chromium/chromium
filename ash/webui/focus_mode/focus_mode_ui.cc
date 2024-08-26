@@ -20,6 +20,7 @@
 #include "ash/webui/grit/ash_focus_mode_resources.h"
 #include "ash/webui/grit/ash_focus_mode_resources_map.h"
 #include "base/base64.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -152,10 +153,15 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
       if (ValidatePlaybackData(data)) {
         // TODO(b/345309770): We may need to add rate limiting for
         // reports.playback API.
+        base::flat_set<std::pair<int, int>> media_segments;
+        if (data->media_start.has_value() && data->media_end.has_value()) {
+          media_segments.insert(
+              {data->media_start.value(), data->media_end.value()});
+        }
         sounds_controller->ReportYouTubeMusicPlayback(
-            youtube_music::PlaybackData(
-                GetPlaybackState(data->state), data->title, data->url,
-                data->media_start, data->media_end, data->initial_playback));
+            youtube_music::PlaybackData(GetPlaybackState(data->state),
+                                        data->title, data->url, media_segments,
+                                        data->initial_playback));
       }
     }
   }

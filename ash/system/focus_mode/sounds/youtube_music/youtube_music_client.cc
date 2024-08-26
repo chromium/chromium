@@ -135,21 +135,22 @@ std::unique_ptr<google_apis::youtube_music::ReportPlaybackRequestPayload>
 CreateReportPlaybackRequestPayload(const std::string& playback_reporting_token,
                                    const PlaybackData& playback_data) {
   base::Time current_time = base::Time::Now();
-  std::optional<google_apis::youtube_music::ReportPlaybackRequestPayload::
-                    WatchTimeSegment>
-      watch_time_segment = std::nullopt;
-  if (!playback_data.initial_playback &&
-      playback_data.media_start.has_value() &&
-      playback_data.media_end.has_value()) {
-    watch_time_segment = google_apis::youtube_music::
-        ReportPlaybackRequestPayload::WatchTimeSegment(
-            base::Seconds(playback_data.media_start.value()),
-            base::Seconds(playback_data.media_end.value()), current_time);
+  std::vector<google_apis::youtube_music::ReportPlaybackRequestPayload::
+                  WatchTimeSegment>
+      watch_time_segments;
+  watch_time_segments.reserve(playback_data.media_segments.size());
+  for (const std::pair<int, int>& media_segment :
+       playback_data.media_segments) {
+    watch_time_segments.emplace_back(
+        google_apis::youtube_music::ReportPlaybackRequestPayload::
+            WatchTimeSegment(base::Seconds(media_segment.first),
+                             base::Seconds(media_segment.second),
+                             current_time));
   }
   google_apis::youtube_music::ReportPlaybackRequestPayload::Params param(
-      playback_reporting_token, current_time, base::TimeDelta(),
-      base::TimeDelta(), GetNetworkConnectionType(),
-      GetPayloadPlaybackState(playback_data.state), watch_time_segment);
+      playback_data.initial_playback, playback_reporting_token, current_time,
+      base::TimeDelta(), base::TimeDelta(), GetNetworkConnectionType(),
+      GetPayloadPlaybackState(playback_data.state), watch_time_segments);
   return std::make_unique<
       google_apis::youtube_music::ReportPlaybackRequestPayload>(param);
 }
