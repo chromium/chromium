@@ -435,15 +435,11 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         """
         # Store complete and filled-in results separately to avoid mutating
         # `complete_results` while it's being used to fill in results.
-        merged_results = {}
+        merged_results = {
+            suite: dict(results_by_build)
+            for suite, results_by_build in complete_results.items()
+        }
         for suite in incomplete_results:
-            complete_results_by_build = complete_results.get(suite, {})
-            if not complete_results_by_build:
-                _log.warning(f'Skipping rebaselining for "{suite}", '
-                             'which has no complete results on any builder.')
-                continue
-
-            merged_results[suite] = dict(complete_results_by_build)
             for incomplete_build in list(incomplete_results[suite]):
                 fill_results = self._select_fill_results(
                     incomplete_build, suite, complete_results)
