@@ -138,6 +138,11 @@ buildflag_header("cronet_buildflags") {
   flags = [ "CRONET_BUILD=$is_cronet_build" ]
 }
 
+proto_library("device_bound_sessions_storage_proto") {
+  proto_in_dir = "//"
+  sources = [ "device_bound_sessions/proto/storage.proto" ]
+}
+
 component("net") {
   sources = [
     "base/address_family.cc",
@@ -1172,7 +1177,11 @@ component("net") {
       "device_bound_sessions/unexportable_key_service_factory.cc",
       "device_bound_sessions/unexportable_key_service_factory.h",
     ]
-    deps += [ "//components/unexportable_keys:unexportable_keys" ]
+
+    deps += [
+      ":device_bound_sessions_storage_proto",
+      "//components/unexportable_keys:unexportable_keys",
+    ]
   }
 
   if (is_android) {
@@ -3318,7 +3327,10 @@ test("net_unittests") {
       "device_bound_sessions/test_util.h",
       "device_bound_sessions/unexportable_key_service_factory_unittest.cc",
     ]
-    deps += [ "//components/unexportable_keys:unexportable_keys" ]
+    deps += [
+      ":device_bound_sessions_storage_proto",
+      "//components/unexportable_keys:unexportable_keys",
+    ]
   }
 }
 

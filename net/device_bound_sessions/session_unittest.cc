@@ -8,6 +8,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
+#include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
@@ -53,6 +54,78 @@ TEST_F(SessionTest, InvalidServiceRefreshUrl) {
   auto params = CreateValidParams();
   params.refresh_url = "";
   EXPECT_FALSE(Session::CreateIfValid(params, kTestUrl));
+}
+
+TEST_F(SessionTest, ToFromProto) {
+  std::unique_ptr<Session> session =
+      Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  ASSERT_TRUE(session);
+
+  // Convert to proto and validate contents.
+  proto::Session sproto = session->ToProto();
+  EXPECT_EQ(Session::Id(sproto.id()), session->id());
+  EXPECT_EQ(sproto.refresh_url(), session->refresh_url().spec());
+  EXPECT_EQ(sproto.should_defer_when_expired(),
+            session->should_defer_when_expired());
+
+  // Restore session from proto and validate contents.
+  std::unique_ptr<Session> restored = Session::CreateFromProto(sproto);
+  ASSERT_TRUE(restored);
+  EXPECT_TRUE(restored->IsEqualForTesting(*session));
+}
+
+TEST_F(SessionTest, FailCreateFromInvalidProto) {
+  // Empty proto.
+  {
+    proto::Session sproto;
+    EXPECT_FALSE(Session::CreateFromProto(sproto));
+  }
+
+  // Create a fully populated proto.
+  std::unique_ptr<Session> session =
+      Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  ASSERT_TRUE(session);
+  proto::Session sproto = session->ToProto();
+
+  // Missing fields.
+  {
+    proto::Session s(sproto);
+    s.clear_id();
+    EXPECT_FALSE(Session::CreateFromProto(s));
+  }
+  {
+    proto::Session s(sproto);
+    s.clear_refresh_url();
+    EXPECT_FALSE(Session::CreateFromProto(s));
+  }
+  {
+    proto::Session s(sproto);
+    s.clear_should_defer_when_expired();
+    EXPECT_FALSE(Session::CreateFromProto(s));
+  }
+  {
+    proto::Session s(sproto);
+    s.clear_expiry_time();
+    EXPECT_FALSE(Session::CreateFromProto(s));
+  }
+  {
+    proto::Session s(sproto);
+    s.clear_session_inclusion_rules();
+    EXPECT_FALSE(Session::CreateFromProto(s));
+  }
+
+  // Empty id.
+  {
+    proto::Session s(sproto);
+    s.set_id("");
+    EXPECT_FALSE(Session::CreateFromProto(s));
+  }
+  // Invalid refresh URL.
+  {
+    proto::Session s(sproto);
+    s.set_refresh_url("blank");
+    EXPECT_FALSE(Session::CreateFromProto(s));
+  }
 }
 
 TEST_F(SessionTest, DeferredSession) {

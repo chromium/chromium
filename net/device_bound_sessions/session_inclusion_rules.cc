@@ -8,12 +8,15 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/scheme_host_port_matcher_result.h"
 #include "net/base/scheme_host_port_matcher_rule.h"
 #include "net/base/url_util.h"
+#include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/device_bound_sessions/session.h"
 
 namespace net::device_bound_sessions {
 
@@ -39,6 +42,25 @@ bool IsValidIPv6Char(char c) {
          // 'x' or 'X' is used in IPv4 to denote hex values, and can be used in
          // parts of IPv6 addresses.
          c == 'x' || c == 'X';
+}
+
+proto::RuleType GetRuleTypeProto(
+    SessionInclusionRules::InclusionResult result) {
+  return result == SessionInclusionRules::InclusionResult::kInclude
+             ? proto::RuleType::INCLUDE
+             : proto::RuleType::EXCLUDE;
+}
+
+std::optional<SessionInclusionRules::InclusionResult> GetInclusionResult(
+    proto::RuleType proto) {
+  if (proto == proto::RuleType::INCLUDE) {
+    return SessionInclusionRules::InclusionResult::kInclude;
+  } else if (proto == proto::RuleType::EXCLUDE) {
+    return SessionInclusionRules::InclusionResult::kExclude;
+  }
+
+  // proto = RULE_TYPE_UNSPECIFIED
+  return std::nullopt;
 }
 
 }  // namespace
@@ -69,6 +91,13 @@ struct SessionInclusionRules::UrlRule {
   // with '/'. Wildcards are not allowed. Simply use "/" to match all paths.
   std::string path_prefix;
 
+  friend bool operator==(const UrlRule& lhs, const UrlRule& rhs) {
+    return lhs.rule_type == rhs.rule_type &&
+           lhs.path_prefix == rhs.path_prefix &&
+           lhs.host_matcher_rule->ToString() ==
+               rhs.host_matcher_rule->ToString();
+  }
+
   // Returns whether the given `url` matches this rule. Note that this
   // function does not check the scheme and port portions of the URL/origin.
   bool MatchesHostAndPath(const GURL& url) const;
@@ -80,6 +109,15 @@ SessionInclusionRules::SessionInclusionRules(const url::Origin& origin)
 SessionInclusionRules::SessionInclusionRules() = default;
 
 SessionInclusionRules::~SessionInclusionRules() = default;
+
+SessionInclusionRules::SessionInclusionRules(SessionInclusionRules&& other) =
+    default;
+
+SessionInclusionRules& SessionInclusionRules::operator=(
+    SessionInclusionRules&& other) = default;
+
+bool SessionInclusionRules::operator==(
+    const SessionInclusionRules& other) const = default;
 
 void SessionInclusionRules::SetIncludeSite(bool include_site) {
   if (!may_include_site_) {
@@ -251,6 +289,56 @@ bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
 
 size_t SessionInclusionRules::num_url_rules_for_testing() const {
   return url_rules_.size();
+}
+
+proto::SessionInclusionRules SessionInclusionRules::ToProto() const {
+  proto::SessionInclusionRules proto;
+  proto.set_origin(origin_.Serialize());
+  proto.set_do_include_site(include_site_.has_value());
+
+  // Note that the ordering of the rules (in terms of when they were added to
+  // the session) is preserved in the proto. Preserving the ordering is
+  // important to handle rules overlap - the latest rule wins.
+  for (auto& rule : url_rules_) {
+    proto::UrlRule rule_proto;
+    rule_proto.set_rule_type(GetRuleTypeProto(rule.rule_type));
+    rule_proto.set_host_matcher_rule(rule.host_matcher_rule->ToString());
+    rule_proto.set_path_prefix(rule.path_prefix);
+    proto.mutable_url_rules()->Add(std::move(rule_proto));
+  }
+
+  return proto;
+}
+
+// static:
+std::unique_ptr<SessionInclusionRules> SessionInclusionRules::CreateFromProto(
+    const proto::SessionInclusionRules& proto) {
+  if (!proto.has_origin() || !proto.has_do_include_site()) {
+    return nullptr;
+  }
+  url::Origin origin = url::Origin::Create(GURL(proto.origin()));
+  if (origin.opaque()) {
+    DLOG(ERROR) << "proto origin parse error: " << origin.GetDebugString();
+    return nullptr;
+  }
+
+  auto result = std::make_unique<SessionInclusionRules>(origin);
+  result->SetIncludeSite(proto.do_include_site());
+  for (const auto& rule_proto : proto.url_rules()) {
+    std::optional<InclusionResult> rule_type =
+        GetInclusionResult(rule_proto.rule_type());
+    if (!rule_type.has_value() ||
+        !result->AddUrlRuleIfValid(*rule_type, rule_proto.host_matcher_rule(),
+                                   rule_proto.path_prefix())) {
+      DLOG(ERROR) << "proto rule parse error: " << "type:"
+                  << proto::RuleType_Name(rule_proto.rule_type()) << " "
+                  << "matcher:" << rule_proto.host_matcher_rule() << " "
+                  << "prefix:" << rule_proto.path_prefix();
+      return nullptr;
+    }
+  }
+
+  return result;
 }
 
 }  // namespace net::device_bound_sessions

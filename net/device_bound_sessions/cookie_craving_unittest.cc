@@ -9,6 +9,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/device_bound_sessions/proto/storage.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -610,6 +611,163 @@ TEST(CookieCravingTest, IsNotSatisfiedByWithPartitionKey) {
       CreateValidCookieCraving(GURL(kUrlString), "name", "Secure; Partitioned",
                                kCreationTime, kNoncedPartitionKey);
   EXPECT_FALSE(cookie_craving.IsSatisfiedBy(canonical_cookie));
+}
+
+TEST(CookieCravingTest, BasicCookieToFromProto) {
+  // Default cookie.
+  CookieCraving cc = CreateValidCookieCraving(GURL(kUrlString), kName, "");
+
+  proto::CookieCraving proto = cc.ToProto();
+  EXPECT_EQ(proto.name(), kName);
+  EXPECT_EQ(proto.domain(), "www.example.test");
+  EXPECT_EQ(proto.path(), "/");
+  EXPECT_EQ(proto.creation_time(),
+            kCreationTime.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  EXPECT_FALSE(proto.secure());
+  EXPECT_FALSE(proto.httponly());
+  EXPECT_EQ(proto.same_site(),
+            proto::CookieSameSite::COOKIE_SAME_SITE_UNSPECIFIED);
+  EXPECT_FALSE(proto.has_serialized_partition_key());
+  EXPECT_EQ(proto.source_scheme(), proto::CookieSourceScheme::SECURE);
+  EXPECT_EQ(proto.source_port(), 443);
+
+  std::optional<CookieCraving> restored_cc =
+      CookieCraving::CreateFromProto(proto);
+  ASSERT_TRUE(restored_cc.has_value());
+  EXPECT_TRUE(restored_cc->IsEqualForTesting(cc));
+
+  // Non-default attributes.
+  cc = CreateValidCookieCraving(
+      GURL(kUrlString), kName,
+      "Secure; HttpOnly; Path=/foo; Domain=example.test; SameSite=Lax");
+
+  proto = cc.ToProto();
+  EXPECT_EQ(proto.name(), kName);
+  EXPECT_EQ(proto.domain(), ".example.test");
+  EXPECT_EQ(proto.path(), "/foo");
+  EXPECT_EQ(proto.creation_time(),
+            kCreationTime.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  EXPECT_TRUE(proto.secure());
+  EXPECT_TRUE(proto.httponly());
+  EXPECT_EQ(proto.same_site(), proto::CookieSameSite::LAX_MODE);
+  EXPECT_FALSE(proto.has_serialized_partition_key());
+  EXPECT_EQ(proto.source_scheme(), proto::CookieSourceScheme::SECURE);
+  EXPECT_EQ(proto.source_port(), 443);
+
+  restored_cc = CookieCraving::CreateFromProto(proto);
+  ASSERT_TRUE(restored_cc.has_value());
+  EXPECT_TRUE(restored_cc->IsEqualForTesting(cc));
+}
+
+TEST(CookieCravingTest, PartitionedCookieToFromProto) {
+  const CookiePartitionKey kSameSitePartitionKey =
+      CookiePartitionKey::FromURLForTesting(GURL("https://auth.example.test"));
+  const CookiePartitionKey kCrossSitePartitionKey =
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.other.test"));
+
+  for (const CookiePartitionKey& partition_key :
+       {kSameSitePartitionKey, kCrossSitePartitionKey}) {
+    // Partitioned cookies must be set with Secure. The __Host- prefix is not
+    // required.
+    CookieCraving cc =
+        CreateValidCookieCraving(GURL(kUrlString), kName, "Secure; Partitioned",
+                                 kCreationTime, partition_key);
+    EXPECT_EQ(cc.PartitionKey(), partition_key);
+    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_partition_key =
+            net::CookiePartitionKey::Serialize(partition_key);
+    CHECK(serialized_partition_key.has_value());
+
+    proto::CookieCraving proto = cc.ToProto();
+    EXPECT_TRUE(proto.secure());
+    ASSERT_TRUE(proto.has_serialized_partition_key());
+    EXPECT_EQ(proto.serialized_partition_key().top_level_site(),
+              serialized_partition_key->TopLevelSite());
+    EXPECT_EQ(proto.serialized_partition_key().has_cross_site_ancestor(),
+              serialized_partition_key->has_cross_site_ancestor());
+
+    std::optional<CookieCraving> restored_cc =
+        CookieCraving::CreateFromProto(proto);
+    ASSERT_TRUE(restored_cc.has_value());
+    EXPECT_TRUE(restored_cc->IsEqualForTesting(cc));
+  }
+}
+
+TEST(CookieCravingTest, FailCreateFromInvalidProto) {
+  // Empty proto.
+  proto::CookieCraving proto;
+  std::optional<CookieCraving> cc = CookieCraving::CreateFromProto(proto);
+  EXPECT_FALSE(cc.has_value());
+
+  cc = CreateValidCookieCraving(
+      GURL(kUrlString), kName,
+      "Secure; HttpOnly; Path=/foo; Domain=example.test; SameSite=Lax");
+  proto = cc->ToProto();
+
+  // Missing parameters.
+  {
+    proto::CookieCraving p(proto);
+    p.clear_name();
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
+  {
+    proto::CookieCraving p(proto);
+    p.clear_domain();
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
+  {
+    proto::CookieCraving p(proto);
+    p.clear_path();
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
+  {
+    proto::CookieCraving p(proto);
+    p.clear_secure();
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
+  {
+    proto::CookieCraving p(proto);
+    p.clear_httponly();
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
+  {
+    proto::CookieCraving p(proto);
+    p.clear_source_port();
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
+  {
+    proto::CookieCraving p(proto);
+    p.clear_creation_time();
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
+  {
+    proto::CookieCraving p(proto);
+    p.clear_same_site();
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
+  {
+    proto::CookieCraving p(proto);
+    p.clear_source_scheme();
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
+  // Malformed serialized partition key.
+  {
+    proto::CookieCraving p(proto);
+    p.mutable_serialized_partition_key()->set_top_level_site("");
+    p.mutable_serialized_partition_key()->set_has_cross_site_ancestor(false);
+    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
+    EXPECT_FALSE(c.has_value());
+  }
 }
 
 }  // namespace net::device_bound_sessions

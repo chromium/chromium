@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
+#include "net/device_bound_sessions/cookie_craving.h"
+#include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_inclusion_rules.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -20,8 +23,22 @@ namespace net::device_bound_sessions {
 Session::Session(Id id, url::Origin origin, GURL refresh)
     : id_(id), refresh_url_(refresh), inclusion_rules_(origin) {}
 
+Session::Session(Id id,
+                 GURL refresh,
+                 SessionInclusionRules inclusion_rules,
+                 std::vector<CookieCraving> cookie_cravings,
+                 bool should_defer_when_expired,
+                 base::Time expiry_date)
+    : id_(id),
+      refresh_url_(refresh),
+      inclusion_rules_(std::move(inclusion_rules)),
+      cookie_cravings_(std::move(cookie_cravings)),
+      should_defer_when_expired_(should_defer_when_expired),
+      expiry_date_(expiry_date) {}
+
 Session::~Session() = default;
 
+// static
 std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
                                                 GURL url) {
   GURL refresh(params.refresh_url);
@@ -57,6 +74,65 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
   }
 
   return session;
+}
+
+// static
+std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
+  if (!proto.has_id() || !proto.has_refresh_url() ||
+      !proto.has_should_defer_when_expired() || !proto.has_expiry_time() ||
+      !proto.has_session_inclusion_rules() || !proto.cookie_cravings_size()) {
+    return nullptr;
+  }
+
+  if (proto.id().empty()) {
+    return nullptr;
+  }
+
+  GURL refresh(proto.refresh_url());
+  if (!refresh.is_valid()) {
+    return nullptr;
+  }
+
+  std::unique_ptr<SessionInclusionRules> inclusion_rules =
+      SessionInclusionRules::CreateFromProto(proto.session_inclusion_rules());
+  if (!inclusion_rules) {
+    return nullptr;
+  }
+
+  std::vector<CookieCraving> cravings;
+  for (const auto& craving_proto : proto.cookie_cravings()) {
+    std::optional<CookieCraving> craving =
+        CookieCraving::CreateFromProto(craving_proto);
+    if (!craving.has_value()) {
+      return nullptr;
+    }
+    cravings.push_back(std::move(*craving));
+  }
+
+  auto expiry_date = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(proto.expiry_time()));
+  std::unique_ptr<Session> result(new Session(
+      Id(proto.id()), std::move(refresh), std::move(*inclusion_rules),
+      std::move(cravings), proto.should_defer_when_expired(), expiry_date));
+
+  return result;
+}
+
+proto::Session Session::ToProto() const {
+  proto::Session session_proto;
+  session_proto.set_id(static_cast<std::string>(id_));
+  session_proto.set_refresh_url(refresh_url_.spec());
+  session_proto.set_should_defer_when_expired(should_defer_when_expired_);
+  session_proto.set_expiry_time(
+      expiry_date_.ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  *session_proto.mutable_session_inclusion_rules() = inclusion_rules_.ToProto();
+
+  for (auto& craving : cookie_cravings_) {
+    session_proto.mutable_cookie_cravings()->Add(craving.ToProto());
+  }
+
+  return session_proto;
 }
 
 bool Session::ShouldDeferRequest(URLRequest* request) const {
@@ -136,6 +212,23 @@ bool Session::ShouldDeferRequest(URLRequest* request) const {
 
   // All cookiecravings satisfied.
   return false;
+}
+
+bool Session::IsEqualForTesting(const Session& other) const {
+  if (!base::ranges::equal(
+          cookie_cravings_, other.cookie_cravings_,
+          [](const CookieCraving& lhs, const CookieCraving& rhs) {
+            return lhs.IsEqualForTesting(rhs);  // IN-TEST
+          })) {
+    return false;
+  }
+
+  return id_ == other.id_ && refresh_url_ == other.refresh_url_ &&
+         inclusion_rules_ == other.inclusion_rules_ &&
+         should_defer_when_expired_ == other.should_defer_when_expired_ &&
+         expiry_date_ == other.expiry_date_ &&
+         key_id_or_error_ == other.key_id_or_error_ &&
+         cached_challenge_ == other.cached_challenge_;
 }
 
 }  // namespace net::device_bound_sessions

@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/device_bound_sessions/proto/storage.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -500,6 +501,98 @@ TEST(SessionInclusionRulesTest, NonstandardPort) {
        // Also excluded explicitly by rule.
        {"https://site.test", Result::kExclude},
        {"https://site.test:443", Result::kExclude}});
+}
+
+TEST(SessionInclusionRulesTest, ToFromProto) {
+  // Create a valid SessionInclusionRules object with default inclusion rule and
+  // a couple of additional URL rules.
+  url::Origin root_site_origin = url::Origin::Create(GURL("https://site.test"));
+  ASSERT_DOMAIN_AND_REGISTRY(root_site_origin, "site.test");
+
+  SessionInclusionRules inclusion_rules{root_site_origin};
+  EXPECT_TRUE(inclusion_rules.may_include_site_for_testing());
+  inclusion_rules.SetIncludeSite(true);
+  EXPECT_TRUE(inclusion_rules.AddUrlRuleIfValid(Result::kExclude,
+                                                "excluded.site.test", "/"));
+  EXPECT_TRUE(inclusion_rules.AddUrlRuleIfValid(Result::kInclude,
+                                                "included.site.test", "/"));
+
+  // Create a corresponding proto object and validate.
+  proto::SessionInclusionRules proto = inclusion_rules.ToProto();
+  EXPECT_EQ(root_site_origin.Serialize(), proto.origin());
+  EXPECT_TRUE(proto.do_include_site());
+  ASSERT_EQ(proto.url_rules().size(), 2);
+  {
+    const auto& rule = proto.url_rules(0);
+    EXPECT_EQ(rule.rule_type(), proto::RuleType::EXCLUDE);
+    EXPECT_EQ(rule.host_matcher_rule(), "excluded.site.test");
+    EXPECT_EQ(rule.path_prefix(), "/");
+  }
+  {
+    const auto& rule = proto.url_rules(1);
+    EXPECT_EQ(rule.rule_type(), proto::RuleType::INCLUDE);
+    EXPECT_EQ(rule.host_matcher_rule(), "included.site.test");
+    EXPECT_EQ(rule.path_prefix(), "/");
+  }
+
+  // Create a SessionInclusionRules object from the proto and verify
+  // that it is the same as the original.
+  std::unique_ptr<SessionInclusionRules> restored_inclusion_rules =
+      SessionInclusionRules::CreateFromProto(proto);
+  ASSERT_TRUE(restored_inclusion_rules != nullptr);
+  EXPECT_EQ(*restored_inclusion_rules, inclusion_rules);
+}
+
+TEST(SessionInclusionRulesTest, FailCreateFromInvalidProto) {
+  // Empty proto.
+  {
+    proto::SessionInclusionRules proto;
+    EXPECT_FALSE(SessionInclusionRules::CreateFromProto(proto));
+  }
+  // Opaque origin.
+  {
+    proto::SessionInclusionRules proto;
+    proto.set_origin("about:blank");
+    proto.set_do_include_site(false);
+    EXPECT_FALSE(SessionInclusionRules::CreateFromProto(proto));
+  }
+  // Create a fully populated proto.
+  url::Origin root_site_origin = url::Origin::Create(GURL("https://site.test"));
+  SessionInclusionRules inclusion_rules{root_site_origin};
+  inclusion_rules.SetIncludeSite(true);
+  inclusion_rules.AddUrlRuleIfValid(Result::kExclude, "excluded.site.test",
+                                    "/");
+  inclusion_rules.AddUrlRuleIfValid(Result::kInclude, "included.site.test",
+                                    "/");
+  proto::SessionInclusionRules proto = inclusion_rules.ToProto();
+
+  // Test for missing proto fields by clearing the fields one at a time.
+  {
+    proto::SessionInclusionRules p(proto);
+    p.clear_origin();
+    EXPECT_FALSE(SessionInclusionRules::CreateFromProto(p));
+  }
+  {
+    proto::SessionInclusionRules p(proto);
+    p.clear_do_include_site();
+    EXPECT_FALSE(SessionInclusionRules::CreateFromProto(p));
+  }
+  // URL rules with missing parameters.
+  {
+    proto::SessionInclusionRules p(proto);
+    p.mutable_url_rules(0)->clear_rule_type();
+    EXPECT_FALSE(SessionInclusionRules::CreateFromProto(p));
+  }
+  {
+    proto::SessionInclusionRules p(proto);
+    p.mutable_url_rules(0)->clear_host_matcher_rule();
+    EXPECT_FALSE(SessionInclusionRules::CreateFromProto(p));
+  }
+  {
+    proto::SessionInclusionRules p(proto);
+    p.mutable_url_rules(0)->clear_path_prefix();
+    EXPECT_FALSE(SessionInclusionRules::CreateFromProto(p));
+  }
 }
 
 }  // namespace
