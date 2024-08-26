@@ -278,9 +278,4 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // TODO(crbug.com/41492947): See crrev.com/c/5744034 for details, but I was
   // unable to add this feature to fieldtrial_testing_config and pass all tests.
   aw_feature_overrides.EnableFeature(blink::features::kElementGetInnerHTML);
-
-  // TODO(crbug.com/356827071): Enable the feature for WebView.
-  // Disable PlzDedicatedWorker as a workaround for crbug.com/356827071.
-  // Otherwise, importScripts fails on WebView.
-  aw_feature_overrides.DisableFeature(blink::features::kPlzDedicatedWorker);
 }
