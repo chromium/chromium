@@ -1920,7 +1920,7 @@ void HTMLElement::SetPopoverFocusOnShow() {
       this, DocumentUpdateReason::kPopover);
 
   if (auto* dialog = DynamicTo<HTMLDialogElement>(this)) {
-    if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
+    if (RuntimeEnabledFeatures::PopoverDialogNewFocusBehaviorEnabled()) {
       dialog->SetFocusForDialog();
     } else {
       HTMLDialogElement::SetFocusForDialogLegacy(dialog);
