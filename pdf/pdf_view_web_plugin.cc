@@ -1992,10 +1992,7 @@ void PdfViewWebPlugin::UpdateScaledValues() {
 }
 
 void PdfViewWebPlugin::UpdateScale(float scale) {
-  if (scale <= 0.0f) {
-    NOTREACHED();
-  }
-
+  CHECK_GT(scale, 0.0f);
   viewport_to_dip_scale_ = scale;
   UpdateScaledValues();
 }
