@@ -208,7 +208,7 @@ class PrivateAggregationBudgeterTest : public testing::Test {
     return PrivateAggregationBudgetKey::CreateForTesting(
         /*origin=*/url::Origin::Create(GURL("https://a.example/")),
         /*api_invocation_time=*/kExampleTime,
-        /*api-*/ PrivateAggregationBudgetKey::Api::kProtectedAudience);
+        /*api=*/PrivateAggregationBudgetKey::Api::kProtectedAudience);
   }
 
   base::FilePath db_path() const {
@@ -2091,7 +2091,7 @@ TEST_F(PrivateAggregationBudgeterTest, StaleDataClearedAfterConsumeBudget) {
       PrivateAggregationBudgetKey::CreateForTesting(
           /*origin=*/url::Origin::Create(GURL("https://b.example/")),
           /*api_invocation_time=*/kExampleTime,
-          /*api-*/ PrivateAggregationBudgetKey::Api::kProtectedAudience);
+          /*api=*/PrivateAggregationBudgetKey::Api::kProtectedAudience);
   base::RunLoop run_loop;
   budgeter()->ConsumeBudget(
       /*budget=*/1, non_stale_key,
