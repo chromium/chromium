@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/render_text.h"
 
 #include <limits.h>
@@ -1671,8 +1666,12 @@ void RenderText::EnsureLayoutTextUpdated() const {
   if (obscured_reveal_index_.has_value()) {
     reveal_index = obscured_reveal_index_.value();
     // Move |reveal_index| to the beginning of the surrogate pair, if needed.
-    if (reveal_index < text_.size())
-      U16_SET_CP_START(text_.data(), 0, reveal_index);
+    if (reveal_index < text_.size()) {
+      // SAFETY: U16_SET_CP_START() internally checks for underflow, and we know
+      // that reveal_index is before the end of the string since it is checked
+      // right above.
+      UNSAFE_BUFFERS(U16_SET_CP_START(text_.data(), 0, reveal_index));
+    }
   }
 
   BreakList<bool>::const_iterator eliding_iterator = elidings_.breaks().begin();

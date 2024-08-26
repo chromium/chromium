@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/render_text_harfbuzz.h"
 
 #include <limits>
@@ -119,26 +114,24 @@ bool IsBracket(UChar32 codepoint) {
          U_BPT_NONE;
 }
 
-// Writes the script and the script extensions of the Unicode |codepoint|.
-// Returns the number of written scripts.
-size_t GetScriptExtensions(UChar32 codepoint, UScriptCode* scripts) {
-  // Fill |scripts| with the script extensions.
+// Returns a vector containing the script and the script extensions of the
+// Unicode |codepoint|.
+std::vector<UScriptCode> GetScriptExtensions(UChar32 codepoint) {
   UErrorCode icu_error = U_ZERO_ERROR;
-  size_t count =
-      uscript_getScriptExtensions(codepoint, scripts, kMaxScripts, &icu_error);
-  DCHECK_NE(icu_error, U_BUFFER_OVERFLOW_ERROR) << " #ext: " << count;
+  std::vector<UScriptCode> result(kMaxScripts);
+  size_t count = uscript_getScriptExtensions(codepoint, result.data(),
+                                             result.size(), &icu_error);
+  CHECK_NE(icu_error, U_BUFFER_OVERFLOW_ERROR) << " #ext: " << count;
   if (U_FAILURE(icu_error))
-    return 0;
+    return {};
+  result.resize(count);
 
-  return count;
+  return result;
 }
 
 // Intersects the script extensions set of |codepoint| with |result| and writes
-// to |result|, reading and updating |result_size|. The output |result| will be
-// a subset of the input |result| (thus |result_size| can only be smaller).
-void ScriptSetIntersect(UChar32 codepoint,
-                        UScriptCode* result,
-                        size_t* result_size) {
+// to |result|.
+void ScriptSetIntersect(UChar32 codepoint, std::vector<UScriptCode>& result) {
   // Each codepoint has a Script property and a Script Extensions (Scx)
   // property.
   //
@@ -168,25 +161,17 @@ void ScriptSetIntersect(UChar32 codepoint,
   // For most of the codepoints, the script extensions set contains only one
   // element. For CJK codepoints, it's common to see 3-4 scripts. For really
   // rare cases, the set can go above 20 scripts.
-  UScriptCode scripts[kMaxScripts] = { USCRIPT_INVALID_CODE };
-  size_t count = GetScriptExtensions(codepoint, scripts);
+  std::vector<UScriptCode> extensions = GetScriptExtensions(codepoint);
 
   // Implicit script 'inherited' is inheriting scripts from preceding codepoint.
-  if (count == 1 && scripts[0] == USCRIPT_INHERITED)
+  if (extensions.size() == 1 && extensions[0] == USCRIPT_INHERITED) {
     return;
-
-  // Perform the intersection of both script set.
-  auto scripts_span = base::span<UScriptCode>(scripts, count);
-  DCHECK(!base::Contains(scripts_span, USCRIPT_INHERITED));
-  auto results_span = base::span<UScriptCode>(result, *result_size);
-
-  size_t out_size = 0;
-  for (UScriptCode current : results_span) {
-    if (base::Contains(scripts_span, current))
-      result[out_size++] = current;
   }
 
-  *result_size = out_size;
+  CHECK(!base::Contains(extensions, USCRIPT_INHERITED));
+
+  std::erase_if(
+      result, [&](auto script) { return !base::Contains(extensions, script); });
 }
 
 struct GraphemeProperties {
@@ -257,7 +242,8 @@ size_t FindRunBreakingCharacter(const std::u16string& text,
                                 size_t run_break,
                                 size_t run_end) {
   const size_t run_length = run_end - run_start;
-  const std::u16string_view run_text(text.c_str() + run_start, run_length);
+  const std::u16string_view text_view(text);
+  const std::u16string_view run_text(text_view.substr(run_start, run_length));
   const bool is_common_script = (script == USCRIPT_COMMON);
 
   DCHECK(!run_text.empty());
@@ -317,17 +303,17 @@ size_t ScriptInterval(const std::u16string& text,
                       UScriptCode* script) {
   DCHECK_GT(length, 0U);
 
-  UScriptCode scripts[kMaxScripts] = { USCRIPT_INVALID_CODE };
-
   base::i18n::UTF16CharIterator char_iterator(
       std::u16string_view(text).substr(start, length));
-  size_t scripts_size = GetScriptExtensions(char_iterator.get(), scripts);
+
+  std::vector<UScriptCode> scripts = GetScriptExtensions(char_iterator.get());
   *script = scripts[0];
 
   while (char_iterator.Advance()) {
-    ScriptSetIntersect(char_iterator.get(), scripts, &scripts_size);
-    if (scripts_size == 0U)
+    ScriptSetIntersect(char_iterator.get(), scripts);
+    if (scripts.empty()) {
       return char_iterator.array_pos();
+    }
     *script = scripts[0];
   }
 
@@ -1364,11 +1350,24 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
   hb_shape(harfbuzz_font, buffer, NULL, 0);
 
   // Populate the run fields with the resulting glyph data in the buffer.
-  unsigned int glyph_count = 0;
-  hb_glyph_info_t* infos = hb_buffer_get_glyph_infos(buffer, &glyph_count);
-  out->glyph_count = glyph_count;
-  hb_glyph_position_t* hb_positions =
-      hb_buffer_get_glyph_positions(buffer, NULL);
+  base::span<hb_glyph_info_t> infos = [](hb_buffer_t* buffer) {
+    unsigned int count;
+    hb_glyph_info_t* data = hb_buffer_get_glyph_infos(buffer, &count);
+    // SAFETY: harfbuzz guarantees that hb_buffer_get_glyph_infos() writes the
+    // count for the returned data array into count.
+    return UNSAFE_BUFFERS(base::make_span(data, count));
+  }(buffer);
+
+  out->glyph_count = infos.size();
+
+  base::span<hb_glyph_position_t> positions = [](hb_buffer_t* buffer) {
+    unsigned int count;
+    hb_glyph_position_t* data = hb_buffer_get_glyph_positions(buffer, &count);
+    // SAFETY: harfbuzz guarantees that hb_buffer_get_glyph_positions() writes
+    // the count for the returned data array into count.
+    return UNSAFE_BUFFERS(base::make_span(data, count));
+  }(buffer);
+
   out->glyphs.resize(out->glyph_count);
   out->glyph_to_char.resize(out->glyph_count);
   out->positions.resize(out->glyph_count);
@@ -1392,21 +1391,21 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
     DCHECK_GE(infos[i].cluster, in.range.start());
     out->glyph_to_char[i] = infos[i].cluster - in.range.start();
 
-    SkScalar x_offset = HarfBuzzUnitsToSkiaScalar(hb_positions[i].x_offset);
+    SkScalar x_offset = HarfBuzzUnitsToSkiaScalar(positions[i].x_offset);
 
     if (in.obscured)
       // Place obscured glyphs in the middle of the allotted spacing.
       x_offset += in.obscured_glyph_spacing / 2.0f;
     if (force_zero_offset)
       x_offset = 0;
-    const SkScalar y_offset =
-        HarfBuzzUnitsToSkiaScalar(hb_positions[i].y_offset);
+    const SkScalar y_offset = HarfBuzzUnitsToSkiaScalar(positions[i].y_offset);
     out->positions[i].set(out->width + x_offset, -y_offset);
 
     if (in.glyph_width_for_test == 0)
-      out->width += HarfBuzzUnitsToFloat(hb_positions[i].x_advance);
-    else if (hb_positions[i].x_advance)  // Leave zero-width glyphs alone.
+      out->width += HarfBuzzUnitsToFloat(positions[i].x_advance);
+    else if (positions[i].x_advance) {  // Leave zero-width glyphs alone.
       out->width += in.glyph_width_for_test;
+    }
 
     if (in.obscured)
       out->width += in.obscured_glyph_spacing;
