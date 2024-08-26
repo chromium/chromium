@@ -625,6 +625,30 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
             performance_row->footer_label()->GetText());
 }
 
+IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
+                       ActiveMemoryUsageHidesOnDiscard) {
+  const uint64_t bytes_used = 1;
+  TabResourceUsageTabHelper::FromWebContents(GetWebContentsAt(0))
+      ->SetMemoryUsageInBytes(bytes_used);
+
+  RunTestSequence(InstrumentTab(kFirstTabContents, 0),
+                  NavigateWebContents(kFirstTabContents, GetURL("a.com")),
+                  AddInstrumentedTab(kSecondTabContents, GetURL("b.com")),
+                  ForceTabDataRefreshMemoryMetrics(), TryDiscardTab(0),
+                  HoverTabAt(0),
+                  WaitForShow(FooterView::kHoverCardFooterElementId),
+                  CheckAlertRowLabel(u"Inactive tab", true),
+                  CheckView(
+                      TabHoverCardBubbleView::kHoverCardBubbleElementId,
+                      [=](TabHoverCardBubbleView* bubble) {
+                        return GetPrimaryPerformanceRowFromHoverCard(bubble)
+                            ->footer_label()
+                            ->GetText()
+                            .empty();
+                      },
+                      true));
+}
+
 // The discarded status in the hover card footer should disappear after a
 // discarded tab is reloaded
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,

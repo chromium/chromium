@@ -545,11 +545,12 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab, bool discarded) {
           ? tab_data.tab_resource_usage->is_high_memory_usage()
           : false;
   // High memory usage notification is considered a tab alert. Show it even
-  // if the memory usage in hovercards pref is disabled.
+  // if the memory usage in hover cards pref is disabled.
   const bool show_memory_usage =
-      (bubble_params_.show_memory_usage && tab_memory_usage_in_bytes > 0) ||
-      is_high_memory_usage;
-  bool show_footer =
+      !show_discard_status &&
+      ((bubble_params_.show_memory_usage && tab_memory_usage_in_bytes > 0) ||
+       is_high_memory_usage);
+  const bool show_footer =
       alert_state_.has_value() || show_discard_status || show_memory_usage;
 
   footer_view_->SetAlertData({alert_state_, show_discard_status,
@@ -567,9 +568,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab, bool discarded) {
 void TabHoverCardBubbleView::SetTextFade(double percent) {
   title_label_->SetFade(percent);
   domain_label_->SetFade(percent);
-  if (footer_view_) {
-    footer_view_->SetFade(percent);
-  }
+  footer_view_->SetFade(percent);
 }
 
 void TabHoverCardBubbleView::SetTargetTabImage(gfx::ImageSkia preview_image) {
