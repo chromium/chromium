@@ -312,6 +312,7 @@ namespace {
 
 const int kExtraCharsBeforeAndAfterSelection = 100;
 const size_t kMaxURLLogChars = 1024;
+const char kCommitRenderFrame[] = "Navigation.CommitRenderFrame";
 
 // Time, in seconds, we delay before sending content state changes (such as form
 // state and scroll position) to the browser. We delay sending changes to avoid
@@ -2703,7 +2704,10 @@ void RenderFrameImpl::CommitNavigation(
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
-  base::ScopedUmaHistogramTimer histogram_timer("Navigation.CommitRenderFrame");
+  base::ElapsedTimer timer;
+  base::ScopedUmaHistogramTimer histogram_timer(kCommitRenderFrame);
+  base::ScopedUmaHistogramTimer histogram_timer_frame(base::StrCat(
+      {kCommitRenderFrame, IsMainFrame() ? ".MainFrame" : ".Subframe"}));
   TRACE_EVENT_WITH_FLOW0("navigation", "RenderFrameImpl::CommitNavigation",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
@@ -2716,6 +2720,24 @@ void RenderFrameImpl::CommitNavigation(
         common_params->url.SchemeIs(url::kDataScheme));
   LogCommitHistograms(commit_params->commit_sent, is_main_frame_,
                       common_params->url);
+
+  bool is_new_navigation_in_outermost_main_frame_with_http_or_https = false;
+  if (frame_->IsOutermostMainFrame() &&
+      common_params->url.SchemeIsHTTPOrHTTPS()) {
+    switch (common_params->navigation_type) {
+      case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
+        is_new_navigation_in_outermost_main_frame_with_http_or_https = true;
+        break;
+      case blink::mojom::NavigationType::RELOAD:
+      case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
+      case blink::mojom::NavigationType::RESTORE:
+      case blink::mojom::NavigationType::RESTORE_WITH_POST:
+      case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
+      case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+      case blink::mojom::NavigationType::SAME_DOCUMENT:
+        break;
+    }
+  }
 
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
@@ -2870,6 +2892,13 @@ void RenderFrameImpl::CommitNavigation(
 
   // Common case - fill navigation params from provided information and commit.
   std::move(commit_with_params).Run(std::move(navigation_params));
+
+  if (is_new_navigation_in_outermost_main_frame_with_http_or_https) {
+    base::UmaHistogramTimes(
+        base::StrCat({kCommitRenderFrame,
+                      ".OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"}),
+        timer.Elapsed());
+  }
 }
 
 void RenderFrameImpl::CommitNavigationWithParams(

@@ -629,6 +629,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.CommitRenderFrame.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
+    units="ms" expires_after="2024-12-04">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time it takes for the RenderFrameImpl::CommitNavigation() to run on the
+    outermost main frame. Recorded on RenderFrameImpl::CommitNavigation() call,
+    when it's a new non-(reload/history/restore) navigation for the URL with
+    HTTP or HTTPS scheme.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.CommitRenderFrame.{FrameType}" units="ms"
+    expires_after="2024-12-04">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time it takes for the RenderFrameImpl::CommitNavigation() to run on
+    {FrameType}. Recorded on every RenderFrameImpl::CommitNavigation() call.
+  </summary>
+  <token key="FrameType" variants="FrameTypes"/>
+</histogram>
+
 <histogram name="Navigation.CompositorCreationTo{Stage}2" units="ms"
     expires_after="2025-02-10">
   <owner>rakina@chromium.org</owner>
