@@ -703,15 +703,6 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
     return;
   }
 
-#if BUILDFLAG(ENABLE_PDF)
-  bool is_pdf;
-  if (chrome_pdf::features::IsOopifPdfEnabled()) {
-    is_pdf = !!pdf::PdfViewerStreamManager::FromWebContents(contents);
-  } else {
-    is_pdf = !!pdf_observer_;
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
-
   // Observe the new contents so we can get the page language once it's
   // determined.
   if (ChromeTranslateClient* translate_client =
@@ -738,6 +729,9 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   }
 
 #if BUILDFLAG(ENABLE_PDF)
+  bool is_pdf = chrome_pdf::features::IsOopifPdfEnabled()
+                    ? !!pdf::PdfViewerStreamManager::FromWebContents(contents)
+                    : !!pdf_observer_;
   if (is_pdf) {
     // What happens if there are multiple such `rfhs`?
     contents->ForEachRenderFrameHost([this](content::RenderFrameHost* rfh) {
