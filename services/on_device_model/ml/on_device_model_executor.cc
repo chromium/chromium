@@ -105,6 +105,18 @@ uint32_t GetTopK(std::optional<uint32_t> top_k) {
                   std::max(1u, top_k.value_or(1)));
 }
 
+std::optional<ModelBackendType> ModelBackendTypeFromMojom(
+    on_device_model::mojom::ModelBackendType backend) {
+  switch (backend) {
+    case on_device_model::mojom::ModelBackendType::kGpu:
+      return ModelBackendType::kGpuBackend;
+    case on_device_model::mojom::ModelBackendType::kApu:
+      return ModelBackendType::kApuBackend;
+    default:
+      return std::nullopt;
+  }
+}
+
 }  // namespace
 
 // Handles sending and canceling responses.
@@ -423,7 +435,7 @@ base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
   static uint32_t next_id = 0;
   base_sessions_.insert(
       {next_id, SessionAccessor::Create(chrome_ml_.get(), model_task_runner_,
-                                        model_, std::move(assets.weights))});
+                                        model_, std::move(assets))});
   model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
   return base::ok(next_id++);
 }
@@ -452,10 +464,24 @@ LoadModelResult OnDeviceModelExecutor::Init(
 
   max_tokens_ = std::max(params->max_tokens, kReserveTokensForSafety);
 
-  ChromeMLModelData data = {
-      .weights_file = assets.weights.TakePlatformFile(),
-  };
+  std::optional<ModelBackendType> backend_type =
+      ModelBackendTypeFromMojom(params->backend_type);
+  if (!backend_type.has_value()) {
+    LOG(ERROR) << "Failed to parse model backend type";
+    return LoadModelResult::kFailedToLoadLibrary;
+  }
+
+  ChromeMLModelData data;
+  std::string weights_path_str = assets.weights_path.AsUTF8Unsafe();
+  std::string sp_model_path_str = assets.sp_model_path.AsUTF8Unsafe();
+  if (*backend_type == ModelBackendType::kGpuBackend) {
+    data.weights_file = assets.weights.TakePlatformFile();
+  } else {
+    data.model_path = weights_path_str.data();
+    data.sentencepiece_model_path = sp_model_path_str.data();
+  }
   ChromeMLModelDescriptor descriptor = {
+      .backend_type = *backend_type,
       .model_data = &data,
       .max_tokens = max_tokens_,
       .temperature = 0.0f,

@@ -13,10 +13,25 @@ bool StructTraits<on_device_model::mojom::ModelAssetsDataView,
                   on_device_model::ModelAssets>::
     Read(on_device_model::mojom::ModelAssetsDataView data,
          on_device_model::ModelAssets* assets) {
-  return data.ReadWeights(&assets->weights) &&
-         data.ReadTsData(&assets->ts_data) &&
-         data.ReadTsSpModel(&assets->ts_sp_model) &&
-         data.ReadLanguageDetectionModel(&assets->language_detection_model);
+  // base::FilePath doesn't have nullable StructTraits, so we need to use
+  // optional.
+  std::optional<base::FilePath> weights_path, sp_model_path;
+  bool ok = data.ReadWeights(&assets->weights) &&
+            data.ReadWeightsPath(&weights_path) &&
+            data.ReadSpModelPath(&sp_model_path) &&
+            data.ReadTsData(&assets->ts_data) &&
+            data.ReadTsSpModel(&assets->ts_sp_model) &&
+            data.ReadLanguageDetectionModel(&assets->language_detection_model);
+  if (!ok) {
+    return false;
+  }
+  if (weights_path.has_value()) {
+    assets->weights_path = *weights_path;
+  }
+  if (sp_model_path.has_value()) {
+    assets->sp_model_path = *sp_model_path;
+  }
+  return true;
 }
 
 }  // namespace mojo

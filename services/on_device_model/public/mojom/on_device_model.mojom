@@ -5,13 +5,21 @@
 module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 
 // Opened file resources needed to define an adaptation.
 [Stable]
 struct AdaptationAssets {
+  // Model weights could be passed as an opened file or a file path.
+  // The backend type will decide which one should be used, or
+  // which one is preferred if both are passed. If both are unset,
+  // usually the operation should fail.
+  // APU backend: weights_path should be used.
+  // GPU backend: weights should be used.
   // TODO(b/313919363): This should also be a ReadOnlyFile.
   mojo_base.mojom.File? weights;
+  [MinVersion=1] mojo_base.mojom.FilePath? weights_path;
 };
 
 // Conveys the result of a language detection attempt on output text.

@@ -62,6 +62,8 @@ class FakeFile {
                                              base::File::FLAG_READ);
   }
 
+  base::FilePath Path() { return temp_file_.path(); }
+
  private:
   base::ScopedTempFile temp_file_;
 };
@@ -75,10 +77,12 @@ class OnDeviceModelServiceTest : public testing::Test {
   mojo::Remote<mojom::OnDeviceModelService>& service() { return service_; }
 
   mojo::Remote<mojom::OnDeviceModel> LoadModel(
-      bool support_multiple_sessions = false) {
+      bool support_multiple_sessions = false,
+      mojom::ModelBackendType backend_type = mojom::ModelBackendType::kGpu) {
     base::RunLoop run_loop;
     mojo::Remote<mojom::OnDeviceModel> remote;
     auto params = mojom::LoadModelParams::New();
+    params->backend_type = backend_type;
     params->support_multiple_sessions = support_multiple_sessions;
     params->max_tokens = 8000;
     service()->LoadModel(
@@ -91,21 +95,35 @@ class OnDeviceModelServiceTest : public testing::Test {
     return remote;
   }
 
-  mojo::Remote<mojom::OnDeviceModel> LoadAdaptation(
+  mojo::Remote<mojom::OnDeviceModel> LoadAdaptationWithParams(
       mojom::OnDeviceModel& model,
-      base::File adaptation_data) {
+      mojom::LoadAdaptationParamsPtr adaptation_params) {
     base::RunLoop run_loop;
     mojo::Remote<mojom::OnDeviceModel> remote;
-    auto params = mojom::LoadAdaptationParams::New();
-    params->assets.weights = std::move(adaptation_data);
     model.LoadAdaptation(
-        std::move(params), remote.BindNewPipeAndPassReceiver(),
+        std::move(adaptation_params), remote.BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting([&](mojom::LoadModelResult result) {
           EXPECT_EQ(mojom::LoadModelResult::kSuccess, result);
           run_loop.Quit();
         }));
     run_loop.Run();
     return remote;
+  }
+
+  mojo::Remote<mojom::OnDeviceModel> LoadAdaptation(
+      mojom::OnDeviceModel& model,
+      base::File adaptation_data) {
+    auto params = mojom::LoadAdaptationParams::New();
+    params->assets.weights = std::move(adaptation_data);
+    return LoadAdaptationWithParams(model, std::move(params));
+  }
+
+  mojo::Remote<mojom::OnDeviceModel> LoadAdaptation(
+      mojom::OnDeviceModel& model,
+      base::FilePath adaptation_path) {
+    auto params = mojom::LoadAdaptationParams::New();
+    params->assets.weights_path = std::move(adaptation_path);
+    return LoadAdaptationWithParams(model, std::move(params));
   }
 
   mojom::InputOptionsPtr MakeInput(const std::string& input) {
@@ -431,6 +449,24 @@ TEST_F(OnDeviceModelServiceTest, LoadsAdaptation) {
               ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
 
   auto adaptation2 = LoadAdaptation(*model, weights2.Open());
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
+  EXPECT_THAT(GetResponses(*adaptation1, "foo"),
+              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
+  EXPECT_THAT(GetResponses(*adaptation2, "foo"),
+              ElementsAre("Adaptation: Adapt2\n", "Input: foo\n"));
+}
+
+TEST_F(OnDeviceModelServiceTest, LoadsAdaptationWithPath) {
+  FakeFile weights1("Adapt1");
+  FakeFile weights2("Adapt2");
+  auto model = LoadModel(/*support_multiple_sessions=*/false,
+                         mojom::ModelBackendType::kApu);
+  auto adaptation1 = LoadAdaptation(*model, weights1.Path());
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
+  EXPECT_THAT(GetResponses(*adaptation1, "foo"),
+              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
+
+  auto adaptation2 = LoadAdaptation(*model, weights2.Path());
   EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation1, "foo"),
               ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));

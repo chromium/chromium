@@ -5,6 +5,7 @@
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 
 #include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
 
@@ -29,6 +30,7 @@ bool QueryGPUAdapter(void (*adapter_callback_fn)(WGPUAdapter adapter,
 }
 
 struct FakeModelInstance {
+  ModelBackendType backend_type_;
   std::string model_data_;
 };
 
@@ -58,7 +60,8 @@ std::string ReadFile(PlatformFile api_file) {
 ChromeMLModel SessionCreateModel(const ChromeMLModelDescriptor* descriptor,
                                  uintptr_t context,
                                  ChromeMLScheduleFn schedule) {
-  return reinterpret_cast<ChromeMLModel>(new FakeModelInstance{});
+  return reinterpret_cast<ChromeMLModel>(
+      new FakeModelInstance{.backend_type_ = descriptor->backend_type});
 }
 
 void DestroyModel(ChromeMLModel model) {
@@ -75,9 +78,17 @@ ChromeMLSafetyResult ClassifyTextSafety(ChromeMLModel model,
 
 ChromeMLSession CreateSession(ChromeMLModel model,
                               const ChromeMLAdaptationDescriptor* descriptor) {
+  auto* model_instance = reinterpret_cast<FakeModelInstance*>(model);
   auto* instance = new FakeSessionInstance{};
   if (descriptor) {
-    instance->adaptation_data_ = ReadFile(descriptor->model_data->weights_file);
+    if (model_instance->backend_type_ == ModelBackendType::kGpuBackend) {
+      instance->adaptation_data_ =
+          ReadFile(descriptor->model_data->weights_file);
+    } else if (model_instance->backend_type_ == ModelBackendType::kApuBackend) {
+      base::ReadFileToString(
+          base::FilePath::FromUTF8Unsafe(descriptor->model_data->model_path),
+          &instance->adaptation_data_);
+    }
   }
   return reinterpret_cast<ChromeMLSession>(instance);
 }
