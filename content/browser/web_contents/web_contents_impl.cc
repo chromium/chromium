@@ -2786,12 +2786,16 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
     web_input_event_audit_callbacks_[callback_id] = std::move(*audit_callback);
   } else {
 #if BUILDFLAG(IS_ANDROID)
-    CHECK(ignore_input_events_count_ != 0 ||
-          !GetPrimaryMainFrame()
-               ->GetRenderWidgetHost()
-               ->GetRenderInputRouter()
-               ->IsAnyScrollGestureInProgress())
-        << "Input suppression started mid gesture";
+    if (ignore_input_events_count_ == 0) {
+      // Reset gesture detection before starting input suppression so that any
+      // ongoing scroll gesture is correctly finished.
+      //
+      // TODO(crbug.com/362301376): This might be a side-effect of the
+      // referenced bug. Revisit restoring the CHECK when it's resolved.
+      if (auto* view = GetRenderWidgetHostView()) {
+        static_cast<RenderWidgetHostViewBase*>(view)->ResetGestureDetection();
+      }
+    }
 #endif
     ++ignore_input_events_count_;
   }
