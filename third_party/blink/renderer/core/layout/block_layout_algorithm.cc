@@ -257,8 +257,16 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
     justify_self = WebkitTextToItemPosition(style.GetTextAlign());
   }
 
+  auto self_start_end_converter = [&]() -> LogicalToLogical<LayoutUnit> {
+    const LayoutUnit free_space = FreeSpace();
+    return LogicalToLogical<LayoutUnit>(
+        child_style.GetWritingDirection(), style.GetWritingDirection(),
+        /* inline_start */ LayoutUnit(), /* inline_end */ free_space,
+        /* block_start */ LayoutUnit(), /* block_end */ free_space);
+  };
+
   bool is_rtl = IsRtl(style.Direction());
-  // TODO(crbug.com/355683658): self-*, safe
+  // TODO(crbug.com/355683658): safe
   switch (justify_self) {
     case ItemPosition::kLeft:
       return is_rtl ? FreeSpace() : LayoutUnit();
@@ -272,6 +280,10 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
     case ItemPosition::kFlexEnd:
     case ItemPosition::kEnd:
       return FreeSpace();
+    case ItemPosition::kSelfStart:
+      return self_start_end_converter().InlineStart();
+    case ItemPosition::kSelfEnd:
+      return self_start_end_converter().InlineEnd();
     default:
       return LayoutUnit();
   }
