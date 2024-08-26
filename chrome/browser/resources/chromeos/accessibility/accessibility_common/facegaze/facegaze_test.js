@@ -1370,3 +1370,52 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeMouseMovement', async function() {
   this.processFaceLandmarkerResult(result);
   this.assertLatestCursorPosition({x: 120, y: 720});
 });
+
+AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence);
+  await this.configureFaceGaze(config);
+
+  // Set the gestures to key combinations preference.
+  const keyCombination = {
+    key: KeyCode.C,
+    modifiers: {ctrl: true},
+  };
+  await this.setPref(
+      GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+      {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
+
+  // Verify that the preference propagated to FaceGaze.
+  assertEquals(this.getFaceGaze().gestureHandler_.gesturesToKeyCombos_.size, 1);
+
+  // Jaw open for custom key press.
+  let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result);
+  let keyEvents = this.getKeyEvents();
+
+  assertEquals(keyEvents.length, 1);
+  assertEquals(
+      keyEvents[0].type,
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN);
+  assertEquals(keyEvents[0].keyCode, KeyCode.C);
+  assertObjectEquals(keyEvents[0].modifiers, {ctrl: true});
+
+  // Release jaw open for custom key release.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.1);
+  this.processFaceLandmarkerResult(result);
+  keyEvents = this.getKeyEvents();
+
+  assertEquals(keyEvents.length, 2);
+  assertEquals(
+      keyEvents[1].type,
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP);
+  assertEquals(keyEvents[1].keyCode, KeyCode.C);
+  assertObjectEquals(keyEvents[1].modifiers, {ctrl: true});
+});

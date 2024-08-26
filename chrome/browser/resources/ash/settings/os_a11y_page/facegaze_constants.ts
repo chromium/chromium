@@ -26,6 +26,7 @@ export const FaceGazeActions: MacroName[] = [
   MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
   MacroName.TOGGLE_SCROLL_MODE,
   MacroName.TOGGLE_VIRTUAL_KEYBOARD,
+  MacroName.CUSTOM_KEY_COMBINATION,
 ];
 
 // All possible facial gestures.
@@ -131,6 +132,8 @@ export class FaceGazeUtils {
         return 'Toggle scroll mode';
       case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
         return 'Show or hide the virtual keyboard';
+      case MacroName.CUSTOM_KEY_COMBINATION:
+        return 'Perform a custom key combination';
       default:
         // Other macros are not supported in FaceGaze.
         console.error('Display text requested for unsupported macro ' + macro);
@@ -145,6 +148,7 @@ export class FaceGazeUtils {
    */
   static getMacroDisplaySubLabel(macro: MacroName): string|null {
     // TODO(b:341770655): Localize this string.
+    // TODO(b/355662619): Add a sub-label for custom key combination macro.
     switch (macro) {
       case MacroName.TOGGLE_SCROLL_MODE:
         return 'Once in scroll mode, use head movement to scroll';

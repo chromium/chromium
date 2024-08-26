@@ -177,6 +177,9 @@ export enum MacroName {
   // Toggles scroll mode for FaceGaze.
   TOGGLE_SCROLL_MODE = 50,
 
+  // A custom key combination, defined by the user.
+  CUSTOM_KEY_COMBINATION = 51,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }

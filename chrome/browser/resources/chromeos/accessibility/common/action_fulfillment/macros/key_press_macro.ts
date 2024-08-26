@@ -8,7 +8,7 @@ import {KeyCode} from '../../key_code.js';
 import {Macro, MacroError, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
-interface KeyCombination {
+export interface KeyCombination {
   key: KeyCode;
   modifiers?: chrome.accessibilityPrivate.SyntheticKeyboardModifiers;
 }
