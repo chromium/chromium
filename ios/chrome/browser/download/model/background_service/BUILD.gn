@@ -33,6 +33,7 @@ source_set("unit_tests") {
     "//components/download/internal/background_service/test:test_support",
     "//components/download/public/background_service/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//net",
     "//net:test_support",
     "//testing/gmock",
