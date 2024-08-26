@@ -30,7 +30,7 @@ TEST_F(ConfirmBubbleViewsTest, MAYBE_CreateAndClose) {
 
   // Create parent widget, as confirm bubble must have an owner.
   Widget::InitParams params =
-      CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                    Widget::InitParams::TYPE_WINDOW);
   std::unique_ptr<views::Widget> parent_widget(new Widget);
   parent_widget->Init(std::move(params));

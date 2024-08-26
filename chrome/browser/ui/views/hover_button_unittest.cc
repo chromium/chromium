@@ -74,8 +74,7 @@ class HoverButtonTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()), widget_->GetNativeWindow());
   }
