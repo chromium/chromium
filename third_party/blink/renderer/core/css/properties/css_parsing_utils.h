@@ -218,9 +218,7 @@ template <typename T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
            std::is_same_v<T, CSSParserTokenRange>
 CSSCustomIdentValue* ConsumeDashedIdent(T&, const CSSParserContext&);
-CSSStringValue* ConsumeString(CSSParserTokenRange&);
 CSSStringValue* ConsumeString(CSSParserTokenStream&);
-StringView ConsumeStringAsStringView(CSSParserTokenRange&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
                                   const CSSParserContext&);
 
@@ -241,29 +239,17 @@ CSSValue* ConsumeLineWidth(CSSParserTokenStream&,
                            const CSSParserContext&,
                            UnitlessQuirk);
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValuePair* ConsumePosition(T&,
+CSSValuePair* ConsumePosition(CSSParserTokenStream&,
                               const CSSParserContext&,
                               UnitlessQuirk,
                               std::optional<WebFeature> three_value_position);
-bool ConsumePosition(CSSParserTokenRange&,
-                     const CSSParserContext&,
-                     UnitlessQuirk,
-                     std::optional<WebFeature> three_value_position,
-                     CSSValue*& result_x,
-                     CSSValue*& result_y);
 bool ConsumePosition(CSSParserTokenStream&,
                      const CSSParserContext&,
                      UnitlessQuirk,
                      std::optional<WebFeature> three_value_position,
                      CSSValue*& result_x,
                      CSSValue*& result_y);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-bool ConsumeOneOrTwoValuedPosition(T&,
+bool ConsumeOneOrTwoValuedPosition(CSSParserTokenStream&,
                                    const CSSParserContext&,
                                    UnitlessQuirk,
                                    CSSValue*& result_x,
@@ -519,43 +505,18 @@ CSSValue* ConsumePaletteMixFunction(CSSParserTokenStream&,
 CSSValueList* ConsumeFontFamily(CSSParserTokenStream&);
 CSSValueList* ConsumeNonGenericFamilyNameList(CSSParserTokenStream& stream);
 CSSValue* ConsumeGenericFamily(CSSParserTokenStream&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFamilyName(T&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-String ConcatenateFamilyName(T&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontStretchKeywordOnly(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontStretch(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontStyle(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontWeight(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontFeatureSettings(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-cssvalue::CSSFontFeatureValue* ConsumeFontFeatureTag(T&,
+CSSValue* ConsumeFamilyName(CSSParserTokenStream&);
+String ConcatenateFamilyName(CSSParserTokenStream&);
+CSSIdentifierValue* ConsumeFontStretchKeywordOnly(CSSParserTokenStream&,
+                                                  const CSSParserContext&);
+CSSValue* ConsumeFontStretch(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeFontStyle(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeFontWeight(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream&,
+                                     const CSSParserContext&);
+cssvalue::CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenStream&,
                                                      const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontVariantCSS21(T&);
+CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenStream&);
 template <typename T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
            std::is_same_v<T, CSSParserTokenRange>

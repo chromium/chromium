@@ -511,10 +511,8 @@ cssvalue::CSSBasicShapePolygonValue* ConsumeBasicShapePolygon(
   return shape;
 }
 
-template <typename T, typename U>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-bool ConsumeBorderRadiusCommon(T& args,
+template <class U>
+bool ConsumeBorderRadiusCommon(CSSParserTokenStream& args,
                                const CSSParserContext& context,
                                U* shape) {
   if (ConsumeIdent<CSSValueID::kRound>(args)) {
@@ -822,9 +820,6 @@ CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
   return MakeGarbageCollected<CSSLightDarkValuePair>(light_value, dark_value);
 }
 
-template <class T = CSSParserTokenRange>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
 CSSAppearanceAutoBaseSelectValuePair* ConsumeAppearanceAutoBaseSelectColor(
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
@@ -1848,14 +1843,6 @@ template CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream&,
 template CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange&,
                                                  const CSSParserContext&);
 
-CSSStringValue* ConsumeString(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() != kStringToken) {
-    return nullptr;
-  }
-  return MakeGarbageCollected<CSSStringValue>(
-      range.ConsumeIncludingWhitespace().Value().ToString());
-}
-
 CSSStringValue* ConsumeString(CSSParserTokenStream& stream) {
   if (stream.Peek().GetType() != kStringToken) {
     return nullptr;
@@ -1864,17 +1851,6 @@ CSSStringValue* ConsumeString(CSSParserTokenStream& stream) {
       stream.ConsumeIncludingWhitespace().Value().ToString());
 }
 
-StringView ConsumeStringAsStringView(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() != CSSParserTokenType::kStringToken) {
-    return StringView();
-  }
-
-  return range.ConsumeIncludingWhitespace().Value();
-}
-
-// With the streaming parser, we cannot return a StringView, since the token
-// will go out of scope when we exit the function and the StringView might
-// point into the token.
 String ConsumeStringAsString(CSSParserTokenStream& stream) {
   if (stream.Peek().GetType() != CSSParserTokenType::kStringToken) {
     return String();
@@ -2539,91 +2515,6 @@ static void PositionFromThreeOrFourValues(CSSValue** values,
   DCHECK(result_x && result_y);
 }
 
-bool ConsumePosition(CSSParserTokenRange& range,
-                     const CSSParserContext& context,
-                     UnitlessQuirk unitless,
-                     std::optional<WebFeature> three_value_position,
-                     CSSValue*& result_x,
-                     CSSValue*& result_y) {
-  bool horizontal_edge = false;
-  bool vertical_edge = false;
-  CSSValue* value1 = ConsumePositionComponent(range, context, unitless,
-                                              horizontal_edge, vertical_edge);
-  if (!value1) {
-    return false;
-  }
-  if (!value1->IsIdentifierValue()) {
-    horizontal_edge = true;
-  }
-
-  CSSParserTokenRange range_after_first_consume = range;
-  CSSValue* value2 = ConsumePositionComponent(range, context, unitless,
-                                              horizontal_edge, vertical_edge);
-  if (!value2) {
-    PositionFromOneValue(value1, result_x, result_y);
-    return true;
-  }
-
-  CSSParserTokenRange range_after_second_consume = range;
-  CSSValue* value3 = nullptr;
-  auto* identifier_value1 = DynamicTo<CSSIdentifierValue>(value1);
-  auto* identifier_value2 = DynamicTo<CSSIdentifierValue>(value2);
-  // TODO(crbug.com/940442): Fix the strange comparison of a
-  // CSSIdentifierValue instance against a specific "range peek" type check.
-  if (identifier_value1 &&
-      !!identifier_value2 != (range.Peek().GetType() == kIdentToken) &&
-      (identifier_value2
-           ? identifier_value2->GetValueID()
-           : identifier_value1->GetValueID()) != CSSValueID::kCenter) {
-    value3 = ConsumePositionComponent(range, context, unitless, horizontal_edge,
-                                      vertical_edge);
-  }
-  if (!value3) {
-    if (vertical_edge && !value2->IsIdentifierValue()) {
-      range = range_after_first_consume;
-      PositionFromOneValue(value1, result_x, result_y);
-      return true;
-    }
-    PositionFromTwoValues(value1, value2, result_x, result_y);
-    return true;
-  }
-
-  CSSValue* value4 = nullptr;
-  auto* identifier_value3 = DynamicTo<CSSIdentifierValue>(value3);
-  if (identifier_value3 &&
-      identifier_value3->GetValueID() != CSSValueID::kCenter &&
-      range.Peek().GetType() != kIdentToken) {
-    value4 = ConsumePositionComponent(range, context, unitless, horizontal_edge,
-                                      vertical_edge);
-  }
-
-  if (!value4) {
-    if (!three_value_position) {
-      // [top | bottom] <length-percentage> is not permitted
-      if (vertical_edge && !value2->IsIdentifierValue()) {
-        range = range_after_first_consume;
-        PositionFromOneValue(value1, result_x, result_y);
-        return true;
-      }
-      range = range_after_second_consume;
-      PositionFromTwoValues(value1, value2, result_x, result_y);
-      return true;
-    }
-    DCHECK_EQ(*three_value_position,
-              WebFeature::kThreeValuedPositionBackground);
-    context.Count(*three_value_position);
-  }
-
-  CSSValue* values[5];
-  values[0] = value1;
-  values[1] = value2;
-  values[2] = value3;
-  values[3] = value4;
-  values[4] = nullptr;
-  PositionFromThreeOrFourValues(values, result_x, result_y);
-  return true;
-}
-
 bool ConsumePosition(CSSParserTokenStream& stream,
                      const CSSParserContext& context,
                      UnitlessQuirk unitless,
@@ -2709,16 +2600,13 @@ bool ConsumePosition(CSSParserTokenStream& stream,
   return true;
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValuePair* ConsumePosition(T& range,
+CSSValuePair* ConsumePosition(CSSParserTokenStream& stream,
                               const CSSParserContext& context,
                               UnitlessQuirk unitless,
                               std::optional<WebFeature> three_value_position) {
   CSSValue* result_x = nullptr;
   CSSValue* result_y = nullptr;
-  if (ConsumePosition(range, context, unitless, three_value_position, result_x,
+  if (ConsumePosition(stream, context, unitless, three_value_position, result_x,
                       result_y)) {
     return MakeGarbageCollected<CSSValuePair>(
         result_x, result_y, CSSValuePair::kKeepIdenticalValues);
@@ -2726,28 +2614,14 @@ CSSValuePair* ConsumePosition(T& range,
   return nullptr;
 }
 
-template CSSValuePair* ConsumePosition(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    UnitlessQuirk unitless,
-    std::optional<WebFeature> three_value_position);
-template CSSValuePair* ConsumePosition(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    UnitlessQuirk unitless,
-    std::optional<WebFeature> three_value_position);
-
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-bool ConsumeOneOrTwoValuedPosition(T& range,
+bool ConsumeOneOrTwoValuedPosition(CSSParserTokenStream& stream,
                                    const CSSParserContext& context,
                                    UnitlessQuirk unitless,
                                    CSSValue*& result_x,
                                    CSSValue*& result_y) {
   bool horizontal_edge = false;
   bool vertical_edge = false;
-  CSSValue* value1 = ConsumePositionComponent(range, context, unitless,
+  CSSValue* value1 = ConsumePositionComponent(stream, context, unitless,
                                               horizontal_edge, vertical_edge);
   if (!value1) {
     return false;
@@ -2757,12 +2631,12 @@ bool ConsumeOneOrTwoValuedPosition(T& range,
   }
 
   if (vertical_edge &&
-      ConsumeLengthOrPercent(range, context,
+      ConsumeLengthOrPercent(stream, context,
                              CSSPrimitiveValue::ValueRange::kAll, unitless)) {
     // <length-percentage> is not permitted after top | bottom.
     return false;
   }
-  CSSValue* value2 = ConsumePositionComponent(range, context, unitless,
+  CSSValue* value2 = ConsumePositionComponent(stream, context, unitless,
                                               horizontal_edge, vertical_edge);
   if (!value2) {
     PositionFromOneValue(value1, result_x, result_y);
@@ -2771,12 +2645,6 @@ bool ConsumeOneOrTwoValuedPosition(T& range,
   PositionFromTwoValues(value1, value2, result_x, result_y);
   return true;
 }
-
-template bool ConsumeOneOrTwoValuedPosition(CSSParserTokenStream& stream,
-                                            const CSSParserContext& context,
-                                            UnitlessQuirk unitless,
-                                            CSSValue*& result_x,
-                                            CSSValue*& result_y);
 
 bool ConsumeBorderShorthand(CSSParserTokenStream& stream,
                             const CSSParserContext& context,
@@ -5796,10 +5664,7 @@ CSSValue* ConsumeGenericFamily(CSSParserTokenStream& stream) {
   return ConsumeIdentRange(stream, CSSValueID::kSerif, CSSValueID::kMath);
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFamilyName(T& range) {
+CSSValue* ConsumeFamilyName(CSSParserTokenStream& range) {
   if (range.Peek().GetType() == kStringToken) {
     return CSSFontFamilyValue::Create(
         range.ConsumeIncludingWhitespace().Value().ToAtomicString());
@@ -5814,10 +5679,7 @@ CSSValue* ConsumeFamilyName(T& range) {
   return CSSFontFamilyValue::Create(AtomicString(family_name));
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-String ConcatenateFamilyName(T& range) {
+String ConcatenateFamilyName(CSSParserTokenStream& range) {
   StringBuilder builder;
   bool added_space = false;
   const CSSParserToken first_token = range.Peek();
@@ -5854,10 +5716,8 @@ bool IsAngleWithinLimits(CSSPrimitiveValue* angle) {
          angle->GetFloatValue() <= kMaxAngle;
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontStyle(T& stream, const CSSParserContext& context) {
+CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
+                           const CSSParserContext& context) {
   if (stream.Peek().Id() == CSSValueID::kNormal ||
       stream.Peek().Id() == CSSValueID::kItalic) {
     return ConsumeIdent(stream);
@@ -5905,16 +5765,8 @@ CSSValue* ConsumeFontStyle(T& stream, const CSSParserContext& context) {
       *oblique_identifier, *range_list);
 }
 
-template CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
-                                    const CSSParserContext& context);
-template CSSValue* ConsumeFontStyle(CSSParserTokenRange& stream,
-                                    const CSSParserContext& context);
-
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
 CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
-    T& stream,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context) {
   const CSSParserToken& token = stream.Peek();
   if (token.Id() == CSSValueID::kNormal ||
@@ -5929,17 +5781,8 @@ CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
   return nullptr;
 }
 
-template CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context);
-template CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
-    CSSParserTokenRange& stream,
-    const CSSParserContext& context);
-
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontStretch(T& stream, const CSSParserContext& context) {
+CSSValue* ConsumeFontStretch(CSSParserTokenStream& stream,
+                             const CSSParserContext& context) {
   CSSIdentifierValue* parsed_keyword =
       ConsumeFontStretchKeywordOnly(stream, context);
   if (parsed_keyword) {
@@ -5966,15 +5809,8 @@ CSSValue* ConsumeFontStretch(T& stream, const CSSParserContext& context) {
   return CombineToRangeList(start_percent, end_percent);
 }
 
-template CSSValue* ConsumeFontStretch(CSSParserTokenRange& stream,
-                                      const CSSParserContext& context);
-template CSSValue* ConsumeFontStretch(CSSParserTokenStream& stream,
-                                      const CSSParserContext& context);
-
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontWeight(T& stream, const CSSParserContext& context) {
+CSSValue* ConsumeFontWeight(CSSParserTokenStream& stream,
+                            const CSSParserContext& context) {
   const CSSParserToken& token = stream.Peek();
   if (context.Mode() != kCSSFontFaceRuleMode) {
     if (token.Id() >= CSSValueID::kNormal &&
@@ -6024,15 +5860,7 @@ CSSValue* ConsumeFontWeight(T& stream, const CSSParserContext& context) {
   return CombineToRangeList(start_weight, end_weight);
 }
 
-template CSSValue* ConsumeFontWeight(CSSParserTokenStream& stream,
-                                     const CSSParserContext& context);
-template CSSValue* ConsumeFontWeight(CSSParserTokenRange& stream,
-                                     const CSSParserContext& context);
-
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontFeatureSettings(T& stream,
+CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
   if (stream.Peek().Id() == CSSValueID::kNormal) {
     return ConsumeIdent(stream);
@@ -6049,15 +5877,7 @@ CSSValue* ConsumeFontFeatureSettings(T& stream,
   return settings;
 }
 
-template CSSValue* ConsumeFontFeatureSettings(CSSParserTokenRange& stream,
-                                              const CSSParserContext& context);
-template CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream& stream,
-                                              const CSSParserContext& context);
-
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSFontFeatureValue* ConsumeFontFeatureTag(T& stream,
+CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenStream& stream,
                                            const CSSParserContext& context) {
   // Feature tag name consists of 4-letter characters.
   const unsigned kTagNameLength = 4;
@@ -6092,17 +5912,9 @@ CSSFontFeatureValue* ConsumeFontFeatureTag(T& stream,
   return MakeGarbageCollected<CSSFontFeatureValue>(tag, tag_value);
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontVariantCSS21(T& stream) {
+CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenStream& stream) {
   return ConsumeIdent<CSSValueID::kNormal, CSSValueID::kSmallCaps>(stream);
 }
-
-template CSSIdentifierValue* ConsumeFontVariantCSS21(
-    CSSParserTokenRange& stream);
-template CSSIdentifierValue* ConsumeFontVariantCSS21(
-    CSSParserTokenStream& stream);
 
 template <typename T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
