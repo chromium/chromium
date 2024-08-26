@@ -3987,6 +3987,8 @@ static_library("browser") {
       "privacy_sandbox/privacy_sandbox_survey_desktop_controller.h",
       "privacy_sandbox/privacy_sandbox_survey_desktop_controller_factory.cc",
       "privacy_sandbox/privacy_sandbox_survey_desktop_controller_factory.h",
+      "privacy_sandbox/privacy_sandbox_tab_observer.cc",
+      "privacy_sandbox/privacy_sandbox_tab_observer.h",
       "private_network_access/chrome_private_network_device_chooser_desktop.cc",
       "private_network_access/chrome_private_network_device_chooser_desktop.h",
       "process_singleton_startup_lock.cc",

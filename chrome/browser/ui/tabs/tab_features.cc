@@ -14,6 +14,7 @@
 #include "chrome/browser/dips/dips_navigation_flow_detector_wrapper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -108,6 +109,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       commerce_ui_tab_helper_ =
           CreateCommerceUiTabHelper(tab.GetContents(), profile);
     }
+
+    privacy_sandbox_tab_observer_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
+            tab.GetContents());
   }
   fedcm_account_selection_view_controller_ =
       std::make_unique<FedCmAccountSelectionViewController>(&tab);
@@ -181,6 +186,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     chrome_autofill_prediction_improvements_client_ =
         ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
             new_contents);
+  }
+
+  if (privacy_sandbox_tab_observer_) {
+    privacy_sandbox_tab_observer_.reset();
+    privacy_sandbox_tab_observer_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
+            tab->GetContents());
   }
 }
 
