@@ -524,6 +524,7 @@
   },
   {
     "prefix": "single-renderer-process",
+    "owners": ["nrosenthal@chromium.org", "npm@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/longtask-timing/shared-renderer"],
     "args": ["--renderer-process-limit=1"],
