@@ -191,7 +191,7 @@ void CleanupExtraFiles(const base::FilePath& store_path,
   std::set<base::FilePath> paths_in_use{store_path};
   for (const auto& hash_file : file_format.hash_files()) {
     paths_in_use.insert(
-        MmapHashPrefixMap::GetPath(store_path, hash_file.extension()));
+        HashPrefixMap::GetPath(store_path, hash_file.extension()));
   }
 
   // Iterate through all files that start with the store path name. All hash
@@ -371,12 +371,9 @@ bool V4Store::HasValidData() {
 
 V4Store::V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                  const base::FilePath& store_path,
-                 std::unique_ptr<HashPrefixMap> hash_prefix_map,
                  const int64_t old_file_size)
     : hash_prefix_map_(
-          hash_prefix_map
-              ? std::move(hash_prefix_map)
-              : std::make_unique<MmapHashPrefixMap>(store_path, task_runner)),
+          std::make_unique<HashPrefixMap>(store_path, task_runner)),
       file_size_(old_file_size),
       has_valid_data_(false),
       store_path_(store_path),
@@ -526,10 +523,7 @@ void V4Store::ApplyUpdate(
     const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner,
     UpdatedStoreReadyCallback callback) {
   base::ElapsedThreadTimer thread_timer;
-  V4StorePtr new_store(new V4Store(task_runner_, store_path_,
-                                   std::make_unique<MmapHashPrefixMap>(
-                                       store_path_, task_runner_),
-                                   file_size_),
+  V4StorePtr new_store(new V4Store(task_runner_, store_path_, file_size_),
                        V4StoreDeleter(task_runner_));
   ApplyUpdateResult apply_update_result;
   std::string metric;
@@ -949,7 +943,7 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
     base::DeleteFile(new_filename);
     for (const auto& hash_file : file_format->hash_files()) {
       base::DeleteFile(
-          MmapHashPrefixMap::GetPath(store_path_, hash_file.extension()));
+          HashPrefixMap::GetPath(store_path_, hash_file.extension()));
     }
   };
 

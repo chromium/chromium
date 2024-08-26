@@ -53,7 +53,7 @@ class HashPrefixMapTest : public PlatformTest {
 };
 
 TEST_F(HashPrefixMapTest, WriteFile) {
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   map.Append(4, "fooo");
 
   V4StoreFileFormat file_format;
@@ -71,7 +71,7 @@ TEST_F(HashPrefixMapTest, WriteFile) {
 }
 
 TEST_F(HashPrefixMapTest, FailedWrite) {
-  MmapHashPrefixMap map(
+  HashPrefixMap map(
       GetBasePath().AppendASCII("bad_dir").AppendASCII("some.store"));
   map.Append(4, "foo");
 
@@ -81,7 +81,7 @@ TEST_F(HashPrefixMapTest, FailedWrite) {
 }
 
 TEST_F(HashPrefixMapTest, WriteMultipleFiles) {
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   map.Append(4, "fooo");
   map.Append(2, "ba");
 
@@ -108,9 +108,9 @@ TEST_F(HashPrefixMapTest, WriteMultipleFiles) {
 }
 
 TEST_F(HashPrefixMapTest, BuffersWrites) {
-  MmapHashPrefixMap map(GetBasePath(),
-                        base::SequencedTaskRunner::GetCurrentDefault(),
-                        /*buffer_size=*/4);
+  HashPrefixMap map(GetBasePath(),
+                    base::SequencedTaskRunner::GetCurrentDefault(),
+                    /*buffer_size=*/4);
 
   map.Append(4, "fooo");
   EXPECT_EQ(GetContents(map.GetExtensionForTesting(4)), "");
@@ -139,7 +139,7 @@ TEST_F(HashPrefixMapTest, ReadFile) {
   hash_file->set_extension("foo");
   hash_file->set_file_size(4);
 
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
   EXPECT_EQ(map.IsValid(), APPLY_UPDATE_SUCCESS);
 
@@ -157,7 +157,7 @@ TEST_F(HashPrefixMapTest, ReadFileNotSorted) {
   hash_file->set_extension("foo");
   hash_file->set_file_size(8);
 
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), READ_FAILURE_NOT_SORTED);
 }
 
@@ -176,7 +176,7 @@ TEST_F(HashPrefixMapTest, ReadMultipleFiles) {
   hash_file->set_extension("bar");
   hash_file->set_file_size(4);
 
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
   EXPECT_EQ(map.IsValid(), APPLY_UPDATE_SUCCESS);
 
@@ -194,7 +194,7 @@ TEST_F(HashPrefixMapTest, ReadFileInvalid) {
   hash_file->set_extension("foo");
   hash_file->set_file_size(4);
 
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
   EXPECT_EQ(map.IsValid(), MMAP_FAILURE);
 }
@@ -208,7 +208,7 @@ TEST_F(HashPrefixMapTest, ReadFileWrongSize) {
   hash_file->set_extension("foo");
   hash_file->set_file_size(4);
 
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
 }
 
@@ -222,19 +222,19 @@ TEST_F(HashPrefixMapTest, ReadFileInvalidSize) {
   hash_file->set_extension("foo");
   hash_file->set_file_size(3);
 
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), ADDITIONS_SIZE_UNEXPECTED_FAILURE);
 }
 
 TEST_F(HashPrefixMapTest, WriteAndReadFile) {
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   map.Append(4, "fooo");
 
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
   EXPECT_EQ(map.IsValid(), APPLY_UPDATE_SUCCESS);
 
-  MmapHashPrefixMap map_read(GetBasePath());
+  HashPrefixMap map_read(GetBasePath());
   EXPECT_EQ(map_read.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
   EXPECT_EQ(map_read.IsValid(), APPLY_UPDATE_SUCCESS);
 
@@ -244,9 +244,9 @@ TEST_F(HashPrefixMapTest, WriteAndReadFile) {
 }
 
 TEST_F(HashPrefixMapTest, ClearingMapBeforeWriteDeletesFile) {
-  MmapHashPrefixMap map(GetBasePath(),
-                        base::SequencedTaskRunner::GetCurrentDefault(),
-                        /*buffer_size=*/1);
+  HashPrefixMap map(GetBasePath(),
+                    base::SequencedTaskRunner::GetCurrentDefault(),
+                    /*buffer_size=*/1);
   map.Append(4, "foo");
 
   std::string extension = map.GetExtensionForTesting(4);
@@ -262,7 +262,7 @@ TEST_F(HashPrefixMapTest, ReadsAndWritesFileOffsets) {
   feature_list.InitAndEnableFeatureWithParameters(
       kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset",
                                 base::NumberToString(kBytesPerOffset)}});
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   const int kNum = 8;
   map.Reserve(4, kNum * kBytesPerOffset);
   std::vector<std::string> hashes;
@@ -283,7 +283,7 @@ TEST_F(HashPrefixMapTest, ReadsAndWritesFileOffsets) {
   EXPECT_THAT(hash_file.offsets(), ElementsAre(0, 2, 4, 6, 8, 10, 12, 14));
   EXPECT_THAT(hash_file.file_size(), 68);
 
-  MmapHashPrefixMap map_read(GetBasePath());
+  HashPrefixMap map_read(GetBasePath());
   EXPECT_EQ(map_read.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
 
   for (const auto& hash : hashes) {
@@ -303,7 +303,7 @@ TEST_F(HashPrefixMapTest, FillsMissingOffsets) {
   feature_list.InitAndEnableFeatureWithParameters(
       kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset",
                                 base::NumberToString(kBytesPerOffset)}});
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   map.Reserve(4, 8 * kBytesPerOffset);
 
   std::string s = StringWithLeadingBytes(127u);
@@ -331,7 +331,7 @@ TEST_F(HashPrefixMapTest, UsesFileOffsets) {
   feature_list.InitAndEnableFeatureWithParameters(
       kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset",
                                 base::NumberToString(kBytesPerOffset)}});
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
 
   // Write kNum * 2 hashes to the file.
   const int kNum = 8;
@@ -368,7 +368,7 @@ TEST_F(HashPrefixMapTest, UsesFileOffsets) {
   // Rewrite the hash file with only a partial set of hashes.
   EXPECT_TRUE(base::WriteFile(GetPath(hash_file.extension()), contents));
 
-  MmapHashPrefixMap map_read(GetBasePath());
+  HashPrefixMap map_read(GetBasePath());
   EXPECT_EQ(map_read.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
   // The hash at index 2 is in the range of the kept hashes. Since it uses the
   // offsets, the binary search should be able to find it.
@@ -383,7 +383,7 @@ TEST_F(HashPrefixMapTest, MigratesFileOffsets) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "8"}});
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
 
   // Write kNum * 2 hashes to the file.
   const int kNum = 8;
@@ -422,7 +422,7 @@ TEST_F(HashPrefixMapTest, NoOffsetMap) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "0"}});
-  MmapHashPrefixMap map(GetBasePath());
+  HashPrefixMap map(GetBasePath());
   map.Reserve(4, 8);
 
   std::string s = "abcd";
@@ -446,7 +446,7 @@ TEST_F(HashPrefixMapTest, NoOffsetMap) {
 
 // Tests that the data in a map is still valid after writing it.
 TEST_F(HashPrefixMapTest, ValidAfterWrite) {
-  MmapHashPrefixMap hash_prefix_map(GetBasePath());
+  HashPrefixMap hash_prefix_map(GetBasePath());
   hash_prefix_map.Append(4, "fooo");
 
   V4StoreFileFormat file_format;

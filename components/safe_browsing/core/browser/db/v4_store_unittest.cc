@@ -666,7 +666,7 @@ TEST_F(V4StoreTest, TestWriteFullResponseWithInvalidHashPrefixMap) {
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheBeginning) {
-  MmapHashPrefixMap map(store_path_);
+  HashPrefixMap map(store_path_);
   map.Append(5, "abcdebbbbbccccc");
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -675,7 +675,7 @@ TEST_F(V4StoreTest, TestHashPrefixExistsAtTheBeginning) {
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsInTheMiddle) {
-  MmapHashPrefixMap map(store_path_);
+  HashPrefixMap map(store_path_);
   map.Append(5, "abcdebbbbbccccc");
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -684,7 +684,7 @@ TEST_F(V4StoreTest, TestHashPrefixExistsInTheMiddle) {
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheEnd) {
-  MmapHashPrefixMap map(store_path_);
+  HashPrefixMap map(store_path_);
   map.Append(5, "abcdebbbbbccccc");
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -693,7 +693,7 @@ TEST_F(V4StoreTest, TestHashPrefixExistsAtTheEnd) {
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheBeginningOfEven) {
-  MmapHashPrefixMap map(store_path_);
+  HashPrefixMap map(store_path_);
   map.Append(5, "abcdebbbbb");
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -702,7 +702,7 @@ TEST_F(V4StoreTest, TestHashPrefixExistsAtTheBeginningOfEven) {
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheEndOfEven) {
-  MmapHashPrefixMap map(store_path_);
+  HashPrefixMap map(store_path_);
   map.Append(5, "abcdebbbbb");
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -711,7 +711,7 @@ TEST_F(V4StoreTest, TestHashPrefixExistsAtTheEndOfEven) {
 }
 
 TEST_F(V4StoreTest, TestHashPrefixDoesNotExistInConcatenatedList) {
-  MmapHashPrefixMap map(store_path_);
+  HashPrefixMap map(store_path_);
   map.Append(5, "abcdebbbbb");
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -998,7 +998,7 @@ TEST_F(V4StoreTest, VerifyChecksumMmapFile) {
                      &expected_checksum);
   list_update_response.mutable_checksum()->set_sha256(expected_checksum);
 
-  base::WriteFile(MmapHashPrefixMap::GetPath(store_path_, "foo"), "abcde");
+  base::WriteFile(HashPrefixMap::GetPath(store_path_, "foo"), "abcde");
 
   V4StoreFileFormat file_format;
   auto* hash_file = file_format.add_hash_files();
@@ -1069,8 +1069,8 @@ TEST_F(V4StoreTest, MigrateToMmap) {
   EXPECT_EQ(file_format.hash_files().size(), 1);
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(
-      MmapHashPrefixMap::GetPath(store_path_,
-                                 file_format.hash_files(0).extension()),
+      HashPrefixMap::GetPath(store_path_,
+                             file_format.hash_files(0).extension()),
       &contents));
   EXPECT_EQ(contents, kHash);
   EXPECT_EQ(mmap_store.file_size(),
@@ -1112,8 +1112,7 @@ TEST_F(V4StoreTest, MigrateFileOffsets) {
 }
 
 TEST_F(V4StoreTest, CleanUpOldFiles) {
-  base::FilePath old_hashes_path =
-      MmapHashPrefixMap::GetPath(store_path_, "foo");
+  base::FilePath old_hashes_path = HashPrefixMap::GetPath(store_path_, "foo");
   base::WriteFile(old_hashes_path, "abcde");
 
   base::FilePath other_path = temp_dir_.GetPath().AppendASCII("SomePath");
@@ -1133,7 +1132,7 @@ TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
 
   int64_t original_file_size = write_store.file_size();
 
-  static_cast<MmapHashPrefixMap*>(write_store.hash_prefix_map_.get())
+  static_cast<HashPrefixMap*>(write_store.hash_prefix_map_.get())
       ->ClearAndWaitForTesting();
   write_store.Reset();
   write_store.hash_prefix_map_->Append(4, "abcd");
@@ -1147,10 +1146,10 @@ TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
 }
 
 TEST_F(V4StoreTest, ReserveSpaceInPrefixMap) {
-  class ReserveTrackingHashPrefixMap : public MmapHashPrefixMap {
+  class ReserveTrackingHashPrefixMap : public HashPrefixMap {
    public:
     explicit ReserveTrackingHashPrefixMap(base::FilePath store_path)
-        : MmapHashPrefixMap(store_path) {}
+        : HashPrefixMap(store_path) {}
 
     void Reserve(PrefixSize size, size_t capacity) override {
       reserve_map_[size] = capacity;
@@ -1183,7 +1182,7 @@ TEST_F(V4StoreTest, ReserveSpaceInPrefixMap) {
   EXPECT_EQ(reserve_map_with_removals.reserve_map_[5], 10u);
 }
 
-TEST_F(V4StoreTest, MergeUpdatesWithMmapHashPrefixMap) {
+TEST_F(V4StoreTest, MergeUpdatesWithHashPrefixMap) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "2"}});

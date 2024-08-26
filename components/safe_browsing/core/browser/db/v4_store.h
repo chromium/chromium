@@ -128,7 +128,6 @@ class V4Store {
   // applying an update.
   V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
           const base::FilePath& store_path,
-          std::unique_ptr<HashPrefixMap> hash_prefix_map = nullptr,
           int64_t old_file_size = 0);
   virtual ~V4Store();
 
@@ -255,13 +254,11 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, VerifyChecksumMmapFile);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FailedMmapOnRead);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToMmap);
-  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToInMemory);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateFileOffsets);
-  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToInMemoryFails);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, CleanUpOldFiles);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FileSizeIncludesHashFiles);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, ReserveSpaceInPrefixMap);
-  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MergeUpdatesWithMmapHashPrefixMap);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MergeUpdatesWithHashPrefixMap);
   FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, StressTest);
 
   friend class V4StoreTest;

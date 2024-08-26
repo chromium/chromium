@@ -70,9 +70,7 @@ TEST_F(V4StorePerftest, StressTest) {
       temp_dir.GetPath().AppendASCII("V4StoreTest.store");
 
   auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-  auto store = std::make_unique<V4Store>(
-      task_runner, store_path,
-      std::make_unique<MmapHashPrefixMap>(store_path, task_runner));
+  auto store = std::make_unique<V4Store>(task_runner, store_path);
   std::sort(prefixes.begin(), prefixes.end());
   store->hash_prefix_map_->Clear();
   store->hash_prefix_map_->Append(kMinHashPrefixLength, base::StrCat(prefixes));
