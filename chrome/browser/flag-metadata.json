@@ -3593,8 +3593,8 @@
   },
   {
     "name": "enable-nav-bar-matches-tab-android",
-    "owners": [ "twellington@chromium.org", "lazzzis@chromium.org"],
-    "expiry_milestone": 130
+    "owners": [ "clhager@google.com", "wenyufu@chromium.org", "twellington@chromium.org"],
+    "expiry_milestone": 135
   },
   {
     "name": "enable-network-and-issuer-icons-for-secure-payment-confirmation",
