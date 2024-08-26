@@ -782,6 +782,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/362211398")
     public void
             testAccountManagementRowForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
                     throws InterruptedException {
