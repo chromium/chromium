@@ -82,9 +82,11 @@ void ShowCertSelectFileDialogFullExport(
     ui::SelectFileDialog* select_file_dialog,
     const base::FilePath& suggested_path,
     gfx::NativeWindow parent) {
-  ui::SelectFileDialog::FileTypeInfo file_type_info(
-      {{FILE_PATH_LITERAL("pem"), FILE_PATH_LITERAL("crt")}},
-      {l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_BASE64_ALL)});
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  file_type_info.extensions = {
+      {FILE_PATH_LITERAL("pem"), FILE_PATH_LITERAL("crt")}};
+  file_type_info.extension_description_overrides.push_back(
+      l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_BASE64_ALL));
   file_type_info.include_all_files = true;
   select_file_dialog->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
@@ -227,19 +229,25 @@ void ShowCertSelectFileDialog(ui::SelectFileDialog* select_file_dialog,
                               ui::SelectFileDialog::Type type,
                               const base::FilePath& suggested_path,
                               gfx::NativeWindow parent) {
-  ui::SelectFileDialog::FileTypeInfo file_type_info(
-      {
-          {{FILE_PATH_LITERAL("pem"), FILE_PATH_LITERAL("crt")},
-           {FILE_PATH_LITERAL("pem"), FILE_PATH_LITERAL("crt")},
-           {FILE_PATH_LITERAL("der")},
-           {FILE_PATH_LITERAL("p7c")},
-           {FILE_PATH_LITERAL("p7c")}},
-      },
-      {l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_BASE64),
-       l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_BASE64_CHAIN),
-       l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_DER),
-       l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_PKCS7),
-       l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_PKCS7_CHAIN)});
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  file_type_info.extensions.resize(kNumCertFileTypes);
+  file_type_info.extensions[kBase64].push_back(FILE_PATH_LITERAL("pem"));
+  file_type_info.extensions[kBase64].push_back(FILE_PATH_LITERAL("crt"));
+  file_type_info.extension_description_overrides.push_back(
+      l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_BASE64));
+  file_type_info.extensions[kBase64Chain].push_back(FILE_PATH_LITERAL("pem"));
+  file_type_info.extensions[kBase64Chain].push_back(FILE_PATH_LITERAL("crt"));
+  file_type_info.extension_description_overrides.push_back(
+      l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_BASE64_CHAIN));
+  file_type_info.extensions[kDer].push_back(FILE_PATH_LITERAL("der"));
+  file_type_info.extension_description_overrides.push_back(
+      l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_DER));
+  file_type_info.extensions[kPkcs7].push_back(FILE_PATH_LITERAL("p7c"));
+  file_type_info.extension_description_overrides.push_back(
+      l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_PKCS7));
+  file_type_info.extensions[kPkcs7Chain].push_back(FILE_PATH_LITERAL("p7c"));
+  file_type_info.extension_description_overrides.push_back(
+      l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_PKCS7_CHAIN));
   file_type_info.include_all_files = true;
   select_file_dialog->SelectFile(
       type, std::u16string(), suggested_path, &file_type_info,
