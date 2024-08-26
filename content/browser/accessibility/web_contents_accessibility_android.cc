@@ -1679,9 +1679,16 @@ void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& view_structure_root,
     ui::AXTreeUpdate& result) {
-  // If we don't have a connection back to the Java-side objects, then fail.
+  // If we don't have a connection back to the Java-side objects, then stop. It
+  // may be that the Java-side object was destroyed (e.g. tab closed) before the
+  // snapshot was able to finish.
   ScopedJavaLocalRef<jobject> obj = java_adb_ref_.get(env);
-  CHECK(obj);
+  if (!obj) {
+    on_done_callback_ = nullptr;
+    accessibility_coordinates_ = nullptr;
+    view_ = nullptr;
+    return;
+  }
 
   // Construct a root manager without a delegate using the snapshot result.
   snapshot_root_manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(

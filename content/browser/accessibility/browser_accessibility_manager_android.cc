@@ -119,7 +119,9 @@ ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
   // Sometimes we get events on nodes in our internal accessibility tree
   // that aren't exposed on Android. Get |updated| to point to the lowest
   // ancestor that is exposed.
+  DUMP_WILL_BE_CHECK(node);
   ui::BrowserAccessibility* wrapper = GetFromAXNode(node);
+  DUMP_WILL_BE_CHECK(wrapper);
   ui::BrowserAccessibility* updated =
       wrapper->PlatformGetLowestPlatformAncestor();
   DCHECK(updated);
