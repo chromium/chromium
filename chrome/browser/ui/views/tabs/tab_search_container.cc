@@ -297,8 +297,7 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
   }
 }
 
-void TabSearchContainer::OnTriggerDeclutterUIVisibility(const Browser* browser,
-                                                        bool should_show) {
+void TabSearchContainer::OnTriggerDeclutterUIVisibility(bool should_show) {
   // TODO(b/358382459): Implement logic to show and hide the tab declutter
   // nudge.
 }

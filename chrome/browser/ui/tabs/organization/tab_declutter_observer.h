@@ -13,18 +13,14 @@ namespace tabs {
 class TabModel;
 }
 
-class Browser;
-
 class TabDeclutterObserver : public base::CheckedObserver {
  public:
   // Called when all checks pass to be able to show or hide the tab declutter
   // nudge to action UI.
-  virtual void OnTriggerDeclutterUIVisibility(const Browser* browser,
-                                              bool should_show) {}
+  virtual void OnTriggerDeclutterUIVisibility(bool should_show) {}
 
-  // Called whenevener the service processes the tabstrip for out of date tabs.
-  virtual void OnOutOfDateTabsProcessed(const Browser* browser,
-                                        std::vector<tabs::TabModel*> tabs) {}
+  // Called whenevener the service processes the tabstrip for stale tabs.
+  virtual void OnStaleTabsProcessed(std::vector<tabs::TabModel*> tabs) {}
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DECLUTTER_OBSERVER_H_

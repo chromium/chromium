@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
 
 namespace content {
@@ -37,10 +38,17 @@ class TabDeclutterController {
     return observers_.HasObserver(observer);
   }
 
+  base::TimeDelta stale_tab_threshold_duration() const {
+    return stale_tab_threshold_duration_;
+  }
+
+  // TODO(b/362310942): Make this method private after adding a timer.
+  void ProcessStaleTabs();
+
  private:
-  void ProcessInactiveTabs();
   bool DeclutterNudgeCriteriaMet();
 
+  base::TimeDelta stale_tab_threshold_duration_;
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
   raw_ptr<content::BrowserContext> browser_context_;
