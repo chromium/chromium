@@ -8,45 +8,19 @@ import {KeyCode} from '../../key_code.js';
 import {Macro, MacroError, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
-/**
- * Class that implements a macro to send a synthetic key event.
- */
+interface KeyCombination {
+  key: KeyCode;
+  modifiers?: chrome.accessibilityPrivate.SyntheticKeyboardModifiers;
+}
+
+/** Class that implements a macro to send a synthetic key event. */
 export class KeyPressMacro extends Macro {
   private runCount_ = 0;
-  private key_: KeyCode|undefined;
+  private keyCombination_: KeyCombination;
 
-  /**
-   * `macroName` is used to determine the key press type.
-   */
-  constructor(macroName: MacroName) {
+  constructor(macroName: MacroName, keyCombination: KeyCombination) {
     super(macroName);
-    switch (macroName) {
-      case MacroName.KEY_PRESS_SPACE:
-        this.key_ = KeyCode.SPACE;
-        break;
-      case MacroName.KEY_PRESS_LEFT:
-        this.key_ = KeyCode.LEFT;
-        break;
-      case MacroName.KEY_PRESS_RIGHT:
-        this.key_ = KeyCode.RIGHT;
-        break;
-      case MacroName.KEY_PRESS_DOWN:
-        this.key_ = KeyCode.DOWN;
-        break;
-      case MacroName.KEY_PRESS_UP:
-        this.key_ = KeyCode.UP;
-        break;
-      case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
-        // The MEDIA_LAUNCH_APP1 key is bound to the kToggleOverview accelerator
-        // action in accelerators.cc.
-        this.key_ = KeyCode.MEDIA_LAUNCH_APP1;
-        break;
-      case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
-        this.key_ = KeyCode.MEDIA_PLAY_PAUSE;
-        break;
-      default:
-        console.error('Macro ' + macroName + ' is not a key press macro.');
-    }
+    this.keyCombination_ = keyCombination;
   }
 
   /**
@@ -57,14 +31,12 @@ export class KeyPressMacro extends Macro {
   }
 
   override run(): RunMacroResult {
-    if (!this.key_) {
-      return this.createRunMacroResult_(
-          /*isSuccess=*/ false, MacroError.INVALID_USER_INTENT);
-    }
+    const key = this.keyCombination_.key;
+    const modifiers = this.keyCombination_.modifiers || {};
     if (this.runCount_ === 0) {
-      EventGenerator.sendKeyDown(this.key_);
+      EventGenerator.sendKeyDown(key, modifiers);
     } else if (this.runCount_ === 1) {
-      EventGenerator.sendKeyUp(this.key_);
+      EventGenerator.sendKeyUp(key, modifiers);
     } else {
       console.error('Key press macro cannot be run more than twice.');
       return this.createRunMacroResult_(

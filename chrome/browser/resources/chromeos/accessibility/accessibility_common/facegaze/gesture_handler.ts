@@ -9,6 +9,7 @@ import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {MouseClickLeftDoubleMacro, MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
 import {AsyncUtil} from '/common/async_util.js';
+import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
@@ -230,13 +231,21 @@ export class GestureHandler {
       case MacroName.RESET_CURSOR:
         return new ResetCursorMacro(this.mouseController_);
       case MacroName.KEY_PRESS_SPACE:
+        return new KeyPressMacro(name, {key: KeyCode.SPACE});
       case MacroName.KEY_PRESS_DOWN:
+        return new KeyPressMacro(name, {key: KeyCode.DOWN});
       case MacroName.KEY_PRESS_LEFT:
+        return new KeyPressMacro(name, {key: KeyCode.LEFT});
       case MacroName.KEY_PRESS_RIGHT:
+        return new KeyPressMacro(name, {key: KeyCode.RIGHT});
       case MacroName.KEY_PRESS_UP:
+        return new KeyPressMacro(name, {key: KeyCode.UP});
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
+        // The MEDIA_LAUNCH_APP1 key is bound to the kToggleOverview accelerator
+        // action in accelerators.cc.
+        return new KeyPressMacro(name, {key: KeyCode.MEDIA_LAUNCH_APP1});
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
-        return new KeyPressMacro(name);
+        return new KeyPressMacro(name, {key: KeyCode.MEDIA_PLAY_PAUSE});
       case MacroName.OPEN_FACEGAZE_SETTINGS:
         return new CustomCallbackMacro(MacroName.OPEN_FACEGAZE_SETTINGS, () => {
           chrome.accessibilityPrivate.openSettingsSubpage(
