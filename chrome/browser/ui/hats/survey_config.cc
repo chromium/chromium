@@ -89,7 +89,7 @@ constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
     "ts-trusted-surface";
 constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
 constexpr char kHatsSurveyTriggerWhatsNew[] = "whats-new";
-constexpr char kHatsSurveyTriggerWhatsNewV2[] = "whats-new-v2";
+constexpr char kHatsSurveyTriggerWhatsNewAlternate[] = "whats-new-alternate";
 constexpr char kHatsSurveyTriggerTrustSafetyV2BrowsingData[] =
     "ts-v2-browsing-data";
 constexpr char kHatsSurveyTriggerTrustSafetyV2ControlGroup[] =
@@ -448,10 +448,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopWhatsNew,
       kHatsSurveyTriggerWhatsNew, "SYLcvnoRH0ugnJ3q1cK0RAHYFycs");
-  // What's New survey for v2
+  // What's New survey for alternate studies. For example, compare
+  // v1 and v2 sentiments side-by-side.
   survey_configs.emplace_back(
-      &features::kHappinessTrackingSurveysForDesktopWhatsNewV2,
-      kHatsSurveyTriggerWhatsNewV2);
+      &features::kHappinessTrackingSurveysForDesktopWhatsNew,
+      kHatsSurveyTriggerWhatsNewAlternate, "6bnVh68QF0ugnJ3q1cK0NQxjpCFS");
 
   // Performance Controls surveys.
   survey_configs.emplace_back(

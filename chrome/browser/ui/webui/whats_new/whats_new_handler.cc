@@ -205,22 +205,19 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
     return;
   }
 
-  if (user_education::features::IsWhatsNewV2()) {
-    // V2 survey
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerWhatsNewV2, web_contents_,
-        features::kHappinessTrackingSurveysForDesktopWhatsNewV2Time.Get()
-            .InMilliseconds(),
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/{},
-        /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
-  } else if (IsHaTSActivated()) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerWhatsNew, web_contents_,
-        features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
-            .InMilliseconds(),
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/{},
-        /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
+  if (!IsHaTSActivated()) {
+    return;
   }
+
+  const auto* trigger_id = user_education::features::IsWhatsNewV2()
+                               ? kHatsSurveyTriggerWhatsNewAlternate
+                               : kHatsSurveyTriggerWhatsNew;
+
+  hats_service->LaunchDelayedSurveyForWebContents(
+      trigger_id, web_contents_,
+      features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
+          .InMilliseconds(),
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/{},
+      /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
 }
