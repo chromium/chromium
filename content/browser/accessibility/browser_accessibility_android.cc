@@ -1098,22 +1098,28 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   // "heading level 1", etc. - and if the heading consists of a link,
   // append the word link as well.
   if (GetRole() == ax::mojom::Role::kHeading) {
-    std::u16string role_description;
+    std::vector<std::u16string> role_description;
     int level = GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
     if (level >= 1 && level <= 6) {
       std::vector<std::u16string> values;
       values.push_back(base::NumberToString16(level));
-      role_description = base::ReplaceStringPlaceholders(
-          GetLocalizedString(IDS_AX_ROLE_HEADING_WITH_LEVEL), values, nullptr);
+      role_description.push_back(base::ReplaceStringPlaceholders(
+          GetLocalizedString(IDS_AX_ROLE_HEADING_WITH_LEVEL), values, nullptr));
     } else {
-      role_description = GetLocalizedString(IDS_AX_ROLE_HEADING);
+      role_description.push_back(GetLocalizedString(IDS_AX_ROLE_HEADING));
     }
 
     if (IsHeadingLink()) {
-      role_description += u" " + GetLocalizedString(IDS_AX_ROLE_LINK);
+      role_description.push_back(GetLocalizedString(IDS_AX_ROLE_LINK));
     }
 
-    return role_description;
+    // For visited links, we additionally want to append "visited" to the
+    // description.
+    if (HasState(ax::mojom::State::kVisited)) {
+      role_description.push_back(GetLocalizedString(IDS_AX_STATE_LINK_VISITED));
+    }
+
+    return base::JoinString(role_description, u" ");
   }
 
   // If this node is a link and the parent is a heading, return the role
@@ -1123,6 +1129,16 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
         static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
     if (parent->IsHeadingLink())
       return parent->GetRoleDescription();
+  }
+
+  // If this node is a link and visited, append "visited" to the description.
+  if (ui::IsLink(GetRole())) {
+    std::vector<std::u16string> role_description = {
+        GetLocalizedStringForRoleDescription()};
+    if (HasState(ax::mojom::State::kVisited)) {
+      role_description.push_back(GetLocalizedString(IDS_AX_STATE_LINK_VISITED));
+    }
+    return base::JoinString(role_description, u" ");
   }
 
   // If this node is an image, check status and potentially add unlabeled role.

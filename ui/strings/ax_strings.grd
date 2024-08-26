@@ -740,6 +740,9 @@ need to be translated for each locale.-->
           <message name="IDS_AX_ARIA_REQUIRED_STATE_DESCRIPTION" desc="Accessibility state description for an element that is labeled as required.">
             Required
           </message>
+          <message name="IDS_AX_STATE_LINK_VISITED" desc="Accessibility role description suffix for links that have been visited.">
+            visited
+          </message>
         </if>
       </if>
       <message name="IDS_AX_CALENDAR_SHOW_DATE_PICKER" desc="Accessible description of a button to show a calendar from a date input field.">
