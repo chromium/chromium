@@ -2287,7 +2287,7 @@ void PDFiumEngine::HandleAccessibilityAction(
       ScrollBasedOnScrollAlignment(action_data.target_rect,
                                    action_data.horizontal_scroll_alignment,
                                    action_data.vertical_scroll_alignment);
-      break;
+      return;
     }
     case AccessibilityAction::kDoDefaultAction: {
       if (PageIndexInBounds(action_data.page_index)) {
@@ -2300,11 +2300,11 @@ void PDFiumEngine::HandleAccessibilityAction(
                                     WindowOpenDisposition::CURRENT_TAB);
         }
       }
-      break;
+      return;
     }
     case AccessibilityAction::kScrollToGlobalPoint: {
       ScrollToGlobalPoint(action_data.target_rect, action_data.target_point);
-      break;
+      return;
     }
     case AccessibilityAction::kSetSelection: {
       if (IsPageCharacterIndexInBounds(action_data.selection_start_index) &&
@@ -2312,15 +2312,16 @@ void PDFiumEngine::HandleAccessibilityAction(
         SetSelection(action_data.selection_start_index,
                      action_data.selection_end_index);
         gfx::Rect target_rect = action_data.target_rect;
-        if (GetVisibleRect().Contains(target_rect))
-          return;
-        client_->ScrollBy(GetScreenRect(target_rect).OffsetFromOrigin());
+        if (!GetVisibleRect().Contains(target_rect)) {
+          client_->ScrollBy(GetScreenRect(target_rect).OffsetFromOrigin());
+        }
       }
-      break;
+      return;
     }
     case AccessibilityAction::kNone:
       NOTREACHED();
   }
+  NOTREACHED();
 }
 
 std::string PDFiumEngine::GetLinkAtPosition(const gfx::Point& point) {
@@ -4171,6 +4172,7 @@ bool PDFiumEngine::HandleTabEventWithModifiers(int modifiers) {
       return !!FORM_OnKeyDown(form(), pages_[last_focused_page_]->GetPage(),
                               FWL_VKEY_Tab, modifiers);
   }
+  NOTREACHED();
 }
 
 bool PDFiumEngine::HandleTabForward(int modifiers) {

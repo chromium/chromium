@@ -777,11 +777,12 @@ void PdfViewWebPlugin::RotateView(blink::WebPlugin::RotationType type) {
   switch (type) {
     case blink::WebPlugin::RotationType::k90Clockwise:
       engine_->RotateClockwise();
-      break;
+      return;
     case blink::WebPlugin::RotationType::k90Counterclockwise:
       engine_->RotateCounterclockwise();
-      break;
+      return;
   }
+  NOTREACHED();
 }
 
 bool PdfViewWebPlugin::ShouldDispatchImeEventsToPlugin() {
@@ -1539,7 +1540,7 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
       // using the plugin data.
       pdf_host_->SetPluginCanSave(true);
       SaveToBuffer(token);
-      break;
+      return;
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_INK)
@@ -1547,11 +1548,12 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
       pdf_host_->SetPluginCanSave(false);
       SaveToFile(token);
       pdf_host_->SetPluginCanSave(edit_mode_);
-      break;
+      return;
     case SaveRequestType::kEdited:
       SaveToBuffer(token);
-      break;
+      return;
   }
+  NOTREACHED();
 }
 
 void PdfViewWebPlugin::HandleSelectAllMessage(

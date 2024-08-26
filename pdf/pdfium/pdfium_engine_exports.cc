@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "pdf/document_metadata.h"

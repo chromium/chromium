@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -699,6 +700,7 @@ void PdfInkModule::ApplyUndoRedoCommands(
       return;
     }
   }
+  NOTREACHED();
 }
 
 void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<size_t> ids,
