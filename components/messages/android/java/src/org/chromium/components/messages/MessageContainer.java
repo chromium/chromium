@@ -117,7 +117,7 @@ public class MessageContainer extends FrameLayout {
                 getResources()
                         .getString(
                                 getChildCount() == 1
-                                        ? R.string.dismiss
+                                        ? R.string.chrome_dismiss
                                         : R.string.message_dismiss_and_show_next);
         mA11yDismissActionId =
                 ViewCompat.addAccessibilityAction(
