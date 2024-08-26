@@ -809,8 +809,7 @@ chrome.accessibilityPrivate.scrollAtPoint = function(target, direction) {};
  * @param {!Array<!chrome.accessibilityPrivate.GestureInfo>} gestureInfo The
  *     recognized facial gestures and their associated confidence values.
  */
-chrome.accessibilityPrivate.sendGestureInfoToSettings = function(
-    gestureInfo) {};
+chrome.accessibilityPrivate.sendGestureInfoToSettings = function(gestureInfo) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.
