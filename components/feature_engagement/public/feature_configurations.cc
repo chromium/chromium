@@ -54,15 +54,15 @@ std::optional<FeatureConfig> CreateNewUserGestureInProductHelpConfig(
     const char* action_event,
     const char* trigger_event,
     const char* used_event,
-    const char* dismiss_button_tap_event,
-    const int total_max_occurrences = 2) {
+    const char* dismiss_button_tap_event) {
   // Maximum storage days for iOS gesture IPHs in days. Note that they only
   // triggered for users who installed Chrome on iOS in the last specific number
   // of days, so this could be used as the maximum storage period of respective
   // events.
+  const int kTotalMaxOccurrences = 2;
   const uint32_t kMaxStorageDays = 61;
-  // The IPH only shows once a week, and honors `total_max_occurrences`.
-  int kDaysBetweenOccurrences = 7;
+  // The IPH only shows once a week, and honors `kTotalMaxOccurrences`.
+  const int kDaysBetweenOccurrences = 7;
 
   std::optional<FeatureConfig> config = FeatureConfig();
   config->valid = true;
@@ -71,12 +71,12 @@ std::optional<FeatureConfig> CreateNewUserGestureInProductHelpConfig(
   // The user hasn't done the action suggested by the IPH.
   config->used = EventConfig(used_event, Comparator(EQUAL, 0), kMaxStorageDays,
                              kMaxStorageDays);
-  // The IPH shows at most once per 7 days.
+  // The IPH shows at most once per `kDaysBetweenOccurrences`.
   config->trigger =
       EventConfig(trigger_event, Comparator(EQUAL, 0), kDaysBetweenOccurrences,
                   kDaysBetweenOccurrences);
   config->event_configs.insert(
-      EventConfig(trigger_event, Comparator(LESS_THAN, total_max_occurrences),
+      EventConfig(trigger_event, Comparator(LESS_THAN, kTotalMaxOccurrences),
                   kMaxStorageDays, kMaxStorageDays));
   // The IPH only shows when user performs the action that should trigger the
   // IPH at least twice since the last time the IPH shows, or since installation
@@ -2184,8 +2184,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         /*trigger_event=*/"swipe_back_forward_trigger", /*used_event=*/
         feature_engagement::events::kIOSSwipeBackForwardUsed,
         /*dismiss_button_tap_event=*/
-        feature_engagement::events::kIOSSwipeBackForwardIPHDismissButtonTapped,
-        /*total_max_occurrences=*/1);
+        feature_engagement::events::kIOSSwipeBackForwardIPHDismissButtonTapped);
   }
 
   if (kIPHiOSSwipeToolbarToChangeTabFeature.name == feature->name) {
