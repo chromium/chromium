@@ -516,10 +516,8 @@ CSSValue* ConsumeMathDepth(CSSParserTokenStream& stream,
 CSSValue* ConsumeFontPalette(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumePaletteMixFunction(CSSParserTokenStream&,
                                     const CSSParserContext&);
-CSSValueList* ConsumeFontFamily(CSSParserTokenRange&);
 CSSValueList* ConsumeFontFamily(CSSParserTokenStream&);
 CSSValueList* ConsumeNonGenericFamilyNameList(CSSParserTokenStream& stream);
-CSSValue* ConsumeGenericFamily(CSSParserTokenRange&);
 CSSValue* ConsumeGenericFamily(CSSParserTokenStream&);
 template <typename T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
@@ -680,7 +678,7 @@ UnitlessQuirk UnitlessUnlessShorthand(const CSSParserLocalContext&);
 // https://drafts.csswg.org/css-counter-styles-3/#typedef-counter-style-name
 CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenStream&,
                                              const CSSParserContext&);
-AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange&,
+AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenStream&,
                                               const CSSParserContext&);
 
 CSSValue* ConsumeFontSizeAdjust(CSSParserTokenStream&, const CSSParserContext&);

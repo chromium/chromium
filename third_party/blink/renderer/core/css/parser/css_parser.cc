@@ -64,9 +64,14 @@ CSSSelectorList* CSSParser::ParsePageSelector(
     StyleSheetContents* style_sheet_contents,
     const String& selector) {
   CSSTokenizer tokenizer(selector);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  return CSSParserImpl::ParsePageSelector(CSSParserTokenRange(tokens),
-                                          style_sheet_contents, context);
+  CSSParserTokenStream stream(tokenizer);
+  CSSSelectorList* selector_list =
+      CSSParserImpl::ParsePageSelector(stream, style_sheet_contents, context);
+  if (!stream.AtEnd()) {
+    // Extra tokens at end of selector.
+    return nullptr;
+  }
+  return selector_list;
 }
 
 StyleRuleBase* CSSParser::ParseMarginRule(const CSSParserContext* context,

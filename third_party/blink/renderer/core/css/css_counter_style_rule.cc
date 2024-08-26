@@ -218,11 +218,10 @@ void CSSCounterStyleRule::setName(const ExecutionContext* execution_context,
   auto& context = *MakeGarbageCollected<CSSParserContext>(
       ParserContext(execution_context->GetSecureContextMode()), style_sheet);
   CSSTokenizer tokenizer(text);
-  auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange token_range(tokens);
+  CSSParserTokenStream stream(tokenizer);
   AtomicString name =
-      css_parsing_utils::ConsumeCounterStyleNameInPrelude(token_range, context);
-  if (!name || name == counter_style_rule_->GetName()) {
+      css_parsing_utils::ConsumeCounterStyleNameInPrelude(stream, context);
+  if (!name || name == counter_style_rule_->GetName() || !stream.AtEnd()) {
     return;
   }
 

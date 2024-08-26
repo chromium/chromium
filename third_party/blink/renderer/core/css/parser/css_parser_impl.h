@@ -138,7 +138,7 @@ class CORE_EXPORT CSSParserImpl {
       StyleSheetContents*,
       CSSDeferPropertyParsing = CSSDeferPropertyParsing::kNo,
       bool allow_import_rules = true);
-  static CSSSelectorList* ParsePageSelector(CSSParserTokenRange,
+  static CSSSelectorList* ParsePageSelector(CSSParserTokenStream&,
                                             StyleSheetContents*,
                                             const CSSParserContext& context);
 
@@ -147,6 +147,10 @@ class CORE_EXPORT CSSParserImpl {
       const String&);
   static String ParseCustomPropertyName(const String& name_text);
 
+  bool ConsumeEndOfPreludeForAtRuleWithoutBlock(CSSParserTokenStream& stream,
+                                                CSSAtRuleID id);
+  bool ConsumeEndOfPreludeForAtRuleWithBlock(CSSParserTokenStream& stream,
+                                             CSSAtRuleID id);
   bool ConsumeSupportsDeclaration(CSSParserTokenStream&);
   void ConsumeErroneousAtRule(CSSParserTokenStream& stream, CSSAtRuleID id);
   const CSSParserContext* GetContext() const { return context_; }
@@ -199,7 +203,7 @@ class CORE_EXPORT CSSParserImpl {
 
   StyleRulePageMargin* ConsumePageMarginRule(CSSAtRuleID rule_id,
                                              CSSParserTokenStream& stream);
-  static StyleRuleCharset* ConsumeCharsetRule(CSSParserTokenStream&);
+  StyleRuleCharset* ConsumeCharsetRule(CSSParserTokenStream&);
   StyleRuleImport* ConsumeImportRule(const AtomicString& prelude_uri,
                                      CSSParserTokenStream&);
   StyleRuleNamespace* ConsumeNamespaceRule(CSSParserTokenStream&);
@@ -240,7 +244,7 @@ class CORE_EXPORT CSSParserImpl {
 
   StyleRuleFunction* ConsumeFunctionRule(CSSParserTokenStream& stream);
   std::optional<Vector<StyleRuleFunction::Parameter>> ConsumeFunctionParameters(
-      CSSParserTokenRange& stream);
+      CSSParserTokenStream& stream);
   StyleRuleMixin* ConsumeMixinRule(CSSParserTokenStream& stream);
   StyleRuleApplyMixin* ConsumeApplyMixinRule(CSSParserTokenStream& stream);
 

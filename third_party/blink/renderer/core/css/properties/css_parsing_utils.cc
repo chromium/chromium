@@ -5755,24 +5755,6 @@ CSSValue* ConsumeFontPalette(CSSParserTokenStream& stream,
   return ConsumeDashedIdent(stream, context);
 }
 
-CSSValueList* ConsumeFontFamily(CSSParserTokenRange& range) {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  do {
-    CSSValue* parsed_value = ConsumeGenericFamily(range);
-    if (parsed_value) {
-      list->Append(*parsed_value);
-    } else {
-      parsed_value = ConsumeFamilyName(range);
-      if (parsed_value) {
-        list->Append(*parsed_value);
-      } else {
-        return nullptr;
-      }
-    }
-  } while (ConsumeCommaIncludingWhitespace(range));
-  return list;
-}
-
 CSSValueList* ConsumeFontFamily(CSSParserTokenStream& stream) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   do {
@@ -5808,10 +5790,6 @@ CSSValueList* ConsumeNonGenericFamilyNameList(CSSParserTokenStream& stream) {
     }
   } while (ConsumeCommaIncludingWhitespace(stream));
   return list;
-}
-
-CSSValue* ConsumeGenericFamily(CSSParserTokenRange& range) {
-  return ConsumeIdentRange(range, CSSValueID::kSerif, CSSValueID::kMath);
 }
 
 CSSValue* ConsumeGenericFamily(CSSParserTokenStream& stream) {
@@ -7957,12 +7935,9 @@ CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenStream& stream,
   return MakeGarbageCollected<CSSCustomIdentValue>(name);
 }
 
-AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange& prelude,
+AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenStream& stream,
                                               const CSSParserContext& context) {
-  const CSSParserToken& name_token = prelude.ConsumeIncludingWhitespace();
-  if (!prelude.AtEnd()) {
-    return g_null_atom;
-  }
+  const CSSParserToken& name_token = stream.Peek();
 
   if (name_token.GetType() != kIdentToken ||
       !IsCustomIdent<CSSValueID::kNone>(name_token.Id())) {
@@ -7984,6 +7959,7 @@ AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange& prelude,
   if (ShouldLowerCaseCounterStyleNameOnParse(name, context)) {
     name = name.LowerASCII();
   }
+  stream.ConsumeIncludingWhitespace();
   return name;
 }
 
