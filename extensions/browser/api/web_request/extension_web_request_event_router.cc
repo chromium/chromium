@@ -2576,11 +2576,10 @@ bool WebRequestEventRouter::ProcessDeclarativeRules(
     // The rules registry is still loading. Block this request until it
     // finishes.
     rules_registry->ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebRequestEventRouter::OnRulesRegistryReady,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::UnsafeDanglingUntriaged(browser_context),
-                       event_name, request->id, request_stage));
+        FROM_HERE, base::BindOnce(&WebRequestEventRouter::OnRulesRegistryReady,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  static_cast<void*>(browser_context),
+                                  event_name, request->id, request_stage));
     BlockedRequest& blocked_request =
         GetOrAddBlockedRequest(browser_context, request->id);
     blocked_request.num_handlers_blocking++;
@@ -2611,19 +2610,21 @@ bool WebRequestEventRouter::ProcessDeclarativeRules(
   return deltas_created;
 }
 
-void WebRequestEventRouter::OnRulesRegistryReady(
-    content::BrowserContext* browser_context,
-    const std::string& event_name,
-    uint64_t request_id,
-    RequestStage request_stage) {
+void WebRequestEventRouter::OnRulesRegistryReady(void* browser_context_id,
+                                                 const std::string& event_name,
+                                                 uint64_t request_id,
+                                                 RequestStage request_stage) {
   // TODO(crbug.com/40264286): We should be able to remove this once we roll
   // out the per-BrowserContext event router, since the WeakPtr that was bound
   // to the callback will be invalidated when the BrowserContext shuts down.
   // Some additional special handling will be needed since this might be a
   // pointer to an off-the-record instance.
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_id)) {
     return;
   }
+
+  content::BrowserContext* browser_context =
+      reinterpret_cast<content::BrowserContext*>(browser_context_id);
 
   // It's possible that this request was deleted, or cancelled by a previous
   // event handler. If so, ignore this response.

@@ -91,18 +91,17 @@ void WarningService::AddWarnings(const WarningSet& warnings) {
 }
 
 // static
-void WarningService::NotifyWarningsOnUI(
-    void* profile_id,
-    const WarningSet& warnings) {
+void WarningService::NotifyWarningsOnUI(void* browser_context_id,
+                                        const WarningSet& warnings) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::BrowserContext* browser_context =
-      reinterpret_cast<content::BrowserContext*>(profile_id);
 
-  if (!browser_context ||
-      !ExtensionsBrowserClient::Get() ||
-      !ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
+  if (!browser_context_id || !ExtensionsBrowserClient::Get() ||
+      !ExtensionsBrowserClient::Get()->IsValidContext(browser_context_id)) {
     return;
   }
+
+  content::BrowserContext* browser_context =
+      reinterpret_cast<content::BrowserContext*>(browser_context_id);
 
   WarningService* warning_service = WarningService::Get(browser_context);
 
