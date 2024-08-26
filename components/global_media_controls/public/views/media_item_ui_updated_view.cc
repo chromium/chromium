@@ -702,6 +702,8 @@ void MediaItemUIUpdatedView::StartCastingButtonPressed() {
         kMediaItemUIUpdatedViewActionHistogram,
         MediaItemUIUpdatedViewAction::kShowDeviceListForCasting);
   }
+  start_casting_button_->GetViewAccessibility().AnnouncePolitely(
+      start_casting_button_->GetTooltipText());
 }
 
 void MediaItemUIUpdatedView::UpdateCastingState() {
