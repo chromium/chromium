@@ -344,6 +344,11 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
                    completion:nil];
 }
 
+- (void)hideBadgeOnCustomizationMenu {
+  CHECK(IsHomeCustomizationEnabled());
+  [self.headerView hideBadgeOnCustomizationMenu];
+}
+
 #pragma mark - Private
 
 // Initialize and add a search field tap target and a voice search button.

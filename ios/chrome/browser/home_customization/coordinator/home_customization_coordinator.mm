@@ -120,9 +120,9 @@ CGFloat const kSheetCornerRadius = 30;
 
 #pragma mark - UISheetPresentationControllerDelegate
 
-- (void)presentationControllerDidDismiss:
+- (void)presentationControllerWillDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate dismissCustomizationMenu];
+  [self dismissMenuPage];
 }
 
 #pragma mark - Private
