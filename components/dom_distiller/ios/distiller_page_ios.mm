@@ -65,6 +65,9 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
       DCHECK_EQ(result.type(), base::Value::Type::DOUBLE);
     }
     // End of different implementation.
+  } else if (value->is_int()) {
+    result = base::Value(value->GetInt());
+    DCHECK_EQ(result.type(), base::Value::Type::INTEGER);
   } else if (value->is_bool()) {
     result = base::Value(value->GetBool());
     DCHECK_EQ(result.type(), base::Value::Type::BOOLEAN);
