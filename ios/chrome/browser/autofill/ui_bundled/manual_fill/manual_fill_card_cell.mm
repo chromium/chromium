@@ -139,9 +139,12 @@ bool ShouldShowGPayIcon(autofill::CreditCard::RecordType card_record_type) {
     case autofill::CreditCard::RecordType::kLocalCard:
       return false;
     case autofill::CreditCard::RecordType::kMaskedServerCard:
-    case autofill::CreditCard::RecordType::kFullServerCard:
     case autofill::CreditCard::RecordType::kVirtualCard:
       return IsKeyboardAccessoryUpgradeEnabled();
+    case autofill::CreditCard::RecordType::kFullServerCard:
+      // Full server cards are a temporary cached state and are not given as
+      // suggestions for manual fill.
+      NOTREACHED();
   }
 }
 

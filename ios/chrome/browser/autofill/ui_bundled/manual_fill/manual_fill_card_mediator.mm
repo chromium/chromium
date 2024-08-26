@@ -46,11 +46,14 @@ namespace manual_fill {
 bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
   switch (record_type) {
     case autofill::CreditCard::RecordType::kLocalCard:
-    case autofill::CreditCard::RecordType::kFullServerCard:
     case autofill::CreditCard::RecordType::kMaskedServerCard:
       return IsKeyboardAccessoryUpgradeEnabled();
     case autofill::CreditCard::RecordType::kVirtualCard:
       return NO;
+    case autofill::CreditCard::RecordType::kFullServerCard:
+      // Full server cards are a temporary cached state and should never be
+      // being offered as a suggestion for manual fill.
+      NOTREACHED();
   }
 }
 
