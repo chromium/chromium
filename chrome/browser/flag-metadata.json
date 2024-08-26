@@ -1058,7 +1058,7 @@
   {
     "name": "bluetooth-floss-telephony",
     "owners": [ "whalechang@google.com", "chromeos-audio-sw@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "bluetooth-use-floss",
