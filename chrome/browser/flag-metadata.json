@@ -4818,7 +4818,7 @@
   {
     "name": "force-resync-drive",
     "owners": [ "cassycc@google.com", "alexbn@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "force-show-update-menu-badge",
@@ -4884,7 +4884,7 @@
   {
     "name": "fsps-in-recents",
     "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "majewski@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "fullscreen-improvement",
@@ -7522,7 +7522,7 @@
   {
     "name": "quickoffice-force-file-download",
     "owners": ["simmonsjosh@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "read-aloud",
@@ -8918,7 +8918,7 @@
   {
     "name": "upload-office-to-cloud",
     "owners": [ "jboulic@chromium.org", "alexbn@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "upstream-trusted-reports-firmware",
