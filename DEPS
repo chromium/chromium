@@ -717,7 +717,7 @@ deps = {
               'version': '4aIIq-rDZI5mGeROQ42Oekdt9QAD6UNWE0TYMy1qGLQC',
           },
       ],
-      'condition': 'checkout_src_internal',
+      'condition': 'checkout_src_internal and non_git_source',
       'dep_type': 'cipd',
   },
   # Pull down Node binaries for WebUI toolchain.
