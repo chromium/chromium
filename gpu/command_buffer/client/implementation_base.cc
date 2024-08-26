@@ -92,8 +92,8 @@ void ImplementationBase::GenSyncToken(GLbyte* sync_token) {
     return;
   }
 
-  uint64_t fence_sync = gpu_control_->GenerateFenceSyncRelease();
-  helper_->InsertFenceSync(fence_sync);
+  uint64_t fence_sync = helper_->InsertFenceSync(
+      [this]() { return gpu_control_->GenerateFenceSyncRelease(); });
   helper_->CommandBufferHelper::OrderingBarrier();
   gpu_control_->EnsureWorkVisible();
 
@@ -111,8 +111,8 @@ void ImplementationBase::GenUnverifiedSyncToken(GLbyte* sync_token) {
     return;
   }
 
-  uint64_t fence_sync = gpu_control_->GenerateFenceSyncRelease();
-  helper_->InsertFenceSync(fence_sync);
+  uint64_t fence_sync = helper_->InsertFenceSync(
+      [this]() { return gpu_control_->GenerateFenceSyncRelease(); });
   helper_->CommandBufferHelper::OrderingBarrier();
 
   // Copy the data over after setting the data to ensure alignment.
