@@ -1595,9 +1595,15 @@ class RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest
 
 }  // namespace
 
+// TODO(crbug.com/362200328): Re-enable test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ItemSequenceNumberExpected DISABLED_ItemSequenceNumberExpected
+#else
+#define MAYBE_ItemSequenceNumberExpected ItemSequenceNumberExpected
+#endif
 IN_PROC_BROWSER_TEST_P(
     RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest,
-    ItemSequenceNumberExpected) {
+    MAYBE_ItemSequenceNumberExpected) {
   ASSERT_TRUE(NavigateToURL(shell(), FirstURL()));
   ASSERT_TRUE(NavigateToURL(shell(), SecondURL()));
 
