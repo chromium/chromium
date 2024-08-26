@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/version_info/channel.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
+#include "components/data_sharing/internal/preview_server_proxy.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
@@ -37,6 +38,7 @@ class LookupGaiaIdByEmailResult;
 
 namespace data_sharing {
 class DataSharingNetworkLoader;
+class PreviewServerProxy;
 
 // The internal implementation of the DataSharingService.
 class DataSharingServiceImpl : public DataSharingService,
@@ -160,6 +162,7 @@ class DataSharingServiceImpl : public DataSharingService,
   std::unique_ptr<DataSharingUIDelegate> ui_delegate_;
 
   base::ObserverList<DataSharingService::Observer> observers_;
+  std::unique_ptr<PreviewServerProxy> preview_server_proxy_;
 
   base::WeakPtrFactory<DataSharingServiceImpl> weak_ptr_factory_{this};
 };

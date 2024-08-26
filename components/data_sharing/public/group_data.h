@@ -95,6 +95,9 @@ struct SharedEntity {
   // Id of the group.
   GroupId group_id;
 
+  // Name of the entity.
+  std::string name;
+
   // Monotonically increasing version number.
   int64_t version = 0;
 

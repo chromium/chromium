@@ -92,7 +92,10 @@ DataSharingServiceImpl::DataSharingServiceImpl(
           std::make_unique<DataSharingNetworkLoaderImpl>(url_loader_factory,
                                                          identity_manager)),
       sdk_delegate_(std::move(sdk_delegate)),
-      ui_delegate_(std::move(ui_delegate)) {
+      ui_delegate_(std::move(ui_delegate)),
+      preview_server_proxy_(
+          std::make_unique<PreviewServerProxy>(identity_manager,
+                                               url_loader_factory)) {
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::COLLABORATION_GROUP,
@@ -581,8 +584,7 @@ void DataSharingServiceImpl::GetSharedEntitiesPreview(
     const GroupToken& group_token,
     base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
         callback) {
-  std::move(callback).Run(
-      base::unexpected(PeopleGroupActionFailure::kPersistentFailure));
+  preview_server_proxy_->GetSharedDataPreview(group_token, std::move(callback));
 }
 
 void DataSharingServiceImpl::OnAccessTokenAdded(

@@ -7,6 +7,7 @@ include_rules = [
   "+components/sync/test",
   "+net/http",
   "+net/base",
+  "+services/data_decoder/public/cpp",
   "+services/network/public/cpp",
   "+services/network/test",
   "+sql",

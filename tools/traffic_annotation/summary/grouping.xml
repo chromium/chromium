@@ -339,6 +339,7 @@ after discussions on the right group.
       <annotation id="android_webview_shell"/>
       <annotation id="contextual_search_resolve_debug"/>
       <annotation id="help_me_read_request"/>
+      <annotation id="chrome_data_sharing_preview"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

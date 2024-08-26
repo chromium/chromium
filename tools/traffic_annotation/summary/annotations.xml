@@ -481,4 +481,5 @@ Refer to README.md for content description and update process.
  <item id="plus_address_preallocation" added_in_milestone="129" content_hash_code="05275659" os_list="linux,windows,android,chromeos" file_path="components/plus_addresses/plus_address_http_client_impl.cc" />
  <item id="contextual_search_resolve_debug" added_in_milestone="129" content_hash_code="053e98c5" os_list="linux,windows,android,chromeos" file_path="components/contextual_search/core/browser/contextual_search_delegate_impl.cc" />
  <item id="help_me_read_request" added_in_milestone="130" content_hash_code="003a1aeb" os_list="chromeos" file_path="components/manta/mahi_provider.cc" />
+ <item id="chrome_data_sharing_preview" added_in_milestone="130" content_hash_code="011e6703" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/preview_server_proxy.cc" />
 </annotations>
