@@ -1160,7 +1160,8 @@ mojo.internal.deserializeMessageHeader = function(data) {
        headerSize != mojo.internal.kMessageV0HeaderSize) ||
       (headerVersion == 1 &&
        headerSize != mojo.internal.kMessageV1HeaderSize) ||
-      headerVersion > 2) {
+      (headerVersion >= 2 &&
+       headerSize < mojo.internal.kMessageV2HeaderSize)) {
     throw new Error('Received invalid message header');
   }
   return {
