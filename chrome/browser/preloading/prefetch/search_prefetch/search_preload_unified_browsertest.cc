@@ -604,10 +604,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   WaitUntilStatusChangesTo(
       GetCanonicalSearchURL(expected_prefetch_url),
       {SearchPrefetchStatus::kCanBeServed, SearchPrefetchStatus::kComplete});
-#if BUILDFLAG(IS_ANDROID)
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchParameterExistence", true, 1);
-#endif
   std::string search_query_2 = "prer";
   ChangeAutocompleteResult(search_query_2, prerender_query,
                            PrerenderHint::kEnabled, PrefetchHint::kEnabled);
@@ -617,11 +613,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   registry_observer.WaitForTrigger(expected_prerender_url);
   prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
                                                     expected_prerender_url);
-#if BUILDFLAG(IS_ANDROID)
-  // Generate the url when upgrading a prefetch attempt to a prerender attempt.
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchParameterExistence", true, 2);
-#endif
 
   // No prerender requests went through network, so there should be only one
   // request and it is with the prefetch flag attached.

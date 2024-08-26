@@ -1558,18 +1558,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Omnibox.SearchPrefetch.PrefetchParameterExistence"
-    enum="Boolean" expires_after="2024-10-03">
-  <owner>lingqi@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Investigate the percentage of prefetch requests that do not have the
-    prefetch parameter attached. Recorded in GetPreloadURLFromMatch, when
-    generating a prefetch url. It can be caused by the missing of prefetch
-    source component from the template url.
-  </summary>
-</histogram>
-
 <histogram
     name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.{HistoryOrSuggest}"
     enum="Boolean" expires_after="2023-05-02">
