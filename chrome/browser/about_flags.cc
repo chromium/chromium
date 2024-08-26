@@ -10865,7 +10865,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"autofill-enable-server-iban",
      flag_descriptions::kAutofillEnableServerIbanName,
-     flag_descriptions::kAutofillEnableServerIbanDescription, kOsDesktop,
+     flag_descriptions::kAutofillEnableServerIbanDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableServerIban)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
