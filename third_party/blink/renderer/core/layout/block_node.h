@@ -118,8 +118,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   BlockNode GetRenderedLegend() const;
   BlockNode GetFieldsetContent() const;
 
-  bool IsTableCell() const { return box_->IsTableCell(); }
-
   bool IsFrameSet() const { return box_->IsFrameSet(); }
   bool IsParentNGFrameSet() const { return box_->Parent()->IsFrameSet(); }
   bool IsParentGrid() const { return box_->Parent()->IsLayoutGrid(); }
