@@ -2160,11 +2160,13 @@ TEST_P(WaylandWindowDragControllerTest, OutgoingSessionWithoutDndFinished) {
   // ie: not reset to `kIdle`.
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(u"dnd-data");
+  base::MockOnceCallback<void()> start_callback;
   base::MockOnceCallback<void(mojom::DragOperation)> completion_callback;
   window_->StartDrag(os_exchange_data,
                      DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE,
                      DragEventSource::kMouse, /*cursor=*/{},
-                     /*can_grab_pointer=*/true, completion_callback.Get(),
+                     /*can_grab_pointer=*/true, start_callback.Get(),
+                     completion_callback.Get(),
                      /*loation delegate=*/nullptr);
   EXPECT_NE(connection_->data_drag_controller()->state_,
             WaylandDataDragController::State::kIdle);

@@ -1591,6 +1591,7 @@ bool X11Window::StartDrag(
     mojom::DragEventSource source,
     gfx::NativeCursor cursor,
     bool can_grab_pointer,
+    base::OnceClosure drag_started_callback,
     WmDragHandler::DragFinishedCallback drag_finished_callback,
     WmDragHandler::LocationDelegate* location_delegate) {
   DCHECK(drag_drop_client_);
@@ -1606,7 +1607,8 @@ bool X11Window::StartDrag(
 
   auto alive = weak_ptr_factory_.GetWeakPtr();
   const bool dropped =
-      drag_loop_->RunMoveLoop(can_grab_pointer, last_cursor_, last_cursor_);
+      drag_loop_->RunMoveLoop(can_grab_pointer, last_cursor_, last_cursor_,
+                              std::move(drag_started_callback));
   if (!alive) {
     return false;
   }

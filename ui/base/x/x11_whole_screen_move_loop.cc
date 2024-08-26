@@ -140,7 +140,8 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
 bool X11WholeScreenMoveLoop::RunMoveLoop(
     bool can_grab_pointer,
     scoped_refptr<ui::X11Cursor> old_cursor,
-    scoped_refptr<ui::X11Cursor> new_cursor) {
+    scoped_refptr<ui::X11Cursor> new_cursor,
+    base::OnceClosure started_callback) {
   DCHECK(!in_move_loop_);  // Can only handle one nested loop at a time.
 
   // Query the mouse cursor prior to the move loop starting so that it can be
@@ -173,6 +174,8 @@ bool X11WholeScreenMoveLoop::RunMoveLoop(
       std::move(nested_dispatcher_);
   nested_dispatcher_ =
       ui::PlatformEventSource::GetInstance()->OverrideDispatcher(this);
+
+  std::move(started_callback).Run();
 
   base::WeakPtr<X11WholeScreenMoveLoop> alive(weak_factory_.GetWeakPtr());
 

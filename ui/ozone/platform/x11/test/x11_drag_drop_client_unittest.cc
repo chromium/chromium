@@ -90,7 +90,8 @@ class TestMoveLoop : public X11MoveLoop {
   // X11MoveLoop:
   bool RunMoveLoop(bool can_grab_pointer,
                    scoped_refptr<X11Cursor> old_cursor,
-                   scoped_refptr<X11Cursor> new_cursor) override;
+                   scoped_refptr<X11Cursor> new_cursor,
+                   base::OnceClosure started_callback) override;
   void UpdateCursor(scoped_refptr<X11Cursor> cursor) override;
   void EndMoveLoop() override;
 
@@ -257,8 +258,10 @@ bool TestMoveLoop::IsRunning() const {
 
 bool TestMoveLoop::RunMoveLoop(bool can_grab_pointer,
                                scoped_refptr<X11Cursor> old_cursor,
-                               scoped_refptr<X11Cursor> new_cursor) {
+                               scoped_refptr<X11Cursor> new_cursor,
+                               base::OnceClosure started_callback) {
   is_running_ = true;
+  std::move(started_callback).Run();
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
@@ -301,7 +304,7 @@ DragOperation SimpleTestDragDropClient::StartDragAndDrop(
   loop_ = std::make_unique<TestMoveLoop>(this);
 
   // Cursors are not set. Thus, pass nothing.
-  loop_->RunMoveLoop(!source_window->HasCapture(), {}, {});
+  loop_->RunMoveLoop(!source_window->HasCapture(), {}, {}, base::DoNothing());
 
   auto resulting_operation = negotiated_operation();
   CleanupDrag();

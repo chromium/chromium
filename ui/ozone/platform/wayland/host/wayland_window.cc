@@ -349,12 +349,15 @@ bool WaylandWindow::StartDrag(
     mojom::DragEventSource source,
     gfx::NativeCursor cursor,
     bool can_grab_pointer,
+    base::OnceClosure drag_started_callback,
     WmDragHandler::DragFinishedCallback drag_finished_callback,
     WmDragHandler::LocationDelegate* location_delegate) {
   if (!connection_->data_drag_controller()->StartSession(data, operations,
                                                          source)) {
     return false;
   }
+
+  std::move(drag_started_callback).Run();
 
   DCHECK(drag_finished_callback_.is_null());
   drag_finished_callback_ = std::move(drag_finished_callback);

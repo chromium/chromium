@@ -189,6 +189,7 @@ class X11Window : public PlatformWindow,
                  mojom::DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,
+                 base::OnceClosure drag_started_callback,
                  WmDragHandler::DragFinishedCallback drag_finished_callback,
                  WmDragHandler::LocationDelegate* delegate) override;
   void CancelDrag() override;
