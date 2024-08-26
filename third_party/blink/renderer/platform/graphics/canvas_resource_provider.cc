@@ -333,11 +333,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return resource_->GetClientSharedImage();
   }
 
-  gpu::Mailbox GetBackingMailboxForOverwrite() override {
-    auto client_si = GetBackingClientSharedImageForOverwrite();
-    return client_si ? client_si->mailbox() : gpu::Mailbox();
-  }
-
   uint32_t GetSharedImageUsageFlags() const override {
     return shared_image_usage_flags_;
   }
@@ -356,9 +351,16 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (IsGpuContextLost())
       return false;
 
+    // TODO(crbug.com/352263194): This code calls WillDrawInternal(true)
+    // followed immediately by GetBackingClientSharedImageForOverwrite(), which
+    // calls WillDrawInternal(false). The former calls EnsureWriteAccess() and
+    // then the latter immediately calls EndWriteAccess(). Figure out what is
+    // actually intended here and either don't call the former (preserving
+    // current behavior) or call resource()->GetClientSharedImage() rather than
+    // the latter (if the current behavior is a bug).
     WillDrawInternal(true);
     RasterInterface()->WritePixels(
-        GetBackingMailboxForOverwrite(), x, y,
+        GetBackingClientSharedImageForOverwrite()->mailbox(), x, y,
         resource()->GetClientSharedImage()->GetTextureTarget(),
         SkPixmap(orig_info, pixels, row_bytes));
 

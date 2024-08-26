@@ -228,10 +228,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
-  virtual gpu::Mailbox GetBackingMailboxForOverwrite() {
-    NOTREACHED_IN_MIGRATION();
-    return gpu::Mailbox();
-  }
   virtual void* GetPixelBufferAddressForOverwrite() {
     NOTREACHED_IN_MIGRATION();
     return nullptr;
