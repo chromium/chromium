@@ -29,6 +29,7 @@
 #include <limits>
 
 #include "base/numerics/safe_conversions.h"
+#include "encrypted_media_utils.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -645,6 +646,12 @@ ScriptPromise<IDLBoolean> MediaKeySession::load(
     return EmptyPromise();
   }
 
+  // Log the usage of loadSession().
+  EncryptedMediaUtils::ReportUsage(EmeApiType::kLoad, GetExecutionContext(),
+                                   config_.key_system,
+                                   config_.use_hardware_secure_codecs,
+                                   /*is_persistent_session=*/true);
+
   // 6. Let origin be the origin of this object's Document.
   //    (Available as getExecutionContext()->getSecurityOrigin() anytime.)
 
@@ -772,6 +779,12 @@ ScriptPromise<IDLUndefined> MediaKeySession::update(
   // 4. Let response copy be a copy of the contents of the response parameter.
   DOMArrayBuffer* response_copy =
       DOMArrayBuffer::Create(response.Data(), response.ByteLength());
+
+  // Log the usage of update().
+  EncryptedMediaUtils::ReportUsage(EmeApiType::kUpdate, GetExecutionContext(),
+                                   config_.key_system,
+                                   config_.use_hardware_secure_codecs,
+                                   IsPersistentSessionType(session_type_));
 
   // 5. Let promise be a new promise.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(

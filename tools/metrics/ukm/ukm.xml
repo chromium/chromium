@@ -12355,6 +12355,63 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Media.EME.Usage">
+  <owner>jrummell@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Event recorded when an Encrypted Media Extensions (EME) API is called.
+  </summary>
+  <metric name="Api" enum="EmeApiType">
+    <summary>
+      The EME API that is called.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="IsPersistentSession" enum="Boolean">
+    <summary>
+      For EME API calls done on MediaKeySession, whether the session is
+      persistent or not.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="KeySystem" enum="MediaKeySystem">
+    <summary>
+      The key system associated with the current CDM.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UseHardwareSecureCodecs" enum="Boolean">
+    <summary>
+      Whether hardware secure codecs are required for the current CDM.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Media.Engagement.SessionFinished">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>

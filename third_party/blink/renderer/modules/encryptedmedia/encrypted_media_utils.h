@@ -51,6 +51,7 @@ constexpr const char* kEncryptedMediaPermissionsPolicyConsoleWarning =
     "applied to the current document. See https://goo.gl/EuHzyv for more "
     "details.";
 
+class ExecutionContext;
 class LocalDOMWindow;
 class V8MediaKeyStatus;
 class WebEncryptedMediaClient;
@@ -79,6 +80,12 @@ class EncryptedMediaUtils {
 
   static WebEncryptedMediaClient* GetEncryptedMediaClientFromLocalDOMWindow(
       LocalDOMWindow*);
+
+  static void ReportUsage(EmeApiType api_type,
+                          ExecutionContext* execution_context,
+                          const String& key_system,
+                          bool use_hardware_secure_codecs,
+                          bool is_persistent_session);
 };
 
 }  // namespace blink
