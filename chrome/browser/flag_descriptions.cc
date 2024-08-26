@@ -5122,12 +5122,6 @@ const char kCastMirroringTargetPlayoutDelay250ms[] = "250ms.";
 const char kCastMirroringTargetPlayoutDelay300ms[] = "300ms.";
 const char kCastMirroringTargetPlayoutDelay350ms[] = "3500ms.";
 
-const char kEnableAccessibilityLiveCaptionName[] = "Live Caption";
-const char kEnableAccessibilityLiveCaptionDescription[] =
-    "Enables the live caption feature which generates captions for "
-    "media playing in Chrome. Turn the feature on in "
-    "chrome://settings/accessibility.";
-
 const char kEnableLiveCaptionMultilangName[] = "Multilingual Live Caption";
 const char kEnableLiveCaptionMultilangDescription[] =
     "Enables the multilingual Live Caption Feature which allows "

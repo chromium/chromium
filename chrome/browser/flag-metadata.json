@@ -2433,11 +2433,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "enable-accessibility-live-caption",
-    "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-accessibility-magnifier-follows-chromevox",
     "owners": [ "aldietz@google.com", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 146

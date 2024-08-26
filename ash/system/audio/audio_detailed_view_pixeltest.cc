@@ -14,7 +14,6 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
-#include "media/base/media_switches.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/view.h"
 
@@ -26,8 +25,8 @@ constexpr uint64_t kInternalMicId = 10003;
 class AudioDetailedViewPixelTest : public AshTestBase {
  public:
   AudioDetailedViewPixelTest() {
-    scoped_features_.InitWithFeatures(
-        {media::kLiveCaption, features::kOnDeviceSpeechRecognition}, {});
+    scoped_features_.InitWithFeatures({features::kOnDeviceSpeechRecognition},
+                                      {});
   }
 
   // AshTestBase:

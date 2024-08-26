@@ -46,7 +46,6 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "content/public/test/browser_test.h"
-#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -87,7 +86,7 @@ class FeaturePromoDialogTest : public TestBase {
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features =*/{*feature_},
         /* disabled_features =*/
-        {media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature});
+        {feature_engagement::kIPHLiveCaptionFeature});
 
     // TODO(crbug.com/40727458): fix cause of bubbles overflowing the
     // screen and remove this.
@@ -207,20 +206,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
   browser()->window()->Activate();
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
 
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_LiveCaption) {
-  if (!captions::IsLiveCaptionFeatureSupported())
-    return;
-
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->toolbar()
-      ->media_button()
-      ->Show();
-  RunScheduledLayouts();
-
-  set_baseline("2936082");
   ShowAndVerifyUi();
 }
 

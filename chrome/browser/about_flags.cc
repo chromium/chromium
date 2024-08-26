@@ -7480,10 +7480,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDisableProcessReuse)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"enable-accessibility-live-caption",
-     flag_descriptions::kEnableAccessibilityLiveCaptionName,
-     flag_descriptions::kEnableAccessibilityLiveCaptionDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kLiveCaption)},
     {"enable-live-caption-multilang",
      flag_descriptions::kEnableLiveCaptionMultilangName,
      flag_descriptions::kEnableLiveCaptionMultilangDescription, kOsDesktop,

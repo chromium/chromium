@@ -41,7 +41,6 @@
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -119,8 +118,7 @@ class AccessibilityControllerTest : public AshTestBase {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{media::kLiveCaption,
-                              ash::features::kOnDeviceSpeechRecognition,
+        /*enabled_features=*/{ash::features::kOnDeviceSpeechRecognition,
                               ::features::kAccessibilityAccelerator,
                               ::features::kAccessibilityFaceGaze,
                               ::features::kAccessibilityMouseKeys,

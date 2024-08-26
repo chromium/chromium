@@ -763,7 +763,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 TEST_F(UnifiedAudioDetailedViewControllerTest, ToggleLiveCaption) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {media::kLiveCaption, ash::features::kOnDeviceSpeechRecognition}, {});
+      {ash::features::kOnDeviceSpeechRecognition}, {});
 
   EXPECT_TRUE(live_caption_view());
   EXPECT_FALSE(live_caption_enabled());
@@ -847,7 +847,7 @@ class UnifiedAudioDetailedViewControllerSodaTest
     // `ChromeBrowserMainPartsAsh` initializes). Create it here so that
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kOnDeviceSpeechRecognition, media::kLiveCaption,
+        {ash::features::kOnDeviceSpeechRecognition,
          media::kLiveCaptionMultiLanguage},
         {});
     soda_installer_impl_ =

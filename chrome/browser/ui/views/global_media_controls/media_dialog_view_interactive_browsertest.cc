@@ -133,7 +133,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
  public:
   MediaDialogViewBrowserTest() {
     feature_list_.InitWithFeatures(
-        {media::kGlobalMediaControls, media::kLiveCaption,
+        {media::kGlobalMediaControls,
          feature_engagement::kIPHLiveCaptionFeature,
          media::kFeatureManagementLiveTranslateCrOS,
          media::kLiveCaptionMultiLanguage, media::kLiveTranslate,

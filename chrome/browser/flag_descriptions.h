@@ -2968,9 +2968,6 @@ extern const char kCastMirroringTargetPlayoutDelay350ms[];
 extern const char kEnablePolicyTestPageName[];
 extern const char kEnablePolicyTestPageDescription[];
 
-extern const char kEnableAccessibilityLiveCaptionName[];
-extern const char kEnableAccessibilityLiveCaptionDescription[];
-
 extern const char kEnableLiveCaptionMultilangName[];
 extern const char kEnableLiveCaptionMultilangDescription[];
 
