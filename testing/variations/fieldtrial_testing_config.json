@@ -18956,6 +18956,25 @@
             ]
         }
     ],
+    "QuickDeleteAndroidSurvey": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "probability": "0.5",
+                        "trigger_id": "GtpVWQGxM0tK1KeaPYj0QBUXAQ9v"
+                    },
+                    "enable_features": [
+                        "QuickDeleteAndroidSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "QuotaDatabaseDisableFullFSync": [
         {
             "platforms": [
