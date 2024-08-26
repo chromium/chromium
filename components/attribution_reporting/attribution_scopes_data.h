@@ -59,8 +59,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionScopesData {
                         uint32_t max_event_states);
 
   AttributionScopesSet attribution_scopes_set_;
-  uint32_t attribution_scope_limit_;
-  uint32_t max_event_states_;
+  uint32_t attribution_scope_limit_ = 0;
+  uint32_t max_event_states_ = 0;
 };
 
 }  // namespace attribution_reporting

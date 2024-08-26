@@ -864,17 +864,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       1);
 }
 
-// http://crbug.com/362285518
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_SourceDataHostRegistration_LimitNavigationOnUniqueAttributionScopeSet \
-  DISABLED_SourceDataHostRegistration_LimitNavigationOnUniqueAttributionScopeSet
-#else
-#define MAYBE_SourceDataHostRegistration_LimitNavigationOnUniqueAttributionScopeSet \
-  SourceDataHostRegistration_LimitNavigationOnUniqueAttributionScopeSet
-#endif
-TEST_F(
-    AttributionDataHostManagerImplTest,
-    MAYBE_SourceDataHostRegistration_LimitNavigationOnUniqueAttributionScopeSet) {
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceDataHostRegistration_LimitNavigationOnUniqueAttributionScopeSet) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       attribution_reporting::features::kAttributionScopes);
