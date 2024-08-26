@@ -35,7 +35,8 @@ def __step_config(ctx, step_config):
         r["action_outs"] = exit137_list
 
         # Some large compile take longer than the default timeout 2m.
-        r["timeout"] = "4m"
+        # TODO(crbug.com/362140878) obj/chrome/test/fuzzing/jsfuzzer_proto_gen/jsfuzzer.pb.o: too slow compile (with coverage)
+        r["timeout"] = "15m"
 
         # use `_large` variant of platform if it doesn't use default platform,
         # i.e. mac/win case.
