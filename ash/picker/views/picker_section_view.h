@@ -83,7 +83,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // Adds an image item to the section. These are displayed in a grid with two
   // columns.
-  PickerImageItemView* AddImageItem(
+  PickerImageItemView* AddImageGridItem(
       std::unique_ptr<PickerImageItemView> image_item);
 
   // Adds an item with submenu to the section.

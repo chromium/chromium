@@ -406,7 +406,7 @@ PickerListItemView* PickerSectionView::AddListItem(
   return list_item_ptr;
 }
 
-PickerImageItemView* PickerSectionView::AddImageItem(
+PickerImageItemView* PickerSectionView::AddImageGridItem(
     std::unique_ptr<PickerImageItemView> image_item) {
   if (image_item_grid_ == nullptr) {
     image_item_grid_ =
@@ -444,7 +444,7 @@ PickerItemView* PickerSectionView::AddResult(
         views::AsViewClass<PickerListItemView>(item.release())));
   }
   if (views::IsViewClass<PickerImageItemView>(item.get())) {
-    return AddImageItem(std::unique_ptr<PickerImageItemView>(
+    return AddImageGridItem(std::unique_ptr<PickerImageItemView>(
         views::AsViewClass<PickerImageItemView>(item.release())));
   }
   if (views::IsViewClass<PickerItemWithSubmenuView>(item.get())) {

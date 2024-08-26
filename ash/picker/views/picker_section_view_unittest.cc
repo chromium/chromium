@@ -123,7 +123,7 @@ TEST_F(PickerSectionViewTest, AddsGifItem) {
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                  &submenu_controller);
 
-  section_view.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  section_view.AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();

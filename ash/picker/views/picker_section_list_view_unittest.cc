@@ -235,9 +235,9 @@ TEST_F(PickerSectionListViewTest, GetsItemLeftOf) {
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 =
-      section1->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+      section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
   PickerItemView* item2 =
-      section1->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+      section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
   PickerSectionView* section2 = section_list.AddSection();
   PickerItemView* item3 = section2->AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
@@ -265,9 +265,9 @@ TEST_F(PickerSectionListViewTest, GetsItemRightOf) {
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 =
-      section1->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+      section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
   PickerItemView* item2 =
-      section1->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+      section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
   PickerSectionView* section2 = section_list.AddSection();
   PickerItemView* item3 = section2->AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
