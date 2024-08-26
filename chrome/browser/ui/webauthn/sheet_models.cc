@@ -1595,7 +1595,8 @@ AuthenticatorPriorityMechanismSheetModel::
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
 
-  webauthn::user_actions::RecordPriorityOptionShown(dialog_model->mechanisms);
+  webauthn::user_actions::RecordPriorityOptionShown(
+      dialog_model->mechanisms[*dialog_model->priority_mechanism_index]);
 }
 AuthenticatorPriorityMechanismSheetModel::
     ~AuthenticatorPriorityMechanismSheetModel() = default;

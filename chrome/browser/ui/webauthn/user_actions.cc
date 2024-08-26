@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webauthn/user_actions.h"
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -35,6 +36,43 @@ constexpr std::string_view kProfileOnly = "ProfileOnly";
 
 constexpr std::string_view kOthers = "Others";
 
+enum class AuthenticatorCategory {
+  kGpm,
+  kICloud,
+  kWindows,
+  kProfile,
+  kOther,
+};
+
+AuthenticatorCategory CategoryFromMechanism(const Mechanism& mechanism) {
+  if (absl::holds_alternative<Mechanism::Credential>(mechanism.type)) {
+    switch (absl::get<Mechanism::Credential>(mechanism.type)->source) {
+      case AuthenticatorType::kEnclave:
+        return AuthenticatorCategory::kGpm;
+      case AuthenticatorType::kTouchID:
+        return AuthenticatorCategory::kProfile;
+      case AuthenticatorType::kICloudKeychain:
+        return AuthenticatorCategory::kICloud;
+      case AuthenticatorType::kWinNative:
+        return AuthenticatorCategory::kWindows;
+      case AuthenticatorType::kChromeOS:
+      case AuthenticatorType::kPhone:
+      case AuthenticatorType::kChromeOSPasskeys:
+      case AuthenticatorType::kOther:
+        return AuthenticatorCategory::kOther;
+    }
+  } else if (absl::holds_alternative<Mechanism::Enclave>(mechanism.type)) {
+    return AuthenticatorCategory::kGpm;
+  } else if (absl::holds_alternative<Mechanism::WindowsAPI>(mechanism.type)) {
+    return AuthenticatorCategory::kWindows;
+  } else if (absl::holds_alternative<Mechanism::ICloudKeychain>(
+                 mechanism.type)) {
+    return AuthenticatorCategory::kICloud;
+  }
+
+  return AuthenticatorCategory::kOther;
+}
+
 std::tuple<bool, bool, bool, bool> AuthenticatorsAvailable(
     const std::vector<Mechanism>& mechanisms) {
   bool has_gpm = false;
@@ -43,34 +81,21 @@ std::tuple<bool, bool, bool, bool> AuthenticatorsAvailable(
   bool has_win = false;
   // TODO(derinel): Add ChromeOS combinations.
   for (const auto& mech : mechanisms) {
-    if (absl::holds_alternative<Mechanism::Credential>(mech.type)) {
-      AuthenticatorType type =
-          absl::get<Mechanism::Credential>(mech.type)->source;
-      switch (type) {
-        case AuthenticatorType::kEnclave:
-          has_gpm = true;
-          break;
-        case AuthenticatorType::kTouchID:
-          has_profile = true;
-          break;
-        case AuthenticatorType::kICloudKeychain:
-          has_icloud = true;
-          break;
-        case AuthenticatorType::kWinNative:
-          has_win = true;
-          break;
-        case AuthenticatorType::kChromeOS:
-        case AuthenticatorType::kPhone:
-        case AuthenticatorType::kChromeOSPasskeys:
-        case AuthenticatorType::kOther:
-          break;
-      }
-    } else if (absl::holds_alternative<Mechanism::Enclave>(mech.type)) {
-      has_gpm = true;
-    } else if (absl::holds_alternative<Mechanism::WindowsAPI>(mech.type)) {
-      has_win = true;
-    } else if (absl::holds_alternative<Mechanism::ICloudKeychain>(mech.type)) {
-      has_icloud = true;
+    switch (CategoryFromMechanism(mech)) {
+      case AuthenticatorCategory::kGpm:
+        has_gpm = true;
+        break;
+      case AuthenticatorCategory::kProfile:
+        has_profile = true;
+        break;
+      case AuthenticatorCategory::kICloud:
+        has_icloud = true;
+        break;
+      case AuthenticatorCategory::kWindows:
+        has_win = true;
+        break;
+      case AuthenticatorCategory::kOther:
+        break;
     }
   }
   return {has_gpm, has_icloud, has_profile, has_win};
@@ -119,33 +144,31 @@ void RecordMultipleOptionsShown(const std::vector<Mechanism>& mechanisms,
   base::RecordAction(base::UserMetricsAction(metric.c_str()));
 }
 
-void RecordPriorityOptionShown(const std::vector<Mechanism>& mechanisms) {
-  bool has_gpm = false;
-  bool has_icloud = false;
-  bool has_profile = false;
-  bool has_win = false;
-  std::tie(has_gpm, has_icloud, has_profile, has_win) =
-      AuthenticatorsAvailable(mechanisms);
-
-  std::string_view metric_to_emit;
-  if (has_gpm) {
-    CHECK(!has_win && !has_icloud && !has_profile);
-    metric_to_emit = kGpmOnly;
-  } else if (has_icloud) {
-    CHECK(!has_gpm && !has_win && !has_profile);
-    metric_to_emit = kICloudOnly;
-  } else if (has_win) {
-    CHECK(!has_gpm && !has_icloud && !has_profile);
-    metric_to_emit = kWinOnly;
-  } else if (has_profile) {
-    CHECK(!has_gpm && !has_icloud && !has_win);
-    metric_to_emit = kProfileOnly;
+void RecordPriorityOptionShown(const Mechanism& mechanism) {
+  std::optional<std::string_view> metric_to_emit;
+  switch (CategoryFromMechanism(mechanism)) {
+    case AuthenticatorCategory::kGpm:
+      metric_to_emit = kGpmOnly;
+      break;
+    case AuthenticatorCategory::kProfile:
+      metric_to_emit = kProfileOnly;
+      break;
+    case AuthenticatorCategory::kICloud:
+      metric_to_emit = kICloudOnly;
+      break;
+    case AuthenticatorCategory::kWindows:
+      metric_to_emit = kWinOnly;
+      break;
+    case AuthenticatorCategory::kOther:
+      break;
   }
 
-  base::RecordAction(base::UserMetricsAction(
-      base::StrCat(
-          {"WebAuthn.GetAssertion.PriorityOptionShown.", metric_to_emit})
-          .c_str()));
+  if (metric_to_emit.has_value()) {
+    base::RecordAction(base::UserMetricsAction(
+        base::StrCat(
+            {"WebAuthn.GetAssertion.PriorityOptionShown.", *metric_to_emit})
+            .c_str()));
+  }
 }
 
 void RecordCancelClick() {
