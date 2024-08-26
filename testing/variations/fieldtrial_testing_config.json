@@ -22134,7 +22134,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "DWrite_Enabled",
+                    "params": {
+                        "typeface": "DWrite"
+                    },
+                    "enable_features": [
+                        "SkiaFontService"
+                    ]
+                },
+                {
+                    "name": "FreeType_Enabled",
+                    "params": {
+                        "typeface": "FreeType"
+                    },
                     "enable_features": [
                         "SkiaFontService"
                     ]
