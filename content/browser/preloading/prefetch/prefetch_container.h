@@ -771,7 +771,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Callback for non-blocking call `StartBlockUntilHead()`.
   //
-  // TODO(https://crbug.com/353490734): Remove it.
+  // TODO(crbug.com/353490734): Remove it.
   base::OnceCallback<void(PrefetchContainer&)>
       on_maybe_determined_head_callback_;
 

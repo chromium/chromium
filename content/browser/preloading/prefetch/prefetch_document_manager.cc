@@ -224,7 +224,7 @@ void PrefetchDocumentManager::PrefetchAheadOfPrerender(
   PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
               /*planned_max_preloading_type=*/PreloadingType::kPrerender,
               referrer, no_vary_search_expected,
-              // TODO(https://crbug.com/342537094): Emit CDP events for prefetch
+              // TODO(crbug.com/342537094): Emit CDP events for prefetch
               // ahead of prerender.
               /*devtools_observer=*/nullptr);
 }

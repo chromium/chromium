@@ -1031,7 +1031,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
   //     `MockNavigationHandle`. They are different.
   //   - In this test, URLs are different.
   //
-  // TODO(https://crbug.com/359802755): Investigate more and use correct URLs.
+  // TODO(crbug.com/359802755): Investigate more and use correct URLs.
   ExpectCorrectUkmLogs(GURL("http://Not.Accurate.Trigger/"),
                        /*is_accurate_trigger=*/true,
                        PreloadingTriggeringOutcome::kFailure,
@@ -1125,7 +1125,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
   // Ditto to `ExpectCorrectUkmLogs()` in
   // `DoNotInterceptNavigationCookiesChanged`.
   //
-  // TODO(https://crbug.com/359802755): Investigate more and use correct URLs.
+  // TODO(crbug.com/359802755): Investigate more and use correct URLs.
   ExpectCorrectUkmLogs(
       GURL("http://Not.Accurate.Trigger/"),
       /*is_accurate_trigger=*/true, PreloadingTriggeringOutcome::kFailure,

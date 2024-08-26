@@ -345,7 +345,7 @@ void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
                            body_length);
 }
 
-// TODO(https://crbug.com/353490734): Inline it. We made it a method due to
+// TODO(crbug.com/353490734): Inline it. We made it a method due to
 // this rule:
 // https://chromium.googlesource.com/chromium/src/+/master/tools/metrics/histograms/README.md#don_t-use-same-inline-string-in-multiple-places
 // If callsite is only one, we can inline it again.
@@ -1047,7 +1047,7 @@ void PrefetchContainer::StartBlockUntilHead(
       std::move(on_maybe_determined_head_callback);
 
   if (timeout.is_positive()) {
-    // TODO(https://crbug.com/40274818): See the comment on
+    // TODO(crbug.com/40274818): See the comment on
     // `OnGetPrefetchToServe()`.
     block_until_head_timer_ = std::make_unique<base::OneShotTimer>();
     block_until_head_timer_->Start(
