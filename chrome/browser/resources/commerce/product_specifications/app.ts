@@ -31,6 +31,7 @@ import {getTemplate} from './app.html.js';
 import type {ProductDescription} from './description_section.js';
 import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
+import {SectionType} from './product_selection_menu.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
@@ -74,6 +75,22 @@ export interface ProductSpecificationsElement {
     summaryTable: TableElement,
   };
 }
+
+// This enum is used for metrics and should be kept in sync with the enum of
+// the same name in enums.xml.
+export enum CompareTableColumnAction {
+  REMOVE = 0,
+  CHANGE_ORDER_DRAG_AND_DROP = 1,
+  ADD_FROM_SUGGESTED = 2,
+  UPDATE_FROM_SUGGESTED = 3,
+  ADD_FROM_RECENTLY_VIEWED = 4,
+  UPDATE_FROM_RECENTLY_VIEWED = 5,
+  // Must be last:
+  MAX_VALUE = 6,
+}
+
+export const COLUMN_MODIFICATION_HISTOGRAM_NAME: string =
+    'Commerce.Compare.Table.ColumnModification';
 
 function getProductDetails(
     product: ProductSpecificationsProduct|null,
@@ -366,11 +383,26 @@ export class ProductSpecificationsElement extends PolymerElement {
         loadTimeData.getString('productSpecificationsManagementUrl'));
   }
 
-  private async onUrlAdd_(e: CustomEvent<{url: string}>) {
+  private async onUrlAdd_(
+      e: CustomEvent<{url: string, urlSection: SectionType}>) {
     if (this.isOffline_) {
       this.showOfflineToast_();
       return;
     }
+
+    let recordValue = CompareTableColumnAction.MAX_VALUE;
+    switch (e.detail.urlSection) {
+      case SectionType.RECENT:
+        recordValue = CompareTableColumnAction.ADD_FROM_RECENTLY_VIEWED;
+        break;
+      case SectionType.SUGGESTED:
+        recordValue = CompareTableColumnAction.ADD_FROM_SUGGESTED;
+        break;
+    }
+    chrome.metricsPrivate.recordEnumerationValue(
+        COLUMN_MODIFICATION_HISTOGRAM_NAME, recordValue,
+        CompareTableColumnAction.MAX_VALUE);
+
     const urls = this.getTableUrls_();
     urls.push(e.detail.url);
     // If there is already a current set, we won't be showing the disclosure and
@@ -389,11 +421,25 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private onUrlChange_(e: CustomEvent<{url: string, index: number}>) {
+  private onUrlChange_(
+      e: CustomEvent<{url: string, urlSection: SectionType, index: number}>) {
     if (this.isOffline_) {
       this.showOfflineToast_();
       return;
     }
+
+    let recordValue = CompareTableColumnAction.MAX_VALUE;
+    switch (e.detail.urlSection) {
+      case SectionType.RECENT:
+        recordValue = CompareTableColumnAction.UPDATE_FROM_RECENTLY_VIEWED;
+        break;
+      case SectionType.SUGGESTED:
+        recordValue = CompareTableColumnAction.UPDATE_FROM_SUGGESTED;
+        break;
+    }
+    chrome.metricsPrivate.recordEnumerationValue(
+        COLUMN_MODIFICATION_HISTOGRAM_NAME, recordValue,
+        CompareTableColumnAction.MAX_VALUE);
 
     const urls = this.getTableUrls_();
     urls[e.detail.index] = e.detail.url;
@@ -406,6 +452,11 @@ export class ProductSpecificationsElement extends PolymerElement {
       return;
     }
 
+    chrome.metricsPrivate.recordEnumerationValue(
+        COLUMN_MODIFICATION_HISTOGRAM_NAME,
+        CompareTableColumnAction.CHANGE_ORDER_DRAG_AND_DROP,
+        CompareTableColumnAction.MAX_VALUE);
+
     const urls = this.getTableUrls_();
     this.modifyUrls_(urls);
   }
@@ -415,6 +466,10 @@ export class ProductSpecificationsElement extends PolymerElement {
       this.showOfflineToast_();
       return;
     }
+
+    chrome.metricsPrivate.recordEnumerationValue(
+        COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction.REMOVE,
+        CompareTableColumnAction.MAX_VALUE);
 
     const urls = this.getTableUrls_();
     urls.splice(e.detail.index, 1);

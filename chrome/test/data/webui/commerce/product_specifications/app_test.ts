@@ -5,7 +5,9 @@
 import 'chrome://compare/app.js';
 
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction} from 'chrome://compare/app.js';
 import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
+import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
 import {Router} from 'chrome://compare/router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsSet, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {WindowProxy} from 'chrome://compare/window_proxy.js';
@@ -16,6 +18,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -1047,6 +1051,161 @@ suite('AppTest', () => {
         0,
         shoppingServiceApi.getCallCount(
             'maybeShowProductSpecificationDisclosure'));
+  });
+
+  suite('metrics', () => {
+    let metrics: MetricsTracker;
+    const tabInfos = [{
+      title: 'title',
+      url: stringToMojoUrl('https://example.com'),
+    }];
+
+    setup(async () => {
+      metrics = fakeMetricsPrivate();
+      const dimensionValues = {
+        summary: [],
+        specificationDescriptions: [
+          {
+            label: '',
+            altText: '',
+            options: [],
+          },
+        ],
+      };
+      const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+          [[BigInt(2), dimensionValues]]);
+      const specsProduct = createSpecsProduct({
+        productClusterId: BigInt(123),
+        title: 'Product',
+        productDimensionValues: dimensionValuesMap,
+      });
+      const info = createInfo({
+        clusterId: BigInt(123),
+        title: 'Product',
+        productUrl: {url: 'https://example.com/'},
+        imageUrl: {url: 'http://example.com/image.png'},
+      });
+      const testId = '00000000-0000-0000-0000-000000000001';
+      const promiseValues = createAppPromiseValues({
+        idParam: testId,
+        specs: createSpecs({
+          productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
+          products: [specsProduct],
+        }),
+        infos: [info],
+      });
+      const specsSet = createSpecsSet(
+          {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsSetByUuid',
+          Promise.resolve({set: specsSet}));
+
+      await createAppElementWithPromiseValues(promiseValues);
+    });
+
+    async function clickFirstAvailableItemInFirstColumn() {
+      const table = appElement.$.summaryTable;
+      const selector = table.shadowRoot!.querySelector<ProductSelectorElement>(
+          'product-selector');
+      assertTrue(!!selector);
+      selector.$.currentProductContainer.click();
+      await waitAfterNextRender(appElement);
+      const crActionMenu = selector.$.productSelectionMenu.$.menu.get();
+      assertTrue(crActionMenu.open);
+      const item = crActionMenu.querySelector<HTMLElement>('.dropdown-item')!;
+      item.click();
+      await waitAfterNextRender(appElement);
+    }
+
+    async function clickFirstAvailableItemInNewColumnSelector() {
+      const newColSelector = appElement.$.newColumnSelector;
+      newColSelector.$.button.click();
+      await waitAfterNextRender(appElement);
+      const menu = newColSelector.$.productSelectionMenu;
+      const crActionMenu = menu.$.menu.get();
+      assertTrue(crActionMenu.open);
+      const dropdownItem =
+          crActionMenu.querySelector<HTMLElement>('.dropdown-item')!;
+      dropdownItem.click();
+      await waitAfterNextRender(appElement);
+    }
+
+    test('add column from suggested', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: tabInfos}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+
+      await clickFirstAvailableItemInNewColumnSelector();
+
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.ADD_FROM_SUGGESTED));
+    });
+
+    test('add column from recently viewed', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: []}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs',
+          Promise.resolve({urlInfos: tabInfos}));
+
+      await clickFirstAvailableItemInNewColumnSelector();
+
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.ADD_FROM_RECENTLY_VIEWED));
+    });
+
+    test('remove column', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: []}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+
+      await clickFirstAvailableItemInFirstColumn();
+
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.REMOVE));
+    });
+
+    test('Update column from suggested', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: tabInfos}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+
+      await clickFirstAvailableItemInFirstColumn();
+
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.UPDATE_FROM_SUGGESTED));
+    });
+
+    test('Update column from recently viewed', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: []}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs',
+          Promise.resolve({urlInfos: tabInfos}));
+
+      await clickFirstAvailableItemInFirstColumn();
+
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.UPDATE_FROM_RECENTLY_VIEWED));
+    });
   });
 
   test('name change updates page title', async () => {

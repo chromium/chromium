@@ -143,6 +143,16 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Compare.Table.ColumnModification"
+    enum="CompareTableColumnAction" expires_after="2025-02-15">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the action taken to modify a column in a comparison table from the
+    table UI.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Discounts.DiscountsBubbleCouponCodeIsCopied"
     enum="BooleanYesNo" expires_after="2025-01-15">
   <owner>meiliang@chromium.org</owner>

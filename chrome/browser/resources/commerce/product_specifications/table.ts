@@ -22,6 +22,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {Content, TableColumn} from './app.js';
 import type {ProductDescription} from './description_section.js';
 import {DragAndDropManager} from './drag_and_drop_manager.js';
+import type {SectionType} from './product_selection_menu.js';
 import {getTemplate} from './table.html.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -156,13 +157,15 @@ export class TableElement extends PolymerElement {
   }
 
   private onSelectedUrlChange_(
-      e: DomRepeatEvent<TableColumn, CustomEvent<{url: string}>>&
+      e: DomRepeatEvent<
+          TableColumn, CustomEvent<{url: string, urlSection: SectionType}>>&
       {model: {columnIndex: number}}) {
     this.dispatchEvent(new CustomEvent('url-change', {
       bubbles: true,
       composed: true,
       detail: {
         url: e.detail.url,
+        urlSection: e.detail.urlSection,
         index: e.model.columnIndex,
       },
     }));
