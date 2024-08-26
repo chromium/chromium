@@ -17,6 +17,7 @@
 #include "cc/slim/layer_tree_impl.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/browser_context_impl.h"
@@ -151,6 +152,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       ui::BackGestureEventSwipeEdge initiating_edge,
       NavigationEntryImpl* destination_entry,
+      const SkBitmap& embedder_bitmap,
       BackForwardTransitionAnimationManagerAndroid* animation_manager)
       : BackForwardTransitionAnimator(web_contents_view_android,
                                       controller,
@@ -158,6 +160,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
                                       nav_type,
                                       initiating_edge,
                                       destination_entry,
+                                      embedder_bitmap,
                                       animation_manager),
         wcva_(web_contents_view_android) {}
 
@@ -342,7 +345,8 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
 class FactoryForTesting : public BackForwardTransitionAnimator::Factory {
  public:
-  FactoryForTesting() = default;
+  explicit FactoryForTesting(const SkBitmap& override_bitmap)
+      : override_bitmap_(override_bitmap) {}
   ~FactoryForTesting() override = default;
 
   std::unique_ptr<BackForwardTransitionAnimator> Create(
@@ -352,12 +356,18 @@ class FactoryForTesting : public BackForwardTransitionAnimator::Factory {
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       ui::BackGestureEventSwipeEdge initiating_edge,
       NavigationEntryImpl* destination_entry,
+      SkBitmap embedder_content,
       BackForwardTransitionAnimationManagerAndroid* animation_manager)
       override {
     return std::make_unique<AnimatorForTesting>(
         web_contents_view_android, controller, gesture, nav_type,
-        initiating_edge, destination_entry, animation_manager);
+        initiating_edge, destination_entry,
+        override_bitmap_.empty() ? embedder_content : override_bitmap_,
+        animation_manager);
   }
+
+ private:
+  SkBitmap override_bitmap_;
 };
 }  // namespace
 
@@ -428,8 +438,10 @@ class BackForwardTransitionAnimationManagerBrowserTest
     WaitForCopyableViewInWebContents(web_contents());
 
     GetAnimationManager()->set_animator_factory_for_testing(
-        std::make_unique<FactoryForTesting>());
+        std::make_unique<FactoryForTesting>(EmbedderBitmap()));
   }
+
+  virtual SkBitmap EmbedderBitmap() { return SkBitmap(); }
 
   gfx::Size GetViewportSize() {
     return web_contents()->GetNativeView()->GetPhysicalBackingSize();
@@ -484,6 +496,13 @@ class BackForwardTransitionAnimationManagerBrowserTest
     return GetAnimator()->clone_layer_for_testing();
   }
 
+  cc::slim::Layer* GetEmbedderLayer() {
+    if (!GetAnimator()) {
+      return nullptr;
+    }
+    return GetAnimator()->embedder_live_content_clone_for_testing();
+  }
+
   cc::slim::Layer* GetLivePageLayer() {
     return GetAnimationManager()
         ->web_contents_view_android()
@@ -516,6 +535,8 @@ class BackForwardTransitionAnimationManagerBrowserTest
         layer_name = "OldSurfaceClone";
       } else if (child.get() == GetProgressBarLayer()) {
         layer_name = "ProgressBar";
+      } else if (child.get() == GetEmbedderLayer()) {
+        layer_name = "EmbedderContentLayer";
       }
 
       if (!layer_name.empty()) {
@@ -3316,7 +3337,7 @@ class BackForwardTransitionAnimationManagerBrowserTestSameDocument
         num_request_before_nav + 1);
 
     GetAnimationManager()->set_animator_factory_for_testing(
-        std::make_unique<FactoryForTesting>());
+        std::make_unique<FactoryForTesting>(EmbedderBitmap()));
   }
 };
 
@@ -4125,6 +4146,78 @@ IN_PROC_BROWSER_TEST_F(
       GetAnimator()->dismiss_screenshot_timer_for_testing()->IsRunning());
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+}
+
+namespace {
+
+class BackForwardTransitionAnimationManagerBrowserTestEmbedderLiveContent
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  SkBitmap EmbedderBitmap() override {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(10, 10, true);
+    bitmap.eraseColor(SkColors::kRed);
+    bitmap.setImmutable();
+    return bitmap;
+  }
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestEmbedderLiveContent,
+    Cancel_EmbedderScreenshot) {
+  TestFuture<void> did_cancel;
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
+  GetAnimationManager()->OnGestureCancelled();
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  ASSERT_TRUE(did_cancel.Wait());
+  EXPECT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestEmbedderLiveContent,
+    Invoke_EmbedderScreenshot) {
+  TestFuture<void> did_invoke;
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimator()->set_intercept_render_frame_metadata_changed(true);
+  GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
+  GetAnimationManager()->OnGestureInvoked();
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  ASSERT_TRUE(did_invoke.Wait());
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimator()->set_intercept_render_frame_metadata_changed(false);
+  base::TimeTicks now = base::TimeTicks();
+  GetAnimator()->OnRenderFrameMetadataChangedAfterActivation(now);
+
+  TestFuture<AnimatorForTesting::State> did_finish;
+  GetAnimator()->set_on_impl_destroyed(did_finish.GetCallback());
+  EXPECT_EQ(did_finish.Get(), AnimatorForTesting::State::kAnimationFinished);
+  EXPECT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 }
 
 }  // namespace content

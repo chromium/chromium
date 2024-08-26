@@ -119,8 +119,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // current animation.
   void OnAnimationStageChanged();
 
-  SkBitmap MaybeCopyContentAreaAsBitmapSync();
-
   // Called from the animator when a stable screenshot is not dismissed. This
   // can happen to a very busy renderer when it couldn't submit a new frame
   // after the navigation.
@@ -141,6 +139,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
  private:
   // The browser test needs to access the test-only `animator_`.
   friend class BackForwardTransitionAnimationManagerBrowserTest;
+
+  SkBitmap MaybeCopyContentAreaAsBitmapSync();
 
   // If the animator state is terminal, this will synchronously destroy the
   // animator. Terminal states are when all the animation has finished in the

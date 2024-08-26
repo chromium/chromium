@@ -82,7 +82,8 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
   CHECK(animator_factory_);
   animator_ = animator_factory_->Create(
       web_contents_view_android_.get(), navigation_controller_.get(), gesture,
-      navigation_direction, edge, destination_entry, this);
+      navigation_direction, edge, destination_entry,
+      MaybeCopyContentAreaAsBitmapSync(), this);
 
   // Become a WCO as soon as this class is created, because we want to
   // observe all navigations while this class is controlling the UI. This
@@ -236,19 +237,19 @@ void BackForwardTransitionAnimationManagerAndroid::OnAnimationStageChanged() {
       ->DidBackForwardTransitionAnimationChange();
 }
 
+void BackForwardTransitionAnimationManagerAndroid::
+    OnPostNavigationFirstFrameTimeout() {
+  CHECK(animator_);
+  CHECK(animator_->IsTerminalState());
+  DestroyAnimator();
+}
+
 SkBitmap BackForwardTransitionAnimationManagerAndroid::
     MaybeCopyContentAreaAsBitmapSync() {
   return web_contents_view_android()
       ->web_contents()
       ->GetDelegate()
       ->MaybeCopyContentAreaAsBitmapSync();
-}
-
-void BackForwardTransitionAnimationManagerAndroid::
-    OnPostNavigationFirstFrameTimeout() {
-  CHECK(animator_);
-  CHECK(animator_->IsTerminalState());
-  DestroyAnimator();
 }
 
 void BackForwardTransitionAnimationManagerAndroid::MaybeDestroyAnimator() {

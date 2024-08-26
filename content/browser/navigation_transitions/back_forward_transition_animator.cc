@@ -169,10 +169,12 @@ BackForwardTransitionAnimator::Factory::Create(
     NavigationDirection nav_direction,
     SwipeEdge initiating_edge,
     NavigationEntryImpl* destination_entry,
+    SkBitmap embedder_content,
     BackForwardTransitionAnimationManagerAndroid* animation_manager) {
   return base::WrapUnique(new BackForwardTransitionAnimator(
       web_contents_view_android, controller, gesture, nav_direction,
-      initiating_edge, destination_entry, animation_manager));
+      initiating_edge, destination_entry, std::move(embedder_content),
+      animation_manager));
 }
 
 BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
@@ -192,14 +194,7 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
     screenshot_layer_.reset();
   }
 
-  if (embedder_live_content_clone_) {
-    CHECK(!old_surface_clone_);
-    embedder_live_content_clone_->RemoveFromParent();
-    embedder_live_content_clone_.reset();
-  } else if (old_surface_clone_) {
-    old_surface_clone_->RemoveFromParent();
-    old_surface_clone_.reset();
-  }
+  ResetLiveOverlayLayer();
 
   if (!use_fallback_screenshot_) {
     CHECK_NE(ui_resource_id_, cc::UIResourceClient::kUninitializedUIResourceId);
@@ -234,6 +229,7 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     NavigationDirection nav_direction,
     SwipeEdge initiating_edge,
     NavigationEntryImpl* destination_entry,
+    SkBitmap embedder_content,
     BackForwardTransitionAnimationManagerAndroid* animation_manager)
     : nav_direction_(nav_direction),
       initiating_edge_(initiating_edge),
@@ -251,6 +247,7 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
                      web_contents_view_android->GetNativeView()->GetDipScale()),
       latest_progress_gesture_(gesture) {
   state_ = State::kStarted;
+  SetupForScreenshotPreview(std::move(embedder_content));
   ProcessState();
 }
 
@@ -844,11 +841,7 @@ void BackForwardTransitionAnimator::OnCancelAnimationDisplayed() {
 }
 
 void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
-  // There is no `old_surface_clone_` when navigating from a crashed page.
-  if (old_surface_clone_) {
-    old_surface_clone_->RemoveFromParent();
-    old_surface_clone_.reset();
-  }
+  ResetLiveOverlayLayer();
 
   if (progress_bar_) {
     progress_bar_->GetLayer()->RemoveFromParent();
@@ -1000,7 +993,6 @@ void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
 void BackForwardTransitionAnimator::ProcessState() {
   switch (state_) {
     case State::kStarted: {
-      SetupForScreenshotPreview();
       break;
       // `this` will be waiting for the `OnGestureProgressed` call.
     }
@@ -1103,7 +1095,8 @@ void BackForwardTransitionAnimator::ProcessState() {
   }
 }
 
-void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
+void BackForwardTransitionAnimator::SetupForScreenshotPreview(
+    SkBitmap embedder_content) {
   NavigationControllerImpl* nav_controller =
       animation_manager_->navigation_controller();
   auto* destination_entry =
@@ -1155,7 +1148,7 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
   screenshot_layer_->AddChild(screenshot_scrim_);
   screenshot_scrim_->SetContentsOpaque(false);
 
-  MaybeCopyContentAreaAsBitmap();
+  SetUpEmbedderContentLayerIfNeeded(std::move(embedder_content));
 
   // This inserts the screenshot layer into the layer tree.
   InsertLayersInOrder();
@@ -1392,8 +1385,8 @@ void BackForwardTransitionAnimator::MaybeCloneOldSurfaceLayer(
   InsertLayersInOrder();
 }
 
-void BackForwardTransitionAnimator::MaybeCopyContentAreaAsBitmap() {
-  SkBitmap bitmap = animation_manager_->MaybeCopyContentAreaAsBitmapSync();
+void BackForwardTransitionAnimator::SetUpEmbedderContentLayerIfNeeded(
+    SkBitmap bitmap) {
   if (bitmap.empty()) {
     return;
   }
@@ -1514,6 +1507,7 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
   if (screenshot_layer_->parent()) {
     screenshot_layer_->RemoveFromParent();
   }
+
   if (embedder_live_content_clone_) {
     embedder_live_content_clone_->RemoveFromParent();
   } else if (old_surface_clone_) {
@@ -1572,6 +1566,21 @@ void BackForwardTransitionAnimator::OnPostNavigationFirstFrameTimeout() {
   CHECK_EQ(navigation_state_, NavigationState::kCommitted);
   AbortAnimation();
   animation_manager_->OnPostNavigationFirstFrameTimeout();
+}
+
+void BackForwardTransitionAnimator::ResetLiveOverlayLayer() {
+  if (embedder_live_content_clone_) {
+    CHECK(!old_surface_clone_);
+    embedder_live_content_clone_->RemoveFromParent();
+    embedder_live_content_clone_.reset();
+    return;
+  }
+
+  // There is no `old_surface_clone_` when navigating from a crashed page.
+  if (old_surface_clone_) {
+    old_surface_clone_->RemoveFromParent();
+    old_surface_clone_.reset();
+  }
 }
 
 }  // namespace content

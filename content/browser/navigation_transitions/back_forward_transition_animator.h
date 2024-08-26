@@ -146,6 +146,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
             nav_direction,
         ui::BackGestureEventSwipeEdge initiating_edge,
         NavigationEntryImpl* destination_entry,
+        SkBitmap embedder_content,
         BackForwardTransitionAnimationManagerAndroid* animation_manager);
   };
 
@@ -190,6 +191,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     return old_surface_clone_.get();
   }
   ProgressBar* progress_bar_for_testing() const { return progress_bar_.get(); }
+  cc::slim::UIResourceLayer* embedder_live_content_clone_for_testing() const {
+    return embedder_live_content_clone_.get();
+  }
 
   base::OneShotTimer* dismiss_screenshot_timer_for_testing() {
     return &dismiss_screenshot_timer_;
@@ -203,6 +207,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       BackForwardTransitionAnimationManager::NavigationDirection nav_direction,
       ui::BackGestureEventSwipeEdge initiating_edge,
       NavigationEntryImpl* destination_entry,
+      SkBitmap embedder_content,
       BackForwardTransitionAnimationManagerAndroid* animation_manager);
 
   // `gfx::FloatAnimationCurve::Target`:
@@ -273,7 +278,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void ProcessState();
 
   // Initializes the `ui_resource_layer_` and sets up the layer tree.
-  void SetupForScreenshotPreview();
+  void SetupForScreenshotPreview(SkBitmap embedder_content);
 
   // Sets the progress bar shown during the invoke phase of the animation.
   void SetupProgressBar();
@@ -313,7 +318,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   void MaybeCloneOldSurfaceLayer(RenderWidgetHostViewBase* old_main_frame_view);
 
-  void MaybeCopyContentAreaAsBitmap();
+  void SetUpEmbedderContentLayerIfNeeded(SkBitmap embedder_content);
 
   // Called when the navigation is ready to be committed in the renderer.
   void SubscribeToNewRenderWidgetHost(NavigationRequest* navigation_request);
@@ -330,6 +335,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // screenshot after the screenshot is fully centered because the new Document
   // hasn't produced a frame yet.
   void OnPostNavigationFirstFrameTimeout();
+
+  void ResetLiveOverlayLayer();
 
   const BackForwardTransitionAnimationManager::NavigationDirection
       nav_direction_;
