@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtFinish.Mainframe"
-    enum="BooleanAvailable" expires_after="2024-09-01">
+    enum="BooleanAvailable" expires_after="2025-08-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -541,45 +541,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtStart.Mainframe"
-    enum="BooleanAvailable" expires_after="2024-06-30">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether a threat details job has already started before starting to
-    collect threat details for blocking page triggered by mainframe. If it is
-    true, no report will be sent after user interacts with the warning.
-  </summary>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab{TriggerType}"
-    enum="BooleanAvailable" expires_after="2024-09-01">
+    name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab.SecurityInterstitial"
+    enum="BooleanAvailable" expires_after="2025-08-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether a threat details job is running on the current tab before
-    sending {TriggerType} client safe browsing report. The job can be already
-    deleted if the current tab is closed directly before the report is sent.
-    Only log if the report should be sent.
-  </summary>
-  <token key="TriggerType">
-    <variant name="" summary="any"/>
-    <variant name=".SecurityInterstitial" summary="security interstitial"/>
-  </token>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsInContainer.SecurityInterstitial"
-    enum="BooleanAvailable" expires_after="2024-09-15">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether a threat details job is found in the data collector
-    container before sending security interstitial client safe browsing report.
-    The report will not be sent if it is unavailable. Only log if the report
-    should be sent and there is an available collector in the data collector
-    map.
+    sending security interstitial client safe browsing report. The job can be
+    already deleted if the current tab is closed directly before the report is
+    sent. Only log if the report should be sent.
   </summary>
 </histogram>
 
@@ -2138,7 +2108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.Daily.SafeBrowsingState"
-    enum="SafeBrowsingState" expires_after="2024-09-29">
+    enum="SafeBrowsingState" expires_after="2025-08-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2427,7 +2397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.HasTokenFromFetcher" enum="BooleanHasToken"
-    expires_after="2024-09-22">
+    expires_after="2025-08-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2605,7 +2575,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Request.Size{UserCategory}" units="bytes"
-    expires_after="2024-09-01">
+    expires_after="2025-08-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

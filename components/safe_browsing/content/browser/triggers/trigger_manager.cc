@@ -190,11 +190,7 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
   // entry in the map for this |web_contents| if it's not there already.
   DataCollectorsContainer* collectors =
       &data_collectors_map_[GetWebContentsKey(web_contents)];
-  bool collection_in_progress = collectors->threat_details != nullptr;
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtStart.Mainframe",
-      collection_in_progress);
-  if (collection_in_progress) {
+  if (collectors->threat_details) {
     return false;
   }
 
@@ -229,16 +225,12 @@ TriggerManager::FinishCollectingThreatDetails(
   bool has_threat_details_in_map =
       base::Contains(data_collectors_map_, web_contents_key);
 
-  if (should_send_report) {
+  if (should_send_report &&
+      trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
     base::UmaHistogramBoolean(
-        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab",
+        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab."
+        "SecurityInterstitial",
         has_threat_details_in_map);
-    if (trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
-      base::UmaHistogramBoolean(
-          "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab."
-          "SecurityInterstitial",
-          has_threat_details_in_map);
-    }
   }
 
   // Make sure there's a ThreatDetails collector running on this tab.
@@ -248,14 +240,6 @@ TriggerManager::FinishCollectingThreatDetails(
         /*are_threat_details_available=*/false);
   DataCollectorsContainer* collectors = &data_collectors_map_[web_contents_key];
   bool has_threat_details = !!collectors->threat_details;
-
-  if (should_send_report &&
-      trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsInContainer."
-        "SecurityInterstitial",
-        has_threat_details);
-  }
 
   if (!has_threat_details) {
     return FinishCollectingThreatDetailsResult(
