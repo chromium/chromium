@@ -31,10 +31,6 @@ namespace blink {
 
 class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
  public:
-  // You probably don't want to instantiate this class directly, use
-  // RuntimeFeatureStateContext instead as it will initialize the override map.
-  RuntimeFeatureStateReadContext() = default;
-
   const base::flat_map<blink::mojom::RuntimeFeature, bool>&
   GetFeatureOverrides() const {
     return feature_overrides_;
@@ -107,6 +103,11 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   // The last comitted origin from the RenderFrameHost this state is attached
   // to via RuntimeFeatureStateDocumentData. Empty if not yet bound to one.
   std::optional<url::Origin> origin_;
+
+ protected:
+  // This class shouldn't be instantiated directly. Use
+  // RuntimeFeatureStateContext.
+  RuntimeFeatureStateReadContext() = default;
 
  private:
   // Only OriginTrialStateHostImpl should be able to make changes
