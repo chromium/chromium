@@ -99,6 +99,9 @@ void SystemMediaControlsBridge::SetPosition(
 
 void SystemMediaControlsBridge::ClearMetadata() {
   now_playing_info_center_delegate_.ClearMetadata();
+
+  // Notify test observers that metadata has been cleared.
+  remote_command_center_delegate_.OnMetadataClearedForTesting();
 }
 
 }  // namespace system_media_controls

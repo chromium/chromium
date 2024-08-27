@@ -83,4 +83,8 @@ interface SystemMediaControlsObserver {
 
   // (For testing purposes) Notifies the browser that the bridge has been established.
   OnBridgeCreatedForTesting();
+
+  // (For testing purposes) Notifies the browser that the bridge has cleared its
+  // now playing info.
+  OnMetadataClearedForTesting();
 };

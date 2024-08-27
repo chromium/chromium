@@ -4,7 +4,7 @@
 
 #include "components/system_media_controls/mac/system_media_controls_mac.h"
 
-#include "base/notimplemented.h"
+#include "base/check_is_test.h"
 #include "components/remote_cocoa/browser/application_host.h"
 #include "components/system_media_controls/mac/remote_cocoa/system_media_controls_bridge.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
@@ -25,6 +25,11 @@ system_media_controls::mojom::PlaybackStatus ConvertPlaybackStatus(
 }  // namespace
 
 namespace system_media_controls {
+
+// For testing only.
+base::RepeatingCallback<void(bool)>*
+    g_on_visibility_changed_for_testing_callback = nullptr;
+
 // static
 std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
     remote_cocoa::ApplicationHost* application_host) {
@@ -32,8 +37,9 @@ std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
 }
 // static
 void SystemMediaControls::SetVisibilityChangedCallbackForTesting(
-    base::RepeatingCallback<void(bool)>*) {
-  NOTIMPLEMENTED();
+    base::RepeatingCallback<void(bool)>* callback) {
+  CHECK_IS_TEST();
+  g_on_visibility_changed_for_testing_callback = callback;
 }
 
 namespace internal {
@@ -207,6 +213,17 @@ void SystemMediaControlsMac::OnBridgeCreatedForTesting() {
   // tests that are listening.
   if (on_bridge_created_callback_for_testing_) {
     std::move(on_bridge_created_callback_for_testing_).Run();
+  }
+}
+
+void SystemMediaControlsMac::OnMetadataClearedForTesting() {
+  if (g_on_visibility_changed_for_testing_callback) {
+    // The mojo test API told us that the metadata has been cleared.
+    // We are using this as a best-approximate signal that the visibility of the
+    // controls has changed, so run the callback with false, as clearing
+    // metadata implies that the controls should be hidden soon.
+    CHECK_IS_TEST();
+    g_on_visibility_changed_for_testing_callback->Run(false);
   }
 }
 

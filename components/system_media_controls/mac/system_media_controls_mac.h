@@ -76,6 +76,7 @@ class SystemMediaControlsMac
   void OnPlay() override;
   void OnSeekTo(base::TimeDelta seek_time) override;
   void OnBridgeCreatedForTesting() override;
+  void OnMetadataClearedForTesting() override;
 
   // remote_cocoa::ApplicationHost::Observer:
   void OnApplicationHostDestroying(

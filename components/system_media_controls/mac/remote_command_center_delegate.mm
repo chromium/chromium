@@ -124,4 +124,8 @@ void RemoteCommandCenterDelegate::OnBridgeCreatedForTesting() {
   observer_remote_->OnBridgeCreatedForTesting();
 }
 
+void RemoteCommandCenterDelegate::OnMetadataClearedForTesting() {
+  observer_remote_->OnMetadataClearedForTesting();
+}
+
 }  // namespace system_media_controls::internal
