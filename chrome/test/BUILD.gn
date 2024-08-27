@@ -5809,6 +5809,10 @@ template("performance_test_suite_template_base") {
       data_deps += [ "//third_party/dawn/src/dawn/tests:dawn_perf_tests" ]
     }
 
+    if (!is_chromeos_lacros) {
+      data_deps += [ "//third_party/dawn/src/tint/cmd/bench:bench_cmd" ]
+    }
+
     if (!is_android && !is_chromeos_lacros) {
       data_deps += [
         "//chrome/test:load_library_perf_tests",
