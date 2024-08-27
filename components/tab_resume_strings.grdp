@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
-  <!-- For use in iOS, Android and Desktop UI -->
+  <!-- For use in Android and Desktop UI -->
   <message name="IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO" desc="Label for visited x ago decorator">
     You visited
   </message>
@@ -16,6 +16,17 @@
   </message>
   <message name="IDS_TAB_RESUME_DECORATORS_TIME_OF_DAY" desc="Label for frequently visited at time of day decorator">
     You visit often at this time
+  </message>
+
+  <!-- For use in iOS UI -->
+  <message name="IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO_IOS" desc="Label for visited x ago decorator">
+    You Visited
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED_IOS" desc="Label for frequently visited decorator">
+    You Visit Often
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_MOST_RECENT_IOS" desc="Label for most recent decorator">
+    Your Most Recent Tab
   </message>
 
 </grit-part>
