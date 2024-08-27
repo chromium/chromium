@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,6 +47,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -52,6 +57,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageCallback;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -70,14 +78,20 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     private static final String TAB_TITLE = "Tab Title";
     private static final String REASON_TO_SHOW_TAB = "Your most recent Tab";
     private static final int TAB_ID = 11;
+    private static final int TRACKING_TAB_ID = 1;
 
     @Mock private UrlImageProvider mUrlImageProvider;
     @Mock private Tab mTab;
+    @Mock private Tab mTrackingTab;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Mock private Callback<Tab> mTabObserverCallback;
 
     @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
     @Captor private ArgumentCaptor<Callback<Drawable>> mThumbnailCallbackCaptor;
     @Captor private ArgumentCaptor<UrlImageCallback> mFetchImageCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mFetchSalientImageCallbackCaptor;
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
 
     private TabResumptionModuleView mModuleView;
     private Size mThumbnailSize;
@@ -89,6 +103,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     private SuggestionEntry mLastClickEntry;
     private int mClickCount;
     private Context mContext;
+    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
 
     @Before
     public void setUp() {
@@ -101,6 +116,12 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         when(mTab.getTitle()).thenReturn(TAB_TITLE);
         when(mTab.getTimestampMillis()).thenReturn(makeTimestamp(24 - 3, 0, 0));
         when(mTab.getId()).thenReturn(TAB_ID);
+
+        when(mTrackingTab.getUrl()).thenReturn(JUnitTestGURLs.BLUE_1);
+        when(mTrackingTab.getTitle()).thenReturn(TAB_TITLE);
+        when(mTrackingTab.getTimestampMillis()).thenReturn(makeTimestamp(24 - 3, 0, 0));
+        when(mTrackingTab.getId()).thenReturn(TRACKING_TAB_ID);
+
         int size =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.single_tab_module_tab_thumbnail_size_big);
@@ -112,12 +133,16 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                     ++mClickCount;
                 };
         mSuggestionBundle = new SuggestionBundle(CURRENT_TIME_MS);
+
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        mTabModelSelectorSupplier = new ObservableSupplierImpl<>();
+        mTabModelSelectorSupplier.set(mTabModelSelector);
     }
 
     @After
     public void tearDown() {
         mModuleView.destroy();
-        Assert.assertTrue(mTileContainerView.isCallbackControllerNullForTesting());
+        assertTrue(mTileContainerView.isCallbackControllerNullForTesting());
         mModuleView = null;
     }
 
@@ -167,7 +192,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         // Check tile texts.
         TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
-        Assert.assertTrue(
+        assertTrue(
                 TextUtils.isEmpty(
                         ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText()));
         Assert.assertEquals(
@@ -227,7 +252,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         // Check tile texts.
         TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
-        Assert.assertTrue(
+        assertTrue(
                 TextUtils.isEmpty(
                         ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText()));
         Assert.assertEquals(
@@ -403,7 +428,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         makeTimestamp(24 - 3, 0, 0),
                         mTab.getId(),
                         /* appId= */ null,
-                        /* reasonToShowTab= */ null);
+                        /* reasonToShowTab= */ null,
+                        /* reasonToShowTab= */ false);
         mSuggestionBundle.entries.add(entry1);
         Assert.assertEquals(0, mTileContainerView.getChildCount());
 
@@ -655,7 +681,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         makeTimestamp(24 - 3, 0, 0),
                         Tab.INVALID_TAB_ID,
                         appId,
-                        null);
+                        null,
+                        /* needMatchLocalTab= */ false);
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -721,7 +748,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         makeTimestamp(24 - 3, 0, 0),
                         Tab.INVALID_TAB_ID,
                         null,
-                        null);
+                        null,
+                        /* needMatchLocalTab= */ false);
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -786,7 +814,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         makeTimestamp(24 - 3, 0, 0),
                         Tab.INVALID_TAB_ID,
                         null,
-                        REASON_TO_SHOW_TAB);
+                        REASON_TO_SHOW_TAB,
+                        /* needMatchLocalTab= */ false);
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -833,7 +862,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         makeTimestamp(24 - 3, 0, 0),
                         Tab.INVALID_TAB_ID,
                         null,
-                        null);
+                        null,
+                        /* needMatchLocalTab= */ false);
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -866,6 +896,268 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                 ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
     }
 
+    @Test
+    @SmallTest
+    public void testHistoryDataMatchesTrackingTab() throws Exception {
+        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.setForTesting(true);
+        initModuleView();
+
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        "Source not to be shown",
+                        JUnitTestGURLs.BLUE_1,
+                        "Google Dog",
+                        makeTimestamp(24 - 3, 0, 0),
+                        Tab.INVALID_TAB_ID,
+                        null,
+                        null,
+                        /* needMatchLocalTab= */ true);
+
+        assertTrue(entry1.url.equals(mTrackingTab.getUrl()));
+        mSuggestionBundle.entries.add(entry1);
+
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        Assert.assertEquals(1, mTileContainerView.getChildCount());
+        // Verifies that the suggestion entry is updated to match the tracking Tab.
+        assertEquals(entry1.getLocalTabId(), mTrackingTab.getId());
+        verify(mTabObserverCallback).onResult(eq(mTrackingTab));
+
+        // Verifies that a LocalTileView is created for the history suggestion which matches the
+        // trackingTab.
+
+        // Capture call to fetch favicon.
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchImageForUrl(
+                        mFetchImagePageUrlCaptor.capture(), mFetchImageCallbackCaptor.capture());
+
+        // Capture call to fetch tab thumbnail.
+        verify(mUrlImageProvider, atLeastOnce())
+                .getTabThumbnail(
+                        eq(TRACKING_TAB_ID),
+                        eq(mThumbnailSize),
+                        mThumbnailCallbackCaptor.capture());
+
+        // Check tile texts.
+        LocalTileView localTileView = (LocalTileView) mTileContainerView.getChildAt(0);
+        // The default reason isn't shown.
+        Assert.assertEquals(
+                View.GONE, localTileView.findViewById(R.id.tab_show_reason).getVisibility());
+        TextView titleView = localTileView.findViewById(R.id.tab_title_view);
+        Assert.assertEquals("Google Dog", titleView.getText());
+        // Verifies that the maximum lines are the default 3 lines when the reason chip isn't shown.
+        Assert.assertEquals(
+                TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_DEFAULT, titleView.getMaxLines());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
+        Assert.assertEquals(
+                "www.blue.com",
+                ((TextView) localTileView.findViewById(R.id.tab_url_view)).getText());
+        // Verifies that a placeholder icon drawable is set for the tab thumbnail.
+        Assert.assertNotNull(
+                ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))
+                        .getIconDrawableForTesting());
+
+        // Provide test image, and check that it's shown as icon.
+        Bitmap expectedBitmap = makeBitmap(48, 48);
+        mFetchImageCallbackCaptor.getAllValues().get(0).onBitmap(expectedBitmap);
+        BitmapDrawable drawable =
+                (BitmapDrawable)
+                        ((ImageView) localTileView.findViewById(R.id.tab_favicon_view))
+                                .getDrawable();
+        Assert.assertNotNull(drawable);
+        Assert.assertEquals(expectedBitmap, drawable.getBitmap());
+
+        mThumbnailCallbackCaptor
+                .getAllValues()
+                .get(0)
+                .onResult(new BitmapDrawable(makeBitmap(64, 64)));
+        // Verifies that the placeholder icon drawable is removed after setting a foreground bitmap.
+        Assert.assertNull(
+                ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))
+                        .getIconDrawableForTesting());
+
+        // Simulate click on the local Tab.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertNull(mLastClickEntry);
+        localTileView.performClick();
+        Assert.assertEquals(1, mClickCount);
+        Assert.assertEquals(TRACKING_TAB_ID, mLastClickEntry.getLocalTabId());
+    }
+
+    @Test
+    @SmallTest
+    public void testHistoryDataMatchesNoneTrackingTab() throws Exception {
+        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.setForTesting(true);
+        initModuleView();
+
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        "Source not to be shown",
+                        JUnitTestGURLs.URL_1,
+                        "Google Dog",
+                        makeTimestamp(24 - 3, 0, 0),
+                        Tab.INVALID_TAB_ID,
+                        null,
+                        null,
+                        /* needMatchLocalTab= */ true);
+        // The entry1 doesn't match the tracking Tab.
+        assertFalse(entry1.url.equals(mTrackingTab.getUrl().getSpec()));
+        mSuggestionBundle.entries.add(entry1);
+
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        Assert.assertEquals(1, mTileContainerView.getChildCount());
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        assertEquals(entry1.getLocalTabId(), Tab.INVALID_TAB_ID);
+
+        // Verifies that a TabResumptionTileView is created for the history suggestion.
+        // Capture call to fetch image.
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchImageForUrl(
+                        mFetchImagePageUrlCaptor.capture(), mFetchImageCallbackCaptor.capture());
+        Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
+        Assert.assertEquals(1, mFetchImageCallbackCaptor.getAllValues().size());
+        Assert.assertEquals(JUnitTestGURLs.URL_1, mFetchImagePageUrlCaptor.getAllValues().get(0));
+
+        // Neither pre_info/app chip is displayed.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
+        // Verifies that the maximum lines are the default 3 lines for the display text.
+        TextView displayTextView = tile1.findViewById(R.id.tile_display_text);
+        Assert.assertEquals(
+                TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_DEFAULT,
+                displayTextView.getMaxLines());
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
+        Assert.assertEquals("Google Dog", displayTextView.getText());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
+        Assert.assertEquals(
+                "www.one.com", ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
+
+        // Image is not loaded yet.
+        Assert.assertNull(((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable());
+
+        // Provide test image, and check that it's shown as icon.
+        Bitmap bitmap1 = makeBitmap(64, 64);
+        mFetchImageCallbackCaptor.getAllValues().get(0).onBitmap(bitmap1);
+        BitmapDrawable drawable1 =
+                (BitmapDrawable) ((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable();
+        Assert.assertNotNull(drawable1);
+        Assert.assertEquals(bitmap1, drawable1.getBitmap());
+
+        // Simulate click.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertNull(mLastClickEntry);
+        tile1.performClick();
+        Assert.assertEquals(1, mClickCount);
+        Assert.assertEquals(JUnitTestGURLs.URL_1, mLastClickEntry.url);
+
+        // Sets the TabModel to make entry1 matches the other Tab in the model.
+        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getTabAt(0)).thenReturn(mTrackingTab);
+        when(mTabModel.getTabAt(1)).thenReturn(mTab);
+        mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
+
+        // Verifies that the entry1 and its tile are updated.
+        assertEquals(mTab.getId(), entry1.getLocalTabId());
+        verify(mTabObserverCallback).onResult(eq(mTab));
+
+        // Simulate click on the local Tab.
+        tile1.performClick();
+        Assert.assertEquals(2, mClickCount);
+        Assert.assertEquals(TAB_ID, mLastClickEntry.getLocalTabId());
+    }
+
+    @Test
+    @SmallTest
+    public void testHistoryDataDoesNotMatchesAnyLocalTab() throws Exception {
+        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.setForTesting(true);
+        initModuleView();
+
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        "Source not to be shown",
+                        JUnitTestGURLs.URL_2,
+                        "Google Dog",
+                        makeTimestamp(24 - 3, 0, 0),
+                        Tab.INVALID_TAB_ID,
+                        null,
+                        null,
+                        /* needMatchLocalTab= */ true);
+        // The entry1 doesn't match the tracking Tab.
+        assertFalse(entry1.url.equals(mTrackingTab.getUrl().getSpec()));
+        mSuggestionBundle.entries.add(entry1);
+
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        Assert.assertEquals(1, mTileContainerView.getChildCount());
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        assertEquals(entry1.getLocalTabId(), Tab.INVALID_TAB_ID);
+
+        // Verifies that a TabResumptionTileView is created for the history suggestion.
+        // Capture call to fetch image.
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchImageForUrl(
+                        mFetchImagePageUrlCaptor.capture(), mFetchImageCallbackCaptor.capture());
+        Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
+        Assert.assertEquals(1, mFetchImageCallbackCaptor.getAllValues().size());
+        Assert.assertEquals(JUnitTestGURLs.URL_2, mFetchImagePageUrlCaptor.getAllValues().get(0));
+
+        // Neither pre_info/app chip is displayed.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
+        // Verifies that the maximum lines are the default 3 lines for the display text.
+        TextView displayTextView = tile1.findViewById(R.id.tile_display_text);
+        Assert.assertEquals(
+                TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_DEFAULT,
+                displayTextView.getMaxLines());
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
+        Assert.assertEquals("Google Dog", displayTextView.getText());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
+        Assert.assertEquals(
+                "www.two.com", ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
+
+        // Image is not loaded yet.
+        Assert.assertNull(((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable());
+
+        // Provide test image, and check that it's shown as icon.
+        Bitmap bitmap1 = makeBitmap(64, 64);
+        mFetchImageCallbackCaptor.getAllValues().get(0).onBitmap(bitmap1);
+        BitmapDrawable drawable1 =
+                (BitmapDrawable) ((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable();
+        Assert.assertNotNull(drawable1);
+        Assert.assertEquals(bitmap1, drawable1.getBitmap());
+
+        // Simulate click.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertNull(mLastClickEntry);
+        tile1.performClick();
+        Assert.assertEquals(1, mClickCount);
+        Assert.assertEquals(JUnitTestGURLs.URL_2, mLastClickEntry.url);
+
+        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getTabAt(0)).thenReturn(mTrackingTab);
+        when(mTabModel.getTabAt(1)).thenReturn(mTab);
+        mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
+
+        // Verifies that the entry1 and its tile aren't updated.
+        assertEquals(Tab.INVALID_TAB_ID, entry1.getLocalTabId());
+        verify(mTabObserverCallback, never()).onResult(any());
+
+        // The click listener still for a URL click, not local Tab click.
+        tile1.performClick();
+        Assert.assertEquals(2, mClickCount);
+        Assert.assertEquals(Tab.INVALID_TAB_ID, mLastClickEntry.getLocalTabId());
+    }
+
     private void initModuleView() {
         mModuleView =
                 (TabResumptionModuleView)
@@ -874,6 +1166,9 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         mModuleView.setUrlImageProvider(mUrlImageProvider);
         mModuleView.setClickCallback(mClickCallback);
+        mModuleView.setTabModelSelectorSupplier(mTabModelSelectorSupplier);
+        mModuleView.setTabObserverCallback(mTabObserverCallback);
+        mModuleView.setTrackingTab(mTrackingTab);
         mTileContainerView = mModuleView.getTileContainerViewForTesting();
     }
 }

@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -76,13 +75,6 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
             return false;
         }
 
-        assert mTabModelSelectorSupplier.hasValue();
-        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-        TabModel tabModel =
-                tabModelSelector.getModel(
-                        /** incognito= */
-                        false);
-
         TabResumptionDataProviderFactory dataProviderFactory =
                 () -> makeDataProvider(profile, moduleDelegate);
 
@@ -98,7 +90,11 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
 
         TabResumptionModuleCoordinator coordinator =
                 new TabResumptionModuleCoordinator(
-                        mContext, moduleDelegate, tabModel, dataProviderFactory, urlImageProvider);
+                        mContext,
+                        moduleDelegate,
+                        mTabModelSelectorSupplier,
+                        dataProviderFactory,
+                        urlImageProvider);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }
@@ -169,7 +165,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
             Profile profile = getRegularProfile();
             SuggestionBackend suggestionBackend =
                     TabResumptionModuleEnablement.SyncDerived.isV2Enabled()
-                            ? new VisitedUrlRankingBackend(profile)
+                            ? new VisitedUrlRankingBackend(profile, mTabModelSelectorSupplier)
                             : new ForeignSessionSuggestionBackend(
                                     new ForeignSessionHelper(profile),
                                     (url) -> TabResumptionModuleUtils.shouldExcludeUrl(url));

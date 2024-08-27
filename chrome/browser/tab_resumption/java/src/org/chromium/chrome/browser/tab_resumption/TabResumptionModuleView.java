@@ -11,10 +11,15 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
  * The View for the tab resumption module, consisting of a header followed by suggestion tile(s).
@@ -30,6 +35,9 @@ public class TabResumptionModuleView extends LinearLayout {
     private String mTitle;
     private String mSeeMoreViewText;
     private String mAllTilesTexts;
+    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private Callback<Tab> mTabObserverCallback;
+    @Nullable private Tab mTrackingTab;
 
     public TabResumptionModuleView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -89,20 +97,47 @@ public class TabResumptionModuleView extends LinearLayout {
         setContentDescriptionOfTabResumption();
     }
 
+    void setTabModelSelectorSupplier(
+            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        renderIfReady();
+    }
+
+    /** Sets the Tab that is tracked by the module's host surface. */
+    void setTrackingTab(@Nullable Tab tab) {
+        mTrackingTab = tab;
+    }
+
+    void setTabObserverCallback(@NonNull Callback<Tab> callback) {
+        mTabObserverCallback = callback;
+        renderIfReady();
+    }
+
     TabResumptionTileContainerView getTileContainerViewForTesting() {
         return mTileContainerView;
     }
 
     private void renderIfReady() {
-        if (mIsSuggestionBundleReady && mUrlImageProvider != null && mClickCallback != null) {
+        if (mIsSuggestionBundleReady
+                && mUrlImageProvider != null
+                && mClickCallback != null
+                && mTabModelSelectorSupplier != null
+                && mTabObserverCallback != null) {
             if (mBundle == null) {
                 mTileContainerView.removeAllViews();
                 mTileContainerView.cancelAllCallbacks();
                 mAllTilesTexts = null;
             } else {
+                assert mTabModelSelectorSupplier.hasValue();
                 mAllTilesTexts =
                         mTileContainerView.renderAllTiles(
-                                mBundle, mUrlImageProvider, mClickCallback, mUseSalientImage);
+                                mBundle,
+                                mUrlImageProvider,
+                                mClickCallback,
+                                mUseSalientImage,
+                                mTabModelSelectorSupplier.get(),
+                                mTrackingTab,
+                                mTabObserverCallback);
             }
             setContentDescriptionOfTabResumption();
         }

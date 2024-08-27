@@ -107,7 +107,15 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
     private static SuggestionEntry createSuggestionEntry(
             String source, GURL url, String title, long time, int id) {
         return new SuggestionEntry(
-                SuggestionEntryType.LOCAL_TAB, source, url, title, time, id, null, null);
+                SuggestionEntryType.LOCAL_TAB,
+                source,
+                url,
+                title,
+                time,
+                id,
+                null,
+                null,
+                /* needMatchLocalTab= */ false);
     }
 
     @Test
@@ -336,7 +344,8 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
                         TIMESTAMP_0,
                         ID_0,
                         null,
-                        null);
+                        null,
+                        /* needMatchLocalTab= */ false);
         assertTrue(entry.isLocalTab());
 
         entry =
@@ -348,7 +357,8 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
                         TIMESTAMP_0,
                         ID_0,
                         null,
-                        null);
+                        null,
+                        /* needMatchLocalTab= */ false);
         assertTrue(entry.isLocalTab());
 
         SuggestionEntry invalidEntry =
@@ -360,7 +370,8 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
                         TIMESTAMP_0,
                         Tab.INVALID_TAB_ID,
                         null,
-                        null);
+                        null,
+                        /* needMatchLocalTab= */ false);
         assertFalse(invalidEntry.isLocalTab());
     }
 }
