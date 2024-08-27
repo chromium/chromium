@@ -25,12 +25,7 @@ std::unique_ptr<Profile> FakeProfileManager::CreateProfileHelper(
     const base::FilePath& path) {
   if (!base::PathExists(path) && !base::CreateDirectory(path))
     return nullptr;
-  auto profile =
-      BuildTestingProfile(path, nullptr, Profile::CreateMode::kSynchronous);
-  // Add the profile to |profiles_info_|. We need to do this manually, because
-  // TestingProfile does not call OnProfileCreationStarted().
-  OnProfileCreationStarted(profile.get(), Profile::CreateMode::kSynchronous);
-  return profile;
+  return BuildTestingProfile(path, this, Profile::CreateMode::kSynchronous);
 }
 
 std::unique_ptr<Profile> FakeProfileManager::CreateProfileAsyncHelper(
@@ -41,13 +36,5 @@ std::unique_ptr<Profile> FakeProfileManager::CreateProfileAsyncHelper(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&base::CreateDirectory), path));
 
-  auto profile =
-      BuildTestingProfile(path, this, Profile::CreateMode::kAsynchronous);
-
-// TODO(b/341267441): Remove this buildflag if statement after this change does
-// not cause test failure on ChromeOS ash anymore,
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  OnProfileCreationStarted(profile.get(), Profile::CreateMode::kAsynchronous);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  return profile;
+  return BuildTestingProfile(path, this, Profile::CreateMode::kAsynchronous);
 }

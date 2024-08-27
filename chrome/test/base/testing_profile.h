@@ -495,7 +495,7 @@ class TestingProfile : public Profile {
 
  private:
   // Common initialization between the two constructors.
-  void Init(bool is_supervised_profile);
+  void Init(bool is_supervised_profile, CreateMode create_mode);
 
   // Finishes initialization when a profile is created asynchronously.
   void FinishInit(CreateMode create_mode);

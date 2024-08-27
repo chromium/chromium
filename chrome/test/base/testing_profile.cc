@@ -311,7 +311,7 @@ TestingProfile::TestingProfile(
         f.service_factory_and_testing_factory);
   }
 
-  Init(is_supervised_profile);
+  Init(is_supervised_profile, create_mode);
 
   switch (create_mode) {
     case CreateMode::kSynchronous:
@@ -326,7 +326,7 @@ TestingProfile::TestingProfile(
   }
 }
 
-void TestingProfile::Init(bool is_supervised_profile) {
+void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
   if (!g_browser_process) {
     // This is intentionally not a CHECK because that would exonerate any
     // EXPECT_CHECK_DEATH()s for the wrong reason by printing "Check failed" to
@@ -343,6 +343,10 @@ void TestingProfile::Init(bool is_supervised_profile) {
          content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   InitializeProfileType();
+
+  if (delegate_) {
+    delegate_->OnProfileCreationStarted(this, create_mode);
+  }
 
   if (IsOffTheRecord()) {
     key_ = std::make_unique<TestingProfileKey>(

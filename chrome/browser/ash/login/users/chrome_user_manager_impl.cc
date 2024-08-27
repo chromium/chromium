@@ -536,12 +536,18 @@ void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
       CHECK_IS_TEST();
     } else {
       const user_manager::User* user = *it;
-      // A |User| instance should always exist for a profile which is not the
-      // initial, the sign-in or the lock screen app profile.
-      CHECK(session_manager::SessionManager::Get()->HasSessionForAccountId(
-          user->GetAccountId()))
-          << "Attempting to construct the profile before starting the user "
-             "session";
+      auto* session_manager = session_manager::SessionManager::Get();
+      if (session_manager) {
+        // A |User| instance should always exist for a profile which is not the
+        // initial, the sign-in or the lock screen app profile.
+        CHECK(session_manager->HasSessionForAccountId(user->GetAccountId()))
+            << "Attempting to construct the profile before starting the user "
+               "session";
+      } else {
+        // SessionManager should be always initialized before Profile creation,
+        // except tests.
+        CHECK_IS_TEST();
+      }
       ash::AnnotatedAccountId::Set(profile, user->GetAccountId(),
                                    /*for_test=*/false);
     }
