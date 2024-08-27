@@ -404,7 +404,7 @@ TEST_P(SafeBrowsingTabHelperTest, SafeRedirectChain) {
 }
 
 // Tests the case of a redirection chain with async checks, where all URLs in
-// the chain are safe.
+// the chain are found as safe from sync queries.
 TEST_P(SafeBrowsingTabHelperTest, SafeRedirectChainWithAsyncCheck) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
@@ -461,6 +461,39 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectChainFirstRequestUnsafe) {
   EXPECT_TRUE(response_decision.ShouldCancelNavigation());
 }
 
+// Tests the case of a redirection chain with async checks, where the first URL
+// in the chain is found as unsafe from sync queries and the rest are safe.
+TEST_P(SafeBrowsingTabHelperTest,
+       RedirectChainFirstRequestUnsafeWithAsyncChecks) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  GURL url1("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  GURL url2("http://chromium2.test");
+  GURL url3("http://chromium3.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  StoreUnsafeResource(url1);
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  SimulateMainFrameRedirect();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url3);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+}
+
 // Tests the case of a redirection chain, where the middle URL in the chain is
 // unsafe and the rest are safe.
 TEST_P(SafeBrowsingTabHelperTest, RedirectChainMiddleRequestUnsafe) {
@@ -480,6 +513,40 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectChainMiddleRequestUnsafe) {
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
   if (SafeBrowsingDecisionArrivesBeforeResponse())
     base::RunLoop().RunUntilIdle();
+  SimulateMainFrameRedirect();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url3);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+}
+
+// Tests the case of a redirection chain with async checks, where the middle URL
+// in the chain is found as unsafe from sync queries and the rest are safe.
+TEST_P(SafeBrowsingTabHelperTest,
+       RedirectChainMiddleRequestUnsafeWithAsyncCheck) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+
+  GURL url1("http://chromium1.test");
+  GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  GURL url3("http://chromium3.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  StoreUnsafeResource(url2);
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
   SimulateMainFrameRedirect();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -513,6 +580,39 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectChainFinalRequestUnsafe) {
   EXPECT_TRUE(response_decision.ShouldCancelNavigation());
 }
 
+// Tests the case of a redirection chain with async check, where the final URL
+// in the chain is found as unsafe from sync queries and the rest are safe.
+TEST_P(SafeBrowsingTabHelperTest,
+       RedirectChainFinalRequestUnsafeWithAsyncCheck) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  GURL url1("http://chromium1.test");
+  GURL url2("http://chromium3.test");
+  GURL url3("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
+  StoreUnsafeResource(url3);
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  SimulateMainFrameRedirect();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url3);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+}
+
 // Tests the case of a redirection chain, where the all URLs in the chain are
 // unsafe.
 TEST_P(SafeBrowsingTabHelperTest, RedirectChainAllRequestsUnsafe) {
@@ -534,6 +634,41 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectChainAllRequestsUnsafe) {
   StoreUnsafeResource(url3);
   if (SafeBrowsingDecisionArrivesBeforeResponse())
     base::RunLoop().RunUntilIdle();
+  SimulateMainFrameRedirect();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url3);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+}
+
+// Tests the case of a redirection chain with async check, where the all URLs in
+// the chain are found as unsafe from sync queries.
+TEST_P(SafeBrowsingTabHelperTest,
+       RedirectChainAllRequestsUnsafeWithAsyncCheck) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  GURL url1("http://" + FakeSafeBrowsingService::kUnsafeHost + "/1");
+  GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost + "/2");
+  GURL url3("http://" + FakeSafeBrowsingService::kUnsafeHost + "/3");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  StoreUnsafeResource(url1);
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  StoreUnsafeResource(url2);
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
+  StoreUnsafeResource(url3);
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
   SimulateMainFrameRedirect();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -578,6 +713,41 @@ TEST_P(SafeBrowsingTabHelperTest, InterruptedUnsafeRedirectChain) {
   StoreUnsafeResource(url1);
   if (SafeBrowsingDecisionArrivesBeforeResponse())
     base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  StoreUnsafeResource(url2);
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  SimulateMainFrameRedirect();
+
+  // Interrupt the redirection chain with a brand new unrelated query. This
+  // should be treated as safe.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url3);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+}
+
+// Tests the case of a redirection chain with sync and async checks that are
+// interrupted by an unrelated request.
+TEST_P(SafeBrowsingTabHelperTest,
+       InterruptedUnsafeRedirectChainWithAsyncCheck) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  GURL url1("http://" + FakeSafeBrowsingService::kUnsafeHost + "/1");
+  GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost + "/2");
+  GURL url3("http://chromium3.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  StoreUnsafeResource(url1);
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
   StoreUnsafeResource(url2);

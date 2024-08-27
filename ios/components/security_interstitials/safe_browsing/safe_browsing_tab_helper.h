@@ -159,6 +159,16 @@ class SafeBrowsingTabHelper
         const SafeBrowsingQueryManager::QueryData& query_data,
         web::WebStatePolicyDecider::PolicyDecision decision);
 
+    // Decisions made from async checks aren't required to allow a navigation to
+    // proceed. Therefore, this function doesn't necessarily run the response
+    // callback provided from `PolicyDecider::ShouldAllowResponse()`. The main
+    // purpose of `OnMainFrameUrlAsyncQueryDecided()` is to update the policy
+    // `decision` and to potentially block a navigation if an unsafe decision is
+    // received from an async check.
+    void OnMainFrameUrlAsyncQueryDecided(
+        const SafeBrowsingQueryManager::QueryData& query_data,
+        web::WebStatePolicyDecider::PolicyDecision decision);
+
     // Returns the policy decision determined by the results of queries for URLs
     // in the main-frame redirect chain and the `pending_main_frame_query`. If
     // at least one such query has received a decision to cancel the navigation,
@@ -192,6 +202,10 @@ class SafeBrowsingTabHelper
         std::optional<web::WebStatePolicyDecider::PolicyDecision> decision,
         RedirectChainFilter filter);
 
+    // Moves `pending_main_frame_redirect_chain_` to
+    // `to_be_committed_redirect_chain_`.
+    void UpdateToBeCommittedRedirectChain();
+
     // The URL check query manager.
     raw_ptr<SafeBrowsingQueryManager> query_manager_;
     // The safe browsing client.
@@ -206,6 +220,9 @@ class SafeBrowsingTabHelper
     // current `pending_main_frame_query_`. This does not include
     // `pending_main_frame_query_` itself.
     std::list<MainFrameUrlQuery> pending_main_frame_redirect_chain_;
+    // A list of queries corresponding to the redirect chain saved at
+    // `ShouldAllowResponse()` and before `DidFinishNavigation()`.
+    std::list<MainFrameUrlQuery> to_be_committed_redirect_chain_;
   };
 
   // Helper object that observes results of URL check queries.
@@ -223,6 +240,8 @@ class SafeBrowsingTabHelper
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check) override;
     void SafeBrowsingSyncQueryFinished(
+        const SafeBrowsingQueryManager::QueryData& query_data) override;
+    void SafeBrowsingAsyncQueryFinished(
         const SafeBrowsingQueryManager::QueryData& query_data) override;
     void SafeBrowsingQueryManagerDestroyed(
         SafeBrowsingQueryManager* manager) override;
