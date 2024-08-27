@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 // "Always Show Toolbar in Full Screen" is off.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        MinimumContentOffset) {
-  chrome::DisableFindBarAnimationsDuringTesting(true);
+  DisableFindBarAnimationsDuringTesting(true);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ImmersiveModeController* controller =
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
     chrome::CloseFind(browser());
     EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
   }
-  chrome::DisableFindBarAnimationsDuringTesting(false);
+  DisableFindBarAnimationsDuringTesting(false);
 }
 
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        ContentFullscreenChildren) {
-  chrome::DisableFindBarAnimationsDuringTesting(true);
+  DisableFindBarAnimationsDuringTesting(true);
 
   // Enter browser fullscreen.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
@@ -397,5 +397,5 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_EQ(browser_view->overlay_widget(), find_bar->parent());
 
   chrome::CloseFind(browser());
-  chrome::DisableFindBarAnimationsDuringTesting(false);
+  DisableFindBarAnimationsDuringTesting(false);
 }

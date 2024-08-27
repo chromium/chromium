@@ -85,9 +85,7 @@ const int kMoveIterations = 30;
 
 class FindInPageControllerTest : public InProcessBrowserTest {
  public:
-  FindInPageControllerTest() {
-    chrome::DisableFindBarAnimationsDuringTesting(true);
-  }
+  FindInPageControllerTest() { DisableFindBarAnimationsDuringTesting(true); }
 
  protected:
   void SetUpOnMainThread() override {
