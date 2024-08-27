@@ -1098,7 +1098,6 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
   absl::Cleanup cleanup = [&]() { dest_scoped_access.reset(); };
   viz::SharedImageFormat dest_format = dest_shared_image->format();
   auto* gr_context = shared_context_state_->gr_context();
-  bool need_graphite_submit = dest_scoped_access->NeedGraphiteContextSubmit();
   for (int plane = 0; plane < dest_format.NumberOfPlanes(); plane++) {
     bool written = false;
     if (gr_context) {
@@ -1117,7 +1116,7 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
     if (!written) {
       dest_scoped_access->ApplyBackendSurfaceEndState();
       shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
-                                               need_graphite_submit);
+                                               /*need_graphite_submit=*/true);
       return base::unexpected(
           GLError(GL_INVALID_OPERATION, "glWritePixelsYUV",
                   "Failed to upload pixels to dest shared image"));
@@ -1126,7 +1125,7 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
   shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
-                                           need_graphite_submit);
+                                           /*need_graphite_submit=*/true);
 
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));

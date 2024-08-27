@@ -2369,9 +2369,8 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
   }
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
-  shared_context_state_->SubmitIfNecessary(
-      std::move(end_semaphores),
-      dest_scoped_access->NeedGraphiteContextSubmit());
+  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
+                                           /*need_graphite_submit=*/true);
 
   return written;
 }
