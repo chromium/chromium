@@ -287,6 +287,7 @@ LensOverlayQueryController::CreateClientContext() {
   // Add the appropriate context filters. If source and target languages have
   // been set, this should add translate.
   if (translate_options_.has_value()) {
+    context.mutable_client_filters()->clear_filter();
     lens::AppliedFilter* translate_filter =
         context.mutable_client_filters()->add_filter();
     translate_filter->set_filter_type(lens::TRANSLATE);

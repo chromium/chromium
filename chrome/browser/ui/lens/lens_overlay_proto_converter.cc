@@ -361,7 +361,7 @@ lens::mojom::ParagraphPtr CreateParagraphMojomFromProto(
   paragraph->writing_direction =
       lens::mojom::WritingDirection(proto_paragraph.writing_direction());
 
-  if (deep_gleam.has_value()) {
+  if (deep_gleam.has_value() && deep_gleam->has_translation()) {
     paragraph->translation = CreateTranslatedParagraphMojomFromProto(
         proto_paragraph, deep_gleam.value(), resized_bitmap_size);
   }

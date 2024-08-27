@@ -30,6 +30,11 @@ const SUPPORTED_TRANSLATION_LANGUAGES = new Set([
   'uk',  'ur',  'ug',    'uz',    'vi', 'cy', 'xh', 'yi', 'yo', 'zu',
 ]);
 
+export interface TranslateState {
+  translateModeEnabled: boolean;
+  targetLanguage: string;
+}
+
 export interface TranslateButtonElement {
   $: {
     languagePicker: HTMLDivElement,
@@ -145,6 +150,7 @@ export class TranslateButtonElement extends PolymerElement {
         this.$.sourceLanguagePickerContainer.itemForElement(event.target);
     this.sourceLanguage = newSourceLanguage;
     this.hideLanguagePickerMenus();
+    this.maybeIssueTranslateRequest();
   }
 
   private onTargetLanguageMenuItemClick(event: PointerEvent) {
@@ -153,12 +159,36 @@ export class TranslateButtonElement extends PolymerElement {
         this.$.targetLanguagePickerContainer.itemForElement(event.target);
     this.targetLanguage = newTargetLanguage;
     this.hideLanguagePickerMenus();
+    this.maybeIssueTranslateRequest();
+    // Dispatch event to let other components know the overlay translate mode
+    // state.
+    this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        translateModeEnabled: this.isTranslateModeEnabled,
+        targetLanguage: this.targetLanguage.code,
+      },
+    }));
   }
 
   private onTranslateButtonClick() {
     // Toggle translate mode on button click.
     this.isTranslateModeEnabled = !this.isTranslateModeEnabled;
+    this.maybeIssueTranslateRequest();
+    // Dispatch event to let other components know the overlay translate mode
+    // state.
+    this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        translateModeEnabled: this.isTranslateModeEnabled,
+        targetLanguage: this.targetLanguage.code,
+      },
+    }));
+  }
 
+  private maybeIssueTranslateRequest() {
     if (this.isTranslateModeEnabled) {
       this.browserProxy.handler.issueTranslateFullPageRequest(
           this.sourceLanguage ? this.sourceLanguage.code : 'auto',

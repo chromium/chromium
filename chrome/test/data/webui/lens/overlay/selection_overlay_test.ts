@@ -15,11 +15,12 @@ import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_ov
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
 import {getImageBoundingRect, simulateClick, simulateDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
+import {createLine, createParagraph, createText, createTranslatedLine, createTranslatedParagraph, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -80,6 +81,49 @@ suite('SelectionOverlay', function() {
     ]);
     callbackRouterRemote.textReceived(text);
     return flushTasks();
+  }
+
+  function addWordsWithTranslations() {
+    const text = createText([
+      createParagraph(
+          [
+            createLine([
+              createWord(
+                  'hello',
+                  normalizedBox({x: 20, y: 20, width: 30, height: 10})),
+              createWord(
+                  'there',
+                  normalizedBox({x: 50, y: 20, width: 50, height: 10})),
+              createWord(
+                  'test', normalizedBox({x: 80, y: 20, width: 30, height: 10})),
+            ]),
+          ],
+          createTranslatedParagraph([createTranslatedLine(
+              [
+                createWord(
+                    'wow',
+                    normalizedBox({x: 20, y: 20, width: 30, height: 10})),
+                createWord(
+                    'a', normalizedBox({x: 50, y: 20, width: 50, height: 10})),
+                createWord(
+                    'translation',
+                    normalizedBox({x: 80, y: 20, width: 30, height: 10})),
+              ],
+              /*translation=*/ 'wow a translation',
+              /*textHexColor=*/ '#ffffff',
+              /*backgroundHexColor=*/ '#000000')])),
+    ]);
+    callbackRouterRemote.textReceived(text);
+    return flushTasks();
+  }
+
+  function dispatchTranslateStateEvent(
+      target: Element, translateModeEnabled: boolean, targetLanguage: string) {
+    target.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
+      detail: {translateModeEnabled, targetLanguage},
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   function addObjects() {
@@ -792,4 +836,52 @@ suite('SelectionOverlay', function() {
     assertEquals(
         1, testBrowserProxy.handler.getCallCount('closePreselectionBubble'));
   });
+
+  test(
+      `verify that translate text does not render if translate mode disabled`,
+      async () => {
+        await addWordsWithTranslations();
+
+        // Make sure only non-translated word divs are present and visible.
+        const wordElements = selectionOverlayElement.$.textSelectionLayer
+                                 .getWordNodesForTesting();
+        assertTrue(wordElements.length > 0);
+        for (const word of wordElements) {
+          assertTrue(isVisible(word));
+        }
+
+        const translatedWordElements =
+            selectionOverlayElement.$.textSelectionLayer
+                .getTranslatedWordNodesForTesting();
+        assertTrue(translatedWordElements.length > 0);
+        for (const word of translatedWordElements) {
+          assertFalse(isVisible(word));
+        }
+      });
+
+  test(
+      `verify that translate text does render if translate mode enabled`,
+      async () => {
+        await addWordsWithTranslations();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        // Make sure only non-translated word divs are visible.
+        const wordElements = selectionOverlayElement.$.textSelectionLayer
+                                 .getWordNodesForTesting();
+        assertTrue(wordElements.length > 0);
+        for (const word of wordElements) {
+          assertFalse(isVisible(word));
+        }
+
+        const translatedWordElements =
+            selectionOverlayElement.$.textSelectionLayer
+                .getTranslatedWordNodesForTesting();
+        assertTrue(translatedWordElements.length > 0);
+        for (const word of translatedWordElements) {
+          assertTrue(isVisible(word));
+        }
+      });
 });
