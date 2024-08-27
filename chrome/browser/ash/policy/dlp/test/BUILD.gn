@@ -26,6 +26,7 @@ static_library("test_support") {
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/chromeos",

@@ -97,6 +97,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/file_manager",

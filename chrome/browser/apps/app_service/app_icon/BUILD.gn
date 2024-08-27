@@ -140,10 +140,13 @@ source_set("unit_tests") {
 
     deps += [
       "//ash/components/arc:arc_test_support",
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/crostini:test_support",
+      "//chromeos/ash/components/dbus/chunneld",
+      "//chromeos/ash/components/dbus/seneschal",
     ]
   }
 }

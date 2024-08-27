@@ -68,6 +68,7 @@ source_set("unit_tests") {
     "//ui/base",
     "//ui/events",
     "//ui/events:test_support",
+    "//ui/events/ash",
     "//ui/events/devices:test_support",
     "//ui/lottie",
     "//ui/message_center",

@@ -581,6 +581,8 @@ static_library("test_support") {
 
   allow_circular_includes_from = [ "//chrome/test:test_support" ]
 
+  public_deps = [ "//chromeos/ash/components/system" ]
+
   deps = [
     ":crosapi",
     "//ash",
@@ -590,8 +592,10 @@ static_library("test_support") {
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
+    "//chrome/browser/ash/printing/history",
     "//chrome/browser/ash/printing/history:test_support",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/webui/ash/app_install",
@@ -719,6 +723,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/parent_access",
     "//chrome/common/printing",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/audio",
@@ -789,6 +794,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/app_mode/test:test_support",

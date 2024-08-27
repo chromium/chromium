@@ -65,6 +65,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/spaced:spaced",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/sparky",
     "//components/manta",
     "//components/prefs",
     "//content/test:test_support",

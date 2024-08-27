@@ -130,6 +130,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":app_list",
     "//ash/app_list/model:app_list_model",
     "//ash/components/arc:arc_test_support",
     "//ash/constants",

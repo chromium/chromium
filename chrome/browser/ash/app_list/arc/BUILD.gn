@@ -142,6 +142,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/apps/app_service/app_icon:util",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/test:test_support",

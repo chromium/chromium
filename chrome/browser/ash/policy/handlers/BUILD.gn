@@ -166,6 +166,8 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":handlers",
+    ":test_support",
     "//ash/components/arc",
     "//ash/components/arc:arc_test_support",
     "//ash/components/arc:prefs",
@@ -175,6 +177,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/ash",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
@@ -182,8 +185,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/notifications:unit_tests",
     "//chrome/browser/ash/plugin_vm",
-    "//chrome/browser/ash/policy/handlers",
-    "//chrome/browser/ash/policy/handlers:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/extensions",

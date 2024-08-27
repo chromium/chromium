@@ -123,6 +123,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/system",
     "//chromeos/ash/services/network_config",
     "//chromeos/ash/services/network_config:in_process_instance",
     "//components/session_manager/core",

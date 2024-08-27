@@ -140,6 +140,7 @@ source_set("browser_tests") {
     "//components/prefs",
     "//content/public/browser",
     "//content/test:test_support",
+    "//services/viz/privileged/mojom/compositing:features_shared_cpp_sources",
     "//ui/aura",
     "//ui/events",
     "//ui/events:test_support",

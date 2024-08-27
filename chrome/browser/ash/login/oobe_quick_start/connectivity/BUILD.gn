@@ -82,6 +82,7 @@ source_set("unit_tests") {
     "proto",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
     "//chrome/browser/ash/nearby:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/nearby/common/connections_manager:test_support",

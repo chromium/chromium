@@ -77,6 +77,7 @@ source_set("browser_tests") {
   deps = [
     ":os_feedback",
     "//ash/constants",
+    "//ash/webui/help_app_ui",
     "//base",
     "//chrome/browser",
     "//chrome/browser:browser_process",

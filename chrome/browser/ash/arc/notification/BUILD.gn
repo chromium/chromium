@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/app/vector_icons",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",

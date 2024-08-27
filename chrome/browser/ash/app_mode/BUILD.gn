@@ -238,6 +238,7 @@ source_set("unit_tests") {
     "//components/webapps/common:mojo_bindings",
     "//content/test:test_support",
     "//extensions:test_support",
+    "//extensions/browser/updater",
     "//extensions/common:common",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",

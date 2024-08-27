@@ -447,6 +447,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/login/ui:test_support",
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/printing:test_support",
+      "//chrome/browser/ash/printing/history",
       "//chrome/browser/ash/printing/history:test_support",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/system_web_apps/test_support:test_support",

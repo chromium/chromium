@@ -80,14 +80,18 @@ source_set("unit_tests") {
 
   deps = [
     ":ml",
+    ":screen_brightness_event_proto",
+    ":user_activity_event_proto",
     ":user_activity_ukm_logger_helpers",
     "//base/test:test_support",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/cpp:stub",
     "//components/site_engagement/content",

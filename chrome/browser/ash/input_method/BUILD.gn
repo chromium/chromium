@@ -466,6 +466,7 @@ source_set("browser_tests") {
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chromeos/strings:strings_grit",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/signin/public/identity_manager:test_support",

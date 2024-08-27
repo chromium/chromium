@@ -104,6 +104,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/mako",
     "//chrome/test:test_support",
     "//chromeos/components/magic_boost/public/cpp:cpp",
+    "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants",
     "//content/public/browser",
     "//content/test:test_support",

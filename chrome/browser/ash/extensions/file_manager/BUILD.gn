@@ -180,8 +180,10 @@ source_set("unit_tests") {
   deps = [
     ":file_manager",
     "//ash/components/arc",
+    "//ash/webui/file_manager:constants",
     "//base",
     "//chrome/browser",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/ash/policy/dlp/test:test_support",
@@ -217,6 +219,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/ash/policy/dlp/test:test_support",

@@ -142,6 +142,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/settings",

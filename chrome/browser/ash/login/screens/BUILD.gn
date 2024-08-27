@@ -478,6 +478,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/screens/chromevox_hint",
     "//chrome/browser/ash/login/session:test_support",
     "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/login/version_updater",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/enrollment",

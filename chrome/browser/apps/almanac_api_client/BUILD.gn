@@ -76,6 +76,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/common:channel_info",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/system",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/language/core/browser",

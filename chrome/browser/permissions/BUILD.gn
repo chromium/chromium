@@ -259,6 +259,7 @@ if (!is_android) {
       "permission_request_manager_browsertest.cc",
       "permission_settings_page_browsertest.cc",
     ]
+
     deps = [
       ":permissions",
       "//chrome/browser/media/webrtc",
@@ -268,9 +269,12 @@ if (!is_android) {
       "//components/back_forward_cache",
       "//components/optimization_guide/core:test_support",
     ]
+
     if (is_chromeos_ash) {
       sources += [ "system/system_permission_settings_chromeos_unittest.cc" ]
+      deps += [ "//chrome/browser/ash/privacy_hub" ]
     }
+
     if (build_with_tflite_lib) {
       sources += [ "prediction_service_browsertest.cc" ]
       deps += [ "//components/permissions/prediction_service" ]

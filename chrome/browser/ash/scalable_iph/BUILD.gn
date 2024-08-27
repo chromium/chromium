@@ -111,11 +111,14 @@ static_library("test_support") {
 
 source_set("browser_tests") {
   testonly = true
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
   sources = [
     "scalable_iph_browsertest.cc",
     "scalable_iph_e2e_browsertest.cc",
   ]
+
   deps = [
     ":scalable_iph",
     ":test_support",
@@ -127,6 +130,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/ui",

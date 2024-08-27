@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/kerberos",
+    "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
     "//components/user_manager",
     "//testing/gmock",
     "//testing/gtest",

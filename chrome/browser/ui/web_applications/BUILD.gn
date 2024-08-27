@@ -112,11 +112,13 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/file_manager:test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chromeos/ash/components/browser_context_helper",
       "//components/session_manager/core:core",
       "//components/user_manager:user_manager",
     ]
@@ -180,6 +182,10 @@ source_set("app_service_browser_tests") {
     "//components/webapps/browser:test_support",
     "//components/webapps/common",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/fileapi" ]
+  }
 
   if (is_chromeos_lacros) {
     deps += [

@@ -37,6 +37,7 @@ source_set("browser_tests") {
   sources = [ "privacy_hub_hats_trigger_browsertest.cc" ]
 
   deps = [
+    ":privacy_hub",
     "//base",
     "//chrome/browser/ash/hats",
     "//chrome/test:test_support",

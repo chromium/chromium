@@ -187,6 +187,8 @@ source_set("browser_tests") {
   deps = [
     ":accessibility",
     ":test_support",
+    "//ash/app_list",
+    "//ash/app_list/model:app_list_model",
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
@@ -202,6 +204,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/live_caption:constants",
     "//ui/events:test_support",
 

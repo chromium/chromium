@@ -147,11 +147,13 @@ source_set("unit_tests") {
       ":proto",
       ":test_support",
       "//ash/components/arc:arc_test_support",
+      "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/almanac_api_client/proto",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_list/arc:test_support",
+      "//chromeos/ash/components/system",
       "//components/arc:arc_test_support",
       "//services/network:test_support",
     ]

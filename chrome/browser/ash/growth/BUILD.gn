@@ -91,10 +91,12 @@ source_set("unit_tests") {
     "//chrome/browser/ash/ownership",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/growth",
     "//chromeos/ash/resources:resources_grit",
     "//components/component_updater/ash",
     "//components/component_updater/ash:test_support",
     "//components/metrics",
+    "//components/metrics/structured:structured_events",
     "//components/metrics/structured:test_support",
     "//testing/gtest",
   ]

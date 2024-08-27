@@ -54,6 +54,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ui/base",
     "//components/exo",
     "//content/public/common",

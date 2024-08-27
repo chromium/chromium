@@ -115,6 +115,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/chromeos",
+    "//ui/chromeos/styles:cros_styles_views_generator",
     "//ui/gfx",
   ]
 }

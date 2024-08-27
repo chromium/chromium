@@ -110,6 +110,7 @@ source_set("unit_tests") {
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",
+    "//chromeos/dbus/power:power_manager_proto",
     "//components/account_id",
     "//components/crx_file",
     "//components/prefs",

@@ -178,8 +178,10 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/resourced",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/memory",
     "//content/test:test_support",
     "//testing/gtest",
   ]
