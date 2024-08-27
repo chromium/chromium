@@ -12,21 +12,21 @@ import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_butt
 import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './related_website_set_list_item.css.js';
-import {getHtml} from './related_website_set_list_item.html.js';
+import {getCss} from './list_item.css.js';
+import {getHtml} from './list_item.html.js';
 import type {Member} from './related_website_sets.mojom-webui.js';
 import {SiteType} from './related_website_sets.mojom-webui.js';
 
-export interface RelatedWebsiteSetListItemElement {
+export interface RelatedWebsiteSetsListItemElement {
   $: {
     expandedContent: CrCollapseElement,
     expandButton: CrExpandButtonElement,
   };
 }
 
-export class RelatedWebsiteSetListItemElement extends CrLitElement {
+export class RelatedWebsiteSetsListItemElement extends CrLitElement {
   static get is() {
-    return 'related-website-set-list-item';
+    return 'related-website-sets-list-item';
   }
 
   static override get styles() {
@@ -119,9 +119,9 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'related-website-set-list-item': RelatedWebsiteSetListItemElement;
+    'related-website-sets-list-item': RelatedWebsiteSetsListItemElement;
   }
 }
 
 customElements.define(
-    RelatedWebsiteSetListItemElement.is, RelatedWebsiteSetListItemElement);
+    RelatedWebsiteSetsListItemElement.is, RelatedWebsiteSetsListItemElement);

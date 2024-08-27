@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {RelatedWebsiteSetsListContainerElement} from './related_website_sets_list_container.js';
+import type {RelatedWebsiteSetsListContainerElement} from './list_container.js';
 
 export function getHtml(this: RelatedWebsiteSetsListContainerElement) {
   return html`
@@ -28,13 +28,13 @@ export function getHtml(this: RelatedWebsiteSetsListContainerElement) {
 <div id="related-website-sets" class="card" role="list"
     ?hidden="${this.errorMessage}">
   ${this.filteredItems.map(item => html`
-    <related-website-set-list-item id="${item.primarySite}"
+    <related-website-sets-list-item id="${item.primarySite}"
         .primarySite="${item.primarySite}"
         .memberSites="${this.getMemberSites_(item)}"
         .managedByEnterprise="${item.managedByEnterprise}"
         .query="${this.query}"
         @expanded-toggled="${this.onExpandedToggled_}">
-    </related-website-set-list-item>
+    </related-website-sets-list-item>
   `)}
 </div>`;
 }

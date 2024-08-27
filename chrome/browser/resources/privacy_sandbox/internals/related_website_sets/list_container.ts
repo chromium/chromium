@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
-import './related_website_set_list_item.js';
+import './list_item.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {Member, RelatedWebsiteSet} from './related_website_sets.mojom-webui.js';
-import {getCss} from './related_website_sets_list_container.css.js';
-import {getHtml} from './related_website_sets_list_container.html.js';
+import {getCss} from './list_container.css.js';
+import {getHtml} from './list_container.html.js';
 
 export interface RelatedWebsiteSetsListContainerElement {
   $: {
@@ -82,7 +82,7 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
 
   protected onClick_() {
     const rows =
-        this.shadowRoot!.querySelectorAll('related-website-set-list-item');
+        this.shadowRoot!.querySelectorAll('related-website-sets-list-item');
     for (const row of rows) {
       row.expanded = this.isAnyRowCollapsed;
     }

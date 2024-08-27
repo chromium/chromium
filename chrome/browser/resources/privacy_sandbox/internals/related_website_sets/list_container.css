@@ -39,12 +39,12 @@
   max-width: var(--card-max-width);
 }
 
-related-website-set-list-item:first-of-type {
+related-website-sets-list-item:first-of-type {
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
 }
 
-related-website-set-list-item:last-of-type {
+related-website-sets-list-item:last-of-type {
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
 }

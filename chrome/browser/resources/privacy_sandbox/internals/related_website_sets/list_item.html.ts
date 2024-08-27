@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {RelatedWebsiteSetListItemElement} from './related_website_set_list_item.js';
+import type {RelatedWebsiteSetsListItemElement} from './list_item.js';
 
-export function getHtml(this: RelatedWebsiteSetListItemElement) {
+export function getHtml(this: RelatedWebsiteSetsListItemElement) {
   return html`
   <cr-expand-button id="expandButton" class="cr-row"
       ?expanded="${this.expanded}"

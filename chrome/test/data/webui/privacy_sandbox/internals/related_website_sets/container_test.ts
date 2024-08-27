@@ -24,16 +24,16 @@ suite('ContainerTest', () => {
 
   test('check layout', async () => {
     assertTrue(isVisible(container));
-    const renderedItems =
-        container.shadowRoot!.querySelectorAll('related-website-set-list-item');
+    const renderedItems = container.shadowRoot!.querySelectorAll(
+        'related-website-sets-list-item');
     assertEquals(sampleSets.length, renderedItems.length);
   });
 
   test('check expand collapse', async () => {
     assertEquals(
         'Expand All', container.$.expandCollapseButton.textContent!.trim());
-    const renderedItems =
-        container.shadowRoot!.querySelectorAll('related-website-set-list-item');
+    const renderedItems = container.shadowRoot!.querySelectorAll(
+        'related-website-sets-list-item');
     renderedItems.forEach(item => assertFalse(item.$.expandedContent.opened));
     container.$.expandCollapseButton.click();
     await microtasksFinished();
