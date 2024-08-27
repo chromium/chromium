@@ -824,7 +824,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Retry.InterruptReason" enum="InterruptReason"
-    expires_after="2024-10-06">
+    expires_after="2025-10-06">
+  <owner>drubery@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
