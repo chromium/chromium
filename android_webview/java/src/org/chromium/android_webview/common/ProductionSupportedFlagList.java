@@ -1031,6 +1031,17 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.PLZ_DEDICATED_WORKER,
                 "Enable PlzDedicatedWorker. This affects how some URLs are sent to"
                         + " WebViewClient.shouldInterceptRequest()"),
+        Flag.baseFeature(
+                "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
+                "Tuning memory allocator for speed - large empty slot span ring for Blink buffer"
+                        + " root"),
+        Flag.baseFeature(
+                "PartitionAllocAdjustSizeWhenInForeground",
+                "Tuning memory allocator for speed - adjustments for foreground vs. background"
+                        + " use"),
+        Flag.baseFeature(
+                "PartitionAllocLargeEmptySlotSpanRing",
+                "Tuning memory allocator for speed - large empty slot span ring"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
