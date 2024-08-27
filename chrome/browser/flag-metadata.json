@@ -8067,11 +8067,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "shimless-rma-compliance-check",
-    "owners": [ "zentaro@chromium.org", "gavinwill@chromium.org", "cros-peripherals@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "shimless-rma-os-update",
     "owners": [ "zentaro@chromium.org", "gavinwill@chromium.org", "cros-peripherals@google.com" ],
     "expiry_milestone": 130

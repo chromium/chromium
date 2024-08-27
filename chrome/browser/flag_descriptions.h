@@ -4335,9 +4335,6 @@ extern const char kShelfAutoHideSeparationDescription[];
 extern const char kShimlessRMAAproUpdateRootfsName[];
 extern const char kShimlessRMAAproUpdateRootfsDescription[];
 
-extern const char kShimlessRMAComplianceCheckName[];
-extern const char kShimlessRMAComplianceCheckDescription[];
-
 extern const char kShimlessRMAOsUpdateName[];
 extern const char kShimlessRMAOsUpdateDescription[];
 

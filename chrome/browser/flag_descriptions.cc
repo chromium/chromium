@@ -7491,11 +7491,6 @@ const char kShimlessRMAOsUpdateName[] = "Enable OS updates in shimless RMA";
 const char kShimlessRMAOsUpdateDescription[] =
     "Turns on OS updating in Shimless RMA";
 
-const char kShimlessRMAComplianceCheckName[] =
-    "Enable compliance check in Shimless RMA";
-const char kShimlessRMAComplianceCheckDescription[] =
-    "Enable device compliance check in the Shimless RMA flow";
-
 const char kSchedulerConfigurationName[] = "Scheduler Configuration";
 const char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";

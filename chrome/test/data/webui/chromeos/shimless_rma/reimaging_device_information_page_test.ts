@@ -419,10 +419,6 @@ suite('reimagingDeviceInformationPageTest', function() {
   // Verify the next button gets disabled when the compliance questions are set
   // to their default options.
   test('NextButtonDisabledDefaultCompliance', async () => {
-    // Set the compliance check flag so that the additional questions show
-    // up.
-    loadTimeData.overrideValues({complianceCheckEnabled: true});
-
     await initializeReimagingDeviceInformationPage();
     // Set the feature level so that the additional questions show up.
     await setFeatureLevelAndReinitialize(FeatureLevel.kRmadFeatureLevelUnknown);
@@ -474,10 +470,6 @@ suite('reimagingDeviceInformationPageTest', function() {
   // Verify the correct info is sent based on the current compliance questions
   // values.
   test('ResultsForComplianceCheckQuestions', async () => {
-    // Set the compliance check flag so that the additional questions show
-    // up.
-    loadTimeData.overrideValues({complianceCheckEnabled: true});
-
     await initializeReimagingDeviceInformationPage();
     // Set the feature level so that the additional questions show up.
     await setFeatureLevelAndReinitialize(FeatureLevel.kRmadFeatureLevelUnknown);
@@ -529,8 +521,6 @@ suite('reimagingDeviceInformationPageTest', function() {
   // Verify the correct warnings and text are displayed based on the current
   // feature level.
   test('WarningsByFeatureLevel', async () => {
-    loadTimeData.overrideValues({complianceCheckEnabled: true});
-
     await initializeReimagingDeviceInformationPage();
     // Set the feature level so no compliance info shows.
     await setFeatureLevelAndReinitialize(

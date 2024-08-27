@@ -428,8 +428,6 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "osUpdateEnabled",
       base::FeatureList::IsEnabled(features::kShimlessRMAOsUpdate));
-  html_source->AddBoolean("complianceCheckEnabled",
-                          features::IsShimlessRMAComplianceCheckEnabled());
   html_source->AddBoolean("3pDiagnosticsEnabled",
                           features::IsShimlessRMA3pDiagnosticsEnabled());
 }

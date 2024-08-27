@@ -2844,11 +2844,6 @@ BASE_FEATURE(kShimlessRMAOsUpdate,
              "ShimlessRMAOsUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables device compliance check in the Shimless RMA flow.
-BASE_FEATURE(kShimlessRMAComplianceCheck,
-             "ShimlessRMAComplianceCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables 3p diagnostics in the Shimless RMA flow.
 BASE_FEATURE(kShimlessRMA3pDiagnostics,
              "ShimlessRMA3pDiagnostics",
@@ -4737,10 +4732,6 @@ bool IsShelfLauncherNudgeEnabled() {
 
 bool IsShimlessRMAOsUpdateEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAOsUpdate);
-}
-
-bool IsShimlessRMAComplianceCheckEnabled() {
-  return base::FeatureList::IsEnabled(kShimlessRMAComplianceCheck);
 }
 
 bool IsShimlessRMA3pDiagnosticsEnabled() {
