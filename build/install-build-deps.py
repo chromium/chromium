@@ -646,8 +646,6 @@ def nacl_list(options):
     print("Skipping NaCl, NaCl toolchain, NaCl ports dependencies.",
           file=sys.stderr)
     return []
-  print("Including NaCl, NaCl toolchain, NaCl ports dependencies.",
-        file=sys.stderr)
 
   packages = [
       "g++-mingw-w64-i686",
@@ -684,32 +682,20 @@ def nacl_list(options):
       "cmake",
       "gawk",
       "intltool",
+      "libtinfo5",
       "xutils-dev",
       "xsltproc",
   ]
 
-  # Some package names have changed over time
-  if package_exists("libssl-dev"):
-    packages.append("libssl-dev:i386")
-  elif package_exists("libssl1.1"):
-    packages.append("libssl1.1:i386")
-  elif package_exists("libssl1.0.2"):
-    packages.append("libssl1.0.2:i386")
-  else:
-    packages.append("libssl1.0.0:i386")
+  for package in packages:
+    if not package_exists(package):
+      print("Skipping NaCl, NaCl toolchain, NaCl ports dependencies because %s "
+            "is not available" % package,
+            file=sys.stderr)
+      return []
 
-  if package_exists("libtinfo5"):
-    packages.append("libtinfo5")
-
-  if package_exists("libncurses6:i386"):
-    packages.append("libncurses6:i386")
-  else:
-    packages.append("libncurses5:i386")
-
-  if package_exists("lib32ncurses-dev"):
-    packages.append("lib32ncurses-dev")
-  else:
-    packages.append("lib32ncurses5-dev")
+  print("Including NaCl, NaCl toolchain, NaCl ports dependencies.",
+        file=sys.stderr)
 
   return packages
 
