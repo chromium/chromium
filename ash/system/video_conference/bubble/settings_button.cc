@@ -25,6 +25,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace ash::video_conference {
 
@@ -34,6 +35,8 @@ namespace {
 static constexpr int kRoundedCornerRadius = 16;
 static constexpr int kNonRoundedCornerRadius = 4;
 static constexpr int kIconSize = 20;
+static constexpr int kIconSpacing = 16;
+static constexpr int kMenuItemTopBottomPadding = 4;
 
 enum CommandId {
   kAudioSettings = 1,
@@ -49,6 +52,51 @@ constexpr gfx::RoundedCornersF kTopRightNonRoundedCorners(
     kNonRoundedCornerRadius,
     kRoundedCornerRadius,
     kRoundedCornerRadius);
+
+class SettingsMenuModelAdapter : public views::MenuModelAdapter {
+ public:
+  explicit SettingsMenuModelAdapter(
+      ui::MenuModel* menu_model,
+      base::RepeatingClosure on_menu_closed_callback = base::NullCallback())
+      : views::MenuModelAdapter(menu_model, on_menu_closed_callback) {}
+
+  SettingsMenuModelAdapter(const SettingsMenuModelAdapter&) = delete;
+  SettingsMenuModelAdapter& operator=(const SettingsMenuModelAdapter&) = delete;
+
+  views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
+                                      ui::MenuModel* model,
+                                      size_t index) override {
+    if (model->GetTypeAt(index) == ui::MenuModel::ItemType::TYPE_TITLE) {
+      // Appends MenuItemView for Studio Look preference title.
+      views::MenuItemView* container =
+          menu->AppendMenuItem(model->GetCommandIdAt(index));
+      container->AddChildView(
+          views::Builder<views::BoxLayoutView>()
+              .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+              .SetInsideBorderInsets(gfx::Insets()
+                                         .set_top(kMenuItemTopBottomPadding)
+                                         .set_bottom(kMenuItemTopBottomPadding)
+                                         .set_left(kIconSpacing))
+              .SetBetweenChildSpacing(kIconSpacing)
+              .AddChild(views::Builder<views::ImageView>()
+                            .SetImage(ui::ImageModel::FromVectorIcon(
+                                kVideoConferenceStudioLookIcon,
+                                cros_tokens::kCrosSysOnSurface))
+                            .SetImageSize(kIconSizeGfx))
+              .AddChild(
+                  views::Builder<views::Label>()
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_ASH_VIDEO_CONFERENCE_SETTINGS_STUDIO_LOOK_PREFERENCE))
+                      .SetFontList(views::TypographyProvider::Get().GetFont(
+                          views::style::CONTEXT_TOUCH_MENU,
+                          views::style::STYLE_PRIMARY)))
+              .Build());
+      return container;
+    }
+    return AppendMenuItemFromModel(model, index, menu,
+                                   model->GetCommandIdAt(index));
+  }
+};
 
 }  // namespace
 
@@ -100,7 +148,7 @@ class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override {
     BuildMenuModel();
-    menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
+    menu_model_adapter_ = std::make_unique<SettingsMenuModelAdapter>(
         menu_model_.get(), base::BindRepeating(&MenuController::OnMenuClosed,
                                                base::Unretained(this)));
     std::unique_ptr<views::MenuItemView> menu =
@@ -138,8 +186,10 @@ class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
         ui::ImageModel::FromVectorIcon(
             kSecurityIcon, cros_tokens::kCrosSysOnSurface, kIconSize));
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-    menu_model_->AddTitle(l10n_util::GetStringUTF16(
-        IDS_ASH_VIDEO_CONFERENCE_SETTINGS_STUDIO_LOOK_PREFERENCE));
+    // Adds Studio Look preference title. Creates an empty MenuItemView and
+    // fills its content with custom style in
+    // SettingsMenuModelAdapter::AppendMenuItem.
+    menu_model_->AddTitle(std::u16string());
     menu_model_->AddCheckItem(
         CommandId::kPortraitRelighting,
         l10n_util::GetStringUTF16(
