@@ -6926,13 +6926,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kShareCustomActionsInCCT)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"discount-on-shoppy-page",
-     commerce::flag_descriptions::kDiscountOnShoppyPageName,
-     commerce::flag_descriptions::kDiscountOnShoppyPageDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kEnableDiscountInfoApi,
-                                    kDiscountsVariations,
-                                    "DisocuntOnShoppyPage")},
-
     {"product-specifications",
      commerce::flag_descriptions::kProductSpecificationsName,
      commerce::flag_descriptions::kProductSpecificationsDescription, kOsDesktop,
@@ -11934,6 +11927,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"outline-silhouette-icon", flag_descriptions::kOutlineSilhouetteIconName,
      flag_descriptions::kOutlineSilhouetteIconDescription,
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(kOutlineSilhouetteIcon)},
+
+    {"discount-on-navigation",
+     commerce::flag_descriptions::kDiscountOnNavigationName,
+     commerce::flag_descriptions::kDiscountOnNavigationDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kEnableDiscountInfoApi,
+                                    kDiscountsVariations,
+                                    "DisocuntOnNavigation")},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

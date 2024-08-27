@@ -113,6 +113,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &browsing_data::features::kBrowsingDataModel,
     &commerce::kCommerceMerchantViewer,
     &commerce::kCommercePriceTracking,
+    &commerce::kEnableDiscountInfoApi,
     &commerce::kPriceInsights,
     &commerce::kShoppingList,
     &commerce::kShoppingPDPMetrics,

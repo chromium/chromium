@@ -304,6 +304,7 @@ public abstract class ChromeFeatureList {
     public static final String DRAW_WEB_EDGE_TO_EDGE = "DrawWebEdgeToEdge";
     public static final String EDGE_TO_EDGE_BOTTOM_CHIN = "EdgeToEdgeBottomChin";
     public static final String EDUCATIONAL_TIP_MODULE = "EducationalTipModule";
+    public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
     public static final String ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS =
             "EnablePasswordsAccountStorageForNonSyncingUsers";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
@@ -615,6 +616,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(EDGE_TO_EDGE_BOTTOM_CHIN, false);
     public static final CachedFlag sEducationalTipModule =
             newCachedFlag(EDUCATIONAL_TIP_MODULE, false);
+    public static final CachedFlag sEnableDiscountInfoApi =
+            newCachedFlag(ENABLE_DISCOUNT_INFO_API, false);
     public static final CachedFlag sExperimentsForAgsa = newCachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
             newCachedFlag(FEED_LOADING_PLACEHOLDER, false);
@@ -752,6 +755,7 @@ public abstract class ChromeFeatureList {
                     sDrawWebEdgeToEdge,
                     sEdgeToEdgeBottomChin,
                     sEducationalTipModule,
+                    sEnableDiscountInfoApi,
                     sFeedLoadingPlaceholder,
                     sForceListTabSwitcher,
                     sFullscreenInsetsApiMigration,
