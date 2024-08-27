@@ -510,7 +510,9 @@ FormDataImporter::GetAddressObservedFieldValues(
       continue;
     }
     // Don't import from ac=unrecognized fields.
-    if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+    if (field->ShouldSuppressSuggestionsAndFillingByDefault() &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillImportFromAutocompleteUnrecognized)) {
       continue;
     }
 

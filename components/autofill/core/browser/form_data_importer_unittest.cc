@@ -67,6 +67,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
@@ -4173,6 +4174,32 @@ TEST_F(FormDataImporterTest,
                              .GetObservedFieldValues(
                                  std::to_array<const AutofillField*>({&field}));
   EXPECT_TRUE(observed_field_types.empty());
+}
+
+// Test the behavior of Autofill importing from fields with
+// autocomplete=unrecognized.
+TEST_F(FormDataImporterTest,
+       GetObservedFieldValues_ImportFromAutocompleteUnrecognized) {
+  AutofillField field;
+  field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
+  field.SetTypeTo(AutofillType(NAME_FIRST));
+  field.set_value(u"First");
+  {
+    base::flat_map<FieldType, std::u16string> observed_field_types =
+        test_api(form_data_importer())
+            .GetObservedFieldValues(
+                std::to_array<const AutofillField*>({&field}));
+    EXPECT_TRUE(observed_field_types.empty());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list{
+        features::kAutofillImportFromAutocompleteUnrecognized};
+    base::flat_map<FieldType, std::u16string> observed_field_types =
+        test_api(form_data_importer())
+            .GetObservedFieldValues(
+                std::to_array<const AutofillField*>({&field}));
+    EXPECT_EQ(observed_field_types.size(), 1u);
+  }
 }
 
 // Test case for credit card extraction.

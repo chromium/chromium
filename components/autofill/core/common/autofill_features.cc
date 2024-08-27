@@ -313,6 +313,13 @@ BASE_FEATURE(kAutofillGivePrecedenceToEmailOverUsername,
              "AutofillGivePrecedenceToEmailOverUsername",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Makes Autofill try to import data from fields annotated with an unrecognized
+// autocomplete HTML attribute. The default behavior doesn't allow that.
+// TODO(crbug.com/347698797): Cleanup when launched.
+BASE_FEATURE(kAutofillImportFromAutocompleteUnrecognized,
+             "AutofillImportFromAutocompleteUnrecognized",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Implements a model that suppresses suggestions after N times the user ignores
 // the popup (i.e. doesn't select a suggestion from the popup).
 // N depends on the parametrization of the feature.
