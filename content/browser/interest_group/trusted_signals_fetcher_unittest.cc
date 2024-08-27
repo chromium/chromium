@@ -38,17 +38,39 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/common/oblivious_http_header_key_config.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 namespace {
+
+// These keys were randomly generated as follows:
+// EVP_HPKE_KEY keys;
+// EVP_HPKE_KEY_generate(&keys, EVP_hpke_x25519_hkdf_sha256());
+// and then EVP_HPKE_KEY_public_key and EVP_HPKE_KEY_private_key were used to
+// extract the keys.
+const uint8_t kTestPrivateKey[] = {
+    0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
+    0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
+    0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
+};
+
+const uint8_t kTestPublicKey[] = {
+    0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
+    0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
+    0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
+};
+
+const uint8_t kKeyId = 3;
 
 // Helper to create a CompressionGroupResult given all field values. Copies the
 // entire `compression_group_data`.
@@ -165,7 +187,11 @@ class TrustedSignalsFetcherTest : public testing::Test {
     trusted_signals_fetcher.FetchBiddingSignals(
         url_loader_factory_.get(),
         signals_url ? *signals_url : TrustedBiddingSignalsUrl(),
-        BiddingAndAuctionServerKey(), compression_groups,
+        BiddingAndAuctionServerKey{
+            std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                        sizeof(kTestPublicKey)),
+            kKeyId},
+        compression_groups,
         base::BindLambdaForTesting(
             [&](TrustedSignalsFetcher::SignalsFetchResult result) {
               out = std::move(result);
@@ -183,6 +209,11 @@ class TrustedSignalsFetcherTest : public testing::Test {
     return out;
   }
 
+  size_t GetEncryptedRequestBodyLength() {
+    base::AutoLock auto_lock(lock_);
+    return encrypted_request_body_length_;
+  }
+
   void ValidateRequestBody(std::string_view expected_response_hex) {
     std::string actual_response = GetBiddingSignalsRequestBody();
     EXPECT_EQ(base::HexEncode(actual_response), expected_response_hex);
@@ -197,9 +228,10 @@ class TrustedSignalsFetcherTest : public testing::Test {
   }
 
   // Sets the response body string.
-  void SetResponseBody(std::string response_body) {
+  void SetResponseBody(std::string response_body, bool use_cleartext = false) {
     base::AutoLock auto_lock(lock_);
     response_body_ = std::move(response_body);
+    use_cleartext_response_body_ = use_cleartext;
   }
 
   // Takes response body string as a CBOR-encoded hex string, parses the hex,
@@ -285,14 +317,47 @@ class TrustedSignalsFetcherTest : public testing::Test {
       EXPECT_EQ(request.headers.find("Cookie"), request.headers.end());
       EXPECT_TRUE(request.has_content);
       EXPECT_EQ(request.method_string, net::HttpRequestHeaders::kPostMethod);
-      bidding_request_body_ = request.content;
+
+      auto config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+          kKeyId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+          EVP_HPKE_AES_256_GCM);
+      EXPECT_TRUE(config.ok()) << config.status();
+
+      auto ohttp_gateway =
+          quiche::ObliviousHttpGateway::Create(
+              std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                          sizeof(kTestPrivateKey)),
+              config.value())
+              .value();
+      encrypted_request_body_length_ = request.content.size();
+      auto plaintext_ohttp_request_body =
+          ohttp_gateway.DecryptObliviousHttpRequest(
+              request.content, TrustedSignalsFetcher::kRequestMediaType);
+      EXPECT_TRUE(plaintext_ohttp_request_body.ok())
+          << plaintext_ohttp_request_body.status();
+      bidding_request_body_ = plaintext_ohttp_request_body->GetPlaintextData();
+
+      std::string response_body;
+      // Encryption doesn't support empty strings.
+      if (response_body_.size() > 0u && !use_cleartext_response_body_) {
+        auto context =
+            std::move(plaintext_ohttp_request_body).value().ReleaseContext();
+        auto ciphertext_ohttp_response_body =
+            ohttp_gateway.CreateObliviousHttpResponse(
+                response_body_, context,
+                TrustedSignalsFetcher::kResponseMediaType);
+        EXPECT_TRUE(ciphertext_ohttp_response_body.ok())
+            << ciphertext_ohttp_response_body.status();
+        response_body =
+            ciphertext_ohttp_response_body->EncapsulateAndSerialize();
+      } else {
+        response_body = response_body_;
+      }
+
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_content_type(response_mime_type_);
       response->set_code(response_status_code_);
-      response->set_content(response_body_);
-
-      // TODO(crbug.com/333445540): Return a response body, once
-      // TrustedSignalsFetcher supports response body parsing.
+      response->set_content(response_body);
       return response;
     }
 
@@ -315,13 +380,18 @@ class TrustedSignalsFetcherTest : public testing::Test {
   net::HttpStatusCode response_status_code_{net::HTTP_OK};
 
   base::Lock lock_;
-  // The most recent bidding request body received by the embedded test server.
-  // Separate bidding / scoring headers to provide basic protections against
-  // unexpectedly receiving the wrong type of request.
+  // Size of the original encrypted request body.
+  size_t encrypted_request_body_length_ GUARDED_BY(lock_);
+  // The most recent bidding request body received by the embedded test server,
+  // after decyption. Separate bidding / scoring headers to provide basic
+  // protections against unexpectedly receiving the wrong type of request.
   std::optional<std::string> bidding_request_body_ GUARDED_BY(lock_);
   // The response body to reply with. Unlike request bodies, not separated for
   // scoring / bidding.
   std::string response_body_ GUARDED_BY(lock_);
+  // If true, the response body is not encrypted, which should result in an
+  // error.
+  bool use_cleartext_response_body_ GUARDED_BY(lock_) = false;
 
   net::test_server::EmbeddedTestServer embedded_test_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
@@ -711,21 +781,23 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
 
 // Test that the expected amount of padding is added to requests.
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRequestPadding) {
-  // TODO(crbug.com/333445540): Once encryption is added, test the request body
-  // size both before and after encryption.
   const struct {
     size_t interest_group_name_length;
+    // Test the encrypted and unecrypted request body.  The encrypted body
+    // length, which should always be a power 2, is what's actually publicly
+    // visible. The others are useful for debugging.
+    size_t expected_encrypted_body_length;
     size_t expected_body_length;
     size_t expected_padding;
   } kTestCases[] = {
-      {31, 201, 1},
-      {32, 201, 0},
-      {33, 457, 255},
+      {31, 256, 201, 1},
+      {32, 256, 201, 0},
+      {33, 512, 457, 255},
 
       // 286 is 1 less than 31+256 because strings in cbor are length-prefixed.
-      {286, 457, 1},
-      {287, 457, 0},
-      {288, 969, 511},
+      {286, 512, 457, 1},
+      {287, 512, 457, 0},
+      {288, 1024, 969, 511},
   };
 
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
@@ -735,6 +807,8 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRequestPadding) {
         std::string(test_case.interest_group_name_length, 'a')};
     ValidateDefaultFetchResult(
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
+    EXPECT_EQ(GetEncryptedRequestBodyLength(),
+              test_case.expected_encrypted_body_length);
     std::string request_body = GetBiddingSignalsRequestBody();
     size_t padding =
         request_body.size() - request_body.find_last_not_of('\0') - 1;
@@ -757,6 +831,18 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponseBodyShorterThanHeader) {
                   TrustedBiddingSignalsUrl().spec().c_str()));
     ValidateRequestBody(kBasicBiddingSignalsRequestBody);
   }
+}
+
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponseBodyUnencrypted) {
+  SetResponseBody(std::string(kBasicBiddingSignalsRequestBody),
+                  /*use_plantext=*/true);
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+  auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            base::StringPrintf("Failed to load %s: OHTTP decryption failed.",
+                               TrustedBiddingSignalsUrl().spec().c_str()));
+  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
 }
 
 // Receiving CBOR without a header in the response body should result in

@@ -24,17 +24,22 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "bidding_and_auction_server_key_fetcher.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "net/http/http_request_headers.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_request.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_response.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/common/oblivious_http_header_key_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -251,9 +256,9 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
-  StartRequest(url_loader_factory, trusted_bidding_signals_url,
-               BuildBiddingSignalsRequestBody(compression_groups),
-               std::move(callback));
+  EncryptRequestBodyAndStart(
+      url_loader_factory, trusted_bidding_signals_url, bidding_and_auction_key,
+      BuildBiddingSignalsRequestBody(compression_groups), std::move(callback));
 }
 
 void TrustedSignalsFetcher::FetchScoringSignals(
@@ -265,15 +270,28 @@ void TrustedSignalsFetcher::FetchScoringSignals(
   NOTIMPLEMENTED();
 }
 
-void TrustedSignalsFetcher::StartRequest(
+void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& trusted_signals_url,
-    std::string request_body,
+    const BiddingAndAuctionServerKey& bidding_and_auction_key,
+    std::string plaintext_request_body,
     Callback callback) {
   DCHECK(!simple_url_loader_);
   DCHECK(!callback_);
   trusted_signals_url_ = trusted_signals_url;
   callback_ = std::move(callback);
+
+  // Add encryption for request body.
+  auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+      bidding_and_auction_key.id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+      EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM);
+  CHECK(maybe_key_config.ok());
+
+  auto maybe_ciphertext_request_body =
+      quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
+          std::move(plaintext_request_body), bidding_and_auction_key.key,
+          *maybe_key_config, kRequestMediaType);
+  CHECK(maybe_ciphertext_request_body.ok());
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
@@ -289,8 +307,15 @@ void TrustedSignalsFetcher::StartRequest(
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
-  simple_url_loader_->AttachStringForUpload(std::move(request_body),
-                                            kRequestMediaType);
+  simple_url_loader_->AttachStringForUpload(
+      maybe_ciphertext_request_body->EncapsulateAndSerialize(),
+      kRequestMediaType);
+  // ObliviousHttpRequest::Context is a move-only type, with no default
+  // constructor, but ReleaseContext() return by value, so have to somewhat
+  // awkwardly wrap it in a unique_ptr to store it in an already-created
+  // TrustedSignalsFetcher.
+  ohttp_context_ = std::make_unique<quiche::ObliviousHttpRequest::Context>(
+      std::move(maybe_ciphertext_request_body).value().ReleaseContext());
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory,
       base::BindOnce(&TrustedSignalsFetcher::OnRequestComplete,
@@ -313,10 +338,32 @@ void TrustedSignalsFetcher::OnRequestComplete(
     return;
   }
 
-  // TODO(crbug.com/333445540): Add decryption here.
+  // `simple_url_loader_` is no longer needed.
+  simple_url_loader_.reset();
 
-  base::SpanReader reader(base::as_byte_span(*response_body));
+  // The oblivious HTTP code returns an error on empty response bodies, so only
+  // try and decrypt if the body is not empty, to give an error about size
+  // rather than OHTTP failing in that case.
+  std::string plaintext_response_body;
+  if (response_body->size() > 0u) {
+    auto maybe_plaintext_response_body =
+        quiche::ObliviousHttpResponse::CreateClientObliviousResponse(
+            std::move(*response_body), *ohttp_context_, kResponseMediaType);
+    // `ohttp_context_` is no longer needed.
+    ohttp_context_.reset();
 
+    if (!maybe_plaintext_response_body.ok()) {
+      // Don't output OHTTP error strings, directly, as they're often not very
+      // user-friendly.
+      std::move(callback_).Run(
+          base::unexpected(CreateError("OHTTP decryption failed")));
+      return;
+    }
+    plaintext_response_body =
+        std::move(maybe_plaintext_response_body).value().ConsumePlaintextData();
+  }
+
+  base::SpanReader reader(base::as_byte_span(plaintext_response_body));
   uint8_t compression_scheme_bytes;
   uint32_t cbor_length;
   if (!reader.ReadU8BigEndian(compression_scheme_bytes) ||

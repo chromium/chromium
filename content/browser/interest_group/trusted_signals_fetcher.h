@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_request.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -163,15 +164,18 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       Callback callback);
 
  private:
-  // Create a SimpleURLLoader and starts a request. Once the request body has
-  // been created, everything else (including response body parsing) is
-  // identical for bidding and scoring signals, as only the data inside
-  // compression groups is different for bidding and scoring signals, and that
-  // layer is not parsed by this class.
-  void StartRequest(network::mojom::URLLoaderFactory* url_loader_factory,
-                    const GURL& trusted_signals_url,
-                    std::string request_body,
-                    Callback callback);
+  // Encrypts `plaintext_body` using `bidding_and_auction_key`, and then creates
+  // a SimpleURLLoader and starts a request. Once the request body has been
+  // created, everything else (including response body parsing) is identical for
+  // bidding and scoring signals, as only the data inside compression groups is
+  // different for bidding and scoring signals, and that layer is not parsed by
+  // this class.
+  void EncryptRequestBodyAndStart(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      const GURL& trusted_signals_url,
+      const BiddingAndAuctionServerKey& bidding_and_auction_key,
+      std::string plaintext_request_body,
+      Callback callback);
 
   void OnRequestComplete(std::unique_ptr<std::string> response_body);
 
@@ -200,6 +204,10 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   GURL trusted_signals_url_;
   Callback callback_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+
+  // Context needed to decrypt the response. Initialized while encrypting the
+  // request body.
+  std::unique_ptr<quiche::ObliviousHttpRequest::Context> ohttp_context_;
 
   // Compression scheme used by all compression groups. Populated when reading
   // the response.
