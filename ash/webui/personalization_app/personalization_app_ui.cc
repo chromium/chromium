@@ -126,6 +126,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"zeroImages", IDS_PERSONALIZATION_APP_NO_IMAGES},
       {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
       {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},
+      {"managedFeature", IDS_PERSONALIZATION_APP_MANAGED_FEATURE},
       {"managedSetting", IDS_PERSONALIZATION_APP_MANAGED_SETTING},
       {"ariaLabelChangeWallpaper",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_WALLPAPER},
