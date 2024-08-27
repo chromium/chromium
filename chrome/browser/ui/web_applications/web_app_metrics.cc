@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
@@ -418,32 +419,34 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
   std::optional<webapps::WebAppBannerData> banner_data =
       app_banner_manager->GetCurrentWebAppBannerData();
 
-  const webapps::AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
-  if (app_id && provider->registrar_unsafe().IsInstallState(
-                    *app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                              proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
+  std::optional<webapps::AppId> maybe_app_id = tab_helper->app_id();
+  if (maybe_app_id &&
+      provider->registrar_unsafe().IsInstallState(
+          *maybe_app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                          proto::INSTALLED_WITH_OS_INTEGRATION})) {
+    webapps::AppId app_id = maybe_app_id.value();
     // App is installed
-    features.start_url = provider->registrar_unsafe().GetAppStartUrl(*app_id);
+    features.start_url = provider->registrar_unsafe().GetAppStartUrl(app_id);
     features.installed = true;
     auto install_source =
-        provider->registrar_unsafe().GetLatestAppInstallSource(*app_id);
+        provider->registrar_unsafe().GetLatestAppInstallSource(app_id);
     if (install_source)
       features.install_source = static_cast<int>(*install_source);
     DisplayMode display_mode =
-        provider->registrar_unsafe().GetAppEffectiveDisplayMode(*app_id);
+        provider->registrar_unsafe().GetAppEffectiveDisplayMode(app_id);
     features.effective_display_mode = static_cast<int>(display_mode);
-    features.captures_links =
-        IsPreferredAppForSupportedLinks(*app_id, profile_);
-    features.promotable = !provider->registrar_unsafe().IsDiyApp(*app_id);
+    features.captures_links = IsPreferredAppForSupportedLinks(app_id, profile_);
+    features.promotable = !provider->registrar_unsafe().IsDiyApp(app_id);
     bool preinstalled_app =
-        provider->registrar_unsafe().IsInstalledByDefaultManagement(*app_id);
+        provider->registrar_unsafe().IsInstalledByDefaultManagement(app_id);
     // Record usage duration and session counts only for installed web apps that
     // are currently open in a window, and all preinstalled apps.
-    if (provider->ui_manager().IsInAppWindow(web_contents) ||
-        preinstalled_app || mode == TabSwitching::kForegroundClosing) {
+    if (tab_helper->is_in_app_window() || preinstalled_app ||
+        mode == TabSwitching::kForegroundClosing) {
       base::Time now = base::Time::Now();
-      if (app_last_interacted_time_.contains(*app_id)) {
-        base::TimeDelta delta = now - GetOrSetLastInteractedTimeForApp(*app_id);
+      if (app_last_interacted_time_.contains(app_id)) {
+        base::TimeDelta delta = now - GetOrSetLastInteractedTimeForApp(app_id);
         if (delta < max_valid_session_delta_) {
           switch (mode) {
             case TabSwitching::kFrom:
@@ -457,12 +460,11 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
           }
         }
       }
-      app_last_interacted_time_[*app_id] = now;
+      app_last_interacted_time_[app_id] = now;
 
-      // Note: real web app launch counts 2 sessions immediately, as app window
-      // is actually activated twice in the launch process.
-      if (mode == TabSwitching::kTo)
+      if (mode == TabSwitching::kTo) {
         features.num_sessions = 1;
+      }
     }
   } else if (banner_data &&
              installable ==
