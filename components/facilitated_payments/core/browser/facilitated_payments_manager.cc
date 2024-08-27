@@ -211,8 +211,7 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   auto* payments_data_manager = client_->GetPaymentsDataManager();
   if (!payments_data_manager ||
       !payments_data_manager->IsFacilitatedPaymentsPixUserPrefEnabled() ||
-      !payments_data_manager->HasMaskedBankAccounts() ||
-      !base::FeatureList::IsEnabled(kEnablePixPayments)) {
+      !payments_data_manager->HasMaskedBankAccounts()) {
     Reset();
     return;
   }

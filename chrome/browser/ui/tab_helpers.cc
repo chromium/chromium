@@ -609,8 +609,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   PolicyAuditorBridge::CreateForWebContents(web_contents);
   PluginObserverAndroid::CreateForWebContents(web_contents);
 
-  if (base::FeatureList::IsEnabled(
-          payments::facilitated::kEnablePixDetection)) {
+  if (base::FeatureList::IsEnabled(payments::facilitated::kEnablePixPayments)) {
     if (auto* optimization_guide_decider =
             OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
       ChromeFacilitatedPaymentsClient::CreateForWebContents(

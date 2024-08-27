@@ -154,91 +154,88 @@ class FacilitatedPaymentsManager {
                            TriggerPixDetectionOnDomContentLoadedExpEnabled_Ukm);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ResettingPreventsPayment);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
-      ValidPixCodeDetectionResult_HasPixAccounts_ApiClientNotTriggered);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            CopyTrigger_UrlInAllowlist_PixValidationTriggered);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       CopyTrigger_UrlNotInAllowlist_PixValidationNotTriggered);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       CopyTriggerHappenedBeforeDOMSearch_ApiClientIsAvailableCalledOnlyOnce);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       DOMSearchHappenedBeforeCopyTrigger_ApiClientIsAvailableCalledOnlyOnce);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       ValidPixCodeDetectionResult_HasPixAccounts_ApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       ValidPixCodeDetectionResult_InvalidPixCodeString_ApiClientNotTriggered);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       InvalidPixCodeDetectionResultDoesNotTriggerApiClient);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PixPrefTurnedOff_NoApiClientTriggered);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            NoPixAccounts_NoApiClientTriggered);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            NoPaymentsDataManager_NoApiClientTriggered);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ValidPixDetectionResultToPixPaymentPromptShown);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ApiClientTriggeredAfterPixCodeValidation);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PaymentNotOfferedReason_CodeValidatorReturnsFalse);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PixCodeValidationFailed_NoApiClientTriggered);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PaymentNotOfferedReason_CodeValidatorFailed);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ApiAvailabilityHistogram);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PaymentNotOfferedReason_ApiNotAvailable);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            SendInitiatePaymentRequest);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       OnInitiatePaymentResponseReceived_FailureResponse_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       OnInitiatePaymentResponseReceived_LoggedOutProfile_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            OnPurchaseActionPositiveResult_UiPromptDismissed);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            OnPurchaseActionNegativeResult_UiPromptDismissed);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            InvokePurchaseActionCompleted_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            OnInitiatePaymentResponseReceived_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            TransactionSuccess_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       TransactionAbandonedAfterInvokePurchaseAction_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       TransactionFailedAfterInvokePurchaseAction_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FacilitatedPaymentsManagerTest,
       FOPSelectorNotShown_TransactionResultHistogramNotLogged);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ApiClientInitializedLazily);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            HandlesFailureToLazilyInitializeApiClient);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
