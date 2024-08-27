@@ -13,6 +13,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
@@ -38,6 +39,14 @@ class NavigationHandle;
 class InteractiveAshTest
     : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
  public:
+  // Helper struct for filling out the Wi-Fi configuration dialog.
+  struct WifiDialogConfig {
+    std::string ssid = "";
+    ::chromeos::network_config::mojom::SecurityType security_type =
+        ::chromeos::network_config::mojom::SecurityType::kNone;
+    bool is_shared = true;
+  };
+
   InteractiveAshTest();
   InteractiveAshTest(const InteractiveAshTest&) = delete;
   InteractiveAshTest& operator=(const InteractiveAshTest&) = delete;
@@ -128,6 +137,18 @@ class InteractiveAshTest
   // app to already be open.
   ui::test::internal::InteractiveTestPrivate::MultiStep OpenAddBuiltInVpnDialog(
       const ui::ElementIdentifier& element_id);
+
+  // Open up the "Add Wi-Fi" dialog. This function expects the Settings app to
+  // already be open.
+  ui::test::internal::InteractiveTestPrivate::MultiStep OpenAddWifiDialog(
+      const ui::ElementIdentifier& element_id);
+
+  // Completes the "Add Wi-Fi" dialog according to the properties provided by
+  // the `config` parameter. This function expects the dialog to already be open
+  // prior to being called.
+  ui::test::internal::InteractiveTestPrivate::MultiStep CompleteAddWifiDialog(
+      const ui::ElementIdentifier& element_id,
+      const WifiDialogConfig& config);
 
   // Opens the Quick Settings bubble.
   ui::test::internal::InteractiveTestPrivate::MultiStep OpenQuickSettings();

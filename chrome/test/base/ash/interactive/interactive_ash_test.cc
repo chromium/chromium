@@ -291,6 +291,77 @@ InteractiveAshTest::OpenAddBuiltInVpnDialog(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::OpenAddWifiDialog(const ui::ElementIdentifier& element_id) {
+  return Steps(
+      NavigateSettingsToNetworkSubpage(element_id,
+                                       ash::NetworkTypePattern::WiFi()),
+      WaitForElementExists(element_id, ash::settings::wifi::AddWifiButton()),
+      ClickElement(element_id, ash::settings::wifi::AddWifiButton()),
+      WaitForElementExists(element_id,
+                           ash::settings::wifi::ConfigureWifiDialog()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::CompleteAddWifiDialog(
+    const ui::ElementIdentifier& element_id,
+    const WifiDialogConfig& config) {
+  CHECK(!config.ssid.empty());
+  ui::test::internal::InteractiveTestPrivate::MultiStep steps = Steps(
+      Log(base::StringPrintf("Entering SSID \"%s\" for the network",
+                             config.ssid.c_str())),
+      WaitForElementExists(element_id,
+                           ash::settings::wifi::ConfigureWifiDialogSsidInput()),
+      ClearInputAndEnterText(
+          element_id, ash::settings::wifi::ConfigureWifiDialogSsidInput(),
+          config.ssid.c_str()),
+      Log("Ensuring the network has the correct security"));
+
+  if (config.security_type !=
+      ::chromeos::network_config::mojom::SecurityType::kNone) {
+    // TODO(cros-connectivity@google.com): Add logic for selecting security type
+    // and filling out the relevant fields.
+    NOTREACHED();
+  }
+
+  AddStep(steps,
+          Log(base::StringPrintf("Configuring the network as %s",
+                                 config.is_shared ? "shared" : "not shared")));
+  if (config.security_type ==
+      ::chromeos::network_config::mojom::SecurityType::kNone) {
+    AddStep(steps, WaitForElementChecked(
+                       element_id,
+                       ash::settings::wifi::ConfigureWifiDialogShareToggle()));
+    if (!config.is_shared) {
+      AddStep(
+          steps,
+          Steps(ClickElement(
+                    element_id,
+                    ash::settings::wifi::ConfigureWifiDialogShareToggle()),
+                WaitForElementUnchecked(
+                    element_id,
+                    ash::settings::wifi::ConfigureWifiDialogShareToggle())));
+    }
+  } else {
+    // TODO(cros-connectivity@google.com): Add logic for marking the network as
+    // that it is shared.
+    NOTREACHED();
+  }
+
+  AddStep(steps,
+          Steps(Log("Clicking the connect button and waiting for the dialog "
+                    "to disappear"),
+                WaitForElementEnabled(
+                    element_id,
+                    ash::settings::wifi::ConfigureWifiDialogConnectButton()),
+                ClickElement(
+                    element_id,
+                    ash::settings::wifi::ConfigureWifiDialogConnectButton()),
+                WaitForElementDoesNotExist(
+                    element_id, ash::settings::wifi::ConfigureWifiDialog())));
+  return steps;
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::NavigateQuickSettingsToHotspotPage() {
   return NavigateQuickSettingsToPage(
       ash::kHotspotFeatureTileDrillInArrowElementId);
@@ -763,6 +834,8 @@ InteractiveAshTest::SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
       modifiers = ui::EF_SHIFT_DOWN;
     } else if (c == '\n') {
       key_code = ui::VKEY_RETURN;
+    } else if (c == ' ') {
+      key_code = ui::VKEY_SPACE;
     }
 
     if (!key_code.has_value()) {

@@ -484,6 +484,30 @@ WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem() {
          "div#networkSummaryItemRow";
 }
 
+WebContentsInteractionTestUtil::DeepQuery AddWifiButton() {
+  return InternetPage() + "settings-internet-subpage" +
+         "cr-icon-button#addWifiButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialog() {
+  return InternetPage() + "internet-config#configDialog" +
+         "network-config#networkConfig";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialogSsidInput() {
+  return ConfigureWifiDialog() + "network-config-input#ssid" + "cr-input" +
+         "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialogShareToggle() {
+  return ConfigureWifiDialog() + "network-config-toggle#share";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialogConnectButton() {
+  return InternetPage() + "internet-config#configDialog" +
+         "cr-button#connectButton";
+}
+
 WebContentsInteractionTestUtil::DeepQuery WifiKnownNetworksSubpageButton() {
   return InternetPage() + "settings-internet-subpage" +
          "cr-link-row#knownNetworksSubpageButton";

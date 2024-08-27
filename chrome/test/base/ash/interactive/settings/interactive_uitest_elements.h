@@ -318,6 +318,22 @@ namespace wifi {
 // The wifi "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem();
 
+// The "add Wi-Fi" button on the Wi-Fi subpage.
+WebContentsInteractionTestUtil::DeepQuery AddWifiButton();
+
+// The dialog opened when the "add Wi-Fi" button on the Wi-Fi subpage is
+// clicked.
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialog();
+
+// The SSID input field on the "add Wi-Fi" dialog.
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialogSsidInput();
+
+// The "share this network" toggle on the "add Wi-Fi" dialog.
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialogShareToggle();
+
+// The connect button on the "add Wi-Fi" dialog.
+WebContentsInteractionTestUtil::DeepQuery ConfigureWifiDialogConnectButton();
+
 // The Known networks subpage button on the network page.
 WebContentsInteractionTestUtil::DeepQuery WifiKnownNetworksSubpageButton();
 
