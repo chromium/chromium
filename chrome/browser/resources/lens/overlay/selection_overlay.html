@@ -49,6 +49,7 @@
     pointer-events: none;
   }
 
+  :host(:not([show-translate-context-menu-item])) .translate-context-menu-item,
   :host([disable-shimmer]) #overlayShimmerCanvas,
   :host([disable-shimmer]) #overlayShimmer {
     display: none;
@@ -333,7 +334,7 @@
         <span class="menu-item-icon copy"></span>
         <span class="menu-item-label">$i18n{copy}</span>
       </div>
-      <div class="context-menu-item" role="menuitem"
+      <div class="context-menu-item translate-context-menu-item" role="menuitem"
           on-pointerup="handleTranslate">
         <span class="menu-item-icon translate"></span>
         <span class="menu-item-label">$i18n{translate}</span>
@@ -349,7 +350,7 @@
         <span class="menu-item-icon text"></span>
         <span class="menu-item-label">$i18n{selectText}</span>
       </div>
-      <div class="context-menu-item" role="menuitem"
+      <div class="context-menu-item translate-context-menu-item" role="menuitem"
           on-pointerup="handleTranslateDetectedText">
         <span class="menu-item-icon translate"></span>
         <span class="menu-item-label">$i18n{translate}</span>

@@ -36,6 +36,7 @@ import {getTemplate} from './selection_overlay.html.js';
 import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, focusShimmerOnRegion, GestureState, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {GestureEvent, OverlayShimmerFocusedRegion} from './selection_utils.js';
 import type {TextLayerElement} from './text_layer.js';
+import type {TranslateState} from './translate_button.js';
 import {toPercent} from './values_converter.js';
 
 // The amount of margins in pixels to add to the screenshot when the window is
@@ -139,6 +140,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      showTranslateContextMenuItem: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       showSelectedTextContextMenu: {
         type: Boolean,
         value: false,
@@ -196,6 +201,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Whether the selection overlay is its initial size, or has changed size.
   private isResized: boolean = false;
   private isInitialSize: boolean = true;
+  private showTranslateContextMenuItem: boolean = true;
   private showSelectedTextContextMenu: boolean;
   private showDetectedTextContextMenu: boolean;
   // Location at which to show the context menus.
@@ -283,6 +289,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           } else {
             this.resetCursor();
           }
+        });
+    this.eventTracker_.add(
+        document, 'translate-mode-state-changed',
+        (e: CustomEvent<TranslateState>) => {
+          this.showTranslateContextMenuItem = !e.detail.translateModeEnabled;
         });
     this.eventTracker_.add(
         document, 'show-selected-text-context-menu',
