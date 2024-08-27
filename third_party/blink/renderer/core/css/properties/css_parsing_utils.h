@@ -518,14 +518,8 @@ CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream&,
 cssvalue::CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenStream&,
                                                      const CSSParserContext&);
 CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenStream&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontTechIdent(T&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontFormatIdent(T&);
+CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenStream&);
+CSSIdentifierValue* ConsumeFontFormatIdent(CSSParserTokenStream&);
 CSSValueID FontFormatToId(String);
 bool IsSupportedKeywordTech(CSSValueID keyword);
 bool IsSupportedKeywordFormat(CSSValueID keyword);

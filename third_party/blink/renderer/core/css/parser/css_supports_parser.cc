@@ -147,15 +147,13 @@ bool CSSSupportsParser::ConsumeFontFormatFn(CSSParserTokenStream& stream) {
   CSSParserTokenStream::RestoringBlockGuard guard(stream);
   stream.ConsumeWhitespace();
 
-  auto format_block = stream.ConsumeUntilPeekedTypeIs<>();
-
   CSSIdentifierValue* consumed_value =
-      css_parsing_utils::ConsumeFontFormatIdent(format_block);
+      css_parsing_utils::ConsumeFontFormatIdent(stream);
 
   if (consumed_value &&
       css_parsing_utils::IsSupportedKeywordFormat(
           consumed_value->GetValueID()) &&
-      format_block.AtEnd() && guard.Release()) {
+      guard.Release()) {
     stream.ConsumeWhitespace();
     return true;
   }
@@ -170,14 +168,12 @@ bool CSSSupportsParser::ConsumeFontTechFn(CSSParserTokenStream& stream) {
   CSSParserTokenStream::RestoringBlockGuard guard(stream);
   stream.ConsumeWhitespace();
 
-  auto technology_block = stream.ConsumeUntilPeekedTypeIs<>();
-
   CSSIdentifierValue* consumed_value =
-      css_parsing_utils::ConsumeFontTechIdent(technology_block);
+      css_parsing_utils::ConsumeFontTechIdent(stream);
 
   if (consumed_value &&
       css_parsing_utils::IsSupportedKeywordTech(consumed_value->GetValueID()) &&
-      technology_block.AtEnd() && guard.Release()) {
+      guard.Release()) {
     stream.ConsumeWhitespace();
     return true;
   }

@@ -5942,10 +5942,7 @@ CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenStream& stream) {
   return ConsumeIdent<CSSValueID::kNormal, CSSValueID::kSmallCaps>(stream);
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontTechIdent(T& stream) {
+CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenStream& stream) {
   return ConsumeIdent<CSSValueID::kFeaturesOpentype, CSSValueID::kFeaturesAat,
                       CSSValueID::kFeaturesGraphite, CSSValueID::kColorCOLRv0,
                       CSSValueID::kColorCOLRv1, CSSValueID::kColorSVG,
@@ -5954,23 +5951,12 @@ CSSIdentifierValue* ConsumeFontTechIdent(T& stream) {
                       CSSValueID::kIncremental>(stream);
 }
 
-template CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenRange& stream);
-template CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenStream& stream);
-
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontFormatIdent(T& stream) {
+CSSIdentifierValue* ConsumeFontFormatIdent(CSSParserTokenStream& stream) {
   return ConsumeIdent<CSSValueID::kCollection, CSSValueID::kEmbeddedOpentype,
                       CSSValueID::kOpentype, CSSValueID::kTruetype,
                       CSSValueID::kSVG, CSSValueID::kWoff, CSSValueID::kWoff2>(
       stream);
 }
-
-template CSSIdentifierValue* ConsumeFontFormatIdent(
-    CSSParserTokenRange& stream);
-template CSSIdentifierValue* ConsumeFontFormatIdent(
-    CSSParserTokenStream& stream);
 
 CSSValueID FontFormatToId(String font_format) {
   CSSValueID converted_id = CssValueKeywordID(font_format);
