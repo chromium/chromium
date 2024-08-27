@@ -24118,6 +24118,21 @@
             ]
         }
     ],
+    "UseSCContentSharingPicker": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseSCContentSharingPicker"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSmartRefForGPUFenceHandle": [
         {
             "platforms": [
