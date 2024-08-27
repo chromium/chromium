@@ -91,6 +91,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kComposeSavedStateNotification:
       return FillingProduct::kCompose;
     case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kManagePlusAddress:
       return FillingProduct::kPlusAddresses;

@@ -474,6 +474,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddressByCountry:

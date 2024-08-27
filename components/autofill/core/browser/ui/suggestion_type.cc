@@ -90,6 +90,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kIbanEntry";
     case SuggestionType::kCreateNewPlusAddress:
       return "kCreateNewPlusAddress";
+    case SuggestionType::kCreateNewPlusAddressInline:
+      return "kCreateNeWPlusAddressInline";
     case SuggestionType::kFillExistingPlusAddress:
       return "kFillExistingPlusAddress";
     case SuggestionType::kMerchantPromoCodeEntry:

@@ -197,6 +197,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddressByCountry:
@@ -536,6 +537,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
+    case SuggestionType::kCreateNewPlusAddressInline:
+      // TODO(crbug.com/362445807): Implement.
+      break;
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kManageAddress:
@@ -674,6 +678,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           std::move(callback));
       break;
     }
+    case SuggestionType::kCreateNewPlusAddressInline:
+      // TODO(crbug.com/362445807): Implement.
+      break;
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
@@ -772,6 +779,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress:
     case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kScanCreditCard:

@@ -94,6 +94,7 @@ enum class SuggestionType {
 
   // Plus address suggestions.
   kCreateNewPlusAddress = 39,
+  kCreateNewPlusAddressInline = 52,
   kFillExistingPlusAddress = 40,
 
   // Promotion suggestions.
@@ -123,7 +124,7 @@ enum class SuggestionType {
   // suggestions with country names as main text mean.
   kDevtoolsTestAddressByCountry = 51,
 
-  kMaxValue = 51
+  kMaxValue = 52
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

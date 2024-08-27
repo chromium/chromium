@@ -4969,6 +4969,8 @@ Called by update_autofill_enums.py.-->
   <int value="48" label="Mixed form message"/>
   <int value="49" label="Devtools test addresses"/>
   <int value="50" label="Devtools test address entry"/>
+  <int value="51" label="Devtools test address by country entry"/>
+  <int value="52" label="Create new plus address inline"/>
 </enum>
 
 <enum name="TouchToFill.CreditCard.Outcome">

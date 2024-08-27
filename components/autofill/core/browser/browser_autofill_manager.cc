@@ -306,6 +306,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDeleteAddressProfile:
@@ -552,6 +553,7 @@ FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
     case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kIbanEntry:
     case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
