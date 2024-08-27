@@ -292,21 +292,42 @@ class CdmVideoFrameAdapter : public cdm::VideoFrame_2 {
   void SetFormat(cdm::VideoFormat format) final {
     video_frame_->SetFormat(format);
   }
+  cdm::VideoFormat Format() const final { return video_frame_->Format(); }
+
   void SetSize(cdm::Size size) final { video_frame_->SetSize(size); }
+  cdm::Size Size() const final { return video_frame_->Size(); }
+
   void SetFrameBuffer(cdm::Buffer* frame_buffer) final {
     video_frame_->SetFrameBuffer(frame_buffer);
   }
+  cdm::Buffer* FrameBuffer() final { return video_frame_->FrameBuffer(); }
+
   void SetPlaneOffset(cdm::VideoPlane plane, uint32_t offset) final {
     video_frame_->SetPlaneOffset(plane, offset);
   }
+  uint32_t PlaneOffset(cdm::VideoPlane plane) final {
+    return video_frame_->PlaneOffset(plane);
+  }
+
   void SetStride(cdm::VideoPlane plane, uint32_t stride) final {
     video_frame_->SetStride(plane, stride);
   }
+  uint32_t Stride(cdm::VideoPlane plane) final {
+    return video_frame_->Stride(plane);
+  }
+
   void SetTimestamp(int64_t timestamp) final {
     video_frame_->SetTimestamp(timestamp);
   }
+  int64_t Timestamp() const final { return video_frame_->Timestamp(); }
+
   void SetColorSpace(cdm::ColorSpace color_space) final {
     // Do nothing since cdm::VideoFrame does not support colorspace.
+  }
+
+  cdm::ColorSpace ColorSpace() const final {
+    // Return empty struct since cdm::VideoFrame does not support colorspace.
+    return {};
   }
 
  private:

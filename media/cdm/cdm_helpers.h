@@ -69,6 +69,7 @@ class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
 
   // cdm::VideoFrame_2 specific implementation.
   void SetColorSpace(cdm::ColorSpace color_space) final;
+  cdm::ColorSpace ColorSpace() const final;
 
   // Helper functions to get the ColorSpace.
   media::VideoColorSpace MediaColorSpace() const;
