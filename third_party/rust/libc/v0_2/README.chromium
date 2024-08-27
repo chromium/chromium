@@ -2,9 +2,9 @@ Name: libc
 URL: https://crates.io/crates/libc
 Description: Raw FFI bindings to platform libraries like libc.
 
-Version: 0.2.155
+Version: 0.2.158
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/libc-0.2.155/LICENSE-APACHE
-Revision: 7df63bd7f61bf3408344673cf0ba08e7ff0df134
+License File: //third_party/rust/chromium_crates_io/vendor/libc-0.2.158/LICENSE-APACHE
+Revision: c809c58c6873c05c9aa8cb3b9142f6c4d2818e57
