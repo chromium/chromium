@@ -148,19 +148,6 @@ TEST_F(HashPrefixMapTest, ReadFile) {
   EXPECT_EQ(view[4], "fooo");
 }
 
-TEST_F(HashPrefixMapTest, ReadFileNotSorted) {
-  base::WriteFile(GetPath("foo"), "zzzzaaaa");
-
-  V4StoreFileFormat file_format;
-  auto* hash_file = file_format.add_hash_files();
-  hash_file->set_prefix_size(4);
-  hash_file->set_extension("foo");
-  hash_file->set_file_size(8);
-
-  HashPrefixMap map(GetBasePath());
-  EXPECT_EQ(map.ReadFromDisk(file_format), READ_FAILURE_NOT_SORTED);
-}
-
 TEST_F(HashPrefixMapTest, ReadMultipleFiles) {
   base::WriteFile(GetPath("foo"), "fooo");
   base::WriteFile(GetPath("bar"), "barr");

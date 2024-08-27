@@ -275,13 +275,6 @@ ApplyUpdateResult HashPrefixMap::ReadFromDisk(
     if (!file_info.Initialize(hash_file)) {
       return MMAP_FAILURE;
     }
-
-    HashPrefixesView prefixes = file_info.GetView();
-    uint32_t end = prefixes.size() / prefix_size;
-    if (!std::is_sorted(PrefixIterator(prefixes, 0, prefix_size),
-                        PrefixIterator(prefixes, end, prefix_size))) {
-      return READ_FAILURE_NOT_SORTED;
-    }
   }
   return APPLY_UPDATE_SUCCESS;
 }
