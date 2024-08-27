@@ -52,9 +52,11 @@ void IOSWebViewPaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
 }
 
 void IOSWebViewPaymentsAutofillClient::CreditCardUploadCompleted(
-    bool card_saved,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
+  const bool card_saved =
+      result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
   [bridge_ handleCreditCardUploadCompleted:card_saved];
 }
 

@@ -350,9 +350,10 @@ void ChromePaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
 }
 
 void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
-    bool card_saved,
+    PaymentsRpcResult result,
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
+  const bool card_saved = result == PaymentsRpcResult::kSuccess;
 #if BUILDFLAG(IS_ANDROID)
   if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
     bridge->Hide();
@@ -370,12 +371,16 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
         GetAutofillSnackbarController().Show(
             AutofillSnackbarType::kSaveCardSuccess);
       }
-    } else {
+    } else if (result != PaymentsRpcResult::kClientSideTimeout) {
       GetAutofillMessageController().Show(
           AutofillMessageModel::CreateForSaveCardFailure());
     }
   }
 #else  // !BUILDFLAG(IS_ANDROID)
+  if (result == PaymentsRpcResult::kClientSideTimeout) {
+    HideSaveCardPrompt();
+    return;
+  }
   if (SaveCardBubbleControllerImpl* controller =
           SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
     controller->ShowConfirmationBubbleView(

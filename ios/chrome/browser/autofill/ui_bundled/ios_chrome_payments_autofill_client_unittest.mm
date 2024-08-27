@@ -198,7 +198,8 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
               CreditCardUploadCompleted(/*card_saved=*/true, _));
   payments_client()->CreditCardUploadCompleted(
-      /*card_saved=*/true, /*on_confirmation_closed_callback=*/std::nullopt);
+      /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*on_confirmation_closed_callback=*/std::nullopt);
   EXPECT_FALSE(client()->DidRemoveSaveCardInfobar());
 }
 
@@ -210,7 +211,9 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
               CreditCardUploadCompleted(/*card_saved=*/false, _));
 
   payments_client()->CreditCardUploadCompleted(
-      /*card_saved=*/false, /*on_confirmation_closed_callback=*/std::nullopt);
+      /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::
+          kPermanentFailure,
+      /*on_confirmation_closed_callback=*/std::nullopt);
 
   EXPECT_TRUE(client()->DidRemoveSaveCardInfobar());
   const std::optional<AutofillErrorDialogContext>& error_context =
@@ -218,6 +221,25 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   EXPECT_TRUE(error_context.has_value());
   EXPECT_EQ(error_context.value().type,
             AutofillErrorDialogType::kCreditCardUploadError);
+}
+
+// Test that on getting client-side timeout, the save card dialog is dismissed
+// and error dialog is not shown.
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       CreditCardUploadCompleted_ClientSideTimeout_NoErrorConfirmation) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
+
+  EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
+              CreditCardUploadCompleted(/*card_saved=*/false, _));
+  payments_client()->CreditCardUploadCompleted(
+      /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::
+          kClientSideTimeout,
+      /*on_confirmation_closed_callback=*/std::nullopt);
+  EXPECT_TRUE(client()->DidRemoveSaveCardInfobar());
+  const std::optional<AutofillErrorDialogContext>& error_context =
+      [autofill_commands() autofillErrorDialogContext];
+  EXPECT_FALSE(error_context.has_value());
 }
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
@@ -255,7 +277,9 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   base::HistogramTester histogram_tester;
 
   payments_client()->CreditCardUploadCompleted(
-      /*card_saved=*/false, /*on_confirmation_closed_callback=*/std::nullopt);
+      /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::
+          kPermanentFailure,
+      /*on_confirmation_closed_callback=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationShown.CardNotUploaded",
@@ -272,7 +296,9 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
       autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
 
   payments_client()->CreditCardUploadCompleted(
-      /*card_saved=*/false, /*on_confirmation_closed_callback=*/std::nullopt);
+      /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::
+          kPermanentFailure,
+      /*on_confirmation_closed_callback=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationShown.CardNotUploaded",
@@ -289,7 +315,8 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
       autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
 
   payments_client()->CreditCardUploadCompleted(
-      /*card_saved=*/true, /*on_confirmation_closed_callback=*/std::nullopt);
+      /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*on_confirmation_closed_callback=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationShown.CardUploaded",

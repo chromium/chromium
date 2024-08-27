@@ -137,7 +137,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback) override;
-  void CreditCardUploadCompleted(bool card_saved,
+  void CreditCardUploadCompleted(PaymentsRpcResult result,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;
   void HideSaveCardPrompt() override;

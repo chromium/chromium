@@ -367,14 +367,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
       UploadSaveCardPromptCallback callback);
 
   // Shows upload result to users. Called after credit card upload is finished.
-  // `card_saved` indicates if the card is successfully saved.
+  // `result` holds the outcome for credit card upload.
   // `on_confirmation_closed_callback` should run after confirmation prompt is
   // closed.
   // TODO(crbug.com/40614280): This function is overridden in iOS codebase and
   // in the desktop codebase. If iOS is not using it to do anything, please keep
   // this function for desktop.
   virtual void CreditCardUploadCompleted(
-      bool card_saved,
+      PaymentsRpcResult result,
       std::optional<OnConfirmationClosedCallback>
           on_confirmation_closed_callback);
 

@@ -87,7 +87,7 @@ void PaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {}
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(
-    bool card_saved,
+    PaymentsRpcResult result,
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {}
 

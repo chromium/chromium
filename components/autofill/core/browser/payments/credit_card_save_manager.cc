@@ -520,8 +520,7 @@ void CreditCardSaveManager::OnDidUploadCard(
 
   // Show credit card upload feedback.
   client_->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
-      result == PaymentsRpcResult::kSuccess,
-      std::move(on_confirmation_closed_callback));
+      result, std::move(on_confirmation_closed_callback));
 
   // Init virtual card enrollment since there is no save card
   // confirmation bubble showing if the flag is disabled.

@@ -178,7 +178,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(
       void,
       CreditCardUploadCompleted,
-      (bool card_saved,
+      (payments::PaymentsAutofillClient::PaymentsRpcResult result,
        std::optional<PaymentsAutofillClient::OnConfirmationClosedCallback>
            on_confirmation_closed_callback),
       (override));
@@ -6111,8 +6111,9 @@ TEST_P(CreditCardSaveManagerWithLoadingAndConfirmation,
 
   EXPECT_CALL(payments_client(),
               CreditCardUploadCompleted(
-                  true, A<std::optional<payments::PaymentsAutofillClient::
-                                            OnConfirmationClosedCallback>>()));
+                  payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  A<std::optional<payments::PaymentsAutofillClient::
+                                      OnConfirmationClosedCallback>>()));
 
   // If loading and confirmation is enabled, `InitVirtualCardEnroll` is passed
   // as a closure to save card bubble controller that executes it after bubble
@@ -6189,8 +6190,9 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
 
   EXPECT_CALL(payments_client(),
               CreditCardUploadCompleted(
-                  true, A<std::optional<payments::PaymentsAutofillClient::
-                                            OnConfirmationClosedCallback>>()));
+                  payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  A<std::optional<payments::PaymentsAutofillClient::
+                                      OnConfirmationClosedCallback>>()));
 
   if (IsVirtualCardEnrollmentEnabled() &&
       GetEnrollmentState() ==

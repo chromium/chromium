@@ -90,7 +90,6 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
                payments::PaymentsAutofillClient::SaveCreditCardOptions,
                payments::PaymentsAutofillClient::LocalSaveCardPromptCallback),
               (override));
-
   MOCK_METHOD(
       void,
       ShowConfirmationBubbleView,
@@ -98,6 +97,7 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
        std::optional<
            payments::PaymentsAutofillClient::OnConfirmationClosedCallback>),
       (override));
+  MOCK_METHOD(void, HideSaveCardBubble, (), (override));
 };
 #endif
 
@@ -361,8 +361,9 @@ TEST_F(
                                   testing::Ne(std::nullopt)));
 
   std::optional<base::OnceClosure> callback = base::OnceClosure();
-  chrome_payments_client()->CreditCardUploadCompleted(true,
-                                                      std::move(callback));
+  chrome_payments_client()->CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(callback));
 }
 
 TEST_F(
@@ -377,7 +378,9 @@ TEST_F(
   EXPECT_CALL(*snackbar_controller,
               Show(AutofillSnackbarType::kSaveCardSuccess));
 
-  chrome_payments_client()->CreditCardUploadCompleted(true, std::nullopt);
+  chrome_payments_client()->CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      std::nullopt);
 }
 
 TEST_F(
@@ -395,7 +398,25 @@ TEST_F(
                   AutofillMessageModel::Type::kSaveCardFailure);
       });
 
-  chrome_payments_client()->CreditCardUploadCompleted(false, std::nullopt);
+  chrome_payments_client()->CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      std::nullopt);
+}
+
+TEST_F(
+    ChromePaymentsAutofillClientTest,
+    CreditCardUploadCompletedOnClientSideTimeout_HidesSaveCardBottomSheetBridge_NoErrorConfirmation) {
+  MockAutofillSaveCardBottomSheetBridge* save_card_bridge =
+      InjectMockAutofillSaveCardBottomSheetBridge();
+  MockAutofillMessageController* message_controller =
+      InjectMockAutofillMessageController();
+
+  EXPECT_CALL(*save_card_bridge, Hide);
+  EXPECT_CALL(*message_controller, Show).Times(0);
+
+  chrome_payments_client()->CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout,
+      std::nullopt);
 }
 
 TEST_F(ChromePaymentsAutofillClientTest,
@@ -452,13 +473,42 @@ TEST_F(ChromePaymentsAutofillClientTest,
       base::DoNothing());
 }
 
-// Test that calling CreditCardUploadCompleted calls
-// SaveCardBubbleControllerImpl::ShowConfirmationBubbleView.
+// Test that calling `CreditCardUploadCompleted` calls
+// SaveCardBubbleControllerImpl::ShowConfirmationBubbleView on card upload
+// success.
 TEST_F(ChromePaymentsAutofillClientTest,
-       CreditCardUploadCompleted_CallsShowConfirmationBubbleView) {
+       CreditCardUploadCompletedSuccess_CallsShowConfirmationBubbleView) {
   EXPECT_CALL(save_card_bubble_controller(),
               ShowConfirmationBubbleView(true, _));
-  chrome_payments_client()->CreditCardUploadCompleted(true, std::nullopt);
+  chrome_payments_client()->CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      std::nullopt);
+}
+
+// Test that calling `CreditCardUploadCompleted` calls
+// SaveCardBubbleControllerImpl::ShowConfirmationBubbleView on card upload
+// failure.
+TEST_F(ChromePaymentsAutofillClientTest,
+       CreditCardUploadCompletedFailure_CallsShowConfirmationBubbleView) {
+  EXPECT_CALL(save_card_bubble_controller(),
+              ShowConfirmationBubbleView(false, _));
+  chrome_payments_client()->CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      std::nullopt);
+}
+
+// Test that calling `CreditCardUploadCompleted` does not show failure
+// confirmation on card upload client-side timeout.
+TEST_F(
+    ChromePaymentsAutofillClientTest,
+    CreditCardUploadCompletedClientSideTimeout_CallsShowConfirmationBubbleView) {
+  EXPECT_CALL(save_card_bubble_controller(), HideSaveCardBubble());
+  EXPECT_CALL(save_card_bubble_controller(),
+              ShowConfirmationBubbleView(false, _))
+      .Times(0);
+  chrome_payments_client()->CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout,
+      std::nullopt);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
