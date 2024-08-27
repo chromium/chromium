@@ -16,7 +16,6 @@
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/deps/no_destructor.h"
 #include "mediapipe/framework/formats/hardware_buffer.h"
-#include "mediapipe/framework/formats/tensor_ahwb_usage.h"
 #include "mediapipe/gpu/gl_base.h"
 #endif  // MEDIAPIPE_TENSOR_USE_AHWB
 
@@ -245,12 +244,9 @@ Tensor::AHardwareBufferView Tensor::GetAHardwareBufferReadView() const {
 
   EraseCompletedUsages(ahwb_usages_);
   ahwb_usages_.push_back(TensorAhwbUsage());
-  auto& ahwb_usage = ahwb_usages_.back();
   return {ahwb_.get(),
-          &write_complete_fence_fd_,   // Returned by GetWriteCompleteFenceFd.
-          &ahwb_usage.is_complete_fn,  // Filled by SetReadingFinishedFunc.
-          &ahwb_usage.release_callbacks,
-          std::move(lock),
+          &write_complete_fence_fd_,  // Returned by GetWriteCompleteFenceFd.
+          &ahwb_usages_.back(), std::move(lock),
           /*is_write_view=*/false};
 }
 
@@ -262,12 +258,12 @@ void Tensor::CreateEglSyncAndFd() const {
         fence_sync_ = eglCreateSyncKHR(egl_display,
                                        EGL_SYNC_NATIVE_FENCE_ANDROID, nullptr);
         if (fence_sync_ != EGL_NO_SYNC_KHR) {
-          if (write_complete_fence_fd_ != -1) {
-            ABSL_LOG(DFATAL) << "write_complete_fence_fd_ is already set.";
-          }
+          // TODO: Ensure we don't leak GL sync objects and fd
+          // fences. This can happen if write_complete_fence_fd_ is already
+          // valid here.
           write_complete_fence_fd_ =
-              eglDupNativeFenceFDANDROID(egl_display, fence_sync_);
-          if (write_complete_fence_fd_ == -1) {
+              UniqueFd(eglDupNativeFenceFDANDROID(egl_display, fence_sync_));
+          if (!write_complete_fence_fd_.IsValid()) {
             eglDestroySyncKHR(egl_display, fence_sync_);
             fence_sync_ = EGL_NO_SYNC_KHR;
           }
@@ -292,12 +288,9 @@ Tensor::AHardwareBufferView Tensor::GetAHardwareBufferWriteView() const {
         ahwb_usages_.size());
   }
   ahwb_usages_.push_back(TensorAhwbUsage());
-  auto& ahwb_usage = ahwb_usages_.back();
   return {ahwb_.get(),
-          &write_complete_fence_fd_,   // For SetWritingFinishedFD.
-          &ahwb_usage.is_complete_fn,  // Filled by SetWritingFinishedFunc.
-          &ahwb_usage.release_callbacks,
-          std::move(lock),
+          &write_complete_fence_fd_,  // Set by SetWritingFinishedFD.
+          &ahwb_usages_.back(), std::move(lock),
           /*is_write_view=*/true};
 }
 
@@ -383,7 +376,7 @@ void Tensor::MoveCpuOrSsboToAhwb() const {
 // is finished then the GPU reads from the SSBO.
 bool Tensor::InsertAhwbToSsboFence() const {
   if (!ahwb_) return false;
-  if (write_complete_fence_fd_ != -1) {
+  if (write_complete_fence_fd_.IsValid()) {
     // Can't wait for FD to be signaled on GPU.
     // TODO: wait on CPU instead.
     if (!IsGlSupported()) return true;
@@ -394,7 +387,7 @@ bool Tensor::InsertAhwbToSsboFence() const {
 
     // EGL will take ownership of the passed fd if eglCreateSyncKHR is
     // successful.
-    int fd_for_egl = dup(write_complete_fence_fd_);
+    int fd_for_egl = dup(write_complete_fence_fd_.Get());
 
     EGLint sync_attribs[] = {EGL_SYNC_NATIVE_FENCE_FD_ANDROID,
                              (EGLint)fd_for_egl, EGL_NONE};
@@ -415,16 +408,13 @@ void Tensor::MoveAhwbStuff(Tensor* src) {
   ahwb_ = std::exchange(src->ahwb_, nullptr);
   fence_sync_ = std::exchange(src->fence_sync_, EGL_NO_SYNC_KHR);
   ssbo_read_ = std::exchange(src->ssbo_read_, static_cast<GLsync>(0));
-  write_complete_fence_fd_ = std::exchange(src->write_complete_fence_fd_, -1);
+  write_complete_fence_fd_ = std::move(src->write_complete_fence_fd_);
   ahwb_usages_ = std::move(src->ahwb_usages_);
   use_ahwb_ = std::exchange(src->use_ahwb_, false);
 }
 
 void Tensor::ReleaseAhwbStuff() {
-  if (write_complete_fence_fd_ != -1) {
-    close(write_complete_fence_fd_);
-    write_complete_fence_fd_ = -1;
-  }
+  write_complete_fence_fd_.Reset();
   if (__builtin_available(android 26, *)) {
     if (ahwb_) {
       if (ssbo_read_ != 0 || fence_sync_ != EGL_NO_SYNC_KHR ||
@@ -443,7 +433,8 @@ void Tensor::ReleaseAhwbStuff() {
 void* Tensor::MapAhwbToCpuRead() const {
   if (ahwb_ != nullptr) {
     if (!(valid_ & kValidCpu)) {
-      if ((valid_ & kValidOpenGlBuffer) && write_complete_fence_fd_ == -1) {
+      if ((valid_ & kValidOpenGlBuffer) &&
+          !write_complete_fence_fd_.IsValid()) {
         // EGLSync is failed. Use another synchronization method.
         // TODO: Use tflite::gpu::GlBufferSync and GlActiveSync.
         gl_context_->Run([]() { glFinish(); });
@@ -455,12 +446,23 @@ void* Tensor::MapAhwbToCpuRead() const {
         CompleteAndEraseUsages(ahwb_usages_);
       }
     }
+    // ahwb_->Lock takes ownership of the fence fd. See b/358020559
+    // Duplicate fence since it may be simultaneously accessed via the
+    // AHardwareBufferView class.
+    const int fence_fd = write_complete_fence_fd_.Get();
+    int duplicate_fence = -1;
+    if (fence_fd != -1) {
+      duplicate_fence = dup(fence_fd);
+      if (duplicate_fence == -1) {
+        ABSL_LOG(ERROR) << "Failed to duplicate fence fd: " << fence_fd;
+      }
+    }
     auto ptr =
         ahwb_->Lock(HardwareBufferSpec::AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN,
-                    write_complete_fence_fd_);
+                    duplicate_fence);
     ABSL_CHECK_OK(ptr) << "Lock of AHWB failed";
-    close(write_complete_fence_fd_);
-    write_complete_fence_fd_ = -1;
+    // TODO b/362214354 - Is it safe to reset ssbo_written_ here?
+    write_complete_fence_fd_.Reset();
     return *ptr;
   }
   return nullptr;

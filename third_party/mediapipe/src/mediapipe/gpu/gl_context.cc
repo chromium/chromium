@@ -403,7 +403,7 @@ absl::Status GlContext::FinishInitialization(bool create_thread) {
   });
 }
 
-GlContext::GlContext() {}
+GlContext::GlContext() = default;
 
 GlContext::~GlContext() {
   destructing_ = true;
