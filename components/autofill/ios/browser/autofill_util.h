@@ -50,6 +50,7 @@ bool ExtractFormsData(NSString* form_json,
                       const GURL& main_frame_url,
                       const GURL& frame_origin,
                       const FieldDataManager& field_data_manager,
+                      const std::string& frame_id,
                       std::vector<FormData>* forms_data);
 
 // Converts |form| into |form_data|.
@@ -63,6 +64,7 @@ bool ExtractFormData(const base::Value::Dict& form,
                      const GURL& main_frame_url,
                      const GURL& form_frame_origin,
                      const FieldDataManager& field_data_manager,
+                     const std::string& frame_id,
                      FormData* form_data);
 
 // Extracts a single form field from the JSON dictionary into a FormFieldData

@@ -1731,6 +1731,48 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Unregister) {
   main_frame_manager().ResetTestState();
 }
 
+// Tests that forms aren't parsed when their host frame ID differs from the ID
+// of the frame on which forms extraction was requested.
+TEST_F(AutofillAcrossIframesTest, FrameAndFormIdsDontMatch) {
+  // Serve form on main frame.
+  AddInput("text", "name");
+  AddInput("text", "address");
+  StartTestServerAndLoad();
+
+  // Verify that the form can be parsed, intially.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
+  main_frame_manager().ResetTestState();
+
+  // Change the ID of the main frame on the renderer side but not in the
+  // browser, making the two IDs different.
+  {
+    web::WebFrame* main_frame = WaitForMainFrame();
+    std::string new_frame_id = main_frame->GetFrameId();
+    // Reverse the main frame id to make it a brand new id.
+    std::reverse(new_frame_id.begin(), new_frame_id.end());
+
+    // Change the frame ID provided by getFrameId() to simulate a different
+    // frame receiving the forms extraction request.
+    std::u16string script = u"__gCrWeb.message.getFrameId = () => "
+                            "'1effd8f52a067c8d3a01762d3c41dfd8'; true";
+    ASSERT_TRUE(ExecuteJavaScriptInFrame(main_frame, script));
+  }
+
+  // Trigger extraction on the `main_frame` where the frame ID obtained within
+  // the script during extraction is different from the ID the main frame was
+  // initially registered with.
+  test_api(*main_frame_driver()).TriggerFormExtractionInDriverFrame();
+
+  // Give enough time for the JS request to be done.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
+
+  // Verify that no forms could be parsed (hence seen) this time because the
+  // forms had a different frame ID than the frame ID for the request hence the
+  // extracted forms couldn't be parsed, resulting in no forms seen.
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 0u);
+}
+
 // Ensure that disabling the feature actually disables the feature.
 TEST_F(AutofillAcrossIframesTest, FeatureDisabled) {
   base::test::ScopedFeatureList disable;
