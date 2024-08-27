@@ -10,6 +10,7 @@
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
@@ -63,6 +64,7 @@
   }
   _consumer = consumer;
   [self postPlusAddressesToConsumer];
+  [self postActionsToConsumer];
 }
 
 #pragma mark - TableViewFaviconDataSource
@@ -79,6 +81,10 @@
 // Initiates the process of fetching and presenting Plus Addresses to the
 // consumer.
 - (void)postPlusAddressesToConsumer {
+  if (!self.consumer) {
+    return;
+  }
+
   if (!_shouldShowManualFallback) {
     [self.consumer presentPlusAddresses:@[]];
     return;
@@ -115,7 +121,7 @@
     NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
             l10n_util::GetStringUTF16(
-                IDS_IOS_MANUAL_FALLBACK_PLUS_ADDRESS_CELL_INDEX),
+                IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CELL_INDEX_IOS),
             "count", plusAddressesCount, "position", i + 1));
 
     ManualFillPlusAddress* manualFillPlusAddress =
@@ -148,6 +154,22 @@
                  siteName:siteName.length ? siteName : plusAddressHost
                      host:plusAddressHost
                       URL:_URL];
+}
+
+// Sends actions to the consumer.
+- (void)postActionsToConsumer {
+  if (!self.consumer) {
+    return;
+  }
+
+  NSString* managePlusAddressesTitle = l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_MANUAL_FALLBACK_MANAGE_ACTION_TEXT_IOS);
+  ManualFillActionItem* managePlusAddressItem =
+      [[ManualFillActionItem alloc] initWithTitle:managePlusAddressesTitle
+                                           action:nil];
+  managePlusAddressItem.accessibilityIdentifier =
+      manual_fill::kManagePlusAddressAccessibilityIdentifier;
+  [self.consumer presentPlusAddressActions:@[ managePlusAddressItem ]];
 }
 
 @end

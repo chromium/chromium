@@ -6,10 +6,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/with_feature_override.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_text_cell.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_text_cell.h"
 
 namespace {
 
@@ -298,6 +298,29 @@ TEST_P(FallbackViewControllerTest, CheckNoDataItemsMessageRemoved) {
 
   // The "no data items to show" message shouldn't be present anymore.
   EXPECT_FALSE(GetHeaderItem(/*section=*/1));
+}
+
+// Tests that the actions are separated by sections if they belong to different
+// types.
+TEST_P(FallbackViewControllerTest,
+       CheckDifferentSectionsForActionsOfDifferentTypes) {
+  TableViewItem* item_one =
+      [[TableViewItem alloc] initWithType:ItemTypeSampleOne];
+  TableViewItem* item_two =
+      [[TableViewItem alloc] initWithType:ItemTypeSampleTwo];
+
+  FallbackViewController* fallbackViewController = GetFallbackViewController();
+
+  [fallbackViewController presentActionItems:@[ item_one ]];
+  [fallbackViewController presentPlusAddressActionItems:@[ item_two ]];
+
+  EXPECT_EQ(NumberOfSections(), 2);
+
+  EXPECT_EQ(NumberOfItemsInSection(0), 1);
+  EXPECT_EQ(NumberOfItemsInSection(1), 1);
+
+  EXPECT_EQ(GetTableViewItemType(/*section=*/0, /*item=*/0), ItemTypeSampleOne);
+  EXPECT_EQ(GetTableViewItemType(/*section=*/1, /*item=*/0), ItemTypeSampleTwo);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FallbackViewControllerTest);

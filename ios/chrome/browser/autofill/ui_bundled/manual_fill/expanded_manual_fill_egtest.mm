@@ -247,8 +247,25 @@ id<GREYMatcher> AutofillFormButton() {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
+  if ([self isRunningTest:@selector(testPlusAddressActions)]) {
+    std::string fakeLocalUrl =
+        base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
+    config.features_enabled_and_params.push_back(
+        {plus_addresses::features::kPlusAddressesEnabled,
+         {{
+             {"server-url", {fakeLocalUrl}},
+             {"manage-url", {fakeLocalUrl}},
+         }}});
+
+    // Enable the Keyboard Accessory Upgrade feature.
+    config.features_enabled_and_params.push_back(
+        {kIOSKeyboardAccessoryUpgrade, {}});
+    config.features_enabled_and_params.push_back(
+        {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
+  } else {
     // Enable the Keyboard Accessory Upgrade feature.
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+  }
 
   return config;
 }
@@ -676,6 +693,34 @@ id<GREYMatcher> AutofillFormButton() {
   [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
       performAction:grey_tap()];
   CheckChipButtonVisibility(plus_addresses::test::kFakePlusAddressU16);
+}
+
+// Tests that the plus address actions are shown in the address and password
+// segments.
+- (void)testPlusAddressActions {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  id<GREYMatcher> managePlusAddressMatcher = grey_accessibilityID(
+      manual_fill::kManagePlusAddressAccessibilityIdentifier);
+
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:managePlusAddressMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Switch over to passwords.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:managePlusAddressMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

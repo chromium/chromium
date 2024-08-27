@@ -209,6 +209,10 @@ enum ManualFallbackItemType : NSInteger {
   [self presentItems];
 }
 
+- (void)presentPlusAddressActions:(NSArray<ManualFillActionItem*>*)actions {
+  [self presentPlusAddressActionItems:actions];
+}
+
 #pragma mark - Private
 
 // Show items depending on the availibility of `_credentials` and

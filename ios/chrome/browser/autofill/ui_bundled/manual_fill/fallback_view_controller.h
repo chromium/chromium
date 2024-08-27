@@ -36,6 +36,10 @@
 // Presents given action items in 'actions' section.
 - (void)presentActionItems:(NSArray<TableViewItem*>*)actions;
 
+// Presents given plus address action items in the `plus address actions`
+// section.
+- (void)presentPlusAddressActionItems:(NSArray<TableViewItem*>*)actions;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_FALLBACK_VIEW_CONTROLLER_H_

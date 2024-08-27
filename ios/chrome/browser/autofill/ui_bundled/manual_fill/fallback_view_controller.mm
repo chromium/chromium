@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   HeaderSectionIdentifier = kSectionIdentifierEnumZero,
   NoDataItemsSectionIdentifier,
   ActionsSectionIdentifier,
+  PlusAddressActionsSectionIdentifier,
   // Must be declared last as it is used as the starting point to dynamically
   // create section identifiers for each data item when the
   // kIOSKeyboardAccessoryUpgrade feature is enabled.
@@ -62,6 +63,7 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 enum class ItemType {
   kItemTypeData = kItemTypeEnumZero,
   kItemTypeAction,
+  kItemTypePlusAddressAction
 };
 
 }  // namespace
@@ -75,6 +77,10 @@ enum class ItemType {
 
 // Action Items to be shown when the loading indicator disappears.
 @property(nonatomic, strong) NSArray<TableViewItem*>* queuedActionItems;
+
+// Plus Address Action Items to be shown when the loading indicator disappears.
+@property(nonatomic, strong)
+    NSArray<TableViewItem*>* queuedPlusAddressActionItems;
 
 @end
 
@@ -168,6 +174,10 @@ enum class ItemType {
   [self presentItems:actions ofItemType:ItemType::kItemTypeAction];
 }
 
+- (void)presentPlusAddressActionItems:(NSArray<TableViewItem*>*)actions {
+  [self presentItems:actions ofItemType:ItemType::kItemTypePlusAddressAction];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -232,6 +242,10 @@ enum class ItemType {
       hasQueuedItems = (self.queuedActionItems != nil);
       self.queuedActionItems = items;
       break;
+    case ItemType::kItemTypePlusAddressAction:
+      hasQueuedItems = (self.queuedPlusAddressActionItems != nil);
+      self.queuedPlusAddressActionItems = items;
+      break;
   }
 
   if (![self shouldPresentItems]) {
@@ -258,6 +272,9 @@ enum class ItemType {
       break;
     case ItemType::kItemTypeAction:
       [self presentQueuedActionItems];
+      break;
+    case ItemType::kItemTypePlusAddressAction:
+      [self presentQueuedPlusAddressActionItems];
       break;
   }
 }
@@ -336,22 +353,35 @@ enum class ItemType {
 
 // Presents the action items currently in queue.
 - (void)presentQueuedActionItems {
-  DCHECK(self.queuedActionItems);
+  [self presentActionItems:self.queuedActionItems
+                 inSection:ActionsSectionIdentifier];
+  self.queuedActionItems = nil;
+}
+
+// Presents plus address action items currently in the queue.
+- (void)presentQueuedPlusAddressActionItems {
+  [self presentActionItems:self.queuedPlusAddressActionItems
+                 inSection:PlusAddressActionsSectionIdentifier];
+  self.queuedPlusAddressActionItems = nil;
+}
+
+// Presents action items `items` in the `section`.
+- (void)presentActionItems:(NSArray<TableViewItem*>*)items
+                 inSection:(SectionIdentifier)section {
+  CHECK(items);
 
   [self createModelIfNeeded];
 
-  BOOL sectionExists = [self.tableViewModel
-      hasSectionForSectionIdentifier:ActionsSectionIdentifier];
+  BOOL sectionExists =
+      [self.tableViewModel hasSectionForSectionIdentifier:section];
   // If there are no passed items, remove section if it exists.
-  if (!self.queuedActionItems.count && sectionExists) {
-    [self.tableViewModel removeSectionWithIdentifier:ActionsSectionIdentifier];
-  } else if (self.queuedActionItems.count && !sectionExists) {
-    [self.tableViewModel addSectionWithIdentifier:ActionsSectionIdentifier];
+  if (!items.count && sectionExists) {
+    [self.tableViewModel removeSectionWithIdentifier:section];
+  } else if (items.count && !sectionExists) {
+    [self.tableViewModel addSectionWithIdentifier:section];
   }
 
-  [self presentFallbackItems:self.queuedActionItems
-                   inSection:ActionsSectionIdentifier];
-  self.queuedActionItems = nil;
+  [self presentFallbackItems:items inSection:section];
 }
 
 // Returns the time elapsed in seconds since the loading indicator started. This
