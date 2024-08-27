@@ -42,6 +42,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -332,23 +333,6 @@ TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
   EXPECT_FALSE(IsEphemeralAccountId(EmptyAccountId()));
 
   EXPECT_EQ(GetUserManagerOwnerId(), kOwnerAccountId);
-}
-
-TEST_F(UserManagerTest, GetProfilePrefs) {
-  // Log in the user and create the profile.
-  user_manager::UserManager::Get()->UserLoggedIn(
-      kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
-      false /* browser_restart */, false /* is_child */);
-  user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  ASSERT_FALSE(user->GetProfilePrefs());
-  Profile& profile = profiles::testing::CreateProfileSync(
-      g_browser_process->profile_manager(),
-      ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
-  EXPECT_TRUE(user->GetProfilePrefs());
-  EXPECT_EQ(profile.GetPrefs(), user->GetProfilePrefs());
-
-  ResetUserManager();
 }
 
 // Tests that `IsEphemeralAccountId(account_id)` returns false when `account_id`
@@ -648,22 +632,27 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
   user_manager::UserManager::Get()->UserLoggedIn(
       kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
       false /* browser_restart */, false /* is_child */);
-  user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  Profile& profile = profiles::testing::CreateProfileSync(
-      g_browser_process->profile_manager(),
-      ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
+
+  TestingPrefServiceSimple prefs;
+  user_manager::UserManagerBase::RegisterProfilePrefs(prefs.registry());
+  // To simplify the dependency, register the pref directly.
+  // In production, this is registered in ash::PowerPrefs.
+  prefs.registry()->RegisterBooleanPref(prefs::kAllowScreenLock, true);
+
+  user_manager::UserManager::Get()->OnUserProfileCreated(kOwnerAccountId,
+                                                         &prefs);
 
   // Verify that the user is allowed to lock the screen.
   EXPECT_TRUE(user_manager::UserManager::Get()->GetActiveUser()->CanLock());
   EXPECT_EQ(1U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
   // The user is not allowed to lock the screen.
-  profile.GetPrefs()->SetBoolean(prefs::kAllowScreenLock, false);
+  prefs.SetBoolean(prefs::kAllowScreenLock, false);
   EXPECT_FALSE(user_manager::UserManager::Get()->GetActiveUser()->CanLock());
   EXPECT_EQ(0U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
-  ResetUserManager();
+  user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+      kOwnerAccountId);
 }
 
 TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {

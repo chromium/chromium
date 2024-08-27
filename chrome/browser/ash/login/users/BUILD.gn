@@ -14,6 +14,8 @@ static_library("users") {
     "chrome_user_manager_impl.h",
     "chrome_user_manager_util.cc",
     "chrome_user_manager_util.h",
+    "profile_user_manager_controller.cc",
+    "profile_user_manager_controller.h",
     "test_users.cc",
     "test_users.h",
     "user_manager_delegate_impl.cc",
@@ -170,6 +172,7 @@ source_set("unit_tests") {
 
   sources = [
     "multi_user_sign_in_policy_controller_unittest.cc",
+    "profile_user_manager_controller_unittest.cc",
     "user_manager_unittest.cc",
   ]
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/net/ash_proxy_monitor.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
@@ -107,6 +108,9 @@ void BrowserProcessPlatformPart::InitializeUserManager() {
   DCHECK(!user_manager_);
   CHECK(session_manager_);
   user_manager_ = ash::ChromeUserManagerImpl::CreateChromeUserManager();
+  profile_user_manager_controller_ =
+      std::make_unique<ash::ProfileUserManagerController>(
+          g_browser_process->profile_manager(), user_manager_.get());
   user_image_manager_registry_ =
       std::make_unique<ash::UserImageManagerRegistry>(user_manager_.get());
   session_manager_->OnUserManagerCreated(user_manager_.get());
@@ -130,6 +134,7 @@ void BrowserProcessPlatformPart::DestroyUserManager() {
   }
 
   user_image_manager_registry_.reset();
+  profile_user_manager_controller_.reset();
   user_manager_.reset();
 }
 

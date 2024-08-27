@@ -48,7 +48,6 @@
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
@@ -56,16 +55,10 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -183,9 +176,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
   }
 
   DeviceSettingsService::Get()->AddObserver(this);
-  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
-    profile_manager_observation_.Observe(profile_manager);
-  }
 
   // Since we're in ctor postpone any actions till this is fully created.
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
@@ -519,71 +509,6 @@ void ChromeUserManagerImpl::UpdatePublicAccountDisplayName(
 
 void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {
   NotifyUsersSignInConstraintsChanged();
-}
-
-void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
-  // Find a User instance from directory path, and annotate the AccountId.
-  // Hereafter, we can use AnnotatedAccountId::Get() to find the User.
-  if (ash::IsUserBrowserContext(profile)) {
-    auto logged_in_users = GetLoggedInUsers();
-    auto it = base::ranges::find(
-        logged_in_users,
-        ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile),
-        [](const user_manager::User* user) { return user->username_hash(); });
-    if (it == logged_in_users.end()) {
-      // User may not be found for now on testing.
-      // TODO(crbug.com/40225390): fix tests to annotate AccountId properly.
-      CHECK_IS_TEST();
-    } else {
-      const user_manager::User* user = *it;
-      auto* session_manager = session_manager::SessionManager::Get();
-      if (session_manager) {
-        // A |User| instance should always exist for a profile which is not the
-        // initial, the sign-in or the lock screen app profile.
-        CHECK(session_manager->HasSessionForAccountId(user->GetAccountId()))
-            << "Attempting to construct the profile before starting the user "
-               "session";
-      } else {
-        // SessionManager should be always initialized before Profile creation,
-        // except tests.
-        CHECK_IS_TEST();
-      }
-      ash::AnnotatedAccountId::Set(profile, user->GetAccountId(),
-                                   /*for_test=*/false);
-    }
-  }
-}
-
-void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
-  // TODO(crbug.com/40225390): Use ash::AnnotatedAccountId::Get(), when
-  // it gets fully ready for tests.
-  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && OnUserProfileCreated(user->GetAccountId(), profile->GetPrefs())) {
-    // Add observer for graceful shutdown of User on Profile destruction.
-    auto observation =
-        std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(
-            this);
-    observation->Observe(profile);
-    profile_observations_.push_back(std::move(observation));
-  }
-
-  ProcessPendingUserSwitchId();
-}
-
-void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
-  CHECK(std::erase_if(profile_observations_, [profile](auto& observation) {
-    return observation->IsObservingSource(profile);
-  }));
-  // TODO(crbug.com/40225390): User ash::AnnotatedAccountId::Get(), when it gets
-  // fully ready for tests.
-  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user) {
-    OnUserProfileWillBeDestroyed(user->GetAccountId());
-  }
-}
-
-void ChromeUserManagerImpl::OnProfileManagerDestroying() {
-  profile_manager_observation_.Reset();
 }
 
 }  // namespace ash

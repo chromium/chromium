@@ -1400,6 +1400,8 @@ bool UserManagerBase::OnUserProfileCreated(const AccountId& account_id,
   for (auto& observer : observer_list_) {
     observer.OnUserProfileCreated(*user);
   }
+
+  ProcessPendingUserSwitchId();
   return true;
 }
 

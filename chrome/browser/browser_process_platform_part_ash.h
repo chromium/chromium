@@ -28,6 +28,7 @@ class ChromeSessionManager;
 class CrosSettingsHolder;
 class InSessionPasswordChangeManager;
 class ProfileHelper;
+class ProfileUserManagerController;
 class SchedulerConfigurationManager;
 class SecureDnsManager;
 class UserImageManagerRegistry;
@@ -176,6 +177,9 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
       automatic_reboot_manager_;
 
   std::unique_ptr<user_manager::UserManager> user_manager_;
+
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
 
   std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
 
