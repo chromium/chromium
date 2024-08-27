@@ -71,6 +71,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   self = [super initWithFrame:frame];
   if (self) {
     [self setupViews];
+    [self setItemsForTraitCollection:self.traitCollection];
   }
   return self;
 }
