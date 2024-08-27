@@ -994,7 +994,7 @@ bssl::CertPathBuilder::Result TryBuildPath(
       aia_cert_issuer_source.emplace(net_fetcher);
       path_builder.AddCertIssuerSource(&aia_cert_issuer_source.value());
     } else {
-      LOG(ERROR) << "No net_fetcher for performing AIA chasing.";
+      VLOG(1) << "No net_fetcher for performing AIA chasing.";
     }
   }
 
@@ -1060,8 +1060,8 @@ int AssignVerifyResult(X509Certificate* input_cert,
   CHECK(path_is_valid || IsCertStatusError(verify_result->cert_status));
 
   if (!path_is_valid) {
-    LOG(ERROR) << "CertVerifyProcBuiltin for " << hostname << " failed:\n"
-               << partial_path.errors.ToDebugString(partial_path.certs);
+    VLOG(1) << "CertVerifyProcBuiltin for " << hostname << " failed:\n"
+            << partial_path.errors.ToDebugString(partial_path.certs);
   }
 
   const PathBuilderDelegateDataImpl* delegate_data =
