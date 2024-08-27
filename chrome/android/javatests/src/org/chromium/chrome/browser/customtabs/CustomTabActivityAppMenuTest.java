@@ -51,7 +51,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -99,7 +98,6 @@ import java.util.concurrent.TimeoutException;
 /** Integration tests for the Custom Tab App Menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
-@Batch(Batch.PER_CLASS)
 public class CustomTabActivityAppMenuTest {
     private static final int MAX_MENU_CUSTOM_ITEMS = 7;
     private static final int NUM_CHROME_MENU_ITEMS = 6;
