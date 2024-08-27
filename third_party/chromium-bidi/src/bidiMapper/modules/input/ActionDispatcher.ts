@@ -410,27 +410,35 @@ export class ActionDispatcher {
             );
             break;
           case Input.PointerType.Pen:
-            // Even if the pressed size is 0, we still need to send the event, as pen can
-            // hover over.
-            // TODO: Implement width and height when available.
-            await this.#context.cdpTarget.cdpClient.sendCommand(
-              'Input.dispatchMouseEvent',
-              {
-                type: 'mouseMoved',
-                x,
-                y,
-                modifiers,
-                clickCount: 0,
-                button: getCdpButton(source.pressed.values().next().value ?? 5),
-                buttons: source.buttons,
-                pointerType,
-                tangentialPressure,
-                tiltX,
-                tiltY,
-                twist,
-                force: pressure,
-              }
-            );
+            if (source.pressed.size !== 0) {
+              // Empty `source.pressed.size` means the pen is not detected by digitizer.
+              // Dispatch a mouse event for the pen only if either:
+              // 1. the pen is hovering over the digitizer (0);
+              // 2. the pen is in contact with the digitizer (1);
+              // 3. the pen has at least one button pressed (2, 4, etc).
+              // https://www.w3.org/TR/pointerevents/#the-buttons-property
+              // TODO: Implement width and height when available.
+              await this.#context.cdpTarget.cdpClient.sendCommand(
+                'Input.dispatchMouseEvent',
+                {
+                  type: 'mouseMoved',
+                  x,
+                  y,
+                  modifiers,
+                  clickCount: 0,
+                  button: getCdpButton(
+                    source.pressed.values().next().value ?? 5
+                  ),
+                  buttons: source.buttons,
+                  pointerType,
+                  tangentialPressure,
+                  tiltX,
+                  tiltY,
+                  twist,
+                  force: pressure ?? 0.5,
+                }
+              );
+            }
             break;
           case Input.PointerType.Touch:
             if (source.pressed.size !== 0) {
@@ -833,6 +841,7 @@ const getKeyEventText = (code: string, source: KeySource) => {
 };
 
 function getCdpButton(button: number) {
+  // https://www.w3.org/TR/pointerevents/#the-button-property
   switch (button) {
     case 0:
       return 'left';
@@ -854,7 +863,7 @@ function getTilt(action: {azimuthAngle?: number; altitudeAngle?: number}): {
   tiltY: number;
 } {
   // https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
-  const altitudeAngle = action.altitudeAngle ?? 0;
+  const altitudeAngle = action.altitudeAngle ?? Math.PI / 2;
   const azimuthAngle = action.azimuthAngle ?? 0;
   let tiltXRadians = 0;
   let tiltYRadians = 0;
