@@ -11,6 +11,7 @@ for more details about the presubmit API built into depot_tools.
 from typing import Callable
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
 from dataclasses import dataclass
 
 PRESUBMIT_VERSION = '2.0.0'
@@ -135,7 +136,7 @@ class BanRule:
     pattern: str
     # Explanation as a sequence of strings. Each string in the sequence will be
     # printed on its own line.
-    explanation: Sequence[str]
+    explanation: Tuple[str, ...]
     # Whether or not to treat this ban as a fatal error. If unspecified,
     # defaults to true.
     treat_as_error: Optional[bool] = None
@@ -1240,7 +1241,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         r'/\bstd::execution::(par|seq)\b',
         ('std::execution::(par|seq) is banned; they do not fit into '
          ' Chrome\'s threading model, and libc++ doesn\'t have full '
-         'support.'),
+         'support.', ),
         True,
         [_THIRD_PARTY_EXCEPT_BLINK],
     ),
@@ -2079,7 +2080,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
          'logic to take on test-only conditionals, which is an anti-pattern. '
          'Features should be performing dependency injection rather than '
          'directly using class Browser. See '
-         'docs/chrome_browser_design_principles.md for more details.'
+         'docs/chrome_browser_design_principles.md for more details.',
         ),
         treat_as_error=False,
     ),
@@ -2089,7 +2090,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ('Do not RunUntilIdle. If possible, explicitly quit the run loop using '
          'run_loop.Quit() or run_loop.QuitClosure() if completion can be '
          'observed using a lambda or callback. Otherwise, wait for the '
-         'condition to be true via base::test::RunUntil().'
+         'condition to be true via base::test::RunUntil().',
         ),
         treat_as_error=False,
     ),
