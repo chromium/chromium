@@ -1140,6 +1140,23 @@ TEST_F(RestoringBlockGuardTest, NestedRelease) {
   EXPECT_TRUE(stream.ConsumeTokens(" h i"));
 }
 
+TEST_F(RestoringBlockGuardTest, ReleaseImmediate) {
+  TestStream stream("a b (c d) e");
+  EXPECT_TRUE(stream.ConsumeTokens("a b "));
+
+  stream.EnsureLookahead();
+  TestRestoringBlockGuard guard(stream);
+  EXPECT_FALSE(guard.Release());
+  EXPECT_TRUE(stream.ConsumeTokens("c d"));
+  EXPECT_TRUE(guard.Release());
+  // The above Release() call should consume the block-end,
+  // even if RestoringBlockGuard hasn't gone out of scope.
+
+  EXPECT_EQ(kWhitespaceToken, stream.Peek().GetType());
+  EXPECT_TRUE(stream.ConsumeTokens(" e"));
+  EXPECT_TRUE(stream.Peek().IsEOF());
+}
+
 TEST_F(RestoringBlockGuardTest, BlockStack) {
   TestStream stream("a (b c) d) e");
   EXPECT_TRUE(stream.ConsumeTokens("a "));

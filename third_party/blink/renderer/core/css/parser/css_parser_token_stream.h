@@ -579,7 +579,8 @@ class CORE_EXPORT CSSParserTokenStream {
     // Attempts to release the guard. If the guard could not be released
     // (i.e. we are not at the end of the block or EOF), then this call
     // has no effect, and ~RestoringBlockGuard will restore the stream to
-    // the pre-guard state.
+    // the pre-guard state. If the guard could be released, then this
+    // function consumes the block-end token.
     //
     // The return value of this function is useful for checking whether or
     // not we are at the end of the block. If we expect to be at the end
@@ -600,9 +601,11 @@ class CORE_EXPORT CSSParserTokenStream {
     //  Since we're not at the end of the block, the guard isn't released,
     //  which means that we have unknown trailing tokens.
     bool Release() {
+      DCHECK(!released_);
       stream_.EnsureLookAhead();
       if (stream_.next_.IsEOF() ||
           stream_.next_.GetBlockType() == CSSParserToken::kBlockEnd) {
+        stream_.UncheckedConsumeInternal();
         released_ = true;
         return true;
       }
@@ -611,13 +614,7 @@ class CORE_EXPORT CSSParserTokenStream {
 
     ~RestoringBlockGuard() {
       stream_.EnsureLookAhead();
-      if (released_) {
-        // The guard has been released, nothing to do except move past
-        // the block-end.
-        const CSSParserToken& token = stream_.UncheckedConsumeInternal();
-        DCHECK(token.GetType() == kEOFToken ||
-               token.GetBlockType() == CSSParserToken::kBlockEnd);
-      } else {
+      if (!released_) {
         // The guard has not been released, and we need to restore to the
         // pre-guard state.
         stream_.Restore(state_);
