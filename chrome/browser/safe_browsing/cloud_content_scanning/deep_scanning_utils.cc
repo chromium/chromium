@@ -44,6 +44,7 @@ std::string MaybeGetUnscannedReason(BinaryUploadService::Result result) {
     case BinaryUploadService::Result::UNKNOWN:
     case BinaryUploadService::Result::UPLOAD_FAILURE:
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
       return "SERVICE_UNAVAILABLE";
     case BinaryUploadService::Result::FILE_ENCRYPTED:
       return "FILE_PASSWORD_PROTECTED";
@@ -405,6 +406,8 @@ std::string BinaryUploadServiceResultToString(
       return "FileEncrypted";
     case BinaryUploadService::Result::TOO_MANY_REQUESTS:
       return "TooManyRequests";
+    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
+      return "IncompleteResponse";
   }
 }
 

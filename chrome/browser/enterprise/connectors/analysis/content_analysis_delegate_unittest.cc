@@ -1466,7 +1466,9 @@ class ContentAnalysisDelegateResultHandlingTest
                          FAILED_TO_GET_TOKEN ||
            result ==
                safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-           result == safe_browsing::BinaryUploadService::Result::UNKNOWN;
+           result == safe_browsing::BinaryUploadService::Result::UNKNOWN ||
+           result ==
+               safe_browsing::BinaryUploadService::Result::INCOMPLETE_RESPONSE;
   }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)

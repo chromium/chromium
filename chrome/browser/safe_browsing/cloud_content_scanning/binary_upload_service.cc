@@ -69,6 +69,8 @@ std::string BinaryUploadService::ResultToString(Result result) {
       return "FILE_ENCRYPTED";
     case Result::TOO_MANY_REQUESTS:
       return "TOO_MANY_REQUESTS";
+    case Result::INCOMPLETE_RESPONSE:
+      return "INCOMPLETE_RESPONSE";
   }
 }
 
