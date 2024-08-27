@@ -2895,9 +2895,16 @@ config("symbols") {
     configs += [ "//build/config:compress_debug_sections" ]
   }
 
-  if (is_clang && !is_nacl && target_os != "chromeos") {
+  if (is_clang && !is_nacl && is_win && !is_component_build) {
     # Remove unreferenced methods to reduce type info in symbols.
     # See: https://github.com/llvm/llvm-project/pull/87018.
+    # The downside with this flag is precisely that: Unreferenced methods get
+    # removed, so that methods only to be used from within a debugger become
+    # unavailable. Therefore, only do this for Windows, which seems to be the
+    # only platform that needs this, due to size limitations in PDF files.
+    # Additionally, this limitation is only likely to be hit in non-component
+    # builds, so only do it then.
+    # See crbug.com/338094922
     cflags += [ "-gomit-unreferenced-methods" ]
   }
 
