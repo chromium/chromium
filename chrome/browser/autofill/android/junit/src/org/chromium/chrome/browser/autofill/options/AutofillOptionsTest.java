@@ -150,6 +150,7 @@ public class AutofillOptionsTest {
                         .initializeNow();
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertTrue(mFragment.getIncognitoNote().isShown());
         assertTrue(getRadioButtonComponent().isEnabled());
         assertHintDisplays(getSpannableString(R.string.autofill_options_hint_3p_setting_ready));
     }
