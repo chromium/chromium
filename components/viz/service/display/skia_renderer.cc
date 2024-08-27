@@ -4389,7 +4389,9 @@ void SkiaRenderer::SetDelegatedInkMetadata(
         output_surface_->capabilities().supports_delegated_ink);
   }
   delegated_ink_handler_->SetDelegatedInkMetadata(std::move(metadata));
-  overlay_processor_->SetFrameHasDelegatedInk();
+  if (!UsingSkiaForDelegatedInk()) {
+    overlay_processor_->SetFrameHasDelegatedInk();
+  }
 }
 
 bool SkiaRenderer::UsingSkiaForDelegatedInk() const {

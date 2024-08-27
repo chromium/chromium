@@ -108,13 +108,15 @@ const base::FeatureParam<DelegatedCompositingMode>
         &kDelegatedCompositingModeOption,
 };
 
+#if BUILDFLAG(IS_WIN)
 // If enabled, the overlay processor will force the use of dcomp surfaces as the
 // render pass backing while delegated ink is being employed. This will avoid
 // the need for finding what surface to synchronize ink updates with by making
 // all surfaces synchronize with dcomp commit
-BASE_FEATURE(kUseDCompSurfacesForDelegatedInk,
-             "UseDCompSurfacesForDelegatedInk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDCompSurfacesForDelegatedInk,
+             "DCompSurfacesForDelegatedInk",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kRenderPassDrawnRect,
              "RenderPassDrawnRect",
@@ -636,4 +638,18 @@ bool IsCrosContentAdjustedRefreshRateEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_WIN)
+bool ShouldUseDCompSurfacesForDelegatedInk() {
+  // kDCompSurfacesForDelegatedInk is for delegated ink to work with partial
+  // delegated compositing. This function should return true if the feature
+  // is enabled or partial delegated compositing is enabled - a condition
+  // which requires the use of DCOMP surfaces for delegated ink.
+  if (IsDelegatedCompositingEnabled() &&
+      kDelegatedCompositingModeParam.Get() ==
+          DelegatedCompositingMode::kLimitToUi) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(kDCompSurfacesForDelegatedInk);
+}
+#endif
 }  // namespace features

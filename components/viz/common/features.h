@@ -44,7 +44,10 @@ enum class DelegatedCompositingMode {
 };
 extern const VIZ_COMMON_EXPORT base::FeatureParam<DelegatedCompositingMode>
     kDelegatedCompositingModeParam;
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDCompSurfacesForDelegatedInk);
+
+#if BUILDFLAG(IS_WIN)
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDCompSurfacesForDelegatedInk);
+#endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderPassDrawnRect);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);
@@ -140,6 +143,9 @@ VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
+#if BUILDFLAG(IS_WIN)
+VIZ_COMMON_EXPORT bool ShouldUseDCompSurfacesForDelegatedInk();
+#endif
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
 VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
