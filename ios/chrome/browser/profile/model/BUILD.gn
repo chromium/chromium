@@ -12,11 +12,58 @@ source_set("model") {
     "profile_ios_impl.h",
     "profile_ios_impl_io_data.h",
     "profile_ios_impl_io_data.mm",
-    "profile_ios_io_data.h",
-    "profile_ios_io_data.mm",
     "profile_manager_ios_impl.h",
+    "profile_manager_ios_impl.mm",
   ]
 
+  deps = [
+    ":profile_ios_io_data",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/metrics:metrics_pref_names",
+    "//components/net_log",
+    "//components/optimization_guide/core:features",
+    "//components/prefs",
+    "//components/proxy_config/ios",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/browser_state/model:constants",
+    "//ios/chrome/browser/browser_state/model:ios_thread",
+    "//ios/chrome/browser/browser_state_metrics/model",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/net/model",
+    "//ios/chrome/browser/net/model:net_types",
+    "//ios/chrome/browser/net/model:network_delegate",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/page_info:model",
+    "//ios/chrome/browser/plus_addresses/model",
+    "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/supervised_user/model",
+    "//ios/chrome/browser/unified_consent/model",
+    "//ios/components/cookie_util",
+    "//ios/net",
+    "//ios/web/public/browsing_data",
+    "//ios/web/public/thread",
+    "//net",
+    "//net/traffic_annotation",
+  ]
+}
+
+source_set("profile_ios_io_data") {
+  sources = [
+    "profile_ios_io_data.h",
+    "profile_ios_io_data.mm",
+  ]
   deps = [
     "//base",
     "//components/content_settings/core/browser",
@@ -27,21 +74,44 @@ source_set("model") {
     "//components/prefs",
     "//components/proxy_config/ios",
     "//components/signin/public/base:signin_switches",
-    "//ios/chrome/browser/browser_state/model:constants",
     "//ios/chrome/browser/browser_state/model:ios_thread",
     "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/net/model:net_types",
     "//ios/chrome/browser/net/model:network_delegate",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/components/cookie_util",
     "//ios/net",
     "//ios/web/public/browsing_data",
     "//ios/web/public/thread",
     "//net",
     "//net/traffic_annotation",
+  ]
+
+  allow_circular_includes_from = [ "//ios/chrome/browser/net/model" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "profile_manager_ios_impl_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/variations:test_support",
+    "//ios/chrome/browser/browser_state/model:constants",
+    "//ios/chrome/browser/browser_state/model:ios_thread",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/thread",
+    "//services/network/public/cpp",
+    "//testing/gtest",
   ]
 }

@@ -30,7 +30,6 @@ source_set("model") {
     "chrome_browser_state_impl.h",
     "chrome_browser_state_impl.mm",
     "chrome_browser_state_io_data.h",
-    "chrome_browser_state_manager_impl.mm",
     "off_the_record_chrome_browser_state_impl.h",
     "off_the_record_chrome_browser_state_impl.mm",
     "off_the_record_chrome_browser_state_io_data.h",
@@ -120,6 +119,7 @@ source_set("model") {
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/profile/model",
+    "//ios/chrome/browser/profile/model:profile_ios_io_data",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
     "//ios/chrome/browser/reading_list/model",
@@ -204,29 +204,4 @@ source_set("constants") {
     "constants.h",
   ]
   deps = [ "//base" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "chrome_browser_state_manager_impl_unittest.mm" ]
-  deps = [
-    ":constants",
-    ":ios_thread",
-    ":model",
-    "//base",
-    "//base/test:test_support",
-    "//components/variations:test_support",
-    "//ios/chrome/browser/optimization_guide/model",
-    "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/profile/model",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/test:test_support",
-    "//ios/web/public/test",
-    "//ios/web/public/thread",
-    "//services/network/public/cpp",
-    "//testing/gtest",
-  ]
 }
