@@ -746,13 +746,6 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
-  if (!rfh) {
-    // This case doesn't seem possible.
-    page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
-                                   /*is_pdf=*/false);
-    return;
-  }
-
   page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(), rfh->GetPageUkmSourceId(),
                                  /*is_pdf=*/false);
 }
