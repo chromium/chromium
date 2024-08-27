@@ -1,4 +1,4 @@
-// META: script=resources/utils.js
+// META: script=../aggregation-service/support/aggregation-service.js
 
 test(() => {
   // The `TextEncoder` approach to converting strings to Uint8Array is tempting
@@ -10,6 +10,12 @@ test(() => {
 }, 'decodeBase64ToUint8Array() handles non-ASCII bytes');
 
 test(() => {
+  const ONE_CONTRIBUTION_EXAMPLE = Object.freeze([{
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(2n, 4),
+    id: encodeBigInt(0n, 1),
+  }]);
+
   assert_payload_equals(
       buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE, 20),
       buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE, 20));

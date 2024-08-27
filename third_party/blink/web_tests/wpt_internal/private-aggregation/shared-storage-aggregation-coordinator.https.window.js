@@ -1,5 +1,6 @@
 // META: timeout=long
 // META: script=/common/get-host-info.sub.js
+// META: script=../aggregation-service/support/aggregation-service.js
 // META: script=resources/utils.js
 // META: script=/shared-storage/resources/util.js
 
