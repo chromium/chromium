@@ -661,7 +661,6 @@ std::vector<base::FilePath> BrowserLauncher::GetPreloadFiles(
       "chrome_200_percent.pak",
       "chrome_crashpad_handler",
       "icudtl.dat",
-      "icudtl.dat.hash",
 #if BUILDFLAG(ENABLE_NACL)
       "nacl_helper",
 #endif
