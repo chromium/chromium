@@ -106,8 +106,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
 
   // Creates a SiteInstance for |url| like CreateForUrlInfo() would except the
   // instance that is returned has its process_reuse_policy set to
-  // REUSE_PENDING_OR_COMMITTED_SITE and the default SiteInstance will never
-  // be returned.
+  // REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME and the default SiteInstance will
+  // never be returned.
   static scoped_refptr<SiteInstanceImpl> CreateReusableInstanceForTesting(
       BrowserContext* browser_context,
       const GURL& url);
@@ -204,12 +204,17 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
     // RenderProcessHost.
     PROCESS_PER_SITE,
 
-    // In this mode, the site will be rendered in a RenderProcessHost that is
-    // already in use for the site, either for a pending navigation or a
+    // In this mode, the subframe's site will be rendered in a RenderProcessHost
+    // that is already in use for the site, either for a pending navigation or a
     // committed navigation. If multiple such processes exist, ones that have
     // foreground frames are given priority, and otherwise one is selected
     // randomly.
-    REUSE_PENDING_OR_COMMITTED_SITE,
+    REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
+
+    // Similar to REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME, but only applied to
+    // workers. Reuse decisions may vary from those for
+    // REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME.
+    REUSE_PENDING_OR_COMMITTED_SITE_WORKER,
 
     // Similar to REUSE_PENDING_OR_COMMITTED_SITE, but limits the number of
     // main frames a RenderProcessHost can host to a certain threshold.

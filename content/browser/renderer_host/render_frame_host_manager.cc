@@ -2858,7 +2858,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
                     ->GetOutermostMainFrame())) {
       new_instance->set_process_reuse_policy(
           SiteInstanceImpl::ProcessReusePolicy::
-              REUSE_PENDING_OR_COMMITTED_SITE);
+              REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
     }
   }
 
@@ -2972,7 +2972,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // share the same default process when they don't need a dedicated process.
   // With sites that do require a dedicated process, we reuse processes via the
   // subframe reuse policy (we set the reuse policy to
-  // REUSE_PENDING_OR_COMMITTED_SITE).
+  // REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME).
   if (!current_frame_host()->IsOutermostMainFrame() &&
       !new_instance->HasProcess() &&
       !new_instance->RequiresDedicatedProcess()) {

@@ -10462,7 +10462,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(bar_url, child->current_url());
   EXPECT_EQ(bar_process, child->current_frame_host()->GetProcess());
   EXPECT_EQ(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE,
+      SiteInstanceImpl::ProcessReusePolicy::
+          REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
       child->current_frame_host()->GetSiteInstance()->process_reuse_policy());
 
   EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
@@ -10543,9 +10544,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(foo_url, second_child->current_url());
   scoped_refptr<SiteInstanceImpl> second_child_foo_instance =
       second_child->current_frame_host()->GetSiteInstance();
-  EXPECT_EQ(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE,
-      second_child_foo_instance->process_reuse_policy());
+  EXPECT_EQ(SiteInstanceImpl::ProcessReusePolicy::
+                REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
+            second_child_foo_instance->process_reuse_policy());
   EXPECT_NE(foo_instance, second_child_foo_instance);
   EXPECT_EQ(foo_instance->GetProcess(),
             second_child_foo_instance->GetProcess());
@@ -13381,9 +13382,12 @@ IN_PROC_BROWSER_TEST_P(DisableProcessReusePolicyTest,
 
   scoped_refptr<SiteInstanceImpl> second_shell_instance =
       second_child->current_frame_host()->GetSiteInstance();
-  EXPECT_NE(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE,
-      second_shell_instance->process_reuse_policy());
+  EXPECT_NE(SiteInstanceImpl::ProcessReusePolicy::
+                REUSE_PENDING_OR_COMMITTED_SITE_WORKER,
+            second_shell_instance->process_reuse_policy());
+  EXPECT_NE(SiteInstanceImpl::ProcessReusePolicy::
+                REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
+            second_shell_instance->process_reuse_policy());
 
   EXPECT_NE(child->current_frame_host()->GetProcess(),
             second_child->current_frame_host()->GetProcess());

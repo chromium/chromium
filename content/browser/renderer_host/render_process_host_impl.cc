@@ -4626,7 +4626,9 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
       break;
     }
     case SiteInstanceImpl::ProcessReusePolicy::
-        REUSE_PENDING_OR_COMMITTED_SITE: {
+        REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME:
+    case SiteInstanceImpl::ProcessReusePolicy::
+        REUSE_PENDING_OR_COMMITTED_SITE_WORKER: {
       render_process_host =
           FindReusableProcessHostForSiteInstance(site_instance);
       const base::TimeTicks reusable_host_lookup_time = base::TimeTicks::Now();

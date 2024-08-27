@@ -201,7 +201,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
              SiteInstanceImpl::ProcessReusePolicy::PROCESS_PER_SITE);
   if (can_reuse_process) {
     site_instance->set_process_reuse_policy(
-        SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+        SiteInstanceImpl::ProcessReusePolicy::
+            REUSE_PENDING_OR_COMMITTED_SITE_WORKER);
   }
   return site_instance;
 }
@@ -307,7 +308,8 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
   auto site_instance = instance->GetSiteInstanceForURL(
       UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::ProcessReusePolicy::
+          REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
   return site_instance;
 }
 
