@@ -28,7 +28,7 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
   // MediaStreamDevicesController::GetDevices(). Move this code into a shared
   // method between the two classes.
 
-  // TOOD(crbug.com/1300883): Generalize to multiple streams.
+  // TODO(crbug.com/40216442): Generalize to multiple streams.
   blink::mojom::StreamDevicesSet stream_devices_set;
   stream_devices_set.stream_devices.emplace_back(
       blink::mojom::StreamDevices::New());
@@ -37,16 +37,13 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
 
   // Set an initial error result. If neither audio or video is allowed, we'll
   // never try to get any device below but will just create |ui| and return an
-  // empty list with "invalid state" result. If at least one is allowed, we'll
-  // try to get device(s), and if failure, we want to return "no hardware"
-  // result.
-  // TODO(grunell): The invalid state result should be changed to a new denied
-  // result + a dcheck to ensure at least one of audio or video types is
-  // capture.
+  // empty list with a "permission denied" result. If at least one is allowed,
+  // we'll try to get the device(s), and if failure, we want to return a "no
+  // hardware" result.
   blink::mojom::MediaStreamRequestResult result =
       (audio_allowed || video_allowed)
           ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
-          : blink::mojom::MediaStreamRequestResult::INVALID_STATE;
+          : blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
 
   // Get the exact audio or video device if an id is specified.
   // We only set any error result here and before running the callback change
