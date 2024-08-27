@@ -309,6 +309,17 @@ std::vector<std::string> SodaInstallerImplChromeOS::GetAvailableLanguages()
   return languages;
 }
 
+std::string SodaInstallerImplChromeOS::GetLanguageDlcNameForLocale(
+    const std::string& locale) const {
+  const auto& language_info = available_languages_.find(locale);
+  if (language_info == available_languages_.end()) {
+    LOG(DFATAL) << "Asked for unavailable language " << locale;
+    return std::string();
+  }
+
+  return language_info->second.dlc_name;
+}
+
 void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
   soda_binary_installed_ = false;
   SetSodaBinaryPath(base::FilePath());
