@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include <array>
 #include <memory>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
@@ -135,54 +132,58 @@ const char* GLApiTest::fake_extension_string_ = "";
 const char* GLApiTest::fake_version_string_ = "";
 
 TEST_F(GLApiTest, DisabledExtensionStringTest) {
-  static const char* kFakeExtensions = "GL_EXT_1 GL_EXT_2 GL_EXT_3 GL_EXT_4";
-  static const char* kFakeDisabledExtensions = "GL_EXT_1,GL_EXT_2,GL_FAKE";
-  static const char* kFilteredExtensions = "GL_EXT_3 GL_EXT_4";
+  static constexpr std::string_view kFakeExtensions =
+      "GL_EXT_1 GL_EXT_2 GL_EXT_3 GL_EXT_4";
+  static constexpr std::string_view kFakeDisabledExtensions =
+      "GL_EXT_1,GL_EXT_2,GL_FAKE";
+  static constexpr std::string_view kFilteredExtensions = "GL_EXT_3 GL_EXT_4";
 
-  SetFakeExtensionString(kFakeExtensions);
+  SetFakeExtensionString(kFakeExtensions.data());
   InitializeAPI(nullptr);
-  EXPECT_STREQ(kFakeExtensions, GetExtensions());
+  EXPECT_STREQ(kFakeExtensions.data(), GetExtensions());
   TerminateAPI();
 
-  InitializeAPI(kFakeDisabledExtensions);
-  EXPECT_STREQ(kFilteredExtensions, GetExtensions());
+  InitializeAPI(kFakeDisabledExtensions.data());
+  EXPECT_STREQ(kFilteredExtensions.data(), GetExtensions());
 }
 
 TEST_F(GLApiTest, DisabledExtensionBitTest) {
-  static const char* kFakeExtensions = "GL_EXT_disjoint_timer_query";
-  static const char* kFakeDisabledExtensions = "GL_EXT_disjoint_timer_query";
+  static constexpr std::string_view kFakeExtensions =
+      "GL_EXT_disjoint_timer_query";
+  static constexpr std::string_view kFakeDisabledExtensions =
+      "GL_EXT_disjoint_timer_query";
 
-  SetFakeExtensionString(kFakeExtensions);
+  SetFakeExtensionString(kFakeExtensions.data());
   InitializeAPI(nullptr);
   EXPECT_TRUE(driver_->ext.b_GL_EXT_disjoint_timer_query);
   TerminateAPI();
 
-  InitializeAPI(kFakeDisabledExtensions);
+  InitializeAPI(kFakeDisabledExtensions.data());
   EXPECT_FALSE(driver_->ext.b_GL_EXT_disjoint_timer_query);
 }
 
 TEST_F(GLApiTest, DisabledExtensionStringIndexTest) {
-  static const char* kFakeExtensions = "GL_EXT_1 GL_EXT_2 GL_EXT_3 GL_EXT_4";
-  static const char* kFakeExtensionList[] = {"GL_EXT_1", "GL_EXT_2", "GL_EXT_3",
-                                             "GL_EXT_4"};
-  static const char* kFakeDisabledExtensions = "GL_EXT_1,GL_EXT_2,GL_FAKE";
-  static const char* kFilteredExtensions[] = {
-    "GL_EXT_3",
-    "GL_EXT_4"
-  };
+  static constexpr std::string_view kFakeExtensions =
+      "GL_EXT_1 GL_EXT_2 GL_EXT_3 GL_EXT_4";
+  static constexpr std::array<std::string_view, 4> kFakeExtensionList = {
+      {"GL_EXT_1", "GL_EXT_2", "GL_EXT_3", "GL_EXT_4"}};
+  static constexpr std::string_view kFakeDisabledExtensions =
+      "GL_EXT_1,GL_EXT_2,GL_FAKE";
+  static constexpr std::array<std::string_view, 2> kFilteredExtensions = {
+      {"GL_EXT_3", "GL_EXT_4"}};
 
-  SetFakeExtensionString(kFakeExtensions);
+  SetFakeExtensionString(kFakeExtensions.data());
   InitializeAPI(nullptr);
-  EXPECT_EQ(std::size(kFakeExtensionList), GetNumExtensions());
-  for (uint32_t i = 0; i < std::size(kFakeExtensionList); ++i) {
-    EXPECT_STREQ(kFakeExtensionList[i], GetExtensioni(i));
+  EXPECT_EQ(kFakeExtensionList.size(), GetNumExtensions());
+  for (size_t i = 0; i < kFakeExtensionList.size(); ++i) {
+    EXPECT_STREQ(kFakeExtensionList[i].data(), GetExtensioni(i));
   }
   TerminateAPI();
 
-  InitializeAPI(kFakeDisabledExtensions);
+  InitializeAPI(kFakeDisabledExtensions.data());
   EXPECT_EQ(std::size(kFilteredExtensions), GetNumExtensions());
-  for (uint32_t i = 0; i < std::size(kFilteredExtensions); ++i) {
-    EXPECT_STREQ(kFilteredExtensions[i], GetExtensioni(i));
+  for (size_t i = 0; i < kFilteredExtensions.size(); ++i) {
+    EXPECT_STREQ(kFilteredExtensions[i].data(), GetExtensioni(i));
   }
 }
 
