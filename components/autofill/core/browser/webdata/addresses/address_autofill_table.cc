@@ -327,6 +327,8 @@ std::string_view GetProfileMetadataTable(
     case AutofillProfile::RecordType::kLocalOrSyncable:
       return kLocalAddressesTable;
     case AutofillProfile::RecordType::kAccount:
+    case AutofillProfile::RecordType::kAccountHome:
+    case AutofillProfile::RecordType::kAccountWork:
       return kContactInfoTable;
   }
   NOTREACHED();
@@ -337,6 +339,8 @@ std::string_view GetProfileTypeTokensTable(
     case AutofillProfile::RecordType::kLocalOrSyncable:
       return kLocalAddressesTypeTokensTable;
     case AutofillProfile::RecordType::kAccount:
+    case AutofillProfile::RecordType::kAccountHome:
+    case AutofillProfile::RecordType::kAccountWork:
       return kContactInfoTypeTokensTable;
   }
   NOTREACHED();

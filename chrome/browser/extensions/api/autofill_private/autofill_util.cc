@@ -57,11 +57,11 @@ autofill_private::AddressSource ConvertProfileRecordType(
     case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
       return autofill_private::AddressSource::kLocalOrSyncable;
     case autofill::AutofillProfile::RecordType::kAccount:
+    case autofill::AutofillProfile::RecordType::kAccountHome:
+    case autofill::AutofillProfile::RecordType::kAccountWork:
       return autofill_private::AddressSource::kAccount;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return autofill_private::AddressSource::kNone;
   }
+  NOTREACHED();
 }
 
 autofill_private::AddressEntry ProfileToAddressEntry(

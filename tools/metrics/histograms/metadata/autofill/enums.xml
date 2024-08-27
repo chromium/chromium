@@ -4020,6 +4020,8 @@ Called by update_autofill_enums.py.-->
 <enum name="AutofillProfileRecordType">
   <int value="0" label="The profile is saved to local store."/>
   <int value="1" label="The profile is saved to account store."/>
+  <int value="2" label="The profile is saved to account store as HOME."/>
+  <int value="3" label="The profile is saved to account store as WORK."/>
 </enum>
 
 <enum name="AutofillProfileTokenQualityObservationType">

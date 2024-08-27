@@ -666,6 +666,8 @@ bool AutofillProfile::IsAccountProfile() const {
     case RecordType::kLocalOrSyncable:
       return false;
     case RecordType::kAccount:
+    case RecordType::kAccountHome:
+    case RecordType::kAccountWork:
       return true;
   }
   NOTREACHED();

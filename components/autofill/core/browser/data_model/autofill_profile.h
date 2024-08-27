@@ -51,8 +51,12 @@ class AutofillProfile : public AutofillDataModel {
     kLocalOrSyncable = 0,
     // Synced through the `ContactInfoSyncBridge`. This corresponds to profiles
     // that are shared beyond Autofill across different services.
+    // kAccountHome and kAccountWork represent special account addresses, only a
+    // single one of which can exist each.
     kAccount = 1,
-    kMaxValue = kAccount,
+    kAccountHome = 2,
+    kAccountWork = 3,
+    kMaxValue = kAccountWork,
   };
 
   // These fields are, by default, the only candidates for being added to the

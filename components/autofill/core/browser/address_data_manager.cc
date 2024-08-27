@@ -195,6 +195,8 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfiles(
       AutofillProfile::RecordType::kLocalOrSyncable, ProfileOrder::kNone);
   std::vector<const AutofillProfile*> b = GetProfilesByRecordType(
       AutofillProfile::RecordType::kAccount, ProfileOrder::kNone);
+  // TODO(crbug.com/354706653): Query kAccountHome and kAccountWork profiles as
+  // well and add them to the result.
   a.reserve(a.size() + b.size());
   base::ranges::move(b, std::back_inserter(a));
   OrderProfiles(a, order);
@@ -207,6 +209,11 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfilesByRecordType(
   std::vector<const AutofillProfile*> profiles =
       base::ToVector(GetProfileStorage(record_type),
                      [](const AutofillProfile& p) { return &p; });
+  // Since the GetProfileStorage() for kAccount, kAccountHome and kAccountWork
+  // are the same, filtering by record type is necessary.
+  std::erase_if(profiles, [&](const AutofillProfile* p) {
+    return p->record_type() != record_type;
+  });
   OrderProfiles(profiles, order);
   return profiles;
 }
@@ -688,9 +695,11 @@ const std::vector<AutofillProfile>& AddressDataManager::GetProfileStorage(
     case AutofillProfile::RecordType::kLocalOrSyncable:
       return synced_local_profiles_;
     case AutofillProfile::RecordType::kAccount:
+    case AutofillProfile::RecordType::kAccountHome:
+    case AutofillProfile::RecordType::kAccountWork:
       return account_profiles_;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AddressDataManager::OnAutofillProfileChanged(
