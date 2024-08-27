@@ -12,10 +12,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "icu_mergeable_data_file.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #define ICU_UTIL_DATA_FILE 0
 #define ICU_UTIL_DATA_STATIC 1
 
@@ -28,16 +24,6 @@ BASE_I18N_EXPORT bool InitializeICU();
 
 #if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 
-// In ChromeOS, two versions of icudtl.dat are shipped separately with Ash and
-// Lacros. Although the two files can differ, there's a big overlap in content.
-// We can take advantage of that and save memory by scanning the two files and
-// merging the pages that are in common.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-using IcuDataFile = IcuMergeableDataFile;
-#else
-// Outside of Lacros, we simply memory map the ICU data file.
-using IcuDataFile = MemoryMappedFile;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the PlatformFile and Region that was initialized by InitializeICU().
 // Use with InitializeICUWithFileDescriptor().
 BASE_I18N_EXPORT PlatformFile

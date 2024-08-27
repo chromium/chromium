@@ -7861,11 +7861,6 @@ const char kBlinkExtensionDiagnosticsName[] =
     "Experimental Diagnostics Blink Extension";
 const char kBlinkExtensionDiagnosticsDescription[] =
     "Enable the experimental Diagnostics Blink Extension.";
-
-const char kLacrosMergeIcuDataFileName[] =
-    "Enable merging of icudtl.dat in Lacros";
-const char kLacrosMergeIcuDataFileDescription[] =
-    "Enables sharing common areas of icudtl.dat between Ash and Lacros.";
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

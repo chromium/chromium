@@ -4552,9 +4552,6 @@ extern const char kBlinkExtensionDescription[];
 
 extern const char kBlinkExtensionDiagnosticsName[];
 extern const char kBlinkExtensionDiagnosticsDescription[];
-
-extern const char kLacrosMergeIcuDataFileName[];
-extern const char kLacrosMergeIcuDataFileDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
