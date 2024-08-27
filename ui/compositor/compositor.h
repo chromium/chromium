@@ -464,6 +464,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   bool IsLocked() { return lock_manager_.IsLocked(); }
 
+  bool output_is_secure() const { return output_is_secure_; }
   void SetOutputIsSecure(bool output_is_secure);
 
   const cc::LayerTreeDebugState& GetLayerTreeDebugState() const;

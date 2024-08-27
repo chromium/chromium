@@ -858,14 +858,18 @@ void WindowTreeHostManager::OnHostResized(aura::WindowTreeHost* host) {
   }
 }
 
-void WindowTreeHostManager::OnDisplaySecurityChanged(int64_t display_id,
-                                                     bool secure) {
+void WindowTreeHostManager::OnDisplaySecurityMaybeChanged(int64_t display_id,
+                                                          bool secure) {
   AshWindowTreeHost* host = GetAshWindowTreeHostForDisplayId(display_id);
   // No host for internal display in docked mode.
   if (!host)
     return;
 
   ui::Compositor* compositor = host->AsWindowTreeHost()->compositor();
+  if (compositor->output_is_secure() == secure) {
+    return;
+  }
+
   compositor->SetOutputIsSecure(secure);
   compositor->ScheduleFullRedraw();
 }
