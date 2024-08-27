@@ -255,6 +255,7 @@ test("components_unittests") {
     "//components/net_log:unit_tests",
     "//components/network_session_configurator/browser:unit_tests",
     "//components/network_time:unit_tests",
+    "//components/network_time/time_tracker:unit_tests",
     "//components/ntp_tiles:unit_tests",
     "//components/offline_items_collection/core:unit_tests",
     "//components/omnibox/browser:unit_tests",

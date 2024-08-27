@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NETWORK_TIME_TIME_TRACKER_H_
-#define COMPONENTS_NETWORK_TIME_TIME_TRACKER_H_
+#ifndef COMPONENTS_NETWORK_TIME_TIME_TRACKER_TIME_TRACKER_H_
+#define COMPONENTS_NETWORK_TIME_TIME_TRACKER_TIME_TRACKER_H_
 
 #include "base/time/time.h"
 
@@ -31,12 +31,12 @@ class TimeTracker {
                base::TimeDelta* uncertainty) const;
 
  private:
-  const base::Time system_time_at_creation_;
-  const base::TimeTicks system_ticks_at_creation_;
-  const base::Time known_time_at_creation_;
-  const base::TimeDelta uncertainty_at_creation_;
+  base::Time system_time_at_creation_;
+  base::TimeTicks system_ticks_at_creation_;
+  base::Time known_time_at_creation_;
+  base::TimeDelta uncertainty_at_creation_;
 };
 
 }  // namespace network_time
 
-#endif  // COMPONENTS_NETWORK_TIME_TIME_TRACKER_H_
+#endif  // COMPONENTS_NETWORK_TIME_TIME_TRACKER_TIME_TRACKER_H_

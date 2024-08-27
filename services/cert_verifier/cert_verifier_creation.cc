@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
+#include "components/network_time/time_tracker/time_tracker.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/cert/cert_verify_proc.h"
@@ -107,19 +108,22 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
     return CreateNewCertVerifyProc(
         cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
         std::move(ct_policy_enforcer),
-        base::OptionalToPtr(impl_params.root_store_data), instance_params);
+        base::OptionalToPtr(impl_params.root_store_data), instance_params,
+        impl_params.time_tracker);
 #else
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     if (impl_params.use_chrome_root_store) {
       return CreateNewCertVerifyProc(
           cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
           std::move(ct_policy_enforcer),
-          base::OptionalToPtr(impl_params.root_store_data), instance_params);
+          base::OptionalToPtr(impl_params.root_store_data), instance_params,
+          impl_params.time_tracker);
     }
 #endif
-    return CreateOldCertVerifyProc(
-        cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
-        std::move(ct_policy_enforcer), instance_params);
+    return CreateOldCertVerifyProc(cert_net_fetcher, impl_params.crl_set,
+                                   std::move(ct_verifier),
+                                   std::move(ct_policy_enforcer),
+                                   instance_params, impl_params.time_tracker);
 #endif
   }
 
@@ -136,12 +140,13 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
       scoped_refptr<net::CRLSet> crl_set,
       std::unique_ptr<net::CTVerifier> ct_verifier,
       scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer,
-      const net::CertVerifyProc::InstanceParams& instance_params) {
+      const net::CertVerifyProc::InstanceParams& instance_params,
+      std::optional<network_time::TimeTracker> time_tracker) {
 #if BUILDFLAG(IS_FUCHSIA)
     return net::CreateCertVerifyProcBuiltin(
         std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
         std::move(ct_policy_enforcer), net::CreateSslSystemTrustStore(),
-        instance_params);
+        instance_params, std::move(time_tracker));
 #else
     return net::CertVerifyProc::CreateSystemVerifyProc(
         std::move(cert_net_fetcher), std::move(crl_set));
@@ -158,7 +163,8 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
       std::unique_ptr<net::CTVerifier> ct_verifier,
       scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer,
       const net::ChromeRootStoreData* root_store_data,
-      const net::CertVerifyProc::InstanceParams& instance_params) {
+      const net::CertVerifyProc::InstanceParams& instance_params,
+      std::optional<network_time::TimeTracker> time_tracker) {
     std::unique_ptr<net::TrustStoreChrome> chrome_root =
         root_store_data
             ? std::make_unique<net::TrustStoreChrome>(*root_store_data)
@@ -201,7 +207,8 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 #endif
     return net::CreateCertVerifyProcBuiltin(
         std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
-        std::move(ct_policy_enforcer), std::move(trust_store), instance_params);
+        std::move(ct_policy_enforcer), std::move(trust_store), instance_params,
+        std::move(time_tracker));
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 

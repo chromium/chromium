@@ -19,6 +19,7 @@ source_set("lib") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/certificate_transparency",
+    "//components/network_time/time_tracker",
     "//mojo/public/cpp/base:protobuf_support",
     "//net",
     "//net/cert:root_store_proto_lite",

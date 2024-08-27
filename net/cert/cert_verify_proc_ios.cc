@@ -396,8 +396,7 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
                                       const std::string& sct_list,
                                       int flags,
                                       CertVerifyResult* verify_result,
-                                      const NetLogWithSource& net_log,
-                                      std::optional<base::Time> time_now) {
+                                      const NetLogWithSource& net_log) {
   ScopedCFTypeRef<CFArrayRef> trust_policies;
   OSStatus status = CreateTrustPolicies(&trust_policies);
   if (status)

@@ -414,11 +414,12 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
     scoped_refptr<CRLSet> crl_set,
     std::unique_ptr<CTVerifier> ct_verifier,
     scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
-    const InstanceParams instance_params) {
+    const InstanceParams instance_params,
+    std::optional<network_time::TimeTracker> time_tracker) {
   return CreateCertVerifyProcBuiltin(
       std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
       std::move(ct_policy_enforcer), CreateSslSystemTrustStore(),
-      instance_params);
+      instance_params, std::move(time_tracker));
 }
 #endif
 
@@ -430,7 +431,8 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinWithChromeRootStore(
     std::unique_ptr<CTVerifier> ct_verifier,
     scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
     const ChromeRootStoreData* root_store_data,
-    const InstanceParams instance_params) {
+    const InstanceParams instance_params,
+    std::optional<network_time::TimeTracker> time_tracker) {
   std::unique_ptr<TrustStoreChrome> chrome_root =
       root_store_data ? std::make_unique<TrustStoreChrome>(*root_store_data)
                       : std::make_unique<TrustStoreChrome>();
@@ -438,7 +440,7 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinWithChromeRootStore(
       std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
       std::move(ct_policy_enforcer),
       CreateSslSystemTrustStoreChromeRoot(std::move(chrome_root)),
-      instance_params);
+      instance_params, std::move(time_tracker));
 }
 #endif
 
@@ -455,8 +457,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
                            const std::string& sct_list,
                            int flags,
                            CertVerifyResult* verify_result,
-                           const NetLogWithSource& net_log,
-                           std::optional<base::Time> time_now) {
+                           const NetLogWithSource& net_log) {
   CHECK(cert);
   CHECK(verify_result);
 
@@ -477,7 +478,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   verify_result->verified_cert = cert;
 
   int rv = VerifyInternal(cert, hostname, ocsp_response, sct_list, flags,
-                          verify_result, net_log, time_now);
+                          verify_result, net_log);
 
   CHECK(verify_result->verified_cert);
 

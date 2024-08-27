@@ -1,5 +1,6 @@
 include_rules = [
   "+components/certificate_transparency",
+  "+components/network_time/time_tracker",
   "+crypto",
   "+net",
   "+mojo/public/cpp",

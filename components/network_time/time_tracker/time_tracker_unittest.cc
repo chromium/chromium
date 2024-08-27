@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/network_time/time_tracker.h"
+#include "components/network_time/time_tracker/time_tracker.h"
 
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"

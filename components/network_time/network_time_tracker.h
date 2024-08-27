@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "components/network_time/time_tracker.h"
+#include "components/network_time/time_tracker/time_tracker.h"
 #include "url/gurl.h"
 
 class PrefRegistrySimple;

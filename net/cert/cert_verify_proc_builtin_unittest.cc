@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/network_time/time_tracker/time_tracker.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -114,13 +115,12 @@ int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
                          const std::string& sct_list,
                          int flags,
                          CertVerifyResult* verify_result,
-                         NetLogSource* out_source,
-                         std::optional<base::Time> time_now) {
+                         NetLogSource* out_source) {
   base::ScopedAllowBaseSyncPrimitivesForTesting scoped_allow_blocking;
   NetLogWithSource net_log(NetLogWithSource::Make(
       net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_TASK));
   int error = verify_proc->Verify(cert.get(), hostname, ocsp_response, sct_list,
-                                  flags, verify_result, net_log, time_now);
+                                  flags, verify_result, net_log);
   *out_source = net_log.source();
   return error;
 }
@@ -266,16 +266,23 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   }
 
   void InitializeVerifyProc(
-      const CertVerifyProc::InstanceParams& instance_params) {
+      const CertVerifyProc::InstanceParams& instance_params,
+      std::optional<base::Time> current_time = std::nullopt) {
     auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
     mock_system_trust_store_ = mock_system_trust_store.get();
     auto mock_ct_verifier = std::make_unique<MockCTVerifier>();
     mock_ct_verifier_ = mock_ct_verifier.get();
     mock_ct_policy_enforcer_ = base::MakeRefCounted<MockCTPolicyEnforcer>();
+    std::optional<network_time::TimeTracker> time_tracker;
+    if (current_time.has_value()) {
+      time_tracker =
+          network_time::TimeTracker(base::Time::Now(), base::TimeTicks::Now(),
+                                    current_time.value(), base::TimeDelta());
+    }
     verify_proc_ = CreateCertVerifyProcBuiltin(
         cert_net_fetcher_, CRLSet::EmptyCRLSetForTesting(),
         std::move(mock_ct_verifier), mock_ct_policy_enforcer_,
-        std::move(mock_system_trust_store), instance_params);
+        std::move(mock_system_trust_store), instance_params, time_tracker);
   }
 
   void Verify(scoped_refptr<X509Certificate> cert,
@@ -283,16 +290,14 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
               int flags,
               CertVerifyResult* verify_result,
               NetLogSource* out_source,
-              CompletionOnceCallback callback,
-              std::optional<base::Time> time_now = std::nullopt) {
+              CompletionOnceCallback callback) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&VerifyOnWorkerThread, verify_proc_, std::move(cert),
-                       hostname,
-                       /*ocsp_response=*/std::string(),
-                       /*sct_list=*/std::string(), flags, verify_result,
-                       out_source, time_now),
+        base::BindOnce(
+            &VerifyOnWorkerThread, verify_proc_, std::move(cert), hostname,
+            /*ocsp_response=*/std::string(),
+            /*sct_list=*/std::string(), flags, verify_result, out_source),
         std::move(callback));
   }
 
@@ -309,7 +314,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&VerifyOnWorkerThread, verify_proc_, std::move(cert),
                        hostname, ocsp_response, sct_list, flags, verify_result,
-                       out_source, std::nullopt),
+                       out_source),
         std::move(callback));
   }
 
@@ -778,15 +783,17 @@ TEST_F(CertVerifyProcBuiltinTest, AddedRootWithBadTimeButNotEnforced) {
   EXPECT_THAT(error, IsOk());
 }
 
-TEST_F(CertVerifyProcBuiltinTest, CustomTime) {
+TEST_F(CertVerifyProcBuiltinTest, TimeTracker) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   root->SetValidity(/*not_before=*/base::Time::Now() - base::Days(10),
                     /*not_after=*/base::Time::Now() - base::Days(5));
-  InitializeVerifyProc(CreateParams(
-      /*additional_trust_anchors=*/{},
-      /*additional_trust_anchors_with_enforced_constraints=*/
-      {root->GetX509Certificate()},
-      /*additional_distrusted_certificates=*/{}));
+  InitializeVerifyProc(
+      CreateParams(
+          /*additional_trust_anchors=*/{},
+          /*additional_trust_anchors_with_enforced_constraints=*/
+          {root->GetX509Certificate()},
+          /*additional_distrusted_certificates=*/{}),
+      base::Time::Now() - base::Days(7));
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
@@ -796,24 +803,25 @@ TEST_F(CertVerifyProcBuiltinTest, CustomTime) {
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
   Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
-         &verify_net_log_source, callback.callback(),
-         base::Time::Now() - base::Days(7));
+         &verify_net_log_source, callback.callback());
 
   int error = callback.WaitForResult();
   // Root is expired when compared to base::Time::Now, but is valid in the
-  // custom time passed to Verify.
+  // time provided by the time tracker.
   EXPECT_THAT(error, IsOk());
 }
 
-TEST_F(CertVerifyProcBuiltinTest, CustomTimeFailureIsRetriedWithSystemTime) {
+TEST_F(CertVerifyProcBuiltinTest, TimeTrackerFailureIsRetriedWithSystemTime) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   root->SetValidity(/*not_before=*/base::Time::Now() - base::Days(10),
                     /*not_after=*/base::Time::Now() + base::Days(10));
-  InitializeVerifyProc(CreateParams(
-      /*additional_trust_anchors=*/{},
-      /*additional_trust_anchors_with_enforced_constraints=*/
-      {root->GetX509Certificate()},
-      /*additional_distrusted_certificates=*/{}));
+  InitializeVerifyProc(
+      CreateParams(
+          /*additional_trust_anchors=*/{},
+          /*additional_trust_anchors_with_enforced_constraints=*/
+          {root->GetX509Certificate()},
+          /*additional_distrusted_certificates=*/{}),
+      base::Time::Now() + base::Days(20));
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
@@ -823,12 +831,11 @@ TEST_F(CertVerifyProcBuiltinTest, CustomTimeFailureIsRetriedWithSystemTime) {
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
   Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
-         &verify_net_log_source, callback.callback(),
-         base::Time::Now() + base::Days(20));
+         &verify_net_log_source, callback.callback());
 
   int error = callback.WaitForResult();
-  // Root is expired when compared to the custom time, but valid when compared
-  // to base::Time::Now.
+  // Root is expired when compared to the time tracker time, but valid when
+  // compared to base::Time::Now.
   EXPECT_THAT(error, IsOk());
 }
 

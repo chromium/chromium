@@ -14,7 +14,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "components/network_time/time_tracker/time_tracker.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
@@ -682,7 +684,8 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
                         std::unique_ptr<CTVerifier> ct_verifier,
                         scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
                         std::unique_ptr<SystemTrustStore> system_trust_store,
-                        const CertVerifyProc::InstanceParams& instance_params);
+                        const CertVerifyProc::InstanceParams& instance_params,
+                        std::optional<network_time::TimeTracker> time_tracker);
 
  protected:
   ~CertVerifyProcBuiltin() override;
@@ -694,8 +697,7 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
                      const std::string& sct_list,
                      int flags,
                      CertVerifyResult* verify_result,
-                     const NetLogWithSource& net_log,
-                     std::optional<base::Time> time_now) override;
+                     const NetLogWithSource& net_log) override;
 
   const scoped_refptr<CertNetFetcher> net_fetcher_;
   const std::unique_ptr<CTVerifier> ct_verifier_;
@@ -704,6 +706,7 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
   std::vector<net::CertVerifyProc::CertificateWithConstraints>
       additional_constraints_;
   bssl::TrustStoreInMemory additional_trust_store_;
+  const std::optional<network_time::TimeTracker> time_tracker_;
 };
 
 CertVerifyProcBuiltin::CertVerifyProcBuiltin(
@@ -712,12 +715,14 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
     std::unique_ptr<CTVerifier> ct_verifier,
     scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
     std::unique_ptr<SystemTrustStore> system_trust_store,
-    const CertVerifyProc::InstanceParams& instance_params)
+    const CertVerifyProc::InstanceParams& instance_params,
+    std::optional<network_time::TimeTracker> time_tracker)
     : CertVerifyProc(std::move(crl_set)),
       net_fetcher_(std::move(net_fetcher)),
       ct_verifier_(std::move(ct_verifier)),
       ct_policy_enforcer_(std::move(ct_policy_enforcer)),
-      system_trust_store_(std::move(system_trust_store)) {
+      system_trust_store_(std::move(system_trust_store)),
+      time_tracker_(std::move(time_tracker)) {
   DCHECK(system_trust_store_);
 
   NetLogWithSource net_log =
@@ -1104,8 +1109,7 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
                                           const std::string& sct_list,
                                           int flags,
                                           CertVerifyResult* verify_result,
-                                          const NetLogWithSource& net_log,
-                                          std::optional<base::Time> time_now) {
+                                          const NetLogWithSource& net_log) {
   base::TimeTicks deadline = base::TimeTicks::Now() + kMaxVerificationTime;
   bssl::der::GeneralizedTime der_verification_system_time;
   bssl::der::GeneralizedTime der_verification_custom_time;
@@ -1116,12 +1120,16 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
     verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
     return ERR_CERT_AUTHORITY_INVALID;
   }
-  if (time_now.has_value()) {
-    if (!EncodeTimeAsGeneralizedTime(time_now.value(),
-                                     &der_verification_custom_time)) {
+  bool tracker_time_available = false;
+  if (time_tracker_.has_value()) {
+    base::Time time_now;
+    tracker_time_available = time_tracker_->GetTime(
+        base::Time::Now(), base::TimeTicks::Now(), &time_now, nullptr);
+    if (tracker_time_available &&
+        !EncodeTimeAsGeneralizedTime(time_now, &der_verification_custom_time)) {
       // This shouldn't be possible, but if it somehow happens, just use system
       // time.
-      der_verification_custom_time = der_verification_system_time;
+      tracker_time_available = false;
     }
   }
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -1181,10 +1189,10 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
   // First try EV validation. Can skip this if the leaf certificate has no
   // chance of verifying as EV (lacks an EV policy).
   if (IsEVCandidate(ev_metadata, target.get()))
-    attempts.emplace_back(VerificationType::kEV, !time_now.has_value());
+    attempts.emplace_back(VerificationType::kEV, !tracker_time_available);
 
   // Next try DV validation.
-  attempts.emplace_back(VerificationType::kDV, !time_now.has_value());
+  attempts.emplace_back(VerificationType::kDV, !tracker_time_available);
 
   bssl::CertPathBuilder::Result result;
   VerificationType verification_type = VerificationType::kDV;
@@ -1279,11 +1287,12 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProcBuiltin(
     std::unique_ptr<CTVerifier> ct_verifier,
     scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
     std::unique_ptr<SystemTrustStore> system_trust_store,
-    const CertVerifyProc::InstanceParams& instance_params) {
+    const CertVerifyProc::InstanceParams& instance_params,
+    std::optional<network_time::TimeTracker> time_tracker) {
   return base::MakeRefCounted<CertVerifyProcBuiltin>(
       std::move(net_fetcher), std::move(crl_set), std::move(ct_verifier),
       std::move(ct_policy_enforcer), std::move(system_trust_store),
-      instance_params);
+      instance_params, std::move(time_tracker));
 }
 
 base::TimeDelta GetCertVerifyProcBuiltinTimeLimitForTesting() {

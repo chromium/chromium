@@ -1085,6 +1085,7 @@ component("net") {
     ":net_deps",
     "//build:chromeos_buildflags",
     "//components/miracle_parameter/common",
+    "//components/network_time/time_tracker",
     "//net/http:transport_security_state_generated_files",
   ]
 
@@ -2957,6 +2958,7 @@ test("net_unittests") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
+    "//components/network_time/time_tracker",
     "//crypto",
     "//crypto:test_support",
     "//net/base/registry_controlled_domains",

@@ -26,6 +26,7 @@
 //components/grpc_support
 //components/metrics
 //components/miracle_parameter/common
+//components/network_time/time_tracker
 //components/prefs
 //components/prefs/android
 //crypto
