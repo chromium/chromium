@@ -706,7 +706,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.ErrorScreensTime.{OOBEScreenShownBeforeNetworkError}.{OOBENetworkError}"
-    units="ms" expires_after="2025-01-05">
+    units="ms" expires_after="never">
+<!-- expires-never: Core metric for monitoring OOBE flow regressions.
+    go/oobe-cmp-dd -->
+
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -997,7 +1000,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OnboardingFlowStatus.{OnboardingType}"
-    enum="BooleanStartedCompleted" expires_after="2025-02-10">
+    enum="BooleanStartedCompleted" expires_after="never">
+<!-- expires-never: Core metric for monitoring OOBE flow regressions.
+    go/oobe-cmp-dd -->
+
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1033,7 +1039,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OobeFlowStatus" enum="BooleanStartedCompleted"
-    expires_after="2025-02-10">
+    expires_after="never">
+<!-- expires-never: Core metric for monitoring OOBE flow regressions.
+    go/oobe-cmp-dd -->
+
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1248,7 +1257,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OOBE.StepCompletionTime.{OOBELegacyScreenName}" units="ms"
     expires_after="never">
-<!-- expires-never: Core metric for monitoring OOBE flow regressions. -->
+<!-- expires-never: Core metric for monitoring OOBE flow regressions.
+    go/oobe-cmp-dd -->
 
   <owner>alemate@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
@@ -1304,7 +1314,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OOBE.StepShownStatus.{OOBELegacyScreenName}"
     enum="BooleanShown" expires_after="never">
-<!-- expires-never: Core metric for monitoring OOBE flow regressions. -->
+<!-- expires-never: Core metric for monitoring OOBE flow regressions.
+    go/oobe-cmp-dd -->
 
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -1520,8 +1531,10 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="OOBE.WebUI.LoadTime.FirstRun" units="ms"
-    expires_after="2025-01-26">
+<histogram name="OOBE.WebUI.LoadTime.FirstRun" units="ms" expires_after="never">
+<!-- expires-never: Core metric for monitoring OOBE flow regressions.
+    go/oobe-cmp-dd -->
+
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
