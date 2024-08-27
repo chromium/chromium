@@ -424,11 +424,6 @@ void BackForwardCachePageLoadMetricsObserver::
             page_load_metrics::LayoutShiftUkmValue(
                 normalized_cls_data
                     .session_windows_gap1000ms_max5000ms_max_cls));
-    base::UmaHistogramCounts100(
-        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-        "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms",
-        page_load_metrics::LayoutShiftUmaValue(
-            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
     base::UmaHistogramCustomCounts(
         "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
         "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2",

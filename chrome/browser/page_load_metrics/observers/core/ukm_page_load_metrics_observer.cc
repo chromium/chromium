@@ -1311,10 +1311,6 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
     builder
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
             page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
-    base::UmaHistogramCounts100(
-        "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
-        "Gap1000ms.Max5000ms",
-        page_load_metrics::LayoutShiftUmaValue(*cwv_cls_value));
     base::UmaHistogramCustomCounts(
         "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
         "Gap1000ms.Max5000ms2",

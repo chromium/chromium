@@ -611,10 +611,11 @@ return score;
   ExpectMetricValueForUrl(url_a,
                           "CumulativeShiftScoreAfterBackForwardCacheRestore",
                           page_load_metrics::LayoutShiftUkmValue(next_score));
-  ExpectMetricValueForUrl(url_a,
-                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
-                          "SessionWindow.Gap1000ms.Max5000ms",
-                          page_load_metrics::LayoutShiftUkmValue(next_score));
+  ExpectMetricValueForUrl(
+      url_a,
+      "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+      "SessionWindow.Gap1000ms.Max5000ms2",
+      page_load_metrics::LayoutShiftUmaValue10000(next_score));
   // Go back to A again.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
@@ -635,7 +636,7 @@ return score;
                           2);
   histogram_tester().ExpectTotalCount(
       "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-      "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms",
+      "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2",
       2);
 }
 
