@@ -699,4 +699,42 @@ suite('ProductSpecificationsTableTest', () => {
       assertFalse(columns[1]!.hasAttribute('is-first-column'));
     });
   });
+
+  test('sets `scroll-snap-align` property correctly', async () => {
+    // Arrange / Act.
+    tableElement.columns = [
+      {
+        selectedItem:
+            {title: 'title', url: 'https://example.com/1', imageUrl: ''},
+        productDetails: [
+          {
+            title: 'foo',
+            content: {
+              attributes: [{label: '', value: 'd1'}],
+              summary: [],
+            },
+          },
+        ],
+      },
+      {
+        selectedItem:
+            {title: 'title2', url: 'https://example.com/2', imageUrl: ''},
+        productDetails: [
+          {title: 'foo', content: null},
+        ],
+      },
+    ];
+    await waitAfterNextRender(tableElement);
+
+    // Assert.
+    const columns =
+        tableElement.shadowRoot!.querySelectorAll<HTMLElement>('.col');
+    assertEquals(2, columns.length);
+    assertStyle(columns[0]!, 'scroll-snap-align', 'start');
+    assertStyle(columns[1]!, 'scroll-snap-align', 'start');
+
+    tableElement.draggingColumn = columns[0]!;
+    assertStyle(columns[0]!, 'scroll-snap-align', 'none');
+    assertStyle(columns[1]!, 'scroll-snap-align', 'none');
+  });
 });
