@@ -61,11 +61,9 @@ FloorNode::FloorNode(SubcomponentsList children)
 FloorNode::~FloorNode() = default;
 
 ApartmentNode::ApartmentNode(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForApartmentNumbers,
-          ADDRESS_HOME_APT_NUM,
-          std::move(children),
-          MergeMode::kDefault) {}
+    : AddressComponent(ADDRESS_HOME_APT_NUM,
+                       std::move(children),
+                       MergeMode::kDefault) {}
 
 ApartmentNode::~ApartmentNode() = default;
 

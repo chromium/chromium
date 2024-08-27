@@ -284,9 +284,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_RATIONALIZATION_ENGINE_FOR_MX,
                 "When enabled, Autofill performs Mexico specific rationalization."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_APARTMENT_NUMBERS,
-                "When enabled, Autofill supports apartment number fields."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_UNIFY_AND_FIX_FORM_TRACKING,
                 "When enabled, AutofillAgent and FormTracker track the same elements."),
         Flag.baseFeature(

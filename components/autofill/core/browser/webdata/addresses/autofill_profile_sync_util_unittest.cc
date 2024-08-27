@@ -917,18 +917,16 @@ class AutofillProfileSyncUtilTest
   AutofillProfileSyncUtilTest() {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
-    features_.InitWithFeatures(
-        {features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseAUAddressModel,
-         features::kAutofillUseBRAddressModel,
-         features::kAutofillUseCAAddressModel,
-         features::kAutofillUseDEAddressModel,
-         features::kAutofillUseFRAddressModel,
-         features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableSupportForApartmentNumbers},
-        {});
+    features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
+                                features::kAutofillUseAUAddressModel,
+                                features::kAutofillUseBRAddressModel,
+                                features::kAutofillUseCAAddressModel,
+                                features::kAutofillUseDEAddressModel,
+                                features::kAutofillUseFRAddressModel,
+                                features::kAutofillUseINAddressModel,
+                                features::kAutofillUseITAddressModel,
+                                features::kAutofillUseMXAddressModel},
+                               {});
   }
 
   AutofillProfile GetAutofillProfileForCountry(I18nCountryModel country_model) {

@@ -556,7 +556,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillUseITAddressModel,
       features::kAutofillUseMXAddressModel,
       features::kAutofillUsePLAddressModel,
-      features::kAutofillEnableSupportForApartmentNumbers,
       features::kAutofillEnableExpirationDateImprovements,
       features::kAutofillEnableRationalizationEngineForMX,
       // Other improvements.

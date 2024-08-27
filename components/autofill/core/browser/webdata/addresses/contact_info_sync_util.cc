@@ -229,12 +229,9 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_street_location(),
         ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.mutable_address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForApartmentNumbers)) {
-    s.Set(specifics.mutable_address_apt(), ADDRESS_HOME_APT);
-    s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
-    s.Set(specifics.mutable_address_apt_type(), ADDRESS_HOME_APT_TYPE);
-  }
+  s.Set(specifics.mutable_address_apt(), ADDRESS_HOME_APT);
+  s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
+  s.Set(specifics.mutable_address_apt_type(), ADDRESS_HOME_APT_TYPE);
   s.Set(specifics.mutable_address_floor(), ADDRESS_HOME_FLOOR);
   s.Set(specifics.mutable_address_overflow(), ADDRESS_HOME_OVERFLOW);
   s.Set(specifics.mutable_address_landmark(), ADDRESS_HOME_LANDMARK);
@@ -359,12 +356,9 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
         ADDRESS_HOME_HOUSE_NUMBER_AND_APT);
   s.Set(specifics.address_street_location(), ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForApartmentNumbers)) {
-    s.Set(specifics.address_apt(), ADDRESS_HOME_APT);
-    s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
-    s.Set(specifics.address_apt_type(), ADDRESS_HOME_APT_TYPE);
-  }
+  s.Set(specifics.address_apt(), ADDRESS_HOME_APT);
+  s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
+  s.Set(specifics.address_apt_type(), ADDRESS_HOME_APT_TYPE);
   s.Set(specifics.address_floor(), ADDRESS_HOME_FLOOR);
   s.Set(specifics.address_overflow(), ADDRESS_HOME_OVERFLOW);
   s.Set(specifics.address_landmark(), ADDRESS_HOME_LANDMARK);

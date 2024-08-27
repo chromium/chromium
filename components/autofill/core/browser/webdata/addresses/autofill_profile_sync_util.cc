@@ -195,15 +195,12 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_LOCATION)));
   specifics->set_address_home_subpremise_name(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_SUBPREMISE)));
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForApartmentNumbers)) {
-    specifics->set_address_home_apt(
-        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT)));
-    specifics->set_address_home_apt_num(
-        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_NUM)));
-    specifics->set_address_home_apt_type(
-        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_TYPE)));
-  }
+  specifics->set_address_home_apt(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT)));
+  specifics->set_address_home_apt_num(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_NUM)));
+  specifics->set_address_home_apt_type(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_TYPE)));
   specifics->set_address_home_floor(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_FLOOR)));
   if (base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
@@ -272,18 +269,15 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_subpremise_name_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_SUBPREMISE)));
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForApartmentNumbers)) {
-    specifics->set_address_home_apt_status(
-        ConvertProfileToSpecificsVerificationStatus(
-            entry.GetVerificationStatus(ADDRESS_HOME_APT)));
-    specifics->set_address_home_apt_num_status(
-        ConvertProfileToSpecificsVerificationStatus(
-            entry.GetVerificationStatus(ADDRESS_HOME_APT_NUM)));
-    specifics->set_address_home_apt_type_status(
-        ConvertProfileToSpecificsVerificationStatus(
-            entry.GetVerificationStatus(ADDRESS_HOME_APT_TYPE)));
-  }
+  specifics->set_address_home_apt_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_APT)));
+  specifics->set_address_home_apt_num_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_APT_NUM)));
+  specifics->set_address_home_apt_type_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_APT_TYPE)));
   specifics->set_address_home_floor_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_FLOOR)));
@@ -538,23 +532,19 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_subpremise_name_status()));
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForApartmentNumbers)) {
-    profile.SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_APT, base::UTF8ToUTF16(specifics.address_home_apt()),
-        ConvertSpecificsToProfileVerificationStatus(
-            specifics.address_home_apt_status()));
-    profile.SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_APT_NUM,
-        base::UTF8ToUTF16(specifics.address_home_apt_num()),
-        ConvertSpecificsToProfileVerificationStatus(
-            specifics.address_home_apt_num_status()));
-    profile.SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_APT_TYPE,
-        base::UTF8ToUTF16(specifics.address_home_apt_type()),
-        ConvertSpecificsToProfileVerificationStatus(
-            specifics.address_home_apt_type_status()));
-  }
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_APT, base::UTF8ToUTF16(specifics.address_home_apt()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_apt_status()));
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_APT_NUM, base::UTF8ToUTF16(specifics.address_home_apt_num()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_apt_num_status()));
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_APT_TYPE,
+      base::UTF8ToUTF16(specifics.address_home_apt_type()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_apt_type_status()));
 
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_FLOOR, base::UTF8ToUTF16(specifics.address_home_floor()),

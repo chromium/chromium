@@ -689,7 +689,6 @@ class ContactInfoSyncUtilTest
          features::kAutofillUseINAddressModel,
          features::kAutofillUseITAddressModel,
          features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillTrackMultipleUseDates},
         {});
   }

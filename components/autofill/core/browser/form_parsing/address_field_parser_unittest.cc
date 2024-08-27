@@ -122,8 +122,6 @@ TEST_P(AddressFieldParserTest, ParseStreetNameAndHouseNumbertPL) {
 // |ADDRESS_HOME_HOUSE_NUMBER| and |ADDRESS_HOME_APT_NUM|  when they are labeled
 // accordingly and both are present.
 TEST_P(AddressFieldParserTest, ParseStreetNameHouseNumbertAndAptNumPL) {
-  base::test::ScopedFeatureList enabled{
-      features::kAutofillEnableSupportForApartmentNumbers};
   AddTextFormFieldData("street", "ulica", ADDRESS_HOME_STREET_NAME);
   AddTextFormFieldData("house-number", "Nr domu", ADDRESS_HOME_HOUSE_NUMBER);
   AddTextFormFieldData("house-number", "Nr lokalu", ADDRESS_HOME_APT_NUM);
@@ -146,11 +144,6 @@ TEST_P(AddressFieldParserTest, ParseStreetNameAndHouseNumber) {
 // accordingly and all are present.
 TEST_P(AddressFieldParserTest,
        ParseStreetNameAndHouseNumberAndApartmentNumber) {
-  // TODO(crbug.com/40718257): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableSupportForApartmentNumbers);
-
   AddTextFormFieldData("street", "Street", ADDRESS_HOME_STREET_NAME);
   AddTextFormFieldData("house-number", "House number",
                        ADDRESS_HOME_HOUSE_NUMBER);

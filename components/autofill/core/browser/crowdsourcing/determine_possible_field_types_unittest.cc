@@ -126,15 +126,13 @@ class ProfileMatchingTypesTest
       public ::testing::WithParamInterface<ProfileMatchingTypesTestCase> {
  public:
   ProfileMatchingTypesTest() {
-    features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseBRAddressModel,
-         features::kAutofillUseCAAddressModel,
-         features::kAutofillUseFRAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel},
-        {});
+    features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
+                                features::kAutofillUseBRAddressModel,
+                                features::kAutofillUseCAAddressModel,
+                                features::kAutofillUseFRAddressModel,
+                                features::kAutofillUseITAddressModel,
+                                features::kAutofillUseMXAddressModel},
+                               {});
   }
 
  protected:

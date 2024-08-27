@@ -97,11 +97,6 @@ TEST_P(AddressFieldParserTestNG, ParseStreetNameAndHouseNumber) {
 // accordingly and all are present.
 TEST_P(AddressFieldParserTestNG,
        ParseStreetNameAndHouseNumberAndApartmentNumber) {
-  // TODO(crbug.com/40718257): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableSupportForApartmentNumbers);
-
   AddTextFormFieldData("street", "Street", ADDRESS_HOME_STREET_NAME);
   AddTextFormFieldData("house-number", "House number",
                        ADDRESS_HOME_HOUSE_NUMBER);

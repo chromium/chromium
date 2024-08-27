@@ -28,7 +28,6 @@ class AddressTest : public testing::Test {
   AddressTest() {
     features_.InitWithFeatures(
         {
-            features::kAutofillEnableSupportForApartmentNumbers,
             features::kAutofillUseAUAddressModel,
             features::kAutofillUseBRAddressModel,
             features::kAutofillUseCAAddressModel,

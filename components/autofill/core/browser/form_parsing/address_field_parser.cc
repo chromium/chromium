@@ -386,10 +386,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
-    // TODO(crbug.com/40734406): Remove finch guard once launched.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForApartmentNumbers) &&
-        !apartment_number_ &&
+    if (!apartment_number_ &&
         i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_APT_NUM,
                                                        country_code) &&
         ParseField(context, scanner, apartment_number_patterns,

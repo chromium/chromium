@@ -226,13 +226,11 @@ void TestCompoundNameMerging(AddressComponentTestValues older_values,
 class AutofillStructuredAddressAddressComponent : public testing::Test {
  public:
   AutofillStructuredAddressAddressComponent() {
-    features_.InitWithFeatures(
-        {features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseBRAddressModel,
-         features::kAutofillUseINAddressModel,
-         features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableSupportForApartmentNumbers},
-        {});
+    features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
+                                features::kAutofillUseBRAddressModel,
+                                features::kAutofillUseINAddressModel,
+                                features::kAutofillUseMXAddressModel},
+                               {});
   }
 
  private:
@@ -1882,9 +1880,6 @@ TEST_F(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
 
 TEST_F(AutofillStructuredAddressAddressComponent,
        IsValueCompatibleWithAncestorsCompatible) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillEnableSupportForApartmentNumbers};
-
   AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
   AddressComponent* root = store.Root();
