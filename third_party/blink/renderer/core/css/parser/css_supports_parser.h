@@ -51,26 +51,26 @@ class CORE_EXPORT CSSSupportsParser {
   Result ConsumeSupportsInParens(CSSParserTokenStream&);
 
   // <supports-feature> = <supports-selector-fn> | <supports-decl>
-  Result ConsumeSupportsFeature(CSSParserTokenStream&);
+  bool ConsumeSupportsFeature(CSSParserTokenStream&);
 
   // <supports-selector-fn> = selector( <complex-selector> )
-  Result ConsumeSupportsSelectorFn(CSSParserTokenStream&);
+  bool ConsumeSupportsSelectorFn(CSSParserTokenStream&);
 
   // <supports-font-tech-fn> = font-tech( <font-tech> )
-  Result ConsumeFontTechFn(CSSParserTokenStream& stream);
+  bool ConsumeFontTechFn(CSSParserTokenStream& stream);
 
   // <supports-font-format-fn> = font-format( <font-format> )
-  Result ConsumeFontFormatFn(CSSParserTokenStream& stream);
+  bool ConsumeFontFormatFn(CSSParserTokenStream& stream);
 
   // <supports-decl> = ( <declaration> )
-  Result ConsumeSupportsDecl(CSSParserTokenStream&);
+  bool ConsumeSupportsDecl(CSSParserTokenStream&);
 
   // <general-enclosed> = [ <function-token> <any-value>? ) ]
   //                  | ( <any-value>? )
-  Result ConsumeGeneralEnclosed(CSSParserTokenStream&);
+  bool ConsumeGeneralEnclosed(CSSParserTokenStream&);
 
   // This is an internal feature which is not web-exposed.
-  Result ConsumeBlinkFeatureFn(CSSParserTokenStream&);
+  bool ConsumeBlinkFeatureFn(CSSParserTokenStream&);
 
   CSSParserImpl& parser_;
 };
