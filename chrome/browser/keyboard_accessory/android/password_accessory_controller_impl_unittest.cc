@@ -982,6 +982,10 @@ TEST_F(PasswordAccessoryControllerTest, AppendsPlusAddressSuggestions) {
       controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
           .AddPlusAddressSection("https://foo.com", u"example@gmail")
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+              AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
           .Build());
 }
 
@@ -1021,6 +1025,10 @@ TEST_F(PasswordAccessoryControllerTest, PlusAddressUsedAsUsername) {
               false, true)
           .AppendField(u"S3cur3", password_for_str(u"example@gmail"), true,
                        false)
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+              AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
           .Build());
 }
 
@@ -1058,6 +1066,10 @@ TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
                              /*is_obfuscated=*/false, /*selectable=*/true)
                 .AppendField(u"S3cur3", password_for_str(u"foo.bar@gmail"),
                              true, false)
+                .AppendFooterCommand(
+                    l10n_util::GetStringUTF16(
+                        IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+                    AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
                 .Build());
 }
 
@@ -1168,6 +1180,10 @@ TEST_F(PasswordAccessoryControllerTest,
       controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
           .AddPlusAddressSection("https://foo.com", u"plus+foo@plus.plus")
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+              AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
           .Build());
 }
 

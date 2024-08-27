@@ -35,6 +35,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
+#include "chrome/browser/ui/android/plus_addresses/plus_addresses_helper.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "chrome/grit/generated_resources.h"
@@ -408,7 +409,7 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
         }
       }
       return;
-    case autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET: {
+    case autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
       if (auto* client = autofill::ContentAutofillClient::FromWebContents(
               &GetWebContents())) {
         client->OfferPlusAddressCreation(
@@ -419,8 +420,7 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
         GetManualFillingController()->Hide();
       }
       return;
-    }
-    case autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET: {
+    case autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
       all_plus_addresses_bottom_sheet_controller_ = std::make_unique<
           plus_addresses::AllPlusAddressesBottomSheetController>(
           &GetWebContents());
@@ -429,7 +429,9 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
           weak_ptr_factory_.GetWeakPtr()));
       GetManualFillingController()->Hide();
       return;
-    }
+    case autofill::AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
+      plus_addresses::ShowManagePlusAddressesPage(GetWebContents());
+      return;
     default:
       NOTREACHED_IN_MIGRATION()
           << "Unhandled selected action: " << static_cast<int>(selected_action);
@@ -650,6 +652,16 @@ PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
             l10n_util::GetStringUTF16(
                 IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
             autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+      }
+      // Show "Manage plus addresses" action only if the user has at least 1
+      // affiliated plus addresses already saved for the current domain.
+      if (plus_profiles_provider_ &&
+          !plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
+        footer_commands_to_add.emplace_back(FooterCommand(
+            l10n_util::GetStringUTF16(
+                IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+            autofill::AccessoryAction::
+                MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET));
       }
     }
   }

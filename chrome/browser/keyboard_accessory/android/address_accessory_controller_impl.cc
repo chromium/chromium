@@ -143,7 +143,7 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
     case AccessoryAction::MANAGE_ADDRESSES:
       autofill::ShowAutofillProfileSettings(&GetWebContents());
       return;
-    case AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET: {
+    case AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
       if (auto* client =
               ContentAutofillClient::FromWebContents(&GetWebContents())) {
         client->OfferPlusAddressCreation(
@@ -154,10 +154,8 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
                 GetManualFillingController()->GetLastFocusedFieldId()));
         GetManualFillingController()->Hide();
       }
-
       return;
-    }
-    case AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET: {
+    case AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
       if (!all_plus_addresses_bottom_sheet_controller_) {
         all_plus_addresses_bottom_sheet_controller_ = std::make_unique<
             plus_addresses::AllPlusAddressesBottomSheetController>(
@@ -169,11 +167,9 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
         GetManualFillingController()->Hide();
       }
       return;
-    }
-    case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET: {
+    case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
       plus_addresses::ShowManagePlusAddressesPage(GetWebContents());
       return;
-    }
     default:
       NOTREACHED() << "Unhandled selected action: "
                    << static_cast<int>(selected_action);
