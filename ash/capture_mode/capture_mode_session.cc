@@ -25,7 +25,6 @@
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
-#include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -77,7 +76,6 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_util.h"
@@ -1215,20 +1213,6 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return ignore_windows;
 }
 
-void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
-  DCHECK_EQ(active_behavior()->behavior_type(), BehaviorType::kSunfish);
-  if (!search_results_panel_widget_) {
-    search_results_panel_widget_ =
-        SearchResultsPanel::CreateWidget(current_root());
-    search_results_panel_widget_->Show();
-  }
-  // TODO(b/359317857): Determine whether to hide or refresh the panel if a new
-  // region selection and/or session is started.
-  auto* search_results_panel = views::AsViewClass<SearchResultsPanel>(
-      search_results_panel_widget_->GetContentsView());
-  search_results_panel->SetSearchBoxImage(image);
-}
-
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
   // If the drag of camera preview is in progress, we will hide other capture
   // UIs (capture bar, capture label), but we should still paint the layer to
@@ -2200,12 +2184,6 @@ void CaptureModeSession::OnLocatedEventReleased(
 
   // After first release event, we advance to the next phase.
   is_selecting_region_ = false;
-  if (active_behavior_->OnRegionSelected()) {
-    // If the behavior handled the event, stop propagation.
-    return;
-  }
-  // TODO(b/359317857): Determine whether to show the capture label view after
-  // drag release.
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);
 
   A11yAlertCaptureSource(/*trigger_now=*/true);

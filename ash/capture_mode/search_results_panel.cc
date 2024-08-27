@@ -69,14 +69,6 @@ class SunfishSearchBoxView : public views::View {
   SunfishSearchBoxView& operator=(const SunfishSearchBoxView&) = delete;
   ~SunfishSearchBoxView() override = default;
 
-  void SetImage(const gfx::ImageSkia& image) {
-    // Resize the image to fit in the searchbox, keeping the same aspect ratio.
-    const int target_height = height();
-    const int target_width = (image.width() * target_height) / image.height();
-    image_view_->SetImage(image);
-    image_view_->SetImageSize(gfx::Size(target_width, target_height));
-  }
-
  private:
   // Owned by the views hierarchy.
   raw_ptr<views::ImageView> image_view_;
@@ -93,7 +85,7 @@ SearchResultsPanel::SearchResultsPanel() {
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true);
-  search_box_view_ = AddChildView(std::make_unique<SunfishSearchBoxView>());
+  AddChildView(std::make_unique<SunfishSearchBoxView>());
   search_results_view_ =
       AddChildView(CaptureModeController::Get()->CreateSearchResultsView());
   search_results_view_->SetProperty(
@@ -112,15 +104,13 @@ SearchResultsPanel::SearchResultsPanel() {
 SearchResultsPanel::~SearchResultsPanel() = default;
 
 // static
-std::unique_ptr<views::Widget> SearchResultsPanel::CreateWidget(
-    aura::Window* const root) {
+std::unique_ptr<views::Widget> SearchResultsPanel::CreateWidget() {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  // TODO(b/362284723): Ensure tooltips are visible over overlay container.
-  params.parent = Shell::GetContainer(root, kShellWindowId_OverlayContainer);
+  // TODO(b/356878705): Use the captured region display and bounds.
   const gfx::Rect work_area(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
   gfx::Rect bounds(work_area.right() - kSearchResultsPanelWidth, work_area.y(),
                    kSearchResultsPanelWidth, work_area.height());
   params.bounds = bounds;
@@ -130,10 +120,6 @@ std::unique_ptr<views::Widget> SearchResultsPanel::CreateWidget(
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<SearchResultsPanel>());
   return widget;
-}
-
-void SearchResultsPanel::SetSearchBoxImage(const gfx::ImageSkia& image) {
-  search_box_view_->SetImage(image);
 }
 
 BEGIN_METADATA(SearchResultsPanel)

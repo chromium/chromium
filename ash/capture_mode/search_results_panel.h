@@ -14,7 +14,6 @@
 namespace ash {
 
 class AshWebView;
-class SunfishSearchBoxView;
 
 // Container for the search results view and other UI such as the search box,
 // close button, etc.
@@ -27,14 +26,13 @@ class ASH_EXPORT SearchResultsPanel : public views::View {
   SearchResultsPanel& operator=(const SearchResultsPanel&) = delete;
   ~SearchResultsPanel() override;
 
-  static std::unique_ptr<views::Widget> CreateWidget(aura::Window* const root);
+  // Currently only used in tests.
+  static std::unique_ptr<views::Widget> CreateWidget();
 
-  // Sets the search box image thumbnail.
-  void SetSearchBoxImage(const gfx::ImageSkia& image);
+  AshWebView* search_results_view() const { return search_results_view_; }
 
  private:
   // Owned by the views hierarchy.
-  raw_ptr<SunfishSearchBoxView> search_box_view_;
   raw_ptr<AshWebView> search_results_view_;
 };
 

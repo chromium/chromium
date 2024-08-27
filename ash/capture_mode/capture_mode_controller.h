@@ -250,9 +250,6 @@ class ASH_EXPORT CaptureModeController
   // the capture session.
   void PerformCapture();
 
-  // Called by a capture session behavior to perform an image capture search.
-  void PerformImageSearch();
-
   void EndVideoRecording(EndRecordingReason reason);
 
   // Posts a task to the blocking pool to check the availability of the given
@@ -470,11 +467,6 @@ class ASH_EXPORT CaptureModeController
                        bool was_cursor_originally_blocked,
                        const CaptureModeBehavior* behavior,
                        scoped_refptr<base::RefCountedMemory> png_bytes);
-
-  // Called back when an image has been captured to trigger a search request.
-  // `jpeg_bytes` is the buffer containing the captured image in a JPEG format.
-  void OnImageCapturedForSearch(
-      scoped_refptr<base::RefCountedMemory> jpeg_bytes);
 
   // Called back when an attempt to save the image file has been completed, with
   // `file_saved_path` indicating whether the attempt succeeded or failed. If

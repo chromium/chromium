@@ -168,7 +168,6 @@ class ASH_EXPORT CaptureModeSession
   void MaybeChangeRoot(aura::Window* new_root,
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
-  void ShowSearchResultsPanel(const gfx::ImageSkia& image) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -414,9 +413,6 @@ class ASH_EXPORT CaptureModeSession
   views::UniqueWidgetPtr recording_type_menu_widget_;
   raw_ptr<RecordingTypeMenuView, DanglingUntriaged> recording_type_menu_view_ =
       nullptr;
-
-  // Contains `SearchResultsPanel` as its contents view.
-  std::unique_ptr<views::Widget> search_results_panel_widget_;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;

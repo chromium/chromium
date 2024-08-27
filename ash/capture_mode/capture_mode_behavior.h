@@ -123,10 +123,6 @@ class CaptureModeBehavior {
   // settings restoration or not.
   virtual void OnDemoToolsSettingsChanged();
 
-  // Notifies the behavior that a region was selected. Returns true if the
-  // behavior handled the event, false otherwise.
-  virtual bool OnRegionSelected();
-
  protected:
   CaptureModeBehavior(const CaptureModeSessionConfigs& configs,
                       const BehaviorType behavior_type);
