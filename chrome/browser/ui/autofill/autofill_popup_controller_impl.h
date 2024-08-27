@@ -104,7 +104,9 @@ class AutofillPopupControllerImpl
       AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void HideSubPopup() override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
-  void PerformButtonActionForSuggestion(int index) override;
+  void PerformButtonActionForSuggestion(
+      int index,
+      const SuggestionButtonAction& button_action) override;
   const std::vector<SuggestionFilterMatch>& GetSuggestionFilterMatches()
       const override;
   void SetFilter(std::optional<SuggestionFilter> filter) override;

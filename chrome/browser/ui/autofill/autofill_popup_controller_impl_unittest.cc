@@ -9,11 +9,13 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -325,7 +327,8 @@ TEST_F(AutofillPopupControllerImplTest, ButtonActionsAreSentToDelegate) {
   ShowSuggestions(manager(), {SuggestionType::kComposeResumeNudge});
   EXPECT_CALL(manager().external_delegate(),
               DidPerformButtonActionForSuggestion);
-  client().popup_controller(manager()).PerformButtonActionForSuggestion(0);
+  client().popup_controller(manager()).PerformButtonActionForSuggestion(
+      0, SuggestionButtonAction());
 }
 
 // The second popup is also the second "sub_popup_level". This test asserts that

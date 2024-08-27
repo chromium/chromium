@@ -352,7 +352,8 @@ void PasswordAutofillManager::DidAcceptSuggestion(
 }
 
 void PasswordAutofillManager::DidPerformButtonActionForSuggestion(
-    const Suggestion&) {
+    const Suggestion&,
+    const autofill::SuggestionButtonAction&) {
   // Button actions do currently not exist for password entries.
   NOTREACHED_IN_MIGRATION();
 }

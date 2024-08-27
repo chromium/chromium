@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -57,11 +58,12 @@ class AutofillSuggestionDelegate {
   virtual void DidAcceptSuggestion(const Suggestion& suggestion,
                                    const SuggestionPosition& position) = 0;
 
-  // Informs the delegate that the user chose to perform the button action
+  // Informs the delegate that the user chose to perform the `button_action`
   // associated with `suggestion`. Actions are currently implemented only on
   // Desktop.
   virtual void DidPerformButtonActionForSuggestion(
-      const Suggestion& suggestion) = 0;
+      const Suggestion& suggestion,
+      const SuggestionButtonAction& button_action) = 0;
 
   // Informs the delegate to delete the described suggestion. Returns true if
   // something was deleted, or false if deletion is not allowed.

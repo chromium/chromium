@@ -807,9 +807,12 @@ bool AutofillPopupControllerImpl::
              features::kAutofillPopupDisablePaintChecks);
 }
 
-void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(int index) {
+void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(
+    int index,
+    const SuggestionButtonAction& button_action) {
   CHECK_LE(base::checked_cast<size_t>(index), GetSuggestions().size());
-  delegate_->DidPerformButtonActionForSuggestion(GetSuggestions()[index]);
+  delegate_->DidPerformButtonActionForSuggestion(GetSuggestions()[index],
+                                                 button_action);
 }
 
 const std::vector<AutofillPopupController::SuggestionFilterMatch>&

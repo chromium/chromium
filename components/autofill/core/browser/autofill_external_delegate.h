@@ -65,7 +65,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   void DidAcceptSuggestion(const Suggestion& suggestion,
                            const SuggestionPosition& position) override;
   void DidPerformButtonActionForSuggestion(
-      const Suggestion& suggestion) override;
+      const Suggestion& suggestion,
+      const SuggestionButtonAction& button_action) override;
   bool RemoveSuggestion(const Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
 

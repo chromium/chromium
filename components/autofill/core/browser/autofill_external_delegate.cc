@@ -743,7 +743,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
 }
 
 void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
-    const Suggestion& suggestion) {
+    const Suggestion& suggestion,
+    const SuggestionButtonAction& button_action) {
   switch (suggestion.type) {
     case SuggestionType::kComposeResumeNudge:
       NOTIMPLEMENTED();

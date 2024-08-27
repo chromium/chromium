@@ -288,7 +288,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
 }
 
 void PasswordManualFallbackFlow::DidPerformButtonActionForSuggestion(
-    const Suggestion& suggestion) {
+    const Suggestion&,
+    const autofill::SuggestionButtonAction&) {
   // Button actions do currently not exist for password entries.
   NOTREACHED();
 }

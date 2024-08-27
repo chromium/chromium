@@ -64,7 +64,8 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
                            const SuggestionPosition& position) override;
   void DidPerformButtonActionForSuggestion(
-      const autofill::Suggestion&) override;
+      const autofill::Suggestion&,
+      const autofill::SuggestionButtonAction&) override;
   bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;

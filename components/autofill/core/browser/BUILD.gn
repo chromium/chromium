@@ -566,6 +566,7 @@ static_library("browser") {
     "ui/region_combobox_model.h",
     "ui/suggestion.cc",
     "ui/suggestion.h",
+    "ui/suggestion_button_action.h",
     "ui/suggestion_hiding_reason.h",
     "ui/suggestion_type.cc",
     "ui/suggestion_type.h",

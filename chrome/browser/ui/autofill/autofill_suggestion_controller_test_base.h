@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -223,7 +224,7 @@ class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,
-              (const Suggestion&),
+              (const Suggestion&, const SuggestionButtonAction&),
               (override));
   MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
 };

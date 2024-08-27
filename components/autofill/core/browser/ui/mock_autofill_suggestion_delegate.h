@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -36,7 +37,7 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,
-              (const Suggestion&),
+              (const Suggestion&, const SuggestionButtonAction&),
               (override));
   MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
