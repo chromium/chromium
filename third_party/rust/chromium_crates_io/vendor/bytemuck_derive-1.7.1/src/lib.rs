@@ -221,7 +221,7 @@ pub fn derive_zeroable(
 /// - The enum must be explicit `#[repr(Int)]`, `#[repr(C)]`, or both
 /// - All variants must be fieldless
 /// - The enum must contain no generic parameters
-#[proc_macro_derive(NoUninit)]
+#[proc_macro_derive(NoUninit, attributes(bytemuck))]
 pub fn derive_no_uninit(
   input: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {

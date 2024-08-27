@@ -346,6 +346,16 @@ Added support for Zeroable enums, which requires them to be represented as an in
 Other trivial/formatting changes.
 """
 
+[[audits.bytemuck_derive]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.7.0 -> 1.7.1"
+notes = """
+No impact on safety AFAICT - the delta only specifies a new attribute for
+`proc_macro_derive` to work around re-export issues described at
+https://github.com/Lokathor/bytemuck/issues/159
+"""
+
 [[audits.bytes]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

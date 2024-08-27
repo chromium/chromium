@@ -12,16 +12,16 @@ cargo_crate("lib") {
   crate_name = "bytemuck_derive"
   epoch = "1"
   crate_type = "proc-macro"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/bytemuck_derive-1.7.0/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/bytemuck_derive-1.7.1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck_derive-1.7.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bytemuck_derive-1.7.0/src/traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck_derive-1.7.1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck_derive-1.7.1/src/traits.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.7.0"
+  cargo_pkg_version = "1.7.1"
   cargo_pkg_authors = "Lokathor <zefria@gmail.com>"
   cargo_pkg_name = "bytemuck_derive"
   cargo_pkg_description = "derive proc-macros for `bytemuck`"

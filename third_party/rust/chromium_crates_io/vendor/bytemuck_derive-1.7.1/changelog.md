@@ -1,6 +1,10 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.7.1
+
+* Adds the `bytemuck` attribute to the `NoUninit` derive, allowing it to be used when re-exported.
+
 ## 1.7.0
 
 * Allow generics in `derive(ByteEq, ByteHash)` https://github.com/Lokathor/bytemuck/pull/219
