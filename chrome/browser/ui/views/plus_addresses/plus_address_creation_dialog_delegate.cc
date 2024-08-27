@@ -254,6 +254,7 @@ class PlusAddressCreationDialogDelegate::PlusAddressContainerView final
   void ShowGenerationMessage();
 
   void ShowRefresh(bool visible);
+  void SetEnabledForRefreshButton(bool enabled);
 
  private:
   using Alignment = views::LayoutAlignment;
@@ -366,6 +367,11 @@ void PlusAddressCreationDialogDelegate::PlusAddressContainerView::ShowRefresh(
   refresh_button_->SetVisible(visible);
 }
 
+void PlusAddressCreationDialogDelegate::PlusAddressContainerView::
+    SetEnabledForRefreshButton(bool enabled) {
+  refresh_button_->SetEnabled(enabled);
+}
+
 BEGIN_METADATA(PlusAddressCreationDialogDelegate, PlusAddressContainerView)
 END_METADATA
 
@@ -475,6 +481,7 @@ void PlusAddressCreationDialogDelegate::ShowReserveResult(
 
   SetProgressBarVisibility(false);
   plus_address_container_->ShowRefresh(offer_refresh);
+  plus_address_container_->SetEnabledForRefreshButton(true);
   if (maybe_plus_profile.has_value()) {
     plus_address_container_->ShowPlusAddress(
         base::UTF8ToUTF16(*maybe_plus_profile->plus_address));
@@ -618,6 +625,7 @@ void PlusAddressCreationDialogDelegate::ShowErrorStateUI() {
 
 void PlusAddressCreationDialogDelegate::OnRefreshClicked() {
   plus_address_container_->ShowGenerationMessage();
+  plus_address_container_->SetEnabledForRefreshButton(false);
   confirm_button_->SetEnabled(false);
   SetProgressBarVisibility(true);
   controller_->OnRefreshClicked();
