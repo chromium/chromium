@@ -8003,10 +8003,9 @@ crbug.com/359628062 [ Mac12 ] virtual/view-transition-on-navigation/external/wpt
 crbug.com/359824074 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.html?gpu [ Failure Pass ]
 crbug.com/359824074 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.worker.html?gpu [ Failure Pass ]
 
-# Gardener 2024-08-15
-crbug.com/360163253 [ Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-click.html [ Failure ]
-
-# Gardener 2024-08-16
+# Flaky scheduler/integration_tests
+crbug.com/360163253 [ Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-click.html [ Failure Pass ]
+crbug.com/361095256 [ Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-keyboard.html [ Failure Pass ]
 crbug.com/360385661 virtual/threaded/wpt_internal/scheduler/integration_tests/high-priority-input-click.html [ Failure Pass ]
 
 # Gardener 2024-08-20
