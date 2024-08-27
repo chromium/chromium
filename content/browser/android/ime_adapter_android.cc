@@ -214,6 +214,8 @@ void ImeAdapterAndroid::UpdateRenderProcessConnection(
     }
   }
   rwhva_ = new_rwhva;
+  // Must be called after the new rwhva has been set.
+  SetImeRenderWidgetHost();
 }
 
 void ImeAdapterAndroid::UpdateState(const ui::mojom::TextInputState& state) {
@@ -453,22 +455,22 @@ void ImeAdapterAndroid::OnStylusWritingGestureActionCompleted(
   }
 }
 
-void ImeAdapterAndroid::SetUpImeRenderWidgetHost(JNIEnv* env) {
+void ImeAdapterAndroid::SetImeRenderWidgetHost() {
   if (!base::FeatureList::IsEnabled(
           blink::features::kCursorAnchorInfoMojoPipe)) {
     return;
   }
-  auto* input_handler = GetFocusedFrameWidgetInputHandler();
-  if (!input_handler) {
+  if (!rwhva_) {
     return;
   }
   // Use a pending remote so we can pass it to Blink.
   mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> ime_render_widget_host;
   auto receiver = ime_render_widget_host.InitWithNewPipeAndPassReceiver();
+  JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
   Java_ImeAdapterImpl_bindImeRenderHost(env, obj,
                                         receiver.PassPipe().release().value());
-  input_handler->PassImeRenderWidgetHost(std::move(ime_render_widget_host));
+  rwhva_->PassImeRenderWidgetHost(std::move(ime_render_widget_host));
 }
 
 void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env,

@@ -635,6 +635,17 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
   std::move(callback).Run(std::nullopt, std::nullopt);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void WebFrameWidgetImpl::PassImeRenderWidgetHost(
+    mojo::PendingRemote<mojom::blink::ImeRenderWidgetHost> pending_remote) {
+  ime_render_widget_host_ =
+      HeapMojoRemote<mojom::blink::ImeRenderWidgetHost>(nullptr);
+  ime_render_widget_host_.Bind(
+      std::move(pending_remote),
+      local_root_->GetTaskRunner(TaskType::kInternalDefault));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void WebFrameWidgetImpl::NotifyClearedDisplayedGraphics() {
   if (!LocalRootImpl() || !LocalRootImpl()->GetFrame() ||
       !LocalRootImpl()->GetFrame()->GetDocument()) {
@@ -3974,19 +3985,6 @@ void WebFrameWidgetImpl::NotifyAutoscrollForSelectionInMainFrame(
     host->SetAutoscrollSelectionActiveInMainFrame(autoscroll_selection);
   }
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void WebFrameWidgetImpl::PassImeRenderWidgetHost(
-    mojo::PendingRemote<mojom::blink::ImeRenderWidgetHost> pending_remote) {
-  // TODO(crbug.com/330385378): Could the renderer send this endpoint to the
-  // browser?
-  ime_render_widget_host_ =
-      HeapMojoRemote<mojom::blink::ImeRenderWidgetHost>(nullptr);
-  ime_render_widget_host_.Bind(
-      std::move(pending_remote),
-      local_root_->GetTaskRunner(TaskType::kInternalDefault));
-}
-#endif
 
 gfx::Range WebFrameWidgetImpl::CompositionRange() {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();

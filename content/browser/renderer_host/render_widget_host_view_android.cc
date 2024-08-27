@@ -3361,6 +3361,11 @@ void RenderWidgetHostViewAndroid::UnregisterOffsetTags(
   }
 }
 
+void RenderWidgetHostViewAndroid::PassImeRenderWidgetHost(
+    mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote) {
+  host()->PassImeRenderWidgetHost(std::move(pending_remote));
+}
+
 void RenderWidgetHostViewAndroid::BeginRotationBatching() {
   in_rotation_ = true;
   rotation_metrics_.emplace_back(

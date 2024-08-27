@@ -438,6 +438,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void RegisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
   void UnregisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
 
+  void PassImeRenderWidgetHost(
+      mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote);
+
  protected:
   ~RenderWidgetHostViewAndroid() override;
 

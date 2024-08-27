@@ -50,8 +50,6 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
                     WebContents* web_contents);
   ~ImeAdapterAndroid() override;
 
-  void SetUpImeRenderWidgetHost(JNIEnv* env);
-
   // Called from java -> native
   bool SendKeyEvent(
       JNIEnv* env,
@@ -108,6 +106,8 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   void OnStylusWritingGestureActionCompleted(
       int,
       blink::mojom::HandwritingGestureResult);
+
+  void SetImeRenderWidgetHost();
 
   // RendetWidgetHostConnector implementation.
   void UpdateRenderProcessConnection(

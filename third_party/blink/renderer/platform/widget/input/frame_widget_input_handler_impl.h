@@ -72,10 +72,6 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
   void HandleStylusWritingGestureAction(
       mojom::blink::StylusWritingGestureDataPtr gesture_data,
       HandleStylusWritingGestureActionCallback callback) override;
-#if BUILDFLAG(IS_ANDROID)
-  void PassImeRenderWidgetHost(
-      mojo::PendingRemote<mojom::blink::ImeRenderWidgetHost>) override;
-#endif
   void ExecuteEditCommand(const String& command, const String& value) override;
   void Undo() override;
   void Redo() override;

@@ -937,6 +937,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   SiteInstanceGroup* GetSiteInstanceGroup();
 
+  void PassImeRenderWidgetHost(
+      mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote);
+
   // Updates the browser controls by directly IPCing onto the compositor thread.
   void UpdateBrowserControlsState(
       cc::BrowserControlsState constraints,

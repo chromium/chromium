@@ -2986,6 +2986,16 @@ void RenderWidgetHostImpl::OnEditElementFocusedForStylusWriting(
   }
 }
 
+void RenderWidgetHostImpl::PassImeRenderWidgetHost(
+    mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!blink_frame_widget_) {
+    return;
+  }
+  blink_frame_widget_->PassImeRenderWidgetHost(std::move(pending_remote));
+#endif
+}
+
 void RenderWidgetHostImpl::SetMouseCapture(bool capture) {
   if (!delegate_ || !delegate_->GetInputEventRouter()) {
     return;
