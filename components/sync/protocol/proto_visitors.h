@@ -1586,6 +1586,7 @@ VISIT_PROTO_FIELDS(const sync_pb::UserConsentSpecifics& proto) {
   VISIT(arc_play_terms_of_service_consent);
   VISIT(assistant_activity_control_consent);
   VISIT(account_passwords_consent);
+  VISIT(recorder_speaker_label_consent);
 }
 
 VISIT_PROTO_FIELDS(
@@ -1629,6 +1630,13 @@ VISIT_PROTO_FIELDS(const sync_pb::UserConsentTypes::UnifiedConsent& proto) {
 
 VISIT_PROTO_FIELDS(
     const sync_pb::UserConsentTypes::AccountPasswordsConsent& proto) {
+  VISIT_REP(description_grd_ids);
+  VISIT(confirmation_grd_id);
+  VISIT_ENUM(status);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& proto) {
   VISIT_REP(description_grd_ids);
   VISIT(confirmation_grd_id);
   VISIT_ENUM(status);
