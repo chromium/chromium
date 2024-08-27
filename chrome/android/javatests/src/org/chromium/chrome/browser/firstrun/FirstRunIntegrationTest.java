@@ -631,6 +631,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "issuetracker.google.com/360931705")
     public void testFirstRunSkippedSharedPreferenceRefresh() throws Exception {
         // Set that the first run was previous skipped by policy in shared preference, then
         // refreshing shared preference should cause its value to become false, since there's no
