@@ -1013,12 +1013,16 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
 StyleRulePageMargin* CSSParserImpl::ConsumePageMarginRule(
     CSSAtRuleID rule_id,
     CSSParserTokenStream& stream) {
+  // TODO(crbug.com/361525281): Implement inspector support.
+  base::AutoReset<CSSParserObserver*> disable_observer(&observer_, nullptr);
+
   // NOTE: @page-margin prelude should be empty.
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream, rule_id)) {
     return nullptr;
   }
   CSSParserTokenStream::BlockGuard guard(stream);
 
+  // TODO(crbug.com/361525281): This is a kPageMargin rule, not a kPage rule.
   ConsumeDeclarationList(stream, StyleRule::kPage, CSSNestingType::kNone,
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
