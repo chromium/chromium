@@ -206,6 +206,8 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutMediaPause;
     case (KeyboardCode::VKEY_MEDIA_PLAY_PAUSE):
       return IconCode::kKeyboardShortcutMediaPlayPause;
+    case ui::VKEY_KBD_BACKLIGHT_TOGGLE:
+      return IconCode::kKeyboardShortcutKeyboardBacklightToggle;
     case (KeyboardCode::VKEY_OEM_104):
       return IconCode::kKeyboardShortcutMediaFastForward;
     case (KeyboardCode::VKEY_BRIGHTNESS_DOWN):
