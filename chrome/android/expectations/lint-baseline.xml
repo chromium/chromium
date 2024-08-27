@@ -2532,17 +2532,6 @@
     </issue>
 
     <issue
-        id="AccessibilityFocus"
-        message="Do not force accessibility focus, as this interferes with screen readers and gives an inconsistent user experience, especially across apps"
-        errorLine1="                        getChildAt(0)"
-        errorLine2="                        ^">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabView.java"
-            line="28"
-            column="25"/>
-    </issue>
-
-    <issue
         id="AccessibilityWindowStateChangedEvent"
         message="Manually populating or sending TYPE_WINDOW_STATE_CHANGED events should be avoided. They may be ignored on certain versions of Android. Prefer setting UI metadata using `View.onInitializeAccessibilityNodeInfo`, `Activity.setTitle`, `ViewCompat.setAccessibilityPaneTitle`, etc. to inform users of crucial changes to the UI."
         errorLine1="            mListView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);"
