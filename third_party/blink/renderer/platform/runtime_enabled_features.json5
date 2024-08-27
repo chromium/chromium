@@ -2505,10 +2505,6 @@
       base_feature: "LayoutNGShapeCache",
     },
     {
-      name: "LayoutSegmentationFastPathForObjectReplacement",
-      status: "stable",
-    },
-    {
       name: "LazyInitializeMediaControls",
       base_feature: "none",
       public: true,

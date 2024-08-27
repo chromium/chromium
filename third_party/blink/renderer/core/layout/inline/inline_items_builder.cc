@@ -1660,10 +1660,6 @@ template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::DidFinishCollectInlines(
     InlineNodeData* data) {
   data->text_content = ToString();
-  if (!RuntimeEnabledFeatures::
-          LayoutSegmentationFastPathForObjectReplacementEnabled()) {
-    has_non_orc_16bit_ = !data->text_content.Is8Bit();
-  }
   data->has_non_orc_16bit_ = has_non_orc_16bit_;
 
   // Set |is_bidi_enabled_| for all UTF-16 strings for now, because at this
