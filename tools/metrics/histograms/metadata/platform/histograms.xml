@@ -28,6 +28,12 @@ chromium-metrics-reviews@google.com.
   <variant name="None" summary="None"/>
 </variants>
 
+<variants name="FirmwareTypes">
+  <variant name="Bluetooth"/>
+  <variant name="UnknownType"/>
+  <variant name="WiFi"/>
+</variants>
+
 <variants name="PartitionTypes">
   <variant name="EncStateful"/>
   <variant name="Stateful"/>
@@ -473,10 +479,7 @@ chromium-metrics-reviews@google.com.
     or not. Emitted every time the bit is updated (user logs in/out, Finch
     updated, etc). Design doc: go/cros-fbpreprocessord-dd
   </summary>
-  <token key="FirmwareType">
-    <variant name="UnknownType"/>
-    <variant name="WiFi"/>
-  </token>
+  <token key="FirmwareType" variants="FirmwareTypes"/>
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Output.Number"
@@ -488,10 +491,7 @@ chromium-metrics-reviews@google.com.
     collection. Emitted periodically, every 5 minutes. Design doc:
     go/cros-fbpreprocessord-dd
   </summary>
-  <token key="FirmwareType">
-    <variant name="UnknownType"/>
-    <variant name="WiFi"/>
-  </token>
+  <token key="FirmwareType" variants="FirmwareTypes"/>
 </histogram>
 
 <histogram
@@ -505,10 +505,7 @@ chromium-metrics-reviews@google.com.
     {FirmwareType}. Emitted every time a new firmware dump completes
     pseudonymization, succesfully or not. Design doc: go/cros-fbpreprocessord-dd
   </summary>
-  <token key="FirmwareType">
-    <variant name="UnknownType"/>
-    <variant name="WiFi"/>
-  </token>
+  <token key="FirmwareType" variants="FirmwareTypes"/>
 </histogram>
 
 <histogram name="Platform.Featured.BootAttemptsSinceLastSafeSeed"

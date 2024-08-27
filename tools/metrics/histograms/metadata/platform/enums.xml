@@ -852,6 +852,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   </summary>
   <int value="0" label="UnknownType"/>
   <int value="1" label="WiFi"/>
+  <int value="2" label="Bluetooth"/>
 </enum>
 
 <enum name="Platform.FbPreprocessor.PseudonymizationResult">
