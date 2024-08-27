@@ -6265,13 +6265,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"omnibox-most-visited-tiles-horizontal-render-group",
-     flag_descriptions::kOmniboxMostVisitedTilesHorizontalRenderGroupName,
-     flag_descriptions::
-         kOmniboxMostVisitedTilesHorizontalRenderGroupDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesHorizontalRenderGroup)},
-
     {"android-app-integration", flag_descriptions::kAndroidAppIntegrationName,
      flag_descriptions::kAndroidAppIntegrationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegration)},

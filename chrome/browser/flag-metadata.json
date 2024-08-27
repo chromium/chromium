@@ -6605,8 +6605,8 @@
   },
   {
     "name": "omnibox-most-visited-tiles-horizontal-render-group",
-    "owners": [ "ender@chromium.org", "chrome-mobile-search@google.com"],
-    "expiry_milestone": 130
+    "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-on-clobber-focus-type-on-content",
