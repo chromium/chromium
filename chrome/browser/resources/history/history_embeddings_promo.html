@@ -61,8 +61,13 @@
     line-height: 20px;
   }
 
+  #description-first-block {
+    margin-block-end: 1em;
+  }
+
   a {
     color: var(--cr-link-color);
+    display: inline-block;
   }
 </style>
 
@@ -76,6 +81,14 @@
   <div id="illustration" aria-hidden="true"></div>
   <div id="text">
     <h2 id="title">$i18n{historyEmbeddingsPromoHeading}</h2>
-    <div id="description">$i18nRaw{historyEmbeddingsPromoBody}</div>
+    <div id="description">
+      <div id="description-first-block">$i18n{historyEmbeddingsPromoBody}</div>
+      <div>
+        $i18n{historyEmbeddingsDisclaimer}
+        <a href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank">
+          $i18n{historyEmbeddingsPromoSettingsLinkText}
+        </a>
+      </div>
+    </div>
   </div>
 </div>
