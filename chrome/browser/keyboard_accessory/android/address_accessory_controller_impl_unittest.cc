@@ -382,6 +382,10 @@ TEST_F(AddressAccessoryControllerTest,
   EXPECT_EQ(controller()->GetSheetData(),
             AddressAccessorySheetDataBuilder(std::u16string())
                 .AddPlusAddressSection("https://foo.com", u"plus+foo@plus.plus")
+                .AppendFooterCommand(
+                    l10n_util::GetStringUTF16(
+                        IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+                    AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
                 .Build());
 }
 
@@ -400,6 +404,10 @@ TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesSection) {
   EXPECT_EQ(controller()->GetSheetData(),
             AddressAccessorySheetDataBuilder(std::u16string())
                 .AddPlusAddressSection("https://foo.com", u"plus+foo@plus.plus")
+                .AppendFooterCommand(
+                    l10n_util::GetStringUTF16(
+                        IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+                    AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
                 .Build());
 }
 

@@ -9,6 +9,9 @@
     <message name="IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID" desc="The text of the link in the address sheet that opens the bottom sheet with all user plus addresses." translateable="false">
       Select Plus Address placeholder
     </message>
+    <message name="IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID" desc="The text of the link in the address sheet that opens the plus address management web page." translateable="false">
+      Manage Plus Addresses placeholder
+    </message>
 
     <!-- Creation dialog strings -->
     <!-- Android strings -->

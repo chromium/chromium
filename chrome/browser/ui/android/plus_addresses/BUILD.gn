@@ -5,6 +5,16 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+android_library("plus_addresses_helper_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/plus_addresses/utils/PlusAddressesHelper.java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/android:chrome_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
@@ -69,6 +79,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetUIInfo.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/utils/PlusAddressesHelper.java",
   ]
 }
 

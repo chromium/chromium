@@ -18,6 +18,7 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
+#include "chrome/browser/ui/android/plus_addresses/plus_addresses_helper.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/address_data_manager.h"
@@ -169,6 +170,10 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
       }
       return;
     }
+    case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET: {
+      plus_addresses::ShowManagePlusAddressesPage(GetWebContents());
+      return;
+    }
     default:
       NOTREACHED() << "Unhandled selected action: "
                    << static_cast<int>(selected_action);
@@ -295,6 +300,14 @@ AddressAccessoryControllerImpl::CreateManageAddressesFooter() const {
         FooterCommand(l10n_util::GetStringUTF16(
                           IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
                       AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET));
+  }
+
+  if (plus_profiles_provider_ &&
+      !plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
+    commands.emplace_back(
+        FooterCommand(l10n_util::GetStringUTF16(
+                          IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+                      AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET));
   }
   return commands;
 }

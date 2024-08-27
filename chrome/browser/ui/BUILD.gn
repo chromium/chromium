@@ -889,6 +889,8 @@ static_library("ui") {
       "android/plus_addresses/plus_address_creation_controller_android.h",
       "android/plus_addresses/plus_address_creation_view_android.cc",
       "android/plus_addresses/plus_address_creation_view_android.h",
+      "android/plus_addresses/plus_addresses_helper.cc",
+      "android/plus_addresses/plus_addresses_helper.h",
       "android/safe_browsing/password_reuse_dialog_view_android.cc",
       "android/safe_browsing/password_reuse_dialog_view_android.h",
       "android/simple_message_box_android.cc",

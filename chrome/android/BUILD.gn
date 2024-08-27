@@ -906,6 +906,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/edge_to_edge/internal:java",
       "//chrome/browser/ui/android/fast_checkout/internal:java",
       "//chrome/browser/ui/android/hats/internal:java",
+      "//chrome/browser/ui/android/plus_addresses:plus_addresses_helper_java",
       "//chrome/browser/ui/android/webid/internal:java",
       "//components/android_autofill/browser:java",
       "//components/autofill/android:payments_autofill_java",
