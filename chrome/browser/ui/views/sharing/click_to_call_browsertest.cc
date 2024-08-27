@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
-  ui::MenuModel* sub_menu_model = nullptr;
+  raw_ptr<ui::MenuModel> sub_menu_model = nullptr;
   size_t device_id = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
                                              &sub_menu_model, &device_id));
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
-  ui::MenuModel* sub_menu_model = nullptr;
+  raw_ptr<ui::MenuModel> sub_menu_model = nullptr;
   size_t device_id = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
                                              &sub_menu_model, &device_id));

@@ -2002,7 +2002,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInProfileEntryPresent) {
     ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
     ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
     // With at least two secondary profiles, they are displayed in a submenu.
-    ui::MenuModel* model = nullptr;
+    raw_ptr<ui::MenuModel> model = nullptr;
     size_t index = 0;
     ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                                &model, &index));
@@ -2078,7 +2078,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
       CreateContextMenuMediaTypeNone(url, url));
 
   // Verify that the size of the menu is correct.
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   size_t index = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                              &model, &index));
@@ -2136,7 +2136,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenProfileNoneReferrer) {
   auto menu = CreateContextMenuFromParams(params);
 
   // Verify that the Open in Profile option is shown.
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   size_t index = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                              &model, &index));

@@ -1697,7 +1697,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
 
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
@@ -1728,7 +1728,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
 
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
@@ -1758,7 +1758,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
 
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
@@ -1787,7 +1787,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
 
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
@@ -1820,7 +1820,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
 
@@ -1848,7 +1848,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
 
@@ -1874,7 +1874,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchIssuesProcessPrewarming) {
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
 
@@ -1900,7 +1900,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
 
@@ -1947,7 +1947,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
 
@@ -1981,7 +1981,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   size_t index = 0;
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
 
