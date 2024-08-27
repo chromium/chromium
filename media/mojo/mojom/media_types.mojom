@@ -468,8 +468,7 @@ struct MailboxVideoFrameData {
 
 // This defines video frame data stored in texture shared images.
 struct SharedImageVideoFrameData {
-  // Size should be no greater than media::VideoFrame::kMaxPlanes.
-  array<gpu.mojom.ExportedSharedImage> shared_images;
+  gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
   uint32 texture_target;
   // |ycbcr_data| is present on Android (and sometimes Fuchsia) when the

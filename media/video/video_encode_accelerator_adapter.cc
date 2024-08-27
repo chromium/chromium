@@ -1201,7 +1201,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(
           kUseMappableSIForVideoEncoderAcceleratorAdapter)) {
-    gpu_frame->shared_image(0)->SetColorSpaceOnNativeBuffer(
+    gpu_frame->shared_image()->SetColorSpaceOnNativeBuffer(
         mapped_gpu_frame->ColorSpace());
   } else {
     gpu_frame->GetGpuMemoryBuffer()->SetColorSpace(
