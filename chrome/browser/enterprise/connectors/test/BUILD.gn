@@ -91,7 +91,6 @@ source_set("test_support") {
     sources += [ "ash/management_context_mixin_ash.cc" ]
 
     deps += [
-      "//chrome/browser/ash",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/core:test_support",
     ]

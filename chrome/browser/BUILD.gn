@@ -9106,7 +9106,6 @@ static_library("test_support") {
     ]
     configs += [ "//build/config/linux/dbus" ]
     deps += [
-      "//chrome/browser/ash",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/login/oobe_quick_start",
       "//chrome/test:test_support_ui",

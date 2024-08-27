@@ -407,7 +407,6 @@ source_set("browser_tests") {
       "//ash/components/arc:prefs",
       "//ash/components/arc/session:session",
       "//chrome/browser/apps/app_service/app_icon",
-      "//chrome/browser/ash",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/arc/session",
       "//chrome/browser/ash/crostini:test_support",
@@ -538,7 +537,6 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash",
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/settings",
       "//chrome/browser/ash/settings:test_support",

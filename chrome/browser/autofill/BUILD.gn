@@ -258,7 +258,6 @@ if (!is_android) {
 
     if (is_chromeos_ash && enable_extensions) {
       deps += [
-        "//chrome/browser/ash",
         "//chrome/browser/ash/accessibility",
         "//chrome/browser/ash/accessibility:test_support",
         "//extensions/browser:test_support",

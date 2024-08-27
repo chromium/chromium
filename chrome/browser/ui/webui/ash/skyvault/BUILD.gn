@@ -45,7 +45,6 @@ source_set("browser_tests") {
   deps = [
     ":skyvault",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ui",
     "//chrome/common",

@@ -208,8 +208,9 @@ js2gtest("accessibility_tests") {
     deps = [
       "//ash",
       "//base",
-      "//chrome/browser/ash",
+      "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/system_web_apps",
       "//chrome/common",
     ]
   }

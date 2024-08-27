@@ -186,8 +186,9 @@ test_deps = [
   "//ash",
   "//ash/keyboard/ui",
   "//base",
-  "//chrome/browser/ash",
+  "//chrome/browser/ash/accessibility",
   "//chrome/browser/ash/crosapi",
+  "//chrome/browser/ash/system_web_apps",
   "//chrome/common",
   "//chromeos",
 ]

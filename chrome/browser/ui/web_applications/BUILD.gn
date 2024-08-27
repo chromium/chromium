@@ -112,7 +112,6 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/file_manager:test_support",
       "//chrome/browser/ash/system_web_apps/test_support",

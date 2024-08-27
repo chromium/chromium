@@ -253,7 +253,9 @@ js2gtest("accessibility_common_extjs_tests") {
     "//ash",
     "//ash/keyboard/ui",
     "//base",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/system_web_apps",
     "//chrome/common",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

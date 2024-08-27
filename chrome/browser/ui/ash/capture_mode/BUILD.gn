@@ -23,7 +23,6 @@ static_library("capture_mode") {
     "//chrome/browser:browser_process",
     "//chrome/browser:primitives",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
