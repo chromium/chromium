@@ -2060,7 +2060,6 @@ if (!is_android) {
       "//components/safe_browsing/content/renderer/phishing_classifier",
       "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
-      "//components/safe_browsing/core/browser/db:metadata_proto",
       "//components/safe_browsing/core/browser/db:test_database_manager",
       "//components/safe_browsing/core/browser/db:v4_database",
       "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",

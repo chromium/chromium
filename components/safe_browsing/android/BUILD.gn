@@ -119,7 +119,6 @@ static_library("safe_browsing_api_handler_util") {
 
   deps = [
     "//base",
-    "//components/safe_browsing/core/browser/db:metadata_proto",
     "//components/safe_browsing/core/browser/db:util",
   ]
 }
@@ -180,7 +179,6 @@ source_set("unit_tests_mobile") {
     "//components/resources:components_resources_grit",
     "//components/safe_browsing/android:realtimeallowlist_proto",
     "//components/safe_browsing/core/browser/db:database_manager",
-    "//components/safe_browsing/core/browser/db:metadata_proto",
     "//components/safe_browsing/core/browser/db:unit_tests_shared",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_test_util",
