@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+component("uri_template") {
+  sources = [
+    "uri_template.cc",
+    "uri_template.h",
+  ]
+  visibility = [
+    ":uri_template_tests",
+    "//net:net_public_deps",
+    "//net/third_party/quiche",
+  ]
+  defines = [ "IS_URI_TEMPLATE_IMPL" ]
+  public_deps = [ "//base" ]
+}
+
+source_set("uri_template_tests") {
+  testonly = true
+  sources = [ "uri_template_test.cc" ]
+  deps = [
+    ":uri_template",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+fuzzer_test("net_uri_template_fuzzer") {
+  sources = [ "uri_template_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//net",
+    "//net:net_fuzzer_test_support",
+  ]
+  dict = "//net/data/fuzzer_dictionaries/net_uri_template_fuzzer.dict"
+}

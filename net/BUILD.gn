@@ -1794,11 +1794,11 @@ source_set("net_public_deps") {
   public_deps = [
     ":buildflags",
     ":net_nqe_proto",
-    ":uri_template",
     "//base",
     "//crypto",
     "//net/third_party/quiche",
     "//net/third_party/quiche:net_quic_test_tools_proto",
+    "//net/third_party/uri_template",
     "//net/traffic_annotation",
     "//third_party/boringssl",
     "//url",
@@ -1807,19 +1807,6 @@ source_set("net_public_deps") {
   if (chrome_root_store_supported) {
     public_deps += [ "//net/cert:root_store_proto_lite" ]
   }
-}
-
-component("uri_template") {
-  sources = [
-    "third_party/uri_template/uri_template.cc",
-    "third_party/uri_template/uri_template.h",
-  ]
-  visibility = [
-    ":net_public_deps",
-    "//net/third_party/quiche",
-  ]
-  defines = [ "IS_URI_TEMPLATE_IMPL" ]
-  public_deps = [ "//base" ]
 }
 
 grit("net_resources") {
@@ -2869,7 +2856,6 @@ test("net_unittests") {
     "test/embedded_test_server/http_request_unittest.cc",
     "test/embedded_test_server/http_response_unittest.cc",
     "test/run_all_unittests.cc",
-    "third_party/uri_template/uri_template_test.cc",
     "tools/content_decoder_tool/content_decoder_tool.cc",
     "tools/content_decoder_tool/content_decoder_tool.h",
     "tools/content_decoder_tool/content_decoder_tool_unittest.cc",
@@ -2980,6 +2966,7 @@ test("net_unittests") {
     "//net/http:transport_security_state_unittest_data",
     "//net/http:transport_security_state_unittest_data_default",
     "//net/third_party/quiche:quiche_tests",
+    "//net/third_party/uri_template:uri_template_tests",
     "//net/tools/huffman_trie:huffman_trie_generator_sources",
     "//testing/gmock",
     "//testing/gtest",
@@ -4001,16 +3988,6 @@ fuzzer_test("net_quic_session_pool_fuzzer") {
     "//net",
     "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
   ]
-}
-
-fuzzer_test("net_uri_template_fuzzer") {
-  sources = [ "third_party/uri_template/uri_template_fuzzer.cc" ]
-  deps = [
-    ":net_fuzzer_test_support",
-    "//base",
-    "//net",
-  ]
-  dict = "data/fuzzer_dictionaries/net_uri_template_fuzzer.dict"
 }
 
 if (is_linux || is_chromeos) {

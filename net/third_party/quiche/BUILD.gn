@@ -80,7 +80,7 @@ component("quiche") {
   all_dependent_configs = [ ":quiche_config" ]
 
   deps = [
-    "//net:uri_template",
+    "//net/third_party/uri_template",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib",
   ]
