@@ -13603,21 +13603,6 @@
             ]
         }
     ],
-    "MacImmersiveFullscreen": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ImmersiveFullscreen"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacWebContentsOcclusionV2": [
         {
             "platforms": [
