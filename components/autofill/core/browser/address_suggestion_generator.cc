@@ -1186,7 +1186,10 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
         suggestions.back().icon = Suggestion::Icon::kAccount;
       }
     }
-    if (profile && profile->IsAccountProfile() &&
+    // This is intentionally not using `profile->IsAccountProfile()` because the
+    // IPH should only be shown for non-H/W profiles.
+    if (profile &&
+        profile->record_type() == AutofillProfile::RecordType::kAccount &&
         profile->initial_creator_id() !=
             AutofillProfile::kInitialCreatorOrModifierChrome) {
       suggestions.back().feature_for_iph =
