@@ -20,8 +20,7 @@ using CreateMemoryRegionsMapFunction =
     std::unique_ptr<base::NativeUnwinderAndroidMemoryRegionsMap> (*)();
 using CreateNativeUnwinderFunction =
     std::unique_ptr<base::Unwinder> (*)(base::NativeUnwinderAndroidMapDelegate*,
-                                        uintptr_t,
-                                        bool);
+                                        uintptr_t);
 using CreateLibunwindstackUnwinderFunction =
     std::unique_ptr<base::Unwinder> (*)();
 

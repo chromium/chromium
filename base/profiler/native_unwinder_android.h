@@ -59,8 +59,7 @@ class NativeUnwinderAndroid : public Unwinder,
   // |map_delegate| is used to manage memory used by libunwindstack. It must
   // outlives this object.
   NativeUnwinderAndroid(uintptr_t exclude_module_with_base_address,
-                        NativeUnwinderAndroidMapDelegate* map_delegate,
-                        bool is_java_name_hashing_enabled);
+                        NativeUnwinderAndroidMapDelegate* map_delegate);
   ~NativeUnwinderAndroid() override;
 
   NativeUnwinderAndroid(const NativeUnwinderAndroid&) = delete;
@@ -85,7 +84,6 @@ class NativeUnwinderAndroid : public Unwinder,
                     unwindstack::ArchEnum,
                     std::vector<Frame>* stack);
 
-  const bool is_java_name_hashing_enabled_;
   std::unique_ptr<unwindstack::DexFiles> dex_files_;
 
   const uintptr_t exclude_module_with_base_address_;

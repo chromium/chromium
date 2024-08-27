@@ -127,14 +127,8 @@ void ChromeContentGpuClient::PostCompositorThreadCreated(
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&tracing::TracingSamplerProfiler::
                                     CreateOnChildThreadWithCustomUnwinders,
-#if BUILDFLAG(IS_ANDROID)
-                                base::BindRepeating(
-                                    &CreateCoreUnwindersFactory,
-                                    /*is_java_name_hashing_enabled=*/false)));
-#else
                                 base::BindRepeating(
                                     &CreateCoreUnwindersFactory)));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

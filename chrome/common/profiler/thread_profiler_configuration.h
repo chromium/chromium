@@ -60,10 +60,6 @@ class ThreadProfilerConfiguration {
   void AppendCommandLineSwitchForChildProcess(
       base::CommandLine* command_line) const;
 
-#if BUILDFLAG(IS_ANDROID)
-  bool IsJavaNameHashingEnabled() const;
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // True if the thread pool is used for unwinding.
   bool IsThreadPoolEnabledForCurrentProcess() const;
 

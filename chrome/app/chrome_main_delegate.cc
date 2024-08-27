@@ -1212,12 +1212,7 @@ void ChromeMainDelegate::SetupTracing() {
   // sampler profiler because it can support java frames which is essential for
   // the main thread.
   base::RepeatingCallback tracing_factory =
-#if BUILDFLAG(IS_ANDROID)
-      base::BindRepeating(&CreateCoreUnwindersFactory,
-                          /*is_java_name_hashing_enabled=*/false);
-#else
       base::BindRepeating(&CreateCoreUnwindersFactory);
-#endif  // BUILDFLAG(IS_ANDROID)
   tracing::TracingSamplerProfiler::UnwinderType unwinder_type =
       tracing::TracingSamplerProfiler::UnwinderType::kCustomAndroid;
 #if BUILDFLAG(IS_ANDROID)

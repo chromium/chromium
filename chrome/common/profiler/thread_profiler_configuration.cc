@@ -160,12 +160,6 @@ void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-bool ThreadProfilerConfiguration::IsJavaNameHashingEnabled() const {
-  return false;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 bool ThreadProfilerConfiguration::IsThreadPoolEnabledForCurrentProcess() const {
   if (absl::holds_alternative<ChildProcessConfiguration>(configuration_)) {
     return base::CommandLine::ForCurrentProcess()->HasSwitch(

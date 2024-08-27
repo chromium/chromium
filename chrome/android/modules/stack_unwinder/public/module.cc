@@ -58,10 +58,9 @@ Module::CreateMemoryRegionsMap() {
 
 std::unique_ptr<base::Unwinder> Module::CreateNativeUnwinder(
     base::NativeUnwinderAndroidMapDelegate* map_delegate,
-    uintptr_t exclude_module_with_base_address,
-    bool is_java_name_hashing_enabled) {
-  return create_native_unwinder_(map_delegate, exclude_module_with_base_address,
-                                 is_java_name_hashing_enabled);
+    uintptr_t exclude_module_with_base_address) {
+  return create_native_unwinder_(map_delegate,
+                                 exclude_module_with_base_address);
 }
 
 std::unique_ptr<base::Unwinder> Module::CreateLibunwindstackUnwinder() {
