@@ -24,10 +24,12 @@
 class Profile;
 class TabGroup;
 
+namespace tabs {
+class TabModel;
+}
+
 namespace syncer {
-
 class DeviceInfoTracker;
-
 }
 
 namespace tab_groups {
@@ -149,13 +151,15 @@ class SavedTabGroupKeyedService : public KeyedService,
       const SavedTabGroup* const saved_group,
       const gfx::Range& tab_range);
 
-  // Connects all SavedTabGroupTabs from a SavedTabGroup to their respective
-  // WebContents that will open.
-  std::map<content::WebContents*, base::Uuid>
-  GetWebContentsToTabGuidMappingForOpening(
+  // Opens a saved tab group into the tabstrip of the |browser| and returns a
+  // mapping of the tabs to the SavedTabGroupTab. This method does not check
+  // that the browser is accepting of groups so this must be done by callers.
+  // This method does not check that the saved group is already open so that
+  // must be done by callers. This method does not check if the saved_group is
+  // part of the model, this must be done by callers.
+  std::map<tabs::TabModel*, base::Uuid> OpenSavedTabGroupAndGetTabToGuidMapping(
       Browser* browser,
-      const SavedTabGroup* const saved_group,
-      const base::Uuid& saved_group_guid);
+      const SavedTabGroup* const saved_group);
 
   // Helper function that adds the opened tabs obtained from calling
   // `GetWebContentsToTabGuidMappingForOpening` into a new tab group in the

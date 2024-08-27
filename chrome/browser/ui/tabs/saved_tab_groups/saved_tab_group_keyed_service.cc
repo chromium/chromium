@@ -264,19 +264,30 @@ std::optional<TabGroupId> SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   // If our tab group was not found in any tabstrip model, open the group in
   // this browser's tabstrip model.
-  std::map<content::WebContents*, base::Uuid> opened_web_contents_to_uuid =
-      GetWebContentsToTabGuidMappingForOpening(browser, saved_group,
-                                               saved_group_guid);
+  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping =
+      OpenSavedTabGroupAndGetTabToGuidMapping(browser, saved_group);
 
   // If no tabs were opened, then there's nothing to do.
-  if (opened_web_contents_to_uuid.empty()) {
+  if (tab_guid_mapping.empty()) {
     return std::nullopt;
   }
+
+  std::map<content::WebContents*, base::Uuid> contents_guid_mapping;
+  std::transform(
+      tab_guid_mapping.begin(), tab_guid_mapping.end(),
+      std::inserter(contents_guid_mapping, contents_guid_mapping.end()),
+      [](const std::pair<tabs::TabModel*, base::Uuid>& pair) {
+        // Transform the TabModel* to WebContents*
+        content::WebContents* web_contents = pair.first->contents();
+
+        // Return a pair with the transformed key and the same UUID value
+        return std::make_pair(web_contents, pair.second);
+      });
 
   // Take the opened tabs and move them into a TabGroup in the TabStrip. Link
   // the `tab_group_id` to `saved_group_guid` to stay up-to-date.
   TabGroupId tab_group_id = AddOpenedTabsToGroup(
-      browser->tab_strip_model(), opened_web_contents_to_uuid, *saved_group);
+      browser->tab_strip_model(), contents_guid_mapping, *saved_group);
 
   EventDetails event_details(TabGroupEvent::kTabGroupOpened);
   event_details.local_tab_group_id = tab_group_id;
@@ -608,20 +619,20 @@ SavedTabGroupKeyedService::GetWebContentsToTabGuidMappingForSavedGroup(
   return web_contents_map;
 }
 
-std::map<content::WebContents*, base::Uuid>
-SavedTabGroupKeyedService::GetWebContentsToTabGuidMappingForOpening(
+std::map<tabs::TabModel*, base::Uuid>
+SavedTabGroupKeyedService::OpenSavedTabGroupAndGetTabToGuidMapping(
     Browser* browser,
-    const SavedTabGroup* const saved_group,
-    const base::Uuid& saved_group_guid) {
-  std::map<content::WebContents*, base::Uuid> web_contents;
+    const SavedTabGroup* const saved_group) {
+  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
   for (const SavedTabGroupTab& saved_tab : saved_group->saved_tabs()) {
     if (!saved_tab.url().is_valid()) {
       continue;
     }
 
-    auto* navigation_handle = SavedTabGroupUtils::OpenTabInBrowser(
-        saved_tab.url(), browser, profile_,
-        WindowOpenDisposition::NEW_BACKGROUND_TAB);
+    content::NavigationHandle* navigation_handle =
+        SavedTabGroupUtils::OpenTabInBrowser(
+            saved_tab.url(), browser, profile_,
+            WindowOpenDisposition::NEW_BACKGROUND_TAB);
     content::WebContents* created_contents =
         navigation_handle ? navigation_handle->GetWebContents() : nullptr;
 
@@ -629,9 +640,13 @@ SavedTabGroupKeyedService::GetWebContentsToTabGuidMappingForOpening(
       continue;
     }
 
-    web_contents.emplace(created_contents, saved_tab.saved_tab_guid());
+    tabs::TabModel* tab =
+        browser->tab_strip_model()->GetTabForWebContents(created_contents);
+    CHECK(tab);
+
+    tab_guid_mapping.emplace(tab, saved_tab.saved_tab_guid());
   }
-  return web_contents;
+  return tab_guid_mapping;
 }
 
 const TabStripModel* SavedTabGroupKeyedService::GetTabStripModelWithTabGroupId(
