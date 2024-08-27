@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/error_message_view_controller.h"
 #include "chrome/browser/ui/views/payments/order_summary_view_controller.h"
@@ -107,7 +108,9 @@ bool PaymentRequestDialogView::ShouldShowCloseButton() const {
 }
 
 void PaymentRequestDialogView::ShowDialog() {
-  constrained_window::ShowWebModalDialogViews(this, request_->web_contents());
+  views::Widget* widget = constrained_window::ShowWebModalDialogViews(
+      this, request_->web_contents());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 }
 
 void PaymentRequestDialogView::CloseDialog() {
