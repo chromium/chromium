@@ -2331,7 +2331,9 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
 
   link_to_text_menu_observer_ = LinkToTextMenuObserver::Create(
       this,
-      content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_));
+      content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+      // Browser can sometimes be undefined in tests.
+      GetBrowser() ? GetBrowser()->GetFeatures().toast_controller() : nullptr);
   if (link_to_text_menu_observer_) {
     observers_.AddObserver(link_to_text_menu_observer_.get());
     link_to_text_menu_observer_->InitMenu(params_);

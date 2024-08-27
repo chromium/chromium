@@ -39,4 +39,10 @@ void ToastService::RegisterToasts(
       ToastId::kImageCopied,
       ToastSpecification::Builder(kCopyMenuIcon, IDS_IMAGE_COPIED_TOAST_BODY)
           .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kLinkToHighlightCopied,
+      ToastSpecification::Builder(kLinkChromeRefreshIcon,
+                                  IDS_LINK_COPIED_TO_HIGHLIGHT_TOAST_BODY)
+          .Build());
 }

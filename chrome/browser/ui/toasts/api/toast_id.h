@@ -10,7 +10,8 @@ enum class ToastId {
   kLinkCopied = 0,
   kMin = kLinkCopied,
   kImageCopied = 1,
-  kMax = kImageCopied
+  kLinkToHighlightCopied = 2,
+  kMax = kLinkToHighlightCopied
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_API_TOAST_ID_H_
