@@ -218,7 +218,7 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
         DCHECK(server_endpoint.is_valid());
         pipe = isolated_connection_->Connect(std::move(server_endpoint));
 #else
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
 #endif
       }
       break;

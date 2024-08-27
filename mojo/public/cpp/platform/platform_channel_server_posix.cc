@@ -66,9 +66,7 @@ class ListenerImpl : public PlatformChannelServer::Listener,
         PlatformChannelEndpoint{PlatformHandle{std::move(socket)}});
   }
 
-  void OnFileCanWriteWithoutBlocking(int fd) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void OnFileCanWriteWithoutBlocking(int fd) override { NOTREACHED(); }
 
  private:
   void Stop() {

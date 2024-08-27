@@ -27,8 +27,7 @@ EnumTraits<mojo_base::mojom::ThreadType, base::ThreadType>::ToMojom(
     case base::ThreadType::kRealtimeAudio:
       return mojo_base::mojom::ThreadType::kRealtimeAudio;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojo_base::mojom::ThreadType::kBackground;
+  NOTREACHED();
 }
 
 // static

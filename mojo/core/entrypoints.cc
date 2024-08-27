@@ -22,9 +22,7 @@ mojo::core::Core* g_core;
 extern "C" {
 
 MojoResult MojoInitializeImpl(const struct MojoInitializeOptions* options) {
-  NOTREACHED_IN_MIGRATION()
-      << "Do not call MojoInitialize() as a Mojo Core embedder!";
-  return MOJO_RESULT_UNIMPLEMENTED;
+  NOTREACHED() << "Do not call MojoInitialize() as a Mojo Core embedder!";
 }
 
 MojoTimeTicks MojoGetTimeTicksNowImpl() {
@@ -355,9 +353,7 @@ MojoResult MojoQueryQuotaImpl(MojoHandle handle,
 }
 
 MojoResult MojoShutdownImpl(const MojoShutdownOptions* options) {
-  NOTREACHED_IN_MIGRATION()
-      << "Do not call MojoShutdown() as a Mojo Core embedder!";
-  return MOJO_RESULT_UNIMPLEMENTED;
+  NOTREACHED() << "Do not call MojoShutdown() as a Mojo Core embedder!";
 }
 
 MojoResult MojoSetDefaultProcessErrorHandlerImpl(

@@ -41,8 +41,7 @@ DataPipeProducer::DataSource::ReadResult StringDataSource::Read(
       buffer[copied_size] = data_view_[offset + copied_size];
     result.bytes_read = copyable_size;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    result.result = MOJO_RESULT_OUT_OF_RANGE;
+    NOTREACHED();
   }
   return result;
 }

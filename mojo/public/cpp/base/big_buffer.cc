@@ -133,8 +133,7 @@ const uint8_t* BigBuffer::data() const {
       // consumer is allowed to dereference this when |size()| is zero anyway.
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -147,8 +146,7 @@ size_t BigBuffer::size() const {
     case StorageType::kInvalidBuffer:
       return 0;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

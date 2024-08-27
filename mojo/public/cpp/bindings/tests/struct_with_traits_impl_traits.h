@@ -98,14 +98,12 @@ struct StructTraits<test::StructWithUnreachableTraitsDataView,
                     test::StructWithUnreachableTraitsImpl> {
  public:
   static bool ignore_me(const test::StructWithUnreachableTraitsImpl& input) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   static bool Read(test::StructWithUnreachableTraitsDataView data,
                    test::StructWithUnreachableTraitsImpl* out) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -197,8 +195,7 @@ struct UnionTraits<test::UnionWithTraitsDataView,
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

@@ -51,8 +51,7 @@ ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
       access_mode = MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ScopedSharedBufferHandle();
+      NOTREACHED();
   }
 
   base::subtle::ScopedPlatformSharedMemoryHandle handle =

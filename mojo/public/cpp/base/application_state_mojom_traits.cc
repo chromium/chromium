@@ -23,8 +23,7 @@ mojo_base::mojom::ApplicationState EnumTraits<
     case base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
       return mojo_base::mojom::ApplicationState::HAS_DESTROYED_ACTIVITIES;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojo_base::mojom::ApplicationState::UNKNOWN;
+  NOTREACHED();
 }
 
 // static

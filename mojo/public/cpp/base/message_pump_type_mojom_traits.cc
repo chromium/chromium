@@ -29,8 +29,7 @@ EnumTraits<mojo_base::mojom::MessagePumpType, base::MessagePumpType>::ToMojom(
       return mojo_base::mojom::MessagePumpType::kNsRunloop;
 #endif
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojo_base::mojom::MessagePumpType::kDefault;
+  NOTREACHED();
 }
 
 // static
