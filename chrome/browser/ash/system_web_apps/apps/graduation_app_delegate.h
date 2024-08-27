@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 
 class Profile;
+class PrefService;
 
 namespace web_app {
 struct WebAppInstallInfo;
@@ -25,6 +27,9 @@ class GraduationAppDelegate : public ash::SystemWebAppDelegate {
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInSearchAndShelf() const override;
   bool IsAppEnabled() const override;
+
+ private:
+  raw_ptr<PrefService> pref_service_ = nullptr;
 };
 
 }  // namespace ash::graduation
