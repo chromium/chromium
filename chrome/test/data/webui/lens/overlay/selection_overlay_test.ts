@@ -30,7 +30,7 @@ suite('SelectionOverlay', function() {
   let callbackRouterRemote: LensPageRemote;
   let objects: OverlayObject[];
 
-  setup(() => {
+  setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
     // attached to the DOM.
@@ -52,6 +52,10 @@ suite('SelectionOverlay', function() {
     // viewport.
     selectionOverlayElement.$.selectionOverlay.style.width = '100%';
     selectionOverlayElement.$.selectionOverlay.style.height = '100%';
+
+    // The first frame triggers our resize handler. Wait another frame for us
+    // the changes made by our resize handler to take effect.
+    await waitAfterNextRender(selectionOverlayElement);
     return waitAfterNextRender(selectionOverlayElement);
   });
 

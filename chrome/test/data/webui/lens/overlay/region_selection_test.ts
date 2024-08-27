@@ -39,7 +39,7 @@ suite('ManualRegionSelection', function() {
     });
   }
 
-  setup(() => {
+  setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
     // attached to the DOM.
@@ -63,6 +63,9 @@ suite('ManualRegionSelection', function() {
 
     metrics = fakeMetricsPrivate();
 
+    // The first frame triggers our resize handler. Wait another frame for us
+    // the changes made by our resize handler to take effect.
+    await waitAfterNextRender(selectionOverlayElement);
     return waitAfterNextRender(selectionOverlayElement);
   });
 

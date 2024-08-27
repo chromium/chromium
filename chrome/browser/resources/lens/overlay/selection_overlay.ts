@@ -42,6 +42,10 @@ import {toPercent} from './values_converter.js';
 // resized.
 const SCREENSHOT_FULLSIZE_MARGIN_PIXEL = 24;
 
+// The number of pixels the screenshot can differ from the viewport before
+// adding margins.
+const SCREENSHOT_RESIZE_TOLERANCE_PIXELS = 2;
+
 // The size of our custom cursor.
 export const CURSOR_SIZE_PIXEL = 32;
 
@@ -666,11 +670,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       cancelAnimationFrame(this.handleResizeRequestId);
     }
 
-    // We want to always have the most up to date overlay rect, since all
-    // children depend on it. This is safe to do since we are not calling
-    // getBoundingClientRect to calculate the rect.
-    this.updateSelectionOverlayRect();
-
     // Use requestAnimationFrame to only calculate the screenshot size once
     // a frame instead of multiple times per frame.
     this.handleResizeRequestId = requestAnimationFrame(() => {
@@ -688,10 +687,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       const screenshotHeight = this.$.backgroundImageCanvas.height;
       const screenshotWidth = this.$.backgroundImageCanvas.width;
 
-      const doesScreenshotFillContainer = newRect.width ===
-              Math.round(screenshotWidth / window.devicePixelRatio) &&
-          newRect.height ===
-              Math.round(screenshotHeight / window.devicePixelRatio);
+      const doesScreenshotFillContainer =
+          Math.abs(
+              newRect.width - (screenshotWidth / window.devicePixelRatio)) <=
+              SCREENSHOT_RESIZE_TOLERANCE_PIXELS &&
+          Math.abs(
+              newRect.height - (screenshotHeight / window.devicePixelRatio)) <=
+              SCREENSHOT_RESIZE_TOLERANCE_PIXELS;
 
       // Apply margins if the page is resized and not closing.
       const margins = !doesScreenshotFillContainer && !this.isClosing ?
@@ -728,6 +730,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         // the flash scrim is hidden on resize.
         this.onInitialFlashAnimationEnd();
       }
+
+      // Update our cached selection overlay rect to the new bounds.
+      this.updateSelectionOverlayRect();
 
       // TODO(b/361798599): Since we now pass selectionOverlayRect, we can use
       // polymer events to allow each client to resize their canvas once
@@ -891,10 +896,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private async screenshotDataReceived(screenshotBitmap: ImageBitmap) {
     renderScreenshot(this.$.backgroundImageCanvas, screenshotBitmap);
-    // Start the canvas as the same dimensions as the image. Our resize handler
-    // will adjust as needed.
-    this.canvasWidth = this.$.backgroundImageCanvas.width;
-    this.canvasHeight = this.$.backgroundImageCanvas.height;
+    // Start the canvas as the same dimensions as the viewport, since we are
+    // assuming the screenshot takes up the viewport dimensions. Our resize
+    // handler will adjust as needed.
+    this.canvasWidth = window.innerWidth;
+    this.canvasHeight = window.innerHeight;
 
     this.isScreenshotRendered = true;
     this.onImageRendered();
