@@ -14,6 +14,7 @@
   "breakages": [
     {
       "bad_change_id": "Id3987d4c3662d674fab99cc92e40efdd859015d2",
+      "good_change_id": "I722bc4085cf789b85d05b962f7e8d5a984f30653",
       "bugs": ["b/361725824"],
       "comment": "Faulty call from Impl to API through QuicException#getConnectionCloseSource."
     },
