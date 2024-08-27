@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/gl_surface_egl.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -711,7 +707,7 @@ void NativeViewGLSurfaceEGL::TraceSwapEvents(EGLuint64KHR oldFrameId) {
 
   const char* pending_symbols = valid_symbols.c_str();
   for (size_t i = 1; i < tracePairs.size(); i++) {
-    pending_symbols++;
+    UNSAFE_TODO(pending_symbols++);
     TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
         kSwapEventTraceCategories, pending_symbols, trace_id,
         tracePairs[i - 1].time);
