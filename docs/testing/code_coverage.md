@@ -15,8 +15,8 @@ Table of contents:
   * [Step 3 Create Indexed Profile](#step-3-create-indexed-profile)
   * [Step 4 Create Coverage Reports](#step-4-create-coverage-reports)
 - [Read The Artifact](#read-the-artifact)
-  * [HTML report]
-  * [lcov report]
+  * [HTML report](#html-report)
+  * [lcov report](#lcov-report)
 - [Contacts](#contacts)
 - [FAQ](#faq)
 
