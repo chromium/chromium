@@ -191,28 +191,30 @@ const char TestingProfile::kTestUserProfileDir[] = "Default";
 TestingProfile::TestingProfile() : TestingProfile(base::FilePath()) {}
 
 TestingProfile::TestingProfile(const base::FilePath& path)
-    : TestingProfile(path, nullptr) {}
+    : TestingProfile(path, /*delegate=*/nullptr) {}
 
 TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
-    : Profile(nullptr), profile_path_(path), delegate_(delegate) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!user_manager::UserManager::IsInitialized()) {
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
-  }
+    : TestingProfile(path,
+                     delegate,
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+                     /*extension_policy=*/nullptr,
 #endif
-
-  if (profile_path_.empty()) {
-    profile_path_ = base::CreateUniqueTempDirectoryScopedToTest();
-  }
-  Init(/*is_supervised_profile=*/false);
-  if (delegate_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TestingProfile::FinishInit, base::Unretained(this)));
-  } else {
-    FinishInit();
-  }
+                     /*prefs=*/nullptr,
+                     /*parent=*/nullptr,
+                     /*guest_session=*/false,
+                     /*allows_browser_windows=*/true,
+                     /*is_new_profile=*/false,
+                     /*is_supervised_profile=*/false,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                     /*is_main_profile=*/false,
+#endif
+                     /*policy_manager=*/{},
+                     /*policy_service=*/nullptr,
+                     /*testing_factories=*/{},
+                     /*profile_name=*/kDefaultProfileUserName,
+                     /*override_policy_connector_is_managed=*/std::nullopt,
+                     /*otr_profile_id=*/nullptr,
+                     /*url_loader_factory=*/nullptr) {
 }
 
 TestingProfile::TestingProfile(
