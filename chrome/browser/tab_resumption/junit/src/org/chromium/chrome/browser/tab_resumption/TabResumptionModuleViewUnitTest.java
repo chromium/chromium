@@ -385,7 +385,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertNull(mLastClickEntry);
         localTileView.performClick();
         Assert.assertEquals(1, mClickCount);
-        Assert.assertEquals(TAB_ID, mLastClickEntry.localTabId);
+        Assert.assertEquals(TAB_ID, mLastClickEntry.getLocalTabId());
     }
 
     @Test
@@ -467,7 +467,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertNull(mLastClickEntry);
         localTileView.performClick();
         Assert.assertEquals(1, mClickCount);
-        Assert.assertEquals(TAB_ID, mLastClickEntry.localTabId);
+        Assert.assertEquals(TAB_ID, mLastClickEntry.getLocalTabId());
     }
 
     @Test
@@ -623,7 +623,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         // Simulate click on a local Tab.
         tile1.performClick();
         Assert.assertEquals(1, mClickCount);
-        Assert.assertEquals(TAB_ID, mLastClickEntry.localTabId);
+        Assert.assertEquals(TAB_ID, mLastClickEntry.getLocalTabId());
 
         // Simulate click on a remote Tab.
         tile2.performClick();

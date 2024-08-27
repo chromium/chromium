@@ -335,7 +335,7 @@ public class TabResumptionModuleMediator {
                 mLocalTabClosureObserver.clear();
                 for (SuggestionEntry entry : mBundle.entries) {
                     if (entry.isLocalTab()) {
-                        Tab tab = mTabModel.getTabById(entry.localTabId);
+                        Tab tab = mTabModel.getTabById(entry.getLocalTabId());
                         assert tab != null; // isSuggestionValid() filtering ensures this.
                         mLocalTabClosureObserver.add(tab);
                     }
@@ -427,7 +427,7 @@ public class TabResumptionModuleMediator {
             // We already detect closure the of a suggested Local Tab, and perform refresh. Below
             // guards against glitches where a Local Tab somehow gets closed, or is in the closing
             // state, but still get suggested.
-            Tab tab = mTabModel.getTabById(entry.localTabId);
+            Tab tab = mTabModel.getTabById(entry.getLocalTabId());
             return tab != null && !tab.isClosing();
         }
 
