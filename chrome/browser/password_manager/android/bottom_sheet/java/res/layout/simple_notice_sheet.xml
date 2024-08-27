@@ -78,7 +78,7 @@ found in the LICENSE file.
                 android:minHeight="@dimen/pwd_migration_warning_button_height"
                 android:ellipsize="end"
                 android:singleLine="true"
-                style="@style/FilledButton.Flat"/>
+                style="@style/FilledButton"/>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

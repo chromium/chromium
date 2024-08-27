@@ -145,7 +145,7 @@ found in the LICENSE file.
                 android:gravity="center"
                 android:ellipsize="end"
                 android:singleLine="true"
-                style="@style/FilledButton.Flat" />
+                style="@style/FilledButton" />
 
             <!-- "Skip" button -->
             <org.chromium.ui.widget.ButtonCompat

@@ -15,9 +15,6 @@ found in the LICENSE file.
     <style name="FilledButtonThemeOverlay">
         <item name="android:buttonStyle">@style/FilledButton</item>
     </style>
-    <style name="FilledButtonThemeOverlay.Flat" tools:ignore="UnusedResources">
-        <item name="android:buttonStyle">@style/FilledButton.Flat</item>
-    </style>
     <style name="TextButtonThemeOverlay" tools:ignore="UnusedResources">
         <item name="android:buttonStyle">@style/TextButton</item>
     </style>
@@ -41,10 +38,6 @@ found in the LICENSE file.
         <item name="buttonTextColor">?attr/globalFilledButtonTextColor</item>
         <item name="buttonColor">?attr/globalFilledButtonBgColor</item>
         <item name="rippleColor">@color/filled_button_ripple_color</item>
-        <item name="buttonRaised">true</item>
-    </style>
-    <style name="FilledButton.Flat" tools:ignore="UnusedResources">
-        <item name="buttonRaised">false</item>
     </style>
     <style name="TextButton" parent="ButtonCompatBase" tools:ignore="UnusedResources">
         <item name="android:paddingStart">8dp</item>
@@ -58,7 +51,6 @@ found in the LICENSE file.
           the buttons with a solid background.
         -->
         <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
-        <item name="buttonRaised">false</item>
     </style>
     <style name="OutlinedButton" parent="TextButton" tools:ignore="UnusedResources">
         <item name="borderWidth">@dimen/button_outlined_border_width</item>

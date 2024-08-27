@@ -86,5 +86,5 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:singleLine="true"
         android:text="@string/done"
-        style="@style/FilledButton.Flat" />
+        style="@style/FilledButton" />
 </LinearLayout>

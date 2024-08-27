@@ -38,7 +38,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:text="@string/privacy_guide_start_button"
-            style="@style/FilledButton.Flat" />
+            style="@style/FilledButton" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/back_button"
@@ -70,7 +70,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:text="@string/next"
-            style="@style/FilledButton.Flat" />
+            style="@style/FilledButton" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/finish_button"
@@ -79,7 +79,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:text="@string/privacy_guide_finish_button"
-            style="@style/FilledButton.Flat" />
+            style="@style/FilledButton" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/done_button"
@@ -88,7 +88,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:text="@string/done"
-            style="@style/FilledButton.Flat" />
+            style="@style/FilledButton" />
 
     </LinearLayout>
 

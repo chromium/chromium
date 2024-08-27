@@ -43,7 +43,7 @@ found in the LICENSE file.
     <!-- Price tracking button -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/price_tracking_button"
-        style="@style/FilledButton.Flat"
+        style="@style/FilledButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/price_insights_content_price_tracking_button_content_description"

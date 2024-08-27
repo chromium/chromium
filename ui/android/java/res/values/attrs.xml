@@ -19,8 +19,6 @@ found in the LICENSE file.
         <attr name="rippleColor"/>
         <attr name="borderColor" format="color"/>
         <attr name="borderWidth" format="reference|dimension"/>
-        <!-- Whether the button is elevated. -->
-        <attr name="buttonRaised" format="boolean"/>
         <!-- The vertical inset of the button background drawable. -->
         <attr name="verticalInset"/>
 

@@ -37,5 +37,5 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_marginEnd="24dp"
         android:text="@string/data_sharing_invitation_dialog_accept"
-        style="@style/FilledButton.Flat" />
+        style="@style/FilledButton" />
 </LinearLayout>

@@ -333,14 +333,14 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             ModalDialogProperties.ModalDialogButtonSpec spec = buttonSpecList[i];
             int style = 0;
             if (numButtons == 1) {
-                style = R.style.FilledButton_Flat_Tonal_SingleButton;
+                style = R.style.FilledButton_Tonal_SingleButton;
             } else {
                 if (i == 0) {
-                    style = R.style.FilledButton_Flat_Tonal_TopButton;
+                    style = R.style.FilledButton_Tonal_TopButton;
                 } else if (i == numButtons - 1) {
-                    style = R.style.FilledButton_Flat_Tonal_BottomButton;
+                    style = R.style.FilledButton_Tonal_BottomButton;
                 } else {
-                    style = R.style.FilledButton_Flat_Tonal_MiddleButton;
+                    style = R.style.FilledButton_Tonal_MiddleButton;
                 }
             }
 

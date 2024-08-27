@@ -114,7 +114,7 @@ public final class DualControlLayout extends ViewGroup {
     private static @StyleRes int getButtonTheme(@ButtonType int buttonType) {
         switch (buttonType) {
             case ButtonType.PRIMARY_FILLED:
-                return R.style.FilledButtonThemeOverlay_Flat;
+                return R.style.FilledButtonThemeOverlay;
             case ButtonType.PRIMARY_TEXT:
             case ButtonType.SECONDARY_TEXT:
                 return R.style.TextButtonThemeOverlay;

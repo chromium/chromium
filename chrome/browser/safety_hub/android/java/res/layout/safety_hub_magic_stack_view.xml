@@ -80,6 +80,6 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        style="@style/FilledButton.Flat"/>
+        style="@style/FilledButton"/>
 
 </org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackView>

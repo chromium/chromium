@@ -16,4 +16,4 @@ found in the LICENSE file.
     android:layout_marginBottom="@dimen/account_selection_sheet_button_margin"
     android:ellipsize="end"
     android:singleLine="true"
-    style="@style/FilledButton.Flat"/>
+    style="@style/FilledButton"/>
