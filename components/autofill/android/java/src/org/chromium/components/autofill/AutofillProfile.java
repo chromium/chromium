@@ -24,7 +24,7 @@ import java.util.Map;
 @JNINamespace("autofill")
 public class AutofillProfile {
     private String mGUID;
-    private @Source int mSource;
+    private @RecordType int mRecordType;
     private Map<Integer, ValueWithStatus> mFields;
     private String mLabel;
     private String mLanguageCode;
@@ -54,7 +54,7 @@ public class AutofillProfile {
     /** Builder for the {@link AutofillProfile}. */
     public static final class Builder {
         private String mGUID = "";
-        private @Source int mSource = Source.LOCAL_OR_SYNCABLE;
+        private @RecordType int mRecordType = RecordType.LOCAL_OR_SYNCABLE;
         private ValueWithStatus mFullName = ValueWithStatus.EMPTY;
         private ValueWithStatus mCompanyName = ValueWithStatus.EMPTY;
         private ValueWithStatus mStreetAddress = ValueWithStatus.EMPTY;
@@ -74,8 +74,8 @@ public class AutofillProfile {
             return this;
         }
 
-        public Builder setSource(@Source int source) {
-            mSource = source;
+        public Builder setRecordType(@RecordType int recordType) {
+            mRecordType = recordType;
             return this;
         }
 
@@ -204,7 +204,7 @@ public class AutofillProfile {
         public AutofillProfile build() {
             return new AutofillProfile(
                     mGUID,
-                    mSource,
+                    mRecordType,
                     mFullName,
                     mCompanyName,
                     mStreetAddress,
@@ -227,17 +227,17 @@ public class AutofillProfile {
     @CalledByNative
     private AutofillProfile(
             @JniType("std::string") String guid,
-            @Source int source,
+            @RecordType int recordType,
             @JniType("std::string") String languageCode) {
         mGUID = guid;
-        mSource = source;
+        mRecordType = recordType;
         mLanguageCode = languageCode;
         mFields = new HashMap<>();
     }
 
     private AutofillProfile(
             String guid,
-            @Source int source,
+            @RecordType int recordType,
             ValueWithStatus fullName,
             ValueWithStatus companyName,
             ValueWithStatus streetAddress,
@@ -250,7 +250,7 @@ public class AutofillProfile {
             ValueWithStatus phoneNumber,
             ValueWithStatus emailAddress,
             String languageCode) {
-        this(guid, source, languageCode);
+        this(guid, recordType, languageCode);
         mFields.put(FieldType.NAME_FULL, fullName);
         mFields.put(FieldType.COMPANY_NAME, companyName);
         mFields.put(FieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
@@ -267,7 +267,7 @@ public class AutofillProfile {
     /* Builds an AutofillProfile that is an exact copy of the one passed as parameter. */
     public AutofillProfile(AutofillProfile profile) {
         mGUID = profile.getGUID();
-        mSource = profile.getSource();
+        mRecordType = profile.getRecordType();
 
         mFields = new HashMap<>(profile.mFields);
 
@@ -286,8 +286,8 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public @JniType("AutofillProfile::RecordType") @Source int getSource() {
-        return mSource;
+    public @JniType("AutofillProfile::RecordType") @RecordType int getRecordType() {
+        return mRecordType;
     }
 
     public String getLabel() {
@@ -424,8 +424,8 @@ public class AutofillProfile {
         mLabel = label;
     }
 
-    public void setSource(@Source int source) {
-        mSource = source;
+    public void setRecordType(@RecordType int recordType) {
+        mRecordType = recordType;
     }
 
     @CalledByNative

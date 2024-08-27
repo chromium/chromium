@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.autofill.Source;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -84,7 +84,7 @@ public class AutofillProfilesFragmentTest {
                     .build();
     private static final AutofillProfile sAccountProfile =
             AutofillProfile.builder()
-                    .setSource(Source.ACCOUNT)
+                    .setRecordType(RecordType.ACCOUNT)
                     .setFullName("Artik Doe")
                     .setCompanyName("Google")
                     .setStreetAddress("999 Fourth St")
@@ -404,7 +404,7 @@ public class AutofillProfilesFragmentTest {
 
         mHelper.setProfile(
                 AutofillProfile.builder()
-                        .setSource(Source.ACCOUNT)
+                        .setRecordType(RecordType.ACCOUNT)
                         .setFullName("Account Updated #0")
                         .setCompanyName("Google")
                         .setStreetAddress("111 Fourth St")
@@ -477,7 +477,7 @@ public class AutofillProfilesFragmentTest {
     public void testEditInvalidAccountProfile() throws Exception {
         mHelper.setProfile(
                 AutofillProfile.builder()
-                        .setSource(Source.ACCOUNT)
+                        .setRecordType(RecordType.ACCOUNT)
                         .setFullName("Account Updated #0")
                         .setCompanyName("Google")
                         .setStreetAddress("")

@@ -234,7 +234,7 @@ AutofillProfile CreateStarterProfile(
   std::string guid = Java_AutofillProfile_getGUID(env, jprofile);
   if (!existing_profile) {
     AutofillProfile::RecordType record_type =
-        Java_AutofillProfile_getSource(env, jprofile);
+        Java_AutofillProfile_getRecordType(env, jprofile);
     AddressCountryCode country_code =
         AddressCountryCode(Java_AutofillProfile_getCountryCode(env, jprofile));
     AutofillProfile profile = AutofillProfile(record_type, country_code);

@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
-import org.chromium.components.autofill.Source;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
@@ -106,7 +106,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                     .build();
     private static final AutofillProfile sAccountProfile =
             AutofillProfile.builder()
-                    .setSource(Source.ACCOUNT)
+                    .setRecordType(RecordType.ACCOUNT)
                     .setFullName("Seb Doe")
                     .setCompanyName("Google")
                     .setStreetAddress("111 First St")

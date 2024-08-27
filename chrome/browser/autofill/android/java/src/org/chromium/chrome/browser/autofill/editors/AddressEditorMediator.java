@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
-import org.chromium.components.autofill.Source;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -380,7 +380,7 @@ class AddressEditorMediator {
         if (willBeSavedInAccount()
                 && mUserFlow == CREATE_NEW_ADDRESS_PROFILE
                 && mPersonalDataManager.isCountryEligibleForAccountStorage(country)) {
-            profile.setSource(Source.ACCOUNT);
+            profile.setRecordType(RecordType.ACCOUNT);
         }
         // Country code and phone number are always required and are always collected from the
         // editor model.
@@ -424,7 +424,7 @@ class AddressEditorMediator {
             case UPDATE_EXISTING_ADDRESS_PROFILE:
                 return false;
             case SAVE_NEW_ADDRESS_PROFILE:
-                return mProfileToEdit.getSource() == Source.ACCOUNT;
+                return mProfileToEdit.getRecordType() == RecordType.ACCOUNT;
             case CREATE_NEW_ADDRESS_PROFILE:
                 return mPersonalDataManager.isEligibleForAddressAccountStorage();
         }
@@ -483,7 +483,7 @@ class AddressEditorMediator {
         // User edits an account address profile either from Chrome settings or upon form
         // submission.
         return mUserFlow == UPDATE_EXISTING_ADDRESS_PROFILE
-                && mProfileToEdit.getSource() == Source.ACCOUNT;
+                && mProfileToEdit.getRecordType() == RecordType.ACCOUNT;
     }
 
     private boolean isAddressSyncOn() {

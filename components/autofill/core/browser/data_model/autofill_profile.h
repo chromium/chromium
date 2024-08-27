@@ -43,7 +43,6 @@ class AutofillProfile : public AutofillDataModel {
  public:
   // Describes where the profile is stored and how it is synced.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: Source
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class RecordType {

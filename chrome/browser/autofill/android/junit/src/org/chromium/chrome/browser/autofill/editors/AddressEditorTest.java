@@ -85,7 +85,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
-import org.chromium.components.autofill.Source;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
@@ -154,7 +154,7 @@ public class AddressEditorTest {
                     .build();
     private static final AutofillProfile sAccountProfile =
             AutofillProfile.builder()
-                    .setSource(Source.ACCOUNT)
+                    .setRecordType(RecordType.ACCOUNT)
                     .setFullName("Seb Doe")
                     .setCompanyName("Google")
                     .setStreetAddress("111 First St")
@@ -1081,7 +1081,7 @@ public class AddressEditorTest {
         verify(mDelegate, times(0)).onCancel();
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
-        assertEquals(Source.ACCOUNT, address.getProfile().getSource());
+        assertEquals(RecordType.ACCOUNT, address.getProfile().getRecordType());
     }
 
     @Test
@@ -1233,7 +1233,7 @@ public class AddressEditorTest {
         verify(mDelegate, times(0)).onCancel();
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
-        assertEquals(Source.LOCAL_OR_SYNCABLE, address.getProfile().getSource());
+        assertEquals(RecordType.LOCAL_OR_SYNCABLE, address.getProfile().getRecordType());
     }
 
     @Test

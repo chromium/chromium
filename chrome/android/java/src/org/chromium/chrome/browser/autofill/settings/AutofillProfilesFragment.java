@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.autofill.Source;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -278,7 +278,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return false;
         }
-        if (profile.getSource() == Source.ACCOUNT) {
+        if (profile.getRecordType() == RecordType.ACCOUNT) {
             return false;
         }
         if (!ChromeFeatureList.isEnabled(
