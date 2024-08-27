@@ -418,6 +418,8 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   bool prevent_propagation_ = false;
   bool result_dirty_ = true;
 
+  int record_replay_created_node_id_ = 0;
+
   // Pointer back to the WebIDBCallbacks that holds a persistent reference to
   // this object.
   WebIDBCallbacks* web_callbacks_ = nullptr;
