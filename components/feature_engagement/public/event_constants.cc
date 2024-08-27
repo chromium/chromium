@@ -92,8 +92,8 @@ const char kPasswordManagerWidgetPromoClosed[] =
 const char kBlueDotPromoOverflowMenuShown[] =
     "blue_dot_promo_overflow_menu_shown";
 const char kBlueDotPromoSettingsShown[] = "blue_dot_promo_settings_shown";
-const char kBlueDotPromoOverflowMenuDismissed[] =
-    "blue_dot_promo_overflow_menu_dismissed";
+const char kBlueDotPromoOverflowMenuOpened[] =
+    "blue_dot_promo_overflow_menu_opened";
 const char kBlueDotPromoSettingsDismissed[] =
     "blue_dot_promo_settings_dismissed";
 const char kBlueDotOverflowMenuCustomized[] =

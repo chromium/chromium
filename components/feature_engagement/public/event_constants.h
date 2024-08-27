@@ -151,9 +151,8 @@ extern const char kBlueDotPromoOverflowMenuShown[];
 // row.
 extern const char kBlueDotPromoSettingsShown[];
 
-// The user has dismissed the blue dot default browser promo on the overflow
-// carousel.
-extern const char kBlueDotPromoOverflowMenuDismissed[];
+// The user has opened the overflow menu while the blue dot was showing.
+extern const char kBlueDotPromoOverflowMenuOpened[];
 
 // The user has dismissed the blue dot default browser promo on the settings
 // row.

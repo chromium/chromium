@@ -1890,8 +1890,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->trigger = EventConfig("blue_dot_promo_overflow_menu_shown",
                                   Comparator(ANY, 0), 360, 360);
-    // Stop showing blue dot promo if settings was tapped at least 3 times.
-    config->used = EventConfig("blue_dot_promo_overflow_menu_dismissed",
+    // Stop showing blue dot promo if overflow menu opened while blue dot was
+    // showing at least 3 times.
+    config->used = EventConfig("blue_dot_promo_overflow_menu_opened",
                                Comparator(LESS_THAN, 3), 360, 360);
     // Stop showing blue dot promo if default browser settings was opened at
     // least once.
@@ -1915,9 +1916,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     // Continue checking deprecated settings badge conditions to not show blue
     // dot at all if user would not have qualified for settings badge.
+    // TODO(crbug.com/362504599): Remove in July 2025.
     config->event_configs.insert(
         EventConfig("blue_dot_promo_settings_shown_new_session",
                     Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360));
+    // TODO(crbug.com/362504058): Remove in Sept 2025.
+    config->event_configs.insert(
+        EventConfig("blue_dot_promo_overflow_menu_dismissed",
+                    Comparator(LESS_THAN, 3), 360, 360));
 
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
