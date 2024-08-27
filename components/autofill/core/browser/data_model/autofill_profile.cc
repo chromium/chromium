@@ -5,10 +5,12 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <map>
 #include <memory>
 #include <ostream>
+#include <ranges>
 #include <set>
 #include <vector>
 
@@ -126,82 +128,26 @@ FieldType GetStorableTypeCollapsingGroups(FieldType type,
 // example, if the profile is going to fill ADDRESS_HOME_ZIP, it should
 // prioritize showing that over ADDRESS_HOME_STATE in the suggestion sublabel.
 int SpecificityForType(FieldType type, bool use_improved_labels_order) {
-  // TODO(crbug.com/40274514): Clean up after launch.
-  if (!use_improved_labels_order) {
-    switch (type) {
-      case ADDRESS_HOME_LINE1:
-        return 1;
-
-      case ADDRESS_HOME_LINE2:
-        return 2;
-
-      case EMAIL_ADDRESS:
-        return 3;
-
-      case PHONE_HOME_WHOLE_NUMBER:
-        return 4;
-
-      case NAME_FULL:
-        return 5;
-
-      case ADDRESS_HOME_ZIP:
-        return 6;
-
-      case ADDRESS_HOME_SORTING_CODE:
-        return 7;
-
-      case COMPANY_NAME:
-        return 8;
-
-      case ADDRESS_HOME_CITY:
-        return 9;
-
-      case ADDRESS_HOME_STATE:
-        return 10;
-
-      case ADDRESS_HOME_COUNTRY:
-        return 11;
-
-      default:
-        break;
-    }
-  } else {
-    switch (type) {
-      case ADDRESS_HOME_LINE1:
-        return 1;
-
-      case NAME_FULL:
-        return 2;
-
-      case EMAIL_ADDRESS:
-        return 3;
-
-      case PHONE_HOME_WHOLE_NUMBER:
-        return 4;
-
-      case ADDRESS_HOME_ZIP:
-        return 5;
-
-      case ADDRESS_HOME_SORTING_CODE:
-        return 6;
-
-      case COMPANY_NAME:
-        return 7;
-
-      case ADDRESS_HOME_CITY:
-        return 8;
-
-      case ADDRESS_HOME_STATE:
-        return 9;
-
-      case ADDRESS_HOME_COUNTRY:
-        return 10;
-
-      default:
-        break;
-    }
+  // TODO(crbug.com/40274514): Clean up after launch. To make `kDefaultOrder`
+  // and `kImprovedOrder` have the same size/type, an `EMPTY_TYPE` dummy value
+  // is added to the end of `kImprovedOrder`. It can be removed together with
+  // the CHECK() after launch.
+  static constexpr auto kDefaultOrder =
+      std::to_array({ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, EMAIL_ADDRESS,
+                     PHONE_HOME_WHOLE_NUMBER, NAME_FULL, ADDRESS_HOME_ZIP,
+                     ADDRESS_HOME_SORTING_CODE, COMPANY_NAME, ADDRESS_HOME_CITY,
+                     ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY});
+  static constexpr auto kImprovedOrder =
+      std::to_array({ADDRESS_HOME_LINE1, NAME_FULL, EMAIL_ADDRESS,
+                     PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_ZIP,
+                     ADDRESS_HOME_SORTING_CODE, COMPANY_NAME, ADDRESS_HOME_CITY,
+                     ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY, EMPTY_TYPE});
+  CHECK_NE(type, EMPTY_TYPE);
+  const auto& order =
+      use_improved_labels_order ? kImprovedOrder : kDefaultOrder;
+  if (auto it = std::ranges::find(order, type); it != order.end()) {
+    return it - order.begin();
   }
-
   // The priority of other types is arbitrary, but deterministic.
   return 100 + type;
 }
