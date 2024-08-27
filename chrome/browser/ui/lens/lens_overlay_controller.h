@@ -619,6 +619,17 @@ class LensOverlayController : public LensSearchboxClient,
       const SkBitmap& bitmap,
       const std::vector<gfx::Rect>& bounds);
 
+  // Process the bitmap and creates all necessary data to initialize the
+  // overlay. Happens on a separate thread to prevent main thread from hanging.
+  void CreateInitializationData(const SkBitmap& screenshot,
+                                const std::vector<gfx::Rect>& all_bounds);
+
+  // Called after creating the RGB bitmap and we are back on the main thread.
+  void ContinueCreateInitializationData(
+      const SkBitmap& screenshot,
+      const std::vector<gfx::Rect>& all_bounds,
+      SkBitmap rgb_screenshot);
+
   // Adds bounding boxes to the initialization data.
   void AddBoundingBoxesToInitializationData(
       const std::vector<gfx::Rect>& bounds);
@@ -637,6 +648,10 @@ class LensOverlayController : public LensSearchboxClient,
   // CloseUISync. Those methods also reset state external to
   // LensOverlayController.
   void CloseUIPart2(lens::LensOverlayDismissalSource dismissal_source);
+
+  // Initializes all parts of our UI and starts the query flow.
+  // Runs once the overlay WebUI and initialization data are ready.
+  void InitializeOverlay();
 
   // Initializes the overlay UI after it has been created with data fetched
   // before its creation.
