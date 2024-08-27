@@ -3146,6 +3146,24 @@
             ]
         }
     ],
+    "BackgroundTabLoadingFromPerformanceManager": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BackgroundTabLoadingFromPerformanceManager"
+                    ]
+                }
+            ]
+        }
+    ],
     "BatchNativeEventsInMessagePumpEpoll": [
         {
             "platforms": [

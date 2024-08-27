@@ -412,6 +412,29 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   graph()->RemovePageNodeObserver(&obs);
 }
 
+TEST_F(PageNodeImplTest, SetMainFrameRestoredState) {
+  const GURL kUrl("http://www.example.org");
+  auto page = CreateNode<PageNodeImpl>();
+  const PageNode* raw_page_node = page.get();
+  EXPECT_EQ(page->GetNotificationPermissionStatus(), std::nullopt);
+
+  MockObserver obs;
+  graph()->AddPageNodeObserver(&obs);
+
+  EXPECT_CALL(obs, OnMainFrameUrlChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  page->SetMainFrameRestoredState(kUrl,
+                                  /* notification_permission_status=*/blink::
+                                      mojom::PermissionStatus::GRANTED);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
+  EXPECT_EQ(page->GetMainFrameUrl(), kUrl);
+  EXPECT_EQ(page->GetNotificationPermissionStatus(),
+            blink::mojom::PermissionStatus::GRANTED);
+
+  graph()->RemovePageNodeObserver(&obs);
+}
+
 TEST_F(PageNodeImplTest, PublicInterface) {
   auto process_node = CreateNode<ProcessNodeImpl>();
   auto page_node = CreateNode<PageNodeImpl>();

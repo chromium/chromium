@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/time/default_tick_clock.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -36,6 +37,12 @@ PageNodeImpl::PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
           initial_properties.Has(PagePropertyFlag::kHasPictureInPicture)),
       is_off_the_record_(
           initial_properties.Has(PagePropertyFlag::kIsOffTheRecord)) {
+  // The `PageNodeImpl` creation hook is before the `WebContents`' visible or
+  // committed url can be set, so the initial main frame URL is always empty.
+  // TODO(crbug.com/40121561): Remove `visible_url` from the constructor in M132
+  // if no issues are found with this CHECK.
+  CHECK(main_frame_url_.value().is_empty(), base::NotFatalUntil::M132);
+
   // Nodes are created on the UI thread, then accessed on the PM sequence.
   // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
   // on the PM sequence.
@@ -325,6 +332,15 @@ void PageNodeImpl::OnAboutToBeDiscarded(base::WeakPtr<PageNode> new_page_node) {
   for (auto& observer : GetObservers()) {
     observer.OnAboutToBeDiscarded(this, new_page_node.get());
   }
+}
+
+void PageNodeImpl::SetMainFrameRestoredState(
+    const GURL& url,
+    blink::mojom::PermissionStatus notification_permission_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(main_frame_url_.value().is_empty());
+  notification_permission_status_ = notification_permission_status;
+  main_frame_url_.SetAndMaybeNotify(this, url);
 }
 
 void PageNodeImpl::OnMainFrameNavigationCommitted(

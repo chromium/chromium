@@ -23,8 +23,7 @@ namespace performance_manager {
 
 namespace policies {
 
-using PageNodeAndNotificationPermission =
-    BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission;
+using PageNodeData = BackgroundTabLoadingPolicy::PageNodeData;
 
 namespace {
 
@@ -129,14 +128,12 @@ TEST_F(BackgroundTabLoadingPolicyTest,
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
       page_nodes;
-  std::vector<PageNodeAndNotificationPermission> to_load;
+  std::vector<PageNodeData> to_load;
 
   // Create vector of PageNode to restore.
   for (int i = 0; i < 4; i++) {
     page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
-    PageNodeAndNotificationPermission page_node_and_notification_permission(
-        page_nodes.back().get()->GetWeakPtr(), false);
-    to_load.push_back(page_node_and_notification_permission);
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
     EXPECT_CALL(*loader(), LoadPageNode(to_load.back().page_node.get()));
 
     // Mark the PageNode as a tab as this is a requirement to pass it to
@@ -160,14 +157,13 @@ TEST_F(BackgroundTabLoadingPolicyTest,
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
       page_nodes;
-  std::vector<PageNodeAndNotificationPermission> to_load;
+  std::vector<PageNodeData> to_load;
 
   // Create vector of PageNode to restore.
   for (int i = 0; i < 4; i++) {
     page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
-    PageNodeAndNotificationPermission page_node_and_notification_permission(
-        page_nodes.back().get()->GetWeakPtr(), true);
-    to_load.push_back(page_node_and_notification_permission);
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr(), GURL(),
+                         blink::mojom::PermissionStatus::GRANTED);
     EXPECT_CALL(*loader(), LoadPageNode(to_load.back().page_node.get()));
 
     // Mark the PageNode as a tab as this is a requirement to pass it to
@@ -191,14 +187,12 @@ TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
       page_nodes;
-  std::vector<PageNodeAndNotificationPermission> to_load;
+  std::vector<PageNodeData> to_load;
 
   // Create vector of PageNode to restore.
   for (int i = 0; i < 4; i++) {
     page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
-    PageNodeAndNotificationPermission page_node_and_notification_permission(
-        page_nodes.back().get()->GetWeakPtr(), false);
-    to_load.push_back(page_node_and_notification_permission);
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
 
     // Mark the PageNode as a tab as this is a requirement to pass it to
     // ScheduleLoadForRestoredTabs().
@@ -245,19 +239,15 @@ TEST_F(BackgroundTabLoadingPolicyTest, LoadingStateLoadedBusy) {
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       page_node(CreateNode<performance_manager::PageNodeImpl>());
 
-  PageNodeAndNotificationPermission page_node_and_notification_permission(
-      page_node.get()->GetWeakPtr(), false);
-  std::vector<PageNodeAndNotificationPermission>
-      page_node_and_notification_permission_to_load_vector{
-          page_node_and_notification_permission};
+  std::vector<PageNodeData> to_load{
+      PageNodeData{page_node.get()->GetWeakPtr()}};
 
   // Mark the PageNode as a tab as this is a requirement to pass it to
   // ScheduleLoadForRestoredTabs().
   page_node->SetType(PageType::kTab);
 
   EXPECT_CALL(*loader(), LoadPageNode(page_node.get()));
-  policy()->ScheduleLoadForRestoredTabs(
-      page_node_and_notification_permission_to_load_vector);
+  policy()->ScheduleLoadForRestoredTabs(to_load);
   task_env().RunUntilIdle();
   ::testing::Mock::VerifyAndClear(loader());
 
@@ -362,7 +352,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
 TEST_F(BackgroundTabLoadingPolicyTest, RemoveTabWithNotificationPermission) {
   testing::SimpleTestSiteDataReader site_data_reader_default(
       {.updates_favicon = false, .updates_title = false, .uses_audio = false});
-  std::vector<PageNodeAndNotificationPermission> to_load;
+  std::vector<PageNodeData> to_load;
 
   // Tab without notification permission.
   auto page_node_without_notification_permission =
@@ -375,8 +365,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, RemoveTabWithNotificationPermission) {
       &site_data_reader_default);
   page_node_without_notification_permission->SetType(PageType::kTab);
   to_load.emplace_back(
-      page_node_without_notification_permission.get()->GetWeakPtr(),
-      /* has_notification_permission=*/false);
+      page_node_without_notification_permission.get()->GetWeakPtr());
 
   // Tab with notification permission.
   auto page_node_with_notification_permission =
@@ -388,8 +377,8 @@ TEST_F(BackgroundTabLoadingPolicyTest, RemoveTabWithNotificationPermission) {
       page_node_with_notification_permission.get(), &site_data_reader_default);
   page_node_with_notification_permission->SetType(PageType::kTab);
   to_load.emplace_back(
-      page_node_with_notification_permission.get()->GetWeakPtr(),
-      /* has_notification_permission=*/true);
+      page_node_with_notification_permission.get()->GetWeakPtr(), GURL(),
+      blink::mojom::PermissionStatus::GRANTED);
 
   // Schedule load for restored tabs.
   policy()->ScheduleLoadForRestoredTabs(to_load);
@@ -423,7 +412,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
       page_nodes;
-  std::vector<PageNodeAndNotificationPermission> to_load;
+  std::vector<PageNodeData> to_load;
 
   // Add tabs to restore:
 
@@ -433,8 +422,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
       base::TimeTicks::Now() - base::Days(30)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_default);
-  PageNodeAndNotificationPermission old(page_nodes.back().get()->GetWeakPtr(),
-                                        false);
+  const PageNodeData old(page_nodes.back().get()->GetWeakPtr());
   to_load.push_back(old);
 
   // Recent
@@ -443,8 +431,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
       base::TimeTicks::Now() - base::Seconds(1)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_default);
-  PageNodeAndNotificationPermission recent(
-      page_nodes.back().get()->GetWeakPtr(), false);
+  const PageNodeData recent(page_nodes.back().get()->GetWeakPtr());
   to_load.push_back(recent);
 
   // Slightly older tabs which were observed updating their title or favicon or
@@ -454,8 +441,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
       base::TimeTicks::Now() - base::Seconds(2)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_title);
-  PageNodeAndNotificationPermission title(page_nodes.back().get()->GetWeakPtr(),
-                                          false);
+  const PageNodeData title(page_nodes.back().get()->GetWeakPtr());
   to_load.push_back(title);
 
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
@@ -463,8 +449,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
       base::TimeTicks::Now() - base::Seconds(3)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_favicon);
-  PageNodeAndNotificationPermission favicon(
-      page_nodes.back().get()->GetWeakPtr(), false);
+  const PageNodeData favicon(page_nodes.back().get()->GetWeakPtr());
   to_load.push_back(favicon);
 
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
@@ -472,31 +457,27 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
       base::TimeTicks::Now() - base::Seconds(4)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_audio);
-  PageNodeAndNotificationPermission audio(page_nodes.back().get()->GetWeakPtr(),
-                                          false);
+  const PageNodeData audio(page_nodes.back().get()->GetWeakPtr());
   to_load.push_back(audio);
 
   //  Internal page
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
-      nullptr, std::string(), GURL("chrome://newtab"),
-      performance_manager::PagePropertyFlags{},
+      nullptr, std::string(), GURL(), performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() - base::Seconds(1)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_default);
-  PageNodeAndNotificationPermission internal(
-      page_nodes.back().get()->GetWeakPtr(), false);
+  const PageNodeData internal(page_nodes.back().get()->GetWeakPtr(),
+                              GURL("chrome://newtab"));
   to_load.push_back(internal);
 
   //  Page with notification permission
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
-      nullptr, std::string(), GURL("chrome://newtab"),
-      performance_manager::PagePropertyFlags{},
+      nullptr, std::string(), GURL(), performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() - base::Seconds(1)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_default);
-  PageNodeAndNotificationPermission notification(
-      page_nodes.back().get()->GetWeakPtr(), true);
-
+  const PageNodeData notification(page_nodes.back().get()->GetWeakPtr(), GURL(),
+                                  blink::mojom::PermissionStatus::GRANTED);
   to_load.push_back(notification);
 
   for (auto& page_node : page_nodes) {
@@ -507,7 +488,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
 
   // Test that tabs are loaded in the expected order:
 
-  const std::vector<PageNodeAndNotificationPermission> expected_load_order{
+  const std::vector<PageNodeData> expected_load_order{
       notification, title, favicon, recent, audio, old, internal};
 
   // 1st tab starts loading when ScheduleLoadForRestoredTabs is invoked.
@@ -534,13 +515,11 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
       page_nodes;
-  std::vector<PageNodeAndNotificationPermission> to_load;
+  std::vector<PageNodeData> to_load;
 
   for (uint32_t i = 0; i < 2; i++) {
     page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
-    PageNodeAndNotificationPermission page_node_and_permisssion(
-        page_nodes.back().get()->GetWeakPtr(), false);
-    to_load.push_back(page_node_and_permisssion);
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
 
     // Mark the PageNode as a tab as this is a requirement to pass it to
     // ScheduleLoadForRestoredTabs().

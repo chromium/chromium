@@ -123,6 +123,12 @@ class PageNodeImpl
   void OnFaviconUpdated();
   void OnTitleUpdated();
   void OnAboutToBeDiscarded(base::WeakPtr<PageNode> new_page_node);
+  // Set main frame information of a restored page before the first navigation
+  // is committed.
+  void SetMainFrameRestoredState(
+      const GURL& url,
+      blink::mojom::PermissionStatus notification_permission_status);
+  // Invoked when a main frame navigation is committed.
   void OnMainFrameNavigationCommitted(
       bool same_document,
       base::TimeTicks navigation_committed_time,
