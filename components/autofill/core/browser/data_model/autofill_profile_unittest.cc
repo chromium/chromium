@@ -1363,7 +1363,6 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kAutofillUseI18nAddressModel,
                                  features::kAutofillUseAUAddressModel,
-                                 features::kAutofillUseBRAddressModel,
                                  features::kAutofillUseCAAddressModel,
                                  features::kAutofillUseDEAddressModel,
                                  features::kAutofillUseFRAddressModel,

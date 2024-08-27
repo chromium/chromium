@@ -324,7 +324,6 @@ class ManualTestingImportTesti18n : public ManualTestingImportTest {
   ManualTestingImportTesti18n() {
     features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
                                 features::kAutofillUseAUAddressModel,
-                                features::kAutofillUseBRAddressModel,
                                 features::kAutofillUseCAAddressModel,
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseFRAddressModel,

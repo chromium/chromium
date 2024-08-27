@@ -23,7 +23,6 @@ class AddressFieldParserTest
   AddressFieldParserTest() : FormFieldParserTestBase(GetParam()) {
     default_features.InitWithFeatures({features::kAutofillUseI18nAddressModel,
                                        features::kAutofillUseAUAddressModel,
-                                       features::kAutofillUseBRAddressModel,
                                        features::kAutofillUseCAAddressModel,
                                        features::kAutofillUseDEAddressModel,
                                        features::kAutofillUseFRAddressModel,
@@ -256,10 +255,7 @@ TEST_P(AddressFieldParserTest, ParseOverflow) {
       {"complemento", "Complemento", "BR", "pt"},
       {"adresszusatz", "Adresszusatz", "DE", "de"},
   };
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures({features::kAutofillUseBRAddressModel,
-                            features::kAutofillUseDEAddressModel},
-                           {});
+  base::test::ScopedFeatureList enabled{features::kAutofillUseDEAddressModel};
 
   for (const TestCase& test : testcases) {
     SCOPED_TRACE(testing::Message() << "field_name=" << test.field_name
@@ -276,8 +272,6 @@ TEST_P(AddressFieldParserTest, ParseOverflow) {
 
 // Tests that overflow field is correctly classified.
 TEST_P(AddressFieldParserTest, ParseOverflowAndLandmark) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList features{features::kAutofillUseBRAddressModel};
   AddTextFormFieldData("additional_info", "Complemento e ponto de referência",
                        ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("BR"),

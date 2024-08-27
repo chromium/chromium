@@ -223,12 +223,6 @@ void AutofillHandler::SetAddresses(
         continue;
       }
 
-      if (test_address_country == u"Brazil" &&
-          !base::FeatureList::IsEnabled(
-              autofill::features::kAutofillUseBRAddressModel)) {
-        continue;
-      }
-
       test_address_for_countries.push_back(profile);
     }
   }

@@ -919,7 +919,6 @@ class AutofillProfileSyncUtilTest
     test_clock_.SetNow(kJune2017);
     features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
                                 features::kAutofillUseAUAddressModel,
-                                features::kAutofillUseBRAddressModel,
                                 features::kAutofillUseCAAddressModel,
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseFRAddressModel,

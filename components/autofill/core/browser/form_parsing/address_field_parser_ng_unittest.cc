@@ -152,8 +152,6 @@ TEST_P(AddressFieldParserTestNG, ParseDependentLocality) {
 
 // Tests that the landmark is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseLandmark) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled{features::kAutofillUseBRAddressModel};
   AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("BR"),
                     LanguageCode("pt"));
@@ -200,8 +198,6 @@ TEST_P(AddressFieldParserTestNG, ParseAdminLevel2) {
 
 // Tests that overflow field is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseOverflow) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled{features::kAutofillUseBRAddressModel};
   AddTextFormFieldData("complemento", "Complemento", ADDRESS_HOME_OVERFLOW);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("BR"),
                     LanguageCode("pt"));
@@ -209,8 +205,6 @@ TEST_P(AddressFieldParserTestNG, ParseOverflow) {
 
 // Tests that overflow field is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseOverflowAndLandmark) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList features{features::kAutofillUseBRAddressModel};
   AddTextFormFieldData("additional_info", "Complemento e ponto de referência",
                        ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("BR"),
