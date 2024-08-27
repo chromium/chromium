@@ -774,7 +774,8 @@ public class ToolbarManager
                             mIncognitoStateProvider::isIncognitoSelected,
                             mPromoShownOneshotSupplier,
                             mLayoutStateProviderSupplier,
-                            mActivityTabProvider);
+                            mActivityTabProvider,
+                            mTabModelSelectorSupplier);
         }
 
         mToolbar =
@@ -1722,7 +1723,6 @@ public class ToolbarManager
                 && !currentTab.getUrl().isEmpty()) {
             mControlContainer.setReadyForBitmapCapture(true);
         }
-
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
 

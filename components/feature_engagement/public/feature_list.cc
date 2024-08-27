@@ -90,6 +90,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsSurfaceFeature,
     &kIPHTabGroupsSurfaceOnHideFeature,
     &kIPHTabSwitcherButtonFeature,
+    &kIPHTabSwitcherButtonSwitchIncognitoFeature,
     &kIPHTabSwitcherFloatingActionButtonFeature,
     &kIPHTranslateMenuButtonFeature,
     &kIPHVideoTutorialNTPChromeIntroFeature,

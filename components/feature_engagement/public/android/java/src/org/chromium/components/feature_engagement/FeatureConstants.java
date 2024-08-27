@@ -61,6 +61,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
     FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
+    FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
     FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
@@ -223,6 +224,12 @@ public @interface FeatureConstants {
 
     /** An IPH feature to prompt users to open the tab switcher after a navigation. */
     String TAB_SWITCHER_BUTTON_FEATURE = "IPH_TabSwitcherButton";
+
+    /**
+     * An IPH feature to prompt users to open the tab switcher to switch to incognito when incognito
+     * tabs are present.
+     */
+    String TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO = "IPH_TabSwitcherButtonSwitchIncognito";
 
     /** An IPH feature to show a highlight on the floating action button in the tab switcher. */
     String TAB_SWITCHER_FLOATING_ACTION_BUTTON = "IPH_TabSwitcherFloatingActionButton";

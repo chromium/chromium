@@ -23,10 +23,12 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -51,9 +53,10 @@ public class ToggleTabStackButtonCoordinator {
     private final Supplier<Boolean> mIsIncognitoSupplier;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final CurrentTabObserver mPageLoadObserver;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private LayoutStateProvider mLayoutStateProvider;
-    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
+    private LayoutStateObserver mLayoutStateObserver;
     @VisibleForTesting boolean mIphBeingShown;
     // Non-null when tab declutter is enabled and initWithNative is called.
     private @Nullable ObservableSupplier<Integer> mArchivedTabCountSupplier;
@@ -70,6 +73,7 @@ public class ToggleTabStackButtonCoordinator {
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
      * @param layoutStateProviderSupplier Allows observing layout state.
      * @param activityTabSupplier Supplier of the activity tab.
+     * @param tabModelSelectorSupplier Supplier for @{@link TabModelSelector}.
      */
     public ToggleTabStackButtonCoordinator(
             Context context,
@@ -78,12 +82,14 @@ public class ToggleTabStackButtonCoordinator {
             Supplier<Boolean> isIncognitoSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            ObservableSupplier<Tab> activityTabSupplier) {
+            ObservableSupplier<Tab> activityTabSupplier,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;
         mUserEducationHelper = userEducationHelper;
         mIsIncognitoSupplier = isIncognitoSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
@@ -190,7 +196,7 @@ public class ToggleTabStackButtonCoordinator {
         // Make button un-clickable during browser layout transition. Re-enable once transition
         // completes.
         mLayoutStateObserver =
-                new LayoutStateProvider.LayoutStateObserver() {
+                new LayoutStateObserver() {
 
                     @Override
                     public void onStartedShowing(@LayoutType int layoutType) {
@@ -232,22 +238,50 @@ public class ToggleTabStackButtonCoordinator {
     @VisibleForTesting
     void handlePageLoadFinished() {
         if (!mToggleTabStackButton.isShown()) return;
-        if (mIsIncognitoSupplier.get()) return;
-        if (mPromoShownOneshotSupplier.get() == null || mPromoShownOneshotSupplier.get()) return;
 
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        IPHCommandBuilder builder = null;
+        if (ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()
+                && mTabModelSelectorSupplier.hasValue()) {
+            TabModelSelector selector = mTabModelSelectorSupplier.get();
+            // When in Incognito, show IPH to switch out.
+            if (selector.getCurrentModel().isIncognitoBranded()) {
+                builder =
+                        new IPHCommandBuilder(
                                 mContext.getResources(),
-                                FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
-                                R.string.iph_tab_switcher_text,
-                                R.string.iph_tab_switcher_accessibility_text)
-                        .setAnchorView(mToggleTabStackButton)
-                        .setOnShowCallback(this::handleShowCallback)
-                        .setOnDismissCallback(this::handleDismissCallback)
-                        .setHighlightParams(params)
-                        .build());
+                                FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
+                                R.string.iph_tab_switcher_switch_out_of_incognito_text,
+                                R.string
+                                        .iph_tab_switcher_switch_out_of_incognito_accessibility_text);
+            } else if (selector.getModel(true).getCount() > 0) {
+                // When in standard model with incognito tabs, show IPH to switch into incognito.
+                builder =
+                        new IPHCommandBuilder(
+                                mContext.getResources(),
+                                FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
+                                R.string.iph_tab_switcher_switch_into_incognito_text,
+                                R.string.iph_tab_switcher_switch_into_incognito_accessibility_text);
+            }
+        } else if (!mIsIncognitoSupplier.get()
+                && mPromoShownOneshotSupplier.hasValue()
+                && !mPromoShownOneshotSupplier.get()) {
+            builder =
+                    new IPHCommandBuilder(
+                            mContext.getResources(),
+                            FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
+                            R.string.iph_tab_switcher_text,
+                            R.string.iph_tab_switcher_accessibility_text);
+        }
+
+        if (builder != null) {
+            mUserEducationHelper.requestShowIPH(
+                    builder.setAnchorView(mToggleTabStackButton)
+                            .setOnShowCallback(this::handleShowCallback)
+                            .setOnDismissCallback(this::handleDismissCallback)
+                            .setHighlightParams(params)
+                            .build());
+        }
     }
 
     /**

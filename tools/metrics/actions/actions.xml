@@ -45140,6 +45140,8 @@ should be able to be added at any place in this file.
   <suffix name="TabPinnedFeature" label="For tab pinned overflow hint."/>
   <suffix name="TabSearch" label="For the tab search feature."/>
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
+  <suffix name="TabSwitcherButtonSwitchIncognito"
+      label="For tab switcher button switch to incognito."/>
   <suffix name="TabSwitcherFloatingActionButton"
       label="For tab switcher new tab floating action button."/>
   <suffix name="ToolbarManagementButton"

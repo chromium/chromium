@@ -402,6 +402,9 @@ BASE_FEATURE(kIPHTabGroupsSurfaceOnHideFeature,
 BASE_FEATURE(kIPHTabSwitcherButtonFeature,
              "IPH_TabSwitcherButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabSwitcherButtonSwitchIncognitoFeature,
+             "IPH_TabSwitcherButtonSwitchIncognito",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabSwitcherFloatingActionButtonFeature,
              "IPH_TabSwitcherFloatingActionButton",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -31,11 +31,17 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.feature_engagement.FeatureConstants;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -52,6 +58,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private OnClickListener mOnClickListener;
     @Mock private OnLongClickListener mOnLongClickListener;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
 
     @Captor private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
 
@@ -60,12 +68,12 @@ public class ToggleTabStackButtonCoordinatorTest {
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
     private Set<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverSet;
-
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutSateProviderOneshotSupplier;
     private ObservableSupplier<Integer> mTabCountSupplier;
     private ObservableSupplierImpl<Integer> mArchivedTabCountSupplier;
 
     private ToggleTabStackButtonCoordinator mCoordinator;
+    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
 
     @Before
     public void setUp() {
@@ -92,7 +100,8 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         mLayoutStateObserverSet = new HashSet<>();
         mLayoutSateProviderOneshotSupplier = new OneshotSupplierImpl<>();
-        mTabCountSupplier = new ObservableSupplierImpl<>();
+        mTabModelSelectorSupplier = new ObservableSupplierImpl<>();
+        mTabModelSelectorSupplier.set(mTabModelSelector);
 
         // Defaults most test cases expect, can be overridden by each test though.
         when(mToggleTabStackButton.isShown()).thenReturn(true);
@@ -110,7 +119,8 @@ public class ToggleTabStackButtonCoordinatorTest {
                         () -> mIsIncognito,
                         mPromoShownOneshotSupplier,
                         mLayoutSateProviderOneshotSupplier,
-                        new ObservableSupplierImpl<>());
+                        new ObservableSupplierImpl<>(),
+                        mTabModelSelectorSupplier);
         coordinator.initializeWithNative(
                 mOnClickListener,
                 mOnLongClickListener,
@@ -276,7 +286,67 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         mIsIncognito = false;
         mCoordinator.handlePageLoadFinished();
-        verifyIphShown();
+        IPHCommand iphCommand = verifyIphShown();
+        assertEquals(
+                "IPH feature is not as expected.",
+                FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
+                iphCommand.featureName);
+        assertEquals(
+                "IPH string is not as expected.",
+                R.string.iph_tab_switcher_text,
+                iphCommand.stringId);
+        assertEquals(
+                "IPH string is not as expected.",
+                R.string.iph_tab_switcher_accessibility_text,
+                iphCommand.accessibilityStringId);
+    }
+
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @Test
+    public void testSwitchToIncognitoIphIsShown() {
+        ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
+        mPromoShownOneshotSupplier.set(false);
+
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
+        when(mTabModel.getCount()).thenReturn(1);
+
+        // Standard model with incognito tabs - show switch into incognito IPH.
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+        toggleTabStackButtonCoordinator.handlePageLoadFinished();
+        IPHCommand iphCommand = verifyIphShown();
+        assertEquals(
+                "IPH feature is not as expected.",
+                FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
+                iphCommand.featureName);
+        assertEquals(
+                "IPH string is not as expected.",
+                R.string.iph_tab_switcher_switch_into_incognito_text,
+                iphCommand.stringId);
+        assertEquals(
+                "IPH string is not as expected.",
+                R.string.iph_tab_switcher_switch_into_incognito_accessibility_text,
+                iphCommand.accessibilityStringId);
+
+        // Incognito model - show switch out of incognito IPH.
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        toggleTabStackButtonCoordinator.handlePageLoadFinished();
+        iphCommand = verifyIphShown();
+        assertEquals(
+                "IPH feature is not as expected.",
+                FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
+                iphCommand.featureName);
+        assertEquals(
+                "IPH string is not as expected.",
+                R.string.iph_tab_switcher_switch_out_of_incognito_text,
+                iphCommand.stringId);
+        assertEquals(
+                "IPH string is not as expected.",
+                R.string.iph_tab_switcher_switch_out_of_incognito_accessibility_text,
+                iphCommand.accessibilityStringId);
     }
 
     @Test

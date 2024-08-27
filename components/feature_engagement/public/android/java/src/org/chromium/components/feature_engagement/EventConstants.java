@@ -85,6 +85,8 @@ public final class EventConstants {
     public static final String INSTANCE_SWITCHER_IPH_USED = "instance_switcher_iph_used";
 
     public static final String TAB_SWITCHER_BUTTON_CLICKED = "tab_switcher_button_clicked";
+    public static final String TAB_SWITCHER_BUTTON_LONG_CLICKED =
+            "tab_switcher_button_long_clicked";
 
     public static final String FOREGROUND_SESSION_DESTROYED = "foreground_session_destroyed";
 

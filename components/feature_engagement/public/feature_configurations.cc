@@ -1078,6 +1078,19 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->snooze_params.max_limit = 3;
     return config;
   }
+  if (kIPHTabSwitcherButtonSwitchIncognitoFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("tab_switcher_switch_incognito_iph_triggered",
+                                  Comparator(EQUAL, 0), 90, 90);
+    config->used = EventConfig("tab_switcher_button_long_clicked",
+                               Comparator(EQUAL, 0), 14, 90);
+    config->snooze_params.snooze_interval = 7;
+    config->snooze_params.max_limit = 3;
+    return config;
+  }
   if (kIPHTabSwitcherFloatingActionButtonFeature.name == feature->name) {
     // Allows an IPH for the tab groups surface through hub toolbar when:
     // * Only once per week.
