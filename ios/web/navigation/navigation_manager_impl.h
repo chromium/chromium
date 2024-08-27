@@ -334,6 +334,10 @@ class NavigationManagerImpl final : public NavigationManager {
 
     std::vector<std::unique_ptr<NavigationItemImpl>> cached_items_;
     int cached_current_item_index_;
+
+    // Returns the WKWebView title. Must only be called when
+    // IsAttachedToWebView() is true.
+    const std::u16string GetWKWebViewTitle() const;
   };
 
   // Type of the list passed to restore items.

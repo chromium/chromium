@@ -1591,6 +1591,19 @@ NavigationManagerImpl::WKWebViewCache::GetNavigationItemImplAtIndex(
   new_item->SetTimestamp(
       navigation_manager_->time_smoother_.GetSmoothedTime(base::Time::Now()));
   new_item->SetTitle(base::SysNSStringToUTF16(wk_item.title));
+  if (new_item->GetTitle().empty() &&
+      GetCurrentItemIndex() == static_cast<int>(index)) {
+    // Normally, The WKBackforwardList.title equals to the document.title when
+    // the page loads. But it's not always accurate. For WKWebView, The
+    // WKBackforwardList.title is empty when the new page is opened via
+    // history.pushState(). But the document.title (WKWebView.title) doesn't
+    // have to be empty or changed. So when opening a new page via
+    // history.pushState(), its title should be the current document.title.
+    // Here, When the WKBackforwardList.title is empty for current navigation,
+    // the document.title is read as the title of the new item to solve this
+    // problem.
+    new_item->SetTitle(GetWKWebViewTitle());
+  }
   const GURL& url = new_item->GetURL();
   // If this navigation item has a restore_session.html URL, then it was created
   // to restore session history and will redirect to the target URL encoded in
@@ -1622,6 +1635,19 @@ WKBackForwardListItem* NavigationManagerImpl::WKWebViewCache::GetWKItemAtIndex(
   id<CRWWebViewNavigationProxy> proxy =
       navigation_manager_->delegate_->GetWebViewNavigationProxy();
   return [proxy.backForwardList itemAtIndex:offset];
+}
+
+const std::u16string NavigationManagerImpl::WKWebViewCache::GetWKWebViewTitle()
+    const {
+  DCHECK(IsAttachedToWebView());
+
+  id<CRWWebViewNavigationProxy> proxy =
+      navigation_manager_->delegate_->GetWebViewNavigationProxy();
+  NSString* title = proxy.title;
+  if (!title) {
+    return std::u16string();
+  }
+  return base::SysNSStringToUTF16(title);
 }
 
 }  // namespace web
