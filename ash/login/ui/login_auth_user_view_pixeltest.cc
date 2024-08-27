@@ -180,12 +180,32 @@ class LoginAuthUserViewPixeltest : public LoginAuthUserViewTestBase {
 };
 
 // Verifies the PIN and password look a like option.
-TEST_F(LoginAuthUserViewPixeltest, PinAndPassword) {
-  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
-                 LoginAuthUserView::AUTH_PIN);
+TEST_F(LoginAuthUserViewPixeltest,
+       PinWithToggleAutosubmitOffFieldModeCorrectness) {
+  LoginAuthUserView::TestApi auth_test(view_);
+  auto client = std::make_unique<MockLoginScreenClient>();
+  LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
+  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
+
+  // Set up PIN without auto submit.
+  SetUserCount(1);
+  SetAuthPasswordAndPin(/*autosubmit_length*/ 0);
+  ExpectModeVisibility(
+      LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOff);
+
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinAndPassword", /*revision_number=*/1, view_));
+      "PinWithToggleAutosubmitOff", /*revision_number=*/0, view_));
+
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(auth_test.pin_password_toggle())
+      .NotifyClick(event);
+  base::RunLoop().RunUntilIdle();
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPasswordWithToggle);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "PasswordWithToggle", /*revision_number=*/0, view_));
 }
 
 class LoginAuthUserViewPinOnlyPixeltest : public LoginAuthUserViewPixeltest {
@@ -255,44 +275,6 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitDisabled) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "PinOnlyFilled", /*revision_number=*/1, view_));
-}
-
-class LoginAuthUserViewSeparatePasswordAndPinPixeltest
-    : public LoginAuthUserViewPixeltest {
- public:
-  LoginAuthUserViewSeparatePasswordAndPinPixeltest() {
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(
-        features::kSeparatePasswordAndPinOnLogin);
-  }
-};
-
-TEST_F(LoginAuthUserViewSeparatePasswordAndPinPixeltest,
-       PinWithToggleAutosubmitOffFieldModeCorrectness) {
-  LoginAuthUserView::TestApi auth_test(view_);
-  auto client = std::make_unique<MockLoginScreenClient>();
-  LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
-  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
-
-  // Set up PIN without auto submit.
-  SetUserCount(1);
-  SetAuthPasswordAndPin(/*autosubmit_length*/ 0);
-  ExpectModeVisibility(
-      LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOff);
-
-  views::test::RunScheduledLayout(container_);
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinWithToggleAutosubmitOff", /*revision_number=*/0, view_));
-
-  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
-                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi(auth_test.pin_password_toggle())
-      .NotifyClick(event);
-  base::RunLoop().RunUntilIdle();
-  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPasswordWithToggle);
-
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PasswordWithToggle", /*revision_number=*/0, view_));
 }
 
 }  // namespace ash
