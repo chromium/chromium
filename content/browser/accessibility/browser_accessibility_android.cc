@@ -229,8 +229,7 @@ bool BrowserAccessibilityAndroid::IsContentInvalid() const {
       GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse) {
     // We will not report content as invalid until a certain number of
     // characters have been typed to prevent verbose announcements to the user.
-    return (GetSubstringTextContentUTF16(
-                LengthAtLeast(kMinimumCharacterCountForInvalid))
+    return (GetSubstringTextContentUTF16(kMinimumCharacterCountForInvalid)
                 .length() > kMinimumCharacterCountForInvalid);
   }
 
@@ -365,8 +364,9 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // The root is not interesting if it doesn't have a title, even
   // though it's focusable.
   if (ui::IsPlatformDocument(GetRole()) &&
-      GetSubstringTextContentUTF16(NonEmptyPredicate()).empty())
+      GetSubstringTextContentUTF16(1).empty()) {
     return false;
+  }
 
   // Mark as uninteresting if it's hidden, even if it is focusable.
   if (IsInvisibleOrIgnored())
@@ -592,7 +592,7 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
     // and allow the child nodes to be set as a leaf.
 
     // Headings with text can drop their children (with exceptions).
-    std::u16string name = GetSubstringTextContentUTF16(NonEmptyPredicate());
+    std::u16string name = GetSubstringTextContentUTF16(1);
     if (GetRole() == ax::mojom::Role::kHeading && !name.empty()) {
       bool ret = IsLeafConsideringChildren();
       g_leaf_map.Get()[this] = ret;
@@ -682,7 +682,7 @@ int BrowserAccessibilityAndroid::GetTextContentLengthUTF16() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
-    std::optional<EarlyExitPredicate> predicate) const {
+    std::optional<size_t> min_length) const {
   if (ui::IsIframe(GetRole()))
     return std::u16string();
 
@@ -713,13 +713,13 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
 
     // To prevent extra commas, only add if the text is non-empty
     if (!text.empty() && !value.empty()) {
-      text = value + u", " + text;
+      text = base::JoinString({std::move(value), std::move(text)}, u", ");
     } else if (!value.empty()) {
-      text = value;
+      text = std::move(value);
     }
   } else if (text.empty()) {
     // When a node does not have a name (e.g. a label), use its value instead.
-    text = value;
+    text = std::move(value);
   }
 
   // For almost all focusable nodes we try to get text from contents, but for
@@ -761,18 +761,25 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
     }
   }
 
+  size_t text_length = text.size();
+  std::vector<std::u16string> inner_text({std::move(text)});
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
-  if (text.empty() && ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
-                       (IsFocusable() && HasOnlyTextAndImageChildren()))) {
+  if (text_length == 0 && ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
+                           (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
-      text += static_cast<BrowserAccessibilityAndroid*>(it.get())
-                  ->GetSubstringTextContentUTF16(predicate);
-      if (predicate && predicate.value().Run(text)) {
+      std::u16string child_text =
+          static_cast<BrowserAccessibilityAndroid*>(it.get())
+              ->GetSubstringTextContentUTF16(min_length);
+      text_length += child_text.size();
+      inner_text.push_back(std::move(child_text));
+      if (min_length && text_length >= *min_length) {
         break;
       }
     }
   }
+
+  text = base::JoinString(inner_text, u"");
 
   if (text.empty() &&
       (ui::IsLink(GetRole()) || ui::IsImageOrVideo(GetRole())) &&
@@ -1702,8 +1709,7 @@ void BrowserAccessibilityAndroid::GetLineBoundaries(
     std::vector<int32_t>* line_ends,
     int offset) {
   // If this node has no children, treat it as all one line.
-  if (GetSubstringTextContentUTF16(NonEmptyPredicate()).size() > 0 &&
-      !InternalChildCount()) {
+  if (GetSubstringTextContentUTF16(1).size() > 0 && !InternalChildCount()) {
     line_starts->push_back(offset);
     line_ends->push_back(offset + GetTextContentUTF16().size());
   }

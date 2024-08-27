@@ -365,15 +365,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestGetTextContent) {
   // No predicate returns all text.
   EXPECT_EQ(u"1Foo2Bar3Baz", node->GetSubstringTextContentUTF16(std::nullopt));
   // Non-empty predicate terminates after one text node.
-  EXPECT_EQ(u"1Foo", node->GetSubstringTextContentUTF16(
-                         BrowserAccessibilityAndroid::NonEmptyPredicate()));
+  EXPECT_EQ(u"1Foo", node->GetSubstringTextContentUTF16(1));
   // Length of 5 not satisfied by one node.
-  EXPECT_EQ(u"1Foo2Bar", node->GetSubstringTextContentUTF16(
-                             BrowserAccessibilityAndroid::LengthAtLeast(5)));
+  EXPECT_EQ(u"1Foo2Bar", node->GetSubstringTextContentUTF16(5));
   // Length of 10 not satisfied by two nodes.
-  EXPECT_EQ(u"1Foo2Bar3Baz",
-            node->GetSubstringTextContentUTF16(
-                BrowserAccessibilityAndroid::LengthAtLeast(10)));
+  EXPECT_EQ(u"1Foo2Bar3Baz", node->GetSubstringTextContentUTF16(10));
   manager.reset();
 }
 
