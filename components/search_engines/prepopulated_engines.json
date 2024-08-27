@@ -301,7 +301,7 @@
       "regulatory_extensions": [
         {
           "variant": "RegulatoryExtensionType::kDefault",
-          "search_params": "client=opensearch",
+          "search_params": "client=cs-chrome",
           "suggest_params": "client=opensearch"
         },
         {
