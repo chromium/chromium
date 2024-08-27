@@ -100,17 +100,18 @@ VideoDecoderHelper::Status VideoDecoderHelper::Initialize(
 
 uint32_t VideoDecoderHelper::CalculateNeededOutputBufferSize(
     const uint8_t* input,
-    uint32_t input_size) const {
+    uint32_t input_size,
+    bool is_first_chunk) const {
   uint32_t output_size = 0;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (h264_converter_ && h264_avcc_) {
     output_size = h264_converter_->CalculateNeededOutputBufferSize(
-        input, input_size, h264_avcc_.get());
+        input, input_size, is_first_chunk ? h264_avcc_.get() : nullptr);
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   else if (h265_converter_ && h265_hvcc_) {
     output_size = h265_converter_->CalculateNeededOutputBufferSize(
-        input, input_size, h265_hvcc_.get());
+        input, input_size, is_first_chunk ? h265_hvcc_.get() : nullptr);
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -121,17 +122,20 @@ VideoDecoderHelper::Status VideoDecoderHelper::ConvertNalUnitStreamToByteStream(
     const uint8_t* input,
     uint32_t input_size,
     uint8_t* output,
-    uint32_t* output_size) {
+    uint32_t* output_size,
+    bool is_first_chunk) {
   bool converted = false;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (h264_converter_ && h264_avcc_) {
     converted = h264_converter_->ConvertNalUnitStreamToByteStream(
-        input, input_size, h264_avcc_.get(), output, output_size);
+        input, input_size, is_first_chunk ? h264_avcc_.get() : nullptr, output,
+        output_size);
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   else if (h265_converter_ && h265_hvcc_) {
     converted = h265_converter_->ConvertNalUnitStreamToByteStream(
-        input, input_size, h265_hvcc_.get(), output, output_size);
+        input, input_size, is_first_chunk ? h265_hvcc_.get() : nullptr, output,
+        output_size);
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)

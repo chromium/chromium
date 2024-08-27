@@ -149,6 +149,8 @@ class MEDIA_EXPORT H265ToAnnexBBitstreamConverter {
   bool configuration_processed_ = false;
   // Flag for indicating whether next NAL unit starts new access unit.
   bool first_nal_unit_in_access_unit_ = false;
+  // Size of length headers in bytes.
+  uint8_t nal_unit_length_field_width_ = 0;
 };
 
 }  // namespace media

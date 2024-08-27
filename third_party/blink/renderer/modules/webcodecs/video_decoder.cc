@@ -492,6 +492,9 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
       }
       return std::nullopt;
     }
+    // The description should not be provided to the decoder because the stream
+    // will be converted to Annex B format.
+    extra_data.clear();
   }
 
   if (video_type.codec == media::VideoCodec::kAV1) {
@@ -597,7 +600,7 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
     // Note: this may not be safe if support for SharedArrayBuffers is added.
     uint32_t output_size =
         decoder_specific_data_->decoder_helper->CalculateNeededOutputBufferSize(
-            src, static_cast<uint32_t>(src_size));
+            src, static_cast<uint32_t>(src_size), verify_key_frame);
     if (!output_size) {
       return media::DecoderStatus(
           media::DecoderStatus::Codes::kMalformedBitstream,
@@ -607,8 +610,8 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
     std::vector<uint8_t> buf(output_size);
     if (decoder_specific_data_->decoder_helper
             ->ConvertNalUnitStreamToByteStream(
-                src, static_cast<uint32_t>(src_size), buf.data(),
-                &output_size) != VideoDecoderHelper::Status::kSucceed) {
+                src, static_cast<uint32_t>(src_size), buf.data(), &output_size,
+                verify_key_frame) != VideoDecoderHelper::Status::kSucceed) {
       return media::DecoderStatus(
           media::DecoderStatus::Codes::kMalformedBitstream,
           "Unable to convert NALU to byte stream.");
