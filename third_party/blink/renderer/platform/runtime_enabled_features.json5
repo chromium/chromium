@@ -3780,6 +3780,14 @@
       status: "experimental",
     },
     {
+      // This flag is a performance optimization which reorganizes some code
+      // for handling <select>'s popup in order to avoid expensive calls to
+      // InternalPopupMenu::UpdateFromElement. Added in M130, should be safe to
+      // remove in M133.
+      name: "SelectPopupLessUpdates",
+      status: "stable",
+    },
+    {
       // If enabled, the type to search in a select element will ignore accents.
       // This should land in M128, and can be cleaned up (assuming no problems)
       // after M130.

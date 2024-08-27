@@ -102,10 +102,6 @@
       Symbol: "kSelectFallbackButton",
     },
     {
-      name: "select-fallback-button-icon",
-      Symbol: "kSelectFallbackButtonIcon",
-    },
-    {
       name: "select-fallback-button-text",
       Symbol: "kSelectFallbackButtonText",
     },

@@ -149,7 +149,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoClosed:
     case CSSSelector::kPseudoDialogInTopLayer:
     case CSSSelector::kPseudoSelectFallbackButton:
-    case CSSSelector::kPseudoSelectFallbackButtonIcon:
     case CSSSelector::kPseudoSelectFallbackButtonText:
     case CSSSelector::kPseudoSelectFallbackDatalist:
     case CSSSelector::kPseudoPopoverInTopLayer:

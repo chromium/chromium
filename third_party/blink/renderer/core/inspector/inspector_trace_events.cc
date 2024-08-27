@@ -409,7 +409,6 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoOpen)
     DEFINE_STRING_MAPPING(PseudoClosed)
     DEFINE_STRING_MAPPING(PseudoSelectFallbackButton)
-    DEFINE_STRING_MAPPING(PseudoSelectFallbackButtonIcon)
     DEFINE_STRING_MAPPING(PseudoSelectFallbackButtonText)
     DEFINE_STRING_MAPPING(PseudoSelectFallbackDatalist)
     DEFINE_STRING_MAPPING(PseudoDialogInTopLayer)

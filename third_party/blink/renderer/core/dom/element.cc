@@ -7524,7 +7524,6 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
-           type == CSSSelector::kPseudoSelectFallbackButtonIcon ||
            type == CSSSelector::kPseudoSelectFallbackButton ||
            type == CSSSelector::kPseudoSelectFallbackButtonText ||
            type == CSSSelector::kPseudoSelectFallbackDatalist)

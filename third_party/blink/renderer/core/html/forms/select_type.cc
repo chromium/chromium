@@ -69,8 +69,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
-#include "third_party/blink/renderer/core/svg/svg_path_element.h"
-#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/base/ui_base_features.h"
 
@@ -453,23 +451,6 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
         shadow_element_names::kSelectFallbackButtonText);
     default_button_->AppendChild(default_button_selected_option_);
 
-    auto* default_button_icon = MakeGarbageCollected<HTMLDivElement>(doc);
-    default_button_icon->SetShadowPseudoId(
-        shadow_element_names::kSelectFallbackButtonIcon);
-    default_button_->AppendChild(default_button_icon);
-
-    auto* default_button_icon_svg = MakeGarbageCollected<SVGSVGElement>(doc);
-    default_button_icon_svg->setAttribute(svg_names::kViewBoxAttr,
-                                          AtomicString("0 0 20 16"));
-    default_button_icon_svg->setAttribute(svg_names::kFillAttr,
-                                          AtomicString("none"));
-    default_button_icon->AppendChild(default_button_icon_svg);
-
-    auto* svg_path = MakeGarbageCollected<SVGPathElement>(doc);
-    svg_path->setAttribute(svg_names::kDAttr,
-                           AtomicString("M4 6 L10 12 L 16 6"));
-    default_button_icon_svg->AppendChild(svg_path);
-
     datalist_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
     datalist_slot_->SetIdAttribute(shadow_element_names::kSelectDatalist);
     root.appendChild(datalist_slot_);
@@ -634,21 +615,37 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
       return;
   }
 
-  if (!popup_) {
-    popup_ = document.GetPage()->GetChromeClient().OpenPopupMenu(
-        *document.GetFrame(), *select_);
-  }
-  if (!popup_)
-    return;
-
   // SetNativePopupIsVisible(true) will start matching :open, and we need to run
   // a style update before we show the native popup because select:open rules in
   // the UA sheet need to remove display:none from a <datalist> which may be
   // wrapping the <option>s.
-  SetNativePopupIsVisible(true);
-  if (RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
-    select_->GetDocument().UpdateStyleAndLayoutForNode(
-        select_, DocumentUpdateReason::kPagePopup);
+  // We also need to update style before calling OpenPopupMenu in order to avoid
+  // an expensive call to popup_->UpdateFromElement in DidRecalcStyle.
+  if (RuntimeEnabledFeatures::SelectPopupLessUpdatesEnabled()) {
+    SetNativePopupIsVisible(true);
+    if (RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
+      select_->GetDocument().UpdateStyleAndLayoutForNode(
+          select_, DocumentUpdateReason::kPagePopup);
+    }
+  }
+
+  if (!popup_) {
+    popup_ = document.GetPage()->GetChromeClient().OpenPopupMenu(
+        *document.GetFrame(), *select_);
+  }
+  if (!popup_) {
+    if (RuntimeEnabledFeatures::SelectPopupLessUpdatesEnabled()) {
+      SetNativePopupIsVisible(false);
+    }
+    return;
+  }
+
+  if (!RuntimeEnabledFeatures::SelectPopupLessUpdatesEnabled()) {
+    SetNativePopupIsVisible(true);
+    if (RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
+      select_->GetDocument().UpdateStyleAndLayoutForNode(
+          select_, DocumentUpdateReason::kPagePopup);
+    }
   }
 
   ObserveTreeMutation();
@@ -823,7 +820,7 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
     // Invalidate paint to ensure that the focus ring is updated.
     layout_object->SetShouldDoFullPaintInvalidation();
   }
-  if (native_popup_is_visible_) {
+  if (popup_ && native_popup_is_visible_) {
     popup_->UpdateFromElement(PopupMenu::kByStyleChange);
   }
 }

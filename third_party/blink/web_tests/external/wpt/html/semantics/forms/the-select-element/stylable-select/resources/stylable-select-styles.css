@@ -59,24 +59,20 @@
   align-items: center;
   overflow-x: hidden;
   overflow-y: hidden;
+  /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
+   * https://github.com/openui/open-ui/issues/1026
+   * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
+  min-inline-size: 24px;
+  min-block-size: max(24px, 1.2em);
 }
 
-.stylable-select-button-icon {
-  opacity: 1;
-  outline: none;
-  margin-inline-start: 0.25em;
-  padding-block: 2px;
-  padding-inline: 3px;
-  block-size: 1.0em;
-  inline-size: 1.2em;
-  min-inline-size: 1.2em;
-  max-inline-size: 1.2em;
-  display: block;
+.stylable-select-button::after {
+  padding-inline-start: 0.5em;
+  content: counter(fake-counter-name, disclosure-closed);
+}
 
-  color: light-dark(black, white);
-  stroke: currentColor;
-  stroke-width: 3;
-  stroke-linejoin: round;
+.stylable-select-button.open::after {
+  content: counter(fake-counter-name, disclosure-open);
 }
 
 .stylable-select-selectedoption {

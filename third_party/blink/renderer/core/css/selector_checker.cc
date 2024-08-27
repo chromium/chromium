@@ -2254,9 +2254,6 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoSelectFallbackButton:
       return MatchesUAShadowElement(
           element, shadow_element_names::kSelectFallbackButton);
-    case CSSSelector::kPseudoSelectFallbackButtonIcon:
-      return MatchesUAShadowElement(
-          element, shadow_element_names::kSelectFallbackButtonIcon);
     case CSSSelector::kPseudoSelectFallbackButtonText:
       return MatchesUAShadowElement(
           element, shadow_element_names::kSelectFallbackButtonText);

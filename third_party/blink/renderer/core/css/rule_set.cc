@@ -302,7 +302,6 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoHostContext:
         case CSSSelector::kPseudoSlotted:
         case CSSSelector::kPseudoSelectFallbackButton:
-        case CSSSelector::kPseudoSelectFallbackButtonIcon:
         case CSSSelector::kPseudoSelectFallbackButtonText:
         case CSSSelector::kPseudoSelectFallbackDatalist:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
@@ -540,7 +539,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
     case CSSSelector::kPseudoSelectFallbackButton:
-    case CSSSelector::kPseudoSelectFallbackButtonIcon:
     case CSSSelector::kPseudoSelectFallbackButtonText:
     case CSSSelector::kPseudoSelectFallbackDatalist:
       if (it->FollowsPart()) {
@@ -558,9 +556,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
             break;
           case CSSSelector::kPseudoSelectFallbackButton:
             name = shadow_element_names::kSelectFallbackButton;
-            break;
-          case CSSSelector::kPseudoSelectFallbackButtonIcon:
-            name = shadow_element_names::kSelectFallbackButtonIcon;
             break;
           case CSSSelector::kPseudoSelectFallbackButtonText:
             name = shadow_element_names::kSelectFallbackButtonText;
