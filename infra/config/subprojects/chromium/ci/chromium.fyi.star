@@ -259,6 +259,7 @@ ci.builder(
         short_name = "rel",
     ),
     execution_timeout = 3 * time.hour,
+    notifies = ["annotator-rel"],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
