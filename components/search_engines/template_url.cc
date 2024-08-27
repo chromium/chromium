@@ -1363,8 +1363,12 @@ std::string TemplateURLRef::HandleReplacements(
         switch (search_terms_args.request_source) {
           case RequestSource::CONTEXTUAL_SEARCHBOX:
           case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
             HandleReplacement("source", "chrome.gsc", replacement, &url);
+            break;
+          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
+            // Lens side panel searchbox source is set via the Lens Overlay
+            // url builder as it contains entry point information.
+            // Therefore we shouldn't replace anything here.
             break;
           default:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
