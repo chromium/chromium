@@ -5,6 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -29,6 +32,7 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
@@ -519,6 +523,117 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
       extension_0_id, ExtensionRegistry::EVERYTHING));
   EXPECT_FALSE(extension_registry()->GetExtensionById(
       extension_1_id, ExtensionRegistry::EVERYTHING));
+}
+
+class DeveloperPrivateApiWithMV2DeprecationApiTest
+    : public DeveloperPrivateApiTest,
+      public testing::WithParamInterface<MV2ExperimentStage> {
+ public:
+  DeveloperPrivateApiWithMV2DeprecationApiTest() {
+    experiment_stage_ = GetParam();
+
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    switch (experiment_stage_) {
+      case MV2ExperimentStage::kNone:
+        NOTREACHED();
+      case MV2ExperimentStage::kWarning:
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        break;
+      case MV2ExperimentStage::kDisableWithReEnable:
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        break;
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  MV2ExperimentStage experiment_stage() const { return experiment_stage_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  MV2ExperimentStage experiment_stage_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeveloperPrivateApiWithMV2DeprecationApiTest,
+    testing::Values(MV2ExperimentStage::kWarning,
+                    MV2ExperimentStage::kDisableWithReEnable),
+    [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
+      switch (info.param) {
+        case MV2ExperimentStage::kNone:
+          NOTREACHED();
+        case MV2ExperimentStage::kWarning:
+          return "WarningExperiment";
+        case MV2ExperimentStage::kDisableWithReEnable:
+          return "DisableExperiment";
+      }
+    });
+
+// Tests that an extension's MV2 deprecation notice is marked as deprecated when
+// the function is called and by accepting the dialog, if necessary.
+// Note: we don't test cancelling the dialog since that's done extensively in
+// unit tests.
+IN_PROC_BROWSER_TEST_P(DeveloperPrivateApiWithMV2DeprecationApiTest,
+                       DismissMv2DeprecationNotice) {
+  // Load MV2 extension.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV2 extension",
+           "manifest_version": 2,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Verify extension is affected by the MV2 deprecation and its notice hasn't
+  // been marked as acknowledged.
+  ManifestV2ExperimentManager* experiment_manager =
+      ManifestV2ExperimentManager::Get(profile());
+  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+
+  // Create the dismiss notice function.
+  auto dismiss_notice_function = base::MakeRefCounted<
+      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
+  std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
+
+  if (experiment_stage() == MV2ExperimentStage::kDisableWithReEnable) {
+    // The function will trigger a dialog for this stage. Add a waiter for the
+    // dialog.
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "Mv2DeprecationKeepDialog");
+    api_test_utils::SendResponseHelper response_helper(
+        dismiss_notice_function.get());
+
+    // Add a dispatcher to wait for the response since the function won't return
+    // till the dialog is accepted/canceled.
+    std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
+        new ExtensionFunctionDispatcher(profile()));
+    dismiss_notice_function->SetDispatcher(dispatcher->AsWeakPtr());
+    dismiss_notice_function->SetArgs(base::test::ParseJsonList(args));
+    dismiss_notice_function->RunWithValidation().Execute();
+
+    // Wait for the dialog and accept it.
+    auto* widget = waiter.WaitIfNeededAndGet();
+    widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+    response_helper.WaitForResponse();
+  } else {
+    api_test_utils::RunFunction(dismiss_notice_function.get(), args, profile());
+  }
+
+  // Extension's notice should be marked as acknowledged.
+  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 }
 
 }  // namespace extensions

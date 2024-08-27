@@ -25,6 +25,7 @@ void ShowMv2DeprecationKeepDialog(Browser* browser,
       base::SplitOnceCallback(std::move(cancel_callback));
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder()
+          .SetInternalName("Mv2DeprecationKeepDialog")
           .SetTitle(l10n_util::GetStringFUTF16(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_TITLE,
               base::UTF8ToUTF16(extension.name())))
