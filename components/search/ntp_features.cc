@@ -116,15 +116,6 @@ BASE_FEATURE(kNtpDriveModuleShowSixFiles,
              "NtpDriveModuleShowSixFiles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, handles navigations from the Most Visited tiles explicitly and
-// overrides the navigation's transition type to bookmark navigation before the
-// navigation is issued.
-// TODO(crbug.com/40730793): When removing this flag, also remove the workaround
-// in ChromeContentBrowserClient::OverrideNavigationParams.
-BASE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly,
-             "HandleMostVisitedNavigationExplicitly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, logo will be shown.
 // This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpLogo, "NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT);

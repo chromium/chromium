@@ -180,10 +180,6 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
     bool shift_key) {
   logger_.LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
 
-  if (!base::FeatureList::IsEnabled(
-          ntp_features::kNtpHandleMostVisitedNavigationExplicitly))
-    return;
-
   WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);

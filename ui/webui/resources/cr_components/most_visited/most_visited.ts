@@ -802,9 +802,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       return;
     }
 
-    if (loadTimeData.getBoolean('handleMostVisitedNavigationExplicitly')) {
-      e.preventDefault();  // Prevents default browser action (navigation).
-    }
+    e.preventDefault();  // Prevents default browser action (navigation).
 
     const index = this.getCurrentTargetIndex_(e);
     const item = this.tiles_[index]!;
