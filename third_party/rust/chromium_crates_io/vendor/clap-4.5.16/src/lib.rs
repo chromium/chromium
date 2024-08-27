@@ -11,7 +11,7 @@
 //! - [Cookbook][_cookbook]
 //! - [FAQ][_faq]
 //! - [Discussions](https://github.com/clap-rs/clap/discussions)
-//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.15/CHANGELOG.md) (includes major version migration
+//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.16/CHANGELOG.md) (includes major version migration
 //!   guides)
 //!
 //! ## Aspirations
@@ -88,7 +88,7 @@
 pub use clap_builder::*;
 #[cfg(feature = "derive")]
 #[doc(hidden)]
-pub use clap_derive::{self, *};
+pub use clap_derive::{self, Args, Parser, Subcommand, ValueEnum};
 
 #[cfg(feature = "unstable-doc")]
 pub mod _cookbook;

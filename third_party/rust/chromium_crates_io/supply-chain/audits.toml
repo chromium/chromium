@@ -463,6 +463,15 @@ who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.8 -> 4.5.9"
 
+[[audits.clap]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.15 -> 4.5.16"
+notes = """
+The only change in the delta is explicitly listing re-exports
+instead of using a `*` wildcard in `pub use clap_derive::{self, *}`.
+"""
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
