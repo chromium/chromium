@@ -479,8 +479,6 @@ try_.builder(
             "try_builder",
             "no_symbols",
             "also_build_lacros_chrome",
-            "use_clang_coverage",
-            "partial_code_coverage_instrumentation",
             "enable_dangling_raw_ptr_feature_flag",
             "enable_backup_ref_ptr_feature_flag",
         ],
