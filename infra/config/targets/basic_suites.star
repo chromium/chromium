@@ -1521,6 +1521,15 @@ targets.legacy_basic_suite(
             ),
             experiment_percentage = 100,
         ),
+        # brfetch_headless_shell_wpt_tests provides coverage for
+        # running WPTs with BackgroundResourceFetch feature.
+        "brfetch_headless_shell_wpt_tests": targets.legacy_test_config(
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+            experiment_percentage = 100,
+        ),
     },
 )
 
@@ -1535,6 +1544,11 @@ targets.legacy_basic_suite(
         "graphite_enabled_blink_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 7,
+            ),
+        ),
+        "graphite_enabled_headless_shell_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 1,
             ),
         ),
     },
@@ -1555,6 +1569,13 @@ targets.legacy_basic_suite(
         "high_dpi_blink_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 3,
+            ),
+        ),
+        # high_dpi_headless_shell_wpt_tests provides coverage for
+        # running WPTs with forced device scale factor.
+        "high_dpi_headless_shell_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 1,
             ),
         ),
     },
@@ -1578,6 +1599,11 @@ targets.legacy_basic_suite(
                 shards = 1,
             ),
         ),
+        "headless_shell_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
     },
 )
 
@@ -1593,7 +1619,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "headless_shell_wpt_tests_isolated_scripts",
     tests = {
-        "headless_shell_wpt_tests": targets.legacy_test_config(
+        "headless_shell_wpt_tests_include_all": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 10,
             ),
@@ -1793,6 +1819,11 @@ targets.legacy_basic_suite(
             ),
         ),
         "chrome_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+        "headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 1,
             ),
@@ -4064,6 +4095,11 @@ targets.legacy_basic_suite(
                 shards = 10,
             ),
         ),
+        "not_site_per_process_headless_shell_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
         "webdriver_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 2,
@@ -4980,6 +5016,18 @@ targets.legacy_basic_suite(
     name = "webrtc_chromium_wpt_tests",
     tests = {
         "blink_wpt_tests": targets.legacy_test_config(
+            args = [
+                "-t",
+                "Release",
+                "external/wpt/webrtc",
+                "external/wpt/webrtc-encoded-transform",
+                "external/wpt/webrtc-extensions",
+                "external/wpt/webrtc-priority",
+                "external/wpt/webrtc-stats",
+                "external/wpt/webrtc-svc",
+            ],
+        ),
+        "headless_shell_wpt_tests": targets.legacy_test_config(
             args = [
                 "-t",
                 "Release",
