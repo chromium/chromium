@@ -654,6 +654,14 @@
       status: "test",
     },
     {
+      // This is a kill switch for shaping directly in TextMetrics when
+      // ctx.measureText() is called. Will be deleted once it reaches stable and
+      // no performance regressions are reported.
+      name: "Canvas2dTextMetricsShaping",
+      status: "experimental",
+      base_feature_status: "enabled",
+    },
+    {
       name: "CanvasFloatingPoint",
       status: "experimental",
     },
