@@ -13,8 +13,8 @@
 
 using ArcPlayTermsOfServiceConsent =
     sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
-using sync_pb::UserConsentTypes;
 using sync_pb::UserConsentSpecifics;
+using sync_pb::UserConsentTypes;
 
 namespace consent_auditor {
 
@@ -119,6 +119,16 @@ void ConsentAuditorImpl::RecordAccountPasswordsConsent(
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
       CreateUserConsentSpecifics(account_id, app_locale_, clock_);
   specifics->mutable_account_passwords_consent()->CopyFrom(consent);
+
+  consent_sync_bridge_->RecordConsent(std::move(specifics));
+}
+
+void ConsentAuditorImpl::RecordRecorderSpeakerLabelConsent(
+    const CoreAccountId& account_id,
+    const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent) {
+  std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
+      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+  specifics->mutable_recorder_speaker_label_consent()->CopyFrom(consent);
 
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
