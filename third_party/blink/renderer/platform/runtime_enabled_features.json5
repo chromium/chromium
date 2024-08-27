@@ -1482,14 +1482,6 @@
       public: true,
     },
     {
-      // Makes document's fallback base URL use about:blank instead of the base
-      // URL of whatever execution context created it in order to match the
-      // HTML spec and the behavior already shipped in all other browsers. This
-      // behavior is reflected by document.baseURI.
-      name: "DocumentBaseURIFix",
-      status: "stable",
-    },
-    {
       name: "DocumentCookie",
     },
     {
