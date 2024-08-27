@@ -6,30 +6,46 @@ package org.chromium.chrome.test.transit;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.TravelException;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.page.PageStation;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabThumbnailCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 
 /* Helper class for extended multi-stage Trips. */
 public class Journeys {
+    public static final String TAG = "Journeys";
+
     /**
-     * Make Chrome have {@code numTabs} of regular Tabs and {@code numIncognitoTabs} of incognito
-     * tabs with {@code url} loaded.
+     * Make Chrome have {@code numRegularTabs} of regular Tabs and {@code numIncognitoTabs} of
+     * incognito tabs with {@code url} loaded.
      *
+     * <p>Ensures tab thumbnails are captured to disk.
+     *
+     * @param <T> specific type of PageStation for all opened tabs.
      * @param startingStation The current active station.
-     * @param numTabs The number of regular tabs.
+     * @param numRegularTabs The number of regular tabs.
      * @param numIncognitoTabs The number of incognito tabs.
      * @param url The URL to load.
-     * @return the last opened tab WebPageStation (regular if numIncognitoTabs = 0, otherwise
-     *     incognito).
+     * @param pageStationFactory A factory method to create the PageStations for each tab.
+     * @return the last opened tab's PageStation.
      */
-    public static WebPageStation prepareTabs(
-            PageStation startingStation, int numTabs, int numIncognitoTabs, String url) {
-        assert numTabs >= 1;
+    public static <T extends PageStation> T prepareTabsWithThumbnails(
+            PageStation startingStation,
+            int numRegularTabs,
+            int numIncognitoTabs,
+            String url,
+            Supplier<PageStation.Builder<T>> pageStationFactory) {
+        assert numRegularTabs >= 1;
         assert url != null;
         TabModelSelector tabModelSelector =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -38,12 +54,25 @@ public class Journeys {
         int currentIncognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
         assert currentTabCount == 1;
         assert currentIncognitoTabCount == 0;
-        WebPageStation station =
-                startingStation.loadPageProgrammatically(url, WebPageStation.newBuilder());
+        T station = startingStation.loadPageProgrammatically(url, pageStationFactory.get());
         // One tab already exists.
-        station = createTabs(station, numTabs - 1, url, /* isIncognito= */ false);
+        if (numRegularTabs > 1) {
+            station =
+                    createTabsWithThumbnails(
+                            station,
+                            numRegularTabs - 1,
+                            url,
+                            /* isIncognito= */ false,
+                            pageStationFactory);
+        }
         if (numIncognitoTabs > 0) {
-            station = createTabs(station, numIncognitoTabs, url, /* isIncognito= */ true);
+            station =
+                    createTabsWithThumbnails(
+                            station,
+                            numIncognitoTabs,
+                            url,
+                            /* isIncognito= */ true,
+                            pageStationFactory);
         }
         return station;
     }
@@ -51,28 +80,41 @@ public class Journeys {
     /**
      * Create {@code numTabs} of {@link Tab}s with {@code url} loaded to Chrome.
      *
-     * @param startingStation The current active station.
+     * <p>Ensures tab thumbnails are captured to disk.
+     *
+     * @param <T> specific type of PageStation for all opened tabs.
+     * @param startingPage The current active station.
      * @param numTabs The number of tabs to create.
      * @param url The URL to load.
      * @param isIncognito Whether to open an incognito tab.
-     * @return the last opened tab WebPageStation (regular unless {@code isIncognito}).
+     * @param pageStationFactory A factory method to create the PageStations for each tab.
+     * @return the last opened tab's PageStation.
      */
-    public static WebPageStation createTabs(
-            PageStation startingStation, int numTabs, String url, boolean isIncognito) {
+    public static <T extends PageStation> T createTabsWithThumbnails(
+            final PageStation startingPage,
+            int numTabs,
+            String url,
+            boolean isIncognito,
+            Supplier<PageStation.Builder<T>> pageStationFactory) {
         assert numTabs > 0;
-        WebPageStation destination = null;
+
+        TabModelSelector tabModelSelector = startingPage.getActivity().getTabModelSelector();
+        TabModel tabModel = tabModelSelector.getModel(isIncognito);
+
+        PageStation currentPage = startingPage;
         for (int i = 0; i < numTabs; i++) {
-            final ChromeTabbedActivity activity = startingStation.getActivity();
-            destination =
-                    WebPageStation.newBuilder()
-                            .withIsOpeningTabs(1)
-                            .withIsSelectingTabs(1)
-                            .withIncognito(isIncognito)
-                            .withExpectedUrlSubstring(url)
-                            .build();
-            startingStation =
-                    startingStation.travelToSync(
-                            destination,
+            final ChromeTabbedActivity activity = currentPage.getActivity();
+            PageStation previousPage = currentPage;
+            Tab previousTab = previousPage.getLoadedTab();
+            currentPage =
+                    currentPage.travelToSync(
+                            pageStationFactory
+                                    .get()
+                                    .withIsOpeningTabs(1)
+                                    .withIsSelectingTabs(1)
+                                    .withIncognito(isIncognito)
+                                    .withExpectedUrlSubstring(url)
+                                    .build(),
                             () -> {
                                 ChromeTabUtils.fullyLoadUrlInNewTab(
                                         InstrumentationRegistry.getInstrumentation(),
@@ -80,7 +122,58 @@ public class Journeys {
                                         url,
                                         isIncognito);
                             });
+            boolean tryToFixThumbnail = false;
+            try {
+                Condition.runAndWaitFor(
+                        null,
+                        TabThumbnailCondition.etc1(tabModel, i),
+                        TabThumbnailCondition.jpeg(tabModel, i));
+            } catch (TravelException e) {
+                tryToFixThumbnail = true;
+            }
+
+            if (tryToFixThumbnail) {
+                Log.w(
+                        TAG,
+                        "Missing previous tab's thumbnail (index %d, id %d), try to fix by"
+                                + " selecting it",
+                        i,
+                        previousTab.getId());
+
+                Tab tabToComeBackTo = currentPage.getLoadedTab();
+                T previousPageAgain =
+                        currentPage.travelToSync(
+                                pageStationFactory
+                                        .get()
+                                        .withIncognito(isIncognito)
+                                        .withIsOpeningTabs(0)
+                                        .withIsSelectingTabs(1)
+                                        .build(),
+                                () -> selectTab(tabModelSelector, previousTab));
+                currentPage =
+                        previousPageAgain.travelToSync(
+                                pageStationFactory
+                                        .get()
+                                        .withIncognito(isIncognito)
+                                        .withIsOpeningTabs(0)
+                                        .withIsSelectingTabs(1)
+                                        .build(),
+                                () -> selectTab(tabModelSelector, tabToComeBackTo));
+
+                Condition.runAndWaitFor(
+                        null,
+                        TabThumbnailCondition.etc1(tabModel, i),
+                        TabThumbnailCondition.jpeg(tabModel, i));
+            }
         }
-        return destination;
+        return (T) currentPage;
+    }
+
+    private static void selectTab(TabModelSelector tabModelSelector, Tab tab) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            tabModelSelector, tab.getId(), TabSelectionType.FROM_USER);
+                });
     }
 }
