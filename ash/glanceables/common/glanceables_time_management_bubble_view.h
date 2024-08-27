@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/style/counter_expand_button.h"
+#include "ash/style/error_message_toast.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -190,7 +190,7 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   void MaybeDismissErrorMessage();
   void ShowErrorMessage(const std::u16string& error_message,
                         views::Button::PressedCallback callback,
-                        GlanceablesErrorMessageView::ButtonActionType type);
+                        ErrorMessageToast::ButtonActionType type);
 
   Combobox* combobox_view() { return combobox_view_; }
   GlanceablesExpandButton* expand_button() { return expand_button_; }
@@ -243,7 +243,7 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   base::OnceClosure resize_animation_ended_closure_;
 
   // Owned by views hierarchy.
-  raw_ptr<GlanceablesErrorMessageView> error_message_ = nullptr;
+  raw_ptr<ErrorMessageToast> error_message_ = nullptr;
 };
 
 }  // namespace ash

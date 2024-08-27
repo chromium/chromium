@@ -159,7 +159,7 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   base::test::TestFuture<GlanceablesTasksErrorType,
-                         GlanceablesErrorMessageView::ButtonActionType>
+                         ErrorMessageToast::ButtonActionType>
       error_future;
 
   const auto* const view =
@@ -186,7 +186,7 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
     EXPECT_EQ(task_error_type,
               GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork);
     EXPECT_EQ(button_action_type,
-              GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+              ErrorMessageToast::ButtonActionType::kDismiss);
   }
 
   // No `STRIKE_THROUGH` style should be applied to the label.
@@ -207,7 +207,7 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
     EXPECT_EQ(task_error_type,
               GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork);
     EXPECT_EQ(button_action_type,
-              GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+              ErrorMessageToast::ButtonActionType::kDismiss);
   }
 }
 

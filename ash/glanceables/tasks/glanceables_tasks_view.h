@@ -142,7 +142,7 @@ class ASH_EXPORT GlanceablesTasksView
   // `button_action_type`.
   void ShowErrorMessageWithType(
       GlanceablesTasksErrorType error_type,
-      GlanceablesErrorMessageView::ButtonActionType button_action_type);
+      ErrorMessageToast::ButtonActionType button_action_type);
 
   // Returns the string to show on `error_message_` according to the
   // `error_type`.

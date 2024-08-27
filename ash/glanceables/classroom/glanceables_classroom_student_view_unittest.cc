@@ -176,8 +176,8 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kProgressBar)));
   }
 
-  const GlanceablesErrorMessageView* GetErrorMessage() const {
-    return views::AsViewClass<GlanceablesErrorMessageView>(
+  const ErrorMessageToast* GetErrorMessage() const {
+    return views::AsViewClass<ErrorMessageToast>(
         view_->GetViewByID(base::to_underlying(
             GlanceablesViewId::kTimeManagementErrorMessageToast)));
   }

@@ -7931,12 +7931,6 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_EDIT_IN_TASKS_LABEL" desc="A glanceables label button placed under the task title textfield that allows users to edit the task in Google Tasks website.">
         Edit in Google Tasks
       </message>
-      <message name="IDS_GLANCEABLES_ERROR_DISMISS" desc="A glanceables bubble (classroom or tasks) displays a notification with an error message when an error occurs during any action within said glanceables bubble. This is the text that is displayed on the button within said notification in order to dismiss it.">
-        Dismiss
-      </message>
-      <message name="IDS_GLANCEABLES_ERROR_RELOAD" desc="A glanceables bubble (classroom or tasks) displays a notification with an error message when an error occurs during any action within said glanceables bubble. This is the text that is displayed on the button within said notification in order to reload the list of tasks to update it.">
-        Reload
-      </message>
       <message name="IDS_GLANCEABLES_CLASSROOM_SEE_ALL_BUTTON_ACCESSIBLE_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking this button, which will open a corresponding website. This is the text announced by ChromeVox for this button.">
         See all classwork on Google Classroom website
       </message>
@@ -8739,6 +8733,14 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_BIRCH_SEND_FEEDBACK" desc="Context menu item that sends feedback about suggestions in informed restore/overview UI">
         Send feedback
+      </message>
+
+      <!-- Ash style -->
+      <message name="IDS_ASH_ERROR_MESSAGE_TOAST_DISMISS" desc="An error message toast is a notification that shows up when an error occurs. This is the text that is displayed on the button within said notification in order to dismiss it.">
+        Dismiss
+      </message>
+      <message name="IDS_ASH_ERROR_MESSAGE_TOAST_RELOAD" desc="An error message toast is a notification that shows up when an error occurs. This is the text that is displayed on the button within said notification in order to reload the contents.">
+        Reload
       </message>
      </messages>
     </release>

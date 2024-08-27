@@ -664,14 +664,14 @@ void GlanceablesTaskView::CheckButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork,
-        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+        ErrorMessageToast::ButtonActionType::kDismiss);
     return;
   }
 
   if (task_id_.empty()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantMarkComplete,
-        GlanceablesErrorMessageView::ButtonActionType::kReload);
+        ErrorMessageToast::ButtonActionType::kReload);
     return;
   }
 
@@ -689,7 +689,7 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork,
-        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+        ErrorMessageToast::ButtonActionType::kDismiss);
     return;
   }
   RecordUserModifyingTask();

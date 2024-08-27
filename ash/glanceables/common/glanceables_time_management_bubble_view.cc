@@ -458,10 +458,10 @@ void GlanceablesTimeManagementBubbleView::MaybeDismissErrorMessage() {
 void GlanceablesTimeManagementBubbleView::ShowErrorMessage(
     const std::u16string& error_message,
     views::Button::PressedCallback callback,
-    GlanceablesErrorMessageView::ButtonActionType type) {
+    ErrorMessageToast::ButtonActionType type) {
   MaybeDismissErrorMessage();
 
-  error_message_ = AddChildView(std::make_unique<GlanceablesErrorMessageView>(
+  error_message_ = AddChildView(std::make_unique<ErrorMessageToast>(
       std::move(callback), error_message, type));
   error_message_->SetID(
       base::to_underlying(GlanceablesViewId::kTimeManagementErrorMessageToast));

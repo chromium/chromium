@@ -1,25 +1,22 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/glanceables/common/glanceables_error_message_view.h"
+#include "ash/style/error_message_toast.h"
 
 #include <algorithm>
 #include <memory>
 #include <string>
 
-#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -41,15 +38,15 @@ class ActionLabelButton : public views::LabelButton {
 
  public:
   ActionLabelButton(PressedCallback callback,
-                    GlanceablesErrorMessageView::ButtonActionType type)
+                    ErrorMessageToast::ButtonActionType type)
       : views::LabelButton(std::move(callback)) {
     int string_id;
     switch (type) {
-      case GlanceablesErrorMessageView::ButtonActionType::kDismiss:
-        string_id = IDS_GLANCEABLES_ERROR_DISMISS;
+      case ErrorMessageToast::ButtonActionType::kDismiss:
+        string_id = IDS_ASH_ERROR_MESSAGE_TOAST_DISMISS;
         break;
-      case GlanceablesErrorMessageView::ButtonActionType::kReload:
-        string_id = IDS_GLANCEABLES_ERROR_RELOAD;
+      case ErrorMessageToast::ButtonActionType::kReload:
+        string_id = IDS_ASH_ERROR_MESSAGE_TOAST_RELOAD;
         break;
     }
     SetText(l10n_util::GetStringUTF16(string_id));
@@ -68,7 +65,7 @@ END_METADATA
 
 }  // namespace
 
-GlanceablesErrorMessageView::GlanceablesErrorMessageView(
+ErrorMessageToast::ErrorMessageToast(
     views::Button::PressedCallback callback,
     const std::u16string& error_message,
     ButtonActionType type) {
@@ -100,7 +97,7 @@ GlanceablesErrorMessageView::GlanceablesErrorMessageView(
       std::make_unique<ActionLabelButton>(std::move(callback), type));
 }
 
-void GlanceablesErrorMessageView::UpdateBoundsToContainer(
+void ErrorMessageToast::UpdateBoundsToContainer(
     const gfx::Rect& container_bounds) {
   gfx::Rect preferred_bounds(container_bounds);
 
@@ -110,11 +107,11 @@ void GlanceablesErrorMessageView::UpdateBoundsToContainer(
   SetBoundsRect(preferred_bounds);
 }
 
-std::u16string GlanceablesErrorMessageView::GetMessageForTest() const {
+std::u16string ErrorMessageToast::GetMessageForTest() const {
   return error_message_label_->GetText();
 }
 
-BEGIN_METADATA(GlanceablesErrorMessageView)
+BEGIN_METADATA(ErrorMessageToast)
 END_METADATA
 
 }  // namespace ash

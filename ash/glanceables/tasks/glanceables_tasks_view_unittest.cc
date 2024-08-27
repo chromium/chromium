@@ -8,7 +8,6 @@
 
 #include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
-#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -158,8 +157,8 @@ class GlanceablesTasksViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kProgressBar)));
   }
 
-  const GlanceablesErrorMessageView* GetErrorMessage() const {
-    return views::AsViewClass<GlanceablesErrorMessageView>(
+  const ErrorMessageToast* GetErrorMessage() const {
+    return views::AsViewClass<ErrorMessageToast>(
         view_->GetViewByID(base::to_underlying(
             GlanceablesViewId::kTimeManagementErrorMessageToast)));
   }

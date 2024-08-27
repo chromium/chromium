@@ -1,9 +1,9 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_GLANCEABLES_COMMON_GLANCEABLES_ERROR_MESSAGE_VIEW_H_
-#define ASH_GLANCEABLES_COMMON_GLANCEABLES_ERROR_MESSAGE_VIEW_H_
+#ifndef ASH_STYLE_ERROR_MESSAGE_TOAST_H_
+#define ASH_STYLE_ERROR_MESSAGE_TOAST_H_
 
 #include <string>
 
@@ -20,22 +20,22 @@ class LabelButton;
 
 namespace ash {
 
-// Displays error message at the bottom of the glanceables bubble. Used in
-// tasks bubbles.
-class ASH_EXPORT GlanceablesErrorMessageView : public views::FlexLayoutView {
-  METADATA_HEADER(GlanceablesErrorMessageView, views::FlexLayoutView)
+// Displays error message in a toast view. This is usually placed at the
+// bottom of its parent bubble.
+class ASH_EXPORT ErrorMessageToast : public views::FlexLayoutView {
+  METADATA_HEADER(ErrorMessageToast, views::FlexLayoutView)
 
  public:
   // Used for `action_button_` that indicates what to expect on click.
   enum class ButtonActionType { kDismiss, kReload };
 
-  GlanceablesErrorMessageView(views::Button::PressedCallback callback,
-                              const std::u16string& error_message,
-                              ButtonActionType type);
-  GlanceablesErrorMessageView(const GlanceablesErrorMessageView&) = delete;
-  GlanceablesErrorMessageView& operator=(const GlanceablesErrorMessageView&) =
+  ErrorMessageToast(views::Button::PressedCallback callback,
+                    const std::u16string& error_message,
+                    ButtonActionType type);
+  ErrorMessageToast(const ErrorMessageToast&) = delete;
+  ErrorMessageToast& operator=(const ErrorMessageToast&) =
       delete;
-  ~GlanceablesErrorMessageView() override = default;
+  ~ErrorMessageToast() override = default;
 
   // Updates the error message view to display proportionally to the given
   // `container_bounds`.
@@ -51,4 +51,4 @@ class ASH_EXPORT GlanceablesErrorMessageView : public views::FlexLayoutView {
 
 }  // namespace ash
 
-#endif  // ASH_GLANCEABLES_COMMON_GLANCEABLES_ERROR_MESSAGE_VIEW_H_
+#endif  // ASH_STYLE_ERROR_MESSAGE_TOAST_H_
