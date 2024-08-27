@@ -155,4 +155,8 @@ BASE_FEATURE(kUseAsyncOsCryptInLoginDatabase,
              "UseAsyncOsCryptInLoginDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseNewEncryptionMethod,
+             "UseNewEncryptionMethod",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace password_manager::features

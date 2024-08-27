@@ -158,6 +158,9 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 // Enables async implementation of OSCrypt inside LoginDatabase.
 BASE_DECLARE_FEATURE(kUseAsyncOsCryptInLoginDatabase);
 
+// Enables async implementation of OSCrypt inside LoginDatabase.
+BASE_DECLARE_FEATURE(kUseNewEncryptionMethod);
+
 // All features parameters in alphabetical order.
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop

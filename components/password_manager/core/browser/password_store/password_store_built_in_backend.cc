@@ -210,12 +210,17 @@ void PasswordStoreBuiltInBackend::InitBackend(
     std::move(init_database_callback).Run(nullptr);
     return;
   }
+  os_crypt_async::Encryptor::Option option =
+      base::FeatureList::IsEnabled(features::kUseNewEncryptionMethod)
+          ? os_crypt_async::Encryptor::Option::kNone
+          : os_crypt_async::Encryptor::Option::kEncryptSyncCompat;
+
   subscription_ = os_crypt_async_->GetInstance(
       metrics_util::TimeCallback(
           base::BindOnce(&ConvertToUniquePtr)
               .Then(std::move(init_database_callback)),
           "PasswordManager.OsCryptAsync.GetInstanceTime"),
-      os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
+      option);
 }
 
 void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
