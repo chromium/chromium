@@ -7764,6 +7764,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6613267708691765962">멀웨어 검사 중...</translation>
 <translation id="6613668613087513143">기기에 업데이트를 완료하기 위한 공간이 부족합니다. 기기 공간을 <ph name="NECESSARY_SPACE" />만큼 확보한 다음 Chrome 브라우저에서 다시 시도하세요.</translation>
+<translation id="6614172284067813496">읽기 목록에 페이지가 추가됨</translation>
 <translation id="6615455863669487791">보기</translation>
 <translation id="6618744767048954150">실행 중</translation>
 <translation id="6619058681307408113">라인 프린터 데몬(LPD)</translation>
@@ -8144,6 +8145,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6876155724392614295">자전거</translation>
 <translation id="6876469544038980967">도움이 되지 않음</translation>
 <translation id="6878422606530379992">센서가 허용됨</translation>
+<translation id="6878862640969460273">가로 모드</translation>
 <translation id="6880587130513028875">이 페이지에서 이미지가 차단되었습니다.</translation>
 <translation id="6881845890692344060">관리자가 로그아웃했습니다. 사용자가 직접 관리할 수 있습니다.</translation>
 <translation id="6882210908253838664">사이트가 작동하지 않으면 서드 파티 쿠키를 사용하도록 임시 권한을 부여해 볼 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -9682,6 +9684,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 
 키 파일은 확장 프로그램의 새 버전을 만드는 데 필요하므로 안전한 장소에 보관하시기 바랍니다.</translation>
 <translation id="8000020256436988724">툴바</translation>
+<translation id="800117767980299235">음성 하이라이트</translation>
 <translation id="8002274832045662704">고급 프린터 설정</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" />을(를) 더 이상 사용할 수 없습니다.</translation>
 <translation id="8004092996156083991">비밀번호가 유출되면 알려드립니다.</translation>
@@ -10765,6 +10768,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="876956356450740926">개발자 도구, IDE, 편집기를 실행합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">확장 프로그램 루트 디렉터리</translation>
 <translation id="8771300903067484968">시작 페이지 배경화면이 기본 배경화면으로 재설정되었습니다.</translation>
+<translation id="8773535891252326047">하이라이트에 링크 복사됨</translation>
 <translation id="8774379074441005279">복원 확인</translation>
 <translation id="8774934320277480003">상단 여백</translation>
 <translation id="8775144690796719618">URL이 올바르지 않습니다.</translation>

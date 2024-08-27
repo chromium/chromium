@@ -8143,6 +8143,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6876155724392614295">Xe đạp</translation>
 <translation id="6876469544038980967">Không hữu ích</translation>
 <translation id="6878422606530379992">Được phép sử dụng cảm biến</translation>
+<translation id="6878862640969460273">Khổ ngang</translation>
 <translation id="6880587130513028875">Hình ảnh đã bị chặn trên trang này.</translation>
 <translation id="6881845890692344060">Quản trị viên của bạn đã đăng xuất. Giờ đây, bạn là người nắm quyền kiểm soát.</translation>
 <translation id="6882210908253838664">Nếu một trang web không hoạt động, bạn có thể cho phép trang web đó tạm thời sử dụng cookie của bên thứ ba. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -9683,6 +9684,7 @@ Tệp Khoá: <ph name="KEY_FILE" />
 
 Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa để tạo phiên bản tiện ích mới của mình.</translation>
 <translation id="8000020256436988724">Thanh công cụ</translation>
+<translation id="800117767980299235">Đánh dấu bằng giọng nói</translation>
 <translation id="8002274832045662704">Cấu hình máy in nâng cao</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> không sử dụng được nữa</translation>
 <translation id="8004092996156083991">Nếu mật khẩu của bạn bị lộ, chúng tôi sẽ thông báo cho bạn.</translation>

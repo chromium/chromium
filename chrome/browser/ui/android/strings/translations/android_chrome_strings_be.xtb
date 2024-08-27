@@ -1018,6 +1018,7 @@
 <translation id="587735546353481577">Каб падпісацца на сайт, перайдзіце на яго, адкрыйце меню Chrome і націсніце "Падпісацца".</translation>
 <translation id="5879072387416556377">Атрымлівайце лепшыя прапановы</translation>
 <translation id="5885378508678660271">Апавяшчэнні <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо гэты сайт небяспечны</translation>
+<translation id="5895834791314695851">Паролі на гэтай прыладзе неўзабаве могуць перастаць працаваць. Каб і далей карыстацца паролямі, абнавіце сэрвісы Google Play. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Аркуш з інфармацыяй пра адсутнасць ключоў доступу закрыты</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5919204609460789179">Каб запусціць сінхранізацыю, абнавіце <ph name="PRODUCT_NAME" /></translation>
@@ -1557,6 +1558,7 @@
 <translation id="820568752112382238">Сайты, якія часцей за ўсё наведваліся</translation>
 <translation id="8209050860603202033">Адкрыць відарыс</translation>
 <translation id="8210770465353466621">Вашы ўкладкі знаходзяцца тут</translation>
+<translation id="8211101263765532799">Некаторыя паролі неўзабаве перастануць працаваць</translation>
 <translation id="8215740705341534369">Бакавая панэль</translation>
 <translation id="8218622182176210845">Кіраваць уліковым запісам</translation>
 <translation id="8221401890884589479">Вы можаце блакіраваць непажаданыя сайты. Chrome таксама аўтаматычна выдаляе сайты са спіса, унесеныя ў яго больш чым за 30 дзён таму. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -1657,6 +1659,7 @@
 <translation id="864544049772947936">Кіраваць вокнамі (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Персаналізуйце выкарыстанне Chrome</translation>
 <translation id="8664979001105139458">Файл з такой назвай ужо існуе</translation>
+<translation id="8672883760227492369">Некаторыя паролі на гэтай прыладзе неўзабаве перастануць працаваць. Вы можаце перамясціць іх у Менеджар пароляў Google.</translation>
 <translation id="8676276370198826499">Зарэгіструйцеся на вэб-сайце <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="8676789164135894283">Спраўджанне ўваходу</translation>
 <translation id="8683039184091909753">відарыс</translation>
@@ -1751,6 +1754,7 @@
 <translation id="9106148373857059373">Укладка захоўвання закладкі закрыта</translation>
 <translation id="9108312223223904744">Падтрымка функцыі "Тэлефон як ключ бяспекі"</translation>
 <translation id="9108808586816295166">Абароненая DNS можа не быць даступнай пастаянна</translation>
+<translation id="910908805481542201">Мне патрабуецца дапамога</translation>
 <translation id="9131209053278896908">Заблакіраваныя сайты будуць паказвацца тут</translation>
 <translation id="9133397713400217035">Агляд па-за сеткай</translation>
 <translation id="9143389653531441385">Зарэгістравацца праз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

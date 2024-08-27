@@ -1435,6 +1435,7 @@
 <translation id="199610894463449797">{0,plural, =1{এই প্ৰ’ফাইলটো বন্ধ কৰক}one{এই প্ৰ’ফাইলটো বন্ধ কৰক (# খন ৱিণ্ড)}other{এই প্ৰ’ফাইলটো বন্ধ কৰক (# খন ৱিণ্ড)}}</translation>
 <translation id="1997433994358798851">আপোনাৰ ডিভাইচটোৰ সৈতে সংযোগ হোৱাৰ বাবে ব্লুটুথ ব্যৱহাৰ কৰিবলৈ Chromeক অনুমতিৰ আৱশ্যক</translation>
 <translation id="1997616988432401742">আপোনাৰ প্ৰমাণপত্ৰ</translation>
+<translation id="1998715278591719161">আপোনাৰ হাত ট্ৰেক কৰাৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="1999115740519098545">আৰম্ভণি</translation>
 <translation id="2002109485265116295">প্ৰকৃত-সময়</translation>
 <translation id="2002160221914907025">পৰীক্ষামূলক AI</translation>
@@ -3548,6 +3549,7 @@
 <translation id="3521606918211282604">ডিস্কৰ আকাৰ সলনি কৰক</translation>
 <translation id="3522088408596898827">ডিস্কৰ ঠাই একেবাৰে কমি গৈছে। ডিস্কৰ ঠাই খালী কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3522979239100719575">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
+<translation id="3523447078673133727">ছাইটসমূহক আপোনাৰ হাত ট্ৰেক কৰিবলৈ নিদিব</translation>
 <translation id="3524518036046613664">প্ৰিণ্টাৰৰ দৰে আপোনাৰ স্থানীয় নেটৱৰ্কত থকা ডিভাইচসমূহ বিচাৰি উলিয়াওক</translation>
 <translation id="3524965460886318643">ৰপ্তানি কার্যসমূহ</translation>
 <translation id="3525426269008462093">ছেটআপৰ পাছত ডিভাইচৰ ছিংক পৰ্যালোচনা কৰক</translation>
@@ -5925,6 +5927,7 @@
 <translation id="52550593576409946">কিঅ’স্ক এপ্লিকেশ্বন লন্স কৰিব পৰা নগল।</translation>
 <translation id="5255726914791076208">আপুনি আপোনাৰ পাছকীটো সম্পাদনা কৰোঁতে, আপোনাৰ <ph name="RP_ID" /> একাউণ্টটো সলনি নহয়</translation>
 <translation id="5255859108402770436">আকৌ ছাইন ইন কৰক</translation>
+<translation id="5256174546894739043">কোনো ছাইটে আপোনাৰ হাত ট্ৰেক কৰিব বিচাৰিলে সোধক</translation>
 <translation id="52566111838498928">ফ’ণ্ট ল'ড কৰি থকা হৈছে...</translation>
 <translation id="5256861893479663409">সকলো ছাইটত</translation>
 <translation id="5258992782919386492">এই ডিভাইচটোত ইনষ্টল কৰক</translation>
@@ -6673,6 +6676,7 @@
 <translation id="5801051031414037185">ফ’ন ছেট আপ কৰক</translation>
 <translation id="5801568494490449797">অগ্ৰাধিকাৰসমূহ</translation>
 <translation id="5803689677801500549">ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ ইয়াত ওলাব। <ph name="USER_EMAIL" />ৰ বাবে <ph name="BRAND" />লৈ পাছৱৰ্ড আমদানি কৰিবলৈ, <ph name="BEGIN_LINK" />এটা CSV ফাইল বাছনি কৰক।<ph name="END_LINK" /></translation>
+<translation id="5804198298544152115">ইমাৰ্ছিভ অভিজ্ঞতা উন্নত কৰিবলৈ ছাইটসমূহে সাধাৰণতে আপোনাৰ হাত আৰু হাতৰ আঙুলি ট্ৰেক কৰে</translation>
 <translation id="5804241973901381774">অনুমতি</translation>
 <translation id="5804259315582798390">স্থানীয় ডেটা পুনৰুদ্ধাৰ কৰাৰ সুবিধাটো সক্ষম কৰিব পৰা নগ’ল</translation>
 <translation id="5805268472388605531">উচ্চাৰণ চিহ্ন আৰু বিশেষ বৰ্ণ চাবলৈ কীব’ৰ্ডৰ কীবোৰ টিপি ধৰি ৰাখক</translation>
@@ -7762,6 +7766,7 @@
 <translation id="661266467055912436">আপোনাৰ লগতে ৱেবত থকা প্ৰত্যেকজনৰ বাবে সুৰক্ষা উন্নত কৰে।</translation>
 <translation id="6613267708691765962">মালৱেৰৰ বাবে স্কেন কৰি থকা হৈছে...</translation>
 <translation id="6613668613087513143">এই আপডে’টটো সম্পূৰ্ণ কৰিবলৈ এই ডিভাইচটোত পৰ্যাপ্ত খালী ঠাই নাই। আপোনাৰ ডিভাইচত <ph name="NECESSARY_SPACE" /> খালী কৰক আৰু আপোনাৰ Chrome ব্ৰাউজাৰৰ পৰা পুনৰ চেষ্টা কৰক।</translation>
+<translation id="6614172284067813496">পৃষ্ঠাখন পঢ়াৰ সূচীত যোগ দিয়া হৈছে</translation>
 <translation id="6615455863669487791">মোক দেখুৱাওক</translation>
 <translation id="6618744767048954150">চলি আছে</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7775,6 +7780,7 @@
 <translation id="6622980291894852883">প্ৰতিচ্ছবি অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="6624036901798307345">টেবলেট ম’ডত, প্ৰতিটো টেবৰ বাবে থাম্বনেইল দেখুওৱা নতুন টেবৰ ষ্ট্ৰিপটো খুলিবলৈ টেব কাউণ্টাৰৰ টুলবাৰৰ বুটামটোত টিপক।</translation>
 <translation id="6624687053722465643">মিষ্টতা</translation>
+<translation id="6627743754845412571">আপোনাৰ হাত ট্ৰেক কৰাৰ অনুমতি দিয়া হোৱা নাই</translation>
 <translation id="6628316682330029452">ক্লায়েণ্টৰ প্ৰমাণপত্ৰসমূহে আপোনাক অন্য ছাৰ্ভাৰসমূহত চিনাক্ত কৰে।</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" />এ আপল’ড কৰা হৈছে</translation>
 <translation id="6630117778953264026">অধিক শক্তিশালী সুৰক্ষা</translation>
@@ -8142,6 +8148,7 @@
 <translation id="6876155724392614295">বাইক</translation>
 <translation id="6876469544038980967">সহায়ক নহয়</translation>
 <translation id="6878422606530379992">ছেন্সৰসমূহ ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়া হৈছে</translation>
+<translation id="6878862640969460273">লেণ্ডস্কে’প</translation>
 <translation id="6880587130513028875">এই পৃষ্ঠাত ছবিবোৰ অৱৰোধ কৰা আছে।</translation>
 <translation id="6881845890692344060">আপোনাৰ প্ৰশাসকে লগ আউট কৰিছে। এতিয়া নিয়ন্ত্ৰণ আপোনাৰ হাতত।</translation>
 <translation id="6882210908253838664">যদি কোনো ছাইটে কাম কৰা নাই, আপুনি সেইটোক তৃতীয় পক্ষৰ কুকিসমূহ ব্যৱহাৰ কৰিবলৈ অস্থায়ীভাৱে অনুমতি দি চাব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -9679,6 +9686,7 @@
 
 আপোনাৰ কী ফাইলটো সুৰক্ষিত স্থানত ৰাখক। আপুনি নিজৰ এক্সটেনশ্বনৰ এটা নতুন সংস্কৰণ সৃষ্টি কৰিব লাগিব।</translation>
 <translation id="8000020256436988724">টুলবাৰ</translation>
+<translation id="800117767980299235">পঢ়ি থকা অংশ হাইলাইট কৰক</translation>
 <translation id="8002274832045662704">প্ৰিণ্টাৰৰ উন্নত কনফিগাৰেশ্বন</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> আৰু উপলব্ধ নহয়</translation>
 <translation id="8004092996156083991">আপোনাৰ পাছৱৰ্ড হেক কৰা হ’লে আমি আপোনাক জনাম।</translation>
@@ -10761,6 +10769,7 @@
 <translation id="876956356450740926">বিকাশকৰ্তাৰ সঁজুলি, IDE আৰু সম্পাদক চলাওক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">এক্সটেনশ্বন ৰুট ডাইৰেক্টৰী</translation>
 <translation id="8771300903067484968">আৰম্ভণিৰ পৃষ্ঠাৰ নেপথ্য ডিফ’ল্ট নেপথ্যলৈ ৰিছেট কৰা হ’ল।</translation>
+<translation id="8773535891252326047">হাইলাইট কৰিবলৈ লিংক প্ৰতিলিপি কৰা হৈছে</translation>
 <translation id="8774379074441005279">পুনঃস্থাপন নিশ্চিত কৰক</translation>
 <translation id="8774934320277480003">শীৰ্ষ মাৰ্জিন</translation>
 <translation id="8775144690796719618">অমান্য URL</translation>

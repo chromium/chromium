@@ -3087,6 +3087,7 @@
 <translation id="3184591616546256659">Користите овај PIN да бисте променили подешавања родитељског надзора.
     Ако заборавите PIN, извршите Powerwash и поново га подесите.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ова апликација је блокирана}one{Неке апликације су блокиране}few{Неке апликације су блокиране}other{Неке апликације су блокиране}}</translation>
+<translation id="3185454065699440434">Дозволи додатке на <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Мерење огласа</translation>
 <translation id="3187556136478864255">Да ли можете да видите уређај за пребацивање у
     <ph name="BEGIN_LINK" />
@@ -3884,6 +3885,7 @@
 <translation id="3760460896538743390">Провери страницу &amp;позадине</translation>
 <translation id="37613671848467444">Отвори у &amp;прозору без архивирања</translation>
 <translation id="3761556954875533505">Желите ли да дозволите сајту да мења датотеке?</translation>
+<translation id="3761560059647741692">Пејзаж</translation>
 <translation id="3761733456040768239">Још радњи за картицу <ph name="CARD_DESCRIPTION" />, CVC је сачуван</translation>
 <translation id="3763433740586298940">Можете да блокирате сајтове које не желите. Chrome такође аутоматски са листе брише сајтове који су старији од 30 дана.</translation>
 <translation id="3763549179847864476">Дугме Назад за Водич за приватност</translation>
@@ -7410,6 +7412,7 @@
 <translation id="6351178441572658285">Језици апликација</translation>
 <translation id="6354918092619878358">Елиптична крива SECG secp256r1 (такође позната као ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Не искључујте уређај</translation>
+<translation id="6356537493253478650">Спокојно</translation>
 <translation id="63566973648609420">Само неко ко има приступну фразу може да чита шифроване податке. Google не шаље нити чува приступну фразу. Ако заборавите приступну фразу или желите да промените ово подешавање, мораћете да <ph name="BEGIN_LINK" />ресетујете синхронизацију<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Скролујте нагоре да бисте померили страницу надоле</translation>
 <translation id="6356893102071098867">Проверите да ли сте изабрали одговарајући налог</translation>
@@ -7751,6 +7754,7 @@
 <translation id="661266467055912436">Побољшава безбедност за вас и друге на вебу.</translation>
 <translation id="6613267708691765962">Тражи се малвер...</translation>
 <translation id="6613668613087513143">Нема довољно места на овом уређају да би се ово ажурирање завршило. Ослободите <ph name="NECESSARY_SPACE" /> на уређају и пробајте поново из Chrome прегледача.</translation>
+<translation id="6614172284067813496">Страница је додата на листу за читање</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
 <translation id="6618744767048954150">У току је</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8169,6 +8173,7 @@
 <translation id="6909422577741440844">Да ли желите да примите садржај са овог уређаја?</translation>
 <translation id="6910190732484284349">Избришите приступни кључ за корисничко име: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Избрисано</translation>
+<translation id="6910274140210351823">Тамно</translation>
 <translation id="6911734910326569517">Меморијски простор у употреби</translation>
 <translation id="6912007319859991306">PIN SIM-а за мобилну мрежу</translation>
 <translation id="6912380255120084882">Пробајте са другим уређајем</translation>
@@ -8320,6 +8325,7 @@
 <translation id="7014174261166285193">Инсталација није успела.</translation>
 <translation id="7014480873681694324">Уклони истицање</translation>
 <translation id="7014741021609395734">Ниво зумирања</translation>
+<translation id="7015135594296285641">Дозволите додатке</translation>
 <translation id="7016995776279438971">Црвено-зелена, слаба црвена (протаномалија)</translation>
 <translation id="7017004637493394352">Кажите поново „Хеј Google“</translation>
 <translation id="7017219178341817193">Додајте нову страницу</translation>
@@ -10754,6 +10760,7 @@
 <translation id="876956356450740926">Покрећите алатке за програмере, IDE-ове и уређиваче. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Основни директоријум додатка</translation>
 <translation id="8771300903067484968">Позадина почетне странице је ресетована на подразумевану позадину.</translation>
+<translation id="8773535891252326047">Линк је копиран ради истицања</translation>
 <translation id="8774379074441005279">Потврдите враћање</translation>
 <translation id="8774934320277480003">Горња маргина</translation>
 <translation id="8775144690796719618">Неважећи URL</translation>

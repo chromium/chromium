@@ -1429,6 +1429,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="199610894463449797">{0,plural, =1{Zatvori ovaj profil}one{Zatvori ovaj profil (# prozor)}few{Zatvori ovaj profil (# prozora)}other{Zatvori ovaj profil (# prozora)}}</translation>
 <translation id="1997433994358798851">Chrome treba dopuštenje za upotrebu Bluetootha radi povezivanja s vašim uređajem</translation>
 <translation id="1997616988432401742">Vaši certifikati</translation>
+<translation id="1998715278591719161">Dopušteno je praćenje ruku</translation>
 <translation id="1999115740519098545">Prilikom pokretanja</translation>
 <translation id="2002109485265116295">U stvarnom vremenu</translation>
 <translation id="2002160221914907025">Eksperimentalna umjetna inteligencija</translation>
@@ -3539,6 +3540,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3521606918211282604">Promjena veličine diska</translation>
 <translation id="3522088408596898827">Količina prostora na disku kritično je mala. Oslobodite prostor na disku i pokušajte ponovo.</translation>
 <translation id="3522979239100719575">Tražimo dostupne profile. To može potrajati nekoliko minuta.</translation>
+<translation id="3523447078673133727">Ne dopuštaj web-lokacijama praćenje ruku</translation>
 <translation id="3524518036046613664">Istražite uređaje na lokalnoj mreži, primjerice pisače</translation>
 <translation id="3524965460886318643">Izvezi aktivnosti</translation>
 <translation id="3525426269008462093">Pregledajte sinkronizaciju uređaja nakon postavljanja</translation>
@@ -5916,6 +5918,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="52550593576409946">Aplikacija kioska nije pokrenuta.</translation>
 <translation id="5255726914791076208">Kad uredite pristupni ključ, vaš se <ph name="RP_ID" /> račun neće promijeniti</translation>
 <translation id="5255859108402770436">Prijavite se ponovo</translation>
+<translation id="5256174546894739043">Pitaj me kad web-lokacija želi pratiti ruke</translation>
 <translation id="52566111838498928">Učitavanje fontova...</translation>
 <translation id="5256861893479663409">Na svim web-lokacijama</translation>
 <translation id="5258992782919386492">Instaliraj na ovom uređaju</translation>
@@ -6661,6 +6664,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5801051031414037185">Postavi telefon</translation>
 <translation id="5801568494490449797">Postavke</translation>
 <translation id="5803689677801500549">Ovdje će se pojaviti spremljene zaporke. Da biste uvezli zaporke na uslugu <ph name="BRAND" /> za <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />odaberite CSV datoteku<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">Web-lokacije obično prate vaše ruke i prste kako bi poboljšale interaktivni doživljaj</translation>
 <translation id="5804241973901381774">Dopuštenja</translation>
 <translation id="5804259315582798390">Omogućivanje oporavka lokalnih podataka nije uspjelo</translation>
 <translation id="5805268472388605531">Pritisnite i zadržite tipke tipkovnice da biste vidjeli dijakritičke i posebne znakove</translation>
@@ -7765,6 +7769,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6622980291894852883">Nastavi blokirati slike</translation>
 <translation id="6624036901798307345">U načinu rada tableta dodirnite na gumb alatne trake brojača kartica da biste otvorili novu vrpcu kartica koja prikazuje minijature svake kartice.</translation>
 <translation id="6624687053722465643">Slastica</translation>
+<translation id="6627743754845412571">Nije dopušteno praćenje ruku</translation>
 <translation id="6628316682330029452">Certifikati klijenta certifikati su koji vas identificiraju drugim poslužiteljima.</translation>
 <translation id="6628328486509726751">Preneseno u <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Snažnija zaštita</translation>

@@ -719,6 +719,7 @@
 <translation id="2276057643614339130">ბეჭდვის ფუძე</translation>
 <translation id="2277103315734023688">წინ გადახვევა</translation>
 <translation id="2277753418458118549">კავშირის დეტალების ჩვენება</translation>
+<translation id="2277949605527755300"><ph name="URL" />-ს სურს, თვალი ადევნოს თქვენი ხელების მოძრაობას</translation>
 <translation id="22792995594807632">ჩამოტვირთვამდე საჭიროა შემოწმება</translation>
 <translation id="2283340219607151381">მისამართების შენახვა და შევსება</translation>
 <translation id="2283447177162560884">„<ph name="PAGE_TITLE" />“ წაიშალა</translation>
@@ -1529,6 +1530,7 @@
 <translation id="3793574014653384240">ახლახან დაფიქსირებული ავარიული გათიშვების ნომრები და გამომწვევი მიზეზები</translation>
 <translation id="3799805948399000906">შრიფტი მოთხოვნილია</translation>
 <translation id="3801265110651850478">„Do Not Track“ მოთხოვნის გაგზავნა თქვენი ბრაუზერის საშუალებით</translation>
+<translation id="3801297763951514916">თქვენ მიერ ხშირად მონახულებული</translation>
 <translation id="380329542618494757">სახელი</translation>
 <translation id="3803801106042434208">თქვენს რეგიონში პოპულარულია ეს საძიებო სისტემები</translation>
 <translation id="3807366285948165054">სურათის წანაცვლება X ღერძზე</translation>
@@ -1622,6 +1624,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 მბაიტზე ნაკლები</translation>
 <translation id="3990250421422698716">კიდის წანაცვლება</translation>
+<translation id="3990532701115075684">თქვენი ხელების მოძრაობაზე თვალის დევნება</translation>
 <translation id="3992684624889376114">ამ გვერდის შესახებ</translation>
 <translation id="3995639283717357522">წესების გამოყენება</translation>
 <translation id="399754345297554962">სტანდარტული და მისაღები გამოცდები</translation>
@@ -2366,6 +2369,7 @@
 <translation id="5385857628869214740">იუმორი</translation>
 <translation id="5385966243497224160">არა-HTTPS URL-ის გადახედვა ვერ მოხერხდება</translation>
 <translation id="5386426401304769735">ამ საიტის სერტიფიკატთა ჯაჭვი SHA-1-ის მეშვეობით ხელმოწერილ სერტიფიკატს შეიცავს.</translation>
+<translation id="5391010642126249196">თქვენ მოინახულეთ</translation>
 <translation id="539203134595252721">მაგიდის ჩოგბურთი</translation>
 <translation id="5392506727170022660">ლითონი (ნახევარპრიალა)</translation>
 <translation id="5394069166371280357">საოჯახო სატელევიზიო შოუები</translation>
@@ -2565,6 +2569,7 @@
 <translation id="5742806904559466333">ბარები, კლუბები და ღამის ცხოვრება</translation>
 <translation id="5743684619253032786">ფრჩხილების მოვლის საშუალებები</translation>
 <translation id="5745733273847572235">შეუძლია თქვენი მდებარეობის გარკვევის თხოვნა</translation>
+<translation id="5750869797196646528">ხელების მოძრაობაზე თვალის დევნება</translation>
 <translation id="5759751709240058861">კამერის გამოყენება და გადაადგილება</translation>
 <translation id="5763042198335101085">შეიყვანეთ ელფოსტის სწორი მისამართი</translation>
 <translation id="5764725887548570807">წყაროს ფორმატი არასწორია.</translation>
@@ -2984,6 +2989,7 @@
 <translation id="6513005815064132016">შეუძლია თქვენი კამერის პოზიციისთვის თვალის მიდევნების თხოვნა</translation>
 <translation id="6517596291481585650">გაფრთხილება: ეს წესები არ გაერთიანებულა სიის სახით, წესებში აღწერილის შესაბამისად, ვინაიდან ისინი არ არის სია.</translation>
 <translation id="6518133107902771759">გადამოწმება</translation>
+<translation id="6519885440226079262">შეიძლება გთხოვოთ თქვენი ხელების მოძრაობაზე თვალის დევნება</translation>
 <translation id="6520026037299163656">ვებაპები და ონლაინხელსაწყოები</translation>
 <translation id="65203098586853226"><ph name="SOURCE" /> ითარგმნება შემდეგ ენაზე: <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">არ არის აქტიური</translation>
@@ -3023,6 +3029,7 @@
 <translation id="6599642189720630047">თვალმიდევნებული პროდუქტები</translation>
 <translation id="6606309334576464871">Chrome უბლოკავს საიტების უმეტესობას მესამე მხარის ქუქი-ჩანაწერების გამოყენების შესაძლებლობას ვების დათვალიერებისას თქვენთვის თვალის დევნების მიზნით.
             <ph name="NEW_LINE" />თუ საიტის ფუნქციები არ მუშაობს, <ph name="START_LINK" />ცადეთ მესამე მხარის ქუქი-ჩანაწერების დროებით დაშვება<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">ხელების მოძრაობაზე თვალის დევნება</translation>
 <translation id="6613866251791999074">შეიტყვეთ მეტი Chrome-ში თქვენი საძიებო სისტემის შესახებ</translation>
 <translation id="6615297766614333076">სტეკერი 2</translation>
 <translation id="6619496928666593220">IBAN არ არის შევსებული</translation>
@@ -3474,6 +3481,7 @@
 <translation id="7440140511386898319">გაეცანით კონტენტს, სანამ ხაზგარეშე რეჟიმში ხართ</translation>
 <translation id="7441627299479586546">პოლიტიკის თემა არასწორია</translation>
 <translation id="7441864845853794192">კერძები გურმანებისთვის და დელიკატესები</translation>
+<translation id="7442389976360981500">დაუშვებთ ხელების მოძრაობაზე თვალის დევნებას?</translation>
 <translation id="7442725080345379071">ღია ნარინჯისფერი</translation>
 <translation id="7444046173054089907">ეს საიტი დაბლოკილია</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{ქუქი-ჩანაწერები კვლავ დაიბლოკება დღეს}=1{ქუქი-ჩანაწერები კვლავ დაიბლოკება ხვალ}other{ქუქი-ჩანაწერები კვლავ დაიბლოკება # დღეში}}</translation>
@@ -4132,6 +4140,7 @@
 <translation id="865032292777205197">მოძრაობის სენსორები</translation>
 <translation id="865255447216708819">ყუაზე ბეჭდვის აფსკი</translation>
 <translation id="8654126188050905496">55 x 91 მმ</translation>
+<translation id="8660780831677950176">თქვენ ამ დროს ხშირად სტუმრობთ</translation>
 <translation id="8662463432865928030">კომერციული უძრავი ქონება</translation>
 <translation id="8663226718884576429">შეკვეთის რეზიუმე, <ph name="TOTAL_LABEL" />, დამატებითი ინფორმაცია</translation>
 <translation id="8663909737634214500">ოპტიკური დისკი</translation>

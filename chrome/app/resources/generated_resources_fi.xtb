@@ -1436,6 +1436,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="199610894463449797">{0,plural, =1{Sulje tämä profiili}other{Sulje tämä profiili (# ikkunaa)}}</translation>
 <translation id="1997433994358798851">Chrome tarvitsee Bluetoothin käyttöluvan muodostaakseen yhteyden laitteeseen</translation>
 <translation id="1997616988432401742">Omat varmenteet</translation>
+<translation id="1998715278591719161">Käsien seuraaminen sallittu</translation>
 <translation id="1999115740519098545">Käynnistyksessä</translation>
 <translation id="2002109485265116295">Reaaliaikainen</translation>
 <translation id="2002160221914907025">Kokeellinen tekoäly</translation>
@@ -3549,6 +3550,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3521606918211282604">Muuta levyn kokoa</translation>
 <translation id="3522088408596898827">Levytila on erittäin vähissä. Vapauta levytilaa ja yritä uudelleen.</translation>
 <translation id="3522979239100719575">Etsitään käytettävissä olevia profiileja. Tässä voi kulua muutama minuutti.</translation>
+<translation id="3523447078673133727">Älä salli sivustojen seurata käsiäsi</translation>
 <translation id="3524518036046613664">löytää paikallisesta verkostasi laitteita, esim. tulostimia</translation>
 <translation id="3524965460886318643">Vie toiminta</translation>
 <translation id="3525426269008462093">Tarkista laitteen synkronointi käyttöönoton jälkeen</translation>
@@ -5925,6 +5927,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="52550593576409946">Kioskisovelluksen käynnistäminen ei onnistunut.</translation>
 <translation id="5255726914791076208">Kun muokkaat avainkoodia, tili (<ph name="RP_ID" />) ei muutu</translation>
 <translation id="5255859108402770436">Kirjaudu uudelleen sisään</translation>
+<translation id="5256174546894739043">Kysy, kun sivusto haluaa seurata käsiäsi</translation>
 <translation id="52566111838498928">Fontteja ladataan…</translation>
 <translation id="5256861893479663409">Kaikilla sivustoilla</translation>
 <translation id="5258992782919386492">Asenna tälle laitteelle</translation>
@@ -6673,6 +6676,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5801051031414037185">Ota puhelin käyttöön</translation>
 <translation id="5801568494490449797">Asetukset</translation>
 <translation id="5803689677801500549">Tallennetut salasanat näkyvät täällä. Jos haluat siirtää salasanoja tänne: <ph name="BRAND" /> (<ph name="USER_EMAIL" />), <ph name="BEGIN_LINK" />valitse CSV-tiedosto<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">Sivustot seuraavat käsiä ja sormia yleensä parantaakseen immersiivisiä kokemuksia</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5804259315582798390">Paikallisen datan palauttamisen käyttöönotto epäonnistui</translation>
 <translation id="5805268472388605531">Näet aksenttimerkit ja erikoismerkit painamalla näppäimiä pitkään</translation>
@@ -7773,6 +7777,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6622980291894852883">Estä kuvat edelleen</translation>
 <translation id="6624036901798307345">Kun laite on tablettitilassa, napauta välilehtilaskurin työkalupalkkikuvaketta. Tämä avaa uuden välilehtirivin, jossa näkyy kunkin välilehden pikkukuva.</translation>
 <translation id="6624687053722465643">Herkku</translation>
+<translation id="6627743754845412571">Käsien seuraaminen ei sallittu</translation>
 <translation id="6628316682330029452">Asiakasvarmenteet ovat varmenteita, joiden perusteella muut palvelimet tunnistavat sinut.</translation>
 <translation id="6628328486509726751">Lähetetty <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Vahvempi suojaus</translation>

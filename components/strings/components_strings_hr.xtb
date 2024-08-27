@@ -1292,6 +1292,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3402261774528610252">Veza za učitavanje ove web-lokacije koristila je TLS 1.0 ili TLS 1.1, koji su obustavljeni i onemogućit će se. Nakon onemogućivanja korisnici neće moći učitati ovu web-lokaciju. Poslužitelj bi trebao omogućiti TLS 1.2 ili noviju verziju.</translation>
 <translation id="3405664148539009465">Prilagodi fontove</translation>
 <translation id="3407789382767355356">prijava putem treće strane</translation>
+<translation id="340924996148642843">Usporedba trenutačno nije dostupna.</translation>
 <translation id="3409896703495473338">Upravljajte sigurnosnim postavkama</translation>
 <translation id="3414275587143250384">Distribuirano računalstvo i računalstvo u oblaku</translation>
 <translation id="3414952576877147120">Veličina:</translation>
@@ -1449,6 +1450,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="365641980390710834">Ležerna odjeća</translation>
 <translation id="3658742229777143148">Izmjena</translation>
 <translation id="3659521826520353662">Koje se web-lokacije koje je definirao administrator posjećuju i kada: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Potražite više opcija za kupnju u drugim trgovinama koje prodaju taj proizvod.</translation>
 <translation id="3664782872746246217">Ključne riječi:</translation>
 <translation id="3665100783276035932">Većina web-lokacija trebala bi funkcionirati u skladu s očekivanjima</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Saznajte više<ph name="LINK_END1" /></translation>
@@ -1886,6 +1888,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4451135742916150903">Može tražiti dopuštenje za povezivanje s HID uređajima</translation>
 <translation id="4451684391620232683">Tekst koji se prikazuje korisniku:</translation>
 <translation id="4452328064229197696">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Radi zaštite vaših računa Google upravitelj zaporki preporučuje da provjerite svoje spremljene zaporke.</translation>
+<translation id="4452957520362597816">Tražiti instaliranje web-aplikacija</translation>
 <translation id="4456937135469235202">Pustolovna putovanja</translation>
 <translation id="4464826014807964867">Web-lokacije s podacima iz vaše organizacije</translation>
 <translation id="4466576951214254884">Studentski zajmovi i financiranje koledža</translation>
@@ -2993,6 +2996,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6529602333819889595">&amp;Ponovi brisanje</translation>
 <translation id="6535617236508021606">Kartica je spremljena na vaš Google račun kako biste je mogli upotrebljavati na Googleovim uslugama.</translation>
 <translation id="6536221421038631327">Uklanjanjem pretplate na Passpoint s uređaja <ph name="DEVICE_TYPE" /> uklonit će se povezane mreže. Obratite se aplikaciji <ph name="FRIENDLY_NAME" /> da biste promijenili svoju pretplatu. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Da biste vidjeli tablice za usporedbu, uključite sinkronizaciju</translation>
 <translation id="6539092367496845964">Nešto nije u redu. Pokušajte ponovo kasnije.</translation>
 <translation id="6540488083026747005">Dopustili ste kolačiće trećih strana na ovoj web-lokaciji</translation>
 <translation id="6545864417968258051">Traženje Bluetootha</translation>

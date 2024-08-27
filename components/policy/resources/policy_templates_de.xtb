@@ -536,8 +536,10 @@ Wenn „PromptInTab“ festgelegt ist und die Authentifizierung des Nutzers abl�
 <translation id="1395988776118675626">Funktion zum Speichern des Passworts für Kerberos aktivieren</translation>
 <translation id="1396119629372155901">Funktion „ThrottleDisplayNoneAndViewableHiddenCrossOriginIframes“ deaktiviert</translation>
 <translation id="1397855852561539316">Vorschlags-URL für die Standardsuchmaschine</translation>
+<translation id="140076409387986842">„Formuliere für mich“ zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="1402227992519954892">Melden der App-Informationen auf Geräten aktivieren</translation>
 <translation id="1405444733221330570">Orca aktivieren</translation>
+<translation id="1407977345632185991">„Designs mit KI erstellen“ nicht zulassen.</translation>
 <translation id="141279920573530952">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit Websites erstellen, die automatisch die Berechtigung für den Zugriff auf alle verfügbaren seriellen Ports erhalten.
 
       Die URLs müssen gültig sein, da die Richtlinie andernfalls ignoriert wird. Es wird nur der Ursprung (Schema, Host und Port) der URL berücksichtigt.
@@ -766,6 +768,15 @@ Ist diese Richtlinie nicht konfiguriert, dürfen Nutzer Ausnahmen hinzufügen, u
 <translation id="1574258262373444557"><ph name="AES_KL_NAME" /> nicht als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden</translation>
 <translation id="1575015449587326319">Konfigurationsrichtlinie für den Chrome Enterprise-Connector "OnFileDownloaded"</translation>
 <translation id="1583248206450240930">Standardmäßig <ph name="PRODUCT_FRAME_NAME" /> verwenden</translation>
+<translation id="1584963377073400553">Mit der Funktion „Designs mit KI erstellen“ können Nutzer individuelle Designs und Hintergründe erstellen, indem sie aus einer Liste von Optionen eine Vorauswahl treffen.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="1587585749332985896">Verwendung des monitorlosen Modus nicht erlauben</translation>
 <translation id="1588240398285670601">Browsereinstellungen</translation>
 <translation id="1590802206069983683">Funktion „ThrottleDisplayNoneAndViewableHiddenCrossOriginIframes“ verfügbar</translation>
@@ -848,6 +859,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621245029534873770">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" />“.</translation>
 <translation id="162162247775156979">Melden des Speicherstatus auf Geräten deaktivieren</translation>
+<translation id="1622982680869126605">„Tabs organisieren“ zulassen und KI‑Modelle verbessern.</translation>
 <translation id="1625700732886306811"><ph name="PRODUCT_NAME" /> erlauben, Verbindungen zu Geräten unter allen IP-Adressen herzustellen</translation>
 <translation id="1626379196197114720">Verwendung des Back-Forward-Cache zulassen</translation>
 <translation id="1628974048137236820">Die „Neuer Tab“-Seite zeigt keine Karten an</translation>
@@ -1120,6 +1132,7 @@ Diese Richtlinie hat keine Auswirkungen, wenn sie auf Geräteebene konfiguriert 
 <translation id="1839042185432919430">Zulassen, dass die Kiosk-Web-App beim Start der App eine Netzwerkaufforderung anzeigt, wenn das Gerät offline ist</translation>
 <translation id="1843102210803941014">Nur notwendige Cookies und Daten in der Suche aktivieren</translation>
 <translation id="1843117931376765605">Aktualisierungsrate für Nutzerrichtlinien</translation>
+<translation id="1844616986352942647">„Designs mit KI erstellen“ zulassen und KI‑Modelle verbessern.</translation>
 <translation id="1844620919405873871">Konfiguriert Richtlinien zum schnellen Entsperren.</translation>
 <translation id="1844833120200057817">Systemprotokollierung für Erweiterungen aktivieren</translation>
 <translation id="1844972978764975668">Anfragen an einen Google-Server zulassen, um einen exakten Zeitstempel abzufragen</translation>
@@ -1593,6 +1606,7 @@ Wird diese Richtlinie nicht konfiguriert, entspricht dies für normale Nutzer ei
       Weitere Informationen zu Safe Browsing findest du unter https://support.google.com/chrome?p=safe_browsing_preferences.</translation>
 <translation id="2177696016354404697">Privatsphärefunktion immer deaktivieren</translation>
 <translation id="2178899310296064282">Mindestens den moderaten eingeschränkten Modus auf YouTube erzwingen</translation>
+<translation id="2180260434916939385">KI‑basierte Verlaufssuche zulassen und KI‑Modelle verbessern.</translation>
 <translation id="2180795125410219364">Einstellungen von „Position 1“ und „Ende“ sind deaktiviert</translation>
 <translation id="2180958780733364832">Verwendung des monitorlosen Modus verwalten</translation>
 <translation id="2182291258410176649">Der Nutzer entscheidet, ob "Sicherung und Wiederherstellung" aktiviert werden soll</translation>
@@ -3220,6 +3234,7 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhinder
 
       Hinweis: Wenn die Richtlinie <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> deaktiviert, <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> jedoch aktiviert oder nicht konfiguriert ist, ist die in Gruppen eingeteilte Chrome-Verlaufsseite trotzdem unter chrome://history/grouped verfügbar, auch wenn sie möglicherweise weniger relevant für den Nutzer ist.
 </translation>
+<translation id="3469713571374938745">„Designs mit KI erstellen“ zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="3478024346823118645">Nutzerdaten bei Abmeldung löschen</translation>
 <translation id="3478406829037689272">Detailliertere Scans von heruntergeladenen Dateien im Rahmen von Safe Browsing aktivieren</translation>
 <translation id="3480961938508521469">Lädt den Akku mit normaler Geschwindigkeit vollständig auf.</translation>
@@ -3439,6 +3454,7 @@ Hinweis: Diese Richtlinie gilt nicht für den Inkognito- oder Gastmodus.</transl
 <translation id="3625900437628963632">Gibt an, ob das in diesem Richtlinienelement festgelegte Kerberos-Passwort gespeichert wird. Wenn die Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, wird das Passwort gespeichert. Ist sie auf „false“ gesetzt, wird das Passwort nicht gespeichert. Wird ignoriert, wenn für dieses Konto kein Passwort festgelegt ist. Dieses Feld wird seit ChromeOS-Version 116 unterstützt.</translation>
 <translation id="3627678165642179114">Webdienst für die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
 <translation id="3628480121685794414">Simplexdruck aktivieren</translation>
+<translation id="36319015509487508">„Hilfe beim Lesen“ nicht zulassen.</translation>
 <translation id="3634125384445314047">Zulassen, dass Fotos und Videos, die kürzlich mit dem Smartphone aufgenommen wurden, über Phone Hub abgerufen werden können.</translation>
 <translation id="3637063789824963261">Wenn die Richtlinie aktiviert ist, werden über registrierte Geräte die Gerätelaufzeitzähler gemeldet (nur bei Intel vPro Gen 14+).
 
@@ -3588,6 +3604,7 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 
       Wenn die Richtlinie nicht konfiguriert ist, betragen die Intervalle standardmäßig 3 Stunden.</translation>
 <translation id="3755796472192036324">Tastaturbeleuchtungsfarbe „Weiß“</translation>
+<translation id="3755902888263933411">KI‑basierte Verlaufssuche zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="3756011779061588474">Entwicklermodus blockieren</translation>
 <translation id="3756516139200532906">Verwaltetem Nutzer erlauben, seinen Gerätehostnamen zu konfigurieren</translation>
 <translation id="3756737071958233151">Upload des Gerätesystemprotokolls aktivieren</translation>
@@ -3657,6 +3674,15 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
 <translation id="379318040165550702">Nutzer können auswählen</translation>
+<translation id="3793244042614155322">„Formuliere für mich“ ist ein KI‑basierter Schreibassistent für Kurzinhalte im Web. Vorgeschlagene Inhalte basieren auf den vom Nutzer eingegebenen Prompts und dem Inhalt auf der Webseite.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3796527892245558832">Profil-Picker beim Start verfügbar</translation>
 <translation id="3798922329287609568">Durch diese Richtlinie kann der Duplexdruck eingeschränkt werden.
 
@@ -4246,6 +4272,17 @@ Mit dieser Richtlinie wurde das automatische Upgrade für gemischte Inhalte unte
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 10 Minuten.</translation>
 <translation id="4290231183305601970">Text, der dem Nutzer im Chrome Webstore angezeigt wird, wenn die Installation blockiert ist.</translation>
+<translation id="4291413477651927481">Bei diesen Funktionen in den Entwicklertools von <ph name="PRODUCT_NAME" /> werden Modelle basierend auf generativer KI eingesetzt, um zusätzliche Debugging-Informationen bereitzustellen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie Fehlermeldungen, Stacktraces, Code-Snippets und Netzwerkanfragen erheben und an einen Google-Server senden, auf dem ein Modell basierend auf generativer KI ausgeführt wird. Antworttext oder Authentifizierungs- und Cookie-Header in Netzwerkanfragen sind nicht in den Daten enthalten, die an den Server gesendet werden.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.
+
+Zu den auf generativer KI basierenden Funktionen der Entwicklertools gehören folgende:
+
+– Console Insights: erklärt Konsolenmeldungen und bietet Vorschläge zum Beheben von Konsolenfehlern.</translation>
 <translation id="4293187705196369087">Ermöglicht die Aktivierung oder Deaktivierung einer Benachrichtigung, wenn nur noch wenig Speicherplatz verfügbar ist. Dies gilt für alle Nutzer auf diesem Gerät.
 
       Ist diese Richtlinie aktiviert, erscheint eine Benachrichtigung, wenn nur noch wenig Speicherplatz verfügbar ist.
@@ -4475,6 +4512,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
 <translation id="4461400898496433231">Überschreibe den IPv6-Erreichbarkeitstest nicht. Frage den AAAA-Eintrag zur Auflösung des Hostnamens nur dann ab, wenn das Gerät für einen globalen IPv6-Host erreichbar ist.</translation>
+<translation id="4463467966408770621">Auf generativer KI basierende Funktionen der Entwicklertools nicht zulassen.</translation>
 <translation id="4463675333222095358">Einheitenumrechnung über „Schnellinfo“ aktivieren</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> deaktivieren</translation>
 <translation id="4467952432486360968">Drittanbieter-Cookies blockieren</translation>
@@ -4531,6 +4569,7 @@ Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder n
 <translation id="4512407512989846472">Gestattet das Blockieren von Kopiervorgängen in die Zwischenablage auf bestimmten URLs</translation>
 <translation id="4513691822411041977">Verwendung von SafeSearch in der Google Suche oder im eingeschränkten Modus für YouTube nicht erzwingen</translation>
 <translation id="4515404363392014383">Safe Browsing für vertrauenswürdige Quellen aktivieren</translation>
+<translation id="4517327050150780380">Einstellungen für die Funktion „Hilfe beim Lesen“</translation>
 <translation id="4518251772179446575">Nachfragen, wenn eine Website den physischen Standort der Nutzer verfolgen möchte</translation>
 <translation id="4521193243799782295">Bei der Anmeldung kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
 
@@ -4756,6 +4795,7 @@ Wenn vorhandene Browserdaten nicht in das verwaltete Profil übernommen werden, 
 <translation id="4674542060943819878">Schließen von Warnungen zu gehackten Passwörtern aktivieren</translation>
 <translation id="4674871290487541952">Unsichere Algorithmen in Integritätsprüfungen bei Erweiterungsupdates und -installationen erlauben</translation>
 <translation id="4680961954980851756">Autofill zulassen</translation>
+<translation id="46845898956959634">„Formuliere für mich“ zulassen und KI‑Modelle verbessern.</translation>
 <translation id="4685721728282448265">CECPQ2-Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS aktiviert</translation>
 <translation id="468822697351680932">SiteList-Richtlinie in Internet Explorer als Quelle für Regeln verwenden</translation>
 <translation id="4693190628432874457">Melden des Standorts auf Geräten aktivieren</translation>
@@ -5116,6 +5156,7 @@ Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtli
 <translation id="4970046075219007744">Webanwendungen erlauben, um Zugriff auf Dateitypen über die File Handling API zu bitten</translation>
 <translation id="4970855112942626932">Browseranmeldung deaktivieren</translation>
 <translation id="4974091268178043378">Chrome OS-Farbmodus</translation>
+<translation id="4976825008579439428">KI‑basierte Verlaufssuche nicht zulassen.</translation>
 <translation id="4978533099939732984">Warnungen bei wenig Speicherplatz immer anzeigen</translation>
 <translation id="4979614740553442831">Mit dieser Richtlinie wird die Verfügbarkeit der Lens-Integration in der Gallery App unter <ph name="PRODUCT_OS_NAME" /> gesteuert.
 
@@ -5688,6 +5729,17 @@ Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im moni
       Ist für diese Richtlinie eine Liste mit IDs für Eingabemethoden festgelegt, werden die entsprechenden Eingabemethoden auf der Anmeldeseite bereitgestellt. Das oberste Listenelement ist vorab ausgewählt. Während bestimmte Nutzerdaten auf der Anmeldeseite markiert sind, wird zusätzlich zu den von dieser Richtlinie bereitgestellten Eingabemethoden auch die vom Nutzer zuletzt verwendete angeboten. Ist diese Richtlinie nicht konfiguriert, werden die Eingabemethoden auf der Anmeldeseite von der Sprache der Anmeldeseite abgeleitet. Werte, die keine gültigen IDs für Eingabemethoden sind, werden ignoriert.</translation>
 <translation id="5406626703145660021">Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit TLS für Geräte aktivieren</translation>
 <translation id="5407008856008996384">Zugriff auf CUPS-Drucker zulassen</translation>
+<translation id="5412932514296195873">Die KI‑basierte Verlaufssuche ist eine Funktion, mit der Nutzer ihren Browserverlauf auch anhand von Seiteninhalten durchsuchen können statt nur anhand von Seitentitel und URL.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.
+
+Wenn die Richtlinie nicht konfiguriert ist, ist die Standardeinstellung für normale Nutzer „0“ und für verwaltete Nutzer „2“ bei <ph name="PRODUCT_OS_NAME" />.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5413051574966911176">Benutzeroberflächen im Zusammenhang mit der Verbindung auf dem Remote-Host-Desktop während einer aktiven Verbindung deaktivieren</translation>
 <translation id="5415713057512333739">URL der herunterzuladenden Daten.</translation>
 <translation id="5416263061774624216">SiteList-Richtlinie in Internet Explorer nicht als Quelle für Regeln verwenden</translation>
@@ -5830,6 +5882,7 @@ Dies wurde in M112 entfernt.</translation>
 <translation id="55057839818162162">Kameragestützte Suche mit <ph name="GOOGLE_LENS_PRODUCT_NAME" /> erlauben</translation>
 <translation id="55057971769693300">„Caret hervorheben“ deaktivieren</translation>
 <translation id="5508307164752647432">Kerberos-Funktion aktivieren</translation>
+<translation id="5511266910976210617">„Formuliere für mich“ nicht zulassen.</translation>
 <translation id="5511702823008968136">Lesezeichenleiste aktivieren</translation>
 <translation id="5512418063782665071">Startseiten-URL</translation>
 <translation id="5516293691820655022">Chrome vollständig schließen</translation>
@@ -6967,6 +7020,7 @@ ACHTUNG: Du musst vorsichtig sein, wenn du diese Einstellung änderst, da dadurc
 <translation id="6353890097388312479">Wenn die Richtlinie auf „Alle“ (0) gesetzt oder nicht konfiguriert ist, können Nutzer Vertrauenseinstellungen für alle CA-Zertifikate bearbeiten, von Nutzern importierte Zertifikate entfernen und Zertifikate mit dem Zertifikat-Manager importieren. Wenn die Richtlinie auf „Nur Nutzer“ (1) gesetzt ist, können Nutzer zwar von Nutzern importierte Zertifikate verwalten, aber die Vertrauenseinstellungen integrierter Zertifikate nicht ändern. Ist sie auf „Keine“ (2) gesetzt, können Nutzer CA-Zertifikate ansehen, aber nicht verwalten.</translation>
 <translation id="6358320368815225772">Remote-Attestierung für das Gerät deaktivieren</translation>
 <translation id="6362589180545896213">Videodecodierung durch GPU-Hardware deaktivieren</translation>
+<translation id="6362805033373293870">„Tabs organisieren“ zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="6362856770865555544">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die WPAD (Web Proxy Auto-Discovery)-Optimierung in <ph name="PRODUCT_NAME" /> aktiviert.
 
       Ist sie deaktiviert, ist die WPAD-Optimierung deaktiviert, sodass <ph name="PRODUCT_NAME" /> länger auf DNS-basierte WPAD-Server warten muss.
@@ -7236,6 +7290,7 @@ Hinweis: Wenn der Client über einen längeren Zeitraum offline war, werden Pass
 
       Ist diese Richtlinie nicht konfiguriert, erhalten Nutzer Benachrichtigungen zu angeschlossenen USB-Geräten.</translation>
 <translation id="6536600139108165863">Automatischer Neustart nach Herunterfahren des Geräts</translation>
+<translation id="6538355612742474835">„Hilfe beim Lesen“ zulassen und KI‑Modelle verbessern.</translation>
 <translation id="6538653424603921690">Privatsphärefunktion auf dem Anmeldebildschirm immer deaktivieren</translation>
 <translation id="6539246272469751178">Diese Richtlinie hat keine Auswirkung auf Android-Apps. Android-Apps verwenden immer das Standardverzeichnis für Downloads und haben keinen Zugriff auf Dateien, die von <ph name="PRODUCT_OS_NAME" /> in ein anderes Verzeichnis als das Standardverzeichnis für Downloads heruntergeladen werden.</translation>
 <translation id="6541383786427998658">Systemprotokollierung für Unternehmenserweiterungen aktivieren</translation>
@@ -7750,6 +7805,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_
 
 Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardverhalten zum Blockieren solcher Anfragen.</translation>
 <translation id="6915524162137327111">Verwaltungslabels 30 Sekunden lang anzeigen lassen</translation>
+<translation id="6919205861950516688">„Tabs organisieren“ nicht zulassen.</translation>
 <translation id="6919819553978815392">Wenn diese Richtlinie auf „wahr“ gesetzt oder nicht konfiguriert ist, sind Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich. Gastanmeldungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen alle Fenster im Inkognitomodus geöffnet werden.
 
       Ist die Richtlinie auf „falsch“ gesetzt, sind keine Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich.
@@ -8016,6 +8072,15 @@ Wird sie auf „None“ festgelegt, ist die Lupe auf dem Anmeldebildschirm immer
 Wenn sie konfiguriert ist, kann sie von Nutzern nicht geändert oder überschrieben werden.
 
 Ist die Richtlinie nicht konfiguriert, ist die Lupe auf dem Anmeldebildschirm anfangs deaktiviert, kann aber jederzeit vom Nutzer aktiviert werden.</translation>
+<translation id="7107649610561925752">„Tabs organisieren“ ist ein KI‑basiertes Tool, das auf Grundlage der geöffneten Tabs eines Nutzers automatisch Tabgruppen erstellt. Die Vorschläge basieren auf geöffneten Tabs, aber nicht auf Seiteninhalten.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7109384070286741861">CECPQ2 deaktivieren</translation>
 <translation id="7113439794629928551">Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
 <translation id="7113803652772945829">Wenn die Richtlinie auf „true“ gesetzt ist, können Nutzer einen Passwortmanager eines Drittanbieters verwenden.
@@ -9636,6 +9701,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parameter für URL der Suche im Voraus, die POST verwendet</translation>
 <translation id="8467267413626499807">Floating-SSO-Dienst aktivieren</translation>
+<translation id="8467463980805035993">„Hilfe beim Lesen“ zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="846994437739309080">Wenn diese Richtlinie aktiviert (oder nicht konfiguriert) ist, werden vom Nutzer hinzugefügte TLS-Zertifikate aus Plattform-Trust Stores bei der Pfaderstellung für die TLS-Serverauthentifizierung verwendet.
 
 Wenn diese Richtlinie deaktiviert ist, werden vom Nutzer hinzugefügte TLS-Zertifikate aus Plattform-Trust Stores nicht bei der Pfaderstellung für die TLS-Serverauthentifizierung verwendet.</translation>
@@ -9895,6 +9961,7 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
       Hinweis: Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables findest du eine Liste der Variablen, die verwendet werden können.</translation>
 <translation id="8657543427358173663">Erfassen von WebRTC-Ereignisprotokollen aus Google-Diensten zulassen</translation>
 <translation id="8659843732895043951">Zwischenablage für diese Websites zulassen</translation>
+<translation id="8660214745436301739">Auf generativer KI basierende Funktionen der Entwicklertools zulassen und KI‑Modelle verbessern.</translation>
 <translation id="8661297125441579970">Datenmigration und ARC nicht zulassen.</translation>
 <translation id="8661538142776716004">Website-Einstellungen löschen</translation>
 <translation id="8661980316738569557">Hohen Kontrast aktivieren</translation>
@@ -10381,6 +10448,13 @@ Im Gegensatz zu anderen Richtlinien hat hier die Richtlinie, wenn sie auf Profil
 <translation id="9015759770696099204">Einstellungen von F11/F12 sind deaktiviert</translation>
 <translation id="9015952763003753868"><ph name="ACAM_HEADER_NAME" />-Abgleich in <ph name="CORS" />-Preflight richtlinienkonform machen</translation>
 <translation id="9020630127193895800">Tastaturbeleuchtungsfarbe „Indigo“</translation>
+<translation id="9026905189580734497">Mit dieser Richtlinie werden die Einstellungen der Funktion „Hilfe beim Lesen“ für <ph name="PRODUCT_OS_NAME" /> festgelegt.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.</translation>
 <translation id="9031831501689819108">Unterstützung älterer Browser aktivieren</translation>
 <translation id="9032595854515551464">Dienst <ph name="PRODUCT_NAME" /> Version 2 aktivieren und Remote-Desktop nach der Anmeldung starten</translation>
 <translation id="9034285085962866065">Anpassung von Tastenkombinationen auf Systemebene erlauben</translation>
@@ -10644,6 +10718,7 @@ Diese Richtlinie ist nicht wirksam, wenn „<ph name="METRICS_REPORTING_ENABLED_
       Wenn diese Richtlinie auf "<ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />" festgelegt ist, wird für die Einrichtung von Assistant der EDU-Modus verwendet.</translation>
 <translation id="9191821120522935133">Ermöglicht die Drosselung nicht sichtbarer, ursprungsübergreifender iFrames</translation>
 <translation id="9192220384862917760">Vorhangmodus für den Host für den Remote-Zugriff aktivieren</translation>
+<translation id="9194693367692364911">Auf generativer KI basierende Funktionen der Entwicklertools zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="9195766455191826480">Sicherheitsstatus nicht melden</translation>
 <translation id="9197238499850071076">Gibt an, ob das Gerät auf die von <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> festgelegte Version zurückgesetzt werden soll, obwohl bereits eine neuere Version ausgeführt wird.
 

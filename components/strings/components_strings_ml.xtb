@@ -719,6 +719,7 @@
 <translation id="2276057643614339130">പ്രിന്റ് ബേസ്</translation>
 <translation id="2277103315734023688">മുന്നോട്ട് നീക്കുക</translation>
 <translation id="2277753418458118549">കണക്ഷന്റെ വിശദാംശങ്ങൾ കാണിക്കുക</translation>
+<translation id="2277949605527755300"><ph name="URL" />, നിങ്ങളുടെ കൈകൾ ട്രാക്ക് ചെയ്യാൻ ആഗ്രഹിക്കുന്നു</translation>
 <translation id="22792995594807632">ഡൗൺലോഡ് ചെയ്യുന്നതിന് മുമ്പ് അവലോകനം ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="2283340219607151381">വിലാസങ്ങൾ സംരക്ഷിച്ച് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' ഇല്ലാതാക്കി</translation>
@@ -1528,6 +1529,7 @@
 <translation id="3793574014653384240">അടുത്തിടെയുണ്ടായ ക്രാഷുകളുടെ എണ്ണവും കാരണങ്ങളും</translation>
 <translation id="3799805948399000906">അഭ്യർത്ഥിച്ച ഫോണ്ട്</translation>
 <translation id="3801265110651850478">നിങ്ങളുടെ ബ്രൗസിംഗ് ട്രാഫിക്ക് ഉപയോഗിച്ച് ഒരു “Do Not Track" അഭ്യർത്ഥന അയയ്ക്കുക</translation>
+<translation id="3801297763951514916">നിങ്ങൾ പതിവായി സന്ദർശിക്കുന്നു</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803801106042434208">നിങ്ങളുടെ പ്രദേശത്ത് ജനപ്രിയമായ തിരയൽ എഞ്ചിനുകൾ ഇവയാണ്</translation>
 <translation id="3807366285948165054">ചിത്രം X ഷിഫ്റ്റ്</translation>
@@ -1621,6 +1623,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">ഒരു MB-യിൽ കുറവാണ്</translation>
 <translation id="3990250421422698716">ജോഗ് ഓഫ്‌സെറ്റ്</translation>
+<translation id="3990532701115075684">നിങ്ങളുടെ കൈകൾ ട്രാക്ക് ചെയ്യാൻ</translation>
 <translation id="3992684624889376114">ഈ പേജിനെക്കുറിച്ച്</translation>
 <translation id="3995639283717357522">നയങ്ങൾ ബാധകമാക്കുക</translation>
 <translation id="399754345297554962">ഏകീകൃത, പ്രവേശന ടെസ്റ്റുകൾ</translation>
@@ -2365,6 +2368,7 @@
 <translation id="5385857628869214740">ഹാസ്യം</translation>
 <translation id="5385966243497224160">HTTPS അല്ലാത്ത URL പ്രിവ്യൂ ചെയ്യാനാകില്ല</translation>
 <translation id="5386426401304769735">ഈ സൈറ്റിന്റെ സർട്ടിഫിക്കറ്റ് ചെയിനിൽ SHA-1 ഉപയോഗിച്ച് സൈൻ ചെയ്‌ത ഒരു സർട്ടിഫിക്കറ്റ് അടങ്ങിയിരിക്കുന്നു.</translation>
+<translation id="5391010642126249196">നിങ്ങൾ സന്ദർശിച്ചത്:</translation>
 <translation id="539203134595252721">ടേബിൾ ടെന്നീസ്</translation>
 <translation id="5392506727170022660">മെറ്റൽ (സെമി ഗ്ലോസ്)</translation>
 <translation id="5394069166371280357">കുടുംബ-കേന്ദ്രീകൃത ടിവി ഷോകൾ</translation>
@@ -2564,6 +2568,7 @@
 <translation id="5742806904559466333">ബാറുകൾ, ക്ലബ്ബുകൾ, നൈറ്റ് ലൈഫ്</translation>
 <translation id="5743684619253032786">നഖ സംരക്ഷണ ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="5745733273847572235">നിങ്ങളുടെ ലൊക്കേഷൻ ആവശ്യപ്പെടാം</translation>
+<translation id="5750869797196646528">കൈകൾ ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="5759751709240058861">ക്യാമറ ഉപയോഗിക്കുകയും ചലിപ്പിക്കുകയും ചെയ്യുക</translation>
 <translation id="5763042198335101085">ശരിയായ ഇമെയിൽ വിലാസം നൽകുക</translation>
 <translation id="5764725887548570807">ഒറിജിൻ ഫോർമാറ്റ് അസാധുവാണ്.</translation>
@@ -2983,6 +2988,7 @@
 <translation id="6513005815064132016">നിങ്ങളുടെ ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="6517596291481585650">മുന്നറിയിപ്പ്: ഈ നയം ഒരു ലിസ്‌റ്റ് അല്ലാത്തതിനാലാണ് നയത്തിൽ വ്യക്തമാക്കിയിരിക്കുന്നത് പോലെ ഒരു ലിസ്‌റ്റായി ലയിപ്പിക്കാത്തത്.</translation>
 <translation id="6518133107902771759">സ്ഥിരീകരിക്കുക</translation>
+<translation id="6519885440226079262">നിങ്ങളുടെ കൈകൾ ട്രാക്ക് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="6520026037299163656">വെബ് ആപ്പുകളും ഓൺലൈൻ ടൂളുകളും</translation>
 <translation id="65203098586853226"><ph name="SOURCE" /> ഭാഷയിൽ നിന്ന് <ph name="TARGET" /> ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6521745193039995384">സജീവമല്ല</translation>
@@ -3022,6 +3028,7 @@
 <translation id="6599642189720630047">ട്രാക്ക് ചെയ്ത ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="6606309334576464871">നിങ്ങൾ ബ്രൗസ് ചെയ്യുന്നതിനനുസരിച്ച് നിങ്ങളെ ട്രാക്ക് ചെയ്യുന്നതിന് മൂന്നാം കക്ഷി കുക്കികൾ ഉപയോഗിക്കുന്നതിൽ നിന്ന് സൈറ്റുകളെ Chrome ബ്ലോക്ക് ചെയ്യുന്നു.
             <ph name="NEW_LINE" />സൈറ്റ് ഫീച്ചറുകൾ പ്രവർത്തിക്കുന്നില്ലെങ്കിൽ, <ph name="START_LINK" />മൂന്നാം കക്ഷി കുക്കികൾ താൽക്കാലികമായി അനുവദിക്കാൻ ശ്രമിക്കുക<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">കൈകൾ ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="6613866251791999074">Chrome-ലെ നിങ്ങളുടെ തിരയൽ യന്ത്രത്തെക്കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="6615297766614333076">സ്റ്റാക്കർ 2</translation>
 <translation id="6619496928666593220">IBAN പൂരിപ്പിച്ചില്ല</translation>
@@ -3472,6 +3479,7 @@
 <translation id="7440140511386898319">ഓഫ്‌ലൈനായിരിക്കുമ്പോൾ ഉള്ളടക്കം അടുത്തറിയുക</translation>
 <translation id="7441627299479586546">തെറ്റായ നയ വിഷയം</translation>
 <translation id="7441864845853794192">പാചകവിദഗ്ദ്ധർ, പ്രത്യേക ഭക്ഷണങ്ങൾ</translation>
+<translation id="7442389976360981500">കൈകൾ ട്രാക്ക് ചെയ്യൽ അനുവദിക്കണോ?</translation>
 <translation id="7442725080345379071">ഇളം ഓറഞ്ച് നിറം</translation>
 <translation id="7444046173054089907">ഈ സൈറ്റ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{കുക്കികൾ ഇന്ന് വീണ്ടും ബ്ലോക്ക് ചെയ്യും}=1{കുക്കികൾ നാളെ വീണ്ടും ബ്ലോക്ക് ചെയ്യും}other{# ദിവസത്തിന് ശേഷം വീണ്ടും കുക്കികൾ ബ്ലോക്ക് ചെയ്യും}}</translation>
@@ -4130,6 +4138,7 @@
 <translation id="865032292777205197">മോഷൻ സെൻസറുകൾ</translation>
 <translation id="865255447216708819">ബാക്ക് പ്രിന്റ് ഫിലിം</translation>
 <translation id="8654126188050905496">55 x 91 മി.മീ</translation>
+<translation id="8660780831677950176">നിങ്ങൾ പതിവായി ഈ സമയത്ത് സന്ദർശിക്കുന്നു</translation>
 <translation id="8662463432865928030">വാണിജ്യപരമായ പ്രോപ്പർട്ടികൾ</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="8663909737634214500">ഒപ്‌റ്റിക്കൽ ഡിസ്‌ക്</translation>

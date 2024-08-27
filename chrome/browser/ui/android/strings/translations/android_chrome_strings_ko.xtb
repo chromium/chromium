@@ -1018,6 +1018,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
 <translation id="5879072387416556377">추천 기능 개선</translation>
 <translation id="5885378508678660271">알림 <ph name="SEPARATOR" /> 위험한 사이트이므로 Chrome에서 이러한 권한을 삭제했습니다.</translation>
+<translation id="5895834791314695851">이 기기에서 비밀번호가 곧 작동하지 않을 수 있습니다. 비밀번호를 계속 사용하려면 Google Play 서비스를 업데이트하세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">닫힌 패스키 시트 없음</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
@@ -1557,6 +1558,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="820568752112382238">자주 방문한 사이트</translation>
 <translation id="8209050860603202033">이미지 열기</translation>
 <translation id="8210770465353466621">여기에서 탭을 확인할 수 있습니다.</translation>
+<translation id="8211101263765532799">일부 비밀번호가 곧 작동하지 않게 됩니다</translation>
 <translation id="8215740705341534369">측면 시트</translation>
 <translation id="8218622182176210845">계정 관리</translation>
 <translation id="8221401890884589479">원치 않는 사이트를 차단할 수 있습니다. 또한 Chrome에서는 30일이 지난 사이트도 목록에서 자동 삭제합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -1657,6 +1659,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="864544049772947936">창 관리(<ph name="INSTANCE_COUNTS" />개)</translation>
 <translation id="8664215986015753476">원하는 방식으로 Chrome 사용</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
+<translation id="8672883760227492369">이 기기의 일부 비밀번호가 곧 작동하지 않게 됩니다. 이러한 비밀번호를 Google 비밀번호 관리자로 이동할 수 있습니다.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" />에 가입하기</translation>
 <translation id="8676789164135894283">로그인 인증</translation>
 <translation id="8683039184091909753">이미지</translation>

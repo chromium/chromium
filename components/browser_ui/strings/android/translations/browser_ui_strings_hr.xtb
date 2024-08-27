@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu kamere. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati kameru.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome će sutra ponovno blokirati kolačiće}one{# dan dok Chrome ponovo ne blokira kolačiće}few{# dana dok Chrome ponovo ne blokira kolačiće}other{# dana dok Chrome ponovo ne blokira kolačiće}}</translation>
 <translation id="3521663503435878242">Web-lokacije na domeni <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Ne dopuštaj web-lokacijama praćenje ruku</translation>
 <translation id="3536227077203206203">Dopušteno ovaj put</translation>
 <translation id="3538390592868664640">Blokirajte web-lokacije da izrađuju 3D kartu vašeg okruženja ili prate položaj kamere</translation>
 <translation id="3544058026430919413">Tvrtka može definirati grupu web-lokacija koje mogu upotrebljavati kolačiće za dijeljenje vaših aktivnosti u grupi. To je isključeno u anonimnom načinu.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">Kad je ta postavka uključena, web-lokacije mogu upotrebljavati JavaScript. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati JavaScript.</translation>
 <translation id="5099358668261120049">Izbrisat će se svi podaci i kolačići koje je spremila web-lokacija <ph name="ORIGIN" /> ili njezina aplikacija na vašem početnom zaslonu.</translation>
 <translation id="5100237604440890931">Sažeto – kliknite za proširivanje.</translation>
+<translation id="5116239826668864748">Možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="5123685120097942451">Anonimna kartica</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sniženje cijene na otvorenoj kartici}one{Sniženja cijena na otvorenim karticama}few{Sniženja cijena na otvorenim karticama}other{Sniženja cijena na otvorenim karticama}}</translation>
 <translation id="5186036860380548585">Opcija je dostupna pri vrhu zaslona</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Ova je web-lokacija u grupi koja može vidjeti vaše aktivnosti. Grupu je definirao <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Fotografije profila</translation>
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
+<translation id="6709432001666529933">Pitaj prije omogućavanja web-lokacijama praćenje ruku (preporučeno)</translation>
 <translation id="6722828510648505498">Blokiraj upite za prijavu s usluga za provjeru identiteta.</translation>
 <translation id="6746124502594467657">Pomakni dolje</translation>
 <translation id="6749077623962119521">Poništiti dopuštenja?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">Odaberite opciju za <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6818926723028410516">Odaberite stavke</translation>
+<translation id="6838525730752203626">Koristite Chrome prema zadanim postavkama</translation>
 <translation id="6840760312327750441">Da biste grupirali kartice, dodirnite i držite karticu. Zatim je povucite na drugu karticu.</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može čitati NFC</translation>
 <translation id="6870169401250095575">Sakrij karticu Sigurnosna provjera</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7667547420449112975">Čarobnjak iz Oza</translation>
 <translation id="7684642910516280563">Ne dopuštaj web-lokaciji upotrebu kolačića trećih strana</translation>
+<translation id="7688240020069572972">Sakrij karticu sa savjetima za Chrome</translation>
 <translation id="7719367874908701697">Zumiranje stranice</translation>
 <translation id="7759147511335618829">Kontrola i reprogr. MIDI uređaja</translation>
 <translation id="7781829728241885113">Danas</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Premjesti gore</translation>
 <translation id="8617611086246832542">Kad je ta postavka uključena, prikazuje se prikaz web-lokacija na računalu. Kad je ta postavka isključena, prikazuje se prikaz web-lokacija na mobilnom uređaju.</translation>
 <translation id="8649036394979866943">Chrome većini web-lokacija ograničava upotrebu kolačića trećih strana kako bi vas pratile dok pregledavate. Otvorite postavke da biste <ph name="BEGIN_LINK" />upravljali zaštitama od praćenja<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za praćenje vaših ruku. Kad je ta postavka isključena, web-lokacije ne mogu pratiti vaše ruke.</translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="8681886425883659911">Oglasi su blokirani na web-lokacijama za koje se zna da prikazuju ometajuće ili obmanjujuće oglase</translation>
 <translation id="868929229000858085">Pretraživanje kontakata</translation>

@@ -2821,6 +2821,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6240964651812394252">Para utilizar el Administrador de contraseñas de Google con tu sistema operativo, reinicia Chrome y permite el acceso al administrador de contraseñas de la computadora. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
 <translation id="6241121617266208201">Ocultar sugerencias</translation>
 <translation id="624499991300733384">Servicio de composición de impresiones</translation>
+<translation id="6246316216123107851">Hace <ph name="NUM_DAYS" /> días</translation>
 <translation id="6246868321321344665">Tu organización puede ver los datos de navegación, como las contraseñas y el historial en los perfiles personales y de trabajo</translation>
 <translation id="6250932670816326647">Productos para el baño y el cuerpo</translation>
 <translation id="6251906504834538140">{0,plural, =1{No se permite mover el archivo}other{No se permite mover <ph name="FILE_COUNT" /> archivos}}</translation>
@@ -3409,6 +3410,7 @@ Detalles adicionales:
 <translation id="7346081071264046066">"responder sí a esta invitación de boda con emoción"</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7353601530677266744">Línea de comandos</translation>
+<translation id="7356678400607112844">Última visita:</translation>
 <translation id="7359588939039777303">Se bloquearon anuncios.</translation>
 <translation id="7360451453306104998">Si Google encuentra descuentos disponibles, aparecerán durante la confirmación de la compra</translation>
 <translation id="7363096869660964304">Sin embargo, no vas a pasar completamente desapercibido. El modo Incógnito no oculta tu información de navegación de un empleador, del proveedor de servicios de Internet ni de los sitios web que visitas.</translation>

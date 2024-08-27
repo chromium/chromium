@@ -2820,6 +2820,7 @@
 <translation id="6240964651812394252">운영체제에서 Google 비밀번호 관리자를 사용하려면 Chrome을 다시 실행하고 비밀번호 관리자에 대한 컴퓨터의 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="6241121617266208201">추천 숨기기</translation>
 <translation id="624499991300733384">인쇄 합성 서비스</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" />일 전</translation>
 <translation id="6246868321321344665">조직에서 직장 프로필과 개인 프로필 모두의 비밀번호, 방문 기록과 같은 인터넷 사용 기록을 볼 수 있습니다.</translation>
 <translation id="6250932670816326647">목욕 및 바디 제품</translation>
 <translation id="6251906504834538140">{0,plural, =1{파일 이동 차단됨}other{파일 <ph name="FILE_COUNT" />개의 이동 차단됨}}</translation>
@@ -3408,6 +3409,7 @@
 <translation id="7346081071264046066">'기쁜 마음으로 이 결혼식 초대에 '예'라고 답장'</translation>
 <translation id="7352651011704765696">문제가 발생했습니다.</translation>
 <translation id="7353601530677266744">명령줄</translation>
+<translation id="7356678400607112844">최근 방문</translation>
 <translation id="7359588939039777303">광고가 차단되었습니다.</translation>
 <translation id="7360451453306104998">Google에서 이용 가능한 할인 혜택을 찾으면 결제 시 표시합니다.</translation>
 <translation id="7363096869660964304">하지만 흔적이 아예 남지 않는 것은 아닙니다. 시크릿 모드로 탐색해도 회사, 인터넷 서비스 제공업체 또는 방문한 웹사이트에 저장된 흔적까지 없앨 수는 없습니다.</translation>

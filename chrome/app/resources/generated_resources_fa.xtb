@@ -1434,6 +1434,7 @@
 <translation id="199610894463449797">{0,plural, =1{بستن این نمایه}one{بستن این نمایه (# پنجره)}other{بستن این نمایه (# پنجره)}}</translation>
 <translation id="1997433994358798851">‏Chrome برای استفاده از بلوتوث به اجازه نیاز دارد تا به دستگاهتان وصل شود</translation>
 <translation id="1997616988432401742">گواهی‌نامه‌های شما</translation>
+<translation id="1998715278591719161">برای ردیابی کردن دست‌هایتان مجاز است</translation>
 <translation id="1999115740519098545">هنگام شروع به کار</translation>
 <translation id="2002109485265116295">بی‌درنگ</translation>
 <translation id="2002160221914907025">هوش مصنوعی آزمایشی</translation>
@@ -3547,6 +3548,7 @@
 <translation id="3521606918211282604">تغییر اندازه دیسک</translation>
 <translation id="3522088408596898827">فضای دیسک بسیار کم است. فضای دیسک را آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="3522979239100719575">درحال جستجوی نمایه‌های دردسترس. ممکن است چند دقیقه طول بکشد.</translation>
+<translation id="3523447078673133727">به سایت‌ها اجازه داده نشود دست‌هایتان را ردیابی کنند</translation>
 <translation id="3524518036046613664">شناسایی دستگاه‌ها (مثل چاپگر) در شبکه محلی‌تان</translation>
 <translation id="3524965460886318643">صادر کردن فعالیت‌ها</translation>
 <translation id="3525426269008462093">مرور همگام‌سازی دستگاه بعداز راه‌اندازی</translation>
@@ -5925,6 +5927,7 @@
 <translation id="52550593576409946">برنامه کیوسک راه‌اندازی نشد.</translation>
 <translation id="5255726914791076208">اگر گذرکلید را ویرایش کنید، حساب <ph name="RP_ID" /> تغییر نخواهد کرد</translation>
 <translation id="5255859108402770436">ورود مجدد به سیستم</translation>
+<translation id="5256174546894739043">وقتی سایتی می‌خواهد دست‌هایتان را ردیابی کند سؤال شود</translation>
 <translation id="52566111838498928">درحال بارگیری قلم‌ها…</translation>
 <translation id="5256861893479663409">در همه سایت‌ها</translation>
 <translation id="5258992782919386492">نصب در این دستگاه</translation>
@@ -6673,6 +6676,7 @@
 <translation id="5801051031414037185">راه‌اندازی تلفن</translation>
 <translation id="5801568494490449797">اولویت‌ها</translation>
 <translation id="5803689677801500549">‏گذرواژه‌های ذخیره‌شده در اینجا نشان داده خواهد شد. برای وارد کردن گذرواژه‌های <ph name="USER_EMAIL" /> به <ph name="BRAND" />، <ph name="BEGIN_LINK" />فایل CSV موردنظر را انتخاب کنید.<ph name="END_LINK" /></translation>
+<translation id="5804198298544152115">سایت‌ها معمولاً دست‌ها و انگشتان شما را برای افزودن تجربه‌های فراگیر ردیابی می‌کنند</translation>
 <translation id="5804241973901381774">اجازه‌ها</translation>
 <translation id="5804259315582798390">بازیابی داده محلی فعال نشد</translation>
 <translation id="5805268472388605531">برای دیدن نشانه‌های تکیه و نویسه‌های خاص، کلیدهای صفحه‌کلید را فشار دهید و نگه دارید</translation>
@@ -7762,6 +7766,7 @@
 <translation id="661266467055912436">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد.</translation>
 <translation id="6613267708691765962">درحال اسکن کردن برای یافتن بدافزار…</translation>
 <translation id="6613668613087513143">‏فضای این دستگاه برای تکمیل به‌روزرسانی کافی نیست. <ph name="NECESSARY_SPACE" /> فضا در دستگاهتان آزاد کنید و از مرورگر Chrome دوباره امتحان کنید.</translation>
+<translation id="6614172284067813496">صفحه به فهرست خواندن اضافه شد</translation>
 <translation id="6615455863669487791">نشانم داده شود</translation>
 <translation id="6618744767048954150">درحال اجرا</translation>
 <translation id="6619058681307408113">‏Line Printer Daemon‏ (LPD)</translation>
@@ -7775,6 +7780,7 @@
 <translation id="6622980291894852883">ادامه مسدودکردن تصاویر</translation>
 <translation id="6624036901798307345">در حالت رایانه لوحی، روی دکمه شمارنده برگه در نوارابزار تک‌ضرب بزنید تا نوار برگه جدید که تصویر کوچک هر برگه را نشان می‌دهد باز شود.</translation>
 <translation id="6624687053722465643">شیرین</translation>
+<translation id="6627743754845412571">برای ردیابی کردن دست‌هایتان مجاز نیست</translation>
 <translation id="6628316682330029452">گواهینامه‌های کارخواه گواهینامه‌هایی هستند که برای شناساندن شما به دیگر سرورها استفاده می‌شوند.</translation>
 <translation id="6628328486509726751">زمان بارگذاری <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">امنیت قوی‌تر</translation>
@@ -10762,6 +10768,7 @@
 <translation id="876956356450740926">ابزار توسعه‌دهندگان، محیط‌های توسعه نرم‌افزار یکپارچه، و ویرایشگرها را اجرا کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">دایرکتوری ریشه افزونه:</translation>
 <translation id="8771300903067484968">پس‌زمینه صفحه شروع روی پس‌زمینه پیش‌فرض بازنشانی شده است.</translation>
+<translation id="8773535891252326047">پیوند در موارد برجسته‌شده کپی شد</translation>
 <translation id="8774379074441005279">تأیید بازیابی</translation>
 <translation id="8774934320277480003">حاشیه بالا</translation>
 <translation id="8775144690796719618">نشانی وب نامعتبر</translation>

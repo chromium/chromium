@@ -7774,6 +7774,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="661266467055912436">Izboljšuje varnost za vas in vse druge v spletu.</translation>
 <translation id="6613267708691765962">Iskanje zlonamerne programske opreme …</translation>
 <translation id="6613668613087513143">V napravi ni dovolj prostora za dokončanje te posodobitve. Počistite <ph name="NECESSARY_SPACE" /> v napravi in v brskalniku Chrome poskusite znova.</translation>
+<translation id="6614172284067813496">Stran je bila dodana na bralni seznam</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6618744767048954150">Preverjanje poteka</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8154,6 +8155,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6876155724392614295">Kolo</translation>
 <translation id="6876469544038980967">Ni uporabno</translation>
 <translation id="6878422606530379992">Tipala so dovoljena</translation>
+<translation id="6878862640969460273">Ležeče</translation>
 <translation id="6880587130513028875">Slike na tej strani so blokirane.</translation>
 <translation id="6881845890692344060">Skrbnik se je odjavil. Zdaj imate nadzor.</translation>
 <translation id="6882210908253838664">Če spletno mesto ne deluje, mu lahko poskusite začasno dovoliti uporabo piškotkov tretjih oseb. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -9692,6 +9694,7 @@ Datoteka s ključem: <ph name="KEY_FILE" />
 
 Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih različic razširitev.</translation>
 <translation id="8000020256436988724">Orodna vrstica</translation>
+<translation id="800117767980299235">Glasovni poudarki</translation>
 <translation id="8002274832045662704">Dodatna konfiguracija tiskalnika</translation>
 <translation id="8002670234429879764">Tiskalnik <ph name="PRINTER_NAME" /> ni več na voljo</translation>
 <translation id="8004092996156083991">Če bodo vaša gesla ogrožena, vas bomo o tem obvestili.</translation>
@@ -10775,6 +10778,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="876956356450740926">Izvajanje orodij za razvijalce, IDE-jev in urednikov. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Korenski imenik razširitve</translation>
 <translation id="8771300903067484968">Ozadje začetne strani je ponastavljeno na privzeto ozadje.</translation>
+<translation id="8773535891252326047">Povezava do označenega besedila je kopirana</translation>
 <translation id="8774379074441005279">Potrdite obnovitev</translation>
 <translation id="8774934320277480003">Zgornji rob</translation>
 <translation id="8775144690796719618">Neveljaven URL</translation>
