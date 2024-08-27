@@ -9,13 +9,12 @@
 <body>
 <script>
 
-window.onload = () => {
-  const partitionedCookie = 'ancestor=chain';
-  // Send message indicating presence of cookie in http header or document.
-  let cookiePresent = window.location.href.includes(partitionedCookie) ||
-      document.cookie.includes(partitionedCookie);
-  window.parent.postMessage({isCookiePresent: cookiePresent}, '*');
-};
+promise_test(async () => {
+  await new Promise(resolve => window.onload = () => step_timeout(resolve, 0));
+  const partitionedCookie = "ancestor=chain";
+  assert_false(window.location.href.includes(partitionedCookie));
+  assert_false(document.cookie.includes(partitionedCookie));
+}, "Parallel cross-site embed partitioned cookie access");
 
 </script>
 </body>
