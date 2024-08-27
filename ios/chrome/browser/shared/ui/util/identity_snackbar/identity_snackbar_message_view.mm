@@ -25,11 +25,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 const CGFloat kSnackbarSize = 68.;
 const CGFloat kAvatarSize = 32.;
-const CGFloat kGoogleSize = 28;
+const CGFloat kGoogleSize = 32;
 const CGFloat kAvatarMargin = (kSnackbarSize - kAvatarSize) / 2;
 const CGFloat kGoogleMargin = (kSnackbarSize - kGoogleSize) / 2;
 // The offset between both texts.
-const CGFloat kTextOffset = 4.;
+const CGFloat kTextOffset = 6.;
 
 }  // namespace
 
@@ -85,7 +85,7 @@ const CGFloat kTextOffset = 4.;
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     _signedInAsView.adjustsFontSizeToFitWidth = NO;
     _signedInAsView.textColor = [UIColor colorNamed:kInvertedTextPrimaryColor];
-    _signedInAsView.lineBreakMode = NSLineBreakByWordWrapping;
+    _signedInAsView.lineBreakMode = NSLineBreakByTruncatingTail;
     _signedInAsView.text =
         l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
                                 base::SysNSStringToUTF16(snackbarMessage.name));
@@ -98,7 +98,7 @@ const CGFloat kTextOffset = 4.;
     _emailView.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _emailView.adjustsFontSizeToFitWidth = NO;
-    _emailView.lineBreakMode = NSLineBreakByWordWrapping;
+    _emailView.lineBreakMode = NSLineBreakByTruncatingTail;
     _emailView.textColor = [UIColor colorNamed:kInvertedTextSecondaryColor];
     _emailView.text = snackbarMessage.email;
 
@@ -150,7 +150,7 @@ const CGFloat kTextOffset = 4.;
       [_textViews.topAnchor
           constraintLessThanOrEqualToAnchor:_signedInAsView.topAnchor],
       [_emailView.topAnchor constraintEqualToAnchor:_signedInAsView.bottomAnchor
-                                           constant:-kTextOffset],
+                                           constant:kTextOffset],
 
       [_textViews.bottomAnchor
           constraintGreaterThanOrEqualToAnchor:_emailView.bottomAnchor],
