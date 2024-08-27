@@ -9,7 +9,7 @@ import {COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction} from 'chro
 import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
 import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
 import {Router} from 'chrome://compare/router.js';
-import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsSet, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
+import type {PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsSet, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {WindowProxy} from 'chrome://compare/window_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter, UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
@@ -26,7 +26,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, installMock} from './test_support.js';
 
-function createInfo(overrides?: Partial<ProductInfo>): ProductInfo {
+function createProductInfo(overrides?: Partial<ProductInfo>): ProductInfo {
   return Object.assign(
       {
         clusterId: BigInt(0),
@@ -38,6 +38,24 @@ function createInfo(overrides?: Partial<ProductInfo>): ProductInfo {
         currentPrice: '',
         previousPrice: '',
         categoryLabels: [],
+      },
+      overrides);
+}
+
+function createPriceInsightsInfo(overrides?: Partial<PriceInsightsInfo>):
+    PriceInsightsInfo {
+  return Object.assign(
+      {
+        clusterId: BigInt(0),
+        typicalLowPrice: '',
+        typicalHighPrice: '',
+        catalogAttributes: '',
+        jackpot: {url: ''},
+        bucket: 0,
+        hasMultipleCatalogs: false,
+        history: [],
+        locale: '',
+        currencyCode: '',
       },
       overrides);
 }
@@ -81,7 +99,8 @@ interface AppPromiseValues {
   idParam: string;
   urlsParam: string[];
   specs: ProductSpecifications;
-  infos: ProductInfo[];
+  productInfos: ProductInfo[];
+  urlToPriceInsightsInfoMap: Map<string, PriceInsightsInfo>;
   specsSet: ProductSpecificationsSet|null;
 }
 
@@ -92,7 +111,8 @@ function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
         idParam: '',
         urlsParam: '',
         specs: createSpecs(),
-        infos: [createInfo()],
+        productInfos: [createProductInfo()],
+        urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>(),
         specsSet: null,
       },
       overrides);
@@ -132,13 +152,21 @@ suite('AppTest', () => {
         Promise.resolve({productSpecs: promiseValues.specs}));
     shoppingServiceApi.setResultMapperFor(
         'getProductInfoForUrl', (url: Url) => {
-          for (const info of promiseValues.infos) {
+          for (const info of promiseValues.productInfos) {
             if (info.productUrl.url === url.url) {
               return Promise.resolve({productInfo: info});
             }
           }
-          const emptyInfo = createInfo();
+          const emptyInfo = createProductInfo();
           return Promise.resolve({productInfo: emptyInfo});
+        });
+    shoppingServiceApi.setResultMapperFor(
+        'getPriceInsightsInfoForUrl', (url: Url) => {
+          return Promise.resolve({
+            priceInsightsInfo:
+                promiseValues.urlToPriceInsightsInfoMap.get(url.url) ??
+                createPriceInsightsInfo(),
+          });
         });
 
     const appElement = await createAppElement();
@@ -331,18 +359,22 @@ suite('AppTest', () => {
         urls: [],
       }],
     });
-    const info1 = createInfo({
+    const productInfo1 = createProductInfo({
       clusterId: BigInt(123),
       title: 'qux',
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'qux.com/image'},
       currentPrice: '$100',
     });
-    const info2 = createInfo({
+    const productInfo2 = createProductInfo({
       clusterId: BigInt(231),
       title: 'foobar',
       productUrl: {url: 'https://example2.com/'},
       imageUrl: {url: 'foobar.com/image'},
+    });
+    const priceInsightsInfo = createPriceInsightsInfo({
+      clusterId: BigInt(123),
+      jackpot: {url: 'https://example.com/jackpot/'},
     });
 
     const promiseValues = createAppPromiseValues({
@@ -352,7 +384,13 @@ suite('AppTest', () => {
             new Map<bigint, string>([[BigInt(2), detailTitle]]),
         products: [specsProduct1],
       }),
-      infos: [info1, info2, createInfo({clusterId: BigInt(0)})],
+      productInfos: [
+        productInfo1,
+        productInfo2,
+        createProductInfo({clusterId: BigInt(0)}),
+      ],
+      urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>(
+          [[productInfo1.productUrl.url, priceInsightsInfo]]),
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -364,7 +402,7 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct1.title,
               url: 'https://example.com/',
-              imageUrl: info1.imageUrl.url,
+              imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
               {title: 'price', content: '$100'},
@@ -393,23 +431,29 @@ suite('AppTest', () => {
                   }],
                 },
               },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo.jackpot.url},
+              },
             ],
           },
           {
             selectedItem: {
               // If the product spec doesn't have a title, the column should
               // use the title from the product info.
-              title: info2.title,
+              title: productInfo2.title,
               url: 'https://example2.com/',
-              imageUrl: info2.imageUrl.url,
+              imageUrl: productInfo2.imageUrl.url,
             },
             // Since this item's product dimension values have no ID, its
             // `productDetails` should have empty strings for `description` and
-            // summary`.
+            // summary`. Its `jackpotUrl` should also be empty since no price
+            // insights are available.
             productDetails: [
               {title: 'price', content: null},
               {title: 'summary', content: {attributes: [], summary: []}},
               {title: detailTitle, content: null},
+              {title: null, content: {jackpotUrl: ''}},
             ],
           },
         ],
@@ -449,7 +493,7 @@ suite('AppTest', () => {
       title: 'qux',
       productDimensionValues: dimensionValuesMap,
     });
-    const info1 = createInfo({
+    const productInfo1 = createProductInfo({
       clusterId: BigInt(123),
       title: 'qux',
       productUrl: {url: 'https://example.com/'},
@@ -463,7 +507,7 @@ suite('AppTest', () => {
             new Map<bigint, string>([[BigInt(2), detailTitle]]),
         products: [specsProduct1],
       }),
-      infos: [info1],
+      productInfos: [productInfo1],
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -475,7 +519,7 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct1.title,
               url: 'https://example.com/',
-              imageUrl: info1.imageUrl.url,
+              imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
               {title: 'price', content: null},
@@ -487,6 +531,7 @@ suite('AppTest', () => {
                   summary: [],
                 },
               },
+              {title: null, content: {jackpotUrl: ''}},
             ],
           },
         ],
@@ -526,11 +571,15 @@ suite('AppTest', () => {
       title: 'Product 1',
       productDimensionValues: dimensionValuesMap1,
     });
-    const info1 = createInfo({
+    const productInfo1 = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product 1',
       productUrl: {url: 'https://example.com/1'},
       imageUrl: {url: 'http://example.com/image1.png'},
+    });
+    const priceInsightsInfo1 = createPriceInsightsInfo({
+      clusterId: BigInt(123),
+      jackpot: {url: 'https://example.com/jackpot1'},
     });
 
     // Set up the second product - the description needs to be different from
@@ -566,11 +615,15 @@ suite('AppTest', () => {
       title: 'Product 2',
       productDimensionValues: dimensionValuesMap2,
     });
-    const info2 = createInfo({
+    const productInfo2 = createProductInfo({
       clusterId: BigInt(456),
       title: 'Product 2',
       productUrl: {url: 'https://example.com/2'},
       imageUrl: {url: 'http://example.com/image2.png'},
+    });
+    const priceInsightsInfo2 = createPriceInsightsInfo({
+      clusterId: BigInt(456),
+      jackpot: {url: 'https://example.com/jackpot2'},
     });
 
     const detailTitle = 'Section';
@@ -584,7 +637,11 @@ suite('AppTest', () => {
         // order.
         products: [specsProduct2, specsProduct1],
       }),
-      infos: [info1, info2],
+      productInfos: [productInfo1, productInfo2],
+      urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>([
+        [productInfo1.productUrl.url, priceInsightsInfo1],
+        [productInfo2.productUrl.url, priceInsightsInfo2],
+      ]),
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -597,7 +654,7 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct1.title,
               url: 'https://example.com/1',
-              imageUrl: info1.imageUrl.url,
+              imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
               {title: 'price', content: null},
@@ -609,13 +666,17 @@ suite('AppTest', () => {
                   summary: [],
                 },
               },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo1.jackpot.url},
+              },
             ],
           },
           {
             selectedItem: {
               title: specsProduct2.title,
               url: 'https://example.com/2',
-              imageUrl: info2.imageUrl.url,
+              imageUrl: productInfo2.imageUrl.url,
             },
             productDetails: [
               {title: 'price', content: null},
@@ -626,6 +687,10 @@ suite('AppTest', () => {
                   attributes: [{label: '', value: 'desc 2'}],
                   summary: [],
                 },
+              },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo2.jackpot.url},
               },
             ],
           },
@@ -667,11 +732,15 @@ suite('AppTest', () => {
       title: 'Product 1',
       productDimensionValues: dimensionValuesMap1,
     });
-    const info1 = createInfo({
+    const productInfo1 = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product 1',
       productUrl: {url: 'https://example.com/1'},
       imageUrl: {url: 'http://example.com/image1.png'},
+    });
+    const priceInsightsInfo1 = createPriceInsightsInfo({
+      clusterId: BigInt(123),
+      jackpot: {url: 'https://example.com/jackpot1'},
     });
 
     // Set up the second product - the description needs to be different from
@@ -707,11 +776,15 @@ suite('AppTest', () => {
       title: 'Product 2',
       productDimensionValues: dimensionValuesMap2,
     });
-    const info2 = createInfo({
+    const productInfo2 = createProductInfo({
       clusterId: BigInt(456),
       title: 'Product 2',
       productUrl: {url: 'https://example.com/2'},
       imageUrl: {url: 'http://example.com/image2.png'},
+    });
+    const priceInsightsInfo2 = createPriceInsightsInfo({
+      clusterId: BigInt(456),
+      jackpot: {url: 'https://example.com/jackpot2'},
     });
 
     const specsSetUrls =
@@ -729,7 +802,11 @@ suite('AppTest', () => {
         productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
         products: [specsProduct1, specsProduct2],
       }),
-      infos: [info1, info2],
+      productInfos: [productInfo1, productInfo2],
+      urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>([
+        [productInfo1.productUrl.url, priceInsightsInfo1],
+        [productInfo2.productUrl.url, priceInsightsInfo2],
+      ]),
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -765,7 +842,7 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct2.title,
               url: 'https://example.com/2',
-              imageUrl: info2.imageUrl.url,
+              imageUrl: productInfo2.imageUrl.url,
             },
             productDetails: [
               {title: 'price', content: null},
@@ -777,13 +854,17 @@ suite('AppTest', () => {
                   summary: [],
                 },
               },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo2.jackpot.url},
+              },
             ],
           },
           {
             selectedItem: {
               title: specsProduct1.title,
               url: 'https://example.com/1',
-              imageUrl: info1.imageUrl.url,
+              imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
               {title: 'price', content: null},
@@ -794,6 +875,10 @@ suite('AppTest', () => {
                   attributes: [{label: '', value: 'desc 1'}],
                   summary: [],
                 },
+              },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo1.jackpot.url},
               },
             ],
           },
@@ -814,7 +899,7 @@ suite('AppTest', () => {
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info = createInfo({
+    const info = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
@@ -833,7 +918,7 @@ suite('AppTest', () => {
             new Map<bigint, string>([[BigInt(2), 'Row Title']]),
         products: [specsProduct],
       }),
-      infos: [info],
+      productInfos: [info],
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -867,7 +952,7 @@ suite('AppTest', () => {
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info = createInfo({
+    const info = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
@@ -886,7 +971,7 @@ suite('AppTest', () => {
             new Map<bigint, string>([[BigInt(2), 'Row Title']]),
         products: [specsProduct],
       }),
-      infos: [info],
+      productInfos: [info],
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -998,7 +1083,7 @@ suite('AppTest', () => {
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info = createInfo({
+    const info = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
@@ -1011,7 +1096,7 @@ suite('AppTest', () => {
         productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
         products: [specsProduct],
       }),
-      infos: [info],
+      productInfos: [info],
     });
     const specsSet = createSpecsSet(
         {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
@@ -1079,7 +1164,7 @@ suite('AppTest', () => {
         title: 'Product',
         productDimensionValues: dimensionValuesMap,
       });
-      const info = createInfo({
+      const info = createProductInfo({
         clusterId: BigInt(123),
         title: 'Product',
         productUrl: {url: 'https://example.com/'},
@@ -1092,7 +1177,7 @@ suite('AppTest', () => {
           productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
           products: [specsProduct],
         }),
-        infos: [info],
+        productInfos: [info],
       });
       const specsSet = createSpecsSet(
           {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
@@ -1226,7 +1311,7 @@ suite('AppTest', () => {
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info = createInfo({
+    const info = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
@@ -1239,7 +1324,7 @@ suite('AppTest', () => {
         productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
         products: [specsProduct],
       }),
-      infos: [info],
+      productInfos: [info],
     });
     const specsSet = createSpecsSet({
       name: 'My products',
@@ -1553,7 +1638,7 @@ suite('AppTest', () => {
           'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
       const promiseValues = createAppPromiseValues({
         urlsParam: [],
-        infos: [createInfo({
+        productInfos: [createProductInfo({
           clusterId: BigInt(123),
           productUrl: {url: 'https://example.com/'},
         })],

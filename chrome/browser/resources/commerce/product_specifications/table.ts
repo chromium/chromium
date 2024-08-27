@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import './description_section.js';
 import './product_selector.js';
+import './buying_options_section.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -20,6 +21,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Content, TableColumn} from './app.js';
+import type {BuyingOptionsLink} from './buying_options_section.js';
 import type {ProductDescription} from './description_section.js';
 import {DragAndDropManager} from './drag_and_drop_manager.js';
 import type {SectionType} from './product_selection_menu.js';
@@ -189,7 +191,8 @@ export class TableElement extends PolymerElement {
   private showRow_(title: string, rowIndex: number): boolean {
     return this.rowHasNonEmptyAttributes_(title, rowIndex) ||
         this.rowHasNonEmptySummary_(title, rowIndex) ||
-        this.rowHasText_(title, rowIndex);
+        this.rowHasText_(title, rowIndex) ||
+        this.rowHasBuyingOptions_(rowIndex);
   }
 
   private rowHasText_(title: string, rowIndex: number): boolean {
@@ -229,6 +232,14 @@ export class TableElement extends PolymerElement {
     });
   }
 
+  private rowHasBuyingOptions_(rowIndex: number): boolean {
+    const rowDetails = this.columns.map(
+        column => column.productDetails && column.productDetails[rowIndex]);
+
+    return rowDetails.some(
+        detail => detail && this.contentIsBuyingOptionsLink_(detail.content));
+  }
+
   private filterProductDescription_(
       productDesc: ProductDescription, title: string,
       rowIndex: number): ProductDescription {
@@ -254,6 +265,16 @@ export class TableElement extends PolymerElement {
       const description = content as ProductDescription;
       return description.attributes && description.summary &&
           (description.attributes.length > 0 || description.summary.length > 0);
+    }
+    return false;
+  }
+
+  private contentIsBuyingOptionsLink_(content: Content):
+      content is BuyingOptionsLink {
+    if (content) {
+      const buyingOptions = content as BuyingOptionsLink;
+      return (buyingOptions.jackpotUrl &&
+              buyingOptions.jackpotUrl.length > 0) as boolean;
     }
     return false;
   }

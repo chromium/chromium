@@ -589,37 +589,113 @@ suite('ProductSpecificationsTableTest', () => {
     assertFalse(isVisible((details[1]!)));
   });
 
-  test('`grid-row` populates correctly', async () => {
-    // Arrange
-    tableElement.columns = [
-      {
-        selectedItem: {
-          title: 'title',
-          url: 'https://example.com',
-          imageUrl: 'https://example.com/image',
+  suite('Buying options', () => {
+    setup(async () => {
+      tableElement.columns = [
+        {
+          selectedItem: {
+            title: 'title',
+            url: 'https://example.com',
+            imageUrl: 'https://example.com/image',
+          },
+          productDetails: [
+            {
+              title: 'foo',
+              content: 'summary1',
+            },
+            {title: null, content: {jackpotUrl: 'https://example.com/jackpot'}},
+          ],
         },
-        productDetails: [{
-          title: 'foo',
-          content: {attributes: [{label: '', value: 'foo1'}], summary: []},
-        }],
-      },
-      {
-        selectedItem: {
-          title: 'title2',
-          url: 'https://example.com/2',
-          imageUrl: 'https://example.com/2/image',
+        {
+          selectedItem: {
+            title: 'title2',
+            url: 'https://example.com/2',
+            imageUrl: 'https://example.com/2/image',
+          },
+          productDetails: [
+            {title: 'foo', content: 'summary2'},
+            {title: null, content: {jackpotUrl: ''}},
+          ],
         },
-        productDetails: [{
-          title: 'foo',
-          content: {attributes: [{label: '', value: 'foo2'}], summary: []},
-        }],
-      },
-    ];
-    await waitAfterNextRender(tableElement);
-    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
-    assertEquals(2, columns.length);
-    assertStyle(columns[0]!, 'grid-row', 'span 3');
-    assertStyle(columns[1]!, 'grid-row', 'span 3');
+      ];
+      await waitAfterNextRender(tableElement);
+    });
+
+    test('detail title is hidden if it is `null`', async () => {
+      const titles = tableElement.shadowRoot!.querySelectorAll('.detail-title');
+      assertEquals(2, titles.length);
+    });
+
+    test('buying options are visible if any are available', async () => {
+      const buyingOptions =
+          tableElement.shadowRoot!.querySelectorAll('buying-options-section');
+      assertEquals(1, buyingOptions.length);
+      assertEquals('https://example.com/jackpot', buyingOptions[0]!.jackpotUrl);
+    });
+
+    test('buying options are hidden if none are available', async () => {
+      assertTrue(!!tableElement.columns[0]);
+      tableElement.columns = [
+        {
+          selectedItem: {
+            title: 'title',
+            url: 'https://example.com',
+            imageUrl: 'https://example.com/image',
+          },
+          productDetails: [
+            {title: null, content: {jackpotUrl: ''}},
+          ],
+        },
+        {
+          selectedItem: {
+            title: 'title2',
+            url: 'https://example.com/2',
+            imageUrl: 'https://example.com/2/image',
+          },
+          productDetails: [
+            {title: null, content: {jackpotUrl: ''}},
+          ],
+        },
+      ];
+      await flushTasks();
+
+      const buyingOptions =
+          tableElement.shadowRoot!.querySelectorAll('buying-options-section');
+      assertEquals(0, buyingOptions.length);
+    });
+
+    test('`grid-row` populates correctly', async () => {
+      // Arrange
+      tableElement.columns = [
+        {
+          selectedItem: {
+            title: 'title',
+            url: 'https://example.com',
+            imageUrl: 'https://example.com/image',
+          },
+          productDetails: [{
+            title: 'foo',
+            content: {attributes: [{label: '', value: 'foo1'}], summary: []},
+          }],
+        },
+        {
+          selectedItem: {
+            title: 'title2',
+            url: 'https://example.com/2',
+            imageUrl: 'https://example.com/2/image',
+          },
+          productDetails: [{
+            title: 'foo',
+            content: {attributes: [{label: '', value: 'foo2'}], summary: []},
+          }],
+        },
+      ];
+      await waitAfterNextRender(tableElement);
+      const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+      assertEquals(2, columns.length);
+      assertStyle(columns[0]!, 'grid-row', 'span 3');
+      assertStyle(columns[1]!, 'grid-row', 'span 3');
+    });
   });
 
   suite('DragAndDrop', () => {

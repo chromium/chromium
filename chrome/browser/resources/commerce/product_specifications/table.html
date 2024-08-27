@@ -3,6 +3,7 @@
     --column-width: 220px;
     --last-column-overflow-x: visible;
     --table-gap: 8px;
+    --detail-container-margin-bottom: 24px;
   }
 
   #table {
@@ -75,8 +76,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--table-gap);
-    margin-bottom: 24px;
     width: var(--column-width);
+  }
+
+  .detail-text {
+    margin-bottom: var(--detail-container-margin-bottom);
   }
 
   .detail-title {
@@ -148,9 +152,11 @@
           index-as="rowIndex">
         <div class="detail-container"
             hidden$="[[!showRow_(detail.title, rowIndex)]]">
-          <div class="detail-title">
-            <span>[[detail.title]]</span>
-          </div>
+          <template is="dom-if" if="[[detail.title]]">
+            <div class="detail-title">
+              <span>[[detail.title]]</span>
+            </div>
+          </template>
           <template is="dom-if" if="[[contentIsString_(detail.content)]]">
             <div class="detail-text">[[detail.content]]</div>
           </template>
@@ -161,6 +167,11 @@
                     detail.title, rowIndex)]]"
                 product-name="[[column.selectedItem.title]]">
             </description-section>
+          </template>
+          <template is="dom-if"
+              if="[[contentIsBuyingOptionsLink_(detail.content)]]">
+            <buying-options-section jackpot-url="[[detail.content.jackpotUrl]]">
+            </buying-options-section>
           </template>
         </div>
       </template>
