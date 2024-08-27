@@ -1424,7 +1424,6 @@ crbug.com/358210825 external/wpt/css/css-color/color-layers-no-blend-mode.html [
 # @supports
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-001.html [ Failure ]
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-002.html [ Failure ]
-crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
 
 # Failures from CSS3 Text (text-justify and text-indent: hanging/each-line) not being implemented.
 crbug.com/248894 external/wpt/css/css-pseudo/first-letter-allowed-properties.html [ Failure ]
@@ -2747,7 +2746,6 @@ crbug.com/356423827 [ Win10.20h2 ] external/wpt/css/css-rhythm/block-step-size-e
 crbug.com/356423827 [ Linux ] external/wpt/css/css-rhythm/block-step-size-establishes-block-formatting-context.html [ Failure ]
 crbug.com/356423827 [ Mac ] external/wpt/css/css-rhythm/block-step-size-establishes-block-formatting-context.html [ Failure ]
 crbug.com/356436618 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/border-image-slice-005.htm [ Failure ]
-crbug.com/356228082 external/wpt/css/css-nesting/supports-rule.html [ Failure ]
 crbug.com/355683658 external/wpt/css/css-align/self-alignment/block-justify-self.html [ Failure ]
 crbug.com/353583104 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
 crbug.com/353583078 external/wpt/trusted-types/block-text-node-insertion-into-svg-script-element.html [ Timeout ]

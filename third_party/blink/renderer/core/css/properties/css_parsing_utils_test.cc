@@ -169,7 +169,7 @@ TEST(CSSParsingUtilsTest, ConsumeIfDelimiter_Stream) {
   EXPECT_EQ(kCommaToken, stream.Peek().GetType());
 }
 
-TEST(CSSParsingUtilsTest, ConsumeAnyValue) {
+TEST(CSSParsingUtilsTest, ConsumeAnyValue_Range) {
   struct {
     // The input string to parse as <any-value>.
     const char* input;
@@ -202,6 +202,40 @@ TEST(CSSParsingUtilsTest, ConsumeAnyValue) {
     CSSParserTokenRange range(tokens);
     EXPECT_EQ(test.expected, css_parsing_utils::ConsumeAnyValue(range));
     EXPECT_EQ(String(test.remainder), range.Serialize());
+  }
+}
+
+TEST(CSSParsingUtilsTest, ConsumeAnyValue_Stream) {
+  struct {
+    // The input string to parse as <any-value>.
+    const char* input;
+    // The serialization of the tokens remaining in the stream.
+    const char* remainder;
+  } tests[] = {
+      {"1", ""},
+      {"1px", ""},
+      {"1px ", ""},
+      {"ident", ""},
+      {"(([ident]))", ""},
+      {" ( ( 1 ) ) ", ""},
+      {"rgb(1, 2, 3)", ""},
+      {"rgb(1, 2, 3", ""},
+      {"!!!;;;", ""},
+      {"asdf)", ")"},
+      {")asdf", ")asdf"},
+      {"(ab)cd) e", ") e"},
+      {"(as]df) e", "(as]df) e"},
+      {"(a b [ c { d ) e } f ] g h) i", "(a b [ c { d ) e } f ] g h) i"},
+      {"a url(() b", "url(() b"},
+  };
+
+  for (const auto& test : tests) {
+    String input(test.input);
+    SCOPED_TRACE(input);
+    CSSTokenizer tokenizer(input);
+    CSSParserTokenStream stream(tokenizer);
+    css_parsing_utils::ConsumeAnyValue(stream);
+    EXPECT_EQ(String(test.remainder), stream.RemainingText().ToString());
   }
 }
 

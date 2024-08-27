@@ -64,10 +64,7 @@ class CSSSupportsParserTest : public testing::Test {
     CSSSupportsParser parser(impl);
     CSSTokenizer tokenizer(string);
     CSSParserTokenStream stream(tokenizer);
-    CSSParserToken first_token = stream.Peek();
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    return parser.ConsumeSupportsFeature(first_token, stream);
+    return parser.ConsumeSupportsFeature(stream);
   }
 
   Result ConsumeSupportsSelectorFn(String string) {
@@ -75,10 +72,7 @@ class CSSSupportsParserTest : public testing::Test {
     CSSSupportsParser parser(impl);
     CSSTokenizer tokenizer(string);
     CSSParserTokenStream stream(tokenizer);
-    CSSParserToken first_token = stream.Peek();
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    return parser.ConsumeSupportsSelectorFn(first_token, stream);
+    return parser.ConsumeSupportsSelectorFn(stream);
   }
 
   Result ConsumeSupportsDecl(String string) {
@@ -86,10 +80,7 @@ class CSSSupportsParserTest : public testing::Test {
     CSSSupportsParser parser(impl);
     CSSTokenizer tokenizer(string);
     CSSParserTokenStream stream(tokenizer);
-    CSSParserToken first_token = stream.Peek();
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    return parser.ConsumeSupportsDecl(first_token, stream);
+    return parser.ConsumeSupportsDecl(stream);
   }
 
   Result ConsumeGeneralEnclosed(String string) {
@@ -97,10 +88,7 @@ class CSSSupportsParserTest : public testing::Test {
     CSSSupportsParser parser(impl);
     CSSTokenizer tokenizer(string);
     CSSParserTokenStream stream(tokenizer);
-    CSSParserToken first_token = stream.Peek();
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    return parser.ConsumeGeneralEnclosed(first_token, stream);
+    return parser.ConsumeGeneralEnclosed(stream);
   }
 };
 
@@ -366,35 +354,38 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsDecl) {
   EXPECT_EQ(Result::kUnsupported, ConsumeSupportsDecl("(color)"));
   EXPECT_EQ(Result::kUnsupported, ConsumeSupportsDecl("(color:)"));
 
-  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsDecl("("));
-  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsDecl("()"));
+  EXPECT_EQ(Result::kUnsupported, ConsumeSupportsDecl("("));
+  EXPECT_EQ(Result::kUnsupported, ConsumeSupportsDecl("()"));
 }
 
 TEST_F(CSSSupportsParserTest, ConsumeSupportsFeature) {
   EXPECT_EQ(Result::kSupported, ConsumeSupportsFeature("(color:red)"));
-  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsFeature("asdf(1)"));
+  EXPECT_EQ(Result::kUnsupported, ConsumeSupportsFeature("asdf(1)"));
 }
 
 TEST_F(CSSSupportsParserTest, ConsumeGeneralEnclosed) {
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("(asdf)"));
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("( asdf )"));
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("(3)"));
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("max(1, 2)"));
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("asdf(1, 2)"));
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("asdf(1, 2)\t"));
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("("));
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("()"));
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("( )"));
+  // TODO(andruud): Change ConsumeGeneralEnclosed to return bool.
+  // A return value of kSupported here means that the given input
+  // is a valid <general-enclosed>.
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("(asdf)"));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("( asdf )"));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("(3)"));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("max(1, 2)"));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("asdf(1, 2)"));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("asdf(1, 2)\t"));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("("));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("()"));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("( )"));
 
   // Invalid <any-value>:
-  EXPECT_EQ(Result::kParseFailure, ConsumeGeneralEnclosed("(asdf})"));
-  EXPECT_EQ(Result::kParseFailure, ConsumeGeneralEnclosed("(asd]f)"));
-  EXPECT_EQ(Result::kParseFailure, ConsumeGeneralEnclosed("(\"as\ndf\")"));
-  EXPECT_EQ(Result::kParseFailure, ConsumeGeneralEnclosed("(url(as'df))"));
+  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("(asdf})"));
+  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("(asd]f)"));
+  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("(\"as\ndf\")"));
+  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("(url(as'df))"));
 
   // Valid <any-value>
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("(as;df)"));
-  EXPECT_EQ(Result::kUnsupported, ConsumeGeneralEnclosed("(as ! df)"));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("(as;df)"));
+  EXPECT_EQ(Result::kSupported, ConsumeGeneralEnclosed("(as ! df)"));
 }
 
 TEST_F(CSSSupportsParserTest, AtSupportsCondition) {

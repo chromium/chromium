@@ -982,6 +982,32 @@ bool ConsumeAnyValue(CSSParserTokenRange& range) {
   return result;
 }
 
+namespace {
+
+bool ConsumeAnyComponentValue(CSSParserTokenStream& stream) {
+  if (stream.Peek().GetBlockType() == CSSParserToken::kBlockStart) {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    ConsumeAnyValue(stream);
+    if (guard.Release()) {
+      return true;
+    }
+  } else if (IsTokenAllowedForAnyValue(stream.Peek())) {
+    stream.Consume();
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
+void ConsumeAnyValue(CSSParserTokenStream& stream) {
+  while (!stream.AtEnd()) {
+    if (!ConsumeAnyComponentValue(stream)) {
+      return;
+    }
+  }
+}
+
 // MathFunctionParser is a helper for parsing something that _might_ be a
 // function. In particular, it helps rewinding the parser to the point where it
 // started if what was to be parsed was not a function (or an invalid function).

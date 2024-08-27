@@ -1325,7 +1325,12 @@ TEST(CSSParserImplTest, ParseSupportsBlinkFeatureAuthorStylesheet) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
   CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
-  ASSERT_EQ(sheet->ChildRules().size(), 0u);
+  ASSERT_EQ(sheet->ChildRules().size(), 1u);
+
+  StyleRuleBase* rule = sheet->ChildRules()[0].Get();
+  ASSERT_EQ(rule->GetType(), StyleRuleBase::RuleType::kSupports);
+  StyleRuleSupports* supports_rule = DynamicTo<StyleRuleSupports>(rule);
+  EXPECT_FALSE(supports_rule->ConditionIsSupported());
 }
 
 TEST(CSSParserImplTest, ParseSupportsBlinkFeatureDisabledFeature) {

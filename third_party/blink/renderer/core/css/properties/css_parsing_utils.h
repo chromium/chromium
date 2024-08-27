@@ -96,6 +96,7 @@ CSSParserTokenRange ConsumeFunction(CSSParserTokenStream&);
 // Consumes component values until it reaches a token that is not allowed
 // for <any-value>.
 CORE_EXPORT bool ConsumeAnyValue(CSSParserTokenRange&);
+CORE_EXPORT void ConsumeAnyValue(CSSParserTokenStream&);
 
 CSSPrimitiveValue* ConsumeInteger(
     CSSParserTokenRange&,
