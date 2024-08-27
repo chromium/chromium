@@ -1048,6 +1048,10 @@ public final class ProductionSupportedFlagList {
                 SensitiveContentFeatures.SENSITIVE_CONTENT,
                 "Redact sensitive content during screen sharing, screen recording, and similar"
                         + " actions"),
+        Flag.baseFeature(
+                BlinkFeatures.PLZ_DEDICATED_WORKER,
+                "Enable PlzDedicatedWorker. This affects how some URLs are sent to"
+                        + " WebViewClient.shouldInterceptRequest()"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
