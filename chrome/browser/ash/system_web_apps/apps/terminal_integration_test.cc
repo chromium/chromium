@@ -16,7 +16,9 @@
 
 namespace {
 
-IN_PROC_BROWSER_TEST_F(AshIntegrationTest, Crosh) {
+// TODO(b/362289622): Re-enable this test after fallback for chrome
+// screen ai has been implemented.
+IN_PROC_BROWSER_TEST_F(AshIntegrationTest, DISABLED_Crosh) {
   ui::ScopedAnimationDurationScaleMode zero_duration(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
