@@ -19,10 +19,6 @@ const int kDefaultMediumDetentHeight = 450;
 // Top margin for the resting place of a large detent sheet.
 const int kLargeDetentTopMargin = 50;
 
-// Threshold for where ending a swipe gesture opens the sheet to the large
-// detent.
-const int kLargeDetentTopThreshold = 150;
-
 // Duration for the animation of the sheet's height.
 const CGFloat kHeightAnimationDuration = 0.3;
 
@@ -122,7 +118,9 @@ const CGFloat kTopCornerRadius = 10;
     return;
   }
 
-  [self animateHeightConstraintToConstant:[self restingHeight]];
+  [self
+      animateHeightConstraintToConstant:[self
+                                            restingHeightWithSheetVelocity:0]];
 
   _widthConstraint.active =
       self.traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact;
@@ -146,40 +144,62 @@ const CGFloat kTopCornerRadius = 10;
 }
 
 // If the sheet is short because the medium detent's size is lower than default,
-// then don't allow expansion to large detent.
+// then don't allow expansion to large detent. Compact height devices only ever
+// show the large detent, so it should always be allowed there.
 - (BOOL)shouldAllowLargeDetent {
-  return [self mediumDetentHeight] == kDefaultMediumDetentHeight;
+  return self.traitCollection.verticalSizeClass ==
+             UIUserInterfaceSizeClassCompact ||
+         [self mediumDetentHeight] == kDefaultMediumDetentHeight;
 }
 
 // Returns the height the sheet should rest at if released at the current
-// position. Returns 0 to indicate the sheet should be closed.
-- (CGFloat)restingHeight {
+// position and velocity. Velocity should be positive if the sheet is moving
+// up/getting larger. Returns 0 to indicate the sheet should be closed.
+- (CGFloat)restingHeightWithSheetVelocity:(CGFloat)velocity {
   CGFloat superviewHeight = self.view.superview.frame.size.height;
+  CGFloat currentSheetHeight = _heightConstraint.constant;
 
-  // Compact height devices only use the large detent.
-  if (self.traitCollection.verticalSizeClass ==
+  // Estimate the final resting point pretending the sheet will decelerate over
+  // 1 second. This is just a simple heuristic for what should feel reasonable
+  // to the user. It is not taken from any UIKit deceleration code. Then the
+  // resulting formula comes from the physics formula for distance traveled with
+  // constant acceleration and known initial velocity and time.
+  CGFloat estimatedFinalRestingHeight = currentSheetHeight + 0.5 * velocity;
+
+  NSMutableArray<NSNumber*>* detents =
+      [[NSMutableArray alloc] initWithArray:@[ @0 ]];
+  // Only regular height devices support medium detent.
+  if (self.traitCollection.verticalSizeClass !=
       UIUserInterfaceSizeClassCompact) {
-    CGFloat height = superviewHeight - kLargeDetentTopMargin;
-    CGFloat closeThreshold = height / 2;
-    if (_heightConstraint.constant < closeThreshold) {
-      return 0;
-    } else {
-      return height;
+    [detents addObject:[NSNumber numberWithDouble:[self mediumDetentHeight]]];
+  }
+  if ([self shouldAllowLargeDetent]) {
+    [detents addObject:[NSNumber numberWithDouble:superviewHeight -
+                                                  kLargeDetentTopMargin]];
+  }
+
+  // Find the detents the current height is between.
+  if (currentSheetHeight < [detents[0] doubleValue]) {
+    return [detents[0] doubleValue];
+  }
+
+  for (NSUInteger index = 0; index < detents.count - 1; index++) {
+    if (currentSheetHeight < [detents[index + 1] doubleValue]) {
+      // If the estimated resting height is less than halfway to the next
+      // detent, then the resting height is the current detent. Otherwise, it's
+      // the next detent.
+      if (estimatedFinalRestingHeight <
+          ([detents[index] doubleValue] + [detents[index + 1] doubleValue]) /
+              2) {
+        return [detents[index] doubleValue];
+      } else {
+        return [detents[index + 1] doubleValue];
+      }
     }
   }
 
-  // TODO(crbug.com/349856760): Use half the medium detent as the threshold for
-  // now.
-  CGFloat closeThreshold = [self mediumDetentHeight] / 2;
-
-  if ([self shouldAllowLargeDetent] &&
-      superviewHeight - _heightConstraint.constant < kLargeDetentTopThreshold) {
-    return superviewHeight - kLargeDetentTopMargin;
-  } else if (_heightConstraint.constant < closeThreshold) {
-    return 0;
-  } else {
-    return [self mediumDetentHeight];
-  }
+  // Detents is initialized with 0, so there's always at least one option.
+  return [detents[detents.count - 1] doubleValue];
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer*)sender {
@@ -188,11 +208,15 @@ const CGFloat kTopCornerRadius = 10;
   }
 
   CGFloat translation = [sender translationInView:self.view].y;
+  // According to the gesture recognizer, positive velocity means gesture moving
+  // down the screen (towards positive y), but it's easier to think about
+  // positive velocity meaning sheet getting taller.
+  CGFloat sheetVelocity = -[sender velocityInView:self.view].y;
 
   _heightConstraint.constant = _initialHeightConstraintConstant - translation;
 
   if (sender.state == UIGestureRecognizerStateEnded) {
-    CGFloat newHeight = [self restingHeight];
+    CGFloat newHeight = [self restingHeightWithSheetVelocity:sheetVelocity];
     if (newHeight == 0) {
       [self closeSheet];
     } else {
@@ -239,7 +263,7 @@ const CGFloat kTopCornerRadius = 10;
 - (void)setContentHeight:(CGFloat)height {
   _contentHeight = height;
 
-  CGFloat newHeight = [self restingHeight];
+  CGFloat newHeight = [self restingHeightWithSheetVelocity:0];
   // This should not close the sheet if the current height is short and the new
   // contentHeight is tall.
   if (newHeight > 0) {
