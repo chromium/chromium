@@ -64,6 +64,7 @@
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -382,31 +383,71 @@ void DrawingBuffer::SetDrawBuffer(GLenum draw_buffer) {
 
 DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
     cc::SharedBitmapIdRegistrar* bitmap_registrar) {
-  // When searching for a hit in SharedBitmap, we don't consider the bitmap
-  // format (RGBA 8888 vs F16) since the allocated bitmap is always RGBA_8888.
-  auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
-                           [this](const RegisteredBitmap& registered) {
-                             return registered.bitmap->size() != size_;
-                           });
-  recycled_bitmaps_.Shrink(
-      static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
+  if (features::IsCanvasSharedBitmapConversionEnabled()) {
+    const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
+    auto* sii_provider = SharedGpuContext::SharedImageInterfaceProvider();
 
-  if (!recycled_bitmaps_.empty()) {
-    RegisteredBitmap recycled = std::move(recycled_bitmaps_.back());
-    recycled_bitmaps_.pop_back();
-    DCHECK(recycled.bitmap->size() == size_);
-    return recycled;
+    auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
+                             [this](const RegisteredBitmap& registered) {
+                               return registered.bitmap->size() != size_ ||
+                                      !registered.sii_provider;
+                             });
+    recycled_bitmaps_.Shrink(
+        static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
+
+    if (!recycled_bitmaps_.empty()) {
+      RegisteredBitmap recycled = std::move(recycled_bitmaps_.back());
+      recycled_bitmaps_.pop_back();
+      return recycled;
+    }
+
+    // There are no bitmaps to recycle so allocate a new one.
+    auto* shared_image_interface = sii_provider->SharedImageInterface();
+    if (!shared_image_interface) {
+      return RegisteredBitmap();
+    }
+    auto shared_image_mapping = shared_image_interface->CreateSharedImage(
+        {format, size_, gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+         "DrawingBufferBitmap"});
+    auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
+        viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
+        std::move(shared_image_mapping.mapping), size_, format);
+
+    RegisteredBitmap registered = {
+        std::move(bitmap), cc::SharedBitmapIdRegistration(),
+        std::move(shared_image_mapping.shared_image),
+        shared_image_interface->GenVerifiedSyncToken(),
+        sii_provider->GetWeakPtr()};
+
+    return registered;
+  } else {
+    // When searching for a hit in SharedBitmap, we don't consider the bitmap
+    // format (RGBA 8888 vs F16) since the allocated bitmap is always RGBA_8888.
+    auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
+                             [this](const RegisteredBitmap& registered) {
+                               return registered.bitmap->size() != size_;
+                             });
+    recycled_bitmaps_.Shrink(
+        static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
+
+    if (!recycled_bitmaps_.empty()) {
+      RegisteredBitmap recycled = std::move(recycled_bitmaps_.back());
+      recycled_bitmaps_.pop_back();
+      DCHECK(recycled.bitmap->size() == size_);
+      return recycled;
+    }
+
+    const viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
+    const viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+    base::MappedReadOnlyRegion shm =
+        viz::bitmap_allocation::AllocateSharedBitmap(size_, format);
+    auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
+        id, std::move(shm.region), std::move(shm.mapping), size_, format);
+    RegisteredBitmap registered = {
+        std::move(bitmap), bitmap_registrar->RegisterSharedBitmapId(id, bitmap),
+        /*shared_image=*/nullptr, gpu::SyncToken(), /*sii_provider=*/nullptr};
+    return registered;
   }
-
-  const viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-  const viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
-  base::MappedReadOnlyRegion shm =
-      viz::bitmap_allocation::AllocateSharedBitmap(size_, format);
-  auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-      id, std::move(shm.region), std::move(shm.mapping), size_, format);
-  RegisteredBitmap registered = {
-      bitmap, bitmap_registrar->RegisterSharedBitmapId(id, bitmap)};
-  return registered;
 }
 
 bool DrawingBuffer::PrepareTransferableResource(
@@ -522,14 +563,24 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
     viz::ReleaseCallback* out_release_callback) {
   DCHECK(state_restorer_);
   RegisteredBitmap registered = CreateOrRecycleBitmap(bitmap_registrar);
+  if (!registered.bitmap) {
+    return false;
+  }
 
   ReadFramebufferIntoBitmapPixels(
       static_cast<uint8_t*>(registered.bitmap->memory()));
 
-  *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
-      registered.bitmap->id(), gpu::SyncToken(), size_,
-      viz::SinglePlaneFormat::kRGBA_8888,
-      viz::TransferableResource::ResourceSource::kDrawingBuffer);
+  if (registered.shared_image) {
+    *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
+        std::move(registered.shared_image), std::move(registered.sync_token),
+        size_, viz::SinglePlaneFormat::kBGRA_8888,
+        viz::TransferableResource::ResourceSource::kImageLayerBridge);
+  } else {
+    *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
+        registered.bitmap->id(), gpu::SyncToken(), size_,
+        viz::SinglePlaneFormat::kRGBA_8888,
+        viz::TransferableResource::ResourceSource::kDrawingBuffer);
+  }
   out_resource->color_space = back_color_buffer_->color_space;
   out_resource->hdr_metadata = hdr_metadata_;
 
@@ -702,7 +753,9 @@ void DrawingBuffer::MailboxReleasedGpu(scoped_refptr<ColorBuffer> color_buffer,
 void DrawingBuffer::MailboxReleasedSoftware(RegisteredBitmap registered,
                                             const gpu::SyncToken& sync_token,
                                             bool lost_resource) {
-  DCHECK(!sync_token.HasData());  // No sync tokens for software resources.
+  DCHECK(!sync_token.HasData() ||
+         features::IsCanvasSharedBitmapConversionEnabled());
+
   if (destruction_in_progress_ || lost_resource || is_hidden_ ||
       registered.bitmap->size() != size_) {
     // Just delete the RegisteredBitmap, which will free the memory and

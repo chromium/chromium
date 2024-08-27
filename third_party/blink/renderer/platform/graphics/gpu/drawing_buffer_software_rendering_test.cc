@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
-
+#include "base/test/scoped_feature_list.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -32,6 +33,8 @@ class TestSharedBitmapIdRegistar : public cc::SharedBitmapIdRegistrar {
 class DrawingBufferSoftwareCompositingTest : public testing::Test {
  protected:
   void SetUp() override {
+    feature_list_.InitAndDisableFeature(
+        features::kCanvasSharedBitmapToSharedImage);
     gfx::Size initial_size(kInitialWidth, kInitialHeight);
     auto gl = std::make_unique<GLES2InterfaceForTests>();
     auto provider =
@@ -49,6 +52,7 @@ class DrawingBufferSoftwareCompositingTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   scoped_refptr<DrawingBufferForTests> drawing_buffer_;
   TestSharedBitmapIdRegistar test_shared_bitmap_id_registrar_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(DrawingBufferSoftwareCompositingTest, BitmapRecycling) {

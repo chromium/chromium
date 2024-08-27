@@ -42,6 +42,7 @@
 #include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -81,6 +82,7 @@ class Extensions3DUtil;
 class StaticBitmapImage;
 class WebGraphicsContext3DProvider;
 class WebGraphicsContext3DProviderWrapper;
+class WebGraphicsSharedImageInterfaceProvider;
 
 // Manages a rendering target (framebuffer + attachment) for a canvas.  Can
 // publish its rendering results to a cc::Layer for compositing.
@@ -345,9 +347,19 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool Initialize(const gfx::Size&, bool use_multisampling);
 
   struct RegisteredBitmap {
-    RegisteredBitmap(scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
-                     cc::SharedBitmapIdRegistration registration)
-        : bitmap(std::move(bitmap)), registration(std::move(registration)) {}
+    RegisteredBitmap(
+        scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
+        cc::SharedBitmapIdRegistration registration,
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
+        gpu::SyncToken sync_token,
+        base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider>
+            sii_provider)
+        : bitmap(std::move(bitmap)),
+          registration(std::move(registration)),
+          shared_image(std::move(shared_image)),
+          sync_token(std::move(sync_token)),
+          sii_provider(sii_provider) {}
+    RegisteredBitmap() = default;
 
     // Explicitly move-only.
     RegisteredBitmap(RegisteredBitmap&&) = default;
@@ -355,6 +367,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
     scoped_refptr<cc::CrossThreadSharedBitmap> bitmap;
     cc::SharedBitmapIdRegistration registration;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    gpu::SyncToken sync_token;
+    base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;
   };
   // Shared memory bitmaps that were released by the compositor and can be used
   // again by this DrawingBuffer.
