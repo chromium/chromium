@@ -638,6 +638,21 @@
             ]
         }
     ],
+    "AndroidUseFrameIntervalDecider": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseFrameIntervalDecider"
+                    ]
+                }
+            ]
+        }
+    ],
     "AnimationForDesktopCapturePermissionChecker": [
         {
             "platforms": [
@@ -26390,6 +26405,22 @@
                     "enable_features": [
                         "WebViewExitReasonMetric"
                     ]
+                }
+            ]
+        }
+    ],
+    "WebViewFrameRateHints": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewFrameRateHints"
+                    ],
+                    "min_os_version": "15.0.0"
                 }
             ]
         }
