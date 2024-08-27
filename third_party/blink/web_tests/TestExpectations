@@ -8015,7 +8015,8 @@ crbug.com/358437652 [ Win11-arm64 ] external/wpt/dom/events/scrolling/wheel-even
 crbug.com/359519774 [ Debug Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Failure Pass ]
 
 # TODO(crbug.com/360166067) This test timeout on headless shell and Chrome
-crbug.com/360166067 external/wpt/longtask-timing/longtask-in-raf.html [ Timeout ]
+crbug.com/360166067 [ Release ] external/wpt/longtask-timing/longtask-in-raf.html [ Timeout ]
+crbug.com/362506646 [ Debug Win ] external/wpt/longtask-timing/longtask-in-raf.html [ Crash Failure Timeout ]
 
 # Gardener 2024-08-14
 crbug.com/359628062 [ Mac12 ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/mismatched-snapshot-containing-block-size-skips.html [ Failure Pass ]
