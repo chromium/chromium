@@ -3746,8 +3746,7 @@ public class AwContents implements SmartClipProvider {
                 return;
             }
 
-            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND)
-                    && mDrawFunctor != null) {
+            if (mDrawFunctor != null) {
                 // Clear the functor. This causes native-side resources to be freed. The functor
                 // will be re-created at the next draw.
                 setFunctor(null);
@@ -4458,12 +4457,6 @@ public class AwContents implements SmartClipProvider {
             boolean visibleRectEmpty = getGlobalVisibleRect().isEmpty();
             final boolean visible = mIsViewVisible && mIsWindowVisible && !visibleRectEmpty;
 
-            boolean clearFunctor =
-                    AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND);
-            int trimThreshold =
-                    clearFunctor
-                            ? ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
-                            : ComponentCallbacks2.TRIM_MEMORY_MODERATE;
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         if (isDestroyed(NO_WARN)) return;
@@ -4473,12 +4466,9 @@ public class AwContents implements SmartClipProvider {
                         if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
                             postDelayedTaskWithOverride(
                                     this::maybeRecordMemory, METRICS_COLLECTION_DELAY_MS);
-                        }
-
-                        if (level >= trimThreshold) {
                             if (mDrawFunctor != null) {
                                 mDrawFunctor.trimMemory();
-                                if (clearFunctor) setFunctor(null);
+                                setFunctor(null);
                             }
                         }
                         AwContentsJni.get().trimMemory(mNativeAwContents, level, visible);

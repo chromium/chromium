@@ -45,7 +45,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -1667,7 +1666,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearDrawFunctorInBackground() throws Throwable {
         mActivityTestRule.startBrowserProcess();
 
@@ -1720,7 +1718,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearDrawFunctorInBackgroundMultipleTransitions() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         AwContents.resetRecordMemoryForTesting();
@@ -1780,59 +1777,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
-    public void testDoeNotClearDrawFunctorInBackground() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        AwContents.resetRecordMemoryForTesting();
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // Load a page to ensure that at least one draw has happened.
-        doHardwareRenderingSmokeTest(testView);
-        Assert.assertTrue(awContents.hasDrawFunctor());
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var postTask = new FakePostDelayedTask();
-                    awContents.setPostDelayedTaskForTesting(postTask);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
-
-                    // Background cleanup task is posted even when the feature is disabled.
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-                    postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS);
-                    // But the functor is not cleared.
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-
-                    // Metrics task.
-                    var histograms =
-                            HistogramWatcher.newBuilder()
-                                    .expectAnyRecord(AwContents.PSS_HISTOGRAM)
-                                    .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
-                                    .build();
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-                    postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(0, postTask.getPendingTasksCount());
-                    histograms.assertExpected();
-
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
-                    Assert.assertEquals(0, postTask.getPendingTasksCount());
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-                });
-
-        // Rendering still works.
-        doHardwareRenderingSmokeTest(testView, 42, 42, 42);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-                });
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearFunctorOnBackgroundMemorySignal() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         AwContents.resetRecordMemoryForTesting();
@@ -1879,61 +1823,6 @@ public class AwContentsTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(awContents.hasDrawFunctor());
-                });
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
-    public void testMetricsRecordingIsThrottled() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        AwContents.resetRecordMemoryForTesting();
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // Load a page to ensure that at least one draw has happened.
-        doHardwareRenderingSmokeTest(testView);
-        Assert.assertTrue(awContents.hasDrawFunctor());
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var postTask = new FakePostDelayedTask();
-                    awContents.setPostDelayedTaskForTesting(postTask);
-
-                    // Not required to happen in background, but this is how the notification is
-                    // dispatched in real code.
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
-                    awContents.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND);
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-
-                    // Metrics task.
-                    var histograms =
-                            HistogramWatcher.newBuilder()
-                                    .expectAnyRecord(AwContents.PSS_HISTOGRAM)
-                                    .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
-                                    .build();
-                    Assert.assertEquals(2, postTask.getPendingTasksCount());
-                    postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-                    histograms.assertExpected();
-
-                    postTask.fastForwardBy(
-                            AwContents.FUNCTOR_RECLAIM_DELAY_MS
-                                    - AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-
-                    // Metrics are not recorded this time, not enough time has passed.
-                    histograms =
-                            HistogramWatcher.newBuilder()
-                                    .expectNoRecords(AwContents.PSS_HISTOGRAM)
-                                    .expectNoRecords(AwContents.PRIVATE_DIRTY_HISTOGRAM)
-                                    .build();
-                    postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(0, postTask.getPendingTasksCount());
-                    histograms.assertExpected();
                 });
     }
 

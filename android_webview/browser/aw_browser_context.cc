@@ -574,8 +574,7 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   // (http://crbug.com/921750).
   context_params->enforce_chrome_ct_policy = false;
 
-  context_params->enable_brotli = base::FeatureList::IsEnabled(
-      android_webview::features::kWebViewBrotliSupport);
+  context_params->enable_brotli = true;
   context_params->enable_zstd =
       base::FeatureList::IsEnabled(net::features::kZstdContentEncoding);
 

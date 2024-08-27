@@ -187,9 +187,6 @@ public final class ProductionSupportedFlagList {
                 VizFeatures.DRAW_IMMEDIATELY_WHEN_INTERACTIVE,
                 "Enable optimization for immediate activation and draw when interactive."),
         Flag.baseFeature(GpuFeatures.USE_GLES2_FOR_OOP_R, "Force Skia context to use es2 only."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_BROTLI_SUPPORT,
-                "Enables brotli compression support in WebView."),
         Flag.baseFeature(NetFeatures.PRIORITY_HEADER, "Enables the HTTP priority header."),
         Flag.baseFeature(
                 NetFeatures.ZSTD_CONTENT_ENCODING,
@@ -683,9 +680,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS,
                 "Report frame metrics to Google, if metrics reporting has been enabled."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND,
-                "Clear the draw functor after some time in background."),
         Flag.baseFeature(
                 PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT,
                 "This flag won't block MIDI by default in WebView. In fact "
