@@ -2177,6 +2177,11 @@ BASE_FEATURE(kOobeInputMethods,
              "OobeInputMethods",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, SplitModifierKeyboardInfoScreen will be shown in OOBE.
+BASE_FEATURE(kOobeSplitModifierKeyboardInfo,
+             "OobeSplitModifierKeyboardInfo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables OOBE Jelly features.
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4455,6 +4460,10 @@ bool IsOobeDisplaySizeEnabled() {
 bool IsOobeInputMethodsEnabled() {
   return IsOobeChoobeEnabled() &&
          base::FeatureList::IsEnabled(kOobeInputMethods);
+}
+
+bool IsOobeSplitModifierKeyboardInfoEnabled() {
+  return base::FeatureList::IsEnabled(kOobeSplitModifierKeyboardInfo);
 }
 
 bool IsOsFeedbackDialogEnabled() {
