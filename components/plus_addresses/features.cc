@@ -21,13 +21,6 @@ constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
 
 }  // namespace
 
-// When enabled, allows the use of affiliation data with plus addresses. This
-// includes things like prefetching affiliation data, or suggesting plus
-// addresses for affiliated domains.
-BASE_FEATURE(kPlusAddressAffiliations,
-             "PlusAddressAffiliations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, mobile manual fallbacks for addresses and passwords show plus
 // address filling information.

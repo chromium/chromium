@@ -107,13 +107,9 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           affiliation_service, std::move(feature_check));
 
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAffiliations)) {
-    affiliation_service->RegisterSource(
-        std::make_unique<plus_addresses::PlusAddressAffiliationSourceAdapter>(
-            plus_address_service.get()));
-  }
-
+  affiliation_service->RegisterSource(
+      std::make_unique<plus_addresses::PlusAddressAffiliationSourceAdapter>(
+          plus_address_service.get()));
   return plus_address_service;
 }
 

@@ -1561,11 +1561,9 @@ class PlusAddressAffiliationsTest : public PlusAddressServiceTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         // Enable features:
         {base::test::FeatureRefAndParams(
-             features::kPlusAddressesEnabled,
-             {{"server-url", "https://server.example"},
-              {"oauth-scope", "scope.example"}}),
-         base::test::FeatureRefAndParams(
-             {features::kPlusAddressAffiliations, {}})},
+            features::kPlusAddressesEnabled,
+            {{"server-url", "https://server.example"},
+             {"oauth-scope", "scope.example"}})},
         // Disable features:
         {});
     identity_env().MakePrimaryAccountAvailable("plus@plus.plus",

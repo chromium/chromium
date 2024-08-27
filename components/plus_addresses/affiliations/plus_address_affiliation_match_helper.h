@@ -53,9 +53,6 @@ class PlusAddressAffiliationMatchHelper {
       const affiliations::FacetURI& facet,
       AffiliatedPlusProfilesCallback result_callback);
 
-  // Requests and caches the list of PSL extensions.
-  void GetPSLExtensions(PSLExtensionCallback callback);
-
  private:
   void OnPSLExtensionsReceived(std::vector<std::string> psl_extensions);
 

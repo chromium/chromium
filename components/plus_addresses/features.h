@@ -11,9 +11,6 @@
 
 namespace plus_addresses::features {
 
-COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-BASE_DECLARE_FEATURE(kPlusAddressAffiliations);
-
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressAndroidManualFallbackEnabled);

@@ -35,25 +35,11 @@ PlusAddressAffiliationMatchHelper::~PlusAddressAffiliationMatchHelper() =
 void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
     const affiliations::FacetURI& facet,
     AffiliatedPlusProfilesCallback result_callback) {
-  if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAffiliations)) {
-    std::vector<PlusProfile> results;
-    if (std::optional<PlusProfile> profile =
-            plus_address_service_->GetPlusProfile(facet)) {
-      results.push_back(std::move(*profile));
-    }
-    std::move(result_callback).Run(std::move(results));
-    return;
-  }
-
-  GetPSLExtensions(
+  PSLExtensionCallback callback =
       base::BindOnce(&PlusAddressAffiliationMatchHelper::RequestGroupInfo,
                      weak_factory_.GetWeakPtr(), std::move(result_callback),
-                     facet, base::TimeTicks::Now()));
-}
+                     facet, base::TimeTicks::Now());
 
-void PlusAddressAffiliationMatchHelper::GetPSLExtensions(
-    PSLExtensionCallback callback) {
   if (psl_extensions_.has_value()) {
     std::move(callback).Run(psl_extensions_.value());
     return;

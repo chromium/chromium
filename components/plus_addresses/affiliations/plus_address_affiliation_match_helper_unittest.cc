@@ -8,7 +8,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -31,6 +30,7 @@ namespace {
 using ::affiliations::FacetURI;
 using ::affiliations::MockAffiliationService;
 using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::NiceMock;
 using ::testing::UnorderedElementsAreArray;
 
@@ -97,7 +97,6 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  base::test::ScopedFeatureList features_{features::kPlusAddressAffiliations};
   base::test::TaskEnvironment task_environment_;
   test::PlusAddressTestEnvironment plus_environment_;
   base::HistogramTester histogram_tester_;
@@ -108,32 +107,46 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
 // Verifies that PSL extensions are cached within the match helper and a single
 // affiliation service call is issued.
 TEST_F(PlusAddressAffiliationMatchHelperTest, GetPSLExtensionsCachesResult) {
+  FacetURI facet = FacetURI::FromCanonicalSpec("https://example.com");
   std::vector<std::string> pls_extensions = {"a.com", "b.com"};
+
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(facet);
+  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillByDefault(RunOnceCallbackRepeatedly<1>(
+          std::vector<affiliations::GroupedFacets>{group}));
+
   EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(pls_extensions));
-
-  base::MockCallback<PlusAddressAffiliationMatchHelper::PSLExtensionCallback>
+  base::MockCallback<
+      PlusAddressAffiliationMatchHelper::AffiliatedPlusProfilesCallback>
       callback;
-  EXPECT_CALL(callback, Run(UnorderedElementsAreArray(pls_extensions)));
-
-  match_helper()->GetPSLExtensions(callback.Get());
+  match_helper()->GetAffiliatedPlusProfiles(facet, callback.Get());
 
   // Now affiliation service isn't called.
   EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions).Times(0);
-  EXPECT_CALL(callback, Run(UnorderedElementsAreArray(pls_extensions)));
-  match_helper()->GetPSLExtensions(callback.Get());
+  match_helper()->GetAffiliatedPlusProfiles(facet, callback.Get());
 }
 
 // Verifies that the match helper correctly handles simultaneous fetch requests
 // for PSL extensions.
 TEST_F(PlusAddressAffiliationMatchHelperTest,
        GetPSLExtensionsHandlesSimultaneousCalls) {
+  FacetURI facet = FacetURI::FromCanonicalSpec("https://example.com");
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(facet);
+  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillByDefault(RunOnceCallbackRepeatedly<1>(
+          std::vector<affiliations::GroupedFacets>{group}));
+
   std::vector<std::string> pls_extensions = {"a.com", "b.com"};
   base::OnceCallback<void(std::vector<std::string>)> first_callback;
 
-  base::MockCallback<PlusAddressAffiliationMatchHelper::PSLExtensionCallback>
+  base::MockCallback<
+      PlusAddressAffiliationMatchHelper::AffiliatedPlusProfilesCallback>
       callback1;
-  base::MockCallback<PlusAddressAffiliationMatchHelper::PSLExtensionCallback>
+  base::MockCallback<
+      PlusAddressAffiliationMatchHelper::AffiliatedPlusProfilesCallback>
       callback2;
   {
     testing::InSequence in_sequence;
@@ -142,12 +155,12 @@ TEST_F(PlusAddressAffiliationMatchHelperTest,
         // made.
         .WillOnce(MoveArg<0>(&first_callback));
 
-    EXPECT_CALL(callback1, Run(UnorderedElementsAreArray(pls_extensions)));
-    EXPECT_CALL(callback2, Run(UnorderedElementsAreArray(pls_extensions)));
+    EXPECT_CALL(callback1, Run);
+    EXPECT_CALL(callback2, Run);
   }
 
-  match_helper()->GetPSLExtensions(callback1.Get());
-  match_helper()->GetPSLExtensions(callback2.Get());
+  match_helper()->GetAffiliatedPlusProfiles(facet, callback1.Get());
+  match_helper()->GetAffiliatedPlusProfiles(facet, callback2.Get());
 
   // After all `GetPSLExtensions` are made, resolve the affiliation service
   // callback and make sure all the calls are resolved.
