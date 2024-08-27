@@ -5,21 +5,20 @@
 import './read_anything_toolbar.js';
 import './strings.m.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
-import '//read-anything-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {listenOnce} from '//resources/js/util.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs} from './common.js';
 import type {SettingsPrefs} from './common.js';
@@ -28,7 +27,7 @@ import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 
-const AppElementBase = WebUiListenerMixin(PolymerElement);
+const AppElementBase = WebUiListenerMixinLit(CrLitElement);
 
 interface UtteranceSettings {
   lang: string;
@@ -145,22 +144,32 @@ export class AppElement extends AppElementBase {
     return 'read-anything-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      speechPlayingState: {
-        type: Object,
-        observer: 'onSpeechPlayingStateChanged_',
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      imagesEnabled: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: false,
-      },
+  static override get properties() {
+    return {
+      speechPlayingState: {type: Object},
+      imagesEnabled: {type: Boolean, reflect: true},
+      enabledLangs: {type: Array},
+      selectedVoice_: {type: Object},
+      availableVoices_: {type: Array},
+      voiceStatusLocalState_: {type: Object},
+      previewVoicePlaying_: {type: Object},
+      localeToDisplayName_: {type: Object},
+      lastDownloadedLang_: {type: String},
+      hasContent_: {type: Boolean},
+      speechEngineLoaded_: {type: Boolean},
+      willDrawAgainSoon_: {type: Boolean},
+      emptyStateImagePath_: {type: String},
+      emptyStateDarkImagePath_: {type: String},
+      emptyStateHeading_: {type: String},
+      emptyStateSubheading_: {type: String},
     };
   }
 
@@ -179,26 +188,26 @@ export class AppElement extends AppElementBase {
   private highlightedNodeToOffsetInParent: Map<Node, number> = new Map();
   private imageNodeIdsToFetch_: Set<number> = new Set();
 
-  private scrollingOnSelection_: boolean;
-  private hasContent_: boolean;
-  private emptyStateImagePath_: string;
-  private emptyStateDarkImagePath_: string;
-  private emptyStateHeading_: string;
-  private lastDownloadedLang: string;
-  private toastDuration_: number = toastDurationMs;
-  private emptyStateSubheading_: string;
+  private scrollingOnSelection_ = false;
+  protected hasContent_ = false;
+  protected emptyStateImagePath_?: string;
+  protected emptyStateDarkImagePath_?: string;
+  protected emptyStateHeading_?: string;
+  protected lastDownloadedLang_?: string;
+  protected toastDuration_: number = toastDurationMs;
+  protected emptyStateSubheading_ = '';
 
   private previousHighlights_: HTMLElement[] = [];
   private previousRootId_: number;
 
   private isReadAloudEnabled_: boolean;
-  private isDocsLoadMoreButtonVisible_: boolean;
+  protected isDocsLoadMoreButtonVisible_: boolean = false;
 
   // If the speech engine is considered "loaded." If it is, we should display
   // the play / pause buttons normally. Otherwise, we should disable the
   // Read Aloud controls until the engine has loaded in order to provide
   // visual feedback that a voice is about to be spoken.
-  private speechEngineLoaded: boolean = true;
+  private speechEngineLoaded_: boolean = true;
 
   // Sometimes distillations are queued up while distillation is happening so
   // when the current distillation finishes, we re-distill immediately. In that
@@ -213,25 +222,25 @@ export class AppElement extends AppElementBase {
 
   synth = window.speechSynthesis;
 
-  private selectedVoice_: SpeechSynthesisVoice|undefined;
+  protected selectedVoice_: SpeechSynthesisVoice|undefined;
   // The set of languages currently enabled for use by Read Aloud. This
   // includes user-enabled languages and auto-downloaded languages. The former
   // are stored in preferences. The latter are not.
   enabledLangs: string[] = [];
 
   // All possible available voices for the current speech engine.
-  private availableVoices_: SpeechSynthesisVoice[];
+  protected availableVoices_: SpeechSynthesisVoice[] = [];
   // The set of languages found in availableVoices.
   private availableLangs_: string[] = [];
   // If a preview is playing, this is set to the voice the preview is playing.
   // Otherwise, this is undefined.
-  private previewVoicePlaying: SpeechSynthesisVoice|undefined;
+  protected previewVoicePlaying_?: SpeechSynthesisVoice;
 
-  private localeToDisplayName: {[locale: string]: string};
+  protected localeToDisplayName_: {[locale: string]: string};
 
   // Our local representation of the status of voice pack downloads and
   // availability
-  private voiceStatusLocalState_:
+  protected voiceStatusLocalState_:
       {[language: string]: VoiceClientSideStatusCode} = {};
 
   // Cache of responses from LanguagePackManager
@@ -247,7 +256,7 @@ export class AppElement extends AppElementBase {
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
-  private settingsPrefs_: SettingsPrefs;
+  protected settingsPrefs_: SettingsPrefs;
 
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
@@ -260,9 +269,9 @@ export class AppElement extends AppElementBase {
     hasSpeechBeenTriggered: false,
   };
 
-  private imagesEnabled: boolean;
+  private imagesEnabled: boolean = false;
 
-  maxSpeechLength = 175;
+  maxSpeechLength: number = 175;
 
   wordBoundaryState: WordBoundaryState = {
     mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
@@ -285,6 +294,16 @@ export class AppElement extends AppElementBase {
   // were successfully restored, we can re-attempt to restore voice and
   // language preferences from settings in onVoicesChanged.
   shouldAttemptLanguageSettingsRestore: boolean = true;
+
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('speechPlayingState')) {
+      chrome.readingMode.onSpeechPlayingStateChanged(
+          this.speechPlayingState.isSpeechActive);
+    }
+  }
 
   constructor() {
     super();
@@ -409,11 +428,11 @@ export class AppElement extends AppElementBase {
     };
 
     chrome.readingMode.updateLinks = () => {
-      this.updateLinks();
+      this.updateLinks_();
     };
 
     chrome.readingMode.updateImages = () => {
-      this.updateImages();
+      this.updateImages_();
     };
 
     chrome.readingMode.onImageDownloaded = (nodeId) => {
@@ -683,7 +702,7 @@ export class AppElement extends AppElementBase {
     container.scrollTop = 0;
     this.hasContent_ = true;
     container.appendChild(node);
-    this.updateImages();
+    this.updateImages_();
   }
 
   async onImageDownloaded(nodeId: number) {
@@ -809,7 +828,7 @@ export class AppElement extends AppElementBase {
     startElement.scrollIntoViewIfNeeded();
   }
 
-  updateLinks(shouldRehighlightCurrentNodes: boolean = true) {
+  protected updateLinks_(shouldRehighlightCurrentNodes: boolean = true) {
     if (!this.shadowRoot) {
       return;
     }
@@ -838,7 +857,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  updateImages() {
+  protected updateImages_() {
     this.imagesEnabled = chrome.readingMode.imagesEnabled;
     // There is some strange issue where the HTML css application does not work
     // on canvases.
@@ -847,7 +866,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private onDocsLoadMoreButtonClick() {
+  protected onDocsLoadMoreButtonClick_() {
     chrome.readingMode.onScrolledToBottom();
   }
 
@@ -947,7 +966,7 @@ export class AppElement extends AppElementBase {
                 convertLangOrLocaleToExactVoicePackLocale(
                     genericVoicePackLanguage);
 
-            this.lastDownloadedLang = exactVoicePackLanguage ?
+            this.lastDownloadedLang_ = exactVoicePackLanguage ?
                 exactVoicePackLanguage :
                 genericVoicePackLanguage;
 
@@ -1012,8 +1031,8 @@ export class AppElement extends AppElementBase {
   }
 
 
-  private getLanguageDownloadedTitle_(lang: string) {
-    const langDisplayName = this.getLangDisplayName(lang);
+  protected getLanguageDownloadedTitle_() {
+    const langDisplayName = this.getLangDisplayName(this.lastDownloadedLang_);
 
     return loadTimeData.getStringF(
         'readingModeVoiceDownloadedTitle', langDisplayName);
@@ -1042,14 +1061,13 @@ export class AppElement extends AppElementBase {
   }
 
   onVoicesChanged() {
-    const previousSize =
-        this.availableVoices_ ? this.availableVoices_.length : 0;
+    const previousSize = this.availableVoices_.length;
     // Get a new list of voices. This should be done before we call
     // refreshVoicePackStatuses();
     this.getVoices_(/*refresh =*/ true);
 
     if (this.shouldAttemptLanguageSettingsRestore && previousSize === 0 &&
-        this.availableVoices_ && this.availableVoices_.length > 0) {
+        this.availableVoices_.length > 0) {
       // If we go from having no available voices to having voices available,
       // restore voice settings from preferences.
       this.restoreEnabledLanguagesFromPref();
@@ -1177,7 +1195,7 @@ export class AppElement extends AppElementBase {
   }
 
   private getVoices_(refresh: boolean = false): SpeechSynthesisVoice[] {
-    if (!this.availableVoices_ || refresh) {
+    if (!this.availableVoices_.length || refresh) {
       this.availableVoices_ = getFilteredVoiceList(this.synth.getVoices());
       this.availableLangs_ =
           [...new Set(this.availableVoices_.map(({lang}) => lang))];
@@ -1194,13 +1212,16 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private getLangDisplayName(lang: string): string {
+  private getLangDisplayName(lang?: string): string {
+    if (!lang) {
+      return '';
+    }
     const langLower = lang.toLowerCase();
-    return this.localeToDisplayName[langLower] || langLower;
+    return this.localeToDisplayName_[langLower] || langLower;
   }
 
   private populateDisplayNamesForLocaleCodes() {
-    this.localeToDisplayName = {};
+    this.localeToDisplayName_ = {};
 
     // Get display names for all the pack manager supported locales, only on
     // ChromeOS.
@@ -1218,12 +1239,12 @@ export class AppElement extends AppElementBase {
 
   private maybeAddDisplayName(lang: string) {
     const langLower = lang.toLowerCase();
-    if (!(langLower in this.localeToDisplayName)) {
+    if (!(langLower in this.localeToDisplayName_)) {
       const langDisplayName =
           chrome.readingMode.getDisplayNameForLocale(langLower, langLower);
       if (langDisplayName) {
-        this.localeToDisplayName =
-            {...this.localeToDisplayName, [langLower]: langDisplayName};
+        this.localeToDisplayName_ =
+            {...this.localeToDisplayName_, [langLower]: langDisplayName};
       }
     }
   }
@@ -1240,7 +1261,7 @@ export class AppElement extends AppElementBase {
     current.replaceWith(replacer);
   }
 
-  private onPreviewVoice_(
+  protected onPreviewVoice_(
       event: CustomEvent<{previewVoice: SpeechSynthesisVoice}>) {
     event.preventDefault();
     event.stopPropagation();
@@ -1249,7 +1270,7 @@ export class AppElement extends AppElementBase {
 
     // If there's no previewVoice, return after stopping the current preview
     if (!event.detail) {
-      this.previewVoicePlaying = undefined;
+      this.previewVoicePlaying_ = undefined;
       return;
     }
 
@@ -1264,11 +1285,11 @@ export class AppElement extends AppElementBase {
     utterance.rate = defaultUtteranceSettings.rate;
 
     utterance.onstart = event => {
-      this.previewVoicePlaying = event.utterance.voice || undefined;
+      this.previewVoicePlaying_ = event.utterance.voice || undefined;
     };
 
     utterance.onend = () => {
-      this.previewVoicePlaying = undefined;
+      this.previewVoicePlaying_ = undefined;
     };
 
     // TODO(b/40927698): There should probably be more sophisticated error
@@ -1276,13 +1297,13 @@ export class AppElement extends AppElementBase {
     // voice to null should be sufficient to reset state if an error is
     // encountered during a preview.
     utterance.onerror = () => {
-      this.previewVoicePlaying = undefined;
+      this.previewVoicePlaying_ = undefined;
     };
 
     this.synth.speak(utterance);
   }
 
-  private onVoiceMenuClose_(
+  protected onVoiceMenuClose_(
       event: CustomEvent<{voicePlayingWhenMenuOpened: boolean}>) {
     event.preventDefault();
     event.stopPropagation();
@@ -1294,7 +1315,8 @@ export class AppElement extends AppElementBase {
       this.playSpeech();
     }
   }
-  private onPlayPauseClick_() {
+
+  protected onPlayPauseClick_() {
     if (this.speechPlayingState.isSpeechActive) {
       this.logSpeechPlaySession_();
       this.stopSpeech(PauseActionSource.BUTTON_CLICK);
@@ -1302,11 +1324,6 @@ export class AppElement extends AppElementBase {
       this.playSessionStartTime = Date.now();
       this.playSpeech();
     }
-  }
-
-  private onSpeechPlayingStateChanged_() {
-    chrome.readingMode.onSpeechPlayingStateChanged(
-        this.speechPlayingState.isSpeechActive);
   }
 
   stopSpeech(pauseSource: PauseActionSource) {
@@ -1339,7 +1356,7 @@ export class AppElement extends AppElementBase {
     // if it's paused from a non-pause button (e.g. voice previews) so the links
     // don't flash off and on.
     if (chrome.readingMode.linksEnabled && pausedFromButton) {
-      this.updateLinks();
+      this.updateLinks_();
     }
   }
 
@@ -1353,7 +1370,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private playNextGranularity_() {
+  protected playNextGranularity_() {
     this.synth.cancel();
     this.resetPreviousHighlight_();
     // Reset the word boundary index whenever we move the granularity position.
@@ -1365,7 +1382,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private playPreviousGranularity_() {
+  protected playPreviousGranularity_() {
     this.synth.cancel();
     // This must be called BEFORE calling
     // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
@@ -1429,7 +1446,7 @@ export class AppElement extends AppElementBase {
       // paused from the play/pause button.
       if (chrome.readingMode.linksEnabled && pausedFromButton) {
         // Toggle links and ensure that the new nodes are also highlighted.
-        this.updateLinks(
+        this.updateLinks_(
             /* shouldRehiglightCurrentNodes= */ !playedFromSelection);
       }
 
@@ -1459,7 +1476,7 @@ export class AppElement extends AppElementBase {
       };
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
-        this.updateLinks();
+        this.updateLinks_();
       }
 
       const playedFromSelection = hasSelection && this.playFromSelection();
@@ -1719,7 +1736,7 @@ export class AppElement extends AppElementBase {
       // to prevent trapping users in a state where they can no longer play
       // Read Aloud, as this is preferable to a long delay before speech
       // with no feedback.
-      this.speechEngineLoaded = true;
+      this.speechEngineLoaded_ = true;
 
       if (error.error === 'interrupted') {
         // SpeechSynthesis.cancel() was called, therefore, do nothing.
@@ -1798,7 +1815,7 @@ export class AppElement extends AppElementBase {
     message.onstart = () => {
       // We've gotten the signal that the speech engine has loaded, therefore
       // we can enable the Read Aloud buttons.
-      this.speechEngineLoaded = true;
+      this.speechEngineLoaded_ = true;
 
       if (!this.speechPlayingState.isAudioCurrentlyPlaying) {
         this.speechPlayingState = {
@@ -1851,7 +1868,7 @@ export class AppElement extends AppElementBase {
 
 
     if (!this.firstUtteranceSpoken_) {
-      this.speechEngineLoaded = false;
+      this.speechEngineLoaded_ = false;
       this.firstUtteranceSpoken_ = true;
     }
     this.synth.speak(message);
@@ -2061,7 +2078,7 @@ export class AppElement extends AppElementBase {
 
     // Show links when speech finishes playing.
     if (chrome.readingMode.linksEnabled) {
-      this.updateLinks();
+      this.updateLinks_();
     }
     // Clear the formatting we added for highlighting.
     this.updateContent();
@@ -2088,7 +2105,7 @@ export class AppElement extends AppElementBase {
         getCurrentSpeechRate() <= 1 && !isEspeak(this.selectedVoice_);
   }
 
-  private onSelectVoice_(
+  protected onSelectVoice_(
       event: CustomEvent<{selectedVoice: SpeechSynthesisVoice}>) {
     event.preventDefault();
     event.stopPropagation();
@@ -2114,7 +2131,7 @@ export class AppElement extends AppElementBase {
     this.resetSpeechPostSettingChange_();
   }
 
-  private onVoiceLanguageToggle_(event: CustomEvent<{language: string}>) {
+  protected onVoiceLanguageToggle_(event: CustomEvent<{language: string}>) {
     event.preventDefault();
     event.stopPropagation();
     const toggledLanguage = event.detail.language;
@@ -2147,7 +2164,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private resetSpeechPostSettingChange_() {
+  protected resetSpeechPostSettingChange_() {
     // Don't call stopSpeech() if the speech tree hasn't been initialized or
     // if speech hasn't been triggered yet.
     if (!this.speechPlayingState.isSpeechTreeInitialized ||
@@ -2299,35 +2316,35 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private onLineSpacingChange_() {
+  protected onLineSpacingChange_() {
     this.styleUpdater_.setLineSpacing();
   }
 
-  private onLetterSpacingChange_() {
+  protected onLetterSpacingChange_() {
     this.styleUpdater_.setLetterSpacing();
   }
 
-  private onFontChange_() {
+  protected onFontChange_() {
     this.styleUpdater_.setFont();
   }
 
-  private onFontSizeChange_() {
+  protected onFontSizeChange_() {
     this.styleUpdater_.setFontSize();
   }
 
-  private onHighlightToggle_() {
+  protected onHighlightToggle_() {
     this.styleUpdater_.setHighlight();
   }
 
-  private onThemeChange_() {
+  protected onThemeChange_() {
     this.styleUpdater_.setTheme();
   }
 
-  private onResetToolbar_() {
+  protected onResetToolbar_() {
     this.styleUpdater_.resetToolbar();
   }
 
-  private onToolbarOverflow_(event: CustomEvent<{overflowLength: number}>) {
+  protected onToolbarOverflow_(event: CustomEvent<{overflowLength: number}>) {
     const shouldScroll =
         (event.detail.overflowLength >= minOverflowLengthToScroll);
     this.styleUpdater_.overflowToolbar(shouldScroll);
@@ -2350,15 +2367,9 @@ export class AppElement extends AppElementBase {
         /* retryIfPreviousInstallFailed= */ false);
   }
 
-  // Include parameters in order to force a re-render whenever the values
-  // change.
-  isReadAloudPlayable(
-      hasContent: boolean = this.hasContent_,
-      selectedVoice: SpeechSynthesisVoice|undefined = this.selectedVoice_,
-      speechEngineLoaded: boolean = this.speechEngineLoaded,
-      willDrawAgainSoon: boolean = this.willDrawAgainSoon_): boolean {
-    return hasContent && speechEngineLoaded && (selectedVoice !== undefined) &&
-        !willDrawAgainSoon;
+  computeIsReadAloudPlayable(): boolean {
+    return this.hasContent_ && this.speechEngineLoaded_ &&
+        !!this.selectedVoice_ && !this.willDrawAgainSoon_;
   }
 
   private autoSwitchVoice_(lang: string) {
@@ -2483,7 +2494,7 @@ export class AppElement extends AppElementBase {
     chrome.readingMode.sendInstallVoicePackRequest(langCodeForVoicePackManager);
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  protected onKeyDown_(e: KeyboardEvent) {
     if (e.key === 'k') {
       e.stopPropagation();
       this.onPlayPauseClick_();

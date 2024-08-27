@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, PauseActionSource, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -68,8 +68,8 @@ suite('WordHighlighting', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
-    flush();
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
+    return microtasksFinished();
   });
 
   // TODO(b/301131238): Before enabling the feature flag, ensure we've
@@ -77,14 +77,16 @@ suite('WordHighlighting', () => {
   suite('with word boundary flag enabled after a word boundary', () => {
     setup(() => {
       app.updateBoundary(10);
+      return microtasksFinished();
     });
 
-    test('word highlight used', () => {
+    test('word highlight used', async () => {
       app.playSpeech();
+      await microtasksFinished();
+
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
-
       // Sometimes the word returned can be "link", "link.", or "link. " which
       // can create flaky tests. Therefore, just check that the highlighted
       // text starts with "link" and isn't longer than the string would be if it
@@ -94,9 +96,11 @@ suite('WordHighlighting', () => {
       assertTrue(currentHighlight!.textContent!.length < 6);
     });
 
-    test('with rate over 1 sentence highlight used', () => {
+    test('with rate over 1 sentence highlight used', async () => {
       chrome.readingMode.onSpeechRateChange(2);
       app.playSpeech();
+      await microtasksFinished();
+
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
@@ -104,8 +108,10 @@ suite('WordHighlighting', () => {
     });
   });
 
-  test('with no word boundary sentence highlight used', () => {
+  test('with no word boundary sentence highlight used', async () => {
     app.playSpeech();
+    await microtasksFinished();
+
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
     assertTrue(!!currentHighlight);
@@ -114,10 +120,12 @@ suite('WordHighlighting', () => {
 
   test(
       'word highlighting with multiple punctuation marks skips highlight',
-      () => {
+      async () => {
         setSimpleAxTreeWithText('.?!\'\",(){}[]');
         app.updateBoundary(10);
         app.playSpeech();
+        await microtasksFinished();
+
         const currentHighlight =
             app.$.container.querySelector('.current-read-highlight');
         assertFalse(!!currentHighlight);
@@ -125,17 +133,19 @@ suite('WordHighlighting', () => {
 
   test(
       'word highlighting with single alphabet character does not skip highlight',
-      () => {
+      async () => {
         setSimpleAxTreeWithText('a');
         app.updateBoundary(0);
         app.playSpeech();
+        await microtasksFinished();
+
         const currentHighlight =
             app.$.container.querySelector('.current-read-highlight');
         assertTrue(!!currentHighlight);
         assertEquals('a', currentHighlight.textContent);
       });
 
-  test('word highlighting skipping', () => {
+  test('word highlighting skipping', async () => {
     const toTest =
         ['[', ']', '(', ')', '.', ',', '?', '!', '{', '}', '\'', '\"'];
 
@@ -143,6 +153,7 @@ suite('WordHighlighting', () => {
       setSimpleAxTreeWithText(char);
       app.updateBoundary(0);
       app.playSpeech();
+      await microtasksFinished();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertFalse(!!currentHighlight);
@@ -157,6 +168,7 @@ suite('WordHighlighting', () => {
     app.playSpeech();
     app.updateBoundary(2);
     app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    await microtasksFinished();
 
     // Update the selection directly on the document.
     const spans = app.$.container.querySelectorAll('span');
@@ -186,17 +198,17 @@ suite('WordHighlighting', () => {
     assertEquals(WordBoundaryMode.NO_BOUNDARIES, app.wordBoundaryState.mode);
   });
 
-  test('sentence highlight used with espeak voice', () => {
+  test('sentence highlight used with espeak voice', async () => {
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi eSpeak'});
     emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-    flush();
 
     const sentence = 'Hello, how are you!';
-
     setSimpleAxTreeWithText(sentence);
     app.updateBoundary(0);
     app.playSpeech();
+    await microtasksFinished();
+
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
     assertTrue(currentHighlight !== undefined);

@@ -366,4 +366,8 @@ export class FakeReadingMode {
   getDisplayNameForLocale(_locale: string, _displayLocale: string): string {
     return '';
   }
+
+  // Begins processing the speech segments on the current page to be used by
+  // Read Aloud.
+  preprocessTextForSpeech() {}
 }
