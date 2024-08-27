@@ -7,27 +7,10 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/socket_permission_request.h"
-#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
-#include "extensions/common/constants.h"
-#include "url/gurl.h"
-
-namespace {
-
-bool IsLockedToExtension(const GURL& lock_url) {
-  return lock_url.SchemeIs(extensions::kExtensionScheme);
-}
-
-const extensions::Extension* GetExtensionByLockUrl(
-    content::BrowserContext* browser_context,
-    const GURL& lock_url) {
-  return extensions::ExtensionRegistry::Get(browser_context)
-      ->enabled_extensions()
-      .GetExtensionOrAppByURL(lock_url);
-}
-
-}  // namespace
 
 bool ChromeDirectSocketsDelegate::IsAPIAccessAllowed(
     content::RenderFrameHost& rfh) {
@@ -39,19 +22,25 @@ bool ChromeDirectSocketsDelegate::IsAPIAccessAllowed(
 }
 
 bool ChromeDirectSocketsDelegate::ValidateAddressAndPort(
-    content::BrowserContext* browser_context,
-    const GURL& lock_url,
+    content::RenderFrameHost& rfh,
     const std::string& address,
     uint16_t port,
     ProtocolType protocol) {
-  if (!IsLockedToExtension(lock_url)) {
+  int32_t process_id = rfh.GetProcess()->GetID();
+  auto* process_map = extensions::ProcessMap::Get(rfh.GetBrowserContext());
+
+  if (!process_map->Contains(process_id)) {
+    // Additional restrictions are imposed only on extension-like contexts.
     return true;
   }
 
   // If we're running an extension, follow the chrome.sockets.* permission
   // model.
-  auto* extension = GetExtensionByLockUrl(browser_context, lock_url);
-  DCHECK(extension);
+  const extensions::Extension* extension =
+      process_map->GetEnabledExtensionByProcessID(process_id);
+  if (!extension) {
+    return false;
+  }
 
   switch (protocol) {
     case ProtocolType::kTcp:

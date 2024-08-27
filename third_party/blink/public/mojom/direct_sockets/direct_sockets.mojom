@@ -18,7 +18,6 @@ import "services/network/public/mojom/udp_socket.mojom";
 
 struct DirectTCPSocketOptions {
   network.mojom.HostPortPair remote_addr;
-  network.mojom.IPEndPoint? local_addr;
 
   // Sets the OS send buffer size (in bytes) for the socket. This is the
   // SO_SNDBUF socket option. If not specified, OS's default value will be used.

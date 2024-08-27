@@ -10,13 +10,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "content/browser/process_lock.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/direct_sockets_delegate.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/isolated_context_util.h"
-#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -96,9 +95,7 @@ bool ValidateAddressAndPort(RenderFrameHost& rfh,
     // No additional rules from the embedder.
     return true;
   }
-  return delegate->ValidateAddressAndPort(
-      rfh.GetBrowserContext(), rfh.GetProcess()->GetProcessLock().lock_url(),
-      address, port, protocol);
+  return delegate->ValidateAddressAndPort(rfh, address, port, protocol);
 }
 
 bool ValidateAddressAndPort(RenderFrameHost& rfh,
@@ -476,7 +473,7 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTCPSocket(
   }
 
   GetNetworkContext()->CreateTCPConnectedSocket(
-      options->local_addr,
+      /*local_addr=*/std::nullopt,
       /*remote_addr_list=*/*resolved_addresses, std::move(socket_options),
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
       std::move(socket), std::move(observer), std::move(callback));
