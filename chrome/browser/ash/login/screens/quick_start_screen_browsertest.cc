@@ -419,17 +419,15 @@ class QuickStartBrowserTestWithBluetoothDisabled
 
   void WaitForBluetoothDialogToOpen() {
     test::OobeJS()
-        .CreateWaiter(
-            test::GetOobeElementPath({kQuickStartBluetoothDialogPath}) +
-            ".open")
+        .CreateWaiter(test::GetOobeElementPath(kQuickStartBluetoothDialogPath) +
+                      ".open")
         ->Wait();
   }
 
   void WaitForBluetoothDialogToClose() {
     test::OobeJS()
-        .CreateWaiter(
-            test::GetOobeElementPath({kQuickStartBluetoothDialogPath}) +
-            ".open === false")
+        .CreateWaiter(test::GetOobeElementPath(kQuickStartBluetoothDialogPath) +
+                      ".open === false")
         ->Wait();
   }
 };

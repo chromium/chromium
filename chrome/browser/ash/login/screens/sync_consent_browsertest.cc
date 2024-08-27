@@ -788,7 +788,7 @@ class SyncConsentTimeoutTest : public SyncConsentTest {
 IN_PROC_BROWSER_TEST_F(SyncConsentTimeoutTest,
                        SyncEngineInitializationTimeout) {
   auto overviewDialogWaiter =
-      test::OobeJS().CreateVisibilityWaiter(true, {kOverviewDialog});
+      test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog);
 
   LoginAndWaitForSyncConsentScreen(true);
   WaitForScreenShown();

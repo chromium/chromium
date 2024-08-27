@@ -124,17 +124,15 @@ void SetConnected(const std::string& service_path) {
 
 void WaitForConfirmationDialogToOpen() {
   test::OobeJS()
-      .CreateWaiter(
-          test::GetOobeElementPath({kEolDeleteUsersDataConfirmDialog}) +
-          ".open")
+      .CreateWaiter(test::GetOobeElementPath(kEolDeleteUsersDataConfirmDialog) +
+                    ".open")
       ->Wait();
 }
 
 void WaitForConfirmationDialogToClose() {
   test::OobeJS()
-      .CreateWaiter(
-          test::GetOobeElementPath({kEolDeleteUsersDataConfirmDialog}) +
-          ".open === false")
+      .CreateWaiter(test::GetOobeElementPath(kEolDeleteUsersDataConfirmDialog) +
+                    ".open === false")
       ->Wait();
 }
 

@@ -780,14 +780,13 @@ class WelcomeScreenChromeVoxHintTest : public WelcomeScreenBrowserTest {
 
   void WaitForChromeVoxHintDialogToOpen() {
     test::OobeJS()
-        .CreateWaiter(test::GetOobeElementPath({kChromeVoxHintDialog}) +
-                      ".open")
+        .CreateWaiter(test::GetOobeElementPath(kChromeVoxHintDialog) + ".open")
         ->Wait();
   }
 
   void WaitForChromeVoxHintDialogToClose() {
     test::OobeJS()
-        .CreateWaiter(test::GetOobeElementPath({kChromeVoxHintDialog}) +
+        .CreateWaiter(test::GetOobeElementPath(kChromeVoxHintDialog) +
                       ".open === false")
         ->Wait();
   }
