@@ -39,7 +39,7 @@ class SecurityTokenSessionRestrictionView : public AppDialogView {
   ~SecurityTokenSessionRestrictionView() override;
 
  private:
-  void UpdateLabel();
+  void UpdateSubtitle();
 
   const ash::login::SecurityTokenSessionController::Behavior behavior_;
   raw_ptr<const base::TickClock> clock_;

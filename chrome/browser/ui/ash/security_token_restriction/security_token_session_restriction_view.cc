@@ -121,23 +121,24 @@ SecurityTokenSessionRestrictionView::SecurityTokenSessionRestrictionView(
       end_time_(base::TimeTicks::Now() + duration) {
   SetModalType(ui::mojom::ModalType::kSystem);
   SetButtonLabel(ui::mojom::DialogButton::kOk, GetButtonLabel(behavior));
-  SetTitle(GetTitle(behavior));
+  InitializeView();
+  AddTitle(GetTitle(behavior));
 
   SetAcceptCallback(std::move(accept_callback));
 
-  InitializeView(/*heading_text=*/std::u16string());
-  UpdateLabel();
+  AddSubtitle(/*subtitle_text=*/std::u16string());
+  UpdateSubtitle();
 
   update_timer_.Start(FROM_HERE, kCountdownUpdateInterval, this,
-                      &SecurityTokenSessionRestrictionView::UpdateLabel);
+                      &SecurityTokenSessionRestrictionView::UpdateSubtitle);
 }
 
 SecurityTokenSessionRestrictionView::~SecurityTokenSessionRestrictionView() =
     default;
 
-void SecurityTokenSessionRestrictionView::UpdateLabel() {
+void SecurityTokenSessionRestrictionView::UpdateSubtitle() {
   const base::TimeDelta time_remaining = end_time_ - clock_->NowTicks();
-  SetLabelText(GetDialogText(behavior_, domain_, time_remaining));
+  SetSubtitleText(GetDialogText(behavior_, domain_, time_remaining));
   if (time_remaining < kLastUpdateTime) {
     update_timer_.Stop();
   }

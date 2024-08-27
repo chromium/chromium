@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -48,8 +49,13 @@
 
 class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
  public:
-  AppDialogView* ActiveView() {
+  AppUninstallDialogView* ActiveView() {
     return AppUninstallDialogView::GetActiveViewForTesting();
+  }
+
+  std::optional<std::u16string> GetTitleText(
+      AppUninstallDialogView* uninstall_dialog_view) {
+    return uninstall_dialog_view->GetTitleTextForTesting();
   }
 
   void ShowUi(const std::string& name) override {
@@ -67,7 +73,7 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
               ActiveView()->buttons());
     std::u16string title =
         u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
-    EXPECT_EQ(title, ActiveView()->GetWindowTitle());
+    EXPECT_EQ(title, GetTitleText(ActiveView()));
 
     if (name == "accept") {
       if (app_service_proxy->AppRegistryCache().GetAppType(app_id_) ==
@@ -280,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
             ActiveView()->buttons());
   std::u16string title =
       u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
-  EXPECT_EQ(title, ActiveView()->GetWindowTitle());
+  EXPECT_EQ(title, GetTitleText(ActiveView()));
 
   // Cancelling the active dialog should not uninstall the web app.
   ActiveView()->CancelDialog();

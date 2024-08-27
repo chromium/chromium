@@ -222,7 +222,6 @@ AppUninstallDialogView::AppUninstallDialogView(
   profile_observation_.Observe(profile);
 
   SetModalType(ui::mojom::ModalType::kWindow);
-  SetTitle(GetWindowTitleForApp(profile, app_type, app_id, app_name));
 
   SetCloseCallback(base::BindOnce(&AppUninstallDialogView::OnDialogCancelled,
                                   base::Unretained(this)));
@@ -231,7 +230,7 @@ AppUninstallDialogView::AppUninstallDialogView(
   SetAcceptCallback(base::BindOnce(&AppUninstallDialogView::OnDialogAccepted,
                                    base::Unretained(this)));
 
-  InitializeView(profile, app_type, app_id);
+  InitializeView(profile, app_type, app_id, app_name);
 
   g_app_uninstall_dialog_view = this;
 }
@@ -251,7 +250,8 @@ void AppUninstallDialogView::OnProfileWillBeDestroyed(Profile* profile) {
 
 void AppUninstallDialogView::InitializeView(Profile* profile,
                                             apps::AppType app_type,
-                                            const std::string& app_id) {
+                                            const std::string& app_id,
+                                            const std::string& app_name) {
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_APP_BUTTON));
@@ -260,6 +260,8 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+
+  AddTitle(GetWindowTitleForApp(profile, app_type, app_id, app_name));
 
   switch (app_type) {
     case apps::AppType::kUnknown:
@@ -281,7 +283,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
 #endif
     case apps::AppType::kPluginVm:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      InitializeViewWithMessage(
+      AddSubtitle(
           l10n_util::GetStringUTF16(IDS_PLUGIN_VM_UNINSTALL_PROMPT_BODY));
       break;
 #else
@@ -290,10 +292,10 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::AppType::kBorealis:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (app_id == borealis::kClientAppId) {
-        InitializeViewWithMessage(l10n_util::GetStringUTF16(
+        AddSubtitle(l10n_util::GetStringUTF16(
             IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY));
       } else {
-        InitializeViewWithMessage(l10n_util::GetStringUTF16(
+        AddSubtitle(l10n_util::GetStringUTF16(
             IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY));
       }
       break;
@@ -302,7 +304,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
 #endif
     case apps::AppType::kCrostini:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      InitializeViewWithMessage(l10n_util::GetStringUTF16(
+      AddSubtitle(l10n_util::GetStringUTF16(
           IDS_CROSTINI_APPLICATION_UNINSTALL_CONFIRM_BODY));
       break;
 #else
@@ -569,18 +571,11 @@ void AppUninstallDialogView::InitializeViewForArcApp(
         ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON));
   } else {
-    InitializeViewWithMessage(l10n_util::GetStringUTF16(
+    AddSubtitle(l10n_util::GetStringUTF16(
         IDS_ARC_APP_UNINSTALL_PROMPT_DATA_REMOVAL_WARNING));
   }
 }
 
-void AppUninstallDialogView::InitializeViewWithMessage(
-    const std::u16string& message) {
-  auto* label = AddChildView(std::make_unique<views::Label>(message));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetAllowCharacterBreak(true);
-}
 #endif
 
 void AppUninstallDialogView::OnDialogCancelled() {
