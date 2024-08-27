@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -654,6 +655,15 @@ void DawnSharedState::OnError(wgpu::ErrorType error_type, const char* message) {
 #endif
 
   base::debug::DumpWithoutCrashing();
+
+#if !DCHECK_IS_ON()
+  // Do not provoke context loss on validation failures for non-DCHECK builds.
+  // We want to capture the above dump on validation errors, but not necessarily
+  // restart the GPU process unless we also have a device loss.
+  if (error_type == wgpu::ErrorType::Validation) {
+    return;
+  }
+#endif
 
   base::AutoLock auto_lock(context_lost_lock_);
   if (context_lost_reason_.has_value()) {
