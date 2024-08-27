@@ -1172,6 +1172,9 @@ public class Fido2CredentialRequest
                     // information.
                     creationResponse.echoCredProps = true;
                 }
+                if (mClientDataJson != null) {
+                    creationResponse.info.clientDataJson = mClientDataJson;
+                }
                 mMakeCredentialCallback.onRegisterResponse(
                         AuthenticatorStatus.SUCCESS, creationResponse);
                 mMakeCredentialCallback = null;
