@@ -12062,10 +12062,6 @@ if (!is_android) {
     }
     if (is_chromeos_ash) {
       sources += [
-        "//chrome/browser/sync/test/integration/ash_apps_toggle_sharing_sync_test.cc",
-        "//chrome/browser/sync/test/integration/ash_custom_passphrase_sharing_sync_test.cc",
-        "//chrome/browser/sync/test/integration/ash_lacros_sync_test.cc",
-        "//chrome/browser/sync/test/integration/ash_trusted_vault_keys_sharing_sync_test.cc",
         "//chrome/browser/sync/test/integration/single_client_app_list_sync_test.cc",
         "//chrome/browser/sync/test/integration/single_client_arc_package_sync_test.cc",
         "//chrome/browser/sync/test/integration/single_client_os_preferences_sync_test.cc",

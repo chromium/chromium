@@ -1,7 +1,4 @@
 specific_include_rules = {
-  "ash_lacros_sync_test.cc": [
-    "+components/power_bookmarks",
-  ],
   "local_sync_test.cc": [
     "+components/power_bookmarks",
   ],
