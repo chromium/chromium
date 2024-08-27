@@ -11236,7 +11236,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/performance_controls/memory_saver_interactive_ui_test.cc",
         "../browser/ui/views/performance_controls/memory_saver_iph_interactive_uitest.cc",
         "../browser/ui/views/performance_controls/performance_intervention_interactive_ui_test.cc",
-        "../browser/ui/views/permissions/chip/LHS_indicators_browsertest.cc",
+        "../browser/ui/views/permissions/chip/LHS_indicators_interactive_uitest.cc",
         "../browser/ui/views/permissions/chip/dashboard_kombucha_interactive_uitest.cc",
         "../browser/ui/views/permissions/chip/permission_chip_interactive_uitest.cc",
         "../browser/ui/views/permissions/chip/permission_chip_kombucha_interactive_uitest.cc",

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -105,18 +106,18 @@ class TestQuietNotificationPermissionUiSelector
 };
 }  // namespace
 
-class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
+class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
  public:
   enum class TargetViewToVerify { kLocationBar, kPageInfo };
 
-  LHSIndicatorsUiBrowserTest() {
+  LHSIndicatorsInteractiveUITest() {
     scoped_features_.InitAndEnableFeature(
         content_settings::features::kLeftHandSideActivityIndicators);
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
 
-  ~LHSIndicatorsUiBrowserTest() override {}
+  ~LHSIndicatorsInteractiveUITest() override {}
 
   void SetUpOnMainThread() override {
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -138,6 +139,13 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
     InitMainFrame();
 
     UiBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Set a window's size to avoid pixel tests flakiness due to different
+    // widths of the omnibox.
+    command_line->AppendSwitchASCII(switches::kWindowSize,
+                                    base::StringPrintf("%d,%d", 800, 600));
   }
 
   void OverrideVisibleUrlInLocationBar(const std::u16string& text) {
@@ -308,7 +316,7 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera) {
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_camera) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
@@ -319,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_microphone) {
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_microphone) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
@@ -330,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_microphone) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_cameraandmicrophone) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
@@ -344,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera_blocked) {
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_camera_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
@@ -355,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera_blocked) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_microphone_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_BLOCK);
@@ -367,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_cameraandmicrophone_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
@@ -381,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_PageInfo_camera) {
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_PageInfo_camera) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
@@ -392,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_PageInfo_camera) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_PageInfo_mic) {
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_PageInfo_mic) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
@@ -403,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_PageInfo_mic) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_PageInfo_camera_and_mic) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
@@ -417,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_PageInfo_camera_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
@@ -429,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_PageInfo_mic_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_BLOCK);
@@ -441,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_PageInfo_camera_and_mic_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
@@ -455,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_Camera_twice) {
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_Camera_twice) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
   InitMainFrame();
@@ -485,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_Camera_twice) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_PageInfo_camera_blocked_on_system_level) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
@@ -497,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_PageInfo_mic_blocked_on_system_level) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
@@ -511,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    LHSIndicatorsUiBrowserTest,
+    LHSIndicatorsInteractiveUITest,
     InvokeUi_PageInfo_camera_and_mic_blocked_on_system_level) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
@@ -530,13 +538,13 @@ IN_PROC_BROWSER_TEST_F(
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_NotificationsRequest_Loud) {
   RequestPermission(permissions::RequestType::kNotifications);
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_NotificationsRequest_Loud_Confirmation) {
   RequestPermission(permissions::RequestType::kNotifications);
   GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
@@ -550,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_NotificationsRequest_VeryUnlikelyGrant) {
   SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
                       std::nullopt);
@@ -559,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    LHSIndicatorsUiBrowserTest,
+    LHSIndicatorsInteractiveUITest,
     InvokeUi_NotificationsRequest_VeryUnlikelyGrant_Confirmation) {
   SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
                       std::nullopt);
@@ -575,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_NotificationsRequest_AbusiveRequests) {
   SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
                       std::nullopt);
@@ -584,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    LHSIndicatorsUiBrowserTest,
+    LHSIndicatorsInteractiveUITest,
     InvokeUi_NotificationsRequest_AbusiveRequests_Confirmation) {
   SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
                       std::nullopt);
@@ -600,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_NotificationsRequest_EnabledInPrefs) {
   SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, std::nullopt);
   RequestPermission(permissions::RequestType::kNotifications);
@@ -608,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    LHSIndicatorsUiBrowserTest,
+    LHSIndicatorsInteractiveUITest,
     InvokeUi_NotificationsRequest_EnabledInPrefs_Confirmation) {
   SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, std::nullopt);
   RequestPermission(permissions::RequestType::kNotifications);
@@ -623,13 +631,13 @@ IN_PROC_BROWSER_TEST_F(
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_GeolocationRequest_Loud) {
   RequestPermission(permissions::RequestType::kGeolocation);
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
                        InvokeUi_GeolocationRequest_Loud_Confirmation) {
   RequestPermission(permissions::RequestType::kGeolocation);
   GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
