@@ -12138,6 +12138,21 @@
             ]
         }
     ],
+    "IOSProactivePasswordGenerationBottomSheet": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "kIOSProactivePasswordGenerationBottomSheet"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSaveToDrive": [
         {
             "platforms": [
