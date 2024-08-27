@@ -30,23 +30,7 @@ GpuMemoryBufferFactoryAndroidHardwareBuffer::CreateGpuMemoryBuffer(
     gfx::BufferUsage usage,
     int client_id,
     SurfaceHandle surface_handle) {
-  DCHECK_EQ(framebuffer_size, size);
-  auto buffer = GpuMemoryBufferImplAndroidHardwareBuffer::Create(
-      id, size, format, usage, GpuMemoryBufferImpl::DestructionCallback());
-  if (!buffer) {
-    LOG(ERROR) << "Error creating new GpuMemoryBuffer";
-    return gfx::GpuMemoryBufferHandle();
-  }
-  auto handle = buffer->CloneHandle();
-
-  {
-    base::AutoLock lock(lock_);
-    BufferMapKey key(id, client_id);
-    DLOG_IF(ERROR, base::Contains(buffer_map_, key))
-        << "Created GpuMemoryBuffer with duplicate id";
-    buffer_map_[key] = std::move(buffer);
-  }
-  return handle;
+  return gfx::GpuMemoryBufferHandle();
 }
 
 void GpuMemoryBufferFactoryAndroidHardwareBuffer::DestroyGpuMemoryBuffer(

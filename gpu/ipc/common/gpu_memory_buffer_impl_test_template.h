@@ -34,10 +34,6 @@
 #include "ui/gfx/mojom/buffer_types.mojom.h"
 #include "ui/gl/gl_display.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "gpu/config/gpu_finch_features.h"
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
@@ -49,15 +45,7 @@ namespace gpu {
 template <typename GpuMemoryBufferImplType>
 class GpuMemoryBufferImplTest : public testing::Test {
  public:
-  GpuMemoryBufferImplTest() {
-#if BUILDFLAG(IS_ANDROID)
-    // Allow for creation of this class to preserve unittest coverage while we
-    // roll out its elimination via Finch.
-    // TODO(crbug.com/343584529): Remove post-safe rollout.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableGpuMemoryBufferImplAHB);
-#endif
-  }
+  GpuMemoryBufferImplTest() = default;
 
   GpuMemoryBufferImpl::DestructionCallback CreateGpuMemoryBuffer(
       const gfx::Size& size,
@@ -136,9 +124,6 @@ class GpuMemoryBufferImplTest : public testing::Test {
   }
 
  private:
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif
   bool run_gpu_test_ = false;
   GpuMemoryBufferSupport gpu_memory_buffer_support_;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
@@ -156,25 +141,13 @@ class GpuMemoryBufferImplTest : public testing::Test {
 template <typename GpuMemoryBufferImplType>
 class GpuMemoryBufferImplCreateTest : public testing::Test {
  public:
-  GpuMemoryBufferImplCreateTest() {
-#if BUILDFLAG(IS_ANDROID)
-    // Allow for creation of this class to preserve unittest coverage while we
-    // roll out its elimination via Finch.
-    // TODO(crbug.com/343584529): Remove post-safe rollout.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableGpuMemoryBufferImplAHB);
-#endif
-  }
+  GpuMemoryBufferImplCreateTest() = default;
 
   GpuMemoryBufferSupport* gpu_memory_buffer_support() {
     return &gpu_memory_buffer_support_;
   }
 
  private:
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif
-
   GpuMemoryBufferSupport gpu_memory_buffer_support_;
 };
 

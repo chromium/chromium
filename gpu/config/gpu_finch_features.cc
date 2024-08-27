@@ -71,13 +71,6 @@ const base::FeatureParam<std::string> kAndroidSurfaceControlModelBlocklist{
     &kAndroidSurfaceControl, "AndroidSurfaceControlModelBlocklist",
     "SM-F9*|SM-W202?|SCV44|SCG05|SCG11|SC-55B"};
 
-// Enables creation of GpuMemoryBufferImplAndroidHardwareBuffer.
-// Serves as reverse killswitch while we roll out disabling of this class.
-// TODO(crbug.com/343584529): Remove post-safe rollout.
-BASE_FEATURE(kEnableGpuMemoryBufferImplAHB,
-             "EnableGpuMemoryBufferImplAHB",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Hardware Overlays for WebView.
 BASE_FEATURE(kWebViewSurfaceControl,
              "WebViewSurfaceControl",

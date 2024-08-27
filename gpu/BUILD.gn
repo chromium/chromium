@@ -584,12 +584,6 @@ test("gpu_unittests") {
     ]
   }
 
-  if (is_android) {
-    sources += [
-      "ipc/common/gpu_memory_buffer_impl_android_hardware_buffer_unittest.cc",
-    ]
-  }
-
   if (is_linux || is_chromeos || is_android) {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
   }

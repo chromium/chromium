@@ -25,26 +25,6 @@ class GPU_EXPORT GpuMemoryBufferImplAndroidHardwareBuffer
   static constexpr gfx::GpuMemoryBufferType kBufferType =
       gfx::ANDROID_HARDWARE_BUFFER;
 
-  static std::unique_ptr<GpuMemoryBufferImplAndroidHardwareBuffer> Create(
-      gfx::GpuMemoryBufferId id,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      DestructionCallback callback);
-
-  static std::unique_ptr<GpuMemoryBufferImplAndroidHardwareBuffer>
-  CreateFromHandle(gfx::GpuMemoryBufferHandle handle,
-                   const gfx::Size& size,
-                   gfx::BufferFormat format,
-                   gfx::BufferUsage usage,
-                   DestructionCallback callback);
-
-  static base::OnceClosure AllocateForTesting(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      gfx::GpuMemoryBufferHandle* handle);
-
   // Overridden from gfx::GpuMemoryBuffer:
   bool Map() override;
   void* memory(size_t plane) override;
