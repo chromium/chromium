@@ -115,7 +115,8 @@ display::DisplayManager* GetDisplayManager() {
 }
 
 void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
-                                const display::Display& display) {
+                                const display::Display& display,
+                                bool needs_redraw = true) {
   const display::Display::Rotation effective_rotation =
       display.panel_rotation();
   aura::WindowTreeHost* host = ash_host->AsWindowTreeHost();
@@ -140,7 +141,9 @@ void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
 
   // Just moving the display requires the full redraw.
   // chrome-os-partner:33558.
-  host->compositor()->ScheduleFullRedraw();
+  if (needs_redraw) {
+    host->compositor()->ScheduleFullRedraw();
+  }
 }
 
 void ClearDisplayPropertiesOnHost(AshWindowTreeHost* ash_host) {
@@ -777,7 +780,13 @@ void WindowTreeHostManager::UpdateDisplayMetrics(
   AshWindowTreeHost* ash_host = window_tree_hosts_[display.id()];
   ash_host->AsWindowTreeHost()->SetBoundsInPixels(
       display_info.bounds_in_native());
-  SetDisplayPropertiesOnHost(ash_host, display);
+
+  // Redraw should trigger on bounds/resolution changes. VRR-only changes should
+  // not trigger redraws.
+  bool needs_redraw =
+      metrics & (DM::DISPLAY_METRIC_BOUNDS | DM::DISPLAY_METRIC_ROTATION |
+                 DM::DISPLAY_METRIC_DEVICE_SCALE_FACTOR);
+  SetDisplayPropertiesOnHost(ash_host, display, needs_redraw);
 
   if (display::features::IsRoundedDisplayEnabled()) {
     // We need to update the surface on which rounded display mask textures are
