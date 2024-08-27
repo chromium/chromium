@@ -92,7 +92,7 @@
 //! [prettyplease]: https://github.com/dtolnay/prettyplease
 
 // Quote types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/quote/1.0.36")]
+#![doc(html_root_url = "https://docs.rs/quote/1.0.37")]
 #![allow(
     clippy::doc_markdown,
     clippy::missing_errors_doc,

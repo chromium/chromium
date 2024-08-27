@@ -13,8 +13,12 @@
 edition = "2018"
 rust-version = "1.56"
 name = "quote"
-version = "1.0.36"
+version = "1.0.37"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+build = false
+autobins = false
+autoexamples = false
+autotests = false
 autobenches = false
 description = "Quasi-quoting macro quote!(...)"
 documentation = "https://docs.rs/quote/"
@@ -32,10 +36,20 @@ rustdoc-args = ["--generate-link-to-definition"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
+name = "quote"
+path = "src/lib.rs"
 doc-scrape-examples = false
 
+[[test]]
+name = "compiletest"
+path = "tests/compiletest.rs"
+
+[[test]]
+name = "test"
+path = "tests/test.rs"
+
 [dependencies.proc-macro2]
-version = "1.0.74"
+version = "1.0.80"
 default-features = false
 
 [dev-dependencies.rustversion]

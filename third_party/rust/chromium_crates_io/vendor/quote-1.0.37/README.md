@@ -84,8 +84,7 @@ let tokens = quote! {
 Repetition is done using `#(...)*` or `#(...),*` similar to `macro_rules!`. This
 iterates through the elements of any variable interpolated within the repetition
 and inserts a copy of the repetition body for each one. The variables in an
-interpolation may be anything that implements `IntoIterator`, including `Vec` or
-a pre-existing iterator.
+interpolation may be a `Vec`, slice, `BTreeSet`, or any `Iterator`.
 
 - `#(#var)*` — no separators
 - `#(#var),*` — the character before the asterisk is used as a separator

@@ -1,9 +1,9 @@
 Name: quote
 URL: https://crates.io/crates/quote
 Description: Quasi-quoting macro quote!(...)
-Version: 1.0.36
+Version: 1.0.37
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/quote-1.0.36/LICENSE-APACHE
-Revision: 5d4880c4255b5c7f5ea0a9ac3cf9f985c418a1e7
+License File: //third_party/rust/chromium_crates_io/vendor/quote-1.0.37/LICENSE-APACHE
+Revision: b1ebffa035363a430862e033aa3268e8cb17affa

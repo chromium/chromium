@@ -3,6 +3,7 @@ use alloc::borrow::Cow;
 use alloc::rc::Rc;
 use core::iter;
 use proc_macro2::{Group, Ident, Literal, Punct, Span, TokenStream, TokenTree};
+use std::ffi::{CStr, CString};
 
 /// Types that can be interpolated inside a `quote!` invocation.
 ///
@@ -106,7 +107,7 @@ impl<T: ?Sized + ToTokens> ToTokens for Rc<T> {
 
 impl<T: ToTokens> ToTokens for Option<T> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        if let Some(ref t) = *self {
+        if let Some(t) = self {
             t.to_tokens(tokens);
         }
     }
@@ -124,35 +125,88 @@ impl ToTokens for String {
     }
 }
 
-macro_rules! primitive {
-    ($($t:ident => $name:ident)*) => {
-        $(
-            impl ToTokens for $t {
-                fn to_tokens(&self, tokens: &mut TokenStream) {
-                    tokens.append(Literal::$name(*self));
-                }
-            }
-        )*
-    };
+impl ToTokens for i8 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::i8_suffixed(*self));
+    }
 }
 
-primitive! {
-    i8 => i8_suffixed
-    i16 => i16_suffixed
-    i32 => i32_suffixed
-    i64 => i64_suffixed
-    i128 => i128_suffixed
-    isize => isize_suffixed
+impl ToTokens for i16 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::i16_suffixed(*self));
+    }
+}
 
-    u8 => u8_suffixed
-    u16 => u16_suffixed
-    u32 => u32_suffixed
-    u64 => u64_suffixed
-    u128 => u128_suffixed
-    usize => usize_suffixed
+impl ToTokens for i32 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::i32_suffixed(*self));
+    }
+}
 
-    f32 => f32_suffixed
-    f64 => f64_suffixed
+impl ToTokens for i64 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::i64_suffixed(*self));
+    }
+}
+
+impl ToTokens for i128 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::i128_suffixed(*self));
+    }
+}
+
+impl ToTokens for isize {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::isize_suffixed(*self));
+    }
+}
+
+impl ToTokens for u8 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::u8_suffixed(*self));
+    }
+}
+
+impl ToTokens for u16 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::u16_suffixed(*self));
+    }
+}
+
+impl ToTokens for u32 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::u32_suffixed(*self));
+    }
+}
+
+impl ToTokens for u64 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::u64_suffixed(*self));
+    }
+}
+
+impl ToTokens for u128 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::u128_suffixed(*self));
+    }
+}
+
+impl ToTokens for usize {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::usize_suffixed(*self));
+    }
+}
+
+impl ToTokens for f32 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::f32_suffixed(*self));
+    }
+}
+
+impl ToTokens for f64 {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::f64_suffixed(*self));
+    }
 }
 
 impl ToTokens for char {
@@ -165,6 +219,18 @@ impl ToTokens for bool {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let word = if *self { "true" } else { "false" };
         tokens.append(Ident::new(word, Span::call_site()));
+    }
+}
+
+impl ToTokens for CStr {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::c_string(self));
+    }
+}
+
+impl ToTokens for CString {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(Literal::c_string(self));
     }
 }
 
@@ -193,14 +259,14 @@ impl ToTokens for Literal {
 }
 
 impl ToTokens for TokenTree {
-    fn to_tokens(&self, dst: &mut TokenStream) {
-        dst.append(self.clone());
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.append(self.clone());
     }
 }
 
 impl ToTokens for TokenStream {
-    fn to_tokens(&self, dst: &mut TokenStream) {
-        dst.extend(iter::once(self.clone()));
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        tokens.extend(iter::once(self.clone()));
     }
 
     fn into_token_stream(self) -> TokenStream {
