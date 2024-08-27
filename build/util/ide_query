@@ -105,8 +105,7 @@ def main():
     ])
     args.extend(targets)
     env = os.environ.copy()
-    # TODO(b/358693473): fix for the case prepare-header-only doesn't work
-    env['SISO_EXPERIMENTS'] = 'no-fast-deps'
+    env['SISO_EXPERIMENTS'] = 'no-fast-deps,prepare-header-only'
     with subprocess.Popen(
         args,
         cwd=repo_root,
