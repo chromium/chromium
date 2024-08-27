@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/strings/utf_string_conversions.h"
+
 @protocol GREYMatcher;
 
 namespace manual_fill {
@@ -76,6 +78,24 @@ id<GREYMatcher> CreditCardTableViewWindowMatcher();
 // Returns a matcher for the button to trigger password generation on manual
 // fallback.
 id<GREYMatcher> SuggestPasswordMatcher();
+
+// Returns a matcher for the header view in the fallback view.
+id<GREYMatcher> ExpandedManualFillHeaderView();
+
+// Matcher for the expanded manual fill view.
+id<GREYMatcher> ExpandedManualFillView();
+
+// Matcher for the keyboard accessory's manual fill button.
+id<GREYMatcher> KeyboardAccessoryManualFillButton();
+
+// Matcher for the segmented control's address tab.
+id<GREYMatcher> SegmentedControlAddressTab();
+
+// Matcher for the segmented control's password tab.
+id<GREYMatcher> SegmentedControlPasswordTab();
+
+// Matcher for the chip button with the given `title`.
+id<GREYMatcher> ChipButton(std::u16string title);
 
 }  // namespace manual_fill
 

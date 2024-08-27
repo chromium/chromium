@@ -6,10 +6,12 @@
 
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace manual_fill {
 
@@ -95,6 +97,40 @@ id<GREYMatcher> CreditCardTableViewWindowMatcher() {
 
 id<GREYMatcher> SuggestPasswordMatcher() {
   return grey_accessibilityID(kSuggestPasswordAccessibilityIdentifier);
+}
+
+id<GREYMatcher> ExpandedManualFillView() {
+  return grey_accessibilityID(manual_fill::kExpandedManualFillViewID);
+}
+
+id<GREYMatcher> KeyboardAccessoryManualFillButton() {
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
+}
+
+id<GREYMatcher> ExpandedManualFillHeaderView() {
+  return grey_accessibilityID(manual_fill::kExpandedManualFillHeaderViewID);
+}
+
+id<GREYMatcher> SegmentedControlAddressTab() {
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL)),
+      grey_ancestor(ExpandedManualFillHeaderView()), nil);
+}
+
+id<GREYMatcher> SegmentedControlPasswordTab() {
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL)),
+      grey_ancestor(ExpandedManualFillHeaderView()), nil);
+}
+
+id<GREYMatcher> ChipButton(std::u16string title) {
+  return grey_allOf(
+      chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL, title)),
+      grey_interactable(), nullptr);
 }
 
 }  // namespace manual_fill

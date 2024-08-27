@@ -297,9 +297,11 @@ source_set("eg_test_support+eg2") {
 
   deps = [
     ":manual_fill_constants",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/autofill/model:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
   ]
 }
 
@@ -313,6 +315,7 @@ source_set("eg2_tests") {
     "fallback_coordinator_egtest.mm",
     "fallback_view_controller_egtest.mm",
     "password_view_controller_egtest.mm",
+    "plus_address_manual_fill_egtest.mm",
   ]
   deps = [
     ":manual_fill_constants",

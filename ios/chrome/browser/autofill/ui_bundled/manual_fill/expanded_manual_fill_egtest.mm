@@ -4,22 +4,14 @@
 
 #import <string_view>
 
-#import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/plus_address_test_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
-#import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
@@ -33,7 +25,13 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using manual_fill::ChipButton;
+using manual_fill::ExpandedManualFillHeaderView;
+using manual_fill::ExpandedManualFillView;
+using manual_fill::KeyboardAccessoryManualFillButton;
 using manual_fill::ManualFillDataType;
+using manual_fill::SegmentedControlAddressTab;
+using manual_fill::SegmentedControlPasswordTab;
 using net::test_server::EmbeddedTestServer;
 
 namespace {
@@ -53,21 +51,8 @@ id<GREYMatcher> CloseButton() {
       IDS_IOS_EXPANDED_MANUAL_FILL_CLOSE_BUTTON_ACCESSIBILITY_LABEL));
 }
 
-// Matcher for the expanded manual fill view.
-id<GREYMatcher> ExpandedManualFillView() {
-  return grey_accessibilityID(manual_fill::kExpandedManualFillViewID);
-}
-
 id<GREYMatcher> ExpandedManualFillHeaderView() {
   return grey_accessibilityID(manual_fill::kExpandedManualFillHeaderViewID);
-}
-
-// Matcher for the segmented control's password tab.
-id<GREYMatcher> SegmentedControlPasswordTab() {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL)),
-      grey_ancestor(ExpandedManualFillHeaderView()), nil);
 }
 
 // Matcher for the segmented control's payment method tab.
@@ -76,20 +61,6 @@ id<GREYMatcher> SegmentedControlPaymentMethodTab() {
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL)),
       grey_ancestor(ExpandedManualFillHeaderView()), nil);
-}
-
-// Matcher for the segmented control's address tab.
-id<GREYMatcher> SegmentedControlAddressTab() {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL)),
-      grey_ancestor(ExpandedManualFillHeaderView()), nil);
-}
-
-// Matcher for the keyboard accessory's manual fill button.
-id<GREYMatcher> KeyboardAccessoryManualFillButton() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
 }
 
 // Matcher for the keyboard accessory's password icon.
@@ -104,14 +75,6 @@ id<GREYMatcher> KeyboardAccessoryPasswordManualFillButton() {
 // Matcher for the password suggestion chip.
 id<GREYMatcher> KeyboardAccessoryPasswordSuggestionChip() {
   return grey_text(@"concrete username");
-}
-
-// Matcher for the chip button with the given `title`.
-id<GREYMatcher> ChipButton(std::u16string title) {
-  return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSStringF(
-          IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL, title)),
-      grey_interactable(), nullptr);
 }
 
 // Checks that the chip button with `title` is sufficiently visible.
@@ -247,25 +210,8 @@ id<GREYMatcher> AutofillFormButton() {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  if ([self isRunningTest:@selector(testPlusAddressActions)]) {
-    std::string fakeLocalUrl =
-        base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
-    config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressesEnabled,
-         {{
-             {"server-url", {fakeLocalUrl}},
-             {"manage-url", {fakeLocalUrl}},
-         }}});
-
-    // Enable the Keyboard Accessory Upgrade feature.
-    config.features_enabled_and_params.push_back(
-        {kIOSKeyboardAccessoryUpgrade, {}});
-    config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
-  } else {
-    // Enable the Keyboard Accessory Upgrade feature.
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
-  }
+  // Enable the Keyboard Accessory Upgrade feature.
+  config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
 
   return config;
 }
@@ -666,61 +612,6 @@ id<GREYMatcher> AutofillFormButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_notVisible()];
-}
-
-// Tests that the plus address fallback is shown in the address and the
-// password segment.
-// TODO(crbug.com/327838014): Re-enable the test.
-- (void)DISABLED_testPlusAddressFallback {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [PlusAddressAppInterface
-      saveExamplePlusProfile:base::SysUTF8ToNSString(
-                                 self.testServer->base_url().spec())];
-
-  // Open the expanded manual fill view for an address field.
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
-                                  fieldToFill:kNameFieldID];
-
-  CheckChipButtonVisibility(plus_addresses::test::kFakePlusAddressU16);
-
-  // Switch over to passwords.
-  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
-      performAction:grey_tap()];
-  CheckChipButtonVisibility(plus_addresses::test::kFakePlusAddressU16);
-}
-
-// Tests that the plus address actions are shown in the address and password
-// segments.
-- (void)testPlusAddressActions {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
-                                  fieldToFill:kNameFieldID];
-
-  id<GREYMatcher> managePlusAddressMatcher = grey_accessibilityID(
-      manual_fill::kManagePlusAddressAccessibilityIdentifier);
-
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey selectElementWithMatcher:managePlusAddressMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Switch over to passwords.
-  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:managePlusAddressMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
