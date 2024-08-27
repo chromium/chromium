@@ -1494,6 +1494,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.ArchiveSettings.TimeDeltaPreference" units="days"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>Records when a user selects an archive time preference.</summary>
+</histogram>
+
 <histogram name="Tabs.AutoOpenSyncedTabGroupsSwitch.ToggledToState"
     enum="Boolean" expires_after="2024-10-30">
   <owner>ckitagawa@chromium.org</owner>
