@@ -977,6 +977,23 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScoresProportional) {
   AssertInRange(0.6, service_->GetScore(url2));
 }
 
+// Tests behavior of CleanupEngagementScores() with a very short
+// DECAY_PERIOD_IN_HOURS.
+TEST_F(SiteEngagementServiceTest, CleanupEngagementScoresShortDecayPeriod) {
+  SetParamValue(SiteEngagementScore::DECAY_PERIOD_IN_HOURS, 1);
+  SetParamValue(SiteEngagementScore::DECAY_POINTS, 0);
+  SetParamValue(SiteEngagementScore::LAST_ENGAGEMENT_GRACE_PERIOD_IN_HOURS, 0);
+
+  clock_.SetNow(GetReferenceTime());
+
+  GURL origin("http://www.google.com/");
+  service_->AddPointsForTesting(origin, 5);
+
+  clock_.Advance(base::Days(1));
+  service_->AddPointsForTesting(origin, 5);
+  EXPECT_EQ(10, service_->GetScore(origin));
+}
+
 TEST_F(SiteEngagementServiceTest, NavigationAccumulation) {
   GURL url("https://www.google.com/");
 

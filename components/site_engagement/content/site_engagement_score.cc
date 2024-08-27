@@ -325,6 +325,14 @@ void SiteEngagementScore::Reset(double points,
   last_engagement_time_ = last_engagement_time;
 }
 
+void SiteEngagementScore::SetLastEngagementTime(const base::Time& time) {
+  if (!last_engagement_time_.is_null() &&
+      time.LocalMidnight() != last_engagement_time_.LocalMidnight()) {
+    points_added_today_ = 0;
+  }
+  last_engagement_time_ = time;
+}
+
 bool SiteEngagementScore::UpdateScoreDict(base::Value::Dict& score_dict) {
   double raw_score_orig = score_dict.FindDouble(kRawScoreKey).value_or(0);
   double points_added_today_orig =

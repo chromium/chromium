@@ -453,12 +453,12 @@ void SiteEngagementService::CleanupEngagementScores(
         // preferences. |rebase_time| is strictly in the past, so any score with
         // a last updated time in the future is caught by this branch.
         if (score.last_engagement_time() > rebase_time) {
-          score.set_last_engagement_time(now);
+          score.SetLastEngagementTime(now);
         } else if (score.last_engagement_time() > last_engagement_time) {
           // This score is newer than |last_engagement_time|, but older than
           // |rebase_time|. It should still be rebased with no offset as we
           // don't accurately know what the offset should be.
-          score.set_last_engagement_time(rebase_time);
+          score.SetLastEngagementTime(rebase_time);
         } else {
           // Work out the offset between this score's last engagement time and
           // the last time the service recorded any engagement. Set the score's
@@ -468,7 +468,7 @@ void SiteEngagementService::CleanupEngagementScores(
           base::TimeDelta offset =
               last_engagement_time - score.last_engagement_time();
           base::Time rebase_score_time = rebase_time - offset;
-          score.set_last_engagement_time(rebase_score_time);
+          score.SetLastEngagementTime(rebase_score_time);
         }
 
         if (score.last_engagement_time() > new_last_engagement_time)
