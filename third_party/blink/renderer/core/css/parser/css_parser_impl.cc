@@ -1374,12 +1374,9 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSSupportsParser::Result supported =
       CSSSupportsParser::ConsumeSupportsCondition(stream, *this);
-  // Check whether the entire prelude was consumed. If it wasn't, ensure we
-  // consume any leftovers plus the block before returning a parse error.
-  stream.ConsumeWhitespace();
-  CSSParserTokenRange prelude_remainder = ConsumeAtRulePrelude(stream);
-  if (!prelude_remainder.AtEnd()) {
-    supported = CSSSupportsParser::Result::kParseFailure;
+  if (supported == CSSSupportsParser::Result::kParseFailure) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleSupports);
+    return nullptr;
   }
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
@@ -1387,10 +1384,6 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
     return nullptr;
   }
   CSSParserTokenStream::BlockGuard guard(stream);
-
-  if (supported == CSSSupportsParser::Result::kParseFailure) {
-    return nullptr;  // Parse error, invalid @supports condition
-  }
 
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kSupports, prelude_offset_start);
