@@ -31,6 +31,9 @@
 // view controller, so it can show any necessary IPH.
 - (void)showIPHAfterOpenOfOverflowMenu:(UIViewController*)menu;
 
+// Returns whether overflow menu button in the toolbar has a blue dot.
+- (BOOL)hasBlueDotForOverflowMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_HELP_COORDINATOR_H_

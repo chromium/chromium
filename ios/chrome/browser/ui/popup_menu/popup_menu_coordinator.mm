@@ -325,6 +325,8 @@ using base::UserMetricsAction;
             self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
     mediator.tabBasedIPHBrowserAgent =
         TabBasedIPHBrowserAgent::FromBrowser(self.browser);
+    mediator.hasSettingsBlueDot =
+        [self.popupMenuHelpCoordinator hasBlueDotForOverflowMenu];
 
     self.contentBlockerMediator.consumer = mediator;
 

@@ -119,6 +119,16 @@ const CGFloat kSpotlightCornerRadius = 7;
   [self updateTintColor];
 }
 
+- (void)hasBlueDot:(BOOL)hasBlueDot {
+  if (_hasBlueDot == hasBlueDot) {
+    return;
+  }
+
+  _hasBlueDot = hasBlueDot;
+
+  // TODO(crbug.com/338249447): Add or remove the blue dot.
+}
+
 #pragma mark - Accessors
 
 - (UIView*)spotlightView {

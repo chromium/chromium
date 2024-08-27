@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/follow_menu_updater.h"
@@ -1227,20 +1226,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   return result;
 }
 
-// Highlight the Settings destination with a promo badge if needed.
-- (void)maybeHighlightSettingsWithPromoBadge {
-  if (self.syncService &&
-      ShouldIndicateIdentityErrorInOverflowMenu(self.syncService)) {
-    return;
-  }
-
-  if (self.engagementTracker &&
-      ShouldTriggerDefaultBrowserHighlightFeature(self.engagementTracker)) {
-    self.settingsDestination.badge = BadgeTypePromo;
-    RecordDefaultBrowserBlueDotFirstDisplay();
-  }
-}
-
 - (DestinationRanking)baseDestinations {
   std::vector<overflow_menu::Destination> destinations = {
       overflow_menu::Destination::Bookmarks,
@@ -1789,8 +1774,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::Destination::Settings:
       if ([self shouldIndicateIdentityError]) {
         self.settingsDestination.badge = BadgeTypeError;
-      } else {
-        [self maybeHighlightSettingsWithPromoBadge];
+      } else if (self.hasSettingsBlueDot) {
+        self.settingsDestination.badge = BadgeTypePromo;
       }
       return self.settingsDestination;
     case overflow_menu::Destination::WhatsNew:

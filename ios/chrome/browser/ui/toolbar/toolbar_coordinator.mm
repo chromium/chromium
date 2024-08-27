@@ -436,6 +436,12 @@
   }
 }
 
+- (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
+  for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
+    [coordinator.popupMenuUIUpdater setOverflowMenuBlueDot:hasBlueDot];
+  }
+}
+
 #pragma mark - PrimaryToolbarViewControllerDelegate
 
 - (void)viewControllerTraitCollectionDidChange:

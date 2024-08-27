@@ -256,8 +256,9 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 }
 
 - (void)setLoadingState:(BOOL)loading {
-  if (self.loading == loading)
+  if (self.loading == loading) {
     return;
+  }
 
   self.loading = loading;
   self.view.reloadButton.hiddenInCurrentState = loading;
@@ -281,15 +282,17 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 }
 
 - (void)setTabCount:(int)tabCount addedInBackground:(BOOL)inBackground {
-  if (self.view.tabGridButton.tabCount == tabCount)
+  if (self.view.tabGridButton.tabCount == tabCount) {
     return;
+  }
 
   CGFloat scaleSign = tabCount > self.view.tabGridButton.tabCount ? 1 : -1;
   self.view.tabGridButton.tabCount = tabCount;
 
-  if (IsRegularXRegularSizeClass(self))
+  if (IsRegularXRegularSizeClass(self)) {
     // No animation on Regular x Regular.
     return;
+  }
 
   CGFloat scaleFactor = 1 + scaleSign * kScaleFactorDiff;
 
@@ -418,6 +421,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   self.view.openNewTabButton.iphHighlighted = NO;
   self.view.tabGridButton.iphHighlighted = NO;
   self.view.toolsMenuButton.iphHighlighted = NO;
+}
+
+- (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
+  self.view.toolsMenuButton.hasBlueDot = hasBlueDot;
 }
 
 #pragma mark - Private
