@@ -28,7 +28,10 @@ class ASH_EXPORT DisableTrackpadEventRewriter : public ui::EventRewriter {
       const ui::Event& event,
       const Continuation continuation) override;
 
+  void HandleKeyEvent(const ui::KeyEvent* event);
+
   bool enabled_ = false;
+  int control_press_count_ = 0;
 };
 
 }  // namespace ash

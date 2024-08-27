@@ -101,15 +101,32 @@ TEST_F(DisableTrackpadEventRewriterTest, KeyboardEventsNotCanceled) {
             event_recorder()->events().back()->type());
 }
 
-TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsNotCanceled) {
+TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsCanceledWhenEnabled) {
+  event_rewriter()->SetEnabled(true);
   generator()->PressLeftButton();
-  EXPECT_EQ(1U, event_recorder()->events().size());
-  EXPECT_EQ(ui::EventType::kMousePressed,
-            event_recorder()->events().back()->type());
+  EXPECT_EQ(0U, event_recorder()->events().size());
   generator()->ReleaseLeftButton();
-  EXPECT_EQ(2U, event_recorder()->events().size());
-  EXPECT_EQ(ui::EventType::kMouseReleased,
-            event_recorder()->events().back()->type());
+  EXPECT_EQ(0U, event_recorder()->events().size());
+}
+
+TEST_F(DisableTrackpadEventRewriterTest, DisableAfterFiveControlKeyPresses) {
+  event_rewriter()->SetEnabled(true);
+
+  int controlKeyPressCount = 0;
+
+  // Simulate pressing and releasing the control key 5 times.
+  for (int i = 0; i < 5; ++i) {
+    generator()->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    ++controlKeyPressCount;
+    generator()->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+
+    // After the 5th press, check if the rewriter is disabled.
+    if (controlKeyPressCount == 5) {
+      EXPECT_FALSE(event_rewriter()->IsEnabled());
+    } else {
+      EXPECT_TRUE(event_rewriter()->IsEnabled());
+    }
+  }
 }
 
 }  // namespace ash
