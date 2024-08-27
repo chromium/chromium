@@ -10,22 +10,29 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_all_accepted_credentials_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_response_js_on.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_current_user_details_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_registration_response_js_on.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_unknown_credential_options.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/authentication_credentials_container.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/json.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/scoped_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-value.h"
 
 namespace blink {
 
 namespace {
+
 // https://www.w3.org/TR/webauthn/#dom-publickeycredential-type-slot:
 constexpr char kPublicKeyCredentialType[] = "public-key";
 
@@ -61,6 +68,19 @@ void OnGetClientCapabilitiesComplete(
         return CodeUnitCompare(a.first, b.first) < 0;
       });
   resolver->Resolve(results);
+}
+
+void OnSignalReportComplete(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    mojom::AuthenticatorStatus status,
+    mojom::blink::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+  auto* resolver = scoped_resolver->Release()->DowncastTo<IDLUndefined>();
+  if (status != mojom::blink::AuthenticatorStatus::SUCCESS) {
+    resolver->Reject(
+        AuthenticatorStatusToDOMException(status, dom_exception_details));
+    return;
+  }
+  resolver->Resolve();
 }
 
 }  // namespace
@@ -233,6 +253,107 @@ PublicKeyCredential::parseRequestOptionsFromJSON(
     const PublicKeyCredentialRequestOptionsJSON* options,
     ExceptionState& exception_state) {
   return PublicKeyCredentialRequestOptionsFromJSON(options, exception_state);
+}
+
+// static
+ScriptPromise<IDLUndefined> PublicKeyCredential::signalUnknownCredential(
+    ScriptState* script_state,
+    const UnknownCredentialOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           "Context is detached"));
+  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  Vector<char> decoded_cred_id;
+  if (!WTF::Base64UnpaddedURLDecode(options->credentialId(), decoded_cred_id)) {
+    resolver->RejectWithTypeError("Invalid base64url string for credentialId.");
+    return promise;
+  }
+  mojom::blink::PublicKeyCredentialReportOptionsPtr mojo_options =
+      mojom::blink::PublicKeyCredentialReportOptions::From(*options);
+  auto* authenticator =
+      CredentialManagerProxy::From(script_state)->Authenticator();
+  authenticator->Report(
+      std::move(mojo_options),
+      WTF::BindOnce(&OnSignalReportComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
+  return promise;
+}
+
+// static
+ScriptPromise<IDLUndefined> PublicKeyCredential::signalAllAcceptedCredentials(
+    ScriptState* script_state,
+    const AllAcceptedCredentialsOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           "Context is detached"));
+  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  for (WTF::String credential_id : options->allAcceptedCredentialIds()) {
+    Vector<char> decoded_cred_id;
+    if (!WTF::Base64UnpaddedURLDecode(credential_id, decoded_cred_id)) {
+      resolver->RejectWithTypeError(
+          "Invalid base64url string for allAcceptedCredentialIds.");
+      return promise;
+    }
+  }
+  Vector<char> decoded_user_id;
+  if (!WTF::Base64UnpaddedURLDecode(options->userId(), decoded_user_id)) {
+    resolver->RejectWithTypeError("Invalid base64url string for userId.");
+    return promise;
+  }
+  mojom::blink::PublicKeyCredentialReportOptionsPtr mojo_options =
+      mojom::blink::PublicKeyCredentialReportOptions::From(*options);
+  auto* authenticator =
+      CredentialManagerProxy::From(script_state)->Authenticator();
+  authenticator->Report(
+      std::move(mojo_options),
+      WTF::BindOnce(&OnSignalReportComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
+  return promise;
+}
+
+// static
+ScriptPromise<IDLUndefined> PublicKeyCredential::signalCurrentUserDetails(
+    ScriptState* script_state,
+    const CurrentUserDetailsOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           "Context is detached"));
+  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  Vector<char> decoded_user_id;
+  if (!WTF::Base64UnpaddedURLDecode(options->userId(), decoded_user_id)) {
+    resolver->RejectWithTypeError("Invalid base64url string for userId.");
+    return promise;
+  }
+  mojom::blink::PublicKeyCredentialReportOptionsPtr mojo_options =
+      mojom::blink::PublicKeyCredentialReportOptions::From(*options);
+  auto* authenticator =
+      CredentialManagerProxy::From(script_state)->Authenticator();
+  authenticator->Report(
+      std::move(mojo_options),
+      WTF::BindOnce(&OnSignalReportComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
+  return promise;
 }
 
 void PublicKeyCredential::Trace(Visitor* visitor) const {

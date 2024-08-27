@@ -37,9 +37,6 @@ class MODULES_EXPORT IdentityCredentialsContainer final
       const CredentialCreationOptions*,
       ExceptionState&) override;
   ScriptPromise<IDLUndefined> preventSilentAccess(ScriptState*) override;
-  ScriptPromise<IDLUndefined> report(ScriptState*,
-                                     const CredentialReportOptions*,
-                                     ExceptionState&) override;
 
   void Trace(Visitor*) const override;
 };

@@ -79,13 +79,6 @@ ScriptPromise<IDLUndefined> IdentityCredentialsContainer::preventSilentAccess(
   return EmptyPromise();
 }
 
-ScriptPromise<IDLUndefined> IdentityCredentialsContainer::report(
-    ScriptState* script_state,
-    const CredentialReportOptions* options,
-    ExceptionState& exception_state) {
-  return EmptyPromise();
-}
-
 void IdentityCredentialsContainer::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
   CredentialsContainer::Trace(visitor);

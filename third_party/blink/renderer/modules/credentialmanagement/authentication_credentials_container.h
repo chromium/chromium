@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"  // IWYU pragma: keep
 #include "third_party/blink/renderer/modules/credentialmanagement/credentials_container.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -23,6 +25,10 @@ class IdentityCredentialRequestOptions;
 class ExceptionState;
 class Navigator;
 class ScriptState;
+
+DOMException* AuthenticatorStatusToDOMException(
+    mojom::blink::AuthenticatorStatus status,
+    const mojom::blink::WebAuthnDOMExceptionDetailsPtr& dom_exception_details);
 
 class MODULES_EXPORT AuthenticationCredentialsContainer final
     : public CredentialsContainer,
@@ -44,9 +50,6 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
       const CredentialCreationOptions*,
       ExceptionState&) override;
   ScriptPromise<IDLUndefined> preventSilentAccess(ScriptState*) override;
-  ScriptPromise<IDLUndefined> report(ScriptState*,
-                                     const CredentialReportOptions*,
-                                     ExceptionState&) override;
   void Trace(Visitor*) const override;
 
  private:

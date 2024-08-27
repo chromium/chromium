@@ -1685,7 +1685,6 @@ interface CredentialsContainer
     method create
     method get
     method preventSilentAccess
-    method report
     method store
 interface CropTarget
     static method fromElement
@@ -7705,6 +7704,9 @@ interface PublicKeyCredential : Credential
     static method isUserVerifyingPlatformAuthenticatorAvailable
     static method parseCreationOptionsFromJSON
     static method parseRequestOptionsFromJSON
+    static method signalAllAcceptedCredentials
+    static method signalCurrentUserDetails
+    static method signalUnknownCredential
     attribute @@toStringTag
     getter authenticatorAttachment
     getter rawId

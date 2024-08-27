@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_report_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
@@ -129,6 +128,12 @@ bool SortPRFValuesByCredentialId(const PRFValuesPtr& a, const PRFValuesPtr& b) {
     return std::lexicographical_compare(a->id->begin(), a->id->end(),
                                         b->id->begin(), b->id->end());
   }
+}
+
+Vector<uint8_t> Base64UnpaddedURLDecodeOrCheck(const String& encoded) {
+  Vector<char> decoded;
+  CHECK(WTF::Base64UnpaddedURLDecode(encoded, decoded));
+  return Vector<uint8_t>(base::as_bytes(base::make_span(decoded)));
 }
 
 }  // namespace
@@ -1022,12 +1027,9 @@ TypeConverter<Vector<PRFValuesPtr>, blink::AuthenticationExtensionsPRFInputs>::
   }
   if (prf.hasEvalByCredential()) {
     for (const auto& pair : prf.evalByCredential()) {
-      Vector<char> cred_id;
-      // The fact that this decodes successfully has already been tested.
-      CHECK(WTF::Base64UnpaddedURLDecode(pair.first, cred_id));
-
       PRFValuesPtr values = ConvertTo<PRFValuesPtr>(*pair.second);
-      values->id = Vector<uint8_t>(base::as_bytes(base::make_span(cred_id)));
+      // The fact that this decodes successfully has already been tested.
+      values->id = Base64UnpaddedURLDecodeOrCheck(pair.first);
       ret.emplace_back(std::move(values));
     }
   }
@@ -1071,72 +1073,55 @@ Vector<Hint> TypeConverter<Vector<Hint>, Vector<String>>::Convert(
 }
 
 // static
-PublicKeyCredentialReportOptionsPtr
-TypeConverter<PublicKeyCredentialReportOptionsPtr,
-              blink::PublicKeyCredentialReportOptions>::
-    Convert(const blink::PublicKeyCredentialReportOptions& options) {
+blink::mojom::blink::PublicKeyCredentialReportOptionsPtr
+TypeConverter<blink::mojom::blink::PublicKeyCredentialReportOptionsPtr,
+              blink::UnknownCredentialOptions>::
+    Convert(const blink::UnknownCredentialOptions& options) {
   auto mojo_options =
       blink::mojom::blink::PublicKeyCredentialReportOptions::New();
-
-  if (options.hasRpId()) {
-    mojo_options->relying_party_id = options.rpId();
-  }
-  if (options.hasUnknownCredentialId()) {
-    Vector<char> decoded_cred_id;
-    // The fact that this decodes successfully has already been tested.
-    CHECK(WTF::Base64UnpaddedURLDecode(options.unknownCredentialId(),
-                                       decoded_cred_id));
-    mojo_options->unknown_credential_id = WTF::Vector<uint8_t>(decoded_cred_id);
-  }
-  if (options.hasAllAcceptedCredentials()) {
-    mojo_options->all_accepted_credentials =
-        AllAcceptedCredentialsOptions::From(*options.allAcceptedCredentials());
-  }
-  if (options.hasCurrentUserDetails()) {
-    mojo_options->current_user_details =
-        CurrentUserDetailsOptions::From(*options.currentUserDetails());
-  }
+  mojo_options->relying_party_id = options.rpId();
+  // The fact that this decodes successfully has already been tested.
+  mojo_options->unknown_credential_id =
+      Base64UnpaddedURLDecodeOrCheck(options.credentialId());
   return mojo_options;
 }
 
 // static
-AllAcceptedCredentialsOptionsPtr
-TypeConverter<AllAcceptedCredentialsOptionsPtr,
+blink::mojom::blink::PublicKeyCredentialReportOptionsPtr
+TypeConverter<blink::mojom::blink::PublicKeyCredentialReportOptionsPtr,
               blink::AllAcceptedCredentialsOptions>::
     Convert(const blink::AllAcceptedCredentialsOptions& options) {
-  auto mojo_options = blink::mojom::blink::AllAcceptedCredentialsOptions::New();
-
-  Vector<char> decoded_user_id;
+  auto mojo_options =
+      blink::mojom::blink::PublicKeyCredentialReportOptions::New();
+  mojo_options->relying_party_id = options.rpId();
+  mojo_options->all_accepted_credentials =
+      blink::mojom::blink::AllAcceptedCredentialsOptions::New();
   // The fact that this decodes successfully has already been tested.
-  CHECK(WTF::Base64UnpaddedURLDecode(options.userId(), decoded_user_id));
-  mojo_options->user_id = WTF::Vector<uint8_t>(decoded_user_id);
-
-  WTF::Vector<Vector<uint8_t>> all_accepted_credential_ids(
-      options.allAcceptedCredentialsIds().size());
-  for (WTF::String credential_id : options.allAcceptedCredentialsIds()) {
-    Vector<char> decoded_cred_id;
+  mojo_options->all_accepted_credentials->user_id =
+      Base64UnpaddedURLDecodeOrCheck(options.userId());
+  for (WTF::String credential_id : options.allAcceptedCredentialIds()) {
     // The fact that this decodes successfully has already been tested.
-    CHECK(WTF::Base64UnpaddedURLDecode(credential_id, decoded_cred_id));
-    all_accepted_credential_ids.push_back(
-        WTF::Vector<uint8_t>(decoded_cred_id));
+    mojo_options->all_accepted_credentials->all_accepted_credentials_ids
+        .push_back(Base64UnpaddedURLDecodeOrCheck(credential_id));
   }
-  mojo_options->all_accepted_credentials_ids =
-      std::move(all_accepted_credential_ids);
   return mojo_options;
 }
 
 // static
-CurrentUserDetailsOptionsPtr
-TypeConverter<CurrentUserDetailsOptionsPtr, blink::CurrentUserDetailsOptions>::
+blink::mojom::blink::PublicKeyCredentialReportOptionsPtr
+TypeConverter<blink::mojom::blink::PublicKeyCredentialReportOptionsPtr,
+              blink::CurrentUserDetailsOptions>::
     Convert(const blink::CurrentUserDetailsOptions& options) {
-  auto mojo_options = blink::mojom::blink::CurrentUserDetailsOptions::New();
-
-  Vector<char> decoded_user_id;
+  auto mojo_options =
+      blink::mojom::blink::PublicKeyCredentialReportOptions::New();
+  mojo_options->relying_party_id = options.rpId();
+  mojo_options->current_user_details =
+      blink::mojom::blink::CurrentUserDetailsOptions::New();
   // The fact that this decodes successfully has already been tested.
-  CHECK(WTF::Base64UnpaddedURLDecode(options.userId(), decoded_user_id));
-  mojo_options->user_id = WTF::Vector<uint8_t>(decoded_user_id);
-  mojo_options->name = options.name();
-  mojo_options->display_name = options.displayName();
+  mojo_options->current_user_details->user_id =
+      Base64UnpaddedURLDecodeOrCheck(options.userId());
+  mojo_options->current_user_details->name = options.name();
+  mojo_options->current_user_details->display_name = options.displayName();
   return mojo_options;
 }
 
