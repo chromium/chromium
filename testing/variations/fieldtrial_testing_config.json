@@ -7405,7 +7405,7 @@
                 {
                     "name": "V2Enabled3V2_20240723",
                     "params": {
-                        "group_name": "enabled-v2-arm-3v2",
+                        "group_name": "enabled-v2-arm-3v2.1",
                         "max_prompt_count": "5",
                         "reprompt_duration": "21d",
                         "reprompt_duration_multiplier": "1",
