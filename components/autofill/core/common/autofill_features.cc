@@ -173,11 +173,6 @@ BASE_FEATURE(kAutofillEnableManualFallbackIPH,
              "AutofillEnableManualFallbackIPH",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls if special rationalization rules for mexico are enabled.
-BASE_FEATURE(kAutofillEnableRationalizationEngineForMX,
-             "AutofillEnableRationalizationEngineForMX",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls if the heuristic field parsing utilizes shared labels.
 // TODO(crbug.com/40741721): Remove once shared labels are launched.
 BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,

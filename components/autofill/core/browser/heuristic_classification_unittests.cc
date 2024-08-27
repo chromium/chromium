@@ -557,7 +557,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillUseMXAddressModel,
       features::kAutofillUsePLAddressModel,
       features::kAutofillEnableExpirationDateImprovements,
-      features::kAutofillEnableRationalizationEngineForMX,
       // Other improvements.
       features::kAutofillEnableCacheForRegexMatching};
   std::vector<base::test::FeatureRef> disabled_features = {};
