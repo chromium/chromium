@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/test/gl_test_helper.h"
 
 #include <memory>
@@ -65,48 +60,6 @@ GLuint GLTestHelper::SetupFramebuffer(int width, int height) {
   glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
   glDeleteTextures(1, &color_buffer_texture);
   return framebuffer;
-}
-
-// static
-bool GLTestHelper::CheckPixels(int x,
-                               int y,
-                               int width,
-                               int height,
-                               const uint8_t expected_color[4]) {
-  return CheckPixelsWithError(x, y, width, height, 0, expected_color);
-}
-
-// static
-bool GLTestHelper::CheckPixelsWithError(int x,
-                                        int y,
-                                        int width,
-                                        int height,
-                                        int error,
-                                        const uint8_t expected_color[4]) {
-  int size = width * height * 4;
-  auto pixels = base::HeapArray<uint8_t>::Uninit(size);
-  const uint8_t kCheckClearValue = 123u;
-  memset(pixels.data(), kCheckClearValue, pixels.size());
-  glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-  int bad_count = 0;
-  for (int yy = 0; yy < height; ++yy) {
-    for (int xx = 0; xx < width; ++xx) {
-      int offset = yy * width * 4 + xx * 4;
-      for (int jj = 0; jj < 4; ++jj) {
-        uint8_t actual = pixels[offset + jj];
-        uint8_t expected = expected_color[jj];
-        EXPECT_NEAR(expected, actual, error)
-            << " at " << (xx + x) << ", " << (yy + y) << " channel " << jj;
-        bad_count += actual != expected;
-        // Exit early just so we don't spam the log but we print enough to
-        // hopefully make it easy to diagnose the issue.
-        if (bad_count > 16)
-          return false;
-      }
-    }
-  }
-
-  return !bad_count;
 }
 
 std::pair<scoped_refptr<GLSurface>, scoped_refptr<GLContext>>
