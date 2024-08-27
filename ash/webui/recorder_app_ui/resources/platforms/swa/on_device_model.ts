@@ -39,25 +39,6 @@ import {
 // TODO(shik): Make this configurable.
 const MAX_CONTENT_WORDS = Math.floor(((2048 - 100) / 4) * 3);
 
-const PLACEHOLDER = 'PLACEHOLDER';
-
-const TITLE_SUGGESTION_PROMPT_TEMPLATE = `
-Please help suggest 3 titles for the audio transcription below.
-
-Transcription:
-\`\`\`
-${PLACEHOLDER}
-\`\`\`
-
-Please reply 3 titles separated with a newline between them in the following
-format:
-1. TITLE 1 (short, concise, ~10 words)
-2. TITLE 2 (formal, ~12 words)
-3. TITLE 3 (descriptive, ~15 words)
-
-Reply:
-`;
-
 /**
  * The keys are id of the safety classes.
  *
@@ -223,23 +204,20 @@ export class SummaryModel extends OnDeviceModel<string> {
 export class TitleSuggestionModel extends OnDeviceModel<string[]> {
   override async execute(content: string): Promise<ModelResponse<string[]>> {
     content = shorten(content, MAX_CONTENT_WORDS);
-    const resp = await this.formatAndExecute(FormatFeature.kPrompt, {
-      prompt: TITLE_SUGGESTION_PROMPT_TEMPLATE.replace(PLACEHOLDER, content),
+    const resp = await this.formatAndExecute(FormatFeature.kAudioTitle, {
+      transcription: content,
     });
     if (resp.kind === 'error') {
       return resp;
     }
-    const lines = parseResponse(resp.result)
-                    .replaceAll(/^\s*\d\.\s*/gm, '')
-                    .replaceAll(/TITLE\s*\d*:?\s*/gim, '')
-                    .split('\n');
+    const lines = parseResponse(resp.result).split('\n');
 
     const titles: string[] = [];
     for (const line of lines) {
-      // Find the longest title-like substring.
-      const m = line.match(/\w.*\w/);
-      if (m !== null && !titles.includes(m[0])) {
-        titles.push(m[0]);
+      // Each line should start with `- ` and the title.
+      const lineStart = '- ';
+      if (line.startsWith(lineStart)) {
+        titles.push(line.substring(lineStart.length));
       }
     }
     return {kind: 'success', result: titles.slice(0, 3)};
@@ -321,7 +299,7 @@ export class SummaryModelLoader extends ModelLoader<string> {
 }
 
 export class TitleSuggestionModelLoader extends ModelLoader<string[]> {
-  protected override modelId = 'ee7c31c2-18e5-405a-b54e-f2607130a15d';
+  protected override modelId = '1bdd5282-2d14-413c-bf43-9ea6d55c38a6';
 
   override createModel(remote: OnDeviceModelRemote): TitleSuggestionModel {
     return new TitleSuggestionModel(remote, this.remote, this.modelId);
