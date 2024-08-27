@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -45,6 +46,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final BottomSheetObserver mBottomSheetObserver;
+    private final Callback<Boolean> mPriceTrackingStateChangedCallback = this::updateButtonIcon;
     private final ButtonSpec mFilledButtonSpec;
     private final ButtonSpec mEmptyButtonSpec;
     private boolean mIsCurrentTabPriceTracked;
@@ -106,7 +108,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                 };
         mBottomSheetController.addObserver(mBottomSheetObserver);
 
-        mPriceTrackingCurrentTabStateSupplier.addObserver(this::updateButtonIcon);
+        mPriceTrackingCurrentTabStateSupplier.addObserver(mPriceTrackingStateChangedCallback);
     }
 
     private void updateButtonIcon(boolean isCurrentTabPriceTracked) {
@@ -124,7 +126,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
         super.destroy();
 
         mBottomSheetController.removeObserver(mBottomSheetObserver);
-        mPriceTrackingCurrentTabStateSupplier.removeObserver(this::updateButtonIcon);
+        mPriceTrackingCurrentTabStateSupplier.removeObserver(mPriceTrackingStateChangedCallback);
     }
 
     @Override
