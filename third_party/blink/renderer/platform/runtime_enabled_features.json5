@@ -4365,13 +4365,6 @@
       depends_on: ["WebUSB"],
     },
     {
-      // This flag makes IDL reflected attributes with the "URL" IDL attribute
-      // return the original string of the attribute when a complete URL can't
-      // be created instead of an empty string.
-      name: "URLAttributeFix",
-      status: "stable",
-    },
-    {
       name: "URLPatternCompareComponent",
       status: "experimental",
     },

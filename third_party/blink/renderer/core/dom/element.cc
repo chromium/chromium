@@ -8484,7 +8484,7 @@ String Element::GetURLAttribute(const QualifiedName& name) const {
 #endif
   KURL url = GetDocument().CompleteURL(
       StripLeadingAndTrailingHTMLSpaces(getAttribute(name)));
-  return url.IsValid() || !RuntimeEnabledFeatures::URLAttributeFixEnabled()
+  return url.IsValid()
              ? url
              : StripLeadingAndTrailingHTMLSpaces(getAttribute(name));
 }
