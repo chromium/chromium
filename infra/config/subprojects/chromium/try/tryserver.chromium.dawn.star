@@ -35,6 +35,10 @@ consoles.list_view(
 
 try_.builder(
     name = "dawn-chromium-presubmit",
+    branch_selector = [
+        branches.selector.ANDROID_BRANCHES,
+        branches.selector.DESKTOP_BRANCHES,
+    ],
     description_html = "Runs Chromium presubmit tests on Dawn CLs",
     mirrors = [
         "ci/Dawn Chromium Presubmit",

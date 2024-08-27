@@ -51,6 +51,10 @@ consoles.console_view(
 
 ci.gpu.linux_builder(
     name = "Dawn Chromium Presubmit",
+    branch_selector = [
+        branches.selector.ANDROID_BRANCHES,
+        branches.selector.DESKTOP_BRANCHES,
+    ],
     description_html = "Runs Chromium presubmit tests on Dawn CLs",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
