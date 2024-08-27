@@ -29,6 +29,7 @@ mac_app_bundle("enterprise_companion_bundle") {
   sources = [ "//chrome/enterprise_companion/main.cc" ]
   deps = [
     "//chrome/enterprise_companion:base",
+    "//chrome/enterprise_companion:constants_prod",
     "//chrome/updater:constants_prod",
   ]
 }

@@ -27,6 +27,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
@@ -35,6 +36,7 @@
 #include "third_party/crashpad/crashpad/client/simulate_crash.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
 #include "third_party/crashpad/crashpad/util/misc/tri_state.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -213,12 +215,13 @@ class CrashClient {
       attachments.push_back(*log_file);
     }
 #endif
-    if (!client->StartHandler(
-            base::PathService::CheckedGet(base::FILE_EXE), database_path,
-            /*metrics_dir=*/base::FilePath(), CRASH_UPLOAD_URL, annotations,
-            MakeCrashHandlerArgs(),
-            /*restartable=*/true,
-            /*asynchronous_start=*/false)) {
+    if (!client->StartHandler(base::PathService::CheckedGet(base::FILE_EXE),
+                              database_path,
+                              /*metrics_dir=*/base::FilePath(),
+                              GetGlobalConstants()->CrashUploadURL().spec(),
+                              annotations, MakeCrashHandlerArgs(),
+                              /*restartable=*/true,
+                              /*asynchronous_start=*/false)) {
       VLOG(1) << "Failed to start handler.";
       return false;
     }

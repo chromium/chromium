@@ -73,6 +73,7 @@ source_set("base") {
     "enterprise_companion_status.h",
     "event_logger.cc",
     "event_logger.h",
+    "global_constants.h",
     "installer.h",
     "ipc_security.h",
     "ipc_support.cc",
@@ -95,6 +96,7 @@ source_set("base") {
     "//components/named_mojo_ipc_server",
     "//components/named_system_lock",
     "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
     "//mojo/core/embedder",
     "//mojo/public/cpp/platform",
     "//net",
@@ -141,6 +143,7 @@ executable("test_crashpad_embedder") {
   deps = [
     ":base",
     ":client",
+    ":constants_test",
     "//base",
     "//chrome/updater:constants_test",
   ]
@@ -170,6 +173,7 @@ test("enterprise_companion_tests") {
     ":base",
     ":branding_header",
     ":client",
+    ":constants_test",
     "mojom/",
     "//base",
     "//base/test:test_support",
@@ -210,6 +214,7 @@ test("enterprise_companion_integration_tests") {
   deps = [
     ":base",
     ":branding_header",
+    ":constants_test",
     ":installer_paths",
     ":version_header",
     "//base",
@@ -262,11 +267,7 @@ static_library("installer_paths") {
     "//base",
   ]
 
-  visibility = [
-    ":base",
-    ":client",
-    ":enterprise_companion_integration_tests",
-  ]
+  visibility = [ ":*" ]
 
   if (is_linux) {
     sources += [ "installer_paths_linux.cc" ]
@@ -278,11 +279,42 @@ static_library("installer_paths") {
   }
 }
 
+static_library("constants_prod") {
+  public = [ "global_constants.h" ]
+  sources = [ "global_constants.cc" ]
+  deps = [
+    ":branding_header",
+    ":installer_paths",
+    "//base",
+    "//url",
+  ]
+  visibility = [
+    ":*",
+    "//chrome/enterprise_companion/mac:*",
+  ]
+}
+
+static_library("constants_test") {
+  testonly = true
+
+  public = [ "global_constants.h" ]
+  sources = [ "global_constants.cc" ]
+  deps = [
+    ":branding_header",
+    ":installer_paths",
+    "//base",
+    "//url",
+  ]
+  visibility = [ ":*" ]
+  defines = [ "ENTERPRISE_COMPANION_TEST_ONLY" ]
+}
+
 if (!is_official_build) {
   executable("enterprise_companion") {
     sources = [ "main.cc" ]
     deps = [
       ":base",
+      ":constants_prod",
       "//chrome/updater:constants_prod",
     ]
 
@@ -292,19 +324,22 @@ if (!is_official_build) {
   }
 }
 
-# Enterprise Companion application used by integration tests. Eventually, this
-# should be linked against test constants.
+# Enterprise Companion application used by integration tests. Constants can be
+# overridden via global_constants.h.
 executable("enterprise_companion_test") {
   testonly = true
   sources = [ "main.cc" ]
   deps = [
     ":base",
+    ":constants_test",
     "//chrome/updater:constants_prod",
   ]
 
   if (is_win) {
     configs += [ "//build/config/win:windowed" ]
   }
+
+  defines = [ "ENTERPRISE_COMPANION_TEST_ONLY" ]
 }
 
 group("all") {

@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 #include "chrome/enterprise_companion/proto/log_request.pb.h"
@@ -437,12 +438,13 @@ class EventLoggerCookieHandlerTest : public ::testing::Test {
 
   void DispatchLoggingCookieChange(const std::string& logging_cookie_value,
                                    net::CookieChangeCause cause) {
+    const GURL event_logging_url =
+        GetGlobalConstants()->EnterpriseCompanionEventLoggingURL();
     url::SchemeHostPort event_logging_scheme_host_port =
-        url::SchemeHostPort(GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL));
+        url::SchemeHostPort(event_logging_url);
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateSanitizedCookie(
-            GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL), kLoggingCookieName,
-            logging_cookie_value,
+            event_logging_url, kLoggingCookieName, logging_cookie_value,
             base::StrCat({".", event_logging_scheme_host_port.host()}),
             /*path=*/"/", /*creation_time=*/base::Time::Now(),
             /*expiration_time=*/base::Time::Now() + base::Days(180),
@@ -485,7 +487,8 @@ TEST_F(EventLoggerCookieHandlerTest, InitializesNewLoggingCookie) {
         ASSERT_TRUE(cookie.IsCanonical());
         EXPECT_EQ(cookie.Name(), kLoggingCookieName);
         EXPECT_EQ(cookie.Value(), kLoggingCookieDefaultValue);
-        EXPECT_EQ(source_url, GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL));
+        EXPECT_EQ(source_url,
+                  GetGlobalConstants()->EnterpriseCompanionEventLoggingURL());
         std::move(callback).Run(net::CookieAccessResult());
       });
 
@@ -500,7 +503,8 @@ TEST_F(EventLoggerCookieHandlerTest, InitializesExistingLoggingCookie) {
         ASSERT_TRUE(cookie.IsCanonical());
         EXPECT_EQ(cookie.Name(), kLoggingCookieName);
         EXPECT_EQ(cookie.Value(), "123");
-        EXPECT_EQ(source_url, GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL));
+        EXPECT_EQ(source_url,
+                  GetGlobalConstants()->EnterpriseCompanionEventLoggingURL());
         std::move(callback).Run(net::CookieAccessResult());
       });
 
