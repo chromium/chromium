@@ -1051,6 +1051,10 @@
       name: "CSSMixins",
     },
     {
+      name: "CSSNestedDeclarations",
+      status: "experimental",
+    },
+    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
     },

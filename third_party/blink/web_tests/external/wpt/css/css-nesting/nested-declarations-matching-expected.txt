@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Nested declarations rule responds to parent selector text change
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+Harness: the test ran to completion.
+

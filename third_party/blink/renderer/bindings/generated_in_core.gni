@@ -778,6 +778,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_media_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_namespace_rule.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_namespace_rule.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_nested_declarations.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_nested_declarations.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_numeric_array.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_numeric_array.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_numeric_value.cc",

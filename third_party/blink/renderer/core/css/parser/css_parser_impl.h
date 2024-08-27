@@ -44,6 +44,7 @@ class StyleRuleKeyframe;
 class StyleRuleKeyframes;
 class StyleRuleMedia;
 class StyleRuleNamespace;
+class StyleRuleNestedDeclarations;
 class StyleRulePage;
 class StyleRulePositionTry;
 class StyleRuleProperty;
@@ -279,6 +280,7 @@ class CORE_EXPORT CSSParserImpl {
                                    CSSParserTokenStream& stream,
                                    CSSNestingType,
                                    StyleRule* parent_rule_for_nesting);
+
   // Returns true if a declaration was parsed and added to parsed_properties_,
   // and false otherwise.
   bool ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);
@@ -313,6 +315,68 @@ class CORE_EXPORT CSSParserImpl {
   // is created instead.
   StyleRule* CreateImplicitNestedRule(CSSNestingType,
                                       StyleRule* parent_rule_for_nesting);
+
+  // CSSNestedDeclarations
+  // =====================
+  //
+  // Bare declarations that appear after a nested child rule
+  // must be wrapped in CSSNestedDeclarations rules [1]. For example:
+  //
+  //  .a {
+  //    color: green;
+  //    .b { }
+  //    width: 100px;
+  //    height: 100px;
+  //    div { }
+  //    opacity: 1;
+  //  }
+  //
+  // Must be wrapped as follows:
+  //
+  //  .a {
+  //    color: green;
+  //    .b { }
+  //    CSSNestedDeclarations {
+  //      width: 100px;
+  //      height: 100px;
+  //    }
+  //    div { }
+  //    CSSNestedDeclarations {
+  //      opacity: 1;
+  //    }
+  //  }
+  //
+  //
+  // We implement this by tracking the start index (into parsed_properties_)
+  // of these bare declaration segments. Whenever we successfully parse
+  // a child rule, we store the current number of parsed_properties_
+  // as the start index. Then, when we encounter the *next* child rule
+  // (or the end of the parent block), we create a CSSNestedDeclarations rule
+  // wrapping the declarations in the range [start_index, end).
+  //
+  // [1] https://drafts.csswg.org/css-nesting-1/#nested-declarations-rule
+
+  // Creates a new "nested declarations rule", consisting of the declarations
+  // (parsed_properties_) in the range [start_index, end_index).
+  // The parsed properties in the range are left as-is, i.e. not removed
+  // from parsed_properties_.
+  //
+  // https://drafts.csswg.org/css-nesting-1/#nested-declarations-rule
+  StyleRuleNestedDeclarations* CreateNestedDeclarationsRule(
+      CSSNestingType nesting_type,
+      const CSSSelector* selector_list,
+      wtf_size_t start_index,
+      wtf_size_t end_index);
+
+  // Adds a new "nested declarations rule" to child_rules, consisting of
+  // the declarations (parsed_properties_) from start_index until the end.
+  // The affected declarations (if any) are removed from parsed_properties_.
+  // See also the "CSSNestedDeclarations" comment above for more information
+  // on what this is used for.
+  void EmitNestedDeclarationsRuleIfNeeded(
+      StyleRule* parent_rule_for_nesting,
+      wtf_size_t start_index,
+      HeapVector<Member<StyleRuleBase>, 4>& child_rules);
 
   // FIXME: Can we build CSSPropertyValueSets directly?
   HeapVector<CSSPropertyValue, 64> parsed_properties_;

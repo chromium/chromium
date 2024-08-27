@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -204,6 +205,7 @@ class StyleSheetHandler final : public CSSParserObserver {
       unsigned start_offset,
       CSSAtRuleID id,
       const Vector<CSSPropertyID, 2>& invalid_properties = {}) override;
+  void ObserveNestedDeclarations(wtf_size_t insert_rule_index) override;
 
   TextPosition GetTextPosition(unsigned start_offset);
   void AddNewRuleToSourceTree(CSSRuleSourceData*);
@@ -574,6 +576,61 @@ void StyleSheetHandler::ObserveErroneousAtRule(
   }
 }
 
+void StyleSheetHandler::ObserveNestedDeclarations(unsigned insert_rule_index) {
+  CHECK(!current_rule_data_stack_.empty());
+  CSSRuleSourceData* rule = current_rule_data_stack_.back().Get();
+  Vector<CSSPropertySourceData>& property_data = rule->property_data;
+  HeapVector<Member<CSSRuleSourceData>>& child_rules = rule->child_rules;
+
+  CHECK_LE(insert_rule_index, child_rules.size());
+
+  // We're going to insert a CSSRuleSourceData for the nested declarations
+  // rule at `insert_rule_index`. The rule that ends up immediately before
+  // that CSSRuleSourceData is the "preceding rule".
+  CSSRuleSourceData* preceding_rule =
+      (insert_rule_index > 0) ? child_rules[insert_rule_index - 1].Get()
+                              : nullptr;
+
+  // Traverse backwards until we see a declaration at the preceding rule,
+  // or earlier.
+  Vector<CSSPropertySourceData>::iterator iter = property_data.end();
+  while (iter != property_data.begin()) {
+    Vector<CSSPropertySourceData>::iterator prev = std::prev(iter);
+    if (preceding_rule &&
+        (prev->range.start <= preceding_rule->rule_body_range.end)) {
+      break;
+    }
+    iter = prev;
+  }
+
+  // Copy the CSSPropertySourceData objects between preceding and following
+  // rules into a new CSSRuleSourceData object for the nested declarations.
+  Vector<CSSPropertySourceData> nested_property_data;
+  std::ranges::copy(iter, property_data.end(),
+                    std::back_inserter(nested_property_data));
+  // Remove the objects we just copied from the original vector. They should
+  // only exist in one place.
+  property_data.resize(property_data.size() - nested_property_data.size());
+
+  CHECK(!nested_property_data.empty());
+
+  // Note that the nested declarations rule has no prelude (i.e. no selector
+  // list), and no curly brackets surrounding its body. Therefore, the header
+  // range is empty, and exists at the same offset as the body-start.
+  auto* nested_declarations_rule =
+      MakeGarbageCollected<CSSRuleSourceData>(StyleRule::kStyle);
+  nested_declarations_rule->rule_header_range.start =
+      nested_property_data.front().range.start;
+  nested_declarations_rule->rule_header_range.end =
+      nested_property_data.front().range.start;
+  nested_declarations_rule->rule_body_range.start =
+      nested_property_data.front().range.start;
+  nested_declarations_rule->rule_body_range.end =
+      nested_property_data.back().range.end;
+  nested_declarations_rule->property_data = std::move(nested_property_data);
+  child_rules.insert(insert_rule_index, nested_declarations_rule);
+}
+
 static CSSPropertySourceData* GetPropertySourceData(
     CSSRuleSourceData& source_data,
     StringView propertyName) {
@@ -677,8 +734,26 @@ bool VerifyStyleText(Document* document,
   if (rule_type == StyleRule::kProperty) {
     return VerifyRuleText(document, "@property --property {" + text + "}");
   }
-
   return VerifyRuleText(document, "div {" + text + "}");
+}
+
+bool VerifyNestedDeclarations(Document* document, const String& rule_text) {
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
+      ParserContextForDocument(document));
+  CSSRuleSourceDataList* source_data =
+      MakeGarbageCollected<CSSRuleSourceDataList>();
+  String text = ".a { .b {} " + rule_text + " }";
+  StyleSheetHandler handler(text, document, source_data);
+  CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
+                                    style_sheet, text, handler);
+
+  unsigned rule_count = source_data->size();
+  if (rule_count != 1 || source_data->at(0)->type != StyleRule::kStyle) {
+    return false;
+  }
+  const CSSRuleSourceData& property_data = *source_data->front();
+
+  return property_data.child_rules.size() == 2;
 }
 
 bool VerifyPropertyNameText(Document* document, const String& name_text) {
@@ -1019,6 +1094,10 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kPropertyRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
+        break;
+      case CSSRule::kNestedDeclarationsRule:
+        result->push_back(
+            To<CSSNestedDeclarationsRule>(*rule).InnerCSSStyleRule());
         break;
       default:
         break;
@@ -1638,6 +1717,17 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
                        source_data->type)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Style text is not valid.");
+    return nullptr;
+  }
+
+  if (source_data->type == StyleRule::RuleType::kStyle &&
+      source_data->rule_header_range.length() == 0u &&
+      !VerifyNestedDeclarations(page_style_sheet_->OwnerDocument(), text)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "Style text would cause rule to disappear");
+    // TODO(crbug.com/361116768): This should work, but we're not yet
+    // equipped to handle rules that disappear.
     return nullptr;
   }
 

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -60,6 +61,7 @@
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/selector_statistics.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -1089,6 +1091,12 @@ static CSSRule* FindStyleRule(CSSRuleCollection* css_rules,
                    FindStyleRule(css_rule->cssRules(), style_rule);
                result) {
       return result;
+    } else if (auto* nested_declarations =
+                   DynamicTo<CSSNestedDeclarationsRule>(css_rule)) {
+      if (nested_declarations->NestedDeclarationsRule()->InnerStyleRule() ==
+          style_rule) {
+        return nested_declarations->InnerCSSStyleRule();
+      }
     }
   }
   return nullptr;

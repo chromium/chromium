@@ -1021,6 +1021,12 @@ void CSSSelector::SetTrue() {
   bits_.set<IsImplicitlyAddedField>(true);
 }
 
+void CSSSelector::SetWhere(CSSSelectorList* selector_list) {
+  SetMatch(kPseudoClass);
+  SetPseudoType(kPseudoWhere);
+  SetSelectorList(selector_list);
+}
+
 static void SerializeIdentifierOrAny(const AtomicString& identifier,
                                      const AtomicString& any,
                                      StringBuilder& builder) {

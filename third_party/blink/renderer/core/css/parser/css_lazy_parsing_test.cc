@@ -154,6 +154,28 @@ TEST_F(CSSLazyParsingTest, NoLazyParsingForNestedRules) {
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
 
+    String sheet_text = "body { color: green; & div { color: red; } }";
+    CSSParser::ParseSheet(context, style_sheet, sheet_text,
+                          CSSDeferPropertyParsing::kYes);
+    StyleRule* rule = RuleAt(style_sheet, 0);
+    EXPECT_TRUE(HasParsedProperties(rule));
+    EXPECT_EQ("color: green;", rule->Properties().AsText());
+    EXPECT_TRUE(HasParsedProperties(rule));
+  }
+}
+
+// A version of NoLazyParsingForNestedRules where CSSNestedDeclarations
+// is disabled. Can be removed when the CSSNestedDeclarations is removed.
+TEST_F(CSSLazyParsingTest,
+       NoLazyParsingForNestedRules_CSSNestedDeclarationsDisabled) {
+  ScopedCSSNestedDeclarationsForTest nested_declarations_enabled(false);
+
+  for (const bool fast_path : {false, true}) {
+    ScopedCSSLazyParsingFastPathForTest fast_path_enabled(fast_path);
+    auto* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
     String sheet_text = "body { & div { color: red; } color: green; }";
     CSSParser::ParseSheet(context, style_sheet, sheet_text,
                           CSSDeferPropertyParsing::kYes);

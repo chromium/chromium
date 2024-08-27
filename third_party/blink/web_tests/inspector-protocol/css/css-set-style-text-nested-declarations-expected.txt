@@ -1,0 +1,108 @@
+The test verifies functionality of protocol method CSS.setStyleTexts modifying CSSNestedDeclarations.
+==== Initial style sheet text ====
+#test {
+  left: 1px;
+  right: 2px;
+  div {  }
+  width: 100px;
+  height: 50px;
+  span {  }
+  top: 3px;
+}
+
+
+Running test: testBasicEdit
+==== Style sheet text ====
+#test {
+  left: 1px;
+  right: 2px;
+  div {  }
+  width: 142px;
+  height: 92px;
+  span {  }
+  top: 3px;
+}
+
+Dumping matched rules: 
+*#test* {    regular
+    left: 1px; @[1:2-1:12]
+    right: 2px; @[2:2-2:13]
+    left: 1px; @[undefined-undefined]
+    right: 2px; @[undefined-undefined]
+}
+ {    regular
+    width: 142px; @[4:2-4:15]
+    height: 92px; @[5:2-5:15]
+    width: 142px; @[undefined-undefined]
+    height: 92px; @[undefined-undefined]
+}
+ {    regular
+    top: 3px; @[7:2-7:11]
+    top: 3px; @[undefined-undefined]
+}
+Dumping inherited rules: 
+
+Running test: testEditTrailing
+==== Style sheet text ====
+#test {
+  left: 1px;
+  right: 2px;
+  div {  }
+  width: 100px;
+  height: 50px;
+  span {  }
+  top: 45px
+}
+
+Dumping matched rules: 
+*#test* {    regular
+    left: 1px; @[1:2-1:12]
+    right: 2px; @[2:2-2:13]
+    left: 1px; @[undefined-undefined]
+    right: 2px; @[undefined-undefined]
+}
+ {    regular
+    width: 100px; @[4:2-4:15]
+    height: 50px; @[5:2-5:15]
+    width: 100px; @[undefined-undefined]
+    height: 50px; @[undefined-undefined]
+}
+ {    regular
+    top: 45px; @[7:2-8:0]
+    top: 45px; @[undefined-undefined]
+}
+Dumping inherited rules: 
+
+Running test: testEditComment
+==== Style sheet text ====
+#test {
+  left: 1px;
+  right: 2px;
+  div {  }
+  /* width: 142px; */
+  height: 92px;
+  span {  }
+  top: 45px
+}
+
+Dumping matched rules: 
+*#test* {    regular
+    left: 1px; @[1:2-1:12]
+    right: 2px; @[2:2-2:13]
+    left: 1px; @[undefined-undefined]
+    right: 2px; @[undefined-undefined]
+}
+ {    regular
+    width: 142px; @[4:2-4:21]
+    height: 92px; @[5:2-5:15]
+    height: 92px; @[undefined-undefined]
+}
+ {    regular
+    top: 45px; @[7:2-8:0]
+    top: 45px; @[undefined-undefined]
+}
+Dumping inherited rules: 
+
+Running test: testEditCommentAllDeclarations
+Expected protocol error: Failed applying edit #0: SyntaxError Style text would cause rule to disappear
+

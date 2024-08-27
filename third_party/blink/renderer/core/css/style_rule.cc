@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_namespace_rule.h"
+#include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
@@ -64,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
+#include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -125,6 +127,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       return;
     case kMedia:
       To<StyleRuleMedia>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kNestedDeclarations:
+      To<StyleRuleNestedDeclarations>(this)->TraceAfterDispatch(visitor);
       return;
     case kScope:
       To<StyleRuleScope>(this)->TraceAfterDispatch(visitor);
@@ -210,6 +215,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kMedia:
       To<StyleRuleMedia>(this)->~StyleRuleMedia();
       return;
+    case kNestedDeclarations:
+      To<StyleRuleNestedDeclarations>(this)->~StyleRuleNestedDeclarations();
+      return;
     case kScope:
       To<StyleRuleScope>(this)->~StyleRuleScope();
       return;
@@ -282,6 +290,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleFontFeature>(this)->Copy();
     case kMedia:
       return To<StyleRuleMedia>(this)->Copy();
+    case kNestedDeclarations:
+      return To<StyleRuleNestedDeclarations>(this)->Copy();
     case kScope:
       return To<StyleRuleScope>(this)->Copy();
     case kSupports:
@@ -362,6 +372,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kMedia:
       rule = MakeGarbageCollected<CSSMediaRule>(To<StyleRuleMedia>(self),
                                                 parent_sheet);
+      break;
+    case kNestedDeclarations:
+      rule = MakeGarbageCollected<CSSNestedDeclarationsRule>(
+          To<StyleRuleNestedDeclarations>(self), parent_sheet);
       break;
     case kScope:
       rule = MakeGarbageCollected<CSSScopeRule>(To<StyleRuleScope>(self),
@@ -560,6 +574,10 @@ void StyleRuleBase::Reparent(StyleRule* new_parent) {
     case kApplyMixin:
       // The parent pointers in mixins don't really matter;
       // they are always replaced during application anyway.
+      break;
+    case kNestedDeclarations:
+      DynamicTo<StyleRuleNestedDeclarations>(this)->InnerStyleRule()->Reparent(
+          new_parent);
       break;
     case kPageMargin:
     case kProperty:

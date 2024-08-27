@@ -445,6 +445,7 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
     }
 
     // Rules inheriting CSSGroupingRule
+    case CSSRule::kNestedDeclarationsRule:
     case CSSRule::kMediaRule:
     case CSSRule::kSupportsRule:
     case CSSRule::kContainerRule:

@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
+#include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
@@ -872,6 +873,11 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                       medium, add_rule_flags, container_query, cascade_layer,
                       style_scope, /*within_mixin=*/true);
       }
+    } else if (auto* nested_declarations =
+                   DynamicTo<StyleRuleNestedDeclarations>(rule)) {
+      AddStyleRule(nested_declarations->InnerStyleRule(), parent_rule, medium,
+                   add_rule_flags, within_mixin, container_query, cascade_layer,
+                   style_scope);
     }
   }
 }

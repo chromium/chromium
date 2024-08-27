@@ -18,10 +18,12 @@
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
+#include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -49,6 +51,9 @@ class TestCSSParserObserver : public CSSParserObserver {
       unsigned start_offset,
       CSSAtRuleID id,
       const Vector<CSSPropertyID, 2>& invalid_properties) override {}
+  void ObserveNestedDeclarations(wtf_size_t insert_rule_index) override {
+    nested_declarations_insert_rule_index = insert_rule_index;
+  }
 
   StyleRule::RuleType rule_type_ = StyleRule::RuleType::kStyle;
   unsigned property_start_ = 0;
@@ -56,6 +61,7 @@ class TestCSSParserObserver : public CSSParserObserver {
   unsigned rule_header_end_ = 0;
   unsigned rule_body_start_ = 0;
   unsigned rule_body_end_ = 0;
+  unsigned nested_declarations_insert_rule_index = 0;
 };
 
 TEST(CSSParserImplTest, AtImportOffsets) {
@@ -413,6 +419,59 @@ TEST(CSSParserImplTest, NestedRulesInsideMediaQueries) {
 
   ASSERT_EQ(2u, media_query->ChildRules().size());
 
+  // Implicit CSSNestedDeclarations rule around the properties.
+  const StyleRuleNestedDeclarations* child0 =
+      DynamicTo<StyleRuleNestedDeclarations>(
+          media_query->ChildRules()[0].Get());
+  ASSERT_NE(nullptr, child0);
+  EXPECT_EQ("color: navy; font-size: 12px;", child0->Properties().AsText());
+
+  const StyleRule* child1 =
+      DynamicTo<StyleRule>(media_query->ChildRules()[1].Get());
+  ASSERT_NE(nullptr, child1);
+  EXPECT_EQ("color: red;", child1->Properties().AsText());
+  EXPECT_EQ("& + #foo", child1->SelectorsText());
+}
+
+// A version of NestedRulesInsideMediaQueries where CSSNestedDeclarations
+// is disabled. Can be removed when the CSSNestedDeclarations is removed.
+TEST(CSSParserImplTest,
+     NestedRulesInsideMediaQueries_CSSNestedDeclarationsDisabled) {
+  ScopedCSSNestedDeclarationsForTest nested_declarations_enabled(false);
+
+  test::TaskEnvironment task_environment;
+  String sheet_text = R"CSS(
+    .element {
+      color: green;
+      @media (width < 1000px) {
+        color: navy;
+        font-size: 12px;
+        & + #foo { color: red; }
+      }
+    }
+    )CSS";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
+                                             test_css_parser_observer);
+
+  ASSERT_EQ(1u, sheet->ChildRules().size());
+  StyleRule* parent = DynamicTo<StyleRule>(sheet->ChildRules()[0].Get());
+  ASSERT_NE(nullptr, parent);
+  EXPECT_EQ("color: green;", parent->Properties().AsText());
+  EXPECT_EQ(".element", parent->SelectorsText());
+
+  ASSERT_NE(nullptr, parent->ChildRules());
+  ASSERT_EQ(1u, parent->ChildRules()->size());
+  const StyleRuleMedia* media_query =
+      DynamicTo<StyleRuleMedia>((*parent->ChildRules())[0].Get());
+  ASSERT_NE(nullptr, media_query);
+
+  ASSERT_EQ(2u, media_query->ChildRules().size());
+
   // Implicit & {} rule around the properties.
   const StyleRule* child0 =
       DynamicTo<StyleRule>(media_query->ChildRules()[0].Get());
@@ -487,10 +546,63 @@ TEST(CSSParserImplTest, NestedIdent) {
   TestCSSParserObserver test_css_parser_observer;
   CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
                                              test_css_parser_observer);
+
   // 'p:hover { }' should be reported both as a failed declaration,
   // and as a style rule (at the same location).
   EXPECT_EQ(test_css_parser_observer.property_start_, 6u);
   EXPECT_EQ(test_css_parser_observer.rule_header_start_, 6u);
+}
+
+TEST(CSSParserImplTest, ObserveNestedDeclarations_Interleaved) {
+  test::TaskEnvironment task_environment;
+
+  String sheet_text = R"CSS(
+    .element {
+      left: 1px;
+      right: 2px;
+      .a {}
+      .b {}
+      top: 3px;
+      bottom: 4px;
+      .c {}
+    }
+    )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
+                                             test_css_parser_observer);
+
+  // The nested declarations rule should be inserted before the .c child rule,
+  // at index 2.
+  EXPECT_EQ(test_css_parser_observer.nested_declarations_insert_rule_index, 2u);
+}
+
+TEST(CSSParserImplTest, ObserveNestedDeclarations_Trailing) {
+  test::TaskEnvironment task_environment;
+
+  String sheet_text = R"CSS(
+    .element {
+      left: 1px;
+      right: 2px;
+      .a {}
+      .b {}
+      .c {}
+      top: 3px;
+      bottom: 4px;
+    }
+    )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
+                                             test_css_parser_observer);
+
+  // The nested declarations rule should be inserted at the end
+  // of the child rules vector, at index 3.
+  EXPECT_EQ(test_css_parser_observer.nested_declarations_insert_rule_index, 3u);
 }
 
 TEST(CSSParserImplTest,

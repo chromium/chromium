@@ -432,6 +432,8 @@ class CORE_EXPORT CSSSelector {
   //
   // Note that :true is always implicit (see IsImplicit).
   void SetTrue();
+  // Sets this CSSSelector to a :where() class with the specified argument.
+  void SetWhere(CSSSelectorList*);
   void UpdatePseudoPage(const AtomicString&, const Document*);
   static PseudoType NameToPseudoType(const AtomicString&,
                                      bool has_arguments,
