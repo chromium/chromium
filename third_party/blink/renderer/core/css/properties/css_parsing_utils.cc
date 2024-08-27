@@ -315,6 +315,7 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kSteps);
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
 
     CSSPrimitiveValue* steps = ConsumePositiveInteger(stream, context);
     if (!steps) {
@@ -378,6 +379,7 @@ CSSValue* ConsumeCubicBezier(CSSParserTokenStream& stream,
   CSSValue* result = nullptr;
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
 
     double x1, y1, x2, y2;
     if (ConsumeNumberRaw(stream, context, x1) && x1 >= 0 && x1 <= 1 &&
