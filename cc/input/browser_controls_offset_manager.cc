@@ -385,6 +385,21 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
         BottomControlsMinHeight()) {
       bottom_controls_min_height_offset_ =
           old_browser_controls_params_.bottom_controls_min_height;
+
+      int height_delta = BottomControlsHeight() - old_bottom_height;
+      int min_height_delta =
+          BottomControlsMinHeight() -
+          old_browser_controls_params_.bottom_controls_min_height;
+      // Currently, browser controls animate purely based on the change in the
+      // height, not on the change in minHeight. This works fine when that
+      // change is the same, but causes issues if the minHeight has been changed
+      // by a different value than the height has. This is mitigated by
+      // "stepping up" or "down" the starting min height offset such that the
+      // effective change is the same for both the height and minHeight.
+      if (min_height_delta > height_delta) {
+        bottom_controls_min_height_offset_ += min_height_delta - height_delta;
+      }
+
       bottom_min_height_change_in_progress_ = true;
       SetBottomMinHeightOffsetAnimationRange(bottom_controls_min_height_offset_,
                                              BottomControlsMinHeight());
