@@ -134,9 +134,7 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   // because it will be too late during the paint invalidation phase.
   if (!GetOrCreateCanvasResourceProvider())
     return;
-  if (Host()) {
-    Host()->FlushRecording(reason);
-  }
+  Host()->FlushRecording(reason);
 }
 
 // BaseRenderingContext2D implementation
