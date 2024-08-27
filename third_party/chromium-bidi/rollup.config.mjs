@@ -16,6 +16,7 @@
  */
 import path from 'path';
 
+import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import license from 'rollup-plugin-license';
@@ -64,6 +65,11 @@ export default {
           },
         },
       },
+    }),
+    alias({
+      entries: [
+        {find: /^(.*)UrlPattern\.js$/, replacement: '$1UrlPattern-browser.js'},
+      ],
     }),
     nodeResolve(),
     commonjs({

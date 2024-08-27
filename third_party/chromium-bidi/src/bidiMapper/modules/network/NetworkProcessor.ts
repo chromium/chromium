@@ -21,6 +21,7 @@ import {
   NoSuchRequestException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
+import {URLPattern} from '../../../utils/UrlPattern.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';

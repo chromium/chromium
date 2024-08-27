@@ -42,6 +42,7 @@ export function parseCommandLineArgs() {
 (() => {
   try {
     const argv = parseCommandLineArgs();
+
     const {port, verbose} = argv;
 
     debugInfo('Launching BiDi server...');
