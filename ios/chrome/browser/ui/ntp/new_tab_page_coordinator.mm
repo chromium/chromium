@@ -902,7 +902,7 @@
   }
 
   if (self.prefService->GetInteger(
-          prefs::kNTPHomeCustomizationNewBadgeImpressionCount) >=
+          prefs::kNTPHomeCustomizationNewBadgeImpressionCount) <=
       kCustomizationNewBadgeMaxImpressionCount) {
     base::RecordAction(
         base::UserMetricsAction(kNTPCustomizationNewBadgeTappedAction));
@@ -1224,6 +1224,7 @@
 }
 
 - (void)updateModuleVisibility {
+  [_customizationCoordinator updateMenuData];
   [self handleChangeInModules];
   [self cancelOmniboxEdit];
   [self setContentOffsetToTop];
@@ -1397,7 +1398,7 @@
 
 - (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  return YES;
+  return !IsHomeCustomizationEnabled() || !_customizationCoordinator;
 }
 
 - (UIView*)toolbarSnapshotViewForOverscrollActionsController:
