@@ -658,11 +658,16 @@ void DisplayConfigurator::SetConfigureDisplays(bool configure_displays) {
 
 void DisplayConfigurator::TakeControl(DisplayControlCallback callback) {
   if (display_control_changing_) {
+    LOG(ERROR) << __func__
+               << " failed. There is another RelinquishControl() or "
+                  "TakeControl() call in progress.";
     std::move(callback).Run(false);
     return;
   }
 
   if (!display_externally_controlled_) {
+    LOG(ERROR) << __func__
+               << " failed. Displays are not controlled externally.";
     std::move(callback).Run(true);
     return;
   }
@@ -692,17 +697,24 @@ void DisplayConfigurator::OnDisplayControlTaken(DisplayControlCallback callback,
 
 void DisplayConfigurator::RelinquishControl(DisplayControlCallback callback) {
   if (display_control_changing_) {
+    LOG(ERROR) << __func__
+               << " failed. There is another RelinquishControl() or "
+                  "TakeControl() call in progress.";
     std::move(callback).Run(false);
     return;
   }
 
   if (display_externally_controlled_) {
+    LOG(ERROR) << __func__
+               << " failed. Displays are already controlled externally.";
     std::move(callback).Run(true);
     return;
   }
 
   // For simplicity, just fail if in the middle of a display configuration.
   if (configuration_task_) {
+    LOG(ERROR) << __func__
+               << " failed. There is a display configuration in progress.";
     std::move(callback).Run(false);
     return;
   }
@@ -735,6 +747,9 @@ void DisplayConfigurator::SendRelinquishDisplayControl(
         base::BindOnce(&DisplayConfigurator::OnDisplayControlRelinquished,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   } else {
+    LOG(ERROR) << __func__
+               << "failed. Failed to turn off all displays before "
+                  "relinquishing control.";
     display_control_changing_ = false;
     std::move(callback).Run(false);
   }

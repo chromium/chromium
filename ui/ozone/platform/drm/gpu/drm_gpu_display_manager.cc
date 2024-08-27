@@ -363,8 +363,15 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
 bool DrmGpuDisplayManager::TakeDisplayControl() {
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
   bool status = true;
-  for (const auto& drm : devices)
-    status &= drm->SetMaster();
+  for (const auto& drm : devices) {
+    const bool set_master_status = drm->SetMaster();
+    if (!set_master_status) {
+      LOG(ERROR) << __func__ << "Drm set master failed for: "  // nocheck
+                 << drm->device_path().value();
+    }
+
+    status &= set_master_status;
+  }
 
   // Roll-back any successful operation.
   if (!status) {
@@ -377,8 +384,12 @@ bool DrmGpuDisplayManager::TakeDisplayControl() {
 
 void DrmGpuDisplayManager::RelinquishDisplayControl() {
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
-  for (const auto& drm : devices)
-    drm->DropMaster();
+  for (const auto& drm : devices) {
+    if (!drm->DropMaster()) {
+      LOG(ERROR) << __func__ << "Drm drop master failed for: "  // nocheck
+                 << drm->device_path().value();
+    }
+  }
 }
 
 bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
