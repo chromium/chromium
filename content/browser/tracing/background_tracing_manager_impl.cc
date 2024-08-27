@@ -964,8 +964,6 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
       return;
     }
     BackgroundTracingManagerImpl::RecordMetric(Metrics::FINALIZATION_STARTED);
-    UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.FinalizingTraceSizeInKB2",
-                                serialized_trace.size() / 1024);
 
     BaseTraceReport base_report;
     base_report.uuid = uuid;

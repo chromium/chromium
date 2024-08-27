@@ -9600,19 +9600,6 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="Tracing.Background.FinalizingTraceSizeInKB2" units="KB"
-    expires_after="2024-09-01">
-  <owner>oksamyt@chromium.org</owner>
-  <owner>tracing@chromium.org</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    The size, in kilobytes, of a finalized trace ready to be uploaded. Values
-    can range from 1KB to 100MB. This replaces
-    Tracing.Background.FinalizingTraceSizeInKB, which had a minimum of 1MB and
-    was not precise enough for WebView traces.
-  </summary>
-</histogram>
-
 <histogram name="Tracing.Background.Perfetto.Trigger"
     enum="BackgroundTracingTriggerNameHash" expires_after="2024-09-22">
   <owner>etiennep@chromium.org</owner>
