@@ -6268,6 +6268,7 @@ crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/f
 crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-frame.https.sub.html [ Timeout ]
 crbug.com/1462796 virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-meta-refresh.https.optional.sub.html [ Timeout ]
+crbug.com/362377843 virtual/keepalive-in-browser-migration/external/wpt/fetch/data-urls/processing.any.worker.html [ Failure Pass ]
 
 crbug.com/1431228 media/video-delay-load-event.html [ Failure Pass ]
 
