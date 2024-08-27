@@ -5007,10 +5007,6 @@ void WebFrameWidgetImpl::UpdateNavigationStateForCompositor(
     ukm::SourceId source_id,
     const KURL& url) {
   LayerTreeHost()->SetSourceURL(source_id, GURL(url));
-  PropagateHistorySequenceNumberToCompositor();
-}
-
-void WebFrameWidgetImpl::PropagateHistorySequenceNumberToCompositor() {
   DocumentLoader* loader =
       local_root_->GetFrame()->Loader().GetDocumentLoader();
   CHECK(loader->GetHistoryItem());

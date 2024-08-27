@@ -408,7 +408,6 @@ testing/data/priorities/injected-async.js
 testing/data/priorities/injected.js
 testing/data/promote_img_in_viewport_priority.html
 testing/data/push_state.html
-testing/data/push_state_empty.html
 testing/data/reload_post.html
 testing/data/resize_scroll_fixed_layout.html
 testing/data/resize_scroll_fixed_width.html

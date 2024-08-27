@@ -8171,32 +8171,6 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
   EXPECT_EQ(kWebBackForwardCommit, client.LastCommitType());
 }
 
-TEST_F(WebFrameTest, SameDocumentHistoryNavigationPropagatesSequenceNumber) {
-  RegisterMockedHttpURLLoad("push_state_empty.html");
-  frame_test_helpers::TestWebFrameClient client;
-  frame_test_helpers::WebViewHelper web_view_helper;
-  WebViewImpl* web_view_impl = web_view_helper.InitializeAndLoad(
-      base_url_ + "push_state_empty.html", &client);
-  auto* local_frame = To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
-  Persistent<HistoryItem> item =
-      local_frame->Loader().GetDocumentLoader()->GetHistoryItem();
-  RunPendingTasks();
-
-  local_frame->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
-      item->Url(), WebFrameLoadType::kBackForward, item.Get(),
-      ClientRedirectPolicy::kNotClientRedirect,
-      false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,
-      /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
-      mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      /*is_browser_initiated=*/true,
-      /*has_ua_visual_transition,=*/false,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
-
-  EXPECT_EQ(item->ItemSequenceNumber(),
-            web_view_helper.GetLayerTreeHost()
-                ->primary_main_frame_item_sequence_number_for_testing());
-}
-
 // Tests that a navigation in a frame with a non-blank initial URL will create
 // a new history item, unlike the case above.
 TEST_F(WebFrameTest, FirstNonBlankSubframeNavigation) {

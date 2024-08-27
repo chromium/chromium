@@ -698,16 +698,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Return if there is a pending scale animation.
   bool HasPendingPageScaleAnimation();
 
-  // Set the source URL (if the compositor is rendering the primary main frame).
-  // Also propagates the history sequence number (equivalent to a
-  // `PropagateHistorySequenceNumberToCompositor()` call).
+  // Set the source URL and the `primary_main_frame_item_sequence_number`
+  // (if the compositor is rendering the primary main frame) for the compositor.
   void UpdateNavigationStateForCompositor(ukm::SourceId source_id,
                                           const KURL& url);
-
-  // Propagates the HistoryItem's ItemSequenceNumber to the compositor. This is
-  // used as part of a RenderFrameMetadata which is sent to the browser when the
-  // compositor submits a frame.
-  void PropagateHistorySequenceNumberToCompositor();
 
   // Ask compositor to create the shared memory for smoothness ukm region.
   base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();

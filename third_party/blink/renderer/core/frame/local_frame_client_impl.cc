@@ -437,39 +437,34 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     // frame if it is not being actively drawn.
     // Exclude cases with prefers-reduced-motion. Back forward transitions are
     // disabled in this case so no screenshots are necessary.
-    // We however always propagate the history sequence number for correctness
-    // in CompositedOuterMainFrame cases.
     bool navigation_with_screenshot = false;
-    if (IsCompositedOutermostMainFrame(web_frame_)) {
+    if (IsCompositedOutermostMainFrame(web_frame_) &&
+        commit_type != kWebHistoryInertCommit &&
+        !web_frame_->GetFrame()->GetSettings()->GetPrefersReducedMotion()) {
+      navigation_with_screenshot = true;
       WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
       // The outermost mainframe must have a frame widget.
       CHECK(frame_widget);
-      frame_widget->PropagateHistorySequenceNumberToCompositor();
-
-      if (commit_type != kWebHistoryInertCommit &&
-          !web_frame_->GetFrame()->GetSettings()->GetPrefersReducedMotion()) {
-        navigation_with_screenshot = true;
-        if (RuntimeEnabledFeatures::
-                IncrementLocalSurfaceIdForMainframeSameDocNavigationEnabled()) {
-          frame_widget->RequestNewLocalSurfaceId();
-          if (RuntimeEnabledFeatures::BackForwardTransitionsEnabled()) {
-            screenshot_destination = base::UnguessableToken::Create();
-            frame_widget->RequestViewportScreenshot(screenshot_destination);
-          }
+      if (RuntimeEnabledFeatures::
+              IncrementLocalSurfaceIdForMainframeSameDocNavigationEnabled()) {
+        frame_widget->RequestNewLocalSurfaceId();
+        if (RuntimeEnabledFeatures::BackForwardTransitionsEnabled()) {
+          screenshot_destination = base::UnguessableToken::Create();
+          frame_widget->RequestViewportScreenshot(screenshot_destination);
         }
-
-        frame_widget->NotifyPresentationTime(WTF::BindOnce(
-            [](base::TimeTicks start,
-               const viz::FrameTimingDetails& frame_timing_details) {
-              base::TimeDelta duration =
-                  frame_timing_details.presentation_feedback.timestamp - start;
-              base::UmaHistogramTimes(
-                  "Navigation."
-                  "MainframeSameDocumentNavigationCommitToPresentFirstFrame",
-                  duration);
-            },
-            base::TimeTicks::Now()));
       }
+
+      frame_widget->NotifyPresentationTime(WTF::BindOnce(
+          [](base::TimeTicks start,
+             const viz::FrameTimingDetails& frame_timing_details) {
+            base::TimeDelta duration =
+                frame_timing_details.presentation_feedback.timestamp - start;
+            base::UmaHistogramTimes(
+                "Navigation."
+                "MainframeSameDocumentNavigationCommitToPresentFirstFrame",
+                duration);
+          },
+          base::TimeTicks::Now()));
     }
     base::UmaHistogramBoolean("Navigation.SameDocumentNavigationWithScreenshot",
                               navigation_with_screenshot);
