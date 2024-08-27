@@ -976,7 +976,7 @@ void ClearRelevantData() {
   const GURL preSigninURL = self.testServer->GetURL("/console.html");
   const GURL firstSigninURL = self.testServer->GetURL("/pony.html");
   const GURL secondSigninURL = self.testServer->GetURL("/destination.html");
-  const GURL thirdSigninURL = self.testServer->GetURL("/echo.html");
+  const GURL thirdSigninURL = self.testServer->GetURL("/links.html");
 
   // Clear browsing history before and after the test to avoid conflicting with
   // other tests.
@@ -985,13 +985,13 @@ void ClearRelevantData() {
     [ChromeEarlGrey clearBrowsingHistory];
   }];
 
-  // Save a password to the local store and visit a URL before sign-in. Also
-  // make sure any pending prefs and history changes are written to disk.
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
+                  @"History was unexpectedly not empty");
+
+  // Save a password to the local store and visit a URL before sign-in.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password1", @"user1", @"https://example.com");
   [ChromeEarlGrey loadURL:preSigninURL];
-  [ChromeEarlGrey commitPendingUserPrefsWrite];
-  [BookmarkEarlGrey commitPendingWrite];
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
                   @"History was unexpectedly empty");
 
@@ -1008,12 +1008,8 @@ void ClearRelevantData() {
   [ChromeEarlGrey loadURL:firstSigninURL];
   [ChromeEarlGrey loadURL:secondSigninURL];
   [ChromeEarlGrey loadURL:thirdSigninURL];
-  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 3,
-                  @"History was unexpectedly empty");
-
-  // Also make sure any pending prefs and history changes are written to disk.
-  [ChromeEarlGrey commitPendingUserPrefsWrite];
-  [BookmarkEarlGrey commitPendingWrite];
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 4,
+                  @"History did not contain the expected entries");
 
   // Open settings and tap "Sign Out".
   [ChromeEarlGreyUI openSettingsMenu];
@@ -1053,9 +1049,11 @@ void ClearRelevantData() {
 
   // Only two history entries remain after browsing history is cleared: the one
   // from before sign-in and the active URL.
+  // Do one more navigation to ensure everything's in a settled state, bringing
+  // the total count to 3.
   [ChromeEarlGrey loadURL:secondSigninURL];
-  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 2,
-                  @"History was unexpectedly empty");
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 3,
+                  @"History did not contain the expected entries");
 }
 
 - (void)testMigrateSyncToSignin_Undo {
