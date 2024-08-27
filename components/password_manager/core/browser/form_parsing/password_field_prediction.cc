@@ -12,6 +12,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::AutofillType;
@@ -54,13 +55,19 @@ FieldType GetServerType(const AutofillType::ServerPrediction& prediction) {
 }  // namespace
 
 CredentialFieldType DeriveFromFieldType(FieldType type) {
+  // TODO: crbug/40925827 - Move if statement under switch case after the
+  // feature is launched.
+  if (type == autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES &&
+      base::FeatureList::IsEnabled(
+          features::kUsernameFirstFlowWithIntermediateValuesPredictions)) {
+    return CredentialFieldType::kSingleUsername;
+  }
   switch (type) {
     case autofill::USERNAME:
     case autofill::USERNAME_AND_EMAIL_ADDRESS:
       return CredentialFieldType::kUsername;
     case autofill::SINGLE_USERNAME:
     case autofill::SINGLE_USERNAME_FORGOT_PASSWORD:
-    case autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return CredentialFieldType::kSingleUsername;
     case autofill::PASSWORD:
       return CredentialFieldType::kCurrentPassword;
