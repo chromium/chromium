@@ -183,9 +183,7 @@ WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
       provider_(WebAppProvider::GetForLocalAppsUnchecked(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   observation_.Observe(&provider_->install_manager());
-  // TODO(https://crbug.com/361811307): Use last committed URL rather than
-  // SiteURL.
-  SetState(FindAppWithUrlInScope(web_contents->GetSiteInstance()->GetSiteURL()),
+  SetState(FindAppWithUrlInScope(web_contents->GetLastCommittedURL()),
            /*is_in_app_window=*/false);
 }
 
@@ -193,7 +191,7 @@ void WebAppTabHelper::OnWebAppInstalled(
     const webapps::AppId& installed_app_id) {
   // Check if current web_contents url is in scope for the newly installed app.
   std::optional<webapps::AppId> app_id =
-      FindAppWithUrlInScope(web_contents()->GetURL());
+      FindAppWithUrlInScope(web_contents()->GetLastCommittedURL());
   if (app_id == installed_app_id) {
     SetAppId(app_id);
   }
