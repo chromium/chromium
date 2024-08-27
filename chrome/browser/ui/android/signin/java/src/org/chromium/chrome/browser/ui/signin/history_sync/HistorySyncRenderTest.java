@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -104,7 +103,7 @@ public class HistorySyncRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
-                    .setRevision(2)
+                    .setRevision(3)
                     .setDescription("Update button stacking")
                     .build();
 
@@ -131,7 +130,6 @@ public class HistorySyncRenderTest {
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
-        when(mHistorySyncDelegateMock.isLargeScreen()).thenReturn(false);
         mActivityTestRule.launchActivity(null);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
     }

@@ -114,7 +114,7 @@ public class SigninFirstRunFragment extends Fragment
                 inflateFragmentView(
                         (LayoutInflater)
                                 getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
-                        newConfig);
+                        getActivity());
         mFragmentView.addView(mMainView);
     }
 
@@ -122,7 +122,7 @@ public class SigninFirstRunFragment extends Fragment
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mFragmentView = new FrameLayout(getActivity());
-        mMainView = inflateFragmentView(inflater, getResources().getConfiguration());
+        mMainView = inflateFragmentView(inflater, getActivity());
         mFragmentView.addView(mMainView);
 
         return mFragmentView;
@@ -267,13 +267,8 @@ public class SigninFirstRunFragment extends Fragment
         }
     }
 
-    private View inflateFragmentView(LayoutInflater inflater, Configuration configuration) {
-        // Since the landscape view has two panes the minimum screenWidth to show it is set to
-        // 600dp for phones.
-        boolean useLandscapeLayout =
-                getPageDelegate().canUseLandscapeLayout()
-                        && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                        && configuration.screenWidthDp >= 600;
+    private View inflateFragmentView(LayoutInflater inflater, Activity activity) {
+        boolean useLandscapeLayout = SigninUtils.shouldShowDualPanesHorizontalLayout(activity);
 
         final FullscreenSigninView view =
                 (FullscreenSigninView)

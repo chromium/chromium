@@ -10,6 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
+import android.view.View;
+import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +30,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.NoAccountSigninMode;
@@ -39,6 +43,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -88,10 +93,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
-        Intent intent = getIntent();
-        if (intent.getBooleanExtra(ARGUMENT_IS_UPGRADE_PROMO, false)) {
-            setTheme(org.chromium.chrome.R.style.Theme_Chromium_DialogWhenLarge);
-        }
         // Temporarily ensure that the native is initialized before calling super.onCreate().
         // TODO(crbug.com/41493758): Handle the case where the UI is shown before the end of
         // native initialization.
@@ -104,8 +105,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
 
         Intent intent = getIntent();
         if (intent.getBooleanExtra(ARGUMENT_IS_UPGRADE_PROMO, false)) {
-            // Set the status bar color to the upgrade promo background color.
-            setStatusBarColor(SemanticColorUtils.getDefaultBgColor(this));
+            updateSystemUiForUpgradePromo();
             mUpgradePromoCoordinator =
                     new UpgradePromoCoordinator(
                             this,
@@ -114,7 +114,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                             PrivacyPreferencesManagerImpl.getInstance(),
                             this);
 
-            setContentView(mUpgradePromoCoordinator.getView());
+            setInitialContentView(mUpgradePromoCoordinator.getView());
             onInitialLayoutInflationComplete();
             return;
         }
@@ -146,13 +146,22 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         boolean isHistorySyncDedicatedFlow =
                 intent.getBooleanExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, false);
 
-        mCoordinator = new SigninAndHistorySyncCoordinator(getWindowAndroid(), this, this,
-                DeviceLockActivityLauncherImpl.get(), mProfileSupplier,
-                getModalDialogManagerSupplier(), bottomSheetStrings, noAccountSigninMode,
-                withAccountSigninMode, historyOptInMode, signinAccessPoint,
-                isHistorySyncDedicatedFlow);
+        mCoordinator =
+                new SigninAndHistorySyncCoordinator(
+                        getWindowAndroid(),
+                        this,
+                        this,
+                        DeviceLockActivityLauncherImpl.get(),
+                        mProfileSupplier,
+                        getModalDialogManagerSupplier(),
+                        bottomSheetStrings,
+                        noAccountSigninMode,
+                        withAccountSigninMode,
+                        historyOptInMode,
+                        signinAccessPoint,
+                        isHistorySyncDedicatedFlow);
 
-        setContentView(mCoordinator.getView());
+        setInitialContentView(mCoordinator.getView());
         onInitialLayoutInflationComplete();
     }
 
@@ -229,7 +238,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             mCoordinator.switchHistorySyncLayout();
         } else {
             mUpgradePromoCoordinator.recreateLayoutAfterConfigurationChange();
-            setContentView(mUpgradePromoCoordinator.getView());
         }
     }
 
@@ -355,5 +363,36 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     @Override
     public Promise<Void> getNativeInitializationPromise() {
         return mNativeInitializationPromise;
+    }
+
+    private void setInitialContentView(View view) {
+        assert view.getParent() == null;
+
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra(ARGUMENT_IS_UPGRADE_PROMO, false)) {
+            // Identically to the FRE, wrap the upgrade promo view inside a custom layout which
+            // mimic DialogWhenLarge theme behavior.
+            super.setContentView(SigninUtils.wrapInDialogWhenLargeLayout(view));
+            return;
+        }
+
+        super.setContentView(view);
+    }
+
+    private void updateSystemUiForUpgradePromo() {
+        if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
+            // Set status bar and navigation bar to dark if the promo is shown as a dialog.
+            setStatusBarColor(Color.BLACK);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                // Use dark navigation bar.
+                Window window = getWindow();
+                window.setNavigationBarColor(Color.BLACK);
+                window.setNavigationBarDividerColor(Color.BLACK);
+                UiUtils.setNavigationBarIconColor(window.getDecorView().getRootView(), false);
+            }
+        } else {
+            // Set the status bar color to the upgrade promo background color.
+            setStatusBarColor(SemanticColorUtils.getDefaultBgColor(this));
+        }
     }
 }
