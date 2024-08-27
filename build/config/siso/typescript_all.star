@@ -4,24 +4,6 @@ load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./tsc.star", "tsc")
 
-# TODO: crbug.com/1298825 - fix missing *.d.ts in tsconfig.
-__input_deps = {
-    "chrome/browser/resources/inline_login/inline_login_app.ts": [
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
-        "chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
-        "chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
-    ],
-    "chrome/test/data/webui/inline_login/arc_account_picker_page_test.ts": [
-        "chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
-    ],
-    "./gen/chrome/test/data/webui/inline_login/preprocessed/arc_account_picker_page_test.ts": [
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
-        "chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
-    ],
-}
-
 # TODO: crbug.com/1478909 - Specify typescript inputs in GN config.
 def __filegroups(ctx):
     return {
@@ -114,5 +96,4 @@ typescript_all = module(
         "typescript_ts_definitions": _ts_definitions,
     },
     filegroups = __filegroups,
-    input_deps = __input_deps,
 )

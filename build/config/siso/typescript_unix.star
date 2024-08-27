@@ -9,7 +9,6 @@ __handlers.update(typescript_all.handlers)
 
 def __step_config(ctx, step_config):
     remote_run = True
-    step_config["input_deps"].update(typescript_all.input_deps)
 
     # crbug.com/345528247 - use_javascript_coverage
     # b/348104171: absolute path used in //ash/webui/recorder_app_ui/resources:build_ts?
