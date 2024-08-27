@@ -663,6 +663,46 @@
     "isolated_scripts": [
       {
         "args": [
+          "webgpu_compat_cts",
+          "--show-stdout",
+          "--browser=android-chromium",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gles-egl --force_high_performance_gpu",
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "webgpu_cts_compat_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "TP1A.220624.021",
+            "device_os_type": "userdebug",
+            "device_type": "oriole",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 36
+        },
+        "test": "telemetry_gpu_integration_test_android_chrome",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
+      },
+      {
+        "args": [
           "webgpu_cts",
           "--show-stdout",
           "--browser=android-chromium",
@@ -908,6 +948,47 @@
       }
     ],
     "isolated_scripts": [
+      {
+        "args": [
+          "webgpu_compat_cts",
+          "--show-stdout",
+          "--browser=android-chromium",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gles-egl --force_high_performance_gpu",
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "webgpu_cts_compat_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "AP1A.240405.002",
+            "device_os_type": "userdebug",
+            "device_type": "oriole",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "expiration": 21600,
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 36
+        },
+        "test": "telemetry_gpu_integration_test_android_chrome",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
+      },
       {
         "args": [
           "webgpu_cts",
@@ -1157,6 +1238,46 @@
       }
     ],
     "isolated_scripts": [
+      {
+        "args": [
+          "webgpu_compat_cts",
+          "--show-stdout",
+          "--browser=android-chromium",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gles-egl --force_high_performance_gpu",
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "webgpu_cts_compat_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "TP1A.220624.021",
+            "device_os_type": "userdebug",
+            "device_type": "oriole",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 36
+        },
+        "test": "telemetry_gpu_integration_test_android_chrome",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
+      },
       {
         "args": [
           "webgpu_cts",
@@ -2138,7 +2259,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gl --force_high_performance_gpu",
           "--enforce-browser-version",
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
@@ -2692,7 +2813,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gl --force_high_performance_gpu",
           "--enforce-browser-version",
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
@@ -3373,7 +3494,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gl --force_high_performance_gpu",
           "--enforce-browser-version",
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
@@ -3952,7 +4073,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gl --force_high_performance_gpu",
           "--enforce-browser-version",
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
@@ -4620,7 +4741,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gl --force_high_performance_gpu",
           "--enforce-browser-version",
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
@@ -5186,7 +5307,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gl --force_high_performance_gpu",
           "--enforce-browser-version",
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
@@ -5854,7 +5975,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles --use-angle=gl --force_high_performance_gpu",
           "--enforce-browser-version",
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"

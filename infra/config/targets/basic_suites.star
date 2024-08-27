@@ -2493,7 +2493,13 @@ targets.legacy_basic_suite(
                 "webgpu_telemetry_cts",
             ],
             args = [
-                "--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures",
+                "--extra-browser-args=--enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles",
+            ],
+            android_args = [
+                "--extra-browser-args=--use-angle=gles-egl",
+            ],
+            linux_args = [
+                "--extra-browser-args=--use-angle=gl",
             ],
             swarming = targets.swarming(
                 shards = 14,

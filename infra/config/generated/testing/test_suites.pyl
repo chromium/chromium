@@ -2673,7 +2673,13 @@
           'webgpu_telemetry_cts',
         ],
         'args': [
-          '--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures',
+          '--extra-browser-args=--enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles',
+        ],
+        'android_args': [
+          '--extra-browser-args=--use-angle=gles-egl',
+        ],
+        'linux_args': [
+          '--extra-browser-args=--use-angle=gl',
         ],
         'swarming': {
           'shards': 14,
@@ -6018,6 +6024,11 @@
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
+    ],
+
+    'gpu_dawn_android_compat_telemetry_tests': [
+      'gpu_dawn_webgpu_compat_cts',
+      'gpu_dawn_webgpu_cts',
     ],
 
     'gpu_dawn_android_isolated_scripts': [

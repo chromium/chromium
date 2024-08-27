@@ -629,6 +629,16 @@ targets.legacy_compound_suite(
     ],
 )
 
+# Same as gpu_dawn_compat_telemetry_tests, but without SwiftShader tests since
+# SwiftShader is not used on Android.
+targets.legacy_compound_suite(
+    name = "gpu_dawn_android_compat_telemetry_tests",
+    basic_suites = [
+        "gpu_dawn_webgpu_compat_cts",
+        "gpu_dawn_webgpu_cts",
+    ],
+)
+
 # Same as gpu_dawn_telemetry_tests, but without SwiftShader tests since
 # SwiftShader is not used on Android.
 targets.legacy_compound_suite(

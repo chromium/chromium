@@ -2459,7 +2459,7 @@
           'gpu_pixel_6_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_android_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_dawn_android_compat_telemetry_tests',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_android_isolated_scripts',
         },
@@ -2476,7 +2476,7 @@
         # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
         # should have the same test_suites as 'Dawn Android arm64 Release (Pixel 6)'.
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_android_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_dawn_android_compat_telemetry_tests',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_android_isolated_scripts',
         },
@@ -2489,7 +2489,7 @@
           'gpu_pixel_6_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_android_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_dawn_android_compat_telemetry_tests',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_android_isolated_scripts',
         },
