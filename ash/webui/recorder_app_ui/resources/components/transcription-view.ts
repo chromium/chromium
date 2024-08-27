@@ -459,7 +459,7 @@ export class TranscriptionView extends ReactiveLitElement {
           <div class="row">
             <span
               class="timestamp"
-              .tabindex=${this.seekable ? 0 : -1}
+              tabindex=${this.seekable ? 0 : -1}
               data-start-ms=${ifDefined(startTimeRange?.startMs)}
             >
               ${startTimeDisplay}
