@@ -598,7 +598,7 @@ export class RecordPage extends ReactiveLitElement {
       <cra-icon-button shape="circle" @click=${this.onToggleMuted}>
         <cra-icon
           slot="icon"
-          .name=${this.micMuted.value ? 'mic_muted' : 'mic'}
+          .name=${this.micMuted.value ? 'mic_mute' : 'mic'}
         ></cra-icon>
       </cra-icon-button>
     `;
