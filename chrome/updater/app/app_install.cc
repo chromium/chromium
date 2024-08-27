@@ -45,9 +45,7 @@ class AppInstallControllerImpl : public AppInstallController {
   AppInstallControllerImpl() = default;
 
   // Override for AppInstallController.
-  void Initialize(base::OnceClosure initialize_done) override {
-    std::move(initialize_done).Run();
-  }
+  void Initialize() override {}
 
   void InstallApp(const std::string& app_id,
                   const std::string& /*app_name*/,
@@ -119,6 +117,9 @@ void AppInstall::Shutdown(int exit_code) {
 }
 
 int AppInstall::Initialize() {
+  app_install_controller_ = app_install_controller_maker_.Run();
+  app_install_controller_->Initialize();
+
   setup_lock_ =
       CreateScopedLock(kSetupMutex, updater_scope(), kWaitForSetupLock);
   return kErrorOk;
@@ -162,14 +163,9 @@ void AppInstall::FirstTaskRun() {
         kAppIdSwitch);
   }
 
-  app_install_controller_ = app_install_controller_maker_.Run();
-  app_install_controller_->Initialize(base::BindOnce(
-      [](scoped_refptr<AppInstall> self) {
-        self->CreateUpdateServiceProxy();
-        self->update_service_->GetVersion(
-            base::BindOnce(&AppInstall::GetVersionDone, self));
-      },
-      base::WrapRefCounted(this)));
+  CreateUpdateServiceProxy();
+  update_service_->GetVersion(
+      base::BindOnce(&AppInstall::GetVersionDone, this));
 }
 
 void AppInstall::CreateUpdateServiceProxy() {

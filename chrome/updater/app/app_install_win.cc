@@ -17,6 +17,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -36,6 +37,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -363,7 +365,7 @@ class AppInstallControllerImpl : public AppInstallController,
   AppInstallControllerImpl& operator=(const AppInstallControllerImpl&) = delete;
 
   // Override for AppInstallController.
-  void Initialize(base::OnceClosure initialize_done) override;
+  void Initialize() override;
 
   void InstallApp(const std::string& app_id,
                   const std::string& app_name,
@@ -480,32 +482,32 @@ AppInstallControllerImpl::AppInstallControllerImpl(bool is_silent_install)
       install_progress_sampler_(base::Seconds(5), base::Seconds(1)) {}
 AppInstallControllerImpl::~AppInstallControllerImpl() = default;
 
-void AppInstallControllerImpl::Initialize(base::OnceClosure initialize_done) {
+void AppInstallControllerImpl::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ui_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(&AppInstallControllerImpl::InitializeUI, this),
+  base::WaitableEvent ui_initialized_event;
+  ui_task_runner_->PostTask(
+      FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<AppInstallControllerImpl> self,
-             base::OnceClosure initialize_done) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-
-            // The UI thread runs the observer.
-            self->install_progress_observer_ipc_ =
-                std::make_unique<AppInstallProgressIPC>(self->observer_.get(),
-                                                        self->ui_thread_id_);
-
-            // At this point, the UI has been initialized, which means the UI
-            // can be used from now on as an observer of the application
-            // install. The task below runs the UI message loop for the UI until
-            // it exits when a WM_QUIT message has been posted to it.
-            self->ui_task_runner_->PostTask(
-                FROM_HERE,
-                base::BindOnce(&AppInstallControllerImpl::RunUI, self));
-
-            std::move(initialize_done).Run();
+             base::WaitableEvent& event) {
+            self->InitializeUI();
+            event.Signal();
           },
-          base::WrapRefCounted(this), std::move(initialize_done)));
+          base::WrapRefCounted(this), std::ref(ui_initialized_event)));
+
+  ui_initialized_event.Wait();
+
+  // The UI thread runs the observer.
+  install_progress_observer_ipc_ =
+      std::make_unique<AppInstallProgressIPC>(observer_.get(), ui_thread_id_);
+
+  // At this point, the UI has been initialized, which means the UI
+  // can be used from now on as an observer of the application
+  // install. The task below runs the UI message loop for the UI until
+  // it exits when a WM_QUIT message has been posted to it.
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&AppInstallControllerImpl::RunUI, this));
 }
 
 void AppInstallControllerImpl::InstallApp(

@@ -32,7 +32,7 @@ class AppInstallController
     : public base::RefCountedThreadSafe<AppInstallController> {
  public:
   using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>()>;
-  virtual void Initialize(base::OnceClosure initialize_done) = 0;
+  virtual void Initialize() = 0;
 
   virtual void InstallApp(const std::string& app_id,
                           const std::string& app_name,
