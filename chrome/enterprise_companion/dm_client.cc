@@ -176,8 +176,8 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
   ~DMClientImpl() override { cloud_policy_client_->RemoveObserver(this); }
 
   // Overrides for DMClient.
-  void RegisterBrowser(scoped_refptr<EventLogger> event_logger,
-                       StatusCallback callback) override {
+  void RegisterPolicyAgent(scoped_refptr<EventLogger> event_logger,
+                           StatusCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(!pending_callback_);
 
@@ -189,9 +189,9 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     dm_storage_->RemoveAllPolicies();
     pending_callback_ =
         TeeOnceCallback(std::move(callback), event_logger->OnEnrollmentStart());
-    cloud_policy_client_->RegisterBrowserWithEnrollmentToken(
+    cloud_policy_client_->RegisterPolicyAgentWithEnrollmentToken(
         dm_storage_->GetEnrollmentToken(), dm_storage_->GetDeviceID(),
-        client_data_delegate_, dm_storage_->IsEnrollmentMandatory());
+        client_data_delegate_);
   }
 
   void FetchPolicies(scoped_refptr<EventLogger> event_logger,
@@ -214,6 +214,7 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
       VLOG(1) << "Failed to fetch policies: policies cannot be persisted.";
       std::move(callback).Run(EnterpriseCompanionStatus(
           ApplicationError::kPolicyPersistenceImpossible));
+      return;
     }
 
     pending_callback_ = std::move(callback);

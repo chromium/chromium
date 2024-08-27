@@ -49,7 +49,7 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
 
     scoped_refptr<EventLogger> event_logger =
         event_logger_manager_->CreateEventLogger();
-    dm_client_->RegisterBrowser(
+    dm_client_->RegisterPolicyAgent(
         event_logger,
         base::BindOnce(&EnterpriseCompanionServiceImpl::OnRegistrationCompleted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),

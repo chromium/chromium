@@ -145,11 +145,10 @@ class MockCloudPolicyClient : public policy::MockCloudPolicyClient {
       : policy::MockCloudPolicyClient(service) {}
 
   MOCK_METHOD(void,
-              RegisterBrowserWithEnrollmentToken,
+              RegisterPolicyAgentWithEnrollmentToken,
               (const std::string& token,
                const std::string& client_id,
-               const policy::ClientDataDelegate& client_data_delegate,
-               bool is_mandatory),
+               const policy::ClientDataDelegate& client_data_delegate),
               (override));
 };
 
@@ -293,12 +292,12 @@ class DMClientTest : public ::testing::Test {
 TEST_F(DMClientTest, RegisterDeviceSuccess) {
   test_token_service_->StoreEnrollmentToken(kFakeEnrollmentToken);
   EXPECT_CALL(*mock_cloud_policy_client_,
-              RegisterBrowserWithEnrollmentToken(
-                  kFakeEnrollmentToken, kFakeDeviceId, testing::_, false))
+              RegisterPolicyAgentWithEnrollmentToken(kFakeEnrollmentToken,
+                                                     kFakeDeviceId, testing::_))
       .Times(1);
 
   base::RunLoop run_loop;
-  dm_client_->RegisterBrowser(
+  dm_client_->RegisterPolicyAgent(
       test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
@@ -316,12 +315,12 @@ TEST_F(DMClientTest, RegisterDeviceSuccess) {
 TEST_F(DMClientTest, RegisterDeviceFailure) {
   test_token_service_->StoreEnrollmentToken(kFakeEnrollmentToken);
   EXPECT_CALL(*mock_cloud_policy_client_,
-              RegisterBrowserWithEnrollmentToken(
-                  kFakeEnrollmentToken, kFakeDeviceId, testing::_, false))
+              RegisterPolicyAgentWithEnrollmentToken(kFakeEnrollmentToken,
+                                                     kFakeDeviceId, testing::_))
       .Times(1);
 
   base::RunLoop run_loop;
-  dm_client_->RegisterBrowser(
+  dm_client_->RegisterPolicyAgent(
       test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
@@ -355,13 +354,13 @@ TEST_F(DMClientTest, RegistrationRemovesPolicies) {
   test_token_service_->DeleteDmToken();
   test_token_service_->StoreEnrollmentToken(kFakeEnrollmentToken);
   EXPECT_CALL(*mock_cloud_policy_client_,
-              RegisterBrowserWithEnrollmentToken(
-                  kFakeEnrollmentToken, kFakeDeviceId, testing::_, false))
+              RegisterPolicyAgentWithEnrollmentToken(kFakeEnrollmentToken,
+                                                     kFakeDeviceId, testing::_))
       .Times(1);
 
   // Register the device. All policies should be removed as a side effect.
   base::RunLoop run_loop;
-  dm_client_->RegisterBrowser(
+  dm_client_->RegisterPolicyAgent(
       test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
@@ -377,11 +376,12 @@ TEST_F(DMClientTest, RegistrationRemovesPolicies) {
 }
 
 TEST_F(DMClientTest, RegistrationSkippedNoEnrollmentToken) {
-  EXPECT_CALL(*mock_cloud_policy_client_, RegisterBrowserWithEnrollmentToken)
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              RegisterPolicyAgentWithEnrollmentToken)
       .Times(0);
 
   base::RunLoop run_loop;
-  dm_client_->RegisterBrowser(
+  dm_client_->RegisterPolicyAgent(
       test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
@@ -393,11 +393,12 @@ TEST_F(DMClientTest, RegistrationSkippedNoEnrollmentToken) {
 
 TEST_F(DMClientTest, RegistrationSkippedAlreadyManaged) {
   EnsureRegistered();
-  EXPECT_CALL(*mock_cloud_policy_client_, RegisterBrowserWithEnrollmentToken)
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              RegisterPolicyAgentWithEnrollmentToken)
       .Times(0);
 
   base::RunLoop run_loop;
-  dm_client_->RegisterBrowser(
+  dm_client_->RegisterPolicyAgent(
       test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
@@ -423,12 +424,13 @@ TEST_F(DMClientTest, PoliciesPersistedThroughSkippedRegistration) {
   ASSERT_TRUE(dm_storage_->ReadPolicyData(kPolicyType1));
 
   // Delete the DM token to ensure registration is not skipped.
-  EXPECT_CALL(*mock_cloud_policy_client_, RegisterBrowserWithEnrollmentToken)
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              RegisterPolicyAgentWithEnrollmentToken)
       .Times(0);
 
   // Registration should be skipped as DM token is still present.
   base::RunLoop run_loop;
-  dm_client_->RegisterBrowser(
+  dm_client_->RegisterPolicyAgent(
       test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
