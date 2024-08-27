@@ -508,10 +508,13 @@ bool ClientSideDetectionService::LoadPhishingReportTimesFromPrefs() {
   }
 
   phishing_report_times_.clear();
+  const auto cutoff = base::Time::Now() - base::Days(kReportsIntervalDays);
   for (const base::Value& timestamp :
        delegate_->GetPrefs()->GetList(prefs::kSafeBrowsingCsdPingTimestamps)) {
-    phishing_report_times_.push_back(
-        base::Time::FromSecondsSinceUnixEpoch(timestamp.GetDouble()));
+    auto time = base::Time::FromSecondsSinceUnixEpoch(timestamp.GetDouble());
+    if (time >= cutoff) {
+      phishing_report_times_.push_back(time);
+    }
   }
 
   return true;
