@@ -1134,13 +1134,10 @@ extern const char kMediaRemotingWithoutFullscreenDescription[];
 extern const char kRemotePlaybackBackendName[];
 extern const char kRemotePlaybackBackendDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kGlobalMediaControlsCrOSUpdatedUIName[];
-extern const char kGlobalMediaControlsCrOSUpdatedUIDescription[];
-#else   // BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 extern const char kGlobalMediaControlsUpdatedUIName[];
 extern const char kGlobalMediaControlsUpdatedUIDescription[];
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 extern const char kGoogleOneOfferFilesBannerName[];
 extern const char kGoogleOneOfferFilesBannerDescription[];

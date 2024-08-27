@@ -8243,18 +8243,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kGesturePropertiesDBusService)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"global-media-controls-cros-updated-ui",
-     flag_descriptions::kGlobalMediaControlsCrOSUpdatedUIName,
-     flag_descriptions::kGlobalMediaControlsCrOSUpdatedUIDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kGlobalMediaControlsCrOSUpdatedUI)},
-#else   // BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
     {"global-media-controls-updated-ui",
      flag_descriptions::kGlobalMediaControlsUpdatedUIName,
      flag_descriptions::kGlobalMediaControlsUpdatedUIDescription,
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(media::kGlobalMediaControlsUpdatedUI)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
     {"enable-cooperative-scheduling",
      flag_descriptions::kCooperativeSchedulingName,

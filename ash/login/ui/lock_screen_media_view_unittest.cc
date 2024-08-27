@@ -9,8 +9,6 @@
 #include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/login_test_base.h"
 #include "base/test/power_monitor_test.h"
-#include "base/test/scoped_feature_list.h"
-#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
@@ -28,9 +26,6 @@ class LockScreenMediaViewTest : public LoginTestBase {
   ~LockScreenMediaViewTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        media::kGlobalMediaControlsCrOSUpdatedUI);
-
     set_start_session(true);
     LoginTestBase::SetUp();
 
@@ -84,7 +79,6 @@ class LockScreenMediaViewTest : public LoginTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<LockScreenMediaView> media_view_ = nullptr;
   base::test::ScopedPowerMonitorTestSource power_monitor_source_;
   std::unique_ptr<TestMediaController> media_controller_;
