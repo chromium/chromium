@@ -1336,14 +1336,6 @@ class UnionType(IdlType):
         assert self._union_definition_object is None
         self._union_definition_object = union_definition_object
 
-    @property
-    def is_phantom(self):
-        """Returns True if a class for union should not be generated,
-        as would be the case if enum only exists at the IDL level and
-        is not passed down to implementation. This can happen when all
-        enum variants are coerced to a single type."""
-        return "PassAsSpan" in self.effective_annotations
-
 
 class NullableType(IdlType):
     """https://webidl.spec.whatwg.org/#idl-nullable-type"""
