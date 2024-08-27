@@ -11,6 +11,7 @@
 
 class FullscreenController;
 @class FullscreenAnimator;
+enum class FullscreenAnimatorStyle : short;
 
 // Interface for listening to fullscreen state.
 class FullscreenControllerObserver : public base::CheckedObserver {
@@ -55,6 +56,11 @@ class FullscreenControllerObserver : public base::CheckedObserver {
   // Invoked when `controller` needs to resize its horizontal insets.
   // TODO(crbug.com/40143738) remove after fixing multiwindow resizing issue.
   virtual void ResizeHorizontalInsets(FullscreenController* controller) {}
+
+  // Invoked when `controller` has finished animating entering or exiting
+  // fullscreen.
+  virtual void FullscreenDidAnimate(FullscreenController* controller,
+                                    FullscreenAnimatorStyle style) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_OBSERVER_H_

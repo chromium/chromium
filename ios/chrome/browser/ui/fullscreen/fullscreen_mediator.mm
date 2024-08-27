@@ -246,6 +246,10 @@ void FullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
       return;
     mediator->model_->AnimationEndedWithProgress(final_progress);
     mediator->animator_ = nil;
+
+    for (auto& observer : mediator->observers_) {
+      observer.FullscreenDidAnimate(mediator->controller_, style);
+    }
   }];
 
   // Notify observers that the animation will occur.
