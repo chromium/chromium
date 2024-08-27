@@ -16,7 +16,6 @@ import './throbber.css.js';
 import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Destination} from '../data/destination.js';
@@ -103,15 +102,6 @@ export class PrintPreviewDestinationSelectCrosElement extends
       state: Number,
 
       error: Number,
-
-      isPrintPreviewSetupAssistanceEnabled: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrintPreviewSetupAssistanceEnabled');
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -127,7 +117,6 @@ export class PrintPreviewDestinationSelectCrosElement extends
   private destinationIcon_: string;
   private isCurrentDestinationCrosLocal_: boolean;
   private isDarkModeActive_: boolean;
-  private isPrintPreviewSetupAssistanceEnabled: boolean;
 
   override focus() {
     this.shadowRoot!.querySelector(
@@ -156,8 +145,7 @@ export class PrintPreviewDestinationSelectCrosElement extends
       if (this.isCurrentDestinationCrosLocal_) {
         // Override the printer status icon if the printer setup info UI is
         // showing.
-        if (this.isPrintPreviewSetupAssistanceEnabled &&
-            shouldShowCrosPrinterSetupError(this.state, this.error)) {
+        if (shouldShowCrosPrinterSetupError(this.state, this.error)) {
           return getPrinterStatusIcon(
               PrinterStatusReason.PRINTER_UNREACHABLE,
               this.destination.isEnterprisePrinter, this.isDarkModeActive_);
@@ -272,8 +260,7 @@ export class PrintPreviewDestinationSelectCrosElement extends
     }
 
     // Override the printer status text if the printer setup info UI is showing.
-    if (this.isPrintPreviewSetupAssistanceEnabled &&
-        shouldShowCrosPrinterSetupError(this.state, this.error)) {
+    if (shouldShowCrosPrinterSetupError(this.state, this.error)) {
       return this.getErrorString_(PrinterStatusReason.PRINTER_UNREACHABLE);
     }
 

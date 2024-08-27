@@ -8019,10 +8019,6 @@ const char kPrintPreviewCrosPrimaryName[] =
 const char kPrintPreviewCrosPrimaryDescription[] =
     "Allows the ChromeOS print preview to be opened instead of the browser "
     " print preview.";
-const char kPrintPreviewSetupAssistanceName[] =
-    "Enable improved printer status and error messaging in Print Preview.";
-const char kPrintPreviewSetupAssistanceDescription[] =
-    "Enable improved printer status and error messaging in Print Preview.";
 
 const char kDisableQuickAnswersV2TranslationName[] =
     "Disable Quick Answers Translation";

@@ -4635,9 +4635,6 @@ extern const char kPlatformKeysAesEncryptionDescription[];
 extern const char kPrintPreviewCrosPrimaryName[];
 extern const char kPrintPreviewCrosPrimaryDescription[];
 
-extern const char kPrintPreviewSetupAssistanceName[];
-extern const char kPrintPreviewSetupAssistanceDescription[];
-
 extern const char kDisableQuickAnswersV2TranslationName[];
 extern const char kDisableQuickAnswersV2TranslationDescription[];
 

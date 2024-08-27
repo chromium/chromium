@@ -1,8 +1,7 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 /**
  *  These values must be kept in sync with the Reason enum in
@@ -147,30 +146,6 @@ export function computePrinterState(
   return PrinterState.ERROR;
 }
 
-export function getPrinterStatusIcon(
-    printerStatusReason: PrinterStatusReason|null, isEnterprisePrinter: boolean,
-    prefersDarkColorScheme: boolean): string {
-  if (loadTimeData.getBoolean('isPrintPreviewSetupAssistanceEnabled')) {
-    return getPrinterStatusIconImproved(
-        printerStatusReason, isEnterprisePrinter, prefersDarkColorScheme);
-  }
-
-  const printerTypePrefix = isEnterprisePrinter ?
-      'print-preview:business-printer-status-' :
-      'print-preview:printer-status-';
-  const darkModeSuffix = prefersDarkColorScheme ? '-dark' : '';
-  switch (computePrinterState(printerStatusReason)) {
-    case PrinterState.GOOD:
-      return `${printerTypePrefix}green${darkModeSuffix}`;
-    case PrinterState.ERROR:
-      return `${printerTypePrefix}red${darkModeSuffix}`;
-    case PrinterState.UNKNOWN:
-      return `${printerTypePrefix}grey${darkModeSuffix}`;
-    default:
-      assertNotReached();
-  }
-}
-
 // Based on printer status icon colors in
 // chrome/browser/resources/print_preview/ui/icons.html.
 type StatusColor = 'green'|'grey'|'orange'|'red';
@@ -199,12 +174,9 @@ const PRINTER_STATUS_REASON_COLOR_MAP =
 
 /**
  * Returns the print-preview icon matching the printer's PrinterStatusReason,
- * enterprise status, and color scheme when
- * 'isPrintPreviewSetupAssistanceEnabled' flag is enabled.
+ * enterprise status, and color scheme.
  */
-// TODO(b/289091283): Rename function to `getPrinterStatusIcon` and remove
-//                    previous implementation when flag is removed.
-function getPrinterStatusIconImproved(
+export function getPrinterStatusIcon(
     printerStatusReason: PrinterStatusReason|null, isEnterprisePrinter: boolean,
     prefersDarkColorScheme: boolean): string {
   const printerTypePrefix = isEnterprisePrinter ?
@@ -224,11 +196,6 @@ function getPrinterStatusIconImproved(
  */
 export function getStatusTextColorClass(
     printerStatusReason: PrinterStatusReason|null): string {
-  // TODO(b/289091283): Remove condition when flag is removed.
-  if (!loadTimeData.getBoolean('isPrintPreviewSetupAssistanceEnabled')) {
-    return '';
-  }
-
   if (printerStatusReason === null) {
     return '';
   }

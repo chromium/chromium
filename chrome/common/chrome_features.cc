@@ -1041,11 +1041,6 @@ BASE_FEATURE(kPrerenderFallbackToPreconnect,
 BASE_FEATURE(kPrintPreviewCrosPrimary,
              "PrintPreviewCrosPrimary",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable improved printer state and error state messaging for Print Preview.
-BASE_FEATURE(kPrintPreviewSetupAssistance,
-             "PrintPreviewSetupAssistance",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables or disables push subscriptions keeping Chrome running in the

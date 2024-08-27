@@ -9379,11 +9379,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrintPreviewCrosPrimaryDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kPrintPreviewCrosPrimary)},
-    {"print-preview-setup-assistance",
-     flag_descriptions::kPrintPreviewSetupAssistanceName,
-     flag_descriptions::kPrintPreviewSetupAssistanceDescription,
-     kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kPrintPreviewSetupAssistance)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
