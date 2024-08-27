@@ -714,31 +714,33 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     return;
   }
 
-  // Show the confirmation prompt if there is data pending upload.
-  bool should_show_confirmation_prompt = !unsynced_datatypes.empty();
+  bool needs_reauth =
+      !identity_manager->HasAccountWithRefreshToken(primary_account_id) ||
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id);
+  bool sign_out_immediately = unsynced_datatypes.empty() && needs_reauth;
+
   base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
       base::BindOnce(&HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
                      reauth_access_point, profile_signout_source,
                      token_signout_source);
 
-  if (should_show_confirmation_prompt) {
-    CHECK(!primary_account_id.empty());
-    bool needs_reauth =
-        !identity_manager->HasAccountWithRefreshToken(primary_account_id) ||
-        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            primary_account_id);
-    ChromeSignoutConfirmationPromptVariant prompt_variant =
+  if (sign_out_immediately) {
+    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
+    return;
+  }
+
+  ChromeSignoutConfirmationPromptVariant prompt_variant =
+      ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData;
+  if (!unsynced_datatypes.empty()) {
+    prompt_variant =
         needs_reauth ? ChromeSignoutConfirmationPromptVariant::
                            kUnsyncedDataWithReauthButton
                      : ChromeSignoutConfirmationPromptVariant::kUnsyncedData;
-
-    // Show confirmation prompt where the user can reauth or sign out.
-    ShowChromeSignoutConfirmationPrompt(*browser_, prompt_variant,
-                                        std::move(callback));
-  } else {
-    // Sign out immediately
-    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
   }
+  // Show confirmation prompt where the user can reauth or sign out.
+  ShowChromeSignoutConfirmationPrompt(*browser_, prompt_variant,
+                                      std::move(callback));
 }
 
 void SigninViewController::ShowChromeSigninDialogForExtensions(

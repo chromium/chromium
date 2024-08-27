@@ -513,7 +513,7 @@
     <!-- User manager web UI -->
     <if expr="use_titlecase">
       <message name="IDS_SCREEN_LOCK_SIGN_OUT">
-        Sign out
+        Sign Out
       </message>
     </if>
     <if expr="not use_titlecase">

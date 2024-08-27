@@ -16,6 +16,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome_signout_confirmation_prompt.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -28,25 +29,29 @@ constexpr char kChromeSignoutPromptHistogramBaseName[] =
 constexpr char kChromeSignoutPromptHistogramUnsyncedReauthVariant[] =
     "UnsyncedReauth";
 constexpr char kChromeSignoutPromptHistogramUnsyncedVariant[] = "Unsynced";
+constexpr char kChromeSignoutPromptHistogramNoUnsyncedVariant[] = "NoUnsynced";
 
 ChromeSignoutConfirmationChoice RecordChromeSignoutConfirmationPromptMetrics(
     ChromeSignoutConfirmationPromptVariant variant,
     ChromeSignoutConfirmationChoice choice) {
-  std::string histogram_name;
+  const char* histogram_variant_name =
+      kChromeSignoutPromptHistogramNoUnsyncedVariant;
   switch (variant) {
+    case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
+      break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
-      histogram_name =
-          base::StrCat({kChromeSignoutPromptHistogramBaseName,
-                        kChromeSignoutPromptHistogramUnsyncedVariant});
+      histogram_variant_name = kChromeSignoutPromptHistogramUnsyncedVariant;
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      histogram_name =
-          base::StrCat({kChromeSignoutPromptHistogramBaseName,
-                        kChromeSignoutPromptHistogramUnsyncedReauthVariant});
+      histogram_variant_name =
+          kChromeSignoutPromptHistogramUnsyncedReauthVariant;
       break;
   }
 
-  base::UmaHistogramEnumeration(histogram_name, choice);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kChromeSignoutPromptHistogramBaseName, histogram_variant_name}),
+      choice);
   return choice;
 }
 
@@ -65,6 +70,7 @@ CreateChromeSignoutConfirmationPromptDialogModel(
       base::SplitOnceCallback(std::move(temp_callback));
 
   // Strings and choices.
+  int title_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TITLE;
   int body_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY;
   int ok_string_id =
       IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_DELETE_AND_SIGNOUT_BUTTON;
@@ -74,6 +80,12 @@ CreateChromeSignoutConfirmationPromptDialogModel(
   ChromeSignoutConfirmationChoice cancel_choice =
       ChromeSignoutConfirmationChoice::kCancelSignout;
   switch (variant) {
+    case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
+      title_string_id =
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_TITLE;
+      body_string_id = CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_BODY;
+      ok_string_id = IDS_SCREEN_LOCK_SIGN_OUT;
+      break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
@@ -90,8 +102,7 @@ CreateChromeSignoutConfirmationPromptDialogModel(
   // Build the dialog.
   ui::DialogModel::Builder dialog_builder;
   return dialog_builder.SetInternalName("ChromeSignoutConfirmationChoicePrompt")
-      .SetTitle(l10n_util::GetStringUTF16(
-          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TITLE))
+      .SetTitle(l10n_util::GetStringUTF16(title_string_id))
       .AddParagraph(ui::DialogModelLabel(body_string_id))
       .AddOkButton(
           base::BindOnce(std::move(ok_callback), ok_choice),
@@ -111,6 +122,12 @@ void ShowChromeSignoutConfirmationPrompt(
     Browser& browser,
     ChromeSignoutConfirmationPromptVariant variant,
     base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
+  if (!switches::IsImprovedSigninUIOnDesktopEnabled() &&
+      variant == ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData) {
+    // This variant is not enabled. Skip the UI and sign out immediately.
+    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
+    return;
+  }
   chrome::ShowBrowserModal(&browser,
                            CreateChromeSignoutConfirmationPromptDialogModel(
                                variant, std::move(callback)));
