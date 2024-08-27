@@ -357,9 +357,15 @@ fn box_bytes_zst() {
   let _: Box<[u8]> = from_box_bytes(x);
 
   let x: BoxBytes = box_bytes_of(Box::new([0u8; 0]));
-  let res: Result<Box<[()]>, _> = try_from_box_bytes(x);
-  assert_eq!(res.unwrap_err().0, PodCastError::SizeMismatch);
+  let _: Box<[()]> = from_box_bytes(x);
 
   let x: BoxBytes = box_bytes_of(Box::new([(); 0]));
   let _: Box<[u8]> = from_box_bytes(x);
+
+  let x: BoxBytes = box_bytes_of(Box::new([0u8]));
+  let res: Result<Box<[()]>, _> = try_from_box_bytes(x);
+  assert_eq!(res.unwrap_err().0, PodCastError::OutputSliceWouldHaveSlop);
+
+  // regression test for dropping zero-sized BoxBytes
+  let _: BoxBytes = box_bytes_of(Box::new([0u8; 0]));
 }

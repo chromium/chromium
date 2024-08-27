@@ -1,7 +1,7 @@
 [package]
 name = "bytemuck"
 description = "A crate for mucking around with piles of bytes."
-version = "1.16.3"
+version = "1.17.1"
 authors = ["Lokathor <zefria@gmail.com>"]
 repository = "https://github.com/Lokathor/bytemuck"
 readme = "README.md"
@@ -32,7 +32,7 @@ min_const_generics = [] # MSRV 1.51: support arrays via min_const_generics
 wasm_simd = []    # MSRV 1.54.0: support wasm simd types
 aarch64_simd = [] # MSRV 1.59.0: support aarch64 simd types
 
-must_cast = [] # MSRV 1.57.0: support the `must` module.
+must_cast = [] # MSRV 1.64.0: support the `must` module.
 
 const_zeroed = [] # MSRV 1.75.0: support const `zeroed()`
 

@@ -68,9 +68,10 @@ pub fn try_cast_box<A: NoUninit, B: AnyBitPattern>(
 #[inline]
 pub fn try_zeroed_box<T: Zeroable>() -> Result<Box<T>, ()> {
   if size_of::<T>() == 0 {
-    // This will not allocate but simply create a dangling pointer.
-    let dangling = core::ptr::NonNull::dangling().as_ptr();
-    return Ok(unsafe { Box::from_raw(dangling) });
+    // This will not allocate but simply create an arbitrary non-null
+    // aligned pointer, valid for Box for a zero-sized pointee.
+    let ptr = core::ptr::NonNull::dangling().as_ptr();
+    return Ok(unsafe { Box::from_raw(ptr) });
   }
   let layout = Layout::new::<T>();
   let ptr = unsafe { alloc_zeroed(layout) };
@@ -125,10 +126,11 @@ pub fn try_zeroed_slice_box<T: Zeroable>(
   length: usize,
 ) -> Result<Box<[T]>, ()> {
   if size_of::<T>() == 0 || length == 0 {
-    // This will not allocate but simply create a dangling slice pointer.
-    let dangling = core::ptr::NonNull::dangling().as_ptr();
-    let dangling_slice = core::ptr::slice_from_raw_parts_mut(dangling, length);
-    return Ok(unsafe { Box::from_raw(dangling_slice) });
+    // This will not allocate but simply create an arbitrary non-null aligned
+    // slice pointer, valid for Box for a zero-sized pointee.
+    let ptr = core::ptr::NonNull::dangling().as_ptr();
+    let slice_ptr = core::ptr::slice_from_raw_parts_mut(ptr, length);
+    return Ok(unsafe { Box::from_raw(slice_ptr) });
   }
   let layout = core::alloc::Layout::array::<T>(length).map_err(|_| ())?;
   let ptr = unsafe { alloc_zeroed(layout) };
@@ -742,9 +744,9 @@ impl<I: ?Sized, T: ?Sized + TransparentWrapper<I>> TransparentWrapperAlloc<I>
 
 /// As `Box<[u8]>`, but remembers the original alignment.
 pub struct BoxBytes {
-  // SAFETY: `ptr` is owned, points to `layout.size()` initialized bytes, and
-  // was allocated with `layout` (unless `layout.size() == 0` in which case it
-  // is dangling).
+  // SAFETY: `ptr` is aligned to `layout.align()`, points to
+  // `layout.size()` initialized bytes, and, if `layout.size() > 0`,
+  // is owned and was allocated with the global allocator with `layout`.
   ptr: NonNull<u8>,
   layout: Layout,
 }

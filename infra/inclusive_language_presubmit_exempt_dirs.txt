@@ -8,7 +8,7 @@ ash/webui/camera_app_ui/resources/js/lib 8 1
 base 1 1
 base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base 1 1
 base/android 1 1
-base/android/java/src/org/chromium/base 1 1
+base/android/java/src/org/chromium/base 2 2
 base/containers 1 1
 base/debug 1 1
 base/files 1 1
@@ -49,8 +49,8 @@ chrome/browser/autofill/android/junit/src/org/chromium/chrome/browser/autofill/e
 chrome/browser/chromeos/extensions/telemetry 2 1
 chrome/browser/download 1 1
 chrome/browser/extensions 2 1
-chrome/browser/extensions/api/commands 3 1
 chrome/browser/extensions/api/identity 1 1
+chrome/browser/extensions/commands 3 1
 chrome/browser/feed/android 1 1
 chrome/browser/first_run 1 1
 chrome/browser/lacros 2 1
@@ -91,6 +91,7 @@ chromeos/ash/services/ime/public/mojom 2 2
 chromeos/crosapi 2 1
 chromeos/lacros 2 1
 chromeos/process_proxy 7 5
+chrome/test/base/ash/interactive/bluetooth 1 1
 chrome/test/chromedriver 2 2
 chrome/test/chromedriver/chrome 1 1
 chrome/test/chromedriver/docs 1 1
@@ -167,6 +168,7 @@ content/browser/device_sensors 1 1
 content/browser/fenced_frame 2 2
 content/browser/indexed_db 1 1
 content/browser/loader 1 1
+content/browser/preloading/prefetch 1 1
 content/browser/renderer_host 3 3
 content/browser/renderer_host/pepper 2 2
 content/browser/sms 2 1
@@ -213,7 +215,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 5 3
+infra 4 2
 infra/config/generated/luci 1 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
@@ -593,7 +595,6 @@ third_party/mediapipe/src/mediapipe/util/tflite/operations 8 2
 third_party/mediapipe/src/third_party 1 1
 third_party/metrics_proto 2 1
 third_party/microsoft_webauthn 1 1
-third_party/node/patches 2 1
 third_party/ocmock/OCMock 2 1
 third_party/opus/src/doc 1 1
 third_party/ots 3 2
@@ -722,7 +723,6 @@ third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.207 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.124 6 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.124/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1 1 1
-third_party/rust/chromium_crates_io/vendor/shlex-1.3.0 1 1
 third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/skrifa-0.20.0/src 1 1
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0 5 2

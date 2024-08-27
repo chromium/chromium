@@ -38,9 +38,9 @@ impl<A, B> Cast<A, B> {
 /// let bytes : [u8; 3] = bytemuck::must_cast(12_u16);
 /// ```
 #[inline]
-pub fn must_cast<A: NoUninit, B: AnyBitPattern>(a: A) -> B {
+pub const fn must_cast<A: NoUninit, B: AnyBitPattern>(a: A) -> B {
   let _ = Cast::<A, B>::ASSERT_SIZE_EQUAL;
-  unsafe { transmute!(a) }
+  unsafe { transmute!(A; B; a) }
 }
 
 /// Convert `&A` into `&B` if infalliable, or fail to compile.
@@ -64,7 +64,7 @@ pub fn must_cast<A: NoUninit, B: AnyBitPattern>(a: A) -> B {
 /// let bytes : &u16 = bytemuck::must_cast_ref(&[1u8, 2u8]);
 /// ```
 #[inline]
-pub fn must_cast_ref<A: NoUninit, B: AnyBitPattern>(a: &A) -> &B {
+pub const fn must_cast_ref<A: NoUninit, B: AnyBitPattern>(a: &A) -> &B {
   let _ = Cast::<A, B>::ASSERT_SIZE_EQUAL;
   let _ = Cast::<A, B>::ASSERT_ALIGN_GREATER_THAN_EQUAL;
   unsafe { &*(a as *const A as *const B) }
@@ -143,7 +143,7 @@ pub fn must_cast_mut<
 /// let zsts: &[()] = bytemuck::must_cast_slice(bytes);
 /// ```
 #[inline]
-pub fn must_cast_slice<A: NoUninit, B: AnyBitPattern>(a: &[A]) -> &[B] {
+pub const fn must_cast_slice<A: NoUninit, B: AnyBitPattern>(a: &[A]) -> &[B] {
   let _ = Cast::<A, B>::ASSERT_SIZE_MULTIPLE_OF_OR_INPUT_ZST;
   let _ = Cast::<A, B>::ASSERT_ALIGN_GREATER_THAN_EQUAL;
   let new_len = if size_of::<A>() == size_of::<B>() {

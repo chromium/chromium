@@ -123,6 +123,18 @@ macro_rules! transmute {
   ($val:expr) => {
     ::core::mem::transmute_copy(&::core::mem::ManuallyDrop::new($val))
   };
+  // This arm is for use in const contexts, where the borrow required to use transmute_copy poses an issue
+  // since the compiler hedges that the type being borrowed could have interior mutability.
+  ($srcty:ty; $dstty:ty; $val:expr) => {
+    {
+      #[repr(C)]
+      union Transmute<A, B> {
+        src: ::core::mem::ManuallyDrop<A>,
+        dst: ::core::mem::ManuallyDrop<B>,
+      }
+      ::core::mem::ManuallyDrop::into_inner(Transmute::<$srcty, $dstty> { src: ::core::mem::ManuallyDrop::new($val) }.dst)
+    }
+  }
 }
 
 /// A macro to implement marker traits for various simd types.

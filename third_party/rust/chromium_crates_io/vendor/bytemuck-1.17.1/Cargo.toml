@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "bytemuck"
-version = "1.16.3"
+version = "1.17.1"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 exclude = ["/pedantic.bat"]
@@ -126,4 +126,4 @@ zeroable_maybe_uninit = []
 [lints.rust.unexpected_cfgs]
 level = "deny"
 priority = 0
-check-cfg = ["cfg(target_arch, values(\"spirv\"))"]
+check-cfg = ['cfg(target_arch, values("spirv"))']

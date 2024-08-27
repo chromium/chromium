@@ -301,6 +301,21 @@ The delta only adds `f16` and `f128` support (with some other minor changes)
 and has no impact on the audit criteria.
 """
 
+[[audits.bytemuck]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "ub-risk-3"
+delta = "1.16.3 -> 1.17.0"
+notes = """
+1.17.0 may rely on `union` layout that is not guaranteed by the compiler.
+See https://github.com/Lokathor/bytemuck/pull/268
+"""
+
+[[audits.bytemuck]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.16.3 -> 1.17.1"
+notes = "Unsafe review comments can be found in https://crrev.com/c/5813463"
+
 [[audits.bytemuck_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
