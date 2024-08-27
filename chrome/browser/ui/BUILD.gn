@@ -5657,8 +5657,6 @@ static_library("ui") {
     sources += [
       "aura/accessibility/automation_manager_aura.cc",
       "aura/accessibility/automation_manager_aura.h",
-      "aura/tab_contents/web_drag_bookmark_handler_aura.cc",
-      "aura/tab_contents/web_drag_bookmark_handler_aura.h",
       "overscroll_pref_manager.cc",
       "overscroll_pref_manager.h",
       "views/accelerator_utils_aura.cc",
@@ -5677,7 +5675,10 @@ static_library("ui") {
       "views/theme_profile_key.h",
       "window_sizer/window_sizer_aura.cc",
     ]
+
     deps += [
+      "//chrome/browser/ui/aura/tab_contents",
+      "//chrome/browser/ui/aura/tab_contents:impl",
       "//components/eye_dropper",
       "//ui/aura",
       "//ui/wm",
@@ -5694,6 +5695,13 @@ static_library("ui") {
         "views/frame/desktop_browser_frame_aura.h",
       ]
     }
+
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
+    allow_circular_includes_from += [
+      # TODO(361027501): //c/b/u/v/t/chrome_web_contents_view_delegate_views.cc
+      # includes //c/b/u/a/t/web_drag_bookmark_handler_aura.cc
+      "//chrome/browser/ui/aura/tab_contents:impl",
+    ]
   }
 
   if (enable_extensions) {
