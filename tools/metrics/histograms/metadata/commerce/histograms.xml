@@ -143,6 +143,36 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Compare.CandidateClusterIdentified"
+    enum="CompareEntryPointTrigger" expires_after="2025-02-15">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records when we identify a candidate cluster for compare and the source of
+    triggering.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Compare.CandidateClusterSizeWhenShown" units="count"
+    expires_after="2025-02-15">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logs when the proactive entry point shows. Records the number of products in
+    the candidate cluster that triggers the entry point.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Compare.ProactiveBackoffDuration" units="days"
+    expires_after="2025-02-15">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logs when the proactive entry point is dismissed. Records the duration of
+    the chip will be suppressed (in days).
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Compare.Table.ColumnCount" units="columns"
     expires_after="2025-02-15">
   <owner>mdjones@chromium.org</owner>

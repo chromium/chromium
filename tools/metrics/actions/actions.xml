@@ -6932,6 +6932,47 @@ should be able to be added at any place in this file.
   <description>Triggered when the user adds a product to cart.</description>
 </action>
 
+<action name="Commerce.Compare.CandidateClusterRejected">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when we filter out a cluster because it was rejected by the backend.
+  </description>
+</action>
+
+<action name="Commerce.Compare.ProactiveChipClicked">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the compare proactive entry point has been clicked.
+  </description>
+</action>
+
+<action name="Commerce.Compare.ProactiveChipDismissed">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the compare proactive entry point has been dismissed.
+  </description>
+</action>
+
+<action name="Commerce.Compare.ProactiveChipIgnored">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the compare proactive entry point has been hidden due to
+    timeout without any user action.
+  </description>
+</action>
+
+<action name="Commerce.Compare.ProactiveChipShown">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the compare proactive entry point has shown.
+  </description>
+</action>
+
 <action name="Commerce.Discounts.DiscountsBubble.AutoShown"
     not_user_triggered="true">
   <owner>meiliang@chromium.org</owner>

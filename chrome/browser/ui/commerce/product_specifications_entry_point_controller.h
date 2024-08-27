@@ -35,6 +35,14 @@ class ProductSpecificationsEntryPointController
     virtual void HideEntryPoint() {}
   };
 
+  // Possible source actions that could trigger compare entry points. These must
+  // be kept in sync with the values in enums.xml.
+  enum class CompareEntryPointTrigger {
+    FROM_SELECTION = 0,
+    FROM_NAVIGATION = 1,
+    kMaxValue = FROM_NAVIGATION,
+  };
+
   explicit ProductSpecificationsEntryPointController(Browser* browser);
   ~ProductSpecificationsEntryPointController() override;
 

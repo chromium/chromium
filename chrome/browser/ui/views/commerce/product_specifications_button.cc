@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -222,6 +224,8 @@ void ProductSpecificationsButton::ExecuteShow() {
 
   hide_button_timer_.Start(FROM_HERE, kShowDuration, this,
                            &ProductSpecificationsButton::OnTimeout);
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipShown"));
 }
 
 void ProductSpecificationsButton::ExecuteHide() {
@@ -243,6 +247,8 @@ void ProductSpecificationsButton::OnClicked() {
     entry_point_controller_->OnEntryPointExecuted();
   }
   ExecuteHide();
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipClicked"));
 }
 
 void ProductSpecificationsButton::OnDismissed() {
@@ -250,10 +256,14 @@ void ProductSpecificationsButton::OnDismissed() {
   if (entry_point_controller_) {
     entry_point_controller_->OnEntryPointDismissed();
   }
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipDismissed"));
 }
 
 void ProductSpecificationsButton::OnTimeout() {
   Hide();
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipIgnored"));
 }
 
 void ProductSpecificationsButton::SetCloseButton(

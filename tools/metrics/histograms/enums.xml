@@ -2953,6 +2953,14 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Changed from Available To Available"/>
 </enum>
 
+<enum name="CompareEntryPointTrigger">
+  <summary>
+    The different ways to trigger a compare proactive entry point.
+  </summary>
+  <int value="0" label="From Selection"/>
+  <int value="1" label="From Navigation"/>
+</enum>
+
 <enum name="CompareTableColumnAction">
   <summary>
     The different ways a comparison table's columns can be modified.
