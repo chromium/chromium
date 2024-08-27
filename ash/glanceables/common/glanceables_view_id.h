@@ -25,6 +25,7 @@ enum class GlanceablesViewId {
   kTimeManagementBubbleExpandButton,
   kTimeManagementBubbleListContainer,
   kTimeManagementBubbleListFooter,
+  kTimeManagementErrorMessageToast,
 
   // `GlanceablesClassroomStudentView`.
   kClassroomBubbleEmptyListLabel,
@@ -49,11 +50,6 @@ enum class GlanceablesViewId {
 
   // `GlanceablesContentsScrollView`.
   kContentsScrollView,
-
-  // `GlanceablesErrorMessageView`
-  kGlanceablesErrorMessageLabel,
-  kGlanceablesErrorMessageButton,
-  kGlanceablesErrorMessageView,
 };
 
 }  // namespace ash

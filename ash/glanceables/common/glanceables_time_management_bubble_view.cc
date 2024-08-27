@@ -463,6 +463,8 @@ void GlanceablesTimeManagementBubbleView::ShowErrorMessage(
 
   error_message_ = AddChildView(std::make_unique<GlanceablesErrorMessageView>(
       std::move(callback), error_message, type));
+  error_message_->SetID(
+      base::to_underlying(GlanceablesViewId::kTimeManagementErrorMessageToast));
   error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 

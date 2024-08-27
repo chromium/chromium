@@ -159,8 +159,9 @@ class GlanceablesTasksViewTest : public AshTestBase {
   }
 
   const GlanceablesErrorMessageView* GetErrorMessage() const {
-    return views::AsViewClass<GlanceablesErrorMessageView>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView)));
+    return views::AsViewClass<GlanceablesErrorMessageView>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementErrorMessageToast)));
   }
 
   api::FakeTasksClient* tasks_client() const {

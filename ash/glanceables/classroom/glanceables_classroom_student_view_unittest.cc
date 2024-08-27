@@ -176,15 +176,14 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kProgressBar)));
   }
 
-  const views::View* GetMessageError() const {
-    return views::AsViewClass<views::View>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView)));
+  const GlanceablesErrorMessageView* GetErrorMessage() const {
+    return views::AsViewClass<GlanceablesErrorMessageView>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementErrorMessageToast)));
   }
 
   const views::LabelButton* GetMessageErrorDismissButton() const {
-    return views::AsViewClass<views::LabelButton>(
-        view_->GetViewByID(base::to_underlying(
-            GlanceablesViewId::kGlanceablesErrorMessageButton)));
+    return GetErrorMessage()->GetButtonForTest();
   }
 
   int GetLastSelectedAssignmentsListPrefValue() const {
@@ -571,17 +570,17 @@ TEST_F(GlanceablesClassroomStudentViewTest, ShowErrorMessageBubble) {
   EXPECT_CALL(classroom_client_, GetCompletedStudentAssignments(_))
       .WillOnce([&](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
         // Error message is not initialized before replying to pending request.
-        EXPECT_FALSE(GetMessageError());
+        EXPECT_FALSE(GetErrorMessage());
 
         std::move(cb).Run(/*success=*/false, {});
 
         // Error message is created and visible after receiving unsuccessful
         // response.
-        ASSERT_TRUE(GetMessageError());
-        EXPECT_TRUE(GetMessageError()->GetVisible());
+        ASSERT_TRUE(GetErrorMessage());
+        EXPECT_TRUE(GetErrorMessage()->GetVisible());
       });
 
-  ASSERT_FALSE(GetMessageError());
+  ASSERT_FALSE(GetErrorMessage());
   ASSERT_TRUE(GetComboBoxView());
   GetComboBoxView()->SelectMenuItemForTest(3);
 }
@@ -590,19 +589,19 @@ TEST_F(GlanceablesClassroomStudentViewTest, DismissErrorMessageBubble) {
   EXPECT_CALL(classroom_client_, GetCompletedStudentAssignments(_))
       .WillOnce([&](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
         std::move(cb).Run(/*success=*/false, {});
-        ASSERT_TRUE(GetMessageError()->GetVisible());
+        ASSERT_TRUE(GetErrorMessage()->GetVisible());
       });
 
-  ASSERT_FALSE(GetMessageError());
+  ASSERT_FALSE(GetErrorMessage());
   ASSERT_TRUE(GetComboBoxView());
   GetComboBoxView()->SelectMenuItemForTest(3);
 
   // Trigger layout after receiving unsuccessful response.
   widget_->LayoutRootViewIfNecessary();
-  ASSERT_TRUE(GetMessageError());
+  ASSERT_TRUE(GetErrorMessage());
 
   LeftClickOn(GetMessageErrorDismissButton());
-  EXPECT_FALSE(GetMessageError());
+  EXPECT_FALSE(GetErrorMessage());
 }
 
 TEST_F(GlanceablesClassroomStudentViewTest,
@@ -612,13 +611,13 @@ TEST_F(GlanceablesClassroomStudentViewTest,
         std::move(cb).Run(/*success=*/false, {});
       });
 
-  ASSERT_FALSE(GetMessageError());
+  ASSERT_FALSE(GetErrorMessage());
   ASSERT_TRUE(GetComboBoxView());
   GetComboBoxView()->SelectMenuItemForTest(3);
 
   // Trigger layout after receiving unsuccessful response.
   widget_->LayoutRootViewIfNecessary();
-  ASSERT_TRUE(GetMessageError());
+  ASSERT_TRUE(GetErrorMessage());
 
   EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithoutDueDate(_))
       .WillOnce([&](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
@@ -628,7 +627,7 @@ TEST_F(GlanceablesClassroomStudentViewTest,
 
   // Trigger layout after receiving successful response.
   widget_->LayoutRootViewIfNecessary();
-  EXPECT_FALSE(GetMessageError());
+  EXPECT_FALSE(GetErrorMessage());
 }
 
 }  // namespace ash

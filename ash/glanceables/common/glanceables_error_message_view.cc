@@ -53,8 +53,6 @@ class ActionLabelButton : public views::LabelButton {
         break;
     }
     SetText(l10n_util::GetStringUTF16(string_id));
-    SetID(
-        base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageButton));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
     SetProperty(views::kMarginsKey, kButtonInsets);
     SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
@@ -79,13 +77,10 @@ GlanceablesErrorMessageView::GlanceablesErrorMessageView(
       gfx::RoundedCornersF(kErrorMessageRoundedCornerRadius));
   SetBackground(views::CreateThemedSolidBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque));
-  SetID(base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView));
 
   const auto* const typography_provider = TypographyProvider::Get();
   error_message_label_ = AddChildView(
       views::Builder<views::Label>()
-          .SetID(base::to_underlying(
-              GlanceablesViewId::kGlanceablesErrorMessageLabel))
           .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
           .SetFontList(typography_provider->ResolveTypographyToken(
               TypographyToken::kCrosAnnotation1))

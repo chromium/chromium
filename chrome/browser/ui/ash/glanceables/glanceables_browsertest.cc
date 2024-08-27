@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest,
 
   auto* error_view = views::AsViewClass<GlanceablesErrorMessageView>(
       GetTasksView()->GetViewByID(base::to_underlying(
-          GlanceablesViewId::kGlanceablesErrorMessageView)));
+          GlanceablesViewId::kTimeManagementErrorMessageToast)));
   ASSERT_TRUE(error_view);
   EXPECT_EQ(error_view->GetMessageForTest(), u"Couldn't load items.");
   EXPECT_EQ(error_view->GetButtonForTest()->GetText(), u"Reload");
@@ -865,8 +865,8 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest,
       error_view->GetButtonForTest()->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
 
-  EXPECT_FALSE(GetTasksView()->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView)));
+  EXPECT_FALSE(GetTasksView()->GetViewByID(base::to_underlying(
+      GlanceablesViewId::kTimeManagementErrorMessageToast)));
   auto* combobox = GetTasksComboBoxView();
   EXPECT_EQ(combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
             u"Task List 1 Title");
@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, SwitchTaskListsWithError) {
 
   auto* error_view = views::AsViewClass<GlanceablesErrorMessageView>(
       GetTasksView()->GetViewByID(base::to_underlying(
-          GlanceablesViewId::kGlanceablesErrorMessageView)));
+          GlanceablesViewId::kTimeManagementErrorMessageToast)));
   ASSERT_TRUE(error_view);
   EXPECT_EQ(error_view->GetMessageForTest(), u"Couldn't load items.");
   EXPECT_EQ(error_view->GetButtonForTest()->GetText(), u"Dismiss");
