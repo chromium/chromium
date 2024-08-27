@@ -36,10 +36,6 @@ struct DISPLAY_EXPORT ScreenInfo {
   // This can be true for black and white printers
   bool is_monochrome = false;
 
-  // The display frequency in Hz of the monitor. Set to 0 if it fails in the
-  // monitor frequency query.
-  float display_frequency = 0;
-
   // This is set from the rcMonitor member of MONITORINFOEX, to whit:
   //   "A RECT structure that specifies the display monitor rectangle,
   //   expressed in virtual-screen coordinates. Note that if the monitor
