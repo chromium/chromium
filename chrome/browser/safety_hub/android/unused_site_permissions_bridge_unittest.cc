@@ -43,7 +43,8 @@ class UnusedSitePermissionsBridgeTest : public testing::Test {
   void AddRevokedPermissions() {
     base::Value::List revoked_permissions_list;
     for (ContentSettingsType type : kUnusedPermissionList) {
-      revoked_permissions_list.Append(static_cast<int32_t>(type));
+      revoked_permissions_list.Append(
+          UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(type));
     }
     auto dict = base::Value::Dict().Set(permissions::kRevokedKey,
                                         revoked_permissions_list.Clone());

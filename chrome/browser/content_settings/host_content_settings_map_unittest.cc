@@ -53,6 +53,7 @@
 #include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
@@ -161,12 +162,17 @@ class IndexedHostContentSettingsMapTest
           /*kIndexedContentSettingsMap*/ bool> {
  public:
   IndexedHostContentSettingsMapTest() {
+    // TODO(crbug.com/362466866): Instead of disabling the
+    // `kSafetyHubAbusiveNotificationRevocation` feature, find a stable
+    // fix such that the tests still pass when the feature is enabled.
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          content_settings::features::kIndexedHostContentSettingsMap);
+      feature_list_.InitWithFeatures(
+          {content_settings::features::kIndexedHostContentSettingsMap},
+          {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
     } else {
-      feature_list_.InitAndDisableFeature(
-          content_settings::features::kIndexedHostContentSettingsMap);
+      feature_list_.InitWithFeatures(
+          {}, {content_settings::features::kIndexedHostContentSettingsMap,
+               safe_browsing::kSafetyHubAbusiveNotificationRevocation});
     }
   }
 
