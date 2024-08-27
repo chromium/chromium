@@ -135,6 +135,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/certificate_policy_app_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -262,7 +263,7 @@ const int kExternalFilesCleanupDelaySeconds = 60;
 class MainControllerAuthenticationServiceDelegate
     : public AuthenticationServiceDelegate {
  public:
-  MainControllerAuthenticationServiceDelegate(
+  explicit MainControllerAuthenticationServiceDelegate(
       ChromeBrowserState* browser_state);
 
   MainControllerAuthenticationServiceDelegate(
@@ -278,7 +279,7 @@ class MainControllerAuthenticationServiceDelegate
       base::OnceClosure completion) override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
+  const raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
 };
 
 MainControllerAuthenticationServiceDelegate::
@@ -303,14 +304,22 @@ void MainControllerAuthenticationServiceDelegate::
   base::Time last_signin_timestamp =
       browser_state_->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
 
+  BrowsingDataRemoveMask remove_mask =
+      BrowsingDataRemoveMask::REMOVE_ALL_FOR_TIME_PERIOD;
+
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    // If fast account switching via the account particle disk on the NTP is
+    // enabled, then also close any tabs that were used since the signin. This
+    // requires separately querying the tab-usage timestamps first.
+    remove_mask |= BrowsingDataRemoveMask::CLOSE_TABS;
+  }
+
   // If `kLastSigninTimestamp` has the default base::Time() value, data will be
   // cleared for all time, which is intended to happen in this case.
   BrowsingDataRemover* browsingDataRemover =
       BrowsingDataRemoverFactory::GetForBrowserState(browser_state_);
-  browsingDataRemover->RemoveInRange(
-      last_signin_timestamp, base::Time::Now(),
-      BrowsingDataRemoveMask::REMOVE_ALL_FOR_TIME_PERIOD,
-      std::move(completion));
+  browsingDataRemover->RemoveInRange(last_signin_timestamp, base::Time::Now(),
+                                     remove_mask, std::move(completion));
 }
 
 }  // namespace
