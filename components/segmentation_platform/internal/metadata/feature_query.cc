@@ -6,7 +6,5 @@
 
 namespace segmentation_platform {
 
-FeatureQuery::FeatureQuery() = default;
-FeatureQuery::~FeatureQuery() = default;
 
 }  // namespace segmentation_platform

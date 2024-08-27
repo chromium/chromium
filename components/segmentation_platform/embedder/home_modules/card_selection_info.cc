@@ -7,6 +7,7 @@
 namespace segmentation_platform::home_modules {
 
 CardSelectionInfo::ShowResult::ShowResult() = default;
+CardSelectionInfo::ShowResult::ShowResult(const ShowResult& result) = default;
 CardSelectionInfo::ShowResult::~ShowResult() = default;
 
 CardSelectionInfo::CardSelectionInfo(const char* card_name)

@@ -28,15 +28,8 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
   // Registers all the profile prefs needed for the ephemeral cards system.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // TODO(thegreenfrog): This class needs to be cleaned up with appropriate
-  // methods.
-
   const std::vector<std::string>& all_output_labels() const {
     return all_output_labels_;
-  }
-
-  const std::vector<std::string>& all_card_ouput_labels() const {
-    return all_cards_ouptut_labels_;
   }
 
   size_t all_cards_input_size() const { return all_cards_input_size_; }
@@ -60,11 +53,20 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
 
   const raw_ptr<PrefService> profile_prefs_;
 
+  // Maps a card label to its output index order.
   std::map<std::string, size_t> label_to_output_index_;
+
+  // List of cards by their default priority.
   std::vector<std::unique_ptr<CardSelectionInfo>> all_cards_by_priority_;
-  std::vector<std::string> all_cards_ouptut_labels_;
+
+  // Holds a map of each card to a map of its input signals to their overall
+  // index order of the returned fetch.
   CardSignalMap card_signal_map_;
+
+  // All the output labels for all the cards registered by this class.
   std::vector<std::string> all_output_labels_;
+
+  // The total count of the inputs of all cards.
   size_t all_cards_input_size_{0};
 
   base::WeakPtrFactory<HomeModulesCardRegistry> weak_ptr_factory_{this};

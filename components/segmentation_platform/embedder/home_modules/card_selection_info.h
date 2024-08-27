@@ -22,6 +22,7 @@ class CardSelectionInfo {
 
   struct ShowResult {
     ShowResult();
+    ShowResult(const ShowResult& result);
     ~ShowResult();
 
     // Where the position of the card should be placed.
@@ -33,9 +34,9 @@ class CardSelectionInfo {
     std::optional<std::string> result_label;
   };
 
-  // Optional implementation, if the Card has multiple variations like different
-  // text or simple behavior difference based on the user signals, each of these
-  // can be different labels.
+  // Optional implementation, if the Card has multiple variations like
+  // different text or simple behavior difference based on the user signals,
+  // each of these can be different labels.
   virtual std::vector<std::string> OutputLabels();
 
   // Returns a list of feature queries mapped by SignalKey. These will be

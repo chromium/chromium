@@ -14,22 +14,22 @@ struct FeatureQuery {
   STACK_ALLOCATED();
 
  public:
-  FeatureQuery();
-  ~FeatureQuery();
+  static constexpr FeatureQuery FromUMAFeature(
+      MetadataWriter::UMAFeature uma_feature) {
+    return FeatureQuery{.uma_feature = uma_feature};
+  }
+  static constexpr FeatureQuery FromSqlFeature(
+      MetadataWriter::SqlFeature sql_feature) {
+    return FeatureQuery{.sql_feature = sql_feature};
+  }
+  static constexpr FeatureQuery FromCustomInput(
+      MetadataWriter::CustomInput custom_input) {
+    return FeatureQuery{.custom_input = custom_input};
+  }
 
-  FeatureQuery(const FeatureQuery&) = delete;
-  FeatureQuery& operator=(const FeatureQuery&) = delete;
-
-  explicit FeatureQuery(MetadataWriter::UMAFeature uma_feature)
-      : uma_feature(uma_feature) {}
-  explicit FeatureQuery(MetadataWriter::SqlFeature sql_feature)
-      : sql_feature(sql_feature) {}
-  explicit FeatureQuery(MetadataWriter::CustomInput custom_input)
-      : custom_input(custom_input) {}
-
-  std::optional<MetadataWriter::UMAFeature> uma_feature;
-  std::optional<MetadataWriter::SqlFeature> sql_feature;
-  std::optional<MetadataWriter::CustomInput> custom_input;
+  const std::optional<MetadataWriter::UMAFeature> uma_feature;
+  const std::optional<MetadataWriter::SqlFeature> sql_feature;
+  const std::optional<MetadataWriter::CustomInput> custom_input;
 };
 
 }  // namespace segmentation_platform
