@@ -18,14 +18,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.concurrent.TimeoutException;
 
@@ -86,7 +85,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/353900381
+    @DisabledTest(message = "issuetracker.google.com/353900381")
     public void testViewportFitCoverForced() throws TimeoutException {
         mTestRule.enterFullscreen();
 
