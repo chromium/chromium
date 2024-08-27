@@ -163,7 +163,7 @@ void TextFragmentFinder::FindMatchInRange(String search_text,
                                           bool word_start_bounded,
                                           bool word_end_bounded) {
   find_buffer_runner_->FindMatchInRange(
-      search_range, search_text, kCaseInsensitive,
+      search_range, search_text, FindOptions().SetCaseInsensitive(true),
       WTF::BindOnce(&TextFragmentFinder::OnFindMatchInRangeComplete,
                     WrapWeakPersistent(this), search_text,
                     WrapWeakPersistent(search_range), word_start_bounded,

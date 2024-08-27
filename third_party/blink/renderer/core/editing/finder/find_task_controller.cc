@@ -108,10 +108,10 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
     bool full_range_searched = true;
     PositionInFlatTree next_task_start_position;
 
-    blink::FindOptions find_options =
-        (options_->forward ? 0 : kBackwards) |
-        (options_->match_case ? 0 : kCaseInsensitive) |
-        (options_->new_session ? kStartInSelection : 0);
+    auto find_options = FindOptions()
+                            .SetBackwards(!options_->forward)
+                            .SetCaseInsensitive(!options_->match_case)
+                            .SetStartingInSelection(options_->new_session);
     const auto start_time = base::TimeTicks::Now();
 
     auto time_allotment_expired = [start_time]() {

@@ -24,7 +24,7 @@ String MakeUTF16(const char* str) {
 TEST(TextSearcherICUTest, FindSubstring) {
   TextSearcherICU searcher;
   const String& pattern = MakeUTF16("substring");
-  searcher.SetPattern(pattern, 0);
+  searcher.SetPattern(pattern, FindOptions());
 
   const String& text = MakeUTF16("Long text with substring content.");
   searcher.SetText(text.Characters16(), text.length());
@@ -45,7 +45,7 @@ TEST(TextSearcherICUTest, FindSubstring) {
 TEST(TextSearcherICUTest, FindIgnoreCaseSubstring) {
   TextSearcherICU searcher;
   const String& pattern = MakeUTF16("substring");
-  searcher.SetPattern(pattern, kCaseInsensitive);
+  searcher.SetPattern(pattern, FindOptions().SetCaseInsensitive(true));
 
   const String& text = MakeUTF16("Long text with SubStrinG content.");
   searcher.SetText(text.Characters16(), text.length());
@@ -58,7 +58,7 @@ TEST(TextSearcherICUTest, FindIgnoreCaseSubstring) {
   EXPECT_EQ(pattern,
             text.Substring(result.start, result.length).DeprecatedLower());
 
-  searcher.SetPattern(pattern, 0);
+  searcher.SetPattern(pattern, FindOptions());
   searcher.SetOffset(0u);
   EXPECT_FALSE(searcher.NextMatchResult(result));
   EXPECT_EQ(0u, result.start);
@@ -68,7 +68,7 @@ TEST(TextSearcherICUTest, FindIgnoreCaseSubstring) {
 TEST(TextSearcherICUTest, FindSubstringWithOffset) {
   TextSearcherICU searcher;
   const String& pattern = MakeUTF16("substring");
-  searcher.SetPattern(pattern, 0);
+  searcher.SetPattern(pattern, FindOptions());
 
   const String& text =
       MakeUTF16("Long text with substring content. Second substring");
@@ -102,7 +102,7 @@ TEST(TextSearcherICUTest, FindSubstringWithOffset) {
 TEST(TextSearcherICUTest, FindControlCharacter) {
   TextSearcherICU searcher;
   const String& pattern = MakeUTF16("\u0080");
-  searcher.SetPattern(pattern, 0);
+  searcher.SetPattern(pattern, FindOptions());
 
   const String& text = MakeUTF16("some text");
   searcher.SetText(text.Characters16(), text.length());
@@ -119,7 +119,7 @@ TEST(TextSearcherICUTest, BrokenSurrogate) {
   UChar one[1];
   one[0] = 0xDB00;
   const String pattern(one, 1u);
-  searcher.SetPattern(pattern, kWholeWord);
+  searcher.SetPattern(pattern, FindOptions().SetWholeWord(true));
 
   UChar two[2];
   two[0] = 0x0022;

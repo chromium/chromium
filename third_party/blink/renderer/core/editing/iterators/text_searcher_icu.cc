@@ -148,7 +148,7 @@ void TextSearcherICU::SetPattern(const StringView& pattern,
                                  FindOptions options) {
   DCHECK_GT(pattern.length(), 0u);
   options_ = options;
-  SetCaseSensitivity(!(options & kCaseInsensitive));
+  SetCaseSensitivity(!options.IsCaseInsensitive());
   SetPattern(pattern.Characters16(), pattern.length());
   if (ContainsKanaLetters(pattern.ToString())) {
     NormalizeCharactersIntoNFCForm(pattern.Characters16(), pattern.length(),
@@ -213,9 +213,7 @@ bool TextSearcherICU::ShouldSkipCurrentMatch(MatchResultICU& result) const {
   if (!normalized_search_text_.empty() && !IsCorrectKanaMatch(text, result))
     return true;
 
-  if ((options_ & kWholeWord) && !IsWholeWordMatch(text, text_length, result))
-    return true;
-  return false;
+  return options_.IsWholeWord() && !IsWholeWordMatch(text, text_length, result);
 }
 
 bool TextSearcherICU::IsCorrectKanaMatch(const UChar* text,

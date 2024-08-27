@@ -243,11 +243,11 @@ bool TextFinder::FindInternal(int identifier,
 
   DCHECK(OwnerFrame().GetFrame());
   DCHECK(OwnerFrame().GetFrame()->View());
-  const FindOptions find_options =
-      (options.forward ? 0 : kBackwards) |
-      (options.match_case ? 0 : kCaseInsensitive) |
-      (wrap_within_frame ? kWrapAround : 0) |
-      (options.new_session ? kStartInSelection : 0);
+  const auto find_options = FindOptions()
+                                .SetBackwards(!options.forward)
+                                .SetCaseInsensitive(!options.match_case)
+                                .SetWrappingAround(wrap_within_frame)
+                                .SetStartingInSelection(options.new_session);
   active_match_ = Editor::FindRangeOfString(
       *OwnerFrame().GetFrame()->GetDocument(), search_text,
       EphemeralRangeInFlatTree(active_match_.Get()), find_options,

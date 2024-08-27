@@ -251,7 +251,7 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
         EphemeralRangeInFlatTree(start_position, range.EndPosition()));
     Results match_results = buffer.FindMatches(search_text, options);
     if (!match_results.IsEmpty()) {
-      if (!(options & kBackwards)) {
+      if (!options.IsBackwards()) {
         BufferMatchResult match = match_results.front();
         return buffer.RangeFromBufferIndex(match.start,
                                            match.start + match.length);

@@ -36,6 +36,9 @@ class FindBufferTest : public EditingTestBase {
     return GetSelectionTextInFlatTreeFromBody(
         SelectionInFlatTree::Builder().SetAsForwardSelection(range).Build());
   }
+
+  static constexpr FindOptions kCaseInsensitive =
+      FindOptions().SetCaseInsensitive(true);
 };
 
 TEST_F(FindBufferTest, FindInline) {
@@ -338,36 +341,39 @@ TEST_F(FindBufferTest, FindMatchInRange) {
       "foo", kCaseInsensitive);
   EXPECT_EQ(foo3, match);
 
+  constexpr FindOptions kCaseInsensitiveBackwards =
+      FindOptions().SetCaseInsensitive(true).SetBackwards(true);
+
   // <div>^foo<a>foof</a><b>oo|</b></div>, backwards
   match = FindBuffer::FindMatchInRange(WholeDocumentRange(), "foo",
-                                       kCaseInsensitive | kBackwards);
+                                       kCaseInsensitiveBackwards);
   EXPECT_EQ(foo3, match);
   // <div>^foo<a>foof</a><b>o|o</b></div>, backwards
   match = FindBuffer::FindMatchInRange(
       EphemeralRangeInFlatTree(
           PositionInFlatTree::FirstPositionInNode(*div->firstChild()),
           PositionInFlatTree(*b->firstChild(), 1)),
-      "foo", kCaseInsensitive | kBackwards);
+      "foo", kCaseInsensitiveBackwards);
   EXPECT_EQ(foo2, match);
   // <div>foo<a>^foof</a><b>o|o</b></div>, backwards
   match = FindBuffer::FindMatchInRange(
       EphemeralRangeInFlatTree(
           PositionInFlatTree::FirstPositionInNode(*a->firstChild()),
           PositionInFlatTree(*b->firstChild(), 1)),
-      "foo", kCaseInsensitive | kBackwards);
+      "foo", kCaseInsensitiveBackwards);
   EXPECT_EQ(foo2, match);
   // <div>foo<a>foo^f</a><b>o|o</b></div>, backwards
   match = FindBuffer::FindMatchInRange(
       EphemeralRangeInFlatTree(PositionInFlatTree(*a->firstChild(), 3),
                                PositionInFlatTree(*b->firstChild(), 1)),
-      "foo", kCaseInsensitive | kBackwards);
+      "foo", kCaseInsensitiveBackwards);
   EXPECT_TRUE(match.IsNull());
   // <div>^foo<a>fo|of</a><b>oo</b></div>, backwards
   match = FindBuffer::FindMatchInRange(
       EphemeralRangeInFlatTree(
           PositionInFlatTree::FirstPositionInNode(*div->firstChild()),
           PositionInFlatTree(*a->firstChild(), 2)),
-      "foo", kCaseInsensitive | kBackwards);
+      "foo", kCaseInsensitiveBackwards);
   EXPECT_EQ(foo1, match);
 }
 
@@ -572,15 +578,21 @@ TEST_F(FindBufferTest, WholeWordTest) {
   SetBodyContent("foo bar foobar 六本木");
   FindBuffer buffer(WholeDocumentRange());
   EXPECT_EQ(2u, buffer.FindMatches("foo", kCaseInsensitive).CountForTesting());
-  EXPECT_EQ(1u, buffer.FindMatches("foo", kCaseInsensitive | kWholeWord)
-                    .CountForTesting());
+  constexpr FindOptions kCaseInsensitiveWholeWord =
+      FindOptions().SetCaseInsensitive(true).SetWholeWord(true);
+  EXPECT_EQ(
+      1u,
+      buffer.FindMatches("foo", kCaseInsensitiveWholeWord).CountForTesting());
   EXPECT_EQ(2u, buffer.FindMatches("bar", kCaseInsensitive).CountForTesting());
-  EXPECT_EQ(1u, buffer.FindMatches("bar", kCaseInsensitive | kWholeWord)
-                    .CountForTesting());
-  EXPECT_EQ(1u, buffer.FindMatches("六", kCaseInsensitive | kWholeWord)
-                    .CountForTesting());
-  EXPECT_EQ(1u, buffer.FindMatches("本木", kCaseInsensitive | kWholeWord)
-                    .CountForTesting());
+  EXPECT_EQ(
+      1u,
+      buffer.FindMatches("bar", kCaseInsensitiveWholeWord).CountForTesting());
+  EXPECT_EQ(
+      1u,
+      buffer.FindMatches("六", kCaseInsensitiveWholeWord).CountForTesting());
+  EXPECT_EQ(
+      1u,
+      buffer.FindMatches("本木", kCaseInsensitiveWholeWord).CountForTesting());
 }
 
 TEST_F(FindBufferTest, KanaDecomposed) {
@@ -607,7 +619,7 @@ TEST_F(FindBufferTest, FindPlainTextInvalidTarget1) {
                                     0x0427u, 0xda0au, 0};
 
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches(String(kInvalid1), 0);
+  const auto results = buffer.FindMatches(String(kInvalid1), FindOptions());
   EXPECT_TRUE(results.IsEmpty());
 }
 
@@ -620,7 +632,7 @@ TEST_F(FindBufferTest, FindPlainTextInvalidTarget2) {
                                     0xd6feu, 0xccadu, 0};
 
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches(String(kInvalid2), 0);
+  const auto results = buffer.FindMatches(String(kInvalid2), FindOptions());
   EXPECT_TRUE(results.IsEmpty());
 }
 
@@ -632,14 +644,14 @@ TEST_F(FindBufferTest, FindPlainTextInvalidTarget3) {
   static const UChar kInvalid3[] = {0xd800u, 0xdc00u, 0x0061u, 0xdc03u,
                                     0xd901u, 0xccadu, 0};
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches(String(kInvalid3), 0);
+  const auto results = buffer.FindMatches(String(kInvalid3), FindOptions());
   EXPECT_TRUE(results.IsEmpty());
 }
 
 TEST_F(FindBufferTest, DisplayInline) {
   SetBodyContent("<span>fi</span>nd");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("find", 0);
+  const auto results = buffer.FindMatches("find", FindOptions());
   ASSERT_EQ(1u, results.CountForTesting());
   EXPECT_EQ(FindBuffer::BufferMatchResult({0, 4}), results.front());
 }
@@ -647,7 +659,7 @@ TEST_F(FindBufferTest, DisplayInline) {
 TEST_F(FindBufferTest, DisplayBlock) {
   SetBodyContent("<div>fi</div>nd");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("find", 0);
+  const auto results = buffer.FindMatches("find", FindOptions());
   ASSERT_EQ(0u, results.CountForTesting())
       << "We should not match across block.";
 }
@@ -655,7 +667,7 @@ TEST_F(FindBufferTest, DisplayBlock) {
 TEST_F(FindBufferTest, DisplayContents) {
   SetBodyContent("<div style='display: contents'>fi</div>nd");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("find", 0);
+  const auto results = buffer.FindMatches("find", FindOptions());
   ASSERT_EQ(1u, results.CountForTesting());
   EXPECT_EQ(FindBuffer::BufferMatchResult({0, 4}), results.front());
 }
@@ -663,14 +675,14 @@ TEST_F(FindBufferTest, DisplayContents) {
 TEST_F(FindBufferTest, WBRTest) {
   SetBodyContent("fi<wbr>nd and fin<wbr>d");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("find", 0);
+  const auto results = buffer.FindMatches("find", FindOptions());
   ASSERT_EQ(2u, results.CountForTesting());
 }
 
 TEST_F(FindBufferTest, InputTest) {
   SetBodyContent("fi<input type='text'>nd and fin<input type='text'>d");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("find", 0);
+  const auto results = buffer.FindMatches("find", FindOptions());
   ASSERT_EQ(0u, results.CountForTesting());
 }
 
@@ -679,31 +691,31 @@ TEST_F(FindBufferTest, SelectMultipleTest) {
   {
     FindBuffer buffer(WholeDocumentRange());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    EXPECT_EQ(0u, buffer.FindMatches("find", 0).CountForTesting());
+    EXPECT_EQ(0u, buffer.FindMatches("find", FindOptions()).CountForTesting());
 #else
-    EXPECT_EQ(1u, buffer.FindMatches("find", 0).CountForTesting());
+    EXPECT_EQ(1u, buffer.FindMatches("find", FindOptions()).CountForTesting());
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   }
   SetBodyContent("<select size=2><option>find me</option></select>");
   {
     FindBuffer buffer(WholeDocumentRange());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    EXPECT_EQ(0u, buffer.FindMatches("find", 0).CountForTesting());
+    EXPECT_EQ(0u, buffer.FindMatches("find", FindOptions()).CountForTesting());
 #else
-    EXPECT_EQ(1u, buffer.FindMatches("find", 0).CountForTesting());
+    EXPECT_EQ(1u, buffer.FindMatches("find", FindOptions()).CountForTesting());
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   }
   SetBodyContent("<select size=1><option>find me</option></select>");
   {
     FindBuffer buffer(WholeDocumentRange());
-    EXPECT_EQ(0u, buffer.FindMatches("find", 0).CountForTesting());
+    EXPECT_EQ(0u, buffer.FindMatches("find", FindOptions()).CountForTesting());
   }
 }
 
 TEST_F(FindBufferTest, NullRange) {
   SetBodyContent("x<div></div>");
   FindBuffer buffer(WholeDocumentRange());
-  EXPECT_EQ(0u, buffer.FindMatches("find", 0).CountForTesting());
+  EXPECT_EQ(0u, buffer.FindMatches("find", FindOptions()).CountForTesting());
 }
 
 TEST_F(FindBufferTest, FindObjectReplacementCharacter) {
@@ -711,7 +723,7 @@ TEST_F(FindBufferTest, FindObjectReplacementCharacter) {
       "some text with <script></script> and \uFFFC (object replacement "
       "character)");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("\uFFFC", 0);
+  const auto results = buffer.FindMatches("\uFFFC", FindOptions());
   ASSERT_EQ(1u, results.CountForTesting());
 }
 
@@ -720,21 +732,21 @@ TEST_F(FindBufferTest,
   SetBodyContent(
       "some text with <img/> <script></script> and \U0010FFFF (max codepoint)");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("\U0010FFFF", 0);
+  const auto results = buffer.FindMatches("\U0010FFFF", FindOptions());
   ASSERT_EQ(1u, results.CountForTesting());
 }
 
 TEST_F(FindBufferTest, FindMaxCodepointNormalTextUTF32) {
   SetBodyContent("some text");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("\U0010FFFF", 0);
+  const auto results = buffer.FindMatches("\U0010FFFF", FindOptions());
   ASSERT_EQ(0u, results.CountForTesting());
 }
 
 TEST_F(FindBufferTest, FindMaxCodepointWithReplacedElementUTF32) {
   SetBodyContent("some text with <img/> <script></script>");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("\U0010FFFF", 0);
+  const auto results = buffer.FindMatches("\U0010FFFF", FindOptions());
   ASSERT_EQ(0u, results.CountForTesting());
 }
 
@@ -743,21 +755,21 @@ TEST_F(FindBufferTest,
   SetBodyContent(
       "some text with <img/> <scrip></script> and \uFFFF (max codepoint)");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("\uFFFF", 0);
+  const auto results = buffer.FindMatches("\uFFFF", FindOptions());
   ASSERT_EQ(1u, results.CountForTesting());
 }
 
 TEST_F(FindBufferTest, FindMaxCodepointNormalTextUTF16) {
   SetBodyContent("some text");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("\uFFFF", 0);
+  const auto results = buffer.FindMatches("\uFFFF", FindOptions());
   ASSERT_EQ(0u, results.CountForTesting());
 }
 
 TEST_F(FindBufferTest, FindMaxCodepointWithReplacedElementUTF16) {
   SetBodyContent("some text with <img/> <script></script>");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("\uFFFF", 0);
+  const auto results = buffer.FindMatches("\uFFFF", FindOptions());
   ASSERT_EQ(0u, results.CountForTesting());
 }
 
@@ -780,7 +792,7 @@ TEST_F(FindBufferTest, DoNotSearchInSuggestedValues) {
   {
     // Apply a search for 'aba'.
     FindBuffer buffer(WholeDocumentRange());
-    const auto results = buffer.FindMatches("aba", 0);
+    const auto results = buffer.FindMatches("aba", FindOptions());
 
     // There should be no result because the suggested value is not supposed to
     // be considered in a search.
@@ -792,7 +804,7 @@ TEST_F(FindBufferTest, DoNotSearchInSuggestedValues) {
   {
     // Apply a search for 'aba' again.
     FindBuffer buffer(WholeDocumentRange());
-    const auto results = buffer.FindMatches("aba", 0);
+    const auto results = buffer.FindMatches("aba", FindOptions());
 
     // This time, there should be a match.
     EXPECT_EQ(1U, results.CountForTesting());
@@ -804,7 +816,7 @@ TEST_F(FindBufferTest, FindInTable) {
       "<table id='table'><tbody><tr id='row'><td id='c1'>c1 "
       "<i>i</i></td></tr></tbody></table>");
   FindBuffer buffer(WholeDocumentRange());
-  const auto results = buffer.FindMatches("c1", 0);
+  const auto results = buffer.FindMatches("c1", FindOptions());
   ASSERT_EQ(1u, results.CountForTesting());
 }
 
