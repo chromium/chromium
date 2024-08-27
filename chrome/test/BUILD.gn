@@ -4627,6 +4627,7 @@ if (!is_android) {
         "../browser/notifications/notification_platform_bridge_chromeos_browsertest.cc",
         "../browser/notifications/notifier_settings_test_observer.cc",
         "../browser/notifications/notifier_settings_test_observer.h",
+        "../browser/page_load_metrics/observers/ash_session_restore_page_load_metrics_observer_browsertest.cc",
         "../browser/policy/login_policy_test_base_browsertest.cc",
         "../browser/policy/restricted_mgs_policy_provider_ash_browsertest.cc",
         "../browser/process_singleton_browsertest.cc",

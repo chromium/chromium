@@ -25,6 +25,9 @@ class WebContents;
 class AshSessionRestorePageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
+  static constexpr char kFirstInputDelayName[] =
+      "Ash.FullRestore.Browser.FirstInputDelay";
+
   // Whether a `AshSessionRestorePageLoadMetricsObserver` should be instantiated
   // for the given `profile`. If false, the metric recording is already complete
   // or a full restore is not possible to begin with, so it's wasteful to create

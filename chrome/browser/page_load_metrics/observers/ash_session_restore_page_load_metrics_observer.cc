@@ -122,7 +122,7 @@ void AshSessionRestorePageLoadMetricsObserver::TryRecordFirstInputDelay(
     return;
   }
   base::UmaHistogramCustomTimes(
-      "Ash.FullRestore.Browser.FirstInputDelay",
+      kFirstInputDelayName,
       timing.interactive_timing->first_input_delay.value(),
       // Parameters taken from `UmaPageLoadMetricsObserver`.
       base::Milliseconds(1), base::Seconds(60), 50);
