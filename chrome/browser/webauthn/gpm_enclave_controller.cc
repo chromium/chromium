@@ -840,22 +840,16 @@ void GPMEnclaveController::OnICloudKeysRetrievedForEnrollment(
     }
   }
 
-  if (local_icloud_keys.empty()) {
-    // The device has no iCloud recovery key. Create a new key.
-    FIDO_LOG(EVENT) << "Creating new iCloud recovery key";
-    device::enclave::ICloudRecoveryKey::Create(
-        base::BindOnce(&GPMEnclaveController::EnrollICloudRecoveryKey,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kICloudKeychainRecoveryKeyAccessGroup);
-    return;
-  }
-
-  // The device has at least one iCloud recovery key, but it hasn't been
-  // enrolled as a passkey domain recovery factor. This can happen if enrollment
-  // was interrupted or if the recovery key is currently enrolled for a
-  // different security domain. Choose an arbitrary key and enroll it.
-  FIDO_LOG(EVENT) << "Enrolling existing iCloud recovery key";
-  EnrollICloudRecoveryKey(std::move(local_icloud_keys.at(0)));
+  // The device has no iCloud recovery key for the passkeys security domain.
+  // Create a new key.
+  // TODO(nsatragno): it's possible we might want to share keys with other
+  // security domains. We would need to loop through all vault members across
+  // all security domains.
+  FIDO_LOG(EVENT) << "Creating new iCloud recovery key";
+  device::enclave::ICloudRecoveryKey::Create(
+      base::BindOnce(&GPMEnclaveController::EnrollICloudRecoveryKey,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kICloudKeychainRecoveryKeyAccessGroup);
 }
 
 void GPMEnclaveController::EnrollICloudRecoveryKey(
