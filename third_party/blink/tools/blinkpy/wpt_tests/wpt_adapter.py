@@ -547,8 +547,16 @@ class WPTAdapter:
                 self.process_and_upload_results(runner_options))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
+            # Restore the original CWD as soon as the call into `wpt run` is
+            # over. This ensures relative paths for `--json-test-results` and
+            # other options work correctly.
+            stack.callback(self.fs.chdir, self.fs.getcwd())
             # Changing the CWD is not ideal, but necessary for `wptserve` to
             # resolve relative paths in `external/wpt/config.json` correctly.
+            #
+            # TODO(crbug.com/362344569): Replace this workaround. One option is
+            # to add a `wpt run` parameter to point to a wptserve config with
+            # absolutized paths.
             self.fs.chdir(self.port.web_tests_dir())
             yield runner_options
 
