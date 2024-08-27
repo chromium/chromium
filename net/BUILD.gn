@@ -1842,7 +1842,6 @@ component("extras") {
   deps = [
     ":net",
     "//base",
-    "//crypto",
     "//sql:sql",
   ]
   public_deps = [ ":shared_dictionary_info" ]

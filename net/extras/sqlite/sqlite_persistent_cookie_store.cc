@@ -32,7 +32,6 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -76,7 +75,6 @@ enum CookieLoadProblem {
   COOKIE_LOAD_PROBLEM_OPEN_DB = 3,
   COOKIE_LOAD_PROBLEM_RECOVERY_FAILED = 4,
   COOKIE_LOAD_DELETE_COOKIE_PARTITION_FAILED = 5,
-  COOKIE_LOAD_PROBLEM_HASH_FAILED = 6,
   COOKIE_LOAD_PROBLEM_LAST_ENTRY
 };
 
@@ -173,7 +171,6 @@ namespace {
 
 // Version number of the database.
 //
-// Version 24 - 2024/08/15 - https://crrev.com/c/5792044
 // Version 23 - 2024/04/10 - https://crrev.com/c/5169630
 // Version 22 - 2024/03/22 - https://crrev.com/c/5378176
 // Version 21 - 2023/11/22 - https://crrev.com/c/5049032
@@ -203,9 +200,6 @@ namespace {
 // Version 4  - 2009/09/01 - https://codereview.chromium.org/183021
 //
 
-// Version 24 adds a SHA256 hash of the domain value to front of the the
-// encrypted_value.
-//
 // Version 23 adds the value for has_cross_site_ancestor and updates any
 // preexisting cookies with a source_scheme value of kUnset and a is_secure of
 // true to have a source_scheme value of kSecure.
@@ -306,8 +300,8 @@ namespace {
 // Version 3 updated the database to include the last access time, so we can
 // expire them in decreasing order of use when we've reached the maximum
 // number of cookies.
-const int kCurrentVersionNumber = 24;
-const int kCompatibleVersionNumber = 24;
+const int kCurrentVersionNumber = 23;
+const int kCompatibleVersionNumber = 23;
 
 }  // namespace
 
@@ -780,11 +774,6 @@ bool CreateV23Schema(sql::Database* db) {
   return db->Execute(kCreateTableQuery) && db->Execute(kCreateIndexQuery);
 }
 
-// v24 schema is identical to v23 schema.
-bool CreateV24Schema(sql::Database* db) {
-  return CreateV23Schema(db);
-}
-
 }  // namespace
 
 void SQLitePersistentCookieStore::Backend::Load(
@@ -854,7 +843,7 @@ void SQLitePersistentCookieStore::Backend::NotifyLoadCompleteInForeground(
 bool SQLitePersistentCookieStore::Backend::CreateDatabaseSchema() {
   DCHECK(db());
 
-  return db()->DoesTableExist("cookies") || CreateV24Schema(db());
+  return db()->DoesTableExist("cookies") || CreateV23Schema(db());
 }
 
 bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
@@ -1014,7 +1003,6 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   bool ok = true;
   while (statement.Step()) {
-    std::string domain = statement.ColumnString(1);
     std::string value;
     std::string encrypted_value = statement.ColumnString(13);
     if (!encrypted_value.empty() && crypto_) {
@@ -1024,14 +1012,6 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
         ok = false;
         continue;
       }
-      std::string correct_hash = crypto::SHA256HashString(domain);
-      if (!base::StartsWith(value, correct_hash,
-                            base::CompareCase::SENSITIVE)) {
-        RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_HASH_FAILED);
-        ok = false;
-        continue;
-      }
-      value = value.substr(correct_hash.length());
     } else {
       value = statement.ColumnString(4);
     }
@@ -1049,7 +1029,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     std::unique_ptr<net::CanonicalCookie> cc = CanonicalCookie::FromStorage(
         /*name=*/statement.ColumnString(3),        //
         value,                                     //
-        domain,                                    //
+        /*domain=*/statement.ColumnString(1),      //
         /*path=*/statement.ColumnString(5),        //
         /*creation=*/statement.ColumnTime(0),      //
         /*expiration=*/statement.ColumnTime(6),    //
@@ -1349,71 +1329,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     }
   }
 
-  if (cur_version == 23) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV24");
-    sql::Transaction transaction(db());
-    if (!transaction.Begin()) {
-      return std::nullopt;
-    }
-
-    if (crypto_) {
-      sql::Statement select_smt, update_smt;
-
-      select_smt.Assign(db()->GetCachedStatement(
-          SQL_FROM_HERE,
-          "SELECT rowid, host_key, encrypted_value FROM cookies"));
-
-      update_smt.Assign(
-          db()->GetCachedStatement(SQL_FROM_HERE,
-                                   "UPDATE cookies SET encrypted_value=? WHERE "
-                                   "rowid=?"));
-
-      if (!select_smt.is_valid() || !update_smt.is_valid()) {
-        return std::nullopt;
-      }
-
-      std::map<int64_t, std::string> encrypted_values;
-
-      while (select_smt.Step()) {
-        int64_t rowid = select_smt.ColumnInt64(0);
-        std::string domain = select_smt.ColumnString(1);
-        std::string encrypted_value = select_smt.ColumnString(2);
-        std::string decrypted_value;
-        if (!crypto_->DecryptString(encrypted_value, &decrypted_value)) {
-          RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_FAILED);
-          continue;
-        }
-        std::string new_encrypted_value;
-
-        if (!crypto_->EncryptString(
-                base::StrCat(
-                    {crypto::SHA256HashString(domain), decrypted_value}),
-                &new_encrypted_value)) {
-          RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ENCRYPT_FAILED);
-          continue;
-        }
-        encrypted_values[rowid] = new_encrypted_value;
-      }
-
-      for (const auto& entry : encrypted_values) {
-        update_smt.Reset(true);
-        update_smt.BindString(0, entry.second);
-        update_smt.BindInt64(1, entry.first);
-        if (!update_smt.Run()) {
-          return std::nullopt;
-        }
-      }
-    }
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return std::nullopt;
-    }
-  }
-
   // Put future migration cases here.
   return std::make_optional(cur_version);
 }
@@ -1560,10 +1475,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           add_statement.BindString(3, po->cc().Name());
           if (crypto_) {
             std::string encrypted_value;
-            if (!crypto_->EncryptString(
-                    base::StrCat({crypto::SHA256HashString(po->cc().Domain()),
-                                  po->cc().Value()}),
-                    &encrypted_value)) {
+            if (!crypto_->EncryptString(po->cc().Value(), &encrypted_value)) {
               DLOG(WARNING) << "Could not encrypt a cookie, skipping add.";
               RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ENCRYPT_FAILED);
               continue;
