@@ -4,15 +4,6 @@
 
 #include "gpu/ipc/service/gpu_memory_buffer_factory_android_hardware_buffer.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
-#include "base/android/scoped_hardware_buffer_handle.h"
-#include "base/containers/contains.h"
-#include "base/logging.h"
-#include "build/build_config.h"
-#include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
-#include "ui/gfx/android/android_surface_control_compat.h"
-
 namespace gpu {
 
 GpuMemoryBufferFactoryAndroidHardwareBuffer::
@@ -35,11 +26,7 @@ GpuMemoryBufferFactoryAndroidHardwareBuffer::CreateGpuMemoryBuffer(
 
 void GpuMemoryBufferFactoryAndroidHardwareBuffer::DestroyGpuMemoryBuffer(
     gfx::GpuMemoryBufferId id,
-    int client_id) {
-  base::AutoLock lock(lock_);
-  BufferMapKey key(id, client_id);
-  buffer_map_.erase(key);
-}
+    int client_id) {}
 
 bool GpuMemoryBufferFactoryAndroidHardwareBuffer::
     FillSharedMemoryRegionWithBufferContents(
