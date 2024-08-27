@@ -329,8 +329,7 @@ class ManualTestingImportTesti18n : public ManualTestingImportTest {
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseFRAddressModel,
                                 features::kAutofillUseINAddressModel,
-                                features::kAutofillUseITAddressModel,
-                                features::kAutofillUseMXAddressModel},
+                                features::kAutofillUseITAddressModel},
                                {});
   }
   base::test::ScopedFeatureList features_;

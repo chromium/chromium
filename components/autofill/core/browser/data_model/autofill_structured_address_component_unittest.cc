@@ -228,8 +228,7 @@ class AutofillStructuredAddressAddressComponent : public testing::Test {
   AutofillStructuredAddressAddressComponent() {
     features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
                                 features::kAutofillUseBRAddressModel,
-                                features::kAutofillUseINAddressModel,
-                                features::kAutofillUseMXAddressModel},
+                                features::kAutofillUseINAddressModel},
                                {});
   }
 

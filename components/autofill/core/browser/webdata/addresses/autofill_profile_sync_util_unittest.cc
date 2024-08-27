@@ -924,8 +924,7 @@ class AutofillProfileSyncUtilTest
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseFRAddressModel,
                                 features::kAutofillUseINAddressModel,
-                                features::kAutofillUseITAddressModel,
-                                features::kAutofillUseMXAddressModel},
+                                features::kAutofillUseITAddressModel},
                                {});
   }
 

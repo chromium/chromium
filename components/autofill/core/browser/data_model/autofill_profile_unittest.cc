@@ -1368,8 +1368,7 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
                                  features::kAutofillUseDEAddressModel,
                                  features::kAutofillUseFRAddressModel,
                                  features::kAutofillUseINAddressModel,
-                                 features::kAutofillUseITAddressModel,
-                                 features::kAutofillUseMXAddressModel},
+                                 features::kAutofillUseITAddressModel},
                                 {});
   // Those types do store a verification status.
   FieldTypeSet structured_types{
@@ -1524,11 +1523,8 @@ TEST_F(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
 }
 
 TEST_F(AutofillProfileTest, SetRawInfoWorksForLandmark) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                 features::kAutofillUseMXAddressModel},
-                                {});
-
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillUseI18nAddressModel};
   AutofillProfile profile(AddressCountryCode("MX"));
 
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
@@ -1536,10 +1532,8 @@ TEST_F(AutofillProfileTest, SetRawInfoWorksForLandmark) {
 }
 
 TEST_F(AutofillProfileTest, SetRawInfoWorksForBetweenStreets) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                 features::kAutofillUseMXAddressModel},
-                                {});
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillUseI18nAddressModel};
   AutofillProfile profile(AddressCountryCode("MX"));
 
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");

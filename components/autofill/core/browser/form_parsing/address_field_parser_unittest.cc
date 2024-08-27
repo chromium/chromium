@@ -29,8 +29,7 @@ class AddressFieldParserTest
                                        features::kAutofillUseFRAddressModel,
                                        features::kAutofillUsePLAddressModel,
                                        features::kAutofillUseINAddressModel,
-                                       features::kAutofillUseITAddressModel,
-                                       features::kAutofillUseMXAddressModel},
+                                       features::kAutofillUseITAddressModel},
                                       {});
   }
   AddressFieldParserTest(const AddressFieldParserTest&) = delete;
@@ -207,8 +206,6 @@ TEST_P(AddressFieldParserTest, ParseLandmark) {
 
 // Tests that between streets field is correctly classified.
 TEST_P(AddressFieldParserTest, ParseBetweenStreets) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   AddTextFormFieldData("entre-calles", "Entre calles",
                        ADDRESS_HOME_BETWEEN_STREETS);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("MX"),
@@ -217,8 +214,6 @@ TEST_P(AddressFieldParserTest, ParseBetweenStreets) {
 
 // Tests that multiple between streets field are correctly classified.
 TEST_P(AddressFieldParserTest, ParseBetweenStreetsLines) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   std::vector<std::pair<std::pair<std::string, std::string>,
                         std::pair<std::string, std::string>>>
       // "Name", "Label" for ADDRESS_HOME_BETWEEN_STREETS_1
@@ -243,8 +238,6 @@ TEST_P(AddressFieldParserTest, ParseBetweenStreetsLines) {
 
 // Tests that address level 2 field is correctly classified.
 TEST_P(AddressFieldParserTest, ParseAdminLevel2) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   AddTextFormFieldData("municipio", "Municipio", ADDRESS_HOME_ADMIN_LEVEL2);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("MX"),
                     LanguageCode("es"));
@@ -334,8 +327,6 @@ TEST_P(AddressFieldParserTest, ParseCompany) {
 // fields are correctly classfied with unambiguous field names and labels.
 TEST_P(AddressFieldParserTest,
        ParseDependentLocalityCityStateCountryZipcodeTogether) {
-  // TODO(crbug.com/40160818): Remove once launched.
-  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   AddTextFormFieldData("neighborhood", "Neighborhood",
                        ADDRESS_HOME_DEPENDENT_LOCALITY);
   AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);

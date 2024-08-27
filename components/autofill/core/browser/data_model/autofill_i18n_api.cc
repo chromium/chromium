@@ -443,11 +443,6 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
     return false;
   }
 
-  if (country_code == AddressCountryCode("MX") &&
-      !base::FeatureList::IsEnabled(features::kAutofillUseMXAddressModel)) {
-    return false;
-  }
-
   if (country_code == AddressCountryCode("PL") &&
       !base::FeatureList::IsEnabled(features::kAutofillUsePLAddressModel)) {
     return false;

@@ -531,8 +531,7 @@ class FormDataImporterTest : public testing::Test {
          features::kAutofillUseDEAddressModel,
          features::kAutofillUseFRAddressModel,
          features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel},
+         features::kAutofillUseITAddressModel},
         {});
   }
 

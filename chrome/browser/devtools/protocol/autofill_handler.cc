@@ -229,12 +229,6 @@ void AutofillHandler::SetAddresses(
         continue;
       }
 
-      if (test_address_country == u"Mexico" &&
-          !base::FeatureList::IsEnabled(
-              autofill::features::kAutofillUseMXAddressModel)) {
-        continue;
-      }
-
       test_address_for_countries.push_back(profile);
     }
   }

@@ -425,11 +425,6 @@ BASE_FEATURE(kAutofillUseITAddressModel,
              "AutofillUseITAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using a custom address model for Mexico, overriding the legacy one.
-BASE_FEATURE(kAutofillUseMXAddressModel,
-             "AutofillUseMXAddressModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using a custom address model for Poland, overriding the legacy one.
 BASE_FEATURE(kAutofillUsePLAddressModel,
              "AutofillUsePLAddressModel",

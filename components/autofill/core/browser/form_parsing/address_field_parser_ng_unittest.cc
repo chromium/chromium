@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -162,8 +161,6 @@ TEST_P(AddressFieldParserTestNG, ParseLandmark) {
 
 // Tests that between streets field is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseBetweenStreets) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   AddTextFormFieldData("entre-calles", "Entre calles",
                        ADDRESS_HOME_BETWEEN_STREETS);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("MX"),
@@ -172,8 +169,6 @@ TEST_P(AddressFieldParserTestNG, ParseBetweenStreets) {
 
 // Tests that multiple between streets field are correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseBetweenStreetsLines) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   std::vector<std::pair<std::pair<std::string, std::string>,
                         std::pair<std::string, std::string>>>
       // "Name", "Label" for ADDRESS_HOME_BETWEEN_STREETS_1
@@ -265,8 +260,6 @@ TEST_P(AddressFieldParserTestNG, ParseCompany) {
 // fields are correctly classfied with unambiguous field names and labels.
 TEST_P(AddressFieldParserTestNG,
        ParseDependentLocalityCityStateCountryZipcodeTogether) {
-  // TODO(crbug.com/40160818): Remove once launched.
-  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   AddTextFormFieldData("neighborhood", "Neighborhood",
                        ADDRESS_HOME_DEPENDENT_LOCALITY);
   AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);

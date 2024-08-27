@@ -85,7 +85,6 @@ class AutofillStructuredAddress : public testing::Test {
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseINAddressModel,
                                 features::kAutofillUseITAddressModel,
-                                features::kAutofillUseMXAddressModel,
                                 features::kAutofillUsePLAddressModel},
                                {});
   }
