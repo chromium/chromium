@@ -1120,7 +1120,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.P2P.UDP.BatchingNumberOfReceivedPackets"
     units="packets/batching" expires_after="2024-03-31">
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     This histogram logs how many received UDP packets are batched in a single
@@ -1131,7 +1131,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.P2P.UDP.BatchingNumberOfSentPackets"
     units="packets/batching" expires_after="2024-06-02">
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     This histogram logs how many sent UDP packets are batched in a single
@@ -1233,7 +1233,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.Duration.Network" units="microseconds"
     expires_after="2024-09-15">
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Duration between the moment the WebRTC network thread's JingleThreadWrapper
@@ -1249,7 +1249,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.Duration.Signaling" units="microseconds"
     expires_after="2024-12-08">
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Duration between the moment the WebRTC signaling thread's
@@ -1265,7 +1265,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.Duration.Worker" units="microseconds"
     expires_after="2025-01-19">
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Duration between the moment the WebRTC worker thread's JingleThreadWrapper
@@ -1317,7 +1317,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.Latency.Network" units="microseconds"
     expires_after="2024-09-15">
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Latency defined as the duration between the moment a task is scheduled from
@@ -1333,7 +1333,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.Latency.Signaling" units="microseconds"
     expires_after="2024-11-17">
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Latency defined as the duration between the moment a task is scheduled from
@@ -1349,7 +1349,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.Latency.Worker" units="microseconds"
     expires_after="2024-12-08">
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Latency defined as the duration between the moment a task is scheduled from
@@ -1536,7 +1536,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>hta@chromium.org</owner>
   <summary>
     Durations of audio tracks received over a PeerConnection. The stopwatch
@@ -1550,7 +1550,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>hta@chromium.org</owner>
   <summary>
     Durations of video tracks received over a PeerConnection. The stopwatch
@@ -1624,7 +1624,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>hta@chromium.org</owner>
   <summary>
     Durations of audio tracks sent over a PeerConnection. The stopwatch starts
@@ -1637,7 +1637,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>hta@chromium.org</owner>
   <summary>
     Durations of video tracks sent over a PeerConnection. The stopwatch starts

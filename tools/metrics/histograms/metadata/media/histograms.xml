@@ -6097,7 +6097,7 @@ chromium-metrics-reviews@google.com.
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device frame rate requested by VideoCaptureManager on
@@ -6120,7 +6120,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.VideoCapture.Height" units="pixels"
     expires_after="2023-12-31">
   <owner>mcasas@chromium.org</owner>
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device captured frame height in pixels. The collection is made
@@ -6296,7 +6296,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.VideoCapture.Width" units="pixels"
     expires_after="2025-05-05">
   <owner>mcasas@chromium.org</owner>
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device captured frame width in pixels. The collection is made
@@ -6460,7 +6460,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCaptureManager.DesktopCaptureImplementationAndType"
     enum="DesktopCaptureImplementationAndType" expires_after="2024-12-08">
-  <owner>handellm@chromium.org</owner>
+  <owner>handellm@google.com</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
     Indicates which desktop capture implementation and DesktopID::Type was used
