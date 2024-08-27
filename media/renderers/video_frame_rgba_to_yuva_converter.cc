@@ -32,7 +32,8 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
                                  const gpu::MailboxHolder& src_mailbox_holder,
                                  VideoFrame* dst_video_frame) {
   DCHECK_EQ(dst_video_frame->format(), PIXEL_FORMAT_NV12);
-
+  CHECK_EQ(dst_video_frame->shared_image_format_type(),
+           SharedImageFormatType::kSharedImageFormat);
   auto* ri = provider->RasterInterface();
   DCHECK(ri);
 
@@ -53,46 +54,32 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
 
   ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
 
-  if (dst_video_frame->shared_image_format_type() ==
-      SharedImageFormatType::kLegacy) {
-    SkYUVAInfo yuva_info =
-        VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(dst_video_frame);
-    gpu::Mailbox yuva_mailboxes[SkYUVAInfo::kMaxPlanes];
-    for (int plane = 0; plane < yuva_info.numPlanes(); ++plane) {
-      const auto& dst_mailbox_holder = dst_video_frame->mailbox_holder(plane);
-      ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
-      yuva_mailboxes[plane] = dst_mailbox_holder.mailbox;
-    }
-    ri->ConvertRGBAToYUVAMailboxes(
-        yuva_info.yuvColorSpace(), yuva_info.planeConfig(),
-        yuva_info.subsampling(), yuva_mailboxes, src_mailbox_holder.mailbox);
-  } else {
-    const auto& dst_mailbox_holder = dst_video_frame->mailbox_holder(0);
-    ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
+  const auto& dst_mailbox_holder =
+      dst_video_frame->mailbox_holder(/*texture_index=*/0);
+  ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
 
-    // `unpack_flip_y` should be set if the surface origin of the source
-    // doesn't match that of the destination, which is created with
-    // kTopLeft_GrSurfaceOrigin.
-    // TODO(crbug.com/40271944): If this codepath is used with destinations
-    // that are created with other surface origins, will need to generalize
-    // this.
-    bool unpack_flip_y = (src_surface_origin != kTopLeft_GrSurfaceOrigin);
+  // `unpack_flip_y` should be set if the surface origin of the source
+  // doesn't match that of the destination, which is created with
+  // kTopLeft_GrSurfaceOrigin.
+  // TODO(crbug.com/40271944): If this codepath is used with destinations
+  // that are created with other surface origins, will need to generalize
+  // this.
+  bool unpack_flip_y = (src_surface_origin != kTopLeft_GrSurfaceOrigin);
 
-    // Note: the destination video frame can have a coded size that is larger
-    // than that of the source video to account for alignment needs. In this
-    // case, both this codepath and the the legacy codepath above stretch to
-    // fill the destination. Cropping would clearly be more correct, but
-    // implementing that behavior in CopySharedImage() for the MultiplanarSI
-    // case resulted in pixeltest failures due to pixel bleeding around image
-    // borders that we weren't able to resolve (see crbug.com/1451025 for
-    // details).
-    // TODO(crbug.com/40270413): Update this comment when we resolve that bug
-    // and change CopySharedImage() to crop rather than stretch.
-    ri->CopySharedImage(src_mailbox_holder.mailbox, dst_mailbox_holder.mailbox,
-                        GL_TEXTURE_2D, 0, 0, 0, 0, src_size.width(),
-                        src_size.height(), unpack_flip_y,
-                        /*unpack_premultiply_alpha=*/false);
-  }
+  // Note: the destination video frame can have a coded size that is larger
+  // than that of the source video to account for alignment needs. In this
+  // case, both this codepath and the the legacy codepath above stretch to
+  // fill the destination. Cropping would clearly be more correct, but
+  // implementing that behavior in CopySharedImage() for the MultiplanarSI
+  // case resulted in pixeltest failures due to pixel bleeding around image
+  // borders that we weren't able to resolve (see crbug.com/1451025 for
+  // details).
+  // TODO(crbug.com/40270413): Update this comment when we resolve that bug
+  // and change CopySharedImage() to crop rather than stretch.
+  ri->CopySharedImage(src_mailbox_holder.mailbox, dst_mailbox_holder.mailbox,
+                      GL_TEXTURE_2D, 0, 0, 0, 0, src_size.width(),
+                      src_size.height(), unpack_flip_y,
+                      /*unpack_premultiply_alpha=*/false);
   ri->Flush();
 
   // Make access to the `dst_video_frame` wait on copy completion. We also
