@@ -3048,9 +3048,6 @@ extern const char kNtpAlphaBackgroundCollectionsDescription[];
 extern const char kNtpBackgroundImageErrorDetectionName[];
 extern const char kNtpBackgroundImageErrorDetectionDescription[];
 
-extern const char kNtpCacheOneGoogleBarName[];
-extern const char kNtpCacheOneGoogleBarDescription[];
-
 extern const char kNtpCalendarModuleName[];
 extern const char kNtpCalendarModuleDescription[];
 

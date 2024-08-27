@@ -7001,10 +7001,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpBackgroundImageErrorDetection)},
 
-    {"ntp-cache-one-google-bar", flag_descriptions::kNtpCacheOneGoogleBarName,
-     flag_descriptions::kNtpCacheOneGoogleBarDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kCacheOneGoogleBar)},
-
     {"ntp-calendar-module", flag_descriptions::kNtpCalendarModuleName,
      flag_descriptions::kNtpCalendarModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpCalendarModule,

@@ -6160,11 +6160,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "ntp-cache-one-google-bar",
-    "owners": [ "aee@chromium.org", "mahmadi@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "ntp-calendar-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
     "expiry_milestone": 130

@@ -5272,11 +5272,6 @@ const char kNtpBackgroundImageErrorDetectionName[] =
 const char kNtpBackgroundImageErrorDetectionDescription[] =
     "Checks NTP background image links for HTTP status errors.";
 
-const char kNtpCacheOneGoogleBarName[] = "Cache OneGoogleBar";
-const char kNtpCacheOneGoogleBarDescription[] =
-    "Enables using the OneGoogleBar cached response in chrome://new-tab-page, "
-    "when available.";
-
 const char kNtpCalendarModuleName[] = "NTP Calendar Module";
 const char kNtpCalendarModuleDescription[] =
     "Shows the Google Calendar module on the New Tab Page.";

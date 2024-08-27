@@ -21,11 +21,6 @@ BASE_FEATURE(kConfirmSuggestionRemovals,
              "ConfirmNtpSuggestionRemovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the OneGooleBar cached response is sent back to NTP.
-BASE_FEATURE(kCacheOneGoogleBar,
-             "CacheOneGoogleBar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, Chrome theme color will be set to match the NTP background
 // on NTP Customize Chrome background change.
 BASE_FEATURE(kCustomizeChromeColorExtraction,
