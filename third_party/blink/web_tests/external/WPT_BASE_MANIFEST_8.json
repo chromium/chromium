@@ -49000,6 +49000,19 @@
         {}
        ]
       ],
+      "max-height-applies-to-017.html": [
+       "3543b19ee33dbbd93e3b8455458123bf298bd4a1",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "max-height-percentage-001.xht": [
        "5ac6f609e9c68384771a207119363215ad8149ca",
        [
@@ -115934,6 +115947,19 @@
        {}
       ]
      ],
+     "flex-item-position-relative-001.html": [
+      "7e6907e0e8d4801776d581474a29d5f5b5743b53",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flex-item-position-relative-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "flex-item-transferred-sizes-padding-border-sizing.html": [
       "fc1a163e01ee1eaca8186619aee3e8d0e25c3155",
       [
@@ -163524,7 +163550,7 @@
       ]
      ],
      "nesting-basic.html": [
-      "19ff48e4a29588e48eb19570149ad7525827cd8c",
+      "9edff4ea1af6a21c7b738f869e171d9fc98968f7",
       [
        null,
        [
@@ -319989,6 +320015,10 @@
       "2b0f294c3441f1cf25a6678b9ce0748258582ea1",
       []
      ],
+     "flex-item-position-relative-001-ref.html": [
+      "01e078d983d1319199a9356e2da54278009a7418",
+      []
+     ],
      "flex-lines": {
       "multi-line-wrap-reverse-column-reverse-ref.html": [
        "38366a62f7e6b7df30b2da814cf178ebba5a83fa",
@@ -335909,6 +335939,10 @@
      ],
      "nest-containing-forgiving-ref.html": [
       "8fb7c8674a534aa6e68501916616304064696145",
+      []
+     ],
+     "nested-declarations-matching-expected.txt": [
+      "ace17cb3889e6e7ebd4142a4e6378871a3dfae80",
       []
      ],
      "nesting-basic-ref.html": [
@@ -457675,7 +457709,7 @@
       ]
      ],
      "scope-nesting.html": [
-      "d299ba30370516a526ff96c971c9d459589f5514",
+      "c0fc7150fae00ad279b89c07d3a1be076eec9c5f",
       [
        null,
        {}
@@ -470072,6 +470106,20 @@
        {}
       ]
      ],
+     "nested-declarations-cssom.html": [
+      "42e3930fbeb5df22b3b66480d335036d6d5d41e3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "nested-declarations-matching.html": [
+      "b6c0fe7a75dfe228556ab44642654bf1af500f26",
+      [
+       null,
+       {}
+      ]
+     ],
      "nesting-layer.html": [
       "91db883059c865d04e57e2e79c4a832054691b12",
       [
@@ -470087,7 +470135,7 @@
       ]
      ],
      "serialize-group-rules-with-decls.html": [
-      "7e9aaafbeb894c2cbb2ff8acfb47b576f89da5c4",
+      "e15210c2dd2dca826b555858f00fbf738cf4cbe0",
       [
        null,
        {}
@@ -476742,7 +476790,7 @@
       ]
      ],
      "custom-property-rule-ambiguity.html": [
-      "04f908acde2e72fba295d9bc1592ab026a1aef68",
+      "a8ac1de2c556ea178d5ddc410c8dc090f718bdae",
       [
        null,
        {}
@@ -744346,7 +744394,7 @@
      ]
     ],
     "request-content-length.any.js": [
-     "054d2cce9d27ab1044f7e99932f7b11a1d807a0e",
+     "69a1e168365ab9c87c1ddf5017d29c0347f8333d",
      [
       "xhr/request-content-length.any.html",
       {}
@@ -759820,7 +759868,7 @@
          ]
         ],
         "pointer_pen.py": [
-         "def4552d3053f60100d541fbaeecf7d67e07f8a1",
+         "7b68d3de057db102ccaec01282a202721b16af24",
          [
           null,
           {}
