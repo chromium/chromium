@@ -776,6 +776,11 @@ class CrossbenchTest(object):
     return browser_arg.lower().startswith('android')
 
   def _find_browser(self, browser_arg):
+    # Replacing --browser with the generated self.browser.
+    self.options.passthrough_args = [
+        arg for arg in self.options.passthrough_args
+        if not arg.startswith('--browser=')
+    ]
     if '/' in browser_arg or '\\' in browser_arg:
       # The --browser arg looks like a path. Use it as-is.
       self.browser = self.CHROME_BROWSER % browser_arg
@@ -891,10 +896,8 @@ class CrossbenchTest(object):
       raise Exception('No support to run multiple benchmarks at this time.')
     return self.execute_benchmark(
         self.options.benchmarks,
-        (self.options.benchmark_display_name or self.options.benchmarks), [
-            arg for arg in self.options.passthrough_args
-            if not arg.startswith('--browser=')
-        ])
+        (self.options.benchmark_display_name or self.options.benchmarks),
+        self.options.passthrough_args)
 
 
 def parse_arguments(args):
@@ -1151,15 +1154,17 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       test_results_files.append(output_paths.test_results)
   if 'crossbench' in shard_configuration:
     benchmarks = shard_configuration['crossbench']
-    crossbench_test = CrossbenchTest(options, isolated_out_dir)
     # Overwriting the "run_benchmark" with the Crossbench tool.
     options.executable = str(CROSSBENCH_TOOL)
     for benchmark, benchmark_config in benchmarks.items():
       display_name = benchmark_config.get('display_name', benchmark)
       print(f'\n### {display_name} ###')
-      benchmark_args = benchmark_config.get('arguments', [])
+      if benchmark_args := benchmark_config.get('arguments', []):
+        options.passthrough_args.extend(benchmark_args)
+      options.benchmarks = benchmark
+      crossbench_test = CrossbenchTest(options, isolated_out_dir)
       return_code = crossbench_test.execute_benchmark(benchmark, display_name,
-                                                      benchmark_args)
+                                                      options.passthrough_args)
       overall_return_code = return_code or overall_return_code
       test_results_files.append(
           OutputFilePaths(isolated_out_dir, display_name).test_results)
