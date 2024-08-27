@@ -14,15 +14,24 @@ import android.widget.TextView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /** Unit test for {@link SharedImageTilesCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedImageTilesCoordinatorUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private DataSharingService mDataSharingService;
+
     private Context mContext;
     private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private SharedImageTilesView mView;
@@ -32,16 +41,12 @@ public class SharedImageTilesCoordinatorUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mSharedImageTilesCoordinator =
-                new SharedImageTilesCoordinator(
-                        mContext, SharedImageTilesType.DEFAULT, SharedImageTilesColor.DEFAULT);
-        mView = mSharedImageTilesCoordinator.getView();
-        mButtonTileView = mView.findViewById(R.id.shared_image_tiles_add);
-        mCountTileView = mView.findViewById(R.id.tiles_count);
+        initialize(SharedImageTilesType.DEFAULT, SharedImageTilesColor.DEFAULT);
     }
 
     private void initialize(@SharedImageTilesType int type, @SharedImageTilesColor int color) {
-        mSharedImageTilesCoordinator = new SharedImageTilesCoordinator(mContext, type, color);
+        mSharedImageTilesCoordinator =
+                new SharedImageTilesCoordinator(mContext, type, color, mDataSharingService);
         mView = mSharedImageTilesCoordinator.getView();
         mButtonTileView = mView.findViewById(R.id.shared_image_tiles_add);
         mCountTileView = mView.findViewById(R.id.tiles_count);
@@ -60,7 +65,6 @@ public class SharedImageTilesCoordinatorUnitTest {
 
     @Test
     public void testDefaultTheme() {
-        initialize(SharedImageTilesType.DEFAULT, SharedImageTilesColor.DEFAULT);
         // Default theme should have the following view logic:
         // 0 tile count: None
         // 1 tile count: Tile

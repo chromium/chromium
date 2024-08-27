@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -35,6 +38,8 @@ public class SharedImageTilesCoordinator {
     private final PropertyModel mModel;
     private final SharedImageTilesView mView;
     private final @SharedImageTilesType int mType;
+    private final @NonNull DataSharingService mDataSharingService;
+    private @NonNull String mCollaborationId;
     private int mAvailableTileCount;
     private int mIconTilesCount;
 
@@ -44,15 +49,20 @@ public class SharedImageTilesCoordinator {
      * @param context The Android context used to inflate the views.
      * @param type The {@link SharedImageTilesType} of the SharedImageTiles.
      * @param color The {@link SharedImageTilesColor} of the SharedImageTiles.
+     * @param dataSharingService Used to fetch tab group data.
      */
     public SharedImageTilesCoordinator(
-            Context context, @SharedImageTilesType int type, @SharedImageTilesColor int color) {
+            Context context,
+            @SharedImageTilesType int type,
+            @SharedImageTilesColor int color,
+            @NonNull DataSharingService dataSharingService) {
         mModel =
                 new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS)
                         .with(SharedImageTilesProperties.COLOR_THEME, color)
                         .build();
         mContext = context;
         mType = type;
+        mDataSharingService = dataSharingService;
 
         mView =
                 (SharedImageTilesView)
@@ -62,6 +72,33 @@ public class SharedImageTilesCoordinator {
         mMediator = new SharedImageTilesMediator(mModel);
 
         initializeSharedImageTiles();
+    }
+
+    /**
+     * Update the collaborationId for a SharedImageTiles component.
+     *
+     * @param collaborationId The new collaborationId.
+     */
+    public void updateCollaborationId(@NonNull String collaborationId) {
+        mCollaborationId = collaborationId;
+        // Fetch group information from DataSharingService.
+        mDataSharingService.readGroup(
+                mCollaborationId,
+                (result) -> {
+                    if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
+                        // Error occurred. Remove all view.
+                        updateTilesCount(0);
+                        return;
+                    }
+
+                    assert result.groupData != null;
+                    extractGroupMemberInfo(result.groupData);
+                });
+    }
+
+    private void extractGroupMemberInfo(GroupData groupData) {
+        // TODO(b/361642045): Call showAvatars here.
+        updateTilesCount(groupData.members.size());
     }
 
     /** Populate the shared_image_tiles container with the specific icons. */

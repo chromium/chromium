@@ -108,8 +108,10 @@ if (is_android) {
 
     deps = [
       ":java_resources",
+      "//base:callback_java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/styles/android:java",
+      "//components/data_sharing/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
@@ -190,6 +192,7 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//chrome/browser/notifications:java",
       "//components/browser_ui/notifications/android:java",
+      "//components/data_sharing/public:public_java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/junit:junit",

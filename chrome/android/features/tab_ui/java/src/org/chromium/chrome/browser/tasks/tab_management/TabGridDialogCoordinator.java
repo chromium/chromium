@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImag
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -48,7 +47,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -150,11 +149,19 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mBottomSheetController = bottomSheetController;
 
             if (isDataSharingAndroidEnabled) {
+                DataSharingService dataSharingService =
+                        DataSharingServiceFactory.getForProfile(
+                                mCurrentTabModelFilterSupplier
+                                        .get()
+                                        .getTabModel()
+                                        .getProfile()
+                                        .getOriginalProfile());
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
                                 activity,
                                 SharedImageTilesType.CLICKABLE,
-                                SharedImageTilesColor.DYNAMIC);
+                                SharedImageTilesColor.DYNAMIC,
+                                dataSharingService);
             }
 
             Runnable showColorPickerPopupRunnable =
@@ -264,18 +271,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     @NonNull
     RecyclerViewPosition getRecyclerViewPosition() {
         return mTabListCoordinator.getRecyclerViewPosition();
-    }
-
-    private void showAvatars(List<String> emails) {
-        mSharedImageTilesCoordinator.updateTilesCount(emails.size());
-        Profile profile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
-        DataSharingUIDelegate uiDelegate = DataSharingServiceFactory.getUIDelegate(profile);
-        uiDelegate.showAvatars(
-                mSharedImageTilesCoordinator.getContext(),
-                mSharedImageTilesCoordinator.getAllIconViews(),
-                emails,
-                /* success= */ null,
-                /* config= */ null);
     }
 
     private @Nullable TabListEditorController getTabListEditorController() {
