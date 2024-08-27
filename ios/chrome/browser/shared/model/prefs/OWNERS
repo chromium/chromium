@@ -1,2 +1,12 @@
 # For simple pref migration/deprecation.
 file://components/prefs/OWNERS
+
+# For the common case of simply adding or removing a pref. Defer to other owners
+# for non-trivial changes like re-naming a pref or changing the type of a pref.
+adamta@google.com
+ajuma@chromium.org
+gujen@google.com
+huitingyu@google.com
+olivierrobin@chromium.org
+stkhapugin@chromium.org
+tmartino@chromium.org
