@@ -138,6 +138,10 @@
                              itemView:itemView];
 }
 
+- (void)requestAddIdentityToDevice {
+  [self.delegate showAddAccountToDevice];
+}
+
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {

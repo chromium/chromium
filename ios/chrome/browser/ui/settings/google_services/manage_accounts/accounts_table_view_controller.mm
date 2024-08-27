@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -30,6 +31,8 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   ItemTypeAccount = kItemTypeEnumZero,
   // Remove account item.
   ItemTypeRemoveAccount,
+  // Add account item.
+  ItemTypeAddAccount,
 };
 
 }  // namespace
@@ -112,6 +115,11 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
     [model addItem:removeAccountItem toSectionWithIdentifier:sectionNumber];
     [mutableIdentityMap setObject:accountItem forKey:identityViewItem.gaiaID];
   }
+
+  TableViewItem* addAccountItem = [self addAccountItem];
+  [model addSectionWithIdentifier:nextSection];
+  [model addItem:addAccountItem toSectionWithIdentifier:nextSection++];
+
   _identityMap = mutableIdentityMap;
 }
 
@@ -146,6 +154,16 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   return item;
 }
 
+- (TableViewItem*)addAccountItem {
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeAddAccount];
+  item.text =
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON);
+  item.accessibilityIdentifier = kSettingsAccountsTableViewAddAccountCellId;
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  return item;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -157,7 +175,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   switch (itemType) {
     case ItemTypeAccount:
       return;
-    case ItemTypeRemoveAccount:
+    case ItemTypeRemoveAccount: {
       NSIndexPath* accountItemIndexPath =
           [NSIndexPath indexPathForRow:0 inSection:indexPath.section];
       TableViewAccountItem* accountItem =
@@ -169,6 +187,12 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
           requestRemoveIdentityWithGaiaID:[self
                                               gaiaIDWithAccountItem:accountItem]
                                  itemView:itemView];
+      break;
+    }
+    case ItemTypeAddAccount:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountsTableView_AddAccount"));
+      [self.mutator requestAddIdentityToDevice];
       break;
   }
 

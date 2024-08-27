@@ -217,4 +217,31 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
 }
 
+// Tests add account flow.
+- (void)testAddAccount {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+
+  // Sign In identity, then open the Sync Settings.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [self openAccountsListFromSettings];
+
+  // Tap on "Add Account".
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kSettingsAccountsTableViewAddAccountCellId)]
+      performAction:grey_tap()];
+
+  // Checks the Fake authentication view is shown
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthActivityViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close the SSO view controller.
+  id<GREYMatcher> matcher =
+      grey_allOf(grey_accessibilityID(kFakeAuthCancelButtonIdentifier),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+}
+
 @end

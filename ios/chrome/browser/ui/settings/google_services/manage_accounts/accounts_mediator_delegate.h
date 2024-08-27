@@ -13,6 +13,9 @@
 - (void)handleRemoveIdentity:(id<SystemIdentity>)identity
                     itemView:(UIView*)itemView;
 
+// Called to show SigninCommand with operation to add account to device.
+- (void)showAddAccountToDevice;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_ACCOUNTS_MEDIATOR_DELEGATE_H_

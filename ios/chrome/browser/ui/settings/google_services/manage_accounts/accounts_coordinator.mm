@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -35,6 +37,9 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+using signin_metrics::AccessPoint;
+using signin_metrics::PromoAction;
 
 @interface AccountsCoordinator () <AccountsMediatorDelegate,
                                    SettingsNavigationControllerDelegate>
@@ -220,6 +225,23 @@
   [_confirmRemoveIdentityAlertCoordinator start];
 }
 
+- (void)showAddAccountToDevice {
+  [_viewController preventUserInteraction];
+  __weak __typeof(self) weakSelf = self;
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kAddAccount
+               identity:nil
+            accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
+            promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
+               callback:^(SigninCoordinatorResult result,
+                          SigninCompletionInfo* completionInfo) {
+                 [weakSelf addAccountToDeviceCompleted];
+               }];
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
+              showSignin:command
+      baseViewController:_viewController];
+}
+
 #pragma mark - Private
 
 - (void)removeAccountDialogConfirmedWithIdentity:(id<SystemIdentity>)identity {
@@ -280,6 +302,10 @@
   DCHECK(_confirmRemoveIdentityAlertCoordinator);
   [_confirmRemoveIdentityAlertCoordinator stop];
   _confirmRemoveIdentityAlertCoordinator = nil;
+}
+
+- (void)addAccountToDeviceCompleted {
+  [_viewController allowUserInteraction];
 }
 
 @end
