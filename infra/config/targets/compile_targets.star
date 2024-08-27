@@ -358,6 +358,11 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "traffic_annotation_proto",
+    label = "//chrome/browser/privacy:traffic_annotation_proto",
+)
+
+targets.compile_target(
     name = "chrome/updater:all",
     label = "//chrome/updater:all",
 )

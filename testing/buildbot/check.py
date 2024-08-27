@@ -30,6 +30,9 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'remoting/client:client',
     'remoting/host:host',
 
+    # These targets are only used by script tests
+    'traffic_annotation_proto',
+
     # These targets are used by builders setting their tests in starlark
     'android_lint',
     'cast_test_lists',

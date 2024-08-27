@@ -1664,6 +1664,10 @@
     "label": "//:traffic_annotation_auditor_dependencies",
     "type": "additional_compile_target",
   },
+  "traffic_annotation_proto": {
+    "label": "//chrome/browser/privacy:traffic_annotation_proto",
+    "type": "additional_compile_target",
+  },
   "trichrome_chrome_bundle_smoke_test": {
     "label": "//chrome/android:trichrome_chrome_bundle_smoke_test",
     "type": "console_test_launcher",
