@@ -4,12 +4,12 @@
 
 #include "components/autofill/core/browser/address_data_manager.h"
 
-#include <iterator>
 #include <memory>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -170,14 +170,11 @@ void AddressDataManager::OnWebDataServiceRequestDone(
     std::vector<AutofillProfile> profiles_from_db =
         static_cast<WDResult<std::vector<AutofillProfile>>*>(result.get())
             ->GetValue();
-    std::list<AutofillProfile> profile_list(
-        std::make_move_iterator(profiles_from_db.begin()),
-        std::make_move_iterator(profiles_from_db.end()));
     if (handle == pending_synced_local_profiles_query_) {
-      synced_local_profiles_ = std::move(profile_list);
+      synced_local_profiles_ = std::move(profiles_from_db);
       pending_synced_local_profiles_query_ = 0;
     } else {
-      account_profiles_ = std::move(profile_list);
+      account_profiles_ = std::move(profiles_from_db);
       pending_account_profiles_query_ = 0;
     }
   }
@@ -207,15 +204,11 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfiles(
 std::vector<const AutofillProfile*> AddressDataManager::GetProfilesFromSource(
     AutofillProfile::Source profile_source,
     ProfileOrder order) const {
-  const std::list<AutofillProfile>& profiles =
-      GetProfileStorage(profile_source);
-  std::vector<const AutofillProfile*> result;
-  result.reserve(profiles.size());
-  for (const AutofillProfile& profile : profiles) {
-    result.push_back(&profile);
-  }
-  OrderProfiles(result, order);
-  return result;
+  std::vector<const AutofillProfile*> profiles =
+      base::ToVector(GetProfileStorage(profile_source),
+                     [](const AutofillProfile& p) { return &p; });
+  OrderProfiles(profiles, order);
+  return profiles;
 }
 
 std::vector<const AutofillProfile*> AddressDataManager::GetProfilesToSuggest()
@@ -271,7 +264,7 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
   // The profile is a duplicate of an existing profile if it has a distinct GUID
   // but the same content.
   // Duplicates can exist across profile sources.
-  const std::list<AutofillProfile>& profiles =
+  const std::vector<AutofillProfile>& profiles =
       GetProfileStorage(profile.source());
   auto duplicate_profile_iter =
       base::ranges::find_if(profiles, [&profile](const auto& other_profile) {
@@ -688,7 +681,7 @@ void AddressDataManager::CancelPendingQuery(
   handle = 0;
 }
 
-const std::list<AutofillProfile>& AddressDataManager::GetProfileStorage(
+const std::vector<AutofillProfile>& AddressDataManager::GetProfileStorage(
     AutofillProfile::Source source) const {
   switch (source) {
     case AutofillProfile::Source::kLocalOrSyncable:
@@ -708,7 +701,7 @@ void AddressDataManager::OnAutofillProfileChanged(
     return;
   }
 
-  std::list<AutofillProfile>& profiles = GetProfileStorage(profile.source());
+  std::vector<AutofillProfile>& profiles = GetProfileStorage(profile.source());
   const AutofillProfile* existing_profile = GetProfileByGUID(guid);
   switch (change.type()) {
     case AutofillProfileChange::ADD:
