@@ -15,7 +15,7 @@
 
 namespace autofill::autofill_metrics {
 
-void LogStoredProfileCountStatistics(AutofillProfileSourceCategory category,
+void LogStoredProfileCountStatistics(AutofillProfileRecordTypeCategory category,
                                      const StoredProfileCounts& counts) {
   const std::string kSuffix = GetProfileCategorySuffix(category);
 
@@ -36,8 +36,9 @@ void LogStoredProfileCountStatistics(AutofillProfileSourceCategory category,
       100 * used / counts.total);
 }
 
-void LogStoredProfileDaysSinceLastUse(AutofillProfileSourceCategory category,
-                                      size_t days) {
+void LogStoredProfileDaysSinceLastUse(
+    AutofillProfileRecordTypeCategory category,
+    size_t days) {
   base::UmaHistogramCounts1000(
       base::StrCat({"Autofill.DaysSinceLastUse.StoredProfile.",
                     GetProfileCategorySuffix(category)}),
@@ -49,7 +50,7 @@ void LogStoredProfileMetrics(
   const base::Time now = AutofillClock::Now();
   // Counts stored profile metrics for all profile of the given `category` and
   // emits UMA metrics for them.
-  auto count_and_log = [&](AutofillProfileSourceCategory category) {
+  auto count_and_log = [&](AutofillProfileRecordTypeCategory category) {
     StoredProfileCounts counts;
     for (const AutofillProfile* profile : profiles) {
       if (category != GetCategoryOfProfile(*profile)) {
@@ -63,9 +64,9 @@ void LogStoredProfileMetrics(
     LogStoredProfileCountStatistics(category, counts);
   };
 
-  count_and_log(AutofillProfileSourceCategory::kLocalOrSyncable);
-  count_and_log(AutofillProfileSourceCategory::kAccountChrome);
-  count_and_log(AutofillProfileSourceCategory::kAccountNonChrome);
+  count_and_log(AutofillProfileRecordTypeCategory::kLocalOrSyncable);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountChrome);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountNonChrome);
   base::UmaHistogramCounts1M("Autofill.StoredProfileCount.Total",
                              profiles.size());
 }

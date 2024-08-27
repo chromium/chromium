@@ -338,8 +338,8 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
 
 void AddressDataCleaner::DeleteDisusedAddresses() {
   const std::vector<const AutofillProfile*>& profiles =
-      address_data_manager_->GetProfilesFromSource(
-          AutofillProfile::Source::kLocalOrSyncable);
+      address_data_manager_->GetProfilesByRecordType(
+          AutofillProfile::RecordType::kLocalOrSyncable);
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.empty()) {
     return;

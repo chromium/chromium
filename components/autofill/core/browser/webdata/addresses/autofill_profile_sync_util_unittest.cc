@@ -38,7 +38,7 @@ const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 // returned from ConstructBaseSpecifics().
 AutofillProfile ConstructBaseProfile(
     AddressCountryCode country_code = AddressCountryCode("ES")) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           country_code);
 
   profile.set_use_count(7);
@@ -983,7 +983,7 @@ TEST_P(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
 
 // Test that fields not set for the input are empty in the output.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile_Empty) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   ASSERT_FALSE(profile.HasRawInfo(NAME_FULL));
   ASSERT_FALSE(profile.HasRawInfo(COMPANY_NAME));
@@ -1002,7 +1002,7 @@ TEST_F(AutofillProfileSyncUtilTest,
   std::string kNameLong(kMaxDataLengthForDatabase + 1, 'a');
   std::string kNameTrimmed(kMaxDataLengthForDatabase, 'a');
 
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FULL, ASCIIToUTF16(kNameLong));
 
@@ -1027,7 +1027,7 @@ TEST_F(AutofillProfileSyncUtilTest,
     kNameTrimmed += "ä";
   }
 
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FULL, UTF8ToUTF16(kNameLong));
 
@@ -1116,7 +1116,7 @@ TEST_F(AutofillProfileSyncUtilTest,
 
 // Tests that guid is returned as storage key.
 TEST_F(AutofillProfileSyncUtilTest, GetStorageKeyFromAutofillProfile) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
 
   EXPECT_EQ(kGuid, GetStorageKeyFromAutofillProfile(profile));

@@ -83,26 +83,27 @@ DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
 
 }  // namespace internal
 
-AutofillProfileSourceCategory GetCategoryOfProfile(
+AutofillProfileRecordTypeCategory GetCategoryOfProfile(
     const AutofillProfile& profile) {
-  switch (profile.source()) {
-    case AutofillProfile::Source::kLocalOrSyncable:
-      return AutofillProfileSourceCategory::kLocalOrSyncable;
-    case AutofillProfile::Source::kAccount:
+  switch (profile.record_type()) {
+    case AutofillProfile::RecordType::kLocalOrSyncable:
+      return AutofillProfileRecordTypeCategory::kLocalOrSyncable;
+    case AutofillProfile::RecordType::kAccount:
       return profile.initial_creator_id() ==
                      AutofillProfile::kInitialCreatorOrModifierChrome
-                 ? AutofillProfileSourceCategory::kAccountChrome
-                 : AutofillProfileSourceCategory::kAccountNonChrome;
+                 ? AutofillProfileRecordTypeCategory::kAccountChrome
+                 : AutofillProfileRecordTypeCategory::kAccountNonChrome;
   }
 }
 
-const char* GetProfileCategorySuffix(AutofillProfileSourceCategory category) {
+const char* GetProfileCategorySuffix(
+    AutofillProfileRecordTypeCategory category) {
   switch (category) {
-    case AutofillProfileSourceCategory::kLocalOrSyncable:
+    case AutofillProfileRecordTypeCategory::kLocalOrSyncable:
       return "Legacy";
-    case AutofillProfileSourceCategory::kAccountChrome:
+    case AutofillProfileRecordTypeCategory::kAccountChrome:
       return "AccountChrome";
-    case AutofillProfileSourceCategory::kAccountNonChrome:
+    case AutofillProfileRecordTypeCategory::kAccountNonChrome:
       return "AccountNonChrome";
   }
 }

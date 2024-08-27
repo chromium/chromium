@@ -191,21 +191,21 @@ void AddressDataManager::OnWebDataServiceRequestDone(
 
 std::vector<const AutofillProfile*> AddressDataManager::GetProfiles(
     ProfileOrder order) const {
-  std::vector<const AutofillProfile*> a = GetProfilesFromSource(
-      AutofillProfile::Source::kLocalOrSyncable, ProfileOrder::kNone);
-  std::vector<const AutofillProfile*> b = GetProfilesFromSource(
-      AutofillProfile::Source::kAccount, ProfileOrder::kNone);
+  std::vector<const AutofillProfile*> a = GetProfilesByRecordType(
+      AutofillProfile::RecordType::kLocalOrSyncable, ProfileOrder::kNone);
+  std::vector<const AutofillProfile*> b = GetProfilesByRecordType(
+      AutofillProfile::RecordType::kAccount, ProfileOrder::kNone);
   a.reserve(a.size() + b.size());
   base::ranges::move(b, std::back_inserter(a));
   OrderProfiles(a, order);
   return a;
 }
 
-std::vector<const AutofillProfile*> AddressDataManager::GetProfilesFromSource(
-    AutofillProfile::Source profile_source,
+std::vector<const AutofillProfile*> AddressDataManager::GetProfilesByRecordType(
+    AutofillProfile::RecordType record_type,
     ProfileOrder order) const {
   std::vector<const AutofillProfile*> profiles =
-      base::ToVector(GetProfileStorage(profile_source),
+      base::ToVector(GetProfileStorage(record_type),
                      [](const AutofillProfile& p) { return &p; });
   OrderProfiles(profiles, order);
   return profiles;
@@ -263,9 +263,9 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
 
   // The profile is a duplicate of an existing profile if it has a distinct GUID
   // but the same content.
-  // Duplicates can exist across profile sources.
+  // Duplicates can exist across record types.
   const std::vector<AutofillProfile>& profiles =
-      GetProfileStorage(profile.source());
+      GetProfileStorage(profile.record_type());
   auto duplicate_profile_iter =
       base::ranges::find_if(profiles, [&profile](const auto& other_profile) {
         return profile.guid() != other_profile.guid() &&
@@ -334,7 +334,8 @@ bool AddressDataManager::IsCountryEligibleForAccountStorage(
 
 void AddressDataManager::MigrateProfileToAccount(
     const AutofillProfile& profile) {
-  CHECK_EQ(profile.source(), AutofillProfile::Source::kLocalOrSyncable);
+  CHECK_EQ(profile.record_type(),
+           AutofillProfile::RecordType::kLocalOrSyncable);
   AutofillProfile account_profile = profile.ConvertToAccountProfile();
   DCHECK_NE(profile.guid(), account_profile.guid());
   // Update the database (and this way indirectly Sync).
@@ -356,9 +357,9 @@ void AddressDataManager::LoadProfiles() {
   CancelPendingQuery(pending_synced_local_profiles_query_);
   CancelPendingQuery(pending_account_profiles_query_);
   pending_synced_local_profiles_query_ = webdata_service_->GetAutofillProfiles(
-      AutofillProfile::Source::kLocalOrSyncable, this);
+      AutofillProfile::RecordType::kLocalOrSyncable, this);
   pending_account_profiles_query_ = webdata_service_->GetAutofillProfiles(
-      AutofillProfile::Source::kAccount, this);
+      AutofillProfile::RecordType::kAccount, this);
 }
 
 void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
@@ -682,11 +683,11 @@ void AddressDataManager::CancelPendingQuery(
 }
 
 const std::vector<AutofillProfile>& AddressDataManager::GetProfileStorage(
-    AutofillProfile::Source source) const {
-  switch (source) {
-    case AutofillProfile::Source::kLocalOrSyncable:
+    AutofillProfile::RecordType record_type) const {
+  switch (record_type) {
+    case AutofillProfile::RecordType::kLocalOrSyncable:
       return synced_local_profiles_;
-    case AutofillProfile::Source::kAccount:
+    case AutofillProfile::RecordType::kAccount:
       return account_profiles_;
   }
   NOTREACHED_IN_MIGRATION();
@@ -701,7 +702,8 @@ void AddressDataManager::OnAutofillProfileChanged(
     return;
   }
 
-  std::vector<AutofillProfile>& profiles = GetProfileStorage(profile.source());
+  std::vector<AutofillProfile>& profiles =
+      GetProfileStorage(profile.record_type());
   const AutofillProfile* existing_profile = GetProfileByGUID(guid);
   switch (change.type()) {
     case AutofillProfileChange::ADD:
@@ -768,13 +770,14 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
         OnProfileChangeDone(guid);
         return;
       }
-      webdata_service_->RemoveAutofillProfile(guid, existing_profile->source());
+      webdata_service_->RemoveAutofillProfile(guid,
+                                              existing_profile->record_type());
       break;
     }
     case AutofillProfileChange::ADD: {
       if (existing_profile ||
           base::ranges::any_of(
-              GetProfileStorage(profile.source()),
+              GetProfileStorage(profile.record_type()),
               [&](const auto& o) { return o.Compare(profile) == 0; })) {
         OnProfileChangeDone(guid);
         return;

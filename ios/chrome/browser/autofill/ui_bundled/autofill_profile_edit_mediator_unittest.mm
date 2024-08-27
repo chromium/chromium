@@ -38,7 +38,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     : NSObject <AutofillProfileEditConsumer>
 // Stores the value displayed in the fields.
 
-// YES, if the profile's source is autofill::AutofillProfile::Source::kAccount.
+// YES, if the profile's record type is
+// autofill::AutofillProfile::RecordType::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
 @property(nonatomic, assign) NSString* countrySelected;

@@ -1033,7 +1033,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion112ToCurrent) {
     table.Init(&connection, /*meta_table=*/nullptr);
     std::optional<autofill::AutofillProfile> profile = table.GetAutofillProfile(
         "00000000-0000-0000-0000-000000000000",
-        autofill::AutofillProfile::Source::kLocalOrSyncable);
+        autofill::AutofillProfile::RecordType::kLocalOrSyncable);
     ASSERT_TRUE(profile);
     EXPECT_EQ(profile->modification_date(), base::Time::FromTimeT(123));
     EXPECT_EQ(profile->GetRawInfo(autofill::NAME_FULL), u"full name");
@@ -1041,7 +1041,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion112ToCurrent) {
 
     EXPECT_TRUE(table.GetAutofillProfile(
         "00000000-0000-0000-0000-000000000001",
-        autofill::AutofillProfile::Source::kLocalOrSyncable));
+        autofill::AutofillProfile::RecordType::kLocalOrSyncable));
   }
 }
 

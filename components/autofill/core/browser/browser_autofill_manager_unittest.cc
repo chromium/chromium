@@ -7974,7 +7974,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile = test::GetFullProfile();
   // This is needed to not get an update prompt that would compromise the test.
-  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   test_api(profile.token_quality()).disable_randomization();
   personal_data().address_data_manager().AddProfile(profile);
   const AutofillProfile* pdm_profile =

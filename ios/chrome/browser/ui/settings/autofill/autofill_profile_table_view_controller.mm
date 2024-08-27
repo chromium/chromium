@@ -44,7 +44,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_source.h"
+#import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_record_type.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -251,13 +251,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.showMigrateToAccountButton = NO;
   item.localProfileIconShown = NO;
   if (autofillProfile.IsAccountProfile()) {
-    item.autofillProfileSource =
-        AutofillAddressProfileSource::AutofillAccountProfile;
+    item.autofillProfileRecordType =
+        AutofillAddressProfileRecordType::AutofillAccountProfile;
   } else if (self.syncEnabled) {
-    item.autofillProfileSource =
-        AutofillAddressProfileSource::AutofillSyncableProfile;
+    item.autofillProfileRecordType =
+        AutofillAddressProfileRecordType::AutofillSyncableProfile;
   } else {
-    item.autofillProfileSource = AutofillLocalProfile;
+    item.autofillProfileRecordType = AutofillLocalProfile;
     if ([self shouldShowCloudOffIconForProfile:autofillProfile]) {
       item.showMigrateToAccountButton = YES;
       item.image = CustomSymbolTemplateWithPointSize(
@@ -662,7 +662,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     AutofillProfileItem* item =
         base::apple::ObjCCastStrict<AutofillProfileItem>(
             [self.tableViewModel itemAtIndexPath:indexPath]);
-    switch (item.autofillProfileSource) {
+    switch (item.autofillProfileRecordType) {
       case AutofillAccountProfile:
         accountProfiles = YES;
         break;

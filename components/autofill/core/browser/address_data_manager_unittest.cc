@@ -194,14 +194,16 @@ TEST_F(AddressDataManagerTest, UpdateProfile_ModificationDate) {
   EXPECT_EQ(profiles[0]->modification_date(), kSomeLaterTime);
 }
 
-// Tests that profiles with source `kAccount` and `kLocalOrSyncable` are loaded,
-// and accessible via `GetProfiles()` and `GetProfilesFromSource()`.
-// If duplicates exist across sources, they should be considered distinct.
+// Tests that profiles with record type`kAccount` and `kLocalOrSyncable` are
+// loaded, and accessible via `GetProfiles()` and `GetProfilesByRecordType()`.
+// If duplicates exist across record types, they should be considered distinct.
 TEST_F(AddressDataManagerTest, GetProfiles) {
   AutofillProfile kAccountProfile = test::GetFullProfile();
-  test_api(kAccountProfile).set_source(AutofillProfile::Source::kAccount);
+  test_api(kAccountProfile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   AutofillProfile kAccountProfile2 = test::GetFullProfile2();
-  test_api(kAccountProfile2).set_source(AutofillProfile::Source::kAccount);
+  test_api(kAccountProfile2)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   AutofillProfile kLocalProfile = test::GetFullProfile();
 
   AddProfileToAddressDataManager(kAccountProfile);
@@ -213,12 +215,12 @@ TEST_F(AddressDataManagerTest, GetProfiles) {
       address_data_manager().GetProfiles(),
       UnorderedElementsAre(Pointee(kAccountProfile), Pointee(kAccountProfile2),
                            Pointee(kLocalProfile)));
-  EXPECT_THAT(address_data_manager().GetProfilesFromSource(
-                  AutofillProfile::Source::kAccount),
+  EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
+                  AutofillProfile::RecordType::kAccount),
               UnorderedElementsAre(Pointee(kAccountProfile),
                                    Pointee(kAccountProfile2)));
-  EXPECT_THAT(address_data_manager().GetProfilesFromSource(
-                  AutofillProfile::Source::kLocalOrSyncable),
+  EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
+                  AutofillProfile::RecordType::kLocalOrSyncable),
               ElementsAre(Pointee(kLocalProfile)));
 }
 
@@ -338,12 +340,13 @@ TEST_F(AddressDataManagerTest, GetProfilesForSettings) {
   TestAutofillClock test_clock;
 
   AutofillProfile kAccountProfile = test::GetFullProfile();
-  test_api(kAccountProfile).set_source(AutofillProfile::Source::kAccount);
+  test_api(kAccountProfile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   AddProfileToAddressDataManager(kAccountProfile);
 
   AutofillProfile kLocalOrSyncableProfile = test::GetFullProfile2();
   test_api(kLocalOrSyncableProfile)
-      .set_source(AutofillProfile::Source::kLocalOrSyncable);
+      .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
   test_clock.Advance(base::Minutes(123));
   AddProfileToAddressDataManager(kLocalOrSyncableProfile);
 
@@ -667,7 +670,8 @@ TEST_F(AddressDataManagerTest, IsCountryEligibleForAccountStorage) {
 
 TEST_F(AddressDataManagerTest, MigrateProfileToAccount) {
   const AutofillProfile kLocalProfile = test::GetFullProfile();
-  ASSERT_EQ(kLocalProfile.source(), AutofillProfile::Source::kLocalOrSyncable);
+  ASSERT_EQ(kLocalProfile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
   AddProfileToAddressDataManager(kLocalProfile);
 
   address_data_manager().MigrateProfileToAccount(kLocalProfile);
@@ -679,7 +683,8 @@ TEST_F(AddressDataManagerTest, MigrateProfileToAccount) {
   // exist.
   ASSERT_EQ(profiles.size(), 1u);
   const AutofillProfile kAccountProfile = *profiles[0];
-  EXPECT_EQ(kAccountProfile.source(), AutofillProfile::Source::kAccount);
+  EXPECT_EQ(kAccountProfile.record_type(),
+            AutofillProfile::RecordType::kAccount);
   EXPECT_EQ(kAccountProfile.initial_creator_id(),
             AutofillProfile::kInitialCreatorOrModifierChrome);
   EXPECT_EQ(kAccountProfile.last_modifier_id(),
@@ -769,9 +774,9 @@ TEST_F(AddressDataManagerTest, Refresh) {
                                    Pointee(profile2)));
 
   profile_database_service_->RemoveAutofillProfile(
-      profile1.guid(), AutofillProfile::Source::kLocalOrSyncable);
+      profile1.guid(), AutofillProfile::RecordType::kLocalOrSyncable);
   profile_database_service_->RemoveAutofillProfile(
-      profile2.guid(), AutofillProfile::Source::kLocalOrSyncable);
+      profile2.guid(), AutofillProfile::RecordType::kLocalOrSyncable);
 
   address_data_manager().LoadProfiles();
   WaitForOnAddressDataChanged();

@@ -82,13 +82,13 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Schedules a task to remove an Autofill profile from the web database.
   // |guid| is the identifier of the profile to remove.
   void RemoveAutofillProfile(const std::string& guid,
-                             AutofillProfile::Source profile_source);
+                             AutofillProfile::RecordType record_type);
 
   // Initiates the request for Autofill profiles. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the profiles included in the argument |result|.
   WebDataServiceBase::Handle GetAutofillProfiles(
-      AutofillProfile::Source profile_source,
+      AutofillProfile::RecordType record_type,
       WebDataServiceConsumer* consumer);
 
   // Schedules a task to count the number of unique autofill values contained

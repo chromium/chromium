@@ -118,10 +118,10 @@ AutofillProfile GetIncompleteProfile1();
 // Returns an incomplete profile of dummy info, different to the above.
 AutofillProfile GetIncompleteProfile2();
 
-// Sets the `profile`s source and initial creator to match `category`.
+// Sets the `profile`s record type and initial creator to match `category`.
 void SetProfileCategory(
     AutofillProfile& profile,
-    autofill_metrics::AutofillProfileSourceCategory category);
+    autofill_metrics::AutofillProfileRecordTypeCategory category);
 
 // Returns the stripped (without characters representing whitespace) value of
 // the given `value`.

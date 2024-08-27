@@ -15,8 +15,8 @@ class AutofillProfileTestApi {
   explicit AutofillProfileTestApi(AutofillProfile* profile)
       : profile_(*profile) {}
 
-  void set_source(AutofillProfile::Source source) {
-    profile_->source_ = source;
+  void set_record_type(AutofillProfile::RecordType record_type) {
+    profile_->record_type_ = record_type;
   }
 
   // Same as `AutofillProfile::operator==`, but cares about differences in usage

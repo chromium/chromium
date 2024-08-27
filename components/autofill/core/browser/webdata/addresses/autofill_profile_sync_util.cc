@@ -304,7 +304,7 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
       CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
 
   AutofillProfile profile(specifics.guid(),
-                          AutofillProfile::Source::kLocalOrSyncable,
+                          AutofillProfile::RecordType::kLocalOrSyncable,
                           AddressCountryCode(country_code));
 
   // Set info that has a default value (and does not distinguish whether it is

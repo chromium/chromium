@@ -158,7 +158,7 @@ void LogNewProfileImportDecision(
 void LogNewProfileStorageLocation(const AutofillProfile& import_candidate) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.StorageNewAddressIsSavedTo",
-      import_candidate.source());
+      import_candidate.record_type());
 }
 
 void LogProfileUpdateImportDecision(

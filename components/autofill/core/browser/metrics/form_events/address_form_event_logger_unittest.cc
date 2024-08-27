@@ -30,7 +30,7 @@ class CategoryResolvedKeyMetricsTest
 
   // Creates a full profile of the given `category` and adds it to the PDM.
   AutofillProfile CreateProfileOfCategory(
-      AutofillProfileSourceCategory category) {
+      AutofillProfileRecordTypeCategory category) {
     AutofillProfile profile = test::GetFullProfile();
     test::SetProfileCategory(profile, category);
     personal_data().address_data_manager().AddProfile(profile);
@@ -111,9 +111,9 @@ INSTANTIATE_TEST_SUITE_P(CategoryResolvedKeyMetricsTest,
 
 TEST_P(CategoryResolvedKeyMetricsEditTest, kLocalOrSyncable) {
   FormData form = CreateAndSeeForm();
-  FillFormWithProfile(
-      form,
-      CreateProfileOfCategory(AutofillProfileSourceCategory::kLocalOrSyncable));
+  FillFormWithProfile(form,
+                      CreateProfileOfCategory(
+                          AutofillProfileRecordTypeCategory::kLocalOrSyncable));
   if (ShouldEditField()) {
     SimulateUserChangedTextField(form, form.fields().front());
   }
@@ -138,8 +138,9 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kLocalOrSyncable) {
 
 TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountChrome) {
   FormData form = CreateAndSeeForm();
-  FillFormWithProfile(form, CreateProfileOfCategory(
-                                AutofillProfileSourceCategory::kAccountChrome));
+  FillFormWithProfile(form,
+                      CreateProfileOfCategory(
+                          AutofillProfileRecordTypeCategory::kAccountChrome));
   if (ShouldEditField()) {
     SimulateUserChangedTextField(form, form.fields().front());
   }
@@ -165,9 +166,9 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountChrome) {
 
 TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNonChrome) {
   FormData form = CreateAndSeeForm();
-  FillFormWithProfile(form,
-                      CreateProfileOfCategory(
-                          AutofillProfileSourceCategory::kAccountNonChrome));
+  FillFormWithProfile(
+      form, CreateProfileOfCategory(
+                AutofillProfileRecordTypeCategory::kAccountNonChrome));
   if (ShouldEditField()) {
     SimulateUserChangedTextField(form, form.fields().front());
   }
@@ -201,15 +202,15 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNonChrome) {
 // the unit tests.
 TEST_P(CategoryResolvedKeyMetricsEditTest, Mixed) {
   FormData form1 = CreateAndSeeForm();
-  FillFormWithProfile(
-      form1,
-      CreateProfileOfCategory(AutofillProfileSourceCategory::kLocalOrSyncable));
+  FillFormWithProfile(form1,
+                      CreateProfileOfCategory(
+                          AutofillProfileRecordTypeCategory::kLocalOrSyncable));
   SubmitForm(form1);
 
   FormData form2 = CreateAndSeeForm();
-  FillFormWithProfile(
-      form2,
-      CreateProfileOfCategory(AutofillProfileSourceCategory::kAccountChrome));
+  FillFormWithProfile(form2,
+                      CreateProfileOfCategory(
+                          AutofillProfileRecordTypeCategory::kAccountChrome));
   SubmitForm(form2);
   if (ShouldEditField()) {
     SimulateUserChangedTextField(form2, form2.fields().front());

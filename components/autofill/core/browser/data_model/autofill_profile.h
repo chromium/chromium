@@ -43,9 +43,10 @@ class AutofillProfile : public AutofillDataModel {
  public:
   // Describes where the profile is stored and how it is synced.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: Source
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class Source {
+  enum class RecordType {
     // Not synced at all or synced through the `AutofillProfileSyncBridge`. This
     // corresponds to profiles that local to Autofill only.
     kLocalOrSyncable = 0,
@@ -73,9 +74,9 @@ class AutofillProfile : public AutofillDataModel {
   // `last_modifier_id()`.
   static constexpr int kInitialCreatorOrModifierChrome = 70073;
   AutofillProfile(const std::string& guid,
-                  Source source,
+                  RecordType record_type,
                   AddressCountryCode country_code);
-  AutofillProfile(Source source, AddressCountryCode country_code);
+  AutofillProfile(RecordType record_type, AddressCountryCode country_code);
   explicit AutofillProfile(AddressCountryCode country_code);
 
   AutofillProfile(const AutofillProfile& profile);
@@ -284,7 +285,7 @@ class AutofillProfile : public AutofillDataModel {
   // Sets the label of the profile.
   void set_profile_label(const std::string& label) { profile_label_ = label; }
 
-  Source source() const { return source_; }
+  RecordType record_type() const { return record_type_; }
 
   // Returns true if the profile is stored in the user's account. Non-account
   // profiles are considered local profiles.
@@ -302,7 +303,8 @@ class AutofillProfile : public AutofillDataModel {
 
   // Converts a kLocalOrSyncable profile to a kAccount profile and returns it.
   // The converted profile shares the same content, but with a different GUID
-  // and with `source_` kAccount. Additional kAccount-specific metadata is set.
+  // and with `record_type` kAccount. Additional kAccount-specific metadata is
+  // set.
   AutofillProfile ConvertToAccountProfile() const;
 
   // Checks for non-empty setting-inaccessible fields and returns all that were
@@ -377,7 +379,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // A globally unique ID for this object. It identifies the profile across
   // browser restarts and is used as the primary key in the database.
-  // The `guid_` is unique across profile sources.
+  // The `guid_` is unique across profile record types.
   std::string guid_;
 
   // Personal information for this profile.
@@ -394,14 +396,14 @@ class AutofillProfile : public AutofillDataModel {
   // The BCP 47 language code that can be used to format |address_| for display.
   std::string language_code_;
 
-  Source source_;
+  RecordType record_type_;
 
   // Indicates the application that initially created the profile and the
   // application that performed the last non-metadata modification of it.
-  // Only relevant for `source_ == kAccount` profiles, since `kLocalOrSyncable`
-  // profiles are only used within Autofill.
-  // The integer values represent a server-side enum `BillableService`, which is
-  // not duplicated in Chromium. For Autofill, the exact application that
+  // Only relevant for `record_type_ == kAccount` profiles, since
+  // `kLocalOrSyncable` profiles are only used within Autofill. The integer
+  // values represent a server-side enum `BillableService`, which is not
+  // duplicated in Chromium. For Autofill, the exact application that
   // created/modified the profile is thus opaque. However, Autofill is
   // represented by the value `kInitialCreatorOrModifierChrome`.
   int initial_creator_id_ = 0;

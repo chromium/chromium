@@ -480,7 +480,7 @@ TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {
 
   // Account profile
   AutofillProfile profile2 = test::GetFullProfile();
-  test_api(profile2).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile2).set_record_type(AutofillProfile::RecordType::kAccount);
   client()->ShowEditAddressProfileDialog(profile2, base::DoNothing());
   std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
       web_contents()->GetBrowserContext());

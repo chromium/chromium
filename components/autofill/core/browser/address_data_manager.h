@@ -120,12 +120,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Their lifetime is until the web database is updated with new information,
   // either through the PDM or via sync.
   // `GetProfiles()` returns local-or-syncable and account profiles. Using
-  // `GetProfilesFromSource()`, profiles from a single source can be retrieved.
-  // The profiles are returned in the specified `order`.
+  // `GetProfilesByRecordType()`, profiles from a single record type can be
+  // retrieved. The profiles are returned in the specified `order`.
   std::vector<const AutofillProfile*> GetProfiles(
       ProfileOrder order = ProfileOrder::kNone) const;
-  std::vector<const AutofillProfile*> GetProfilesFromSource(
-      AutofillProfile::Source profile_source,
+  std::vector<const AutofillProfile*> GetProfilesByRecordType(
+      AutofillProfile::RecordType record_type,
       ProfileOrder order = ProfileOrder::kNone) const;
 
   // Returns the profiles to suggest to the user for filling, ordered by
@@ -158,8 +158,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // function determines if the `country_code` is eligible.
   bool IsCountryEligibleForAccountStorage(std::string_view country_code) const;
 
-  // Migrates a given kLocalOrSyncable `profile` to source kAccount. This has
-  // multiple side-effects for the profile:
+  // Migrates a given kLocalOrSyncable `profile` to kAccount. This has multiple
+  // side-effects for the profile:
   // - It is stored in a different backend.
   // - It receives a new GUID.
   // Like all database operations, the migration happens asynchronously.
@@ -167,8 +167,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // AddressDataManager anymore once the migrating has finished.
   void MigrateProfileToAccount(const AutofillProfile& profile);
 
-  // Asynchronously loads all `AutofillProfile`s (from all sources) into the
-  // class's state. See `synced_local_profiles_` and `account_profiles_`.
+  // Asynchronously loads all `AutofillProfile`s (from all record types) into
+  // the class's state. See `synced_local_profiles_` and `account_profiles_`.
   virtual void LoadProfiles();
 
   // Updates the `profile`'s use count and use date in the database.
@@ -309,16 +309,17 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
  protected:
   friend class AddressDataManagerTestApi;
 
-  // Profiles of different sources are stored in different members. Several
-  // function need to read/write from the correct one, depending on the source
-  // of the profile they are dealing with. This helper function returns returns
-  // the container where profiles of the given `source` are stored.
+  // Profiles of different record types are stored in different members. Several
+  // function need to read/write from the correct one, depending on the record
+  // type of the profile they are dealing with. This helper function returns
+  // returns the container where profiles of the given `record_type` are stored.
   const std::vector<AutofillProfile>& GetProfileStorage(
-      AutofillProfile::Source source) const;
+      AutofillProfile::RecordType record_type) const;
   std::vector<AutofillProfile>& GetProfileStorage(
-      AutofillProfile::Source source) {
+      AutofillProfile::RecordType record_type) {
     return const_cast<std::vector<AutofillProfile>&>(
-        const_cast<const AddressDataManager*>(this)->GetProfileStorage(source));
+        const_cast<const AddressDataManager*>(this)->GetProfileStorage(
+            record_type));
   }
 
   void SetPrefService(PrefService* pref_service);

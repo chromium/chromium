@@ -23,10 +23,10 @@ namespace autofill::autofill_metrics {
 
 namespace {
 
-// Converts a set of `AutofillProfileSourceCategory` to the corresponding
+// Converts a set of `AutofillProfileRecordTypeCategory` to the corresponding
 // `CategoryResolvedKeyMetricBucket`.
 CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
-    DenseSet<AutofillProfileSourceCategory> categories) {
+    DenseSet<AutofillProfileRecordTypeCategory> categories) {
   if (categories.empty()) {
     return CategoryResolvedKeyMetricBucket::kNone;
   }
@@ -34,11 +34,11 @@ CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
     return CategoryResolvedKeyMetricBucket::kMixed;
   }
   switch (*categories.begin()) {
-    case AutofillProfileSourceCategory::kLocalOrSyncable:
+    case AutofillProfileRecordTypeCategory::kLocalOrSyncable:
       return CategoryResolvedKeyMetricBucket::kLocalOrSyncable;
-    case AutofillProfileSourceCategory::kAccountChrome:
+    case AutofillProfileRecordTypeCategory::kAccountChrome:
       return CategoryResolvedKeyMetricBucket::kAccountChrome;
-    case AutofillProfileSourceCategory::kAccountNonChrome:
+    case AutofillProfileRecordTypeCategory::kAccountNonChrome:
       return CategoryResolvedKeyMetricBucket::kAccountNonChrome;
   }
 }

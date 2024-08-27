@@ -43,8 +43,8 @@ class AutofillSaveUpdateAddressProfileDelegateIOSTest : public testing::Test {
       bool is_account_profile = false) {
     profile_ = std::make_unique<AutofillProfile>(test::GetFullProfile());
     if (is_account_profile) {
-      test_api(*profile_).set_source(
-          autofill::AutofillProfile::Source::kAccount);
+      test_api(*profile_).set_record_type(
+          autofill::AutofillProfile::RecordType::kAccount);
     }
     return std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
         *profile_, original_profile, email,

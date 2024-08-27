@@ -102,9 +102,10 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingNonAccountAddress) {
 
 TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
-  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   AutofillProfile original_profile = test::GetFullProfile();
-  test_api(original_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(original_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())

@@ -149,7 +149,7 @@ optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToLocal(
     base::OnceClosure autofill_changes_callback) {
   for (const std::string& storage_key : delete_from_local_) {
     if (!table_->RemoveAutofillProfile(
-            storage_key, AutofillProfile::Source::kLocalOrSyncable)) {
+            storage_key, AutofillProfile::RecordType::kLocalOrSyncable)) {
       return ModelError(FROM_HERE, "Failed deleting from WebDatabase");
     }
   }
@@ -217,8 +217,8 @@ bool AutofillProfileSyncDifferenceTracker::
   }
 
   std::vector<AutofillProfile> entries;
-  if (!table_->GetAutofillProfiles(AutofillProfile::Source::kLocalOrSyncable,
-                                   entries)) {
+  if (!table_->GetAutofillProfiles(
+          AutofillProfile::RecordType::kLocalOrSyncable, entries)) {
     return false;
   }
 

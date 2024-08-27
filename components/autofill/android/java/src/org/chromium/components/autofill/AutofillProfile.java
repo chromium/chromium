@@ -286,7 +286,7 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public @JniType("AutofillProfile::Source") @Source int getSource() {
+    public @JniType("AutofillProfile::RecordType") @Source int getSource() {
         return mSource;
     }
 

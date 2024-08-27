@@ -93,7 +93,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE:
         if (!GetAutofillTable()->RemoveAutofillProfile(
-                change->storage_key(), AutofillProfile::Source::kAccount)) {
+                change->storage_key(), AutofillProfile::RecordType::kAccount)) {
           return syncer::ModelError(FROM_HERE,
                                     "Failed to delete profile from table.");
         }
@@ -113,7 +113,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
         // TODO(crbug.com/40100455): Consider adding an AddOrUpdate() function
         // to AutofillTable's API.
         if (GetAutofillTable()->GetAutofillProfile(
-                remote->guid(), AutofillProfile::Source::kAccount)) {
+                remote->guid(), AutofillProfile::RecordType::kAccount)) {
           if (!GetAutofillTable()->UpdateAutofillProfile(*remote)) {
             return syncer::ModelError(FROM_HERE,
                                       "Failed to update profile in table.");
@@ -211,7 +211,7 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
 void ContactInfoSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   if (!GetAutofillTable()->RemoveAllAutofillProfiles(
-          AutofillProfile::Source::kAccount)) {
+          AutofillProfile::RecordType::kAccount)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete profiles from table."});
   }
@@ -287,7 +287,7 @@ ContactInfoSyncBridge::GetDataAndFilter(
     base::RepeatingCallback<bool(const std::string&)> filter) {
   std::vector<AutofillProfile> profiles;
   if (!GetAutofillTable()->GetAutofillProfiles(
-          AutofillProfile::Source::kAccount, profiles)) {
+          AutofillProfile::RecordType::kAccount, profiles)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load profiles from table."});
     return nullptr;

@@ -510,8 +510,7 @@ void ChromeAutofillClient::ShowDeleteAddressProfileDialog(
   DeleteAddressProfileDialogControllerImpl* controller =
       DeleteAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferDelete(
-      /*is_account_address_profile=*/profile.source() ==
-          AutofillProfile::Source::kAccount,
+      profile.IsAccountProfile(),
       /*delete_dialog_callback=*/std::move(delete_dialog_callback));
 #else
   // Delete address profile dialog is only available is desktop.

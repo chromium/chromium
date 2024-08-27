@@ -196,8 +196,9 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 // migration flow.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        SaveMessageContent_AddressProfileMigrationFlow) {
-  test_api(*profile_).set_source(AutofillProfile::Source::kAccount);
-  test_api(*original_profile_).set_source(AutofillProfile::Source::kAccount);
+  test_api(*profile_).set_record_type(AutofillProfile::RecordType::kAccount);
+  test_api(*original_profile_)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   SigninUser(TestingProfile::kDefaultProfileUserName,
              signin::ConsentLevel::kSignin);
   EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/true,
@@ -229,8 +230,9 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 // profile is saved in account.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        SaveMessageContent_AccountAddressProfile) {
-  test_api(*profile_).set_source(AutofillProfile::Source::kAccount);
-  test_api(*original_profile_).set_source(AutofillProfile::Source::kAccount);
+  test_api(*profile_).set_record_type(AutofillProfile::RecordType::kAccount);
+  test_api(*original_profile_)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   SigninUser(TestingProfile::kDefaultProfileUserName,
              signin::ConsentLevel::kSignin);
   EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/false,

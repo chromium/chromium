@@ -340,7 +340,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenSaveAccountAddress) {
   SigninUser();
-  test_api(profile_).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
   SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
@@ -392,7 +392,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenUpdateAccountAddress) {
   SigninUser();
-  test_api(profile_).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
 
   SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE),

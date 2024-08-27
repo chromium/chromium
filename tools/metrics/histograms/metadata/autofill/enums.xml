@@ -4017,7 +4017,7 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="ProfileMigrationAndSilentUpdate"/>
 </enum>
 
-<enum name="AutofillProfileSource">
+<enum name="AutofillProfileRecordType">
   <int value="0" label="The profile is saved to local store."/>
   <int value="1" label="The profile is saved to account store."/>
 </enum>

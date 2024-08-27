@@ -199,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(UpdateAddressProfileTest, UpdateThroughEdit) {
 
 class UpdateAccountAddressProfileTest : public UpdateAddressProfileTest {
   void TriggerBubble() override {
-    test_api(original_profile_).set_source(AutofillProfile::Source::kAccount);
+    test_api(original_profile_)
+        .set_record_type(AutofillProfile::RecordType::kAccount);
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), &original_profile_,
         /*options=*/{},

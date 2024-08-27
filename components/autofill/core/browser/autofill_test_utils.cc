@@ -246,19 +246,20 @@ AutofillProfile GetIncompleteProfile2() {
 
 void SetProfileCategory(
     AutofillProfile& profile,
-    autofill_metrics::AutofillProfileSourceCategory category) {
+    autofill_metrics::AutofillProfileRecordTypeCategory category) {
   switch (category) {
-    case autofill_metrics::AutofillProfileSourceCategory::kLocalOrSyncable:
-      test_api(profile).set_source(AutofillProfile::Source::kLocalOrSyncable);
+    case autofill_metrics::AutofillProfileRecordTypeCategory::kLocalOrSyncable:
+      test_api(profile).set_record_type(
+          AutofillProfile::RecordType::kLocalOrSyncable);
       break;
-    case autofill_metrics::AutofillProfileSourceCategory::kAccountChrome:
-    case autofill_metrics::AutofillProfileSourceCategory::kAccountNonChrome:
-      test_api(profile).set_source(AutofillProfile::Source::kAccount);
+    case autofill_metrics::AutofillProfileRecordTypeCategory::kAccountChrome:
+    case autofill_metrics::AutofillProfileRecordTypeCategory::kAccountNonChrome:
+      test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
       // Any value that is not kInitialCreatorOrModifierChrome works.
       const int kInitialCreatorOrModifierNonChrome =
           AutofillProfile::kInitialCreatorOrModifierChrome + 1;
       profile.set_initial_creator_id(
-          category == autofill_metrics::AutofillProfileSourceCategory::
+          category == autofill_metrics::AutofillProfileRecordTypeCategory::
                           kAccountChrome
               ? AutofillProfile::kInitialCreatorOrModifierChrome
               : kInitialCreatorOrModifierNonChrome);

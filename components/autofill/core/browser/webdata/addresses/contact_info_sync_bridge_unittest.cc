@@ -67,7 +67,8 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
 }
 
 AutofillProfile TestProfile(std::string_view guid) {
-  return AutofillProfile(std::string(guid), AutofillProfile::Source::kAccount,
+  return AutofillProfile(std::string(guid),
+                         AutofillProfile::RecordType::kAccount,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
 }
 
@@ -120,8 +121,8 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   // how the PersonalDataManager will access the profiles.
   std::vector<AutofillProfile> GetAllDataFromTable() {
     std::vector<AutofillProfile> profiles;
-    EXPECT_TRUE(table_.GetAutofillProfiles(AutofillProfile::Source::kAccount,
-                                           profiles));
+    EXPECT_TRUE(table_.GetAutofillProfiles(
+        AutofillProfile::RecordType::kAccount, profiles));
     return profiles;
   }
 

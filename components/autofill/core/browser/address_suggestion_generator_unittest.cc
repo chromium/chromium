@@ -525,15 +525,16 @@ TEST_F(AddressSuggestionGeneratorTest,
 // in case of a duplicate.
 TEST_F(AddressSuggestionGeneratorTest,
        GetProfilesToSuggest_kAccountPrecedence) {
-  // Create two profiles that only differ by their source.
+  // Create two profiles that only differ by their record type.
   AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_1.SetRawInfo(NAME_FULL, u"First Last");
-  test_api(profile_1).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile_1).set_record_type(AutofillProfile::RecordType::kAccount);
   address_data().AddProfile(profile_1);
 
   AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_2.SetRawInfo(NAME_FULL, u"First Last");
-  test_api(profile_2).set_source(AutofillProfile::Source::kLocalOrSyncable);
+  test_api(profile_2).set_record_type(
+      AutofillProfile::RecordType::kLocalOrSyncable);
   // Set high use count for profile 2 so that it has greater ranking than
   // profile_1
   profile_2.set_use_count(100);
@@ -546,8 +547,8 @@ TEST_F(AddressSuggestionGeneratorTest,
 
   ASSERT_EQ(1u, profiles_to_suggest.size());
   EXPECT_EQ(profile_1.guid(), profiles_to_suggest[0]->guid());
-  EXPECT_EQ(AutofillProfile::Source::kAccount,
-            profiles_to_suggest[0]->source());
+  EXPECT_EQ(AutofillProfile::RecordType::kAccount,
+            profiles_to_suggest[0]->record_type());
 }
 
 TEST_F(AddressSuggestionGeneratorTest,

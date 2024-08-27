@@ -233,11 +233,11 @@ AutofillProfile CreateStarterProfile(
     const AutofillProfile* existing_profile) {
   std::string guid = Java_AutofillProfile_getGUID(env, jprofile);
   if (!existing_profile) {
-    AutofillProfile::Source source =
+    AutofillProfile::RecordType record_type =
         Java_AutofillProfile_getSource(env, jprofile);
     AddressCountryCode country_code =
         AddressCountryCode(Java_AutofillProfile_getCountryCode(env, jprofile));
-    AutofillProfile profile = AutofillProfile(source, country_code);
+    AutofillProfile profile = AutofillProfile(record_type, country_code);
     // Only set the guid if CreateStartProfile is called on an existing profile
     // (java guid not empty). Otherwise, keep the generated one.
     // TODO(crbug.com/40282123): `guid` should be always empty when existing
@@ -256,7 +256,7 @@ AutofillProfile CreateStarterProfile(
 }  // namespace
 
 AutofillProfile::AutofillProfile(const std::string& guid,
-                                 Source source,
+                                 RecordType record_type,
                                  AddressCountryCode country_code)
     : AutofillDataModel(/*usage_history_size=*/
                         base::FeatureList::IsEnabled(
@@ -266,18 +266,19 @@ AutofillProfile::AutofillProfile(const std::string& guid,
       guid_(guid),
       phone_number_(this),
       address_(country_code),
-      source_(source),
+      record_type_(record_type),
       initial_creator_id_(kInitialCreatorOrModifierChrome),
       last_modifier_id_(kInitialCreatorOrModifierChrome),
       token_quality_(this) {}
 
-AutofillProfile::AutofillProfile(Source source, AddressCountryCode country_code)
+AutofillProfile::AutofillProfile(RecordType record_type,
+                                 AddressCountryCode country_code)
     : AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      source,
+                      record_type,
                       country_code) {}
 
 AutofillProfile::AutofillProfile(AddressCountryCode country_code)
-    : AutofillProfile(Source::kLocalOrSyncable, country_code) {}
+    : AutofillProfile(RecordType::kLocalOrSyncable, country_code) {}
 
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
     : AutofillDataModel(profile),
@@ -312,7 +313,7 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   address_ = profile.address_;
   set_language_code(profile.language_code());
 
-  source_ = profile.source_;
+  record_type_ = profile.record_type_;
   initial_creator_id_ = profile.initial_creator_id_;
   last_modifier_id_ = profile.last_modifier_id_;
 
@@ -327,8 +328,8 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
     const std::string& app_locale) const {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jprofile =
-      Java_AutofillProfile_Constructor(env, guid(), static_cast<jint>(source()),
-                                       language_code());
+      Java_AutofillProfile_Constructor(
+          env, guid(), static_cast<jint>(record_type()), language_code());
 
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     auto status = static_cast<jint>(GetVerificationStatus(type));
@@ -661,10 +662,10 @@ AddressCountryCode AutofillProfile::GetAddressCountryCode() const {
 }
 
 bool AutofillProfile::IsAccountProfile() const {
-  switch (source()) {
-    case Source::kLocalOrSyncable:
+  switch (record_type()) {
+    case RecordType::kLocalOrSyncable:
       return false;
-    case Source::kAccount:
+    case RecordType::kAccount:
       return true;
   }
   NOTREACHED();
@@ -910,7 +911,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
 
   // A copy of |this| pruned down to contain only data for the address fields in
   // |included_fields|.
-  AutofillProfile trimmed_profile(guid(), Source::kLocalOrSyncable,
+  AutofillProfile trimmed_profile(guid(), RecordType::kLocalOrSyncable,
                                   GetAddressCountryCode());
   trimmed_profile.SetInfo(AutofillType(HtmlFieldType::kCountryCode),
                           profile_region_code, app_locale);
@@ -1138,7 +1139,7 @@ FormGroup* AutofillProfile::MutableFormGroupForType(FieldType type) {
 bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
   return language_code() == profile.language_code() &&
          profile_label() == profile.profile_label() &&
-         source() == profile.source() && Compare(profile) == 0;
+         record_type() == profile.record_type() && Compare(profile) == 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
@@ -1175,12 +1176,12 @@ bool AutofillProfile::HasStructuredData() const {
 }
 
 AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
-  DCHECK_EQ(source(), Source::kLocalOrSyncable);
+  DCHECK_EQ(record_type(), RecordType::kLocalOrSyncable);
   AutofillProfile account_profile = *this;
-  // Since GUIDs are assumed to be unique across all profile sources, a new GUID
-  // is assigned.
+  // Since GUIDs are assumed to be unique across all profile record types, a new
+  // GUID is assigned.
   account_profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  account_profile.source_ = Source::kAccount;
+  account_profile.record_type_ = RecordType::kAccount;
   // Initial creator and last modifier are unused for kLocalOrSyncable profiles.
   account_profile.initial_creator_id_ = kInitialCreatorOrModifierChrome;
   account_profile.last_modifier_id_ = kInitialCreatorOrModifierChrome;

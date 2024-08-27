@@ -26,7 +26,8 @@ class EditAddressProfileDialogControllerImplTest
  protected:
   EditAddressProfileDialogControllerImplTest() {
     local_profile_ = std::make_unique<AutofillProfile>(
-        AutofillProfile::Source::kLocalOrSyncable, AddressCountryCode("US"));
+        AutofillProfile::RecordType::kLocalOrSyncable,
+        AddressCountryCode("US"));
     local_profile_->SetRawInfoWithVerificationStatus(
         NAME_FULL, u"Mona J. Liza", VerificationStatus::kUserVerified);
     test::SetProfileInfo(local_profile_.get(), "", "", "", "email@example.com",

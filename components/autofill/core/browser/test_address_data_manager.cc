@@ -30,12 +30,14 @@ TestAddressDataManager::~TestAddressDataManager() = default;
 void TestAddressDataManager::AddProfile(const AutofillProfile& profile) {
   AutofillProfile profile_copy = profile;
   profile_copy.FinalizeAfterImport();
-  GetProfileStorage(profile_copy.source()).push_back(std::move(profile_copy));
+  GetProfileStorage(profile_copy.record_type())
+      .push_back(std::move(profile_copy));
   NotifyObservers();
 }
 
 void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
-  std::vector<AutofillProfile>& storage = GetProfileStorage(profile.source());
+  std::vector<AutofillProfile>& storage =
+      GetProfileStorage(profile.record_type());
   auto adm_profile =
       base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
   if (adm_profile != storage.end()) {
@@ -46,7 +48,8 @@ void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
 
 void TestAddressDataManager::RemoveProfile(const std::string& guid) {
   const AutofillProfile* profile = GetProfileByGUID(guid);
-  std::vector<AutofillProfile>& profiles = GetProfileStorage(profile->source());
+  std::vector<AutofillProfile>& profiles =
+      GetProfileStorage(profile->record_type());
   profiles.erase(
       base::ranges::find(profiles, profile->guid(), &AutofillProfile::guid));
   NotifyObservers();
@@ -61,7 +64,8 @@ void TestAddressDataManager::LoadProfiles() {
 }
 
 void TestAddressDataManager::RecordUseOf(const AutofillProfile& profile) {
-  std::vector<AutofillProfile>& storage = GetProfileStorage(profile.source());
+  std::vector<AutofillProfile>& storage =
+      GetProfileStorage(profile.record_type());
   auto adm_profile =
       base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
   if (adm_profile != storage.end()) {
@@ -93,8 +97,8 @@ bool TestAddressDataManager::IsEligibleForAddressAccountStorage() const {
 }
 
 void TestAddressDataManager::ClearProfiles() {
-  GetProfileStorage(AutofillProfile::Source::kLocalOrSyncable).clear();
-  GetProfileStorage(AutofillProfile::Source::kAccount).clear();
+  GetProfileStorage(AutofillProfile::RecordType::kLocalOrSyncable).clear();
+  GetProfileStorage(AutofillProfile::RecordType::kAccount).clear();
 }
 
 }  // namespace autofill

@@ -1603,10 +1603,12 @@ TEST_F(AutofillProfileTest, HasStructuredData) {
 
 TEST_F(AutofillProfileTest, ConvertToAccountProfile) {
   const AutofillProfile kLocalProfile = test::GetFullProfile();
-  ASSERT_EQ(kLocalProfile.source(), AutofillProfile::Source::kLocalOrSyncable);
+  ASSERT_EQ(kLocalProfile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
   const AutofillProfile kAccountProfile =
       kLocalProfile.ConvertToAccountProfile();
-  EXPECT_EQ(kAccountProfile.source(), AutofillProfile::Source::kAccount);
+  EXPECT_EQ(kAccountProfile.record_type(),
+            AutofillProfile::RecordType::kAccount);
   EXPECT_EQ(kAccountProfile.initial_creator_id(),
             AutofillProfile::kInitialCreatorOrModifierChrome);
   EXPECT_EQ(kAccountProfile.last_modifier_id(),

@@ -49,22 +49,22 @@ class AddressAutofillTableTest : public testing::Test {
 };
 
 // Tests for the AutofillProfil CRUD interface are tested with both profile
-// sources.
+// record types.
 class AddressAutofillTableProfileTest
     : public AddressAutofillTableTest,
-      public testing::WithParamInterface<AutofillProfile::Source> {
+      public testing::WithParamInterface<AutofillProfile::RecordType> {
  public:
-  AutofillProfile::Source profile_source() const { return GetParam(); }
+  AutofillProfile::RecordType record_type() const { return GetParam(); }
 
-  // Creates an `AutofillProfile` with `profile_source()` as its source.
+  // Creates an `AutofillProfile` of `record_type()`.
   AutofillProfile CreateAutofillProfile() const {
-    return AutofillProfile(profile_source(), AddressCountryCode("ES"));
+    return AutofillProfile(record_type(), AddressCountryCode("ES"));
   }
 
-  // Depending on the `profile_source()`, the AutofillProfiles are stored in a
+  // Depending on the `record_type()`, the AutofillProfiles are stored in a
   // different master table.
   std::string_view GetProfileTable() const {
-    return profile_source() == AutofillProfile::Source::kLocalOrSyncable
+    return record_type() == AutofillProfile::RecordType::kLocalOrSyncable
                ? "local_addresses"
                : "contact_info";
   }
@@ -73,8 +73,8 @@ class AddressAutofillTableProfileTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     AddressAutofillTableProfileTest,
-    testing::ValuesIn({AutofillProfile::Source::kLocalOrSyncable,
-                       AutofillProfile::Source::kAccount}));
+    testing::ValuesIn({AutofillProfile::RecordType::kLocalOrSyncable,
+                       AutofillProfile::RecordType::kAccount}));
 
 // Tests reading/writing name, email, company, address and phone number
 // information.
@@ -163,65 +163,64 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   EXPECT_TRUE(table_.AddAutofillProfile(home_profile));
 
   // Get the 'Home' profile from the table.
-  std::optional<AutofillProfile> db_profile =
-      table_.GetAutofillProfile(home_profile.guid(), home_profile.source());
+  std::optional<AutofillProfile> db_profile = table_.GetAutofillProfile(
+      home_profile.guid(), home_profile.record_type());
   ASSERT_TRUE(db_profile);
 
   // Verify that it is correct.
   EXPECT_EQ(home_profile, *db_profile);
 
   // Remove the profile and expect that no profiles remain.
-  EXPECT_TRUE(
-      table_.RemoveAutofillProfile(home_profile.guid(), profile_source()));
+  EXPECT_TRUE(table_.RemoveAutofillProfile(home_profile.guid(), record_type()));
   std::vector<AutofillProfile> profiles;
-  EXPECT_TRUE(table_.GetAutofillProfiles(profile_source(), profiles));
+  EXPECT_TRUE(table_.GetAutofillProfiles(record_type(), profiles));
   EXPECT_TRUE(profiles.empty());
 }
 
-// Tests that `GetAutofillProfiles(source, profiles)` clears `profiles` and
-// only returns profiles from the correct `source`.
+// Tests that `GetAutofillProfiles(record_type, profiles)` clears `profiles` and
+// only returns profiles from the correct `record_type`.
 // Not part of the `AddressAutofillTableProfileTest` fixture, as it doesn't
-// benefit from parameterization on the `profile_source()`.
+// benefit from parameterization on the `record_type()`.
 TEST_F(AddressAutofillTableTest, GetAutofillProfiles) {
-  AutofillProfile local_profile(AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile local_profile(AutofillProfile::RecordType::kLocalOrSyncable,
                                 AddressCountryCode("ES"));
-  AutofillProfile account_profile(AutofillProfile::Source::kAccount,
+  AutofillProfile account_profile(AutofillProfile::RecordType::kAccount,
                                   AddressCountryCode("ES"));
   EXPECT_TRUE(table_.AddAutofillProfile(local_profile));
   EXPECT_TRUE(table_.AddAutofillProfile(account_profile));
 
   std::vector<AutofillProfile> profiles;
   EXPECT_TRUE(table_.GetAutofillProfiles(
-      AutofillProfile::Source::kLocalOrSyncable, profiles));
+      AutofillProfile::RecordType::kLocalOrSyncable, profiles));
   EXPECT_THAT(profiles, ElementsAre(local_profile));
-  EXPECT_TRUE(
-      table_.GetAutofillProfiles(AutofillProfile::Source::kAccount, profiles));
+  EXPECT_TRUE(table_.GetAutofillProfiles(AutofillProfile::RecordType::kAccount,
+                                         profiles));
   EXPECT_THAT(profiles, ElementsAre(account_profile));
 }
 
 // Tests that `RemoveAllAutofillProfiles()` clears all profiles of the given
-// source.
+// record type.
 TEST_P(AddressAutofillTableProfileTest, RemoveAllAutofillProfiles) {
   ASSERT_TRUE(table_.AddAutofillProfile(
-      AutofillProfile(AutofillProfile::Source::kLocalOrSyncable,
+      AutofillProfile(AutofillProfile::RecordType::kLocalOrSyncable,
                       i18n_model_definition::kLegacyHierarchyCountryCode)));
   ASSERT_TRUE(table_.AddAutofillProfile(
-      AutofillProfile(AutofillProfile::Source::kAccount,
+      AutofillProfile(AutofillProfile::RecordType::kAccount,
                       i18n_model_definition::kLegacyHierarchyCountryCode)));
 
-  EXPECT_TRUE(table_.RemoveAllAutofillProfiles(profile_source()));
+  EXPECT_TRUE(table_.RemoveAllAutofillProfiles(record_type()));
 
-  // Expect that the profiles from `profile_source()` are gone.
+  // Expect that the profiles from `record_type()` are gone.
   std::vector<AutofillProfile> profiles;
-  ASSERT_TRUE(table_.GetAutofillProfiles(profile_source(), profiles));
+  ASSERT_TRUE(table_.GetAutofillProfiles(record_type(), profiles));
   EXPECT_TRUE(profiles.empty());
 
-  // Expect that the profile from the opposite source remains.
-  const auto other_source =
-      profile_source() == AutofillProfile::Source::kAccount
-          ? AutofillProfile::Source::kLocalOrSyncable
-          : AutofillProfile::Source::kAccount;
-  ASSERT_TRUE(table_.GetAutofillProfiles(other_source, profiles));
+  // Expect that the profile from the opposite record_type remains.
+  const auto other_record_type =
+      record_type() == AutofillProfile::RecordType::kAccount
+          ? AutofillProfile::RecordType::kLocalOrSyncable
+          : AutofillProfile::RecordType::kAccount;
+  ASSERT_TRUE(table_.GetAutofillProfiles(other_record_type, profiles));
   EXPECT_EQ(profiles.size(), 1u);
 }
 
@@ -235,7 +234,7 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
 
   // Add
   table_.AddAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid(), profile.source());
+  profile = *table_.GetAutofillProfile(profile.guid(), profile.record_type());
   EXPECT_THAT(
       profile.token_quality().GetObservationTypesForFieldType(NAME_FIRST),
       UnorderedElementsAre(ProfileTokenQuality::ObservationType::kAccepted));
@@ -249,7 +248,7 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
                       ProfileTokenQuality::ObservationType::kEditedFallback,
                       ProfileTokenQualityTestApi::FormSignatureHash(21));
   table_.UpdateAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid(), profile.source());
+  profile = *table_.GetAutofillProfile(profile.guid(), profile.record_type());
   EXPECT_THAT(
       profile.token_quality().GetObservationTypesForFieldType(NAME_FIRST),
       UnorderedElementsAre(
@@ -273,7 +272,7 @@ TEST_P(AddressAutofillTableProfileTest, UseDates) {
   ASSERT_FALSE(profile.use_date(3).has_value());
 
   table_.AddAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid(), profile.source());
+  profile = *table_.GetAutofillProfile(profile.guid(), profile.record_type());
   EXPECT_EQ(profile.use_date(1), initial_use_date);
   EXPECT_FALSE(profile.use_date(2).has_value());
   EXPECT_FALSE(profile.use_date(3).has_value());
@@ -281,7 +280,7 @@ TEST_P(AddressAutofillTableProfileTest, UseDates) {
   profile.RecordUseDate(initial_use_date + base::Days(1));
   profile.RecordUseDate(initial_use_date + base::Days(2));
   table_.UpdateAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid(), profile.source());
+  profile = *table_.GetAutofillProfile(profile.guid(), profile.record_type());
   EXPECT_EQ(profile.use_date(1), initial_use_date + base::Days(2));
   EXPECT_EQ(profile.use_date(2), initial_use_date + base::Days(1));
   EXPECT_EQ(profile.use_date(3), initial_use_date);
@@ -311,7 +310,7 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
 
   // Get the profile.
   std::optional<AutofillProfile> db_profile =
-      table_.GetAutofillProfile(profile.guid(), profile.source());
+      table_.GetAutofillProfile(profile.guid(), profile.record_type());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
 
@@ -321,7 +320,7 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   table_.UpdateAutofillProfile(profile);
 
   // Get the profile.
-  db_profile = table_.GetAutofillProfile(profile.guid(), profile.source());
+  db_profile = table_.GetAutofillProfile(profile.guid(), profile.record_type());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
 }

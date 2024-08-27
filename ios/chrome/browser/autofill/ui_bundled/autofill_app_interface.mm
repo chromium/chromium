@@ -176,7 +176,8 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
       personalDataManager->address_data_manager().GetProfiles().size();
 
   if (isAccountProfile) {
-    test_api(profile).set_source(autofill::AutofillProfile::Source::kAccount);
+    test_api(profile).set_record_type(
+        autofill::AutofillProfile::RecordType::kAccount);
   }
   personalDataManager->address_data_manager().AddProfile(profile);
 

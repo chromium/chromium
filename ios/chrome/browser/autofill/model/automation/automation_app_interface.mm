@@ -140,8 +140,8 @@ NSError* PrepareAutofillProfileWithValues(
     personal_data_manager->RemoveByGUID(local_card->guid());
   }
   for (const autofill::AutofillProfile* local_profile :
-       personal_data_manager->address_data_manager().GetProfilesFromSource(
-           autofill::AutofillProfile::Source::kLocalOrSyncable)) {
+       personal_data_manager->address_data_manager().GetProfilesByRecordType(
+           autofill::AutofillProfile::RecordType::kLocalOrSyncable)) {
     personal_data_manager->RemoveByGUID(local_profile->guid());
   }
   personal_data_manager->payments_data_manager().AddCreditCard(credit_card);

@@ -304,7 +304,8 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   std::string country_code =
       CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
 
-  AutofillProfile profile(specifics.guid(), AutofillProfile::Source::kAccount,
+  AutofillProfile profile(specifics.guid(),
+                          AutofillProfile::RecordType::kAccount,
                           AddressCountryCode(country_code));
 
   profile.set_use_count(specifics.use_count());

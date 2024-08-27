@@ -57,11 +57,12 @@ constexpr char kProfileMigrationDecisionHistogram[] =
 constexpr char kProfileUpdateNumberOfAffectedTypesHistogram[] =
     "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields";
 
-// Test that two AutofillProfiles have the same `source() and `Compare()` equal.
-MATCHER(CompareWithSource, "") {
+// Test that two AutofillProfiles have the same `record_type() and `Compare()`
+// equal.
+MATCHER(CompareWithRecordType, "") {
   const AutofillProfile& a = std::get<0>(arg);
   const AutofillProfile& b = std::get<1>(arg);
-  return a.source() == b.source() && a.Compare(b) == 0;
+  return a.record_type() == b.record_type() && a.Compare(b) == 0;
 }
 
 // This derived version of the AddressProfileSaveManager stores the last import
@@ -334,7 +335,7 @@ void AddressProfileSaveManagerTest::VerifyFinalProfiles(
   } else {
     EXPECT_THAT(
         test_scenario.expected_final_profiles,
-        testing::UnorderedPointwise(CompareWithSource(), final_profiles));
+        testing::UnorderedPointwise(CompareWithRecordType(), final_profiles));
   }
 }
 

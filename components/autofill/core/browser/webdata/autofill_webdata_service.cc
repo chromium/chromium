@@ -120,20 +120,20 @@ void AutofillWebDataService::UpdateAutofillProfile(
 
 void AutofillWebDataService::RemoveAutofillProfile(
     const std::string& guid,
-    AutofillProfile::Source profile_source) {
+    AutofillProfile::RecordType record_type) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::RemoveAutofillProfile,
-                     autofill_backend_, guid, profile_source));
+                     autofill_backend_, guid, record_type));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
-    AutofillProfile::Source profile_source,
+    AutofillProfile::RecordType record_type,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetAutofillProfiles,
-                     autofill_backend_, profile_source),
+                     autofill_backend_, record_type),
       consumer);
 }
 

@@ -34,7 +34,7 @@ const auto kModificationDate = base::Time::FromSecondsSinceUnixEpoch(456);
 // returned from `ConstructBaseSpecifics()`.
 AutofillProfile ConstructBaseProfile(
     AddressCountryCode country_code = AddressCountryCode("ES")) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kAccount,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kAccount,
                           country_code);
 
   profile.set_use_count(123);
@@ -748,17 +748,17 @@ TEST_P(ContactInfoSyncUtilTest,
 // Test that only profiles with valid GUID are converted.
 TEST_F(ContactInfoSyncUtilTest,
        CreateContactInfoEntityDataFromAutofillProfile_InvalidGUID) {
-  AutofillProfile profile(kInvalidGuid, AutofillProfile::Source::kAccount,
+  AutofillProfile profile(kInvalidGuid, AutofillProfile::RecordType::kAccount,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);
 }
 
-// Test that AutofillProfiles with invalid source are not converted.
+// Test that AutofillProfiles with invalid record type are not converted.
 TEST_F(ContactInfoSyncUtilTest,
-       CreateContactInfoEntityDataFromAutofillProfile_InvalidSource) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+       CreateContactInfoEntityDataFromAutofillProfile_InvalidRecordType) {
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
@@ -860,7 +860,7 @@ TEST_F(ContactInfoSyncUtilTest,
 TEST_F(ContactInfoSyncUtilTest, ObservationResetting) {
   // Create a profile and collect an observation for NAME_FIRST.
   AutofillProfile profile = test::GetFullProfile();
-  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   test_api(profile.token_quality())
       .AddObservation(NAME_FIRST,
                       ProfileTokenQuality::ObservationType::kAccepted);

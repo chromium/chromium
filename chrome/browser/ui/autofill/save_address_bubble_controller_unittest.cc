@@ -123,7 +123,7 @@ TEST_F(SaveAddressBubbleControllerTest, SavingNonAccountAddress) {
 
 TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
-  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   auto controller =
       CreateController(profile, /*is_migration_to_account=*/false);
   std::u16string email =

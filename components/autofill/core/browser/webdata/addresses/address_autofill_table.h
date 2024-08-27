@@ -102,25 +102,25 @@ class AddressAutofillTable : public WebDatabaseTable {
   // Updates the database values for the specified profile.  Multi-value aware.
   bool UpdateAutofillProfile(const AutofillProfile& profile);
 
-  // Removes the Autofill profile with the given `guid`. `profile_source`
+  // Removes the Autofill profile with the given `guid`. `record_type`
   // indicates where the profile was synced from and thus whether it is stored
   // in `kAutofillProfilesTable` or `kContactInfoTable`.
   bool RemoveAutofillProfile(const std::string& guid,
-                             AutofillProfile::Source profile_source);
+                             AutofillProfile::RecordType record_type);
 
-  // Removes all profiles from the given `profile_source`.
-  bool RemoveAllAutofillProfiles(AutofillProfile::Source profile_source);
+  // Removes all profiles from the given `record_type`.
+  bool RemoveAllAutofillProfiles(AutofillProfile::RecordType record_type);
 
   // Retrieves a profile with guid `guid` from `kAutofillProfilesTable` or
   // `kContactInfoTable`.
   std::optional<AutofillProfile> GetAutofillProfile(
       const std::string& guid,
-      AutofillProfile::Source profile_source) const;
+      AutofillProfile::RecordType record_type) const;
 
   // Retrieves profiles in the database. They are returned in unspecified order.
-  // The `profile_source` specifies if profiles from the legacy or the remote
+  // The `record_type` specifies if profiles from the legacy or the remote
   // backend should be retrieved.
-  bool GetAutofillProfiles(AutofillProfile::Source profile_source,
+  bool GetAutofillProfiles(AutofillProfile::RecordType record_type,
                            std::vector<AutofillProfile>& profiles) const;
 
   // Removes rows from local_addresses tables if they were created on or after
@@ -165,8 +165,8 @@ class AddressAutofillTable : public WebDatabaseTable {
       std::vector<AutofillProfile>& profiles) const;
 
   bool InitLegacyProfileAddressesTable();
-  bool InitProfileMetadataTable(AutofillProfile::Source source);
-  bool InitProfileTypeTokensTable(AutofillProfile::Source source);
+  bool InitProfileMetadataTable(AutofillProfile::RecordType record_type);
+  bool InitProfileTypeTokensTable(AutofillProfile::RecordType record_type);
 };
 
 }  // namespace autofill

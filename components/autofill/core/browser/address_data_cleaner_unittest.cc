@@ -187,10 +187,12 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_OncePerVersion) {
 // Tests that `kAccount` profiles are not deduplicated against each other.
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountPairs) {
   AutofillProfile account_profile1 = test::StandardProfile();
-  test_api(account_profile1).set_source(AutofillProfile::Source::kAccount);
+  test_api(account_profile1)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   test_adm_.AddProfile(account_profile1);
   AutofillProfile account_profile2 = test::StandardProfile();
-  test_api(account_profile2).set_source(AutofillProfile::Source::kAccount);
+  test_api(account_profile2)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   test_adm_.AddProfile(account_profile2);
 
   test_api(data_cleaner_).ApplyDeduplicationRoutine();
@@ -208,7 +210,8 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
       AutofillProfile::kInitialCreatorOrModifierChrome + 1;
   account_profile.set_initial_creator_id(non_chrome_service);
   account_profile.set_last_modifier_id(non_chrome_service);
-  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   test_adm_.AddProfile(account_profile);
   test_adm_.AddProfile(test::SubsetOfStandardProfile());
 
@@ -228,7 +231,8 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
 // profile are not deduplicated.
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
-  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   test_adm_.AddProfile(account_profile);
   AutofillProfile local_profile = test::StandardProfile();
   test_adm_.AddProfile(local_profile);

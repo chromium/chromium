@@ -50,13 +50,13 @@ std::string GetStringFromProfile(const autofill::AutofillProfile& profile,
   return base::UTF16ToUTF8(profile.GetRawInfo(type));
 }
 
-// Converts AutofillProfile::Source enum to the WebUI idl one.
-autofill_private::AddressSource ConvertProfileSource(
-    autofill::AutofillProfile::Source source) {
-  switch (source) {
-    case autofill::AutofillProfile::Source::kLocalOrSyncable:
+// Converts AutofillProfile::RecordType enum to the WebUI idl one.
+autofill_private::AddressSource ConvertProfileRecordType(
+    autofill::AutofillProfile::RecordType record_type) {
+  switch (record_type) {
+    case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
       return autofill_private::AddressSource::kLocalOrSyncable;
-    case autofill::AutofillProfile::Source::kAccount:
+    case autofill::AutofillProfile::RecordType::kAccount:
       return autofill_private::AddressSource::kAccount;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -95,7 +95,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   address.metadata->summary_label = base::UTF16ToUTF8(label_pieces[0]);
   address.metadata->summary_sublabel =
       base::UTF16ToUTF8(label.substr(label_pieces[0].size()));
-  address.metadata->source = ConvertProfileSource(profile.source());
+  address.metadata->source = ConvertProfileRecordType(profile.record_type());
 
   return address;
 }

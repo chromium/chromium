@@ -97,8 +97,8 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   std::optional<std::u16string> UserAccountEmail() const { return user_email_; }
 
-  // Returns true if the profile's source is
-  // `AutofillProfile::Source::kAccount`.
+  // Returns true if the profile's record type is
+  // `AutofillProfile::RecordType::kAccount`.
   bool IsProfileAnAccountProfile() const { return profile_.IsAccountProfile(); }
 
 #if defined(UNIT_TEST)

@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, UploadProfile) {
 // trigger reuploads - and it only operates on finalized profiles.
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
   AutofillProfile unfinalized_profile(
-      AutofillProfile::Source::kAccount,
+      AutofillProfile::RecordType::kAccount,
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   unfinalized_profile.SetRawInfo(autofill::NAME_FULL, u"Full Name");
   AutofillProfile finalized_profile = unfinalized_profile;
@@ -493,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   profile2.SetRawInfoWithVerificationStatus(
       autofill::NAME_FULL, u"Name of new profile.",
       autofill::VerificationStatus::kFormatted);
-  test_api(profile2).set_source(autofill::AutofillProfile::Source::kAccount);
+  test_api(profile2).set_record_type(
+      autofill::AutofillProfile::RecordType::kAccount);
 
   // Add an obsolete profile to make sure that the server has received the
   // update.
