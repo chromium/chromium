@@ -16,6 +16,7 @@
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
@@ -58,6 +59,11 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
     // Simulates submitting the `pin` to cryptohome as if the user
     // manually entered it.
     void SubmitPin(const std::string& pin);
+
+    // Simulate building and displaying a pin status message.
+    void DisplayPinStatusMessage(const cryptohome::PinStatus pin_status);
+
+    const std::u16string& GetPinStatusMessage() const;
 
     void Close();
 
@@ -129,6 +135,10 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   // called after auth factors configuration is updated.
   bool IsPinLocked() const;
 
+  // Show a PinStatus based error message, only if |pin_status| represents
+  // a locked factor.
+  void DisplayPinStatusMessage(const cryptohome::PinStatus pin_status);
+
   std::unique_ptr<views::Widget> widget_;
 
   base::ScopedObservation<views::View, ViewObserver> contents_view_observer_{
@@ -139,6 +149,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   AccountId account_id_;
   std::u16string title_;
   std::u16string description_;
+  std::u16string pin_status_message_;
 
   std::unique_ptr<AuthFactorEditor> auth_factor_editor_;
   std::unique_ptr<AuthPerformer> auth_performer_;

@@ -5333,7 +5333,10 @@ No devices connected.
         Incorrect PIN
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS" desc="Text shown in the auth dialog to tell the user that PIN auth has reached maximum attempts">
-        Too many attempts
+        Too many PIN attempts
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_PIN_DELAY_REQUIRED" desc="Text shown in the auth dialog to tell the user that PIN auth has reached many attempts and a rate limiting delay is in effect">
+        Too many PIN attempts. Wait <ph name="TIME_LEFT">$1<ex>1 hour, 15 minutes, 10 seconds</ex></ph> and try again
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_AVAILABLE" desc="Text shown in the auth dialog to remind user that fingerprint auth is supported">
         Touch the fingerprint sensor

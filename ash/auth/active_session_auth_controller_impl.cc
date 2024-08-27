@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -118,6 +119,28 @@ const char* ActiveSessionAuthStateToString(
   NOTREACHED();
 }
 
+std::u16string BuildPinStatusMessage(const cryptohome::PinStatus& pin_status) {
+  if (!pin_status.IsLockedFactor()) {
+    return u"";
+  }
+  if (pin_status.AvailableAt() == base::Time::Max()) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS);
+  } else {
+    base::TimeDelta delta = pin_status.AvailableAt() - base::Time::Now();
+    std::u16string time_left_message;
+    if (base::TimeDurationCompactFormatWithSeconds(
+            delta, base::DurationFormatWidth::DURATION_WIDTH_WIDE,
+            &time_left_message)) {
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_IN_SESSION_AUTH_PIN_DELAY_REQUIRED, time_left_message);
+    } else {
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS);
+    }
+  }
+}
+
 }  // namespace
 
 ActiveSessionAuthControllerImpl::TestApi::TestApi(
@@ -139,6 +162,16 @@ void ActiveSessionAuthControllerImpl::TestApi::SubmitPassword(
 void ActiveSessionAuthControllerImpl::TestApi::SubmitPin(
     const std::string& pin) {
   controller_->OnPinSubmit(base::UTF8ToUTF16(pin));
+}
+
+void ActiveSessionAuthControllerImpl::TestApi::DisplayPinStatusMessage(
+    const cryptohome::PinStatus pin_status) {
+  controller_->DisplayPinStatusMessage(pin_status);
+}
+
+const std::u16string&
+ActiveSessionAuthControllerImpl::TestApi::GetPinStatusMessage() const {
+  return controller_->pin_status_message_;
 }
 
 void ActiveSessionAuthControllerImpl::TestApi::Close() {
@@ -410,12 +443,20 @@ void ActiveSessionAuthControllerImpl::ProcessAuthFactorStatusUpdate(
         /*fallback_type=*/cryptohome::AuthFactorType::kPassword);
     if (auth_factor.ref().type() == cryptohome::AuthFactorType::kPin) {
       CHECK(contents_view_);
-      bool pin_enabled = !auth_factor.GetPinStatus().IsLockedFactor();
+      auto pin_status = auth_factor.GetPinStatus();
+      bool pin_enabled = !pin_status.IsLockedFactor();
       // Only need to update the auth view because |available_factors_| is only
       // used to initialize the view.
       contents_view_->SetHasPin(pin_enabled);
+      DisplayPinStatusMessage(pin_status);
     }
   }
+}
+
+void ActiveSessionAuthControllerImpl::DisplayPinStatusMessage(
+    const cryptohome::PinStatus pin_status) {
+  pin_status_message_ = BuildPinStatusMessage(pin_status);
+  contents_view_->SetPinStatus(pin_status_message_);
 }
 
 }  // namespace ash

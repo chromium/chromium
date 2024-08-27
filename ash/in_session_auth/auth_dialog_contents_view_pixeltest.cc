@@ -262,7 +262,7 @@ TEST_F(AuthDialogContentsViewPixelTest, PinAndFingerprintWithPinFail) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "pin_fingerprint_pin_fail", /*revision_number=*/3, widget.get()));
+      "pin_fingerprint_pin_fail", /*revision_number=*/4, widget.get()));
 }
 
 TEST_F(AuthDialogContentsViewPixelTest,

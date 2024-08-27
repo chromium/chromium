@@ -6,7 +6,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
@@ -19,6 +21,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -410,6 +413,44 @@ TEST_F(ActiveSessionAuthControllerTest, BadPinThenGoodPassword) {
       HashPassword(kExpectedPassword));
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get<bool>(), true);
+}
+
+// Check the format and content of pin lockout status message.
+TEST_F(ActiveSessionAuthControllerTest, PinLockoutMessage) {
+  AddGaiaPassword(account_id_, kExpectedPassword);
+  AddCryptohomePin(account_id_, kExpectedPin);
+  const std::string bad_pin = "bad_pin";
+
+  user_manager::KnownUser known_user(Shell::Get()->local_state());
+  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+                           kExpectedSalt);
+
+  auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
+      Shell::Get()->active_session_auth_controller());
+  auto test_api = ActiveSessionAuthControllerImpl::TestApi(controller);
+
+  OnAuthComplete future;
+
+  Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
+      std::make_unique<SettingsAuthRequest>(future.GetCallback()));
+
+  // Await show.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return controller->IsShown(); }));
+
+  const base::TimeDelta in_a_while = base::Seconds(60);
+  cryptohome::PinStatus soft_lockout{in_a_while};
+  test_api.DisplayPinStatusMessage(soft_lockout);
+
+  EXPECT_EQ(
+      test_api.GetPinStatusMessage(),
+      l10n_util::GetStringFUTF16(IDS_ASH_IN_SESSION_AUTH_PIN_DELAY_REQUIRED,
+                                 u"1 minute, 0 seconds"));
+
+  cryptohome::PinStatus hard_lockout{base::TimeDelta::Max()};
+  test_api.DisplayPinStatusMessage(hard_lockout);
+  EXPECT_EQ(
+      test_api.GetPinStatusMessage(),
+      l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS));
 }
 
 // Tests that the OnAuthCancel callback is called with the correct
