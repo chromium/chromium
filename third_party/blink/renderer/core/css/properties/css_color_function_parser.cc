@@ -605,6 +605,7 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   }
 
   std::optional<Color> resolved_color;
+  bool has_alpha = false;
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
@@ -638,22 +639,21 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     }
 
     // Parse alpha.
-    bool expect_alpha = false;
     if (is_legacy_syntax_) {
       if (!Color::IsLegacyColorSpace(color_space_)) {
         return nullptr;
       }
       // , <alpha-value>?
       if (css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
-        expect_alpha = true;
+        has_alpha = true;
       }
     } else {
       // / <alpha-value>?
       if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
-        expect_alpha = true;
+        has_alpha = true;
       }
     }
-    if (expect_alpha) {
+    if (has_alpha) {
       if (!ConsumeAlpha(stream, context)) {
         return nullptr;
       }
@@ -710,89 +710,87 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
 
     // The parsing was successful, so we need to consume the input.
     guard.Release();
-
-    // We should be able to resolve channel values for all non-relative colors
-    // and all relative colors where the origin color is resolvable at parse
-    // time.
-    if (!IsRelativeColor() || origin_color_.has_value()) {
-      // Resolve channel values.
-      for (int i = 0; i < 3; i++) {
-        if (channel_types_[i] != ChannelType::kNone) {
-          channels_[i] = ResolveColorChannel(
-              unresolved_channels_[i], channel_types_[i],
-              function_metadata_->channel_percentage[i], color_channel_map_);
-
-          if (ColorChannelIsHue(color_space_, i)) {
-            // Non-finite values should be clamped to the range [0, 360].
-            // Since 0 = 360 in this case, they can all simply become zero.
-            if (!isfinite(channels_[i].value())) {
-              channels_[i] = 0.0;
-            }
-
-            // Wrap hue to be in the range [0, 360].
-            channels_[i].value() =
-                fmod(fmod(channels_[i].value(), 360.0) + 360.0, 360.0);
-          }
-        }
-      }
-
-      if (expect_alpha) {
-        if (alpha_channel_type_ != ChannelType::kNone) {
-          alpha_ = ResolveAlpha(unresolved_alpha_, alpha_channel_type_,
-                                color_channel_map_);
-        } else {
-          alpha_.reset();
-        }
-      } else if (IsRelativeColor()) {
-        alpha_ = color_channel_map_.at(CSSValueID::kAlpha);
-      }
-
-      MakePerColorSpaceAdjustments();
-
-      resolved_color = Color::FromColorSpace(
-          color_space_, channels_[0], channels_[1], channels_[2], alpha_);
-      if (IsRelativeColor() && Color::IsLegacyColorSpace(color_space_)) {
-        resolved_color->ConvertToColorSpace(Color::ColorSpace::kSRGB);
-      }
-    }
-
-    if (IsRelativeColor()) {
-      context.Count(WebFeature::kCSSRelativeColor);
-    } else {
-      switch (color_space_) {
-        case Color::ColorSpace::kSRGB:
-        case Color::ColorSpace::kSRGBLinear:
-        case Color::ColorSpace::kDisplayP3:
-        case Color::ColorSpace::kA98RGB:
-        case Color::ColorSpace::kProPhotoRGB:
-        case Color::ColorSpace::kRec2020:
-          context.Count(WebFeature::kCSSColor_SpaceRGB);
-          if (resolved_color.has_value() &&
-              !IsInGamutRec2020(*resolved_color)) {
-            context.Count(WebFeature::kCSSColor_SpaceRGB_outOfRec2020);
-          }
-          break;
-        case Color::ColorSpace::kOklab:
-        case Color::ColorSpace::kOklch:
-          context.Count(WebFeature::kCSSColor_SpaceOkLxx);
-          if (resolved_color.has_value() &&
-              !IsInGamutRec2020(*resolved_color)) {
-            context.Count(WebFeature::kCSSColor_SpaceOkLxx_outOfRec2020);
-          }
-          break;
-        case Color::ColorSpace::kXYZD50:
-        case Color::ColorSpace::kXYZD65:
-        case Color::ColorSpace::kLab:
-        case Color::ColorSpace::kLch:
-        case Color::ColorSpace::kSRGBLegacy:
-        case Color::ColorSpace::kHSL:
-        case Color::ColorSpace::kHWB:
-        case Color::ColorSpace::kNone:
-          break;
-      }
-    }
   }
   stream.ConsumeWhitespace();
+
+  // We should be able to resolve channel values for all non-relative colors
+  // and all relative colors where the origin color is resolvable at parse
+  // time.
+  if (!IsRelativeColor() || origin_color_.has_value()) {
+    // Resolve channel values.
+    for (int i = 0; i < 3; i++) {
+      if (channel_types_[i] != ChannelType::kNone) {
+        channels_[i] = ResolveColorChannel(
+            unresolved_channels_[i], channel_types_[i],
+            function_metadata_->channel_percentage[i], color_channel_map_);
+
+        if (ColorChannelIsHue(color_space_, i)) {
+          // Non-finite values should be clamped to the range [0, 360].
+          // Since 0 = 360 in this case, they can all simply become zero.
+          if (!isfinite(channels_[i].value())) {
+            channels_[i] = 0.0;
+          }
+
+          // Wrap hue to be in the range [0, 360].
+          channels_[i].value() =
+              fmod(fmod(channels_[i].value(), 360.0) + 360.0, 360.0);
+        }
+      }
+    }
+
+    if (has_alpha) {
+      if (alpha_channel_type_ != ChannelType::kNone) {
+        alpha_ = ResolveAlpha(unresolved_alpha_, alpha_channel_type_,
+                              color_channel_map_);
+      } else {
+        alpha_.reset();
+      }
+    } else if (IsRelativeColor()) {
+      alpha_ = color_channel_map_.at(CSSValueID::kAlpha);
+    }
+
+    MakePerColorSpaceAdjustments();
+
+    resolved_color = Color::FromColorSpace(color_space_, channels_[0],
+                                           channels_[1], channels_[2], alpha_);
+    if (IsRelativeColor() && Color::IsLegacyColorSpace(color_space_)) {
+      resolved_color->ConvertToColorSpace(Color::ColorSpace::kSRGB);
+    }
+  }
+
+  if (IsRelativeColor()) {
+    context.Count(WebFeature::kCSSRelativeColor);
+  } else {
+    switch (color_space_) {
+      case Color::ColorSpace::kSRGB:
+      case Color::ColorSpace::kSRGBLinear:
+      case Color::ColorSpace::kDisplayP3:
+      case Color::ColorSpace::kA98RGB:
+      case Color::ColorSpace::kProPhotoRGB:
+      case Color::ColorSpace::kRec2020:
+        context.Count(WebFeature::kCSSColor_SpaceRGB);
+        if (resolved_color.has_value() && !IsInGamutRec2020(*resolved_color)) {
+          context.Count(WebFeature::kCSSColor_SpaceRGB_outOfRec2020);
+        }
+        break;
+      case Color::ColorSpace::kOklab:
+      case Color::ColorSpace::kOklch:
+        context.Count(WebFeature::kCSSColor_SpaceOkLxx);
+        if (resolved_color.has_value() && !IsInGamutRec2020(*resolved_color)) {
+          context.Count(WebFeature::kCSSColor_SpaceOkLxx_outOfRec2020);
+        }
+        break;
+      case Color::ColorSpace::kXYZD50:
+      case Color::ColorSpace::kXYZD65:
+      case Color::ColorSpace::kLab:
+      case Color::ColorSpace::kLch:
+      case Color::ColorSpace::kSRGBLegacy:
+      case Color::ColorSpace::kHSL:
+      case Color::ColorSpace::kHWB:
+      case Color::ColorSpace::kNone:
+        break;
+    }
+  }
 
   if (resolved_color.has_value()) {
     return cssvalue::CSSColor::Create(*resolved_color);
