@@ -6,6 +6,7 @@
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_BASE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +19,7 @@
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -248,6 +250,11 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Returns false if permission management should automatically drop
   // permission requests of the given `type`.
   virtual bool IsPermissionRequestable(ContentSettingsType type) const;
+
+  // If the GuestView overrides |type|, returns the permission result of |type|.
+  // Otherwise, returns nullopt.
+  virtual std::optional<content::PermissionResult> OverridePermissionResult(
+      ContentSettingsType type) const;
 
   content::RenderFrameHost* GetGuestMainFrame() const;
 

@@ -32,8 +32,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
     })();
   )";
   test_case.permission_name = "pointerLock";
-  test_case.embedder_content_settings_type.insert(
-      ContentSettingsType::POINTER_LOCK);
+  test_case.content_settings_type.insert(ContentSettingsType::POINTER_LOCK);
 
   PermissionRequestTestParam test_param = GetParam();
   RunTestAndVerify(test_case, test_param);

@@ -36,8 +36,8 @@ struct PermissionRequestTestCase {
   std::string permission_name;
   // Policy features the permission depends on.
   std::set<blink::mojom::PermissionsPolicyFeature> policy_features;
-  // ContentSettingsType(s) of the embedder the permission depends on.
-  std::set<ContentSettingsType> embedder_content_settings_type;
+  // Corresponding ContentSettingsType(s) of the permission.
+  std::set<ContentSettingsType> content_settings_type;
 };
 
 enum class EmbedderPolicy {
@@ -47,11 +47,14 @@ enum class EmbedderPolicy {
   kBothEmbedderAndRequestingOrigin
 };
 
+enum class ContentSettingsState { kDefault, kAllow, kDeny };
+
 struct PermissionRequestTestParam {
   std::string name;
   bool calls_allow;
   EmbedderPolicy embedder_policy;
-  bool has_embedder_content_setting;
+  bool allowed_by_embedder_content_settings;
+  ContentSettingsState embedded_origin_content_settings_state;
   bool expected_success;
 };
 

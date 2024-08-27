@@ -5,6 +5,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -902,6 +904,11 @@ bool GuestViewBase::RequiresSslInterstitials() const {
 
 bool GuestViewBase::IsPermissionRequestable(ContentSettingsType type) const {
   return true;
+}
+
+std::optional<content::PermissionResult>
+GuestViewBase::OverridePermissionResult(ContentSettingsType type) const {
+  return std::nullopt;
 }
 
 content::RenderFrameHost* GuestViewBase::GetGuestMainFrame() const {

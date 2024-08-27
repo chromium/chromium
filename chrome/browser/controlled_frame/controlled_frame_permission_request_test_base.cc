@@ -44,31 +44,50 @@ const std::vector<PermissionRequestTestParam> kTestParams = {
     {.name = "Succeeds",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
-     .has_embedder_content_setting = true,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
      .expected_success = true},
     {.name = "FailsBecauseNotAllow",
      .calls_allow = false,
      .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
-     .has_embedder_content_setting = true,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
      .expected_success = false},
     {.name = "FailsBecauseEmbedderDoesNotHavePermissionsPolicy",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kNoPolicy,
-     .has_embedder_content_setting = true,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
      .expected_success = false},
     {.name = "FailsBecauseEmbedderPermissionsPolicyMissingEmbedderOrigin",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kNoEmbedderOrigin,
-     .has_embedder_content_setting = true},
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
+     .expected_success = false},
     {.name = "FailsBecauseEmbedderPermissionsPolicyMissingRequestingOrigin",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kNoRequestingOrigin,
-     .has_embedder_content_setting = true,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
      .expected_success = false},
     {.name = "FailsBecauseNoEmbedderContentSettings",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
-     .has_embedder_content_setting = false,
+     .allowed_by_embedder_content_settings = false,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
+     .expected_success = false},
+    {.name = "SucceedsWhenEmbeddedOriginPermissionStateIsDenied",
+     .calls_allow = true,
+     .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDeny,
+     .expected_success = true},
+    {.name = "FailsWhenEmbeddedOriginPermissionStateIsAllowed",
+     .calls_allow = true,
+     .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
+     .allowed_by_embedder_content_settings = false,
+     .embedded_origin_content_settings_state = ContentSettingsState::kAllow,
      .expected_success = false},
 };
 
@@ -88,6 +107,14 @@ class PermissionRequestEventObserver
  private:
   std::vector<std::string> events_;
 };
+
+ContentSetting ContentSettingFromState(ContentSettingsState state) {
+  CHECK(state != ContentSettingsState::kDefault);
+  if (state == ContentSettingsState::kAllow) {
+    return ContentSetting::CONTENT_SETTING_ALLOW;
+  }
+  return ContentSetting::CONTENT_SETTING_BLOCK;
+}
 
 }  // namespace
 
@@ -150,8 +177,8 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
 
   // If the permission has no dependent embedder content setting, then skip
   // the true negative embedder content settings test cases.
-  if (!test_param.has_embedder_content_setting &&
-      test_case.embedder_content_settings_type.empty()) {
+  if (!test_param.allowed_by_embedder_content_settings &&
+      test_case.content_settings_type.empty()) {
     return;
   }
 
@@ -185,15 +212,25 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
   SetUpPermissionRequestEventListener(app_frame, test_case.permission_name,
                                       test_param.calls_allow);
 
-  for (const auto& content_settings_type :
-       test_case.embedder_content_settings_type) {
+  for (const auto& content_settings_type : test_case.content_settings_type) {
     HostContentSettingsMapFactory::GetForProfile(profile())
         ->SetContentSettingDefaultScope(
             app_frame->GetLastCommittedOrigin().GetURL(),
             app_frame->GetLastCommittedOrigin().GetURL(), content_settings_type,
-            test_param.has_embedder_content_setting
+            test_param.allowed_by_embedder_content_settings
                 ? ContentSetting::CONTENT_SETTING_ALLOW
                 : ContentSetting::CONTENT_SETTING_BLOCK);
+
+    if (test_param.embedded_origin_content_settings_state !=
+        ContentSettingsState::kDefault) {
+      HostContentSettingsMapFactory::GetForProfile(profile())
+          ->SetContentSettingDefaultScope(
+              controlled_frame->GetLastCommittedOrigin().GetURL(),
+              controlled_frame->GetLastCommittedOrigin().GetURL(),
+              content_settings_type,
+              ContentSettingFromState(
+                  test_param.embedded_origin_content_settings_state));
+    }
   }
 
   PermissionRequestEventObserver event_observer;
