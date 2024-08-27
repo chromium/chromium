@@ -60,9 +60,7 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
       Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
       auto hr = d3d11_device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
       CHECK(SUCCEEDED(hr));
-      if (!multi_threaded->GetMultithreadProtected()) {
-        multi_threaded->SetMultithreadProtected(TRUE);
-      }
+      multi_threaded->SetMultithreadProtected(TRUE);
       multithread_protected_ = true;
     }
 
