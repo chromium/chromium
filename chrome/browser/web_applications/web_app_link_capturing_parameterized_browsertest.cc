@@ -67,11 +67,14 @@ constexpr char kDestinationPageScopeA[] =
     "/banners/link_capturing/scope_a/destination.html";
 constexpr char kDestinationPageScopeB[] =
     "/banners/link_capturing/scope_b/destination.html";
+constexpr char kDestinationPageScopeX[] =
+    "/banners/link_capturing/scope_x/destination.html";
 constexpr char kLinkCaptureTestInputPath[] =
     "chrome/test/data/web_apps/link_capture_test_input.json";
 
 constexpr char kValueScopeA2A[] = "A_TO_A";
 constexpr char kValueScopeA2B[] = "A_TO_B";
+constexpr char kValueScopeA2X[] = "A_TO_X";
 constexpr char kValueLink[] = "LINK";
 constexpr char kValueButton[] = "BTN";
 constexpr char kValueServiceWorkerButton[] = "BTN_SW";
@@ -112,10 +115,14 @@ std::string_view ToParamString(StartingPoint start) {
   }
 }
 
-// Whether to navigate within the same scope or outside it:
+// Destinations:
+// ScopeA2A: Navigation to an installed app, within same scope.
+// ScopeA2B: Navigation to an installed app, but different scope.
+// ScopeA2X: Navigation to non-installed app (different scope).
 enum class Destination {
   kScopeA2A,
   kScopeA2B,
+  kScopeA2X,
 };
 
 std::string ToIdString(Destination scope) {
@@ -124,6 +131,8 @@ std::string ToIdString(Destination scope) {
       return kValueScopeA2A;
     case Destination::kScopeA2B:
       return kValueScopeA2B;
+    case Destination::kScopeA2X:
+      return kValueScopeA2X;
   }
 }
 
@@ -133,6 +142,8 @@ std::string_view ToParamString(Destination scope) {
       return "ScopeA2A";
     case Destination::kScopeA2B:
       return "ScopeA2B";
+    case Destination::kScopeA2X:
+      return "ScopeA2X";
   }
 }
 
@@ -140,6 +151,7 @@ enum class RedirectType {
   kNone,
   kServerSideViaA,
   kServerSideViaB,
+  kServerSideViaX,
 };
 
 std::string ToIdString(RedirectType redirect, Destination final_destination) {
@@ -150,6 +162,8 @@ std::string ToIdString(RedirectType redirect, Destination final_destination) {
       return kValueScopeA2A;
     case RedirectType::kServerSideViaB:
       return kValueScopeA2B;
+    case RedirectType::kServerSideViaX:
+      return kValueScopeA2X;
   }
 }
 
@@ -161,6 +175,8 @@ std::string_view ToParamString(RedirectType redirect) {
       return "ServerSideViaA";
     case RedirectType::kServerSideViaB:
       return "ServerSideViaB";
+    case RedirectType::kServerSideViaX:
+      return "ServerSideViaX";
   }
 }
 
@@ -675,6 +691,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
         return embedded_test_server()->GetURL(kDestinationPageScopeA);
       case Destination::kScopeA2B:
         return embedded_test_server()->GetURL(kDestinationPageScopeB);
+      case Destination::kScopeA2X:
+        return embedded_test_server()->GetURL(kDestinationPageScopeX);
     }
   }
 
@@ -690,6 +708,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
         return embedded_test_server()->GetURL(kDestinationPageScopeA);
       case RedirectType::kServerSideViaB:
         return embedded_test_server()->GetURL(kDestinationPageScopeB);
+      case RedirectType::kServerSideViaX:
+        return embedded_test_server()->GetURL(kDestinationPageScopeX);
     }
   }
 
@@ -868,7 +888,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
            "Add the switch '--run-all-tests' to run disabled tests too.";
   }
 
-  // Install all apps.
+  // Install apps for scope A and B (note: scope X is deliberately excluded).
   const webapps::AppId app_a =
       InstallTestWebApp(embedded_test_server()->GetURL(kStartPageScopeA));
   const webapps::AppId app_b =
@@ -964,8 +984,10 @@ INSTANTIATE_TEST_SUITE_P(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
             ),
-        testing::Values(Destination::kScopeA2A,   // Navigate in-scope A.
-                        Destination::kScopeA2B),  // Navigate A -> B.
+        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
+                        Destination::kScopeA2B,  // Navigate A -> B.
+                        Destination::kScopeA2X   // A -> X (X is not installed).
+                        ),
         testing::Values(RedirectType::kNone),
         testing::Values(
             NavigationElement::kElementLink,   // Navigate via element.
