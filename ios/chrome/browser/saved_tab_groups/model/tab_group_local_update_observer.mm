@@ -172,6 +172,17 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
     case WebStateListChange::Type::kGroupMove:
       break;
   }
+
+  web::WebState* web_state = status.new_active_web_state;
+  if (status.active_web_state_change() && web_state) {
+    const TabGroup* tab_group =
+        web_state_list->GetGroupOfWebStateAt(web_state_list->active_index());
+    if (tab_group) {
+      sync_service_->OnTabSelected(
+          tab_group->tab_group_id(),
+          web_state->GetUniqueIdentifier().identifier());
+    }
+  }
 }
 
 void TabGroupLocalUpdateObserver::WebStateListDestroyed(

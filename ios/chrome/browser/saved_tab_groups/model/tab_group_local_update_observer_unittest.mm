@@ -780,4 +780,19 @@ TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroupAfterRemovingLastTtab) {
   web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
 }
 
+// Tests that the service is correctly called when the active tab is updated.
+TEST_F(TabGroupLocalUpdateObserverTest, UpdateActiveTab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a b] c* d e f"));
+
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+  web::WebState* web_state_a = builder.GetWebStateForIdentifier('a');
+
+  EXPECT_CALL(*mock_service_,
+              OnTabSelected(group->tab_group_id(),
+                            web_state_a->GetUniqueIdentifier().identifier()));
+  web_state_list->ActivateWebStateAt(0);
+}
+
 }  // namespace tab_groups
