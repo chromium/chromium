@@ -3496,9 +3496,6 @@ extern const char kArcVmmSwapKBShortcutDesc[];
 extern const char kArcVmMemorySizeName[];
 extern const char kArcVmMemorySizeDesc[];
 
-extern const char kArcXdgModeName[];
-extern const char kArcXdgModeDesc[];
-
 extern const char kArcAAudioMMAPLowLatencyName[];
 extern const char kArcAAudioMMAPLowLatencyDescription[];
 

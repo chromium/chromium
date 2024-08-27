@@ -6060,10 +6060,6 @@ const char kArcVmmSwapKBShortcutDesc[] =
     "Alt + Ctrl + Shift + O/P to enable / disable ARCVM vmm swap. Only for "
     "experimental usage.";
 
-const char kArcXdgModeName[] = "Enable XDG mode for ARC apps.";
-const char kArcXdgModeDesc[] =
-    "Switch to XDG-based Wayland protocols for ARC apps.";
-
 const char kArcAAudioMMAPLowLatencyName[] =
     "Enable ARCVM AAudio MMAP low latency";
 const char kArcAAudioMMAPLowLatencyDescription[] =

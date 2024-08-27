@@ -107,7 +107,6 @@ extern const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond;
 extern const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond;
 extern const base::FeatureParam<base::TimeDelta> kVmmSwapTrimInterval;
 extern const base::FeatureParam<base::TimeDelta> kVmmSwapMinShrinkInterval;
-BASE_DECLARE_FEATURE(kXdgMode);
 BASE_DECLARE_FEATURE(kPriorityAppLmkDelay);
 extern const base::FeatureParam<int> kPriorityAppLmkDelaySecond;
 extern const base::FeatureParam<std::string> kPriorityAppLmkDelayList;

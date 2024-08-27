@@ -425,11 +425,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "arc-xdg-mode",
-    "owners": [ "takise@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "ash-capture-mode-education",
     "owners": [ "hewer@chromium.org", "meganlfu@google.com"],
     "expiry_milestone": 127

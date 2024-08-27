@@ -513,9 +513,6 @@ const base::FeatureParam<base::TimeDelta> kVmmSwapTrimInterval{
 const base::FeatureParam<base::TimeDelta> kVmmSwapMinShrinkInterval{
     &kVmmSwapPolicy, "min_shrink_interval", base::Minutes(10)};
 
-// When enabled, ARC uses XDG-based Wayland protocols.
-BASE_FEATURE(kXdgMode, "ArcXdgMode", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls the feature to delay low memory kills of high priority apps when the
 // memory pressure is below foreground.
 BASE_FEATURE(kPriorityAppLmkDelay,

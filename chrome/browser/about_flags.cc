@@ -6067,9 +6067,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcVmmSwapKBShortcutName,
      flag_descriptions::kArcVmmSwapKBShortcutDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kVmmSwapKeyboardShortcut)},
-    {"arc-xdg-mode", flag_descriptions::kArcXdgModeName,
-     flag_descriptions::kArcXdgModeDesc, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kXdgMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-generic-sensor-extra-classes",
      flag_descriptions::kEnableGenericSensorExtraClassesName,

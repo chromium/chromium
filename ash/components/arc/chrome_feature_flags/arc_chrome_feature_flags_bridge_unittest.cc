@@ -134,18 +134,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Disabled) {
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 0);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyXdgMode_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(kXdgMode);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->xdg_mode);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyXdgMode_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(kXdgMode);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->xdg_mode);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(
       ash::features::kPipDoubleTapToResize);
