@@ -230,6 +230,13 @@ void ChromeContentClient::AddContentDecryptionModules(
 //
 // Example standard schemes: https://, chrome-extension://, chrome://, file://
 // Example nonstandard schemes: mailto:, data:, javascript:, about:
+//
+// Warning: Adding a scheme here will make URLs with that scheme incompatible
+// with other parts of the web. If you just need the URL parser to handle the
+// hostname or path correctly, you don't need to add a scheme here since
+// non-special scheme URLs are now supported (see http://crbug.com/40063064 for
+// details). If you add a new scheme, please also add WPT tests for it like
+// https://crrev.com/c/5790445.
 static const char* const kChromeStandardURLSchemes[] = {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions::kExtensionScheme,
