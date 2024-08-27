@@ -65,9 +65,6 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   source->EnableReplaceI18nInJS();
   source->UseStringsJs();
 
-  source->AddString("lockScreenReauthSubtitile",
-                    l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_REAUTH_SUBTITLE,
-                                               base::UTF8ToUTF16(email)));
   source->AddString(
       "lockScreenReauthSubtitile1WithError",
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE1));
@@ -75,7 +72,6 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       "lockScreenReauthSubtitile2WithError",
       l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE2,
                                  base::UTF8ToUTF16(email)));
-
   source->AddString("lockScreenVerifyButton",
                     l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_VERIFY_BUTTON));
   source->AddString(

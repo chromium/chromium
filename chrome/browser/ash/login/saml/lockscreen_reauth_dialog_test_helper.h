@@ -78,7 +78,6 @@ class LockScreenReauthDialogTestHelper {
 
   void WaitForSigninWebview();
 
-  void ExpectVerifyAccountScreenHidden();
   void ExpectErrorScreenVisible();
   void ExpectSigninWebviewVisible();
   void ExpectSigninWebviewHidden();

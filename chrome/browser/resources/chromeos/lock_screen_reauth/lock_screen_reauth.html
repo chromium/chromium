@@ -255,37 +255,6 @@
     transform: rotate(180deg);
   }
 </style>
-<div class="content-wrapper" hidden="[[!isVerifyUser]]" role="dialog"
-    aria-modal="true" id="verifyAccountScreen"
-    aria-label="$i18n{loginWelcomeMessage}">
-  <div class="main-container">
-    <div class="header">
-      <iron-icon class="title-icon" icon="oobe-32:avatar"></iron-icon>
-      <div class="title">
-        $i18n{loginWelcomeMessage}
-      </div>
-      <div class="subtitle">
-        $i18n{lockScreenReauthSubtitile}
-      </div>
-    </div>
-    <div class="illustration-container">
-      <iron-icon icon="oobe-illos:encryption-migration-illo"
-          class="illustration">
-      </iron-icon>
-    </div>
-  </div>
-  <div class="flex layout horizontal button-container">
-    <cr-button id="cancelButtonVerifyScreen" class="cancel-button"
-        on-click="onCloseClick">
-      $i18n{lockScreenCancelButton}
-    </cr-button>
-    <cr-button id="nextButtonVerifyScreen" class="action-button"
-        on-click="onVerify">
-      $i18n{lockScreenVerifyButton}
-    </cr-button>
-  </div>
-</div>
-
 <div class="content-wrapper" hidden="[[!isErrorDisplayed]]" role="dialog"
     aria-modal="true" id="errorScreen"
     aria-label="$i18n{loginWelcomeMessageWithError}">

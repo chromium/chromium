@@ -81,14 +81,6 @@ class LockReauthElement extends LockReauthElementBase {
       },
 
       /**
-       * Whether the ‘verify user’ screen is shown.
-       */
-      isVerifyUser: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Whether the ‘verify user again’ screen is shown.
        */
       isErrorDisplayed: {
@@ -158,7 +150,6 @@ class LockReauthElement extends LockReauthElementBase {
 
   email: string;
   authDomain: string;
-  isVerifyUser: boolean;
   isButtonsEnabled: boolean;
   isErrorDisplayed: boolean;
   isSigninFrameDisplayed: boolean;
@@ -226,7 +217,6 @@ class LockReauthElement extends LockReauthElementBase {
   }
 
   private resetState() {
-    this.isVerifyUser = false;
     this.isErrorDisplayed = false;
     this.isSaml = false;
     this.isSigninFrameDisplayed = false;
@@ -282,11 +272,8 @@ class LockReauthElement extends LockReauthElementBase {
     this.email = data.email;
     this.isDefaultSsoProvider = !!data.doSamlRedirect;
     this.isSaml = this.isDefaultSsoProvider;
-    if (data.showVerificationNotice) {
-      this.isVerifyUser = true;
-    } else {
-      this.doGaiaRedirect();
-    }
+    this.doGaiaRedirect();
+
     chrome.send('authenticatorLoaded');
   }
 
