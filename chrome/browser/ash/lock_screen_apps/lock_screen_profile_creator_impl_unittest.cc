@@ -209,11 +209,12 @@ class UnittestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
+      Delegate* delegate,
+      Profile::CreateMode create_mode) override {
     pending_profile_creation_.Set(path, delegate);
 
-    auto new_profile =
-        std::make_unique<TestingProfile>(path, &pending_profile_creation_);
+    auto new_profile = std::make_unique<TestingProfile>(
+        path, &pending_profile_creation_, create_mode);
 
     // Build accompaning incognito profile, to ensure it has the same path
     // as the original profile.

@@ -190,8 +190,8 @@ class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
 // callback for the next profile creation.
 class UnittestProfileManager : public FakeProfileManager {
  public:
-  using ProfileBuilderCallback = base::RepeatingCallback<
-      std::unique_ptr<TestingProfile>(const base::FilePath&, Delegate*)>;
+  using ProfileBuilderCallback = base::RepeatingCallback<std::unique_ptr<
+      TestingProfile>(const base::FilePath&, Delegate*, Profile::CreateMode)>;
 
   explicit UnittestProfileManager(
       const base::FilePath& user_data_dir,
@@ -206,8 +206,9 @@ class UnittestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
-    auto profile = profile_builder_callback_.Run(path, delegate);
+      Delegate* delegate,
+      Profile::CreateMode create_mode) override {
+    auto profile = profile_builder_callback_.Run(path, delegate, create_mode);
     if (next_profile_created_callback_) {
       std::move(next_profile_created_callback_).Run(profile.get());
     }
@@ -408,7 +409,7 @@ class TurnSyncOnHelperTest : public testing::Test {
                                 base::Unretained(this))));
     auto testing_profile = BuildTestingProfile(
         temp_user_data_dir.Append(FILE_PATH_LITERAL("profile")),
-        /*delegate=*/nullptr);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
     profile_ = testing_profile.get();
 
     // Makes sure the profile has profile storage entries.
@@ -422,7 +423,7 @@ class TurnSyncOnHelperTest : public testing::Test {
     // Lacros expects that the main profile always exists.
     auto main_profile = BuildTestingProfile(
         temp_user_data_dir.Append(FILE_PATH_LITERAL("Default")),
-        /*delegate=*/nullptr);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
     profile_manager()->RegisterTestingProfile(std::move(main_profile),
                                               /*add_to_storage=*/true);
 
@@ -511,12 +512,14 @@ class TurnSyncOnHelperTest : public testing::Test {
   // Builds a testing profile with the right setup for this test.
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Profile::Delegate* delegate) {
+      Profile::Delegate* delegate,
+      Profile::CreateMode create_mode) {
     TestingProfile::Builder profile_builder;
 
     AddTestingProfileFactories(profile_builder);
 
     profile_builder.SetDelegate(delegate);
+    profile_builder.SetCreateMode(create_mode);
     profile_builder.SetPath(path);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_builder.SetIsMainProfile(Profile::IsMainProfilePath(path));

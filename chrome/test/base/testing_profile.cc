@@ -191,11 +191,16 @@ const char TestingProfile::kTestUserProfileDir[] = "Default";
 TestingProfile::TestingProfile() : TestingProfile(base::FilePath()) {}
 
 TestingProfile::TestingProfile(const base::FilePath& path)
-    : TestingProfile(path, /*delegate=*/nullptr) {}
+    : TestingProfile(path,
+                     /*delegate=*/nullptr,
+                     Profile::CreateMode::kSynchronous) {}
 
-TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
+TestingProfile::TestingProfile(const base::FilePath& path,
+                               Delegate* delegate,
+                               CreateMode create_mode)
     : TestingProfile(path,
                      delegate,
+                     create_mode,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
                      /*extension_policy=*/nullptr,
 #endif
@@ -220,6 +225,7 @@ TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
 TestingProfile::TestingProfile(
     const base::FilePath& path,
     Delegate* delegate,
+    CreateMode create_mode,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     scoped_refptr<ExtensionSpecialStoragePolicy> extension_policy,
 #endif
@@ -307,16 +313,16 @@ TestingProfile::TestingProfile(
 
   Init(is_supervised_profile);
 
-  // If caller supplied a delegate, delay the FinishInit invocation until other
-  // tasks have run.
-  // TODO(atwilson): See if this is still required once we convert the current
-  // users of the constructor that takes a Delegate* param.
-  if (delegate_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TestingProfile::FinishInit, base::Unretained(this)));
-  } else {
-    FinishInit();
+  switch (create_mode) {
+    case CreateMode::kSynchronous:
+      FinishInit(CreateMode::kSynchronous);
+      break;
+    case CreateMode::kAsynchronous:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&TestingProfile::FinishInit, base::Unretained(this),
+                         CreateMode::kAsynchronous));
+      break;
   }
 }
 
@@ -513,7 +519,7 @@ void TestingProfile::InitializeProfileType() {
       this, profile_metrics::BrowserProfileType::kRegular);
 }
 
-void TestingProfile::FinishInit() {
+void TestingProfile::FinishInit(CreateMode create_mode) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager)
     profile_manager->InitProfileUserPrefs(this);
@@ -525,7 +531,7 @@ void TestingProfile::FinishInit() {
   }
 
   if (delegate_) {
-    delegate_->OnProfileCreationFinished(this, CreateMode::kAsynchronous,
+    delegate_->OnProfileCreationFinished(this, create_mode,
                                          /*success=*/true,
                                          /*is_new_profile=*/false);
   }
@@ -1055,6 +1061,12 @@ TestingProfile::Builder& TestingProfile::Builder::SetDelegate(
   return *this;
 }
 
+TestingProfile::Builder& TestingProfile::Builder::SetCreateMode(
+    Profile::CreateMode create_mode) {
+  create_mode_ = create_mode;
+  return *this;
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TestingProfile::Builder&
 TestingProfile::Builder::SetExtensionSpecialStoragePolicy(
@@ -1187,7 +1199,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<TestingProfile>(
-      path_, delegate_,
+      path_, delegate_, create_mode_,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_policy_,
 #endif
@@ -1214,7 +1226,7 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
 
   // Note: Owned by |original_profile|.
   return new TestingProfile(
-      path_, delegate_,
+      path_, delegate_, create_mode_,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_policy_,
 #endif

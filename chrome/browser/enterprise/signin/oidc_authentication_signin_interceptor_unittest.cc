@@ -233,10 +233,12 @@ class UnittestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
+      Delegate* delegate,
+      Profile::CreateMode create_mode) override {
     TestingProfile::Builder builder;
     builder.SetPath(path);
     builder.SetDelegate(delegate);
+    builder.SetCreateMode(create_mode);
 
     if (absl::holds_alternative<std::unique_ptr<UserCloudPolicyManager>>(
             policy_manager_)) {

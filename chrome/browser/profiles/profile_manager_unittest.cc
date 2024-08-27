@@ -878,8 +878,8 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
 
   const base::FilePath supervised_path =
       temp_dir_.GetPath().AppendASCII("Supervised");
-  auto supervised_profile =
-      std::make_unique<TestingProfile>(supervised_path, nullptr);
+  auto supervised_profile = std::make_unique<TestingProfile>(
+      supervised_path, nullptr, Profile::CreateMode::kSynchronous);
   supervised_profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                             supervised_user::kChildAccountSUID);
 
@@ -892,8 +892,8 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
 
   const base::FilePath nonsupervised_path =
       temp_dir_.GetPath().AppendASCII("Non-Supervised");
-  auto nonsupervised_profile =
-      std::make_unique<TestingProfile>(nonsupervised_path, nullptr);
+  auto nonsupervised_profile = std::make_unique<TestingProfile>(
+      nonsupervised_path, nullptr, Profile::CreateMode::kSynchronous);
   profile_manager->RegisterTestingProfile(std::move(nonsupervised_profile),
                                           true);
 
@@ -925,12 +925,14 @@ class UnittestGuestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
+      Delegate* delegate,
+      Profile::CreateMode create_mode) override {
     TestingProfile::Builder builder;
     if (create_profiles_as_guest_)
       builder.SetGuestSession();
     builder.SetPath(path);
     builder.SetDelegate(delegate);
+    builder.SetCreateMode(create_mode);
     return builder.Build();
   }
 
