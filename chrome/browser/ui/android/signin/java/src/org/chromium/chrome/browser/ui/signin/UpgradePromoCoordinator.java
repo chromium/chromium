@@ -15,6 +15,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -157,6 +158,11 @@ public final class UpgradePromoCoordinator
     public void advanceToNextPage() {
         if (!isSignedIn() || mCurrentView == ChildView.HISTORY_SYNC) {
             mDelegate.onFlowComplete();
+            return;
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
+            // Always show history sync when the upgrade promo was forced on by a flag.
+            showChildView(ChildView.HISTORY_SYNC);
             return;
         }
         Profile profile = mProfileSupplier.get().getOriginalProfile();
