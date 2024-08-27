@@ -8028,20 +8028,6 @@ crbug.com/360163253 [ Linux ] virtual/threaded/wpt_internal/scheduler/integratio
 crbug.com/361095256 [ Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-keyboard.html [ Failure Pass ]
 crbug.com/360385661 virtual/threaded/wpt_internal/scheduler/integration_tests/high-priority-input-click.html [ Failure Pass ]
 
-# Gardener 2024-08-20
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/constructor-validate-payment-method-data.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/constructor.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass ]
-crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass ]
 crbug.com/361277938 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Failure Pass ]
 
 # Gardener 2024-08-22
