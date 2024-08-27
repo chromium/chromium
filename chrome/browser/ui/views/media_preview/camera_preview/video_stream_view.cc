@@ -107,13 +107,9 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
                         raster_context_provider_.get());
 }
 
-int VideoStreamView::GetHeightForWidth(int w) const {
-  return w / targeted_aspect_ratio_;
-}
-
 gfx::Size VideoStreamView::CalculatePreferredSize(
     const views::SizeBounds& /*available_size*/) const {
-  return gfx::Size(width(), GetHeightForWidth(width()));
+  return gfx::Size(width(), width() / targeted_aspect_ratio_);
 }
 
 void VideoStreamView::OnThemeChanged() {
