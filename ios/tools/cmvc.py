@@ -357,7 +357,7 @@ def main(args):
 
     # Presentation delegate h file
     if presentation_delegate or view_controller:
-        vc_source_set_files.append(f"{vc_snake_name}_presentation_delegate.mm")
+        vc_source_set_files.append(f"{vc_snake_name}_presentation_delegate.h")
 
         wanted_imports = {"#import <Foundation/Foundation.h>"}
         wanted_forwards = {f"@class {vc_name};"}
