@@ -95,12 +95,10 @@ TEST_F(SunfishTest, CaptureLabelView) {
   EXPECT_FALSE(capture_button->GetVisible());
   EXPECT_FALSE(capture_label->GetVisible());
 
-  // Release the drag. Test only the button is visible.
+  // Release the drag. The label and button are both hidden.
   event_generator->ReleaseLeftButton();
-  EXPECT_TRUE(capture_button->GetVisible());
+  EXPECT_FALSE(capture_button->GetVisible());
   EXPECT_FALSE(capture_label->GetVisible());
-
-  // TODO: Maybe hide the button.
 }
 
 // Tests the sunfish capture mode bar view.

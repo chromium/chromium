@@ -65,6 +65,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -662,9 +663,8 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 
 void CaptureModeController::StartSunfishSession() {
   DCHECK(features::IsSunfishFeatureEnabled());
+  // TODO(b/357658506): Determine whether to close the results panel.
   StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
-  // TODO(b/357658506): Implement sunfish behavior. Currently this will start
-  // what looks like the default capture mode session.
 }
 
 void CaptureModeController::Stop() {
@@ -840,6 +840,23 @@ void CaptureModeController::PerformCapture() {
       base::BindOnce(
           &CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture,
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CaptureModeController::PerformImageSearch() {
+  DCHECK_EQ(capture_mode_session_->active_behavior()->behavior_type(),
+            BehaviorType::kSunfish);
+  const std::optional<CaptureParams> capture_params = GetCaptureParams();
+  if (!capture_params) {
+    return;
+  }
+
+  // We capture the image as JPEG bytes to be sent to the backend.
+  // TODO(b/362285082): Investigate whether sending PNG bytes would work.
+  // TODO(b/359317857): Check DLP restrictions.
+  ui::GrabWindowSnapshotAsJPEG(
+      capture_params->window, capture_params->bounds,
+      base::BindOnce(&CaptureModeController::OnImageCapturedForSearch,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeController::EndVideoRecording(EndRecordingReason reason) {
@@ -1535,7 +1552,7 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
   }
 
   // Attempt the capture image. Note the callback `OnImageCaptured()` will only
-  // be invoked if an image was successfully captured.©
+  // be invoked if an image was successfully captured.
   ui::GrabWindowSnapshotAsPNG(
       capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::OnImageCaptured,
@@ -1598,6 +1615,21 @@ void CaptureModeController::OnImageCaptured(
                      GetFallbackFilePathFromFile(path)),
       base::BindOnce(&CaptureModeController::OnImageFileSaved,
                      weak_ptr_factory_.GetWeakPtr(), png_bytes, behavior));
+}
+
+void CaptureModeController::OnImageCapturedForSearch(
+    scoped_refptr<base::RefCountedMemory> jpeg_bytes) {
+  // Capture mode session may end before the `jpeg_bytes` are received, no-op if
+  // the session is no longer active.
+  if (!IsActive()) {
+    return;
+  }
+  // TODO(b/356878705): Send the image data to the backend. This currently shows
+  // the results panel immediately for debugging purposes.
+  const std::unique_ptr<SkBitmap> bitmap =
+      gfx::JPEGCodec::Decode(jpeg_bytes->data(), jpeg_bytes->size());
+  const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(*bitmap);
+  capture_mode_session_->ShowSearchResultsPanel(image);
 }
 
 void CaptureModeController::OnImageFileSaved(

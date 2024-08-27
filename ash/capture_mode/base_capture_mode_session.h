@@ -150,6 +150,10 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // label widget, etc.) that should be ignored as the topmost window.
   virtual std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() = 0;
 
+  // Shows (if the underlying session type supports it) the results panel with
+  // the captured region as `image`.
+  virtual void ShowSearchResultsPanel(const gfx::ImageSkia& image) = 0;
+
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
 
