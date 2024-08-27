@@ -77,6 +77,36 @@ const char ChromeDevToolsManagerDelegate::kTypePage[] = "page";
 
 namespace {
 
+std::optional<std::string> GetIsolatedWebAppName(
+    content::WebContents* web_contents) {
+  const webapps::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+
+  if (!app_id) {
+    return std::nullopt;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  const web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
+    return std::nullopt;
+  }
+
+  // In this case we will not modify any data and reading stale data is
+  // fine, since the app will already be installed and open in the case
+  // it needs to be checked in DevTools.
+  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+
+  if (registrar.IsIsolated(*app_id)) {
+    return registrar.GetAppShortName(*app_id);
+  }
+
+  return std::nullopt;
+}
+
 bool GetExtensionInfo(content::WebContents* wc,
                       std::string* name,
                       std::string* type) {
@@ -141,32 +171,6 @@ policy::DeveloperToolsPolicyHandler::Availability GetDevToolsAvailability(
 }
 
 ChromeDevToolsManagerDelegate* g_instance;
-
-bool IsIsolatedWebApp(content::WebContents* web_contents) {
-  const webapps::AppId* app_id =
-      web_app::WebAppTabHelper::GetAppId(web_contents);
-
-  if (!app_id) {
-    return false;
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  const web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
-  if (!provider) {
-    return false;
-  }
-
-  // In this case we will not modify any data and reading stale data is
-  // fine, since the app will already be installed and open in the case
-  // it needs to be checked in DevTools.
-  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-
-  const web_app::WebApp* web_app = registrar.GetAppById(*app_id);
-  return web_app && web_app->isolation_data().has_value();
-}
 
 }  // namespace
 
@@ -261,7 +265,7 @@ void ChromeDevToolsManagerDelegate::HandleCommand(
 
 std::string ChromeDevToolsManagerDelegate::GetTargetType(
     content::WebContents* web_contents) {
-  if (IsIsolatedWebApp(web_contents)) {
+  if (GetIsolatedWebAppName(web_contents).has_value()) {
     return ChromeDevToolsManagerDelegate::kTypeApp;
   }
 
@@ -283,10 +287,16 @@ std::string ChromeDevToolsManagerDelegate::GetTargetType(
 
 std::string ChromeDevToolsManagerDelegate::GetTargetTitle(
     content::WebContents* web_contents) {
+  if (auto isolated_web_app_name = GetIsolatedWebAppName(web_contents)) {
+    return *isolated_web_app_name;
+  }
+
   std::string extension_name;
   std::string extension_type;
-  if (!GetExtensionInfo(web_contents, &extension_name, &extension_type))
+  if (!GetExtensionInfo(web_contents, &extension_name, &extension_type)) {
     return std::string();
+  }
+
   return extension_name;
 }
 

@@ -32,6 +32,7 @@ namespace web_app {
 
 namespace {
 constexpr std::string_view kTypeApp = "app";
+constexpr std::string_view kIsolatedAppTitle = "Simple Isolated App";
 }
 class IsolatedWebAppDevToolsTest : public IsolatedWebAppBrowserTestHarness {
  protected:
@@ -102,10 +103,20 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, IwaIdentifiedAsApp) {
   EXPECT_EQ(1, content::EvalJs(
                    web_contents,
                    "document.getElementById('apps-list').children.length"));
-  EXPECT_EQ("Isolated Web App",
+  EXPECT_EQ(kIsolatedAppTitle,
             content::EvalJs(web_contents,
                             "document.getElementById('apps-list').children[0]."
                             "getElementsByClassName('name')[0].innerText"));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, IwaWithCorrectTitle) {
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  Browser* iwa_app = LaunchWebAppBrowserAndWait(url_info.app_id());
+  scoped_refptr<content::DevToolsAgentHost> iwa_host =
+      content::DevToolsAgentHost::GetOrCreateFor(
+          iwa_app->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(iwa_host->GetType(), kTypeApp);
+  EXPECT_EQ(iwa_host->GetTitle(), kIsolatedAppTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, PwaIdentifiedAsPage) {
