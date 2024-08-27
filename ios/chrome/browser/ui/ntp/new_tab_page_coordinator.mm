@@ -99,8 +99,10 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
+#import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory_protocol.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+Testing.h"
@@ -484,6 +486,9 @@
 }
 
 - (void)focusFakebox {
+  if (IsHomeCustomizationEnabled()) {
+    [self dismissCustomizationMenu];
+  }
   [self.NTPViewController focusOmnibox];
 }
 
@@ -854,6 +859,9 @@
 }
 
 - (void)identityDiscWasTapped:(UIView*)identityDisc {
+  if (IsHomeCustomizationEnabled()) {
+    [self dismissCustomizationMenu];
+  }
   [self.NTPMetricsRecorder recordIdentityDiscTapped];
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
@@ -886,6 +894,27 @@
 }
 
 - (void)customizationMenuWasTapped:(UIView*)customizationMenu {
+  if (_customizationCoordinator) {
+    // The menu is already opened, so tapping an entrypoint again should close
+    // it.
+    [self dismissCustomizationMenu];
+    return;
+  }
+
+  if (self.prefService->GetInteger(
+          prefs::kNTPHomeCustomizationNewBadgeImpressionCount) >=
+      kCustomizationNewBadgeMaxImpressionCount) {
+    base::RecordAction(
+        base::UserMetricsAction(kNTPCustomizationNewBadgeTappedAction));
+    // Set the new badge impression count to `INT_MAX` to ensure it isn't shown
+    // again, even if we increase the max impression count.
+    self.prefService->SetInteger(
+        prefs::kNTPHomeCustomizationNewBadgeImpressionCount, INT_MAX);
+  }
+
+  [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
+                               HomeCustomizationEntrypoint::kMain];
+
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
 }
 
@@ -1060,6 +1089,16 @@
 }
 
 - (void)openMagicStackCustomizationMenu {
+  if (_customizationCoordinator) {
+    // The menu is already opened, so tapping an entrypoint again should close
+    // it.
+    [self dismissCustomizationMenu];
+    return;
+  }
+
+  [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
+                               HomeCustomizationEntrypoint::kMagicStack];
+
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMagicStack
                            animated:NO];
 }
@@ -1780,9 +1819,6 @@
 // Opens the Home customization menu at a specific `page`.
 - (void)openCustomizationMenuAtPage:(CustomizationMenuPage)page
                            animated:(BOOL)animated {
-  if (_customizationCoordinator) {
-    return;
-  }
   _customizationCoordinator = [[HomeCustomizationCoordinator alloc]
       initWithBaseViewController:self.NTPViewController
                          browser:self.browser];

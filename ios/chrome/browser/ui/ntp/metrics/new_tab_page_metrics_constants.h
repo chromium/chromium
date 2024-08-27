@@ -12,6 +12,8 @@ extern const char kFakeViewNTPTappedAction[];
 extern const char kMostVisitedVoiceSearchAction[];
 extern const char kNTPEntrypointTappedAction[];
 extern const char kNTPIdentityDiscTappedAction[];
+extern const char kNTPCustomizationNewBadgeShownAction[];
+extern const char kNTPCustomizationNewBadgeTappedAction[];
 
 #pragma mark - Histograms
 
@@ -27,5 +29,6 @@ extern const char kMagicStackSetUpListEnabledHistogram[];
 extern const char kMagicStackSafetyCheckEnabledHistogram[];
 extern const char kMagicStackTabResumptionEnabledHistogram[];
 extern const char kMagicStackParcelTrackingEnabledHistogram[];
+extern const char kHomeCustomizationOpenedHistogram[];
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_NEW_TAB_PAGE_METRICS_CONSTANTS_H_

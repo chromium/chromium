@@ -49,6 +49,14 @@ enum class OverscrollActionType {
   kMaxValue = kCloseTab,
 };
 
+// The entrypoint used to open the Home Customization menu. These match
+// tools/metrics/histograms/enums.xml.
+enum class HomeCustomizationEntrypoint {
+  kMain = 0,
+  kMagicStack = 1,
+  kMaxValue = kMagicStack,
+};
+
 // Metrics recorder for the new tab page.
 @interface NewTabPageMetricsRecorder : NSObject
 
@@ -93,6 +101,10 @@ enum class OverscrollActionType {
                                         safetyCheck:(BOOL)safetyCheckEnabled
                                       tabResumption:(BOOL)tabResumptionEnabled
                                      parcelTracking:(BOOL)parcelTrackingEnabled;
+
+// Logs the entrypoint used to open the customization menu.
+- (void)recordHomeCustomizationMenuOpenedFromEntrypoint:
+    (HomeCustomizationEntrypoint)entrypoint;
 
 @end
 

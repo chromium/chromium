@@ -30,6 +30,8 @@
                         UserAccountImageUpdateDelegate>
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
+                 useNewBadgeForCustomizationMenu:
+                     (BOOL)useNewBadgeForCustomizationMenu
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

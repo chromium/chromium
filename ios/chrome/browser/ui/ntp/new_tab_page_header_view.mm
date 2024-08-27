@@ -270,30 +270,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   ]];
 }
 
-- (void)setCustomizationMenuButton:(UIButton*)customizationMenuButton {
-  if (_customizationMenuButton) {
-    [_customizationMenuButton removeFromSuperview];
-  }
-
-  customizationMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [self.toolBarView addSubview:customizationMenuButton];
-  [NSLayoutConstraint activateConstraints:@[
-    [customizationMenuButton.centerYAnchor
-        constraintEqualToAnchor:self.toolBarView.centerYAnchor],
-    [customizationMenuButton.heightAnchor
-        constraintEqualToConstant:ntp_home::kCustomizationMenuButtonDimension],
-    [customizationMenuButton.widthAnchor
-        constraintEqualToAnchor:customizationMenuButton.heightAnchor],
-    [customizationMenuButton.leadingAnchor
-        constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor
-                       constant:(ntp_home::kIdentityAvatarPadding +
-                                 ntp_home::kHeaderIconMargin)],
-  ]];
-
-  _customizationMenuButton = customizationMenuButton;
-}
-
 - (void)addViewsToSearchField:(UIView*)searchField {
   // Fake Toolbar.
   self.fakeToolbar = [[UIView alloc] init];
@@ -720,6 +696,49 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (void)removeIdentityDiscErrorBadge {
   [_accountDiscParticleBadgeImageView removeFromSuperview];
   _accountDiscParticleBadgeImageView = nil;
+}
+
+- (void)setCustomizationMenuButton:(UIButton*)customizationMenuButton
+                      withNewBadge:(BOOL)hasNewBadge {
+  if (_customizationMenuButton) {
+    [_customizationMenuButton removeFromSuperview];
+  }
+
+  customizationMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
+  customizationMenuButton.layer.cornerRadius =
+      ntp_home::kCustomizationMenuButtonCornerRadius;
+  customizationMenuButton.pointerInteractionEnabled = YES;
+  customizationMenuButton.clipsToBounds = YES;
+
+  NewFeatureBadgeView* newBadgeView =
+      [[NewFeatureBadgeView alloc] initWithBadgeSize:20 fontSize:10];
+  newBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
+  newBadgeView.userInteractionEnabled = NO;
+  newBadgeView.layer.opacity = hasNewBadge ? 1 : 0;
+
+  [self.toolBarView addSubview:customizationMenuButton];
+  [self.toolBarView addSubview:newBadgeView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [customizationMenuButton.centerYAnchor
+        constraintEqualToAnchor:self.toolBarView.centerYAnchor],
+    [customizationMenuButton.heightAnchor
+        constraintEqualToConstant:ntp_home::kCustomizationMenuButtonDimension],
+    [customizationMenuButton.widthAnchor
+        constraintEqualToAnchor:customizationMenuButton.heightAnchor],
+    [customizationMenuButton.leadingAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor
+                       constant:(ntp_home::kIdentityAvatarPadding +
+                                 ntp_home::kHeaderIconMargin)],
+    [newBadgeView.centerXAnchor
+        constraintEqualToAnchor:customizationMenuButton.centerXAnchor
+                       constant:14],
+    [newBadgeView.centerYAnchor
+        constraintEqualToAnchor:customizationMenuButton.centerYAnchor
+                       constant:-14],
+  ]];
+
+  _customizationMenuButton = customizationMenuButton;
 }
 
 #pragma mark - UITraitEnvironment

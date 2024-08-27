@@ -47,4 +47,8 @@ extern const CGFloat kHomeModuleMinimumPadding;
 // The vertical spacing between modules on the Home surface.
 extern const CGFloat kSpaceBetweenModules;
 
+// The maximum number of times to show the new badge on the Customization menu
+// entrypoint.
+extern const NSInteger kCustomizationNewBadgeMaxImpressionCount;
+
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONSTANTS_H_

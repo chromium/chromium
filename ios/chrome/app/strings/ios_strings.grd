@@ -2014,6 +2014,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_HISTORY_SYNC_TITLE" desc="Title of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox.">
         Save Time, Type Less
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL" desc="Accessibility label for the Home Customization menu in the new tab page.">
+        Customize your home screen
+      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE" desc="The title of the Shortcuts toggle in the Home Customization menu's main page.">
         Discover Feed
       </message>

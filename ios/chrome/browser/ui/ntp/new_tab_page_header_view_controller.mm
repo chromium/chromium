@@ -92,14 +92,17 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 @implementation NewTabPageHeaderViewController {
   BOOL _useNewBadgeForLensButton;
+  BOOL _useNewBadgeForCustomizationMenu;
   BOOL _hasAccountError;
 }
 
-- (instancetype)initWithUseNewBadgeForLensButton:
-    (BOOL)useNewBadgeForLensButton {
+- (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
+                 useNewBadgeForCustomizationMenu:
+                     (BOOL)useNewBadgeForCustomizationMenu {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
+    _useNewBadgeForCustomizationMenu = useNewBadgeForCustomizationMenu;
   }
   return self;
 }
@@ -484,22 +487,19 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
           colorWithAlphaComponent:0.8];
   buttonConfiguration.baseForegroundColor =
       [UIColor colorNamed:kTextSecondaryColor];
-  customizationMenuButton.layer.cornerRadius =
-      ntp_home::kCustomizationMenuButtonCornerRadius;
-  customizationMenuButton.pointerInteractionEnabled = YES;
-  customizationMenuButton.clipsToBounds = YES;
 
   customizationMenuButton.accessibilityIdentifier =
       kNTPCustomizationMenuButtonIdentifier;
-
-  // TODO(crbug.com/350990359): Add a11y label.
+  customizationMenuButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL);
 
   customizationMenuButton.configuration = buttonConfiguration;
   [customizationMenuButton addTarget:self.commandHandler
                               action:@selector(customizationMenuWasTapped:)
                     forControlEvents:UIControlEventTouchUpInside];
 
-  [self.headerView setCustomizationMenuButton:customizationMenuButton];
+  [self.headerView setCustomizationMenuButton:customizationMenuButton
+                                 withNewBadge:_useNewBadgeForCustomizationMenu];
 }
 
 // Configures `identityDiscButton` with the current state of
@@ -764,6 +764,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
   self.identityDiscAccessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL);
+
   // `self.identityDiscButton` should not be updated if the view has not been
   // created yet.
   if (self.identityDiscButton) {

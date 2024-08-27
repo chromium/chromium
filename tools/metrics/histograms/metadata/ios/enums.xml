@@ -343,6 +343,11 @@ the generic promo launch. -->
   <int value="9" label="Distant tab resumption tile"/>
 </enum>
 
+<enum name="IOSHomeCustomizationEntrypoint">
+  <int value="0" label="Main entrypoint"/>
+  <int value="1" label="Magic Stack entrypoint"/>
+</enum>
+
 <enum name="IOSJavascriptContentBlockType">
   <int value="0" label="Cookie"/>
   <int value="1" label="Local Storage"/>

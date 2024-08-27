@@ -29,7 +29,8 @@ class NewTabPageHeaderViewControllerUnitTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures({kHomeCustomization}, {});
 
     view_controller_ = [[NewTabPageHeaderViewController alloc]
-        initWithUseNewBadgeForLensButton:YES];
+        initWithUseNewBadgeForLensButton:YES
+         useNewBadgeForCustomizationMenu:YES];
   }
 
  protected:

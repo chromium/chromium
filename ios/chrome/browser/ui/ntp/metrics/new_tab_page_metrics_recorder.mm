@@ -82,4 +82,10 @@
                             parcelTrackingEnabled);
 }
 
+- (void)recordHomeCustomizationMenuOpenedFromEntrypoint:
+    (HomeCustomizationEntrypoint)entrypoint {
+  UMA_HISTOGRAM_ENUMERATION(kHomeCustomizationOpenedHistogram, entrypoint,
+                            HomeCustomizationEntrypoint::kMaxValue);
+}
+
 @end

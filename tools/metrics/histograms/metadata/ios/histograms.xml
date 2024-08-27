@@ -1568,6 +1568,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.HomeCustomization.Opened"
+    enum="IOSHomeCustomizationEntrypoint" expires_after="2025-08-11">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the entrypoint used to open the Home Customization menu. Logged
+    whenever the Home Customization menu is opened.
+  </summary>
+</histogram>
+
 <histogram name="IOS.InactiveTabs.Settings.Threshold"
     enum="InactiveTabsThresholdSettingType" expires_after="2025-01-26">
   <owner>alionadangla@chromium.org</owner>

@@ -99,6 +99,11 @@
 // Removes account disc particle error badge.
 - (void)removeIdentityDiscErrorBadge;
 
+// Sets the Home customization menu entrypoint with a conditional "new feature"
+// badge.
+- (void)setCustomizationMenuButton:(UIButton*)customizationMenuButton
+                      withNewBadge:(BOOL)hasNewBadge;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_H_

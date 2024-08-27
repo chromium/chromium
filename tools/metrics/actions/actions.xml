@@ -23324,6 +23324,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileNTPCustomizationNewBadgeShown">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded when the new feature badge is shown on the Home Customization
+    menu's entrypoint.
+  </description>
+</action>
+
+<action name="MobileNTPCustomizationNewBadgeTapped">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded when the Home Customization menu's entrypoint is tapped while the
+    new feature badge is visible.
+  </description>
+</action>
+
 <action name="MobileNTPExploreSites">
   <owner>dewittj@chromium.org</owner>
   <description>

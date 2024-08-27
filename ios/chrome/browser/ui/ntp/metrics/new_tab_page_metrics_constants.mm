@@ -12,6 +12,10 @@ const char kMostVisitedVoiceSearchAction[] = "MobileNTPMostVisitedVoiceSearch";
 const char kNTPEntrypointTappedAction[] =
     "Mobile.LensIOS.NewTabPageEntrypointTapped";
 const char kNTPIdentityDiscTappedAction[] = "MobileNTPIdentityDiscTapped";
+const char kNTPCustomizationNewBadgeShownAction[] =
+    "MobileNTPCustomizationNewBadgeShown";
+const char kNTPCustomizationNewBadgeTappedAction[] =
+    "MobileNTPCustomizationNewBadgeTapped";
 
 #pragma mark - Histograms
 
@@ -33,3 +37,4 @@ const char kMagicStackTabResumptionEnabledHistogram[] =
     "IOS.HomeCustomization.MagicStack.TabResumption.Enabled";
 const char kMagicStackParcelTrackingEnabledHistogram[] =
     "IOS.HomeCustomization.MagicStack.ParcelTracking.Enabled";
+const char kHomeCustomizationOpenedHistogram[] = "IOS.HomeCustomization.Opened";
