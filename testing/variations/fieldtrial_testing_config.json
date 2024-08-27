@@ -20286,8 +20286,13 @@
     "SafetyHubAbusiveNotificationRevocation": [
         {
             "platforms": [
+                "android",
                 "chromeos",
-                "chromeos_lacros"
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
