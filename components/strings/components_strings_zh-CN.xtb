@@ -379,7 +379,7 @@
 <translation id="1656489000284462475">取货</translation>
 <translation id="1658111267661135323">电视节目和视频</translation>
 <translation id="1658918301167915956">蓝牙设备</translation>
-<translation id="1662550410081243962">保存并填写付款方式</translation>
+<translation id="1662550410081243962">保存并自动填充付款方式</translation>
 <translation id="1663943134801823270">信用卡选项和地址选项均来自 Chrome。您可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理这些选项。</translation>
 <translation id="1664389769577564606">柔印光敏聚合物</translation>
 <translation id="166624440456221306">删除比较表格</translation>
@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1975457531113383421">进纸匣</translation>
 <translation id="1975584088563498795">信箱 10</translation>
-<translation id="1976610264358655503">您经常访问</translation>
 <translation id="1978555033938440688">固件版本</translation>
 <translation id="1979156660928743046">媒体信息</translation>
 <translation id="1988881251331415125">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行连接诊断工具<ph name="END_LINK" />。</translation>
@@ -1244,7 +1243,6 @@
 <translation id="3307649904964670439">“自定义 Chrome”按钮，激活它即可自定义您的浏览器外观</translation>
 <translation id="3308006649705061278">组织单位 (OU)</translation>
 <translation id="3318016344440038475">电视喜剧</translation>
-<translation id="3321152582690622182">未跟踪</translation>
 <translation id="3324687287337751929">4 x 6 英寸</translation>
 <translation id="3324983252691184275">深红色</translation>
 <translation id="3325027355611702542">野营挂车与休闲车</translation>
@@ -1449,6 +1447,7 @@
 <translation id="365641980390710834">休闲服装</translation>
 <translation id="3658742229777143148">修订版本</translation>
 <translation id="3659521826520353662">访问了哪些管理员定义的网站以及访问时间：<ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">搜索销售此商品的其他商店的更多购买选项。</translation>
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3665100783276035932">大多数网站应该都会按预期运行</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />了解详情<ph name="LINK_END1" /></translation>
@@ -3088,7 +3087,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6734506549556896534">模拟游戏</translation>
-<translation id="6735783933931458444">您经常在一天中的这个时间访问</translation>
 <translation id="6737708609449480586">烘烤类食品</translation>
 <translation id="6738516213925468394">您的数据已于 <ph name="TIME" />使用您的<ph name="BEGIN_LINK" />同步密码<ph name="END_LINK" />加密。输入该密码即可开始同步。</translation>
 <translation id="6739943577740687354">此功能使用了 AI 技术，并非始终准确无误</translation>
@@ -4418,7 +4416,6 @@
 <translation id="9191834167571392248">打孔（左下角）</translation>
 <translation id="9192361865877479444">金属（哑光）</translation>
 <translation id="9192947025498305328">洁净美容</translation>
-<translation id="919455784772793601">这会打开一个页面，其中显示了销售此商品的其他商店。</translation>
 <translation id="9199905725844810519">打印功能已被禁用</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="920643408853370361">旅行保险</translation>

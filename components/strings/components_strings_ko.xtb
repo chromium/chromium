@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">고급</translation>
 <translation id="1975457531113383421">입력 트레이</translation>
 <translation id="1975584088563498795">메일박스 10</translation>
-<translation id="1976610264358655503">자주 방문함</translation>
 <translation id="1978555033938440688">펌웨어 버전</translation>
 <translation id="1979156660928743046">미디어 정보</translation>
 <translation id="1988881251331415125">철자가 올바르다면 <ph name="BEGIN_LINK" />연결 진단을 실행<ph name="END_LINK" />해 보세요.</translation>
@@ -1246,7 +1245,6 @@
 <translation id="3307649904964670439">Chrome 맞춤설정 버튼, 브라우저 테마를 맞춤설정하려면 활성화하세요.</translation>
 <translation id="3308006649705061278">조직 구성 단위(OU)</translation>
 <translation id="3318016344440038475">TV 코미디</translation>
-<translation id="3321152582690622182">추적하지 않음</translation>
 <translation id="3324687287337751929">4x6인치</translation>
 <translation id="3324983252691184275">진홍색</translation>
 <translation id="3325027355611702542">캠핑카 및 레저용 차량</translation>
@@ -1453,6 +1451,7 @@
 <translation id="365641980390710834">일상복</translation>
 <translation id="3658742229777143148">개정</translation>
 <translation id="3659521826520353662">방문한 관리자 정의 웹사이트 및 방문 시기: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">이 제품을 판매하는 다른 매장에서 더 많은 구매 옵션을 검색하세요.</translation>
 <translation id="3664782872746246217">키워드:</translation>
 <translation id="3665100783276035932">대부분의 사이트가 예상대로 작동합니다.</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />자세히 알아보기<ph name="LINK_END1" /></translation>
@@ -3093,7 +3092,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">카메라</translation>
 <translation id="6734506549556896534">시뮬레이션 게임</translation>
-<translation id="6735783933931458444">이 시간에 자주 방문함</translation>
 <translation id="6737708609449480586">베이커리 제품</translation>
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6739943577740687354">이 기능은 AI를 사용하며 정확하지 않을 수 있습니다.</translation>
@@ -4421,7 +4419,6 @@
 <translation id="9191834167571392248">왼쪽 하단 펀칭</translation>
 <translation id="9192361865877479444">금속(매트)</translation>
 <translation id="9192947025498305328">클린 뷰티</translation>
-<translation id="919455784772793601">이 제품을 판매하는 다른 매장을 보여주는 페이지를 엽니다.</translation>
 <translation id="9199905725844810519">인쇄가 차단됨</translation>
 <translation id="9205078245616868884">동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="920643408853370361">여행자 보험</translation>

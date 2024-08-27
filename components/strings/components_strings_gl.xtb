@@ -546,7 +546,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1975457531113383421">Bandexa de entrada</translation>
 <translation id="1975584088563498795">Caixa de correo 10</translation>
-<translation id="1976610264358655503">Acceso frecuente</translation>
 <translation id="1978555033938440688">Versión do firmware</translation>
 <translation id="1979156660928743046">Información sobre o contido multimedia</translation>
 <translation id="1988881251331415125">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar diagnósticos de conectividade<ph name="END_LINK" />.</translation>
@@ -1246,7 +1245,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3307649904964670439">Botón para personalizar Chrome. Actívao para personalizar o aspecto do navegador</translation>
 <translation id="3308006649705061278">Unidade organizativa (UO)</translation>
 <translation id="3318016344440038475">Comedias de televisión</translation>
-<translation id="3321152582690622182">Sen seguimento</translation>
 <translation id="3324687287337751929">4 x 6 polgadas</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3325027355611702542">Campistas e caravanas</translation>
@@ -1453,6 +1451,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="365641980390710834">Roupa informal</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3659521826520353662">Que sitios web definidos pola persoa administradora se visitan e cando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Busca máis opcións de compra noutras tendas nas que se venda este produto.</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3665100783276035932">A maioría dos sitios deberían funcionar segundo o previsto</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Máis información<ph name="LINK_END1" /></translation>
@@ -3093,7 +3092,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6734506549556896534">Xogos de simulación</translation>
-<translation id="6735783933931458444">Acceso frecuente a esta hora do día</translation>
 <translation id="6737708609449480586">Produtos de pastelaría</translation>
 <translation id="6738516213925468394">Os teus datos encriptáronse coa túa <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" /> o <ph name="TIME" />. Introdúcea para comezar a sincronización.</translation>
 <translation id="6739943577740687354">Esta función utiliza IA e non acertará sempre</translation>
@@ -4423,7 +4421,6 @@ Detalles adicionais:
 <translation id="9191834167571392248">Perforación na parte inferior esquerda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Cosmética ecolóxica</translation>
-<translation id="919455784772793601">Abre unha páxina que mostra outras tendas nas que se vende este produto.</translation>
 <translation id="9199905725844810519">A opción de impresión está bloqueada</translation>
 <translation id="9205078245616868884">Os teus datos encriptáronse co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
 <translation id="920643408853370361">Seguros de viaxe</translation>

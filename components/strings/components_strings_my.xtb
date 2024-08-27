@@ -547,7 +547,6 @@
 <translation id="1974060860693918893">အဆင့်မြင့်</translation>
 <translation id="1975457531113383421">ထည့်ရန် ဗန်း</translation>
 <translation id="1975584088563498795">စာတိုက်ပုံး ၁၀</translation>
-<translation id="1976610264358655503">မကြာခဏ ဝင်ကြည့်သည်</translation>
 <translation id="1978555033938440688">Firmware ဗားရှင်း</translation>
 <translation id="1979156660928743046">မီဒီယာအချက်အလက်</translation>
 <translation id="1988881251331415125">စာလုံးပေါင်း မှန်ကန်ပါက <ph name="BEGIN_LINK" />ချိတ်ဆက်မှု အမှားရှာဖွေမှုများပြုလုပ်ရန် ကြိုးစားကြည့်ပါ<ph name="END_LINK" />။</translation>
@@ -1248,7 +1247,6 @@
 <translation id="3307649904964670439">သင့်ဘရောင်ဇာ၏အမြင်ကို စိတ်ကြိုက်ပြုလုပ်ရန်အတွက် ‘Chrome စိတ်ကြိုက်လုပ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="3308006649705061278">အဖွဲ့အစည်းဆိုင်ရာ ယူနစ် (OU)</translation>
 <translation id="3318016344440038475">ဟာသ TV ရှိုး</translation>
-<translation id="3321152582690622182">စောင့်မကြည့်ပါ</translation>
 <translation id="3324687287337751929">၄ x ၆ လက်မ</translation>
 <translation id="3324983252691184275">ကြက်သွေး</translation>
 <translation id="3325027355611702542">စခန်းချပစ္စည်းနှင့် RV</translation>
@@ -1453,6 +1451,7 @@
 <translation id="365641980390710834">ပေါ့ပေါ့ပါးပါး အဝတ်အစား</translation>
 <translation id="3658742229777143148">ပြင်ဆင်ချက်</translation>
 <translation id="3659521826520353662">ဝင်ကြည့်ထားသော စီမံခန့်ခွဲသူ သတ်မှတ်ထားသည့် ဝဘ်ဆိုက်များနှင့် ကြည့်သည့်အချိန်- <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">ဤကုန်ပစ္စည်းရောင်းသော အခြားဆိုင်များမှ ဝယ်ယူခြင်းဆိုင်ရာ နောက်ထပ်ရွေးစရာများကို ရှာနိုင်သည်။</translation>
 <translation id="3664782872746246217">အဓိကစကားလုံးများ-</translation>
 <translation id="3665100783276035932">ဝဘ်ဆိုက်အများစုသည် မျှော်မှန်းထားသည့်အတိုင်း အလုပ်လုပ်နိုင်သည်</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ပိုမိုလေ့လာရန်<ph name="LINK_END1" /></translation>
@@ -1531,6 +1530,7 @@
 <translation id="3793574014653384240">မကြာသေးမီက ဖြစ်ပွားခဲ့သည့် ရပ်တန့်သွားခြင်း အရေအတွက်များနှင့် အကြောင်းရင်းများ</translation>
 <translation id="3799805948399000906">ဖောင့်တောင်းဆိုထားသည်</translation>
 <translation id="3801265110651850478">သင်၏အသုံးပြုမှုဆိုင်ရာ ဒေတာစီးဆင်းမှုနှင့်အတူ “Do Not Track” တောင်းဆိုချက်ပို့ရန်</translation>
+<translation id="3801297763951514916">မကြာခဏ သင်ဝင်ကြည့်တတ်သည်</translation>
 <translation id="380329542618494757">အမည်</translation>
 <translation id="3803801106042434208">ဤရှာဖွေရေး အင်ဂျင်များသည် သင့်ဒေသတွင် လူကြိုက်များသည်</translation>
 <translation id="3807366285948165054">ပုံအလျားလိုက် အရွှေ့</translation>
@@ -2368,6 +2368,7 @@
 <translation id="5385857628869214740">ဟာသ</translation>
 <translation id="5385966243497224160">HTTPS မဟုတ်သည့် URL ကို အစမ်းမကြည့်ရှုနိုင်ပါ</translation>
 <translation id="5386426401304769735">ဤဆိုက်အတွက် အသိအမှတ်ပြုလက်မှတ်ကွင်းဆက်တွင် SHA-1 ကို အသုံးပြု၍ လက်မှတ်ထိုးထားသည့် အသိအမှတ်ပြုလက်မှတ်တစ်စောင် ပါဝင်ပါသည်။</translation>
+<translation id="5391010642126249196">သင်ဝင်ကြည့်ထားသည်</translation>
 <translation id="539203134595252721">စားပွဲတင် တင်းနစ်</translation>
 <translation id="5392506727170022660">သတ္တု (အနည်းငယ် တောက်ပြောင်)</translation>
 <translation id="5394069166371280357">မိသားစု TV ရှိုး</translation>
@@ -3093,7 +3094,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ကင်မရာ</translation>
 <translation id="6734506549556896534">အသွင်တူဂိမ်း</translation>
-<translation id="6735783933931458444">ယခုအချိန်မျိုးတွင် မကြာခဏ ဝင်ကြည့်သည်</translation>
 <translation id="6737708609449480586">မီးဖုတ်ထားသည့် စားစရာ</translation>
 <translation id="6738516213925468394">သင့်ဒေတာများကို သင်၏ <ph name="BEGIN_LINK" />စင့်ခ်စကားဝှက်စာ<ph name="END_LINK" />ဖြင့် <ph name="TIME" /> တွင် အသွင်ဝှက်ထားပါသည်။ စင့်ခ်စလုပ်ရန် ၎င်းကိုထည့်ပါ။</translation>
 <translation id="6739943577740687354">ဤဝန်ဆောင်မှုသည် AI ကိုသုံးပြီး အမြဲတမ်း မှန်ကန်မည်မဟုတ်ပါ</translation>
@@ -4135,6 +4135,7 @@
 <translation id="865032292777205197">လှုပ်ရှားမှု အာရုံခံစနစ်များ</translation>
 <translation id="865255447216708819">ရှေ့နောက်ပုံနှိပ်နိုင်သည့် ဖလင်</translation>
 <translation id="8654126188050905496">၅၅ x ၉၁ မီလီမီတာ</translation>
+<translation id="8660780831677950176">ဤအချိန်တွင် မကြာခဏ သင်ဝင်ကြည့်တတ်သည်</translation>
 <translation id="8662463432865928030">လုပ်ငန်းသုံးအဆောက်အအုံ</translation>
 <translation id="8663226718884576429">မှာယူမှု အနှစ်ချုပ်၊ <ph name="TOTAL_LABEL" />၊ နောက်ထပ် အသေးစိတ်အချက်အလက်များ</translation>
 <translation id="8663909737634214500">ဒစ်ခွေ</translation>
@@ -4425,7 +4426,6 @@
 <translation id="9191834167571392248">ဘယ်ဘက်အောက်ခြေတွင် ဖောက်ရန်</translation>
 <translation id="9192361865877479444">သတ္တု (မှိုင်းပျပျ)</translation>
 <translation id="9192947025498305328">သဘာဝ အလှကုန်</translation>
-<translation id="919455784772793601">ဤကုန်ပစ္စည်းရောင်းချသော အခြားဆိုင်များအား ပြရန် စာမျက်နှာတစ်ခု ဖွင့်ပါ။</translation>
 <translation id="9199905725844810519">ပုံနှိပ်ထုတ်ယူခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="9205078245616868884">သင့်ဒေတာများကို သင်စင့်ခ်ပြုလုပ်ထားသည့် စကားဝှက်ဖြင့် အသွင်ဝှက်ထားပါသည်။ စင့်ခ်ပြုလုပ်ခြင်းစတင်ရန် ၎င်းကိုထည့်ပါ။</translation>
 <translation id="920643408853370361">ခရီးသွားအာမခံ</translation>

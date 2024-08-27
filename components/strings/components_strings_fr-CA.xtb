@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1975457531113383421">Plateau d'entrée</translation>
 <translation id="1975584088563498795">Boîte aux lettres 10</translation>
-<translation id="1976610264358655503">Fréquemment consulté</translation>
 <translation id="1978555033938440688">Version du micrologiciel</translation>
 <translation id="1979156660928743046">Renseignements sur le contenu multimédia</translation>
 <translation id="1988881251331415125">S'il n'y a pas d'erreur, <ph name="BEGIN_LINK" />essayez d'exécuter les diagnostics de connectivité<ph name="END_LINK" />.</translation>
@@ -1246,7 +1245,6 @@
 <translation id="3307649904964670439">Bouton Personnaliser Chrome, activez-le pour personnaliser l'apparence de votre navigateur</translation>
 <translation id="3308006649705061278">Unité organisationnelle (« OU »)</translation>
 <translation id="3318016344440038475">Séries télévisées comiques</translation>
-<translation id="3321152582690622182">Pas de suivi</translation>
 <translation id="3324687287337751929">4 po x 6 po</translation>
 <translation id="3324983252691184275">Cramoisi</translation>
 <translation id="3325027355611702542">Fourgonnettes de camping et véhicules de plaisance</translation>
@@ -1863,7 +1861,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">Le téléversement de fichiers vers Microsoft OneDrive a été suspendu</translation>
 <translation id="4390472908992056574">Bord</translation>
-<translation id="4397059608630092079">Toujours vérifier lors de l'utilisation du Remplissage automatique</translation>
+<translation id="4397059608630092079">Toujours vérifier lors de l'utilisation du remplissage automatique</translation>
 <translation id="4397978002248035985">Ouvre une fenêtre contextuelle pour vérifier sur le site Web de votre banque</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4406896451731180161">résultats de recherche</translation>
@@ -3093,7 +3091,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">Appareil photo</translation>
 <translation id="6734506549556896534">Jeux de simulation</translation>
-<translation id="6735783933931458444">Fréquemment consulté à cette heure de la journée</translation>
 <translation id="6737708609449480586">Produits de boulangerie-pâtisserie</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase de passe de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="6739943577740687354">Cette fonctionnalité utilise l'IA et ne fonctionnera pas toujours correctement</translation>
@@ -4422,7 +4419,6 @@ Détails supplémentaires :
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9192947025498305328">Produits de beauté responsables</translation>
-<translation id="919455784772793601">Ouvrez une page qui montre d'autres magasins qui vendent ce produit.</translation>
 <translation id="9199905725844810519">L'impression est bloquée</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase de passe de synchronisation. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="920643408853370361">Assurance voyage</translation>

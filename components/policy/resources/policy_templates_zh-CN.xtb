@@ -155,6 +155,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 
 如果您未设置此政策，<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。</translation>
 <translation id="1068801725746725727">允许接收“安全浏览”功能调查问卷</translation>
+<translation id="107045325503547419">具体取决于功能发布流程。</translation>
 <translation id="1073983258515362346">报告与设备背光有关的信息。
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
@@ -3045,6 +3046,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3308724602356134956">如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />会下载并使用您为用户桌面和登录屏幕背景设置的壁纸图片，但用户无法更改它。请指定可供 <ph name="PRODUCT_OS_NAME" />从中下载相应壁纸图片的网址（无需进行身份验证即可访问），以及一个用于验证该图片是否完整的加密哈希值（采用 JPEG 格式，文件大小不超过 16 MB）。
 
       如果您不设置此政策，用户可以选择要在桌面和登录屏幕背景中显示的图片。</translation>
+<translation id="3313395530427546108">不使用临时代码签名。</translation>
 <translation id="3315324240256767419">启用“ghost 窗口”功能。</translation>
 <translation id="3321099611644751329"><ph name="PRODUCT_NAME" /> 在验证服务器身份时应信任的 TLS 证书（有限制条件）</translation>
 <translation id="3323819750604111729">允许在首次运行时导入书签</translation>
@@ -4270,6 +4272,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 仅当 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 设为 False 时，设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 才会产生影响。</translation>
 <translation id="4298476374822550051">为 TLS 启用 Kyber 后量子密钥协议</translation>
+<translation id="4301478455179579340">在安装渐进式 Web 应用期间对原生应用进行签名</translation>
 <translation id="4303167373847512281">允许使用开发者模式</translation>
 <translation id="4307116964468610577">此政策允许系统电池每天只充满 1 次，以延长它的使用寿命。除了用来将电池充满的时间，在当天的其余时间内，电池始终都不会充到 100%，即使系统已接通电源也是如此，这样更利于储电。
 
@@ -8115,6 +8118,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7146198347561863646">如果此政策已启用或未设置，系统就会允许使用唤醒锁定，以便进行电源管理。扩展程序可通过 Power Management Extension API 和 ARC 应用请求唤醒锁定。
 
       如果此政策已停用，唤醒锁定请求会被忽略。</translation>
+<translation id="7146363485174988200">使用临时代码签名。</translation>
 <translation id="7148958378210448356">包含启动器键的一系列预定快捷键一律不执行任何操作。</translation>
 <translation id="7149042336307555519"> 指定可使用哪些连接类型来更新操作系统。由于规模庞大，操作系统更新可能会对连接造成沉重负荷，也可能会产生额外费用。所以，在默认情况下，当用户使用较为昂贵的连接类型（目前仅包括“cellular”）时，系统不会启用操作系统更新。
 
@@ -9031,6 +9035,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="793473937901685727">为 ARC 应用设置证书可用性</translation>
 <translation id="7936302526928951356">User-Agent 字符串不会冻结主要版本。</translation>
 <translation id="7937766917976512374">是否允许视频捕获</translation>
+<translation id="7937825205289116563">如果已启用或未设置此政策，系统会允许在安装渐进式 Web 应用 (PWA) 时为创建的原生应用使用临时签名。这可确保每个已安装的应用都有一个对于 <ph name="MAC_OS_NAME" /> 系统组件唯一的身份。
+
+如果已停用此政策，安装渐进式 Web 应用时创建的每个原生应用都将具有相同的身份。这可能会干扰 <ph name="MAC_OS_NAME" /> 功能。
+
+仅当使用的端点安全解决方案会阻止使用临时签名的应用时，才应停用此政策。</translation>
 <translation id="7941528208359969119">允许执行在线 <ph name="OCSP_CRL_LABEL" /> 检查</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
 <translation id="7945445169067895719">允许在设备休眠或合盖时锁定设备</translation>

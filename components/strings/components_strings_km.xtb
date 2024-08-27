@@ -548,7 +548,6 @@
 <translation id="1974060860693918893">កម្រិតខ្ពស់</translation>
 <translation id="1975457531113383421">ទម្រ​បញ្ចូល</translation>
 <translation id="1975584088563498795">ប្រអប់​សំបុត្រទី 10</translation>
-<translation id="1976610264358655503">អ្នកចូលមើលញឹកញាប់</translation>
 <translation id="1978555033938440688">កំណែកម្មវិធី​បង្កប់</translation>
 <translation id="1979156660928743046">ព័ត៌មានមេឌៀ</translation>
 <translation id="1988881251331415125">ប្រសិនបើ​អក្ខរាវិរុទ្ធគឺត្រឹមត្រូវ <ph name="BEGIN_LINK" />សូមសាកល្បង​ដំណើរការ​ការវិភាគការតភ្ជាប់<ph name="END_LINK" />។</translation>
@@ -1249,7 +1248,6 @@
 <translation id="3307649904964670439">ប៊ូតុង "ប្ដូរ Chrome តាមបំណង", បើកដំណើរការ ដើម្បីប្ដូររូបរាងកម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នកតាមបំណង</translation>
 <translation id="3308006649705061278">ក្រុមអង្គភាព (OU)</translation>
 <translation id="3318016344440038475">កម្មវិធី​កំប្លែង​តាម​ទូរទស្សន៍</translation>
-<translation id="3321152582690622182">មិនកំពុងតាមដាន</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">ឈាមជ្រូក</translation>
 <translation id="3325027355611702542">រថយន្ត​បោះជំរំ និង​រថយន្ត​កម្សាន្ត</translation>
@@ -1456,6 +1454,7 @@
 <translation id="365641980390710834">សម្លៀកបំពាក់​ធម្មតា</translation>
 <translation id="3658742229777143148">កំណែប្រែ</translation>
 <translation id="3659521826520353662">គេហទំព័រណាខ្លះដែលកំណត់ដោយអ្នកគ្រប់គ្រងត្រូវបានចូលមើល និងនៅពេលណា៖ <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">ស្វែងរកជម្រើសទិញបន្ថែមពីហាងផ្សេងទៀតដែលលក់ផលិតផលនេះ។</translation>
 <translation id="3664782872746246217">ពាក្យ​គន្លឹះ៖</translation>
 <translation id="3665100783276035932">គេហទំព័រ​ភាគច្រើន​គួរ​តែ​ដំណើរការដូច​ការរំពឹង​ទុក</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ស្វែងយល់បន្ថែម<ph name="LINK_END1" /></translation>
@@ -1534,6 +1533,7 @@
 <translation id="3793574014653384240">មូលហេតុ និងចំនួននៃការគាំង ដែលបានកើតឡើងកាលពីពេលថ្មីៗនេះ</translation>
 <translation id="3799805948399000906">បានស្នើសុំ​ពុម្ពអក្សរ</translation>
 <translation id="3801265110651850478">ផ្ញើ​សំណើ “Do Not Track” ជាមួយ​ចរាចរណ៍នៃ​ការរុករក​របស់អ្នក</translation>
+<translation id="3801297763951514916">អ្នកចូលមើលញឹកញាប់</translation>
 <translation id="380329542618494757">ឈ្មោះ</translation>
 <translation id="3803801106042434208">ម៉ាស៊ីន​ស្វែងរក​ទាំងនេះ​មានភាព​ពេញនិយម​នៅក្នុង​តំបន់​របស់អ្នក</translation>
 <translation id="3807366285948165054">ការប្ដូរ​រូបភាព X</translation>
@@ -2371,6 +2371,7 @@
 <translation id="5385857628869214740">កំប្លែង</translation>
 <translation id="5385966243497224160">មិនអាចមើលសាកល្បងនូវ URL ដែលមិនមែនជា HTTPS បានទេ</translation>
 <translation id="5386426401304769735">ខ្សែ​វិញ្ញាបនបត្រ​សម្រាប់​ទំព័រ​នេះ​ផ្ទុក​វិញ្ញាបនបត្រ​មួយ​ដែល​ចុះហត្ថលេខា​ដោយប្រើ SHA-1 ។</translation>
+<translation id="5391010642126249196">អ្នកបានចូលមើល</translation>
 <translation id="539203134595252721">ប៉េងប៉ុង</translation>
 <translation id="5392506727170022660">លោហៈ (រលោងមធ្យម)</translation>
 <translation id="5394069166371280357">កម្មវិធី​ទូរទស្សន៍​សម្រាប់គ្រួសារ</translation>
@@ -3097,7 +3098,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">កាមេរ៉ា</translation>
 <translation id="6734506549556896534">ហ្គេមត្រាប់តាម</translation>
-<translation id="6735783933931458444">អ្នកចូលមើលញឹកញាប់នៅម៉ោងនេះជាប្រចាំថ្ងៃ</translation>
 <translation id="6737708609449480586">នំដុត</translation>
 <translation id="6738516213925468394">ទិន្នន័យ​របស់អ្នក​ត្រូវបាន​អ៊ីនគ្រីប ដោយប្រើ<ph name="BEGIN_LINK" />ឃ្លា​សម្ងាត់សម​កាល​កម្ម<ph name="END_LINK" /> របស់អ្នក នៅថ្ងៃទី <ph name="TIME" />។ សូម​បញ្ចូលឃ្លា​សម្ងាត់ ដើម្បី​ចាប់ផ្ដើមធ្វើ​សមកាល​កម្ម។</translation>
 <translation id="6739943577740687354">មុខងារនេះ​ប្រើ AI ហើយនឹង​មិនធ្វើបានត្រឹមត្រូវ​ជានិច្ច​នោះទេ</translation>
@@ -4139,6 +4139,7 @@
 <translation id="865032292777205197">ឧបករណ៍​ចាប់ចលនា</translation>
 <translation id="865255447216708819">ហ្វ៊ីលបោះពុម្ពនៅខាងខ្នង</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
+<translation id="8660780831677950176">អ្នកចូលមើលញឹកញាប់នៅពេលនេះ</translation>
 <translation id="8662463432865928030">អចលនទ្រព្យពាណិជ្ជកម្ម</translation>
 <translation id="8663226718884576429">ការ​សង្ខេប​អំពី​ការបញ្ជាទិញ, <ph name="TOTAL_LABEL" />, ព័ត៌មាន​លម្អិត​បន្ថែម</translation>
 <translation id="8663909737634214500">ឌីសអុបទិក</translation>
@@ -4428,7 +4429,6 @@
 <translation id="9191834167571392248">ចោះ​ខាងក្រោម​ផ្នែកខាងឆ្វេង</translation>
 <translation id="9192361865877479444">លោហៈ (គ្រើម)</translation>
 <translation id="9192947025498305328">គ្រឿងថែរក្សាសម្ផស្សគ្មានសារធាតុគ្រោះថ្នាក់</translation>
-<translation id="919455784772793601">បើកទំព័រដែលបង្ហាញហាងផ្សេងទៀតដែលលក់ផលិតផលនេះ។</translation>
 <translation id="9199905725844810519">ការបោះពុម្ពត្រូវបានទប់ស្កាត់។</translation>
 <translation id="9205078245616868884">ទិន្នន័យរបស់អ្នកត្រូវបានអ៊ិនគ្រីបដោយប្រើឃ្លាសម្ងាត់សមកាលកម្មរបស់អ្នក។ សូមបញ្ចូលវាដើម្បីចាប់ផ្តើមធ្វើសមកាលកម្ម។</translation>
 <translation id="920643408853370361">ធានា​រ៉ាប់រង​ការធ្វើ​ដំណើរ</translation>

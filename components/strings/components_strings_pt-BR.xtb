@@ -546,7 +546,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1974060860693918893">Avançado</translation>
 <translation id="1975457531113383421">Bandeja de entrada</translation>
 <translation id="1975584088563498795">Caixa de e-mails 10</translation>
-<translation id="1976610264358655503">Você visita com frequência</translation>
 <translation id="1978555033938440688">Versão do firmware</translation>
 <translation id="1979156660928743046">Informações de mídia</translation>
 <translation id="1988881251331415125">Se o endereço estiver correto, <ph name="BEGIN_LINK" />tente executar o Diagnóstico de Conectividade<ph name="END_LINK" />.</translation>
@@ -1246,7 +1245,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3307649904964670439">Botão "Personalizar o Chrome". Ative para personalizar a aparência do navegador</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
 <translation id="3318016344440038475">Programas de TV de comédia</translation>
-<translation id="3321152582690622182">Não está rastreando</translation>
 <translation id="3324687287337751929">4 x 6 pol.</translation>
 <translation id="3324983252691184275">Carmim</translation>
 <translation id="3325027355611702542">Campers e veículos recreativos</translation>
@@ -3093,7 +3091,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6734506549556896534">Jogos de simulação</translation>
-<translation id="6735783933931458444">Você visita com frequência neste horário</translation>
 <translation id="6737708609449480586">Produtos assados</translation>
 <translation id="6738516213925468394">Seus dados foram criptografados com sua <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" /> em <ph name="TIME" />. Digite-a para iniciar a sincronização.</translation>
 <translation id="6739943577740687354">Este recurso usa IA e nem sempre acerta</translation>
@@ -3742,7 +3739,7 @@ Mais detalhes:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">O CVC desse cartão será criptografado e salvo no seu dispositivo para agilizar pagamentos</translation>
 <translation id="7937554595067888181">Expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Mostra quais recompensas e benefícios estão disponíveis para seus cartões na finalização da compra <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saiba mais sobre os benefícios do cartão<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="7938490694919717008">Mostra quais recompensas e benefícios estão disponíveis para seus cartões na finalização da compra. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saiba mais sobre os benefícios do cartão<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">O certificado do servidor ainda não é válido.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">Balas e doces</translation>
@@ -4425,7 +4422,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9191834167571392248">Perfuração na parte inferior esquerda</translation>
 <translation id="9192361865877479444">Metal (fosco)</translation>
 <translation id="9192947025498305328">Beleza consciente</translation>
-<translation id="919455784772793601">Abrir uma página que mostra outras lojas que vendem esse produto.</translation>
 <translation id="9199905725844810519">A impressão foi bloqueada</translation>
 <translation id="9205078245616868884">Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="920643408853370361">Seguro de viagem</translation>

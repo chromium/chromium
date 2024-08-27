@@ -546,7 +546,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1975457531113383421">Input tray</translation>
 <translation id="1975584088563498795">Mailbox 10</translation>
-<translation id="1976610264358655503">Your visit often</translation>
 <translation id="1978555033938440688">Firmware Version</translation>
 <translation id="1979156660928743046">Media information</translation>
 <translation id="1988881251331415125">If spelling is correct, <ph name="BEGIN_LINK" />try running connectivity Diagnostics<ph name="END_LINK" />.</translation>
@@ -894,7 +893,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2608019759319359258">When a topic is blocked, it won't be used to personalise ads</translation>
 <translation id="2610561535971892504">Click to copy</translation>
 <translation id="2612676031748830579">Card number</translation>
-<translation id="2612993535136743634">All security codes saved on your device and in Google Account will be deleted</translation>
+<translation id="2612993535136743634">All security codes saved on your device and in your Google Account will be deleted</translation>
 <translation id="2616412942031748191">Search Engine Optimisation and Marketing</translation>
 <translation id="2618206371527040026">Academic conferences and publications</translation>
 <translation id="2619052155095999743">Insert</translation>
@@ -1246,7 +1245,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3307649904964670439">Customise Chrome button, activate to customise the look of your browser</translation>
 <translation id="3308006649705061278">Organisational Unit (OU)</translation>
 <translation id="3318016344440038475">TV comedies</translation>
-<translation id="3321152582690622182">Not tracking</translation>
 <translation id="3324687287337751929">4 in x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>
 <translation id="3325027355611702542">Campers and Motorhomes</translation>
@@ -3093,7 +3091,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6734506549556896534">Simulation games</translation>
-<translation id="6735783933931458444">You visit often at this time of day</translation>
 <translation id="6737708609449480586">Baked Goods</translation>
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6739943577740687354">This feature uses AI and won't always get it right</translation>
@@ -3742,7 +3739,7 @@ Additional details:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">This card's CVC will be encrypted and saved to your device for faster checkout</translation>
 <translation id="7937554595067888181">Expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Show which rewards and benefits are available for your cards at checkout <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="7938490694919717008">Show which rewards and benefits are available for your cards at checkout. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Server's certificate is not yet valid.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">Sweets</translation>
@@ -4423,7 +4420,6 @@ Additional details:
 <translation id="9191834167571392248">Punch bottom left</translation>
 <translation id="9192361865877479444">Metal (matte)</translation>
 <translation id="9192947025498305328">Clean beauty</translation>
-<translation id="919455784772793601">Open a page that shows other shops that sell this product.</translation>
 <translation id="9199905725844810519">Printing is blocked</translation>
 <translation id="9205078245616868884">Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
 <translation id="920643408853370361">Travel insurance</translation>

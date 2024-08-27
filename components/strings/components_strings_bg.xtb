@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1975457531113383421">Входна тава</translation>
 <translation id="1975584088563498795">Пощенска кутия 10</translation>
-<translation id="1976610264358655503">Често посещавани от вас</translation>
 <translation id="1978555033938440688">Версия на фърмуера</translation>
 <translation id="1979156660928743046">Информация за мултимедията</translation>
 <translation id="1988881251331415125">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте диагностика на свързаността<ph name="END_LINK" />.</translation>
@@ -1246,7 +1245,6 @@
 <translation id="3307649904964670439">Бутон за персонализиране на Chrome. Активирайте, за да персонализирате облика на браузъра си</translation>
 <translation id="3308006649705061278">Организационна единица (OU)</translation>
 <translation id="3318016344440038475">Телевизионни комедии</translation>
-<translation id="3321152582690622182">Не се проследява</translation>
 <translation id="3324687287337751929">4 x 6 инча</translation>
 <translation id="3324983252691184275">пурпурно</translation>
 <translation id="3325027355611702542">Кемпери и каравани</translation>
@@ -1453,6 +1451,7 @@
 <translation id="365641980390710834">Неформално облекло</translation>
 <translation id="3658742229777143148">Ревизия</translation>
 <translation id="3659521826520353662">Кои дефинирани от администратора уебсайтове са посетени и кога: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Потърсете още опции за купуване от други магазини, в които се продава този продукт.</translation>
 <translation id="3664782872746246217">Ключови думи:</translation>
 <translation id="3665100783276035932">Повечето сайтове би трябвало да работят по очаквания начин</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Научете повече<ph name="LINK_END1" /></translation>
@@ -3093,7 +3092,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6734506549556896534">Симулационни игри</translation>
-<translation id="6735783933931458444">Посещавате често по това време на деня</translation>
 <translation id="6737708609449480586">Печива</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6739943577740687354">Тази функция използва AI и понякога греши.</translation>
@@ -4423,7 +4421,6 @@
 <translation id="9191834167571392248">Перфориране долу вляво</translation>
 <translation id="9192361865877479444">Метал (матиран)</translation>
 <translation id="9192947025498305328">Чисти продукти за красота</translation>
-<translation id="919455784772793601">Отворете страница, показваща други магазини, в които се продава този продукт.</translation>
 <translation id="9199905725844810519">Отпечатването е блокирано</translation>
 <translation id="9205078245616868884">Данните ви са шифровани с пропуска ви за синхронизиране. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="920643408853370361">Застраховка при пътуване</translation>

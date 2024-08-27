@@ -2289,6 +2289,7 @@
 <translation id="2593499352046705383">চালু করার আগে, আপনার ডেটার ব্যাক-আপ নেওয়া আছে কিনা তা নিশ্চিত করুন। <ph name="DEVICE_OS" /> ইনস্টল করলে আপনার হার্ড ড্রাইভে থাকা সব ডেটা মুছে যাবে। g.co/flex/InstallGuide থেকে আরও জানুন।</translation>
 <translation id="2594832159966169099">ভি৮ সুরক্ষা ম্যানেজ করুন</translation>
 <translation id="2597073208962000830">কাছাকাছি ডিভাইস খুঁজে পেতে 'নিয়ারবাই শেয়ার' ব্লুটুথ স্ক্যানিং ব্যবহার করে।</translation>
+<translation id="2598136842498757793">কাস্টমাইজ টুলবার বোতাম</translation>
 <translation id="2598710988533271874">নতুন Chrome উপলভ্য</translation>
 <translation id="2599048253926156421">ব্যবহারকারীর নাম ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="2602501489742255173">শুরু করতে স্ক্রিনের উপরের দিকে সোয়াইপ করুন</translation>
@@ -4061,6 +4062,7 @@
 <translation id="3866142613641074814">আপনার কাছে ঝুঁকিপূর্ণ পাসওয়ার্ড আছে</translation>
 <translation id="3866249974567520381">বর্ণনা</translation>
 <translation id="3867134342671430205">ডিসপ্লে সরাতে তীরচিহ্নযুক্ত কী প্রেস করুন বা মাউস ব্যবহার করে টেনে আনুন</translation>
+<translation id="3867831579565057323">আপনার টাচস্ক্রিন ম্যাপ করুন</translation>
 <translation id="3867944738977021751">সার্টিফিকেট ক্ষেত্রসমূহ</translation>
 <translation id="3869917919960562512">ভুল সূচি৷</translation>
 <translation id="3870626286046977643">এছাড়াও সিস্টেম অডিও শেয়ার করুন</translation>
@@ -9576,6 +9578,7 @@
 <translation id="79312157130859720"><ph name="APP_NAME" /> আপনার স্ক্রিন এবং অডিও শেয়ার করছে।</translation>
 <translation id="793293630927785390">নতুন ওয়াই-ফাই নেটওয়ার্ক ডায়ালগ</translation>
 <translation id="7932969338829957666">Linux-এর <ph name="BASE_DIR" />-এ শেয়ার করা ফোল্ডার পাওয়া যাবে।</translation>
+<translation id="7932992556896556665">সঠিক ডিসপ্লেতে আপনার টাচস্ক্রিন ডিভাইস সেট-আপ ও ম্যাপ করুন</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{সাইট আনমিউট করুন}one{সাইট আনমিউট করুন}other{সাইট আনমিউট করুন}}</translation>
 <translation id="7933486544522242079">&amp;সেভ ও শেয়ার করুন</translation>
 <translation id="7933518760693751884">কোনও পৃষ্ঠা পরে দেখার জন্য সেভ করতে চাইলে, বুকমার্ক আইকনে ক্লিক করুন</translation>

@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1975457531113383421">輸入紙匣</translation>
 <translation id="1975584088563498795">出紙槽 10</translation>
-<translation id="1976610264358655503">你經常瀏覽</translation>
 <translation id="1978555033938440688">韌體版本</translation>
 <translation id="1979156660928743046">媒體資料</translation>
 <translation id="1988881251331415125">如果拼字正確，請<ph name="BEGIN_LINK" />嘗試執行連線診斷<ph name="END_LINK" />。</translation>
@@ -1246,7 +1245,6 @@
 <translation id="3307649904964670439">自訂 Chrome 按鈕，啟動之後就可以自訂瀏覽器嘅風格</translation>
 <translation id="3308006649705061278">機構單位 (OU)</translation>
 <translation id="3318016344440038475">電視喜劇</translation>
-<translation id="3321152582690622182">沒有追蹤</translation>
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">棕紅色</translation>
 <translation id="3325027355611702542">野營車和旅遊車</translation>
@@ -1452,6 +1450,7 @@
 <translation id="365641980390710834">休閒服裝</translation>
 <translation id="3658742229777143148">修訂</translation>
 <translation id="3659521826520353662">瀏覽過哪些管理員定義的網站和瀏覽時間：<ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">搜尋其他出售此產品的店舖的更多購買選項。</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3665100783276035932">大部份網站應該都能正常運作</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />瞭解詳情<ph name="LINK_END1" /></translation>
@@ -3092,7 +3091,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">攝錄機</translation>
 <translation id="6734506549556896534">模擬遊戲</translation>
-<translation id="6735783933931458444">你經常在此時段瀏覽</translation>
 <translation id="6737708609449480586">烘焙品</translation>
 <translation id="6738516213925468394">您已於 <ph name="TIME" />使用<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="6739943577740687354">此功能採用 AI，結果未必完全準確</translation>
@@ -4421,7 +4419,6 @@
 <translation id="9191834167571392248">打孔 (左下方)</translation>
 <translation id="9192361865877479444">金屬 (啞面)</translation>
 <translation id="9192947025498305328">潔淨美容</translation>
-<translation id="919455784772793601">開啟頁面以顯示其他出售此產品的店舖</translation>
 <translation id="9199905725844810519">已封鎖列印功能</translation>
 <translation id="9205078245616868884">您已使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="920643408853370361">旅遊保險</translation>

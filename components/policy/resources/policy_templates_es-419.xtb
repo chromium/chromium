@@ -166,6 +166,7 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
 
 Si no estableces la política, no se permitirán excepciones a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1068801725746725727">Habilitar la recepción de encuestas de Navegación segura</translation>
+<translation id="107045325503547419">Depender del proceso de lanzamiento de la función.</translation>
 <translation id="1073983258515362346">Envía información sobre la luz de fondo del dispositivo.
 
       Si se establece la política como falsa o no se establece, no se enviará la información.
@@ -3182,6 +3183,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       podrá descargar la imagen de fondo de pantalla y un hash criptográfico (en formato JPEG con un tamaño de archivo de hasta 16 MB) para verificar su integridad.
 
       Si no estableces la política, los usuarios podrán elegir la imagen de fondo para la pantalla de acceso y el escritorio.</translation>
+<translation id="3313395530427546108">No usar firmas de código ad-hoc.</translation>
 <translation id="3315324240256767419">Habilitar la función de ventana fantasma</translation>
 <translation id="3321099611644751329">Certificados TLS en los que debe confiar <ph name="PRODUCT_NAME" /> para la autenticación del servidor con restricciones</translation>
 <translation id="3323819750604111729">Habilitar la importación de favoritos en la primera ejecución</translation>
@@ -4481,6 +4483,7 @@ Esta política se usó para inhabilitar la actualización automática de conteni
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falsa.</translation>
 <translation id="4298476374822550051">Habilitar el acuerdo de claves poscuántico Kyber en TLS</translation>
+<translation id="4301478455179579340">Firma de aplicaciones nativas durante la instalación de aplicaciones web progresivas</translation>
 <translation id="4303167373847512281">Permitir el modo de desarrollador</translation>
 <translation id="4307116964468610577">La política prolonga la vida útil de las baterías del sistema, ya que las carga a la capacidad máxima solo una vez por día. Durante el resto del día, las baterías se mantienen en un estado de carga más bajo, que es mejor para el almacenamiento, incluso cuando el sistema está conectado a una fuente de alimentación.
 
@@ -8518,6 +8521,7 @@ Si se inhabilita esta política, las contraseñas no se recordarán nunca y se q
 <translation id="7146198347561863646">Si habilitas la política o no la estableces, se permitirán los bloqueos de activación para la administración de energía. Las extensiones pueden solicitar estos bloqueos mediante la API de extensión de administración de energía. Las apps de ARC también pueden solicitarlos.
 
       Si inhabilitas la política, se ignorarán las solicitudes de bloqueos de activación.</translation>
+<translation id="7146363485174988200">Usar firmas de código ad-hoc.</translation>
 <translation id="7148958378210448356">Una lista predeterminada de combinaciones de teclas con la tecla del Selector nunca realizará una acción solo en pantalla completa.</translation>
 <translation id="7149042336307555519"> Esta política controla los tipos de conexiones permitidos en las actualizaciones del SO. Es posible que el tamaño de las actualizaciones del SO sobrecargue la conexión, lo que podría generar costos adicionales para el usuario. Por lo tanto, no están habilitadas de forma predeterminada en conexiones que se consideren costosas (actualmente, solo "celular").
 
@@ -9447,6 +9451,11 @@ Si inhabilitas la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el va
 <translation id="793473937901685727">Establecer la disponibilidad de certificados para apps de ARC</translation>
 <translation id="7936302526928951356">El string usuario-agente no bloqueará los cambios para la versión principal</translation>
 <translation id="7937766917976512374">Permitir o rechazar la captura de video</translation>
+<translation id="7937825205289116563">Si habilitas la política o no la estableces, se habilitará el uso de firmas de ad-hoc para la aplicación nativa que se crea cuando se instala una aplicación web progresiva (AWP). Esto garantiza que cada aplicación instalada tenga una identidad única para los componentes del sistema <ph name="MAC_OS_NAME" />.
+
+Si inhabilitas la política, todas las aplicaciones nativas que se creen cuando se instale una aplicación web progresiva tendrán la misma identidad. Esto puede interferir con la funcionalidad de <ph name="MAC_OS_NAME" />.
+
+Solo desactiva la política si usas una solución de seguridad de endpoint que bloquea las aplicaciones con una firma de ad-hoc.</translation>
 <translation id="7941528208359969119">Permitir que se realicen verificaciones en línea de <ph name="OCSP_CRL_LABEL" /></translation>
 <translation id="7941975817681987555">No predecir acciones de la red en ninguna conexión de red</translation>
 <translation id="7945445169067895719">Habilitar el bloqueo cuando el dispositivo se suspenda o se cierra la tapa</translation>

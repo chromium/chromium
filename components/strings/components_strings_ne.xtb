@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">उन्नत</translation>
 <translation id="1975457531113383421">इनपुट ट्रे</translation>
 <translation id="1975584088563498795">मेलबक्स १०</translation>
-<translation id="1976610264358655503">तपाईं प्रायः खोल्ने गर्नुहुन्छ</translation>
 <translation id="1978555033938440688">फर्मवेयरको संस्करण</translation>
 <translation id="1979156660928743046">मिडियासम्बन्धी जानकारी</translation>
 <translation id="1988881251331415125">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'कनेक्टिभिटीका निदानहरू' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
@@ -1243,7 +1242,6 @@
 <translation id="3307649904964670439">Chrome कस्टमाइज गर्ने बटन, आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="3308006649705061278">सङ्गठनात्मक एकाइ (OU)</translation>
 <translation id="3318016344440038475">हास्य टिभी कार्यक्रमहरू</translation>
-<translation id="3321152582690622182">ट्र्याक गरिएको छैन</translation>
 <translation id="3324687287337751929">४ x ६ इन्च</translation>
 <translation id="3324983252691184275">गाढा रातो</translation>
 <translation id="3325027355611702542">क्याम्पर तथा RV हरू</translation>
@@ -1450,6 +1448,7 @@
 <translation id="365641980390710834">क्याजुअल लुगा</translation>
 <translation id="3658742229777143148">संशोधन</translation>
 <translation id="3659521826520353662">एड्मिनले तोकेका कुन-कुन वेबसाइटहरू हेरिएका छन् र कहिले हेरिएका छन्: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">यो उत्पादन बिक्री गर्ने अन्य स्टोरमा खरिद गर्ने थप विकल्पहरू खोज्नुहोस्।</translation>
 <translation id="3664782872746246217">किवर्डहरू:</translation>
 <translation id="3665100783276035932">अधिकांश साइटहरूले गर्नु पर्ने जसरी नै काम गर्छन्</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="LINK_END1" /></translation>
@@ -3091,7 +3090,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">क्यामेरा</translation>
 <translation id="6734506549556896534">सिमुलेसन गेमहरू</translation>
-<translation id="6735783933931458444">तपाईं हरेक दिन यति बेला खोल्ने गर्नुहुन्छ</translation>
 <translation id="6737708609449480586">आगोको भट्टीमा पकाइएका परिकारहरू</translation>
 <translation id="6738516213925468394">तपाईंको डेटा तपाईंको <ph name="BEGIN_LINK" />पासफ्रेज सिंक गर्नुहोस्<ph name="END_LINK" /> मार्फत <ph name="TIME" /> मा इन्क्रिप्ट गरियो। सिंक प्रक्रिया सुरु गर्न उक्स पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
 <translation id="6739943577740687354">यो सुविधाले AI प्रयोग गर्छ र यसले सधैँ सही जानकारी नदिन सक्छ</translation>
@@ -4421,7 +4419,6 @@
 <translation id="9191834167571392248">फेदको बायाँपट्टि प्वाल</translation>
 <translation id="9192361865877479444">मेटल (म्याट)</translation>
 <translation id="9192947025498305328">स्वास्थ्य तथा वातावरणमैत्री सौन्दर्य प्रसाधन</translation>
-<translation id="919455784772793601">यो उत्पादन बेच्ने अन्य स्टोरको सूची भएको पेज खोल्नुहोस्।</translation>
 <translation id="9199905725844810519">प्रिन्ट गर्ने सुविधा ब्लक गरिएको छ</translation>
 <translation id="9205078245616868884">तपाईँको डेटालाई तपाईँको सिंक पासफ्रेजमार्फत इन्क्रिप्ट गरिएको छ। सिंक सुरु गर्न त्यो पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
 <translation id="920643408853370361">यात्रा बीमा</translation>

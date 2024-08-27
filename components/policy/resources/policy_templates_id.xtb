@@ -166,6 +166,7 @@ kebijakan ini tidak melarang screenshot yang diambil dengan aplikasi sistem oper
 
 Jika kebijakan ini tidak disetel, tidak akan ada pengecualian untuk <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1068801725746725727">Aktifkan penerimaan survei Safe Browsing</translation>
+<translation id="107045325503547419">Bergantung pada proses peluncuran fitur.</translation>
 <translation id="1073983258515362346">Melaporkan informasi tentang lampu latar perangkat.
 
       Jika kebijakan ditetapkan ke false, atau tidak ditetapkan, informasi tidak akan dilaporkan.
@@ -3189,6 +3190,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang di
       dapat mendownload gambar wallpaper, serta hash kriptografi (dalam format JPEG dengan ukuran file hingga 16 MB) untuk memverifikasi integritasnya.
 
       Jika tidak ditetapkan, pengguna akan memilih gambar untuk latar belakang desktop dan layar login.</translation>
+<translation id="3313395530427546108">Jangan gunakan tanda tangan kode ad-hoc.</translation>
 <translation id="3315324240256767419">Aktifkan fitur jendela bayangan.</translation>
 <translation id="3321099611644751329">Sertifikat TLS yang seharusnya dipercaya oleh <ph name="PRODUCT_NAME" /> untuk autentikasi server dengan batasan</translation>
 <translation id="3323819750604111729">Aktifkan impor bookmark saat browser pertama kali dijalankan</translation>
@@ -4493,6 +4495,7 @@ Kebijakan ini digunakan untuk menonaktifkan upgrade otomatis konten campuran di 
 
 Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpengaruh jika <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> disetel ke Salah (False).</translation>
 <translation id="4298476374822550051">Aktifkan perjanjian kunci pasca-kuantum Kyber untuk TLS</translation>
+<translation id="4301478455179579340">Penandatanganan aplikasi native selama penginstalan Progressive Web Application</translation>
 <translation id="4303167373847512281">Izinkan mode developer</translation>
 <translation id="4307116964468610577">Kebijakan ini memperpanjang masa pakai baterai sistem dengan mengisi daya baterai hingga kapasitas penuh hanya sekali per hari. Selama sisa hari tersebut, baterai berada dalam status pengisian daya lambat dan lebih baik untuk penyimpanan daya, bahkan ketika sistem dicolokkan ke sumber listrik.
 
@@ -8532,6 +8535,7 @@ Jika kebijakan ini disetel ke nonaktif, sandi tidak akan diingat dan semua sandi
 <translation id="7146198347561863646">Jika kebijakan disetel ke Aktif atau tidak disetel, penguncian layar saat aktif akan diizinkan untuk pengelolaan daya. Ekstensi dapat meminta penguncian layar saat aktif melalui aplikasi ARC dan API ekstensi pengelolaan daya.
 
       Jika kebijakan disetel ke Nonaktif, permintaan penguncian layar saat aktif akan diabaikan.</translation>
+<translation id="7146363485174988200">Gunakan tanda tangan kode ad-hoc.</translation>
 <translation id="7148958378210448356">Daftar pintasan yang telah ditentukan dengan tombol peluncur tidak akan pernah menjalankan tindakan.</translation>
 <translation id="7149042336307555519"> Jenis sambungan yang diizinkan untuk digunakan update OS. Update OS berpotensi menyebabkan beban berat pada sambungan karena ukurannya dan mungkin menimbulkan biaya tambahan. Oleh karena itu, update tersebut akan dinonaktifkan secara default untuk jenis sambungan yang dianggap mahal (saat ini hanya "data seluler").
 
@@ -9460,6 +9464,11 @@ Jika kebijakan <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke Nonaktif
 <translation id="793473937901685727">Menyetel ketersediaan sertifikat untuk aplikasi ARC</translation>
 <translation id="7936302526928951356">String Agen Pengguna tidak akan membekukan versi utama.</translation>
 <translation id="7937766917976512374">Izinkan atau tolak penangkapan video</translation>
+<translation id="7937825205289116563">Jika kebijakan ini disetel ke Aktif atau tidak disetel, penggunaan tanda tangan ad-hoc akan diaktifkan untuk aplikasi native yang dibuat saat menginstal Progressive Web Application (PWA). Hal ini memastikan bahwa setiap aplikasi yang diinstal memiliki identitas unik untuk komponen sistem <ph name="MAC_OS_NAME" />.
+
+Jika kebijakan ini disetel ke Nonaktif, setiap aplikasi native yang dibuat saat menginstal Progressive Web Application akan memiliki identitas yang sama. Hal ini dapat mengganggu fungsi <ph name="MAC_OS_NAME" />.
+
+Nonaktifkan kebijakan ini hanya jika Anda menggunakan solusi keamanan endpoint yang memblokir aplikasi dengan tanda tangan ad-hoc.</translation>
 <translation id="7941528208359969119">Izinkan pelaksanaan pemeriksaan <ph name="OCSP_CRL_LABEL" /> online</translation>
 <translation id="7941975817681987555">Jangan memprediksi tindakan jaringan di koneksi jaringan apa pun</translation>
 <translation id="7945445169067895719">Mengaktifkan kunci saat perangkat ditangguhkan atau penutupnya ditutup</translation>

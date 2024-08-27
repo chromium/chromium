@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">വിപുലമായത്</translation>
 <translation id="1975457531113383421">ഇൻപുട്ട് ട്രേ</translation>
 <translation id="1975584088563498795">മെയിൽബോക്സ് 10</translation>
-<translation id="1976610264358655503">നിങ്ങൾ പതിവായി സന്ദർശിക്കുന്നവ</translation>
 <translation id="1978555033938440688">ഫേംവെയർ പതിപ്പ്</translation>
 <translation id="1979156660928743046">മീഡിയാ വിവരം</translation>
 <translation id="1988881251331415125">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ, <ph name="BEGIN_LINK" />കണക്റ്റിവിറ്റി ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
@@ -1245,7 +1244,6 @@
 <translation id="3307649904964670439">'Chrome ഇഷ്‌ടാനുസൃതമാക്കുക ബട്ടൺ', നിങ്ങളുടെ ബ്രൗസറിന്റെ രൂപം ഇഷ്ടാനുസൃതമാക്കാൻ സജീവമാക്കുക</translation>
 <translation id="3308006649705061278">ഓര്‍‌ഗനൈസേഷണല്‍‌ യൂണിറ്റ് (OU)</translation>
 <translation id="3318016344440038475">ടിവി കോമഡികൾ</translation>
-<translation id="3321152582690622182">ട്രാക്ക് ചെയ്യുന്നില്ല</translation>
 <translation id="3324687287337751929">4 x 6 ഇഞ്ച്</translation>
 <translation id="3324983252691184275">ക്രിംസൺ</translation>
 <translation id="3325027355611702542">ക്യാമ്പറുകളും RV-കളും</translation>
@@ -1530,6 +1528,7 @@
 <translation id="3793574014653384240">അടുത്തിടെയുണ്ടായ ക്രാഷുകളുടെ എണ്ണവും കാരണങ്ങളും</translation>
 <translation id="3799805948399000906">അഭ്യർത്ഥിച്ച ഫോണ്ട്</translation>
 <translation id="3801265110651850478">നിങ്ങളുടെ ബ്രൗസിംഗ് ട്രാഫിക്ക് ഉപയോഗിച്ച് ഒരു “Do Not Track" അഭ്യർത്ഥന അയയ്ക്കുക</translation>
+<translation id="3801297763951514916">നിങ്ങൾ പതിവായി സന്ദർശിക്കുന്നു</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803801106042434208">നിങ്ങളുടെ പ്രദേശത്ത് ജനപ്രിയമായ തിരയൽ എഞ്ചിനുകൾ ഇവയാണ്</translation>
 <translation id="3807366285948165054">ചിത്രം X ഷിഫ്റ്റ്</translation>
@@ -2366,6 +2365,7 @@
 <translation id="5385857628869214740">ഹാസ്യം</translation>
 <translation id="5385966243497224160">HTTPS അല്ലാത്ത URL പ്രിവ്യൂ ചെയ്യാനാകില്ല</translation>
 <translation id="5386426401304769735">ഈ സൈറ്റിന്റെ സർട്ടിഫിക്കറ്റ് ചെയിനിൽ SHA-1 ഉപയോഗിച്ച് സൈൻ ചെയ്‌ത ഒരു സർട്ടിഫിക്കറ്റ് അടങ്ങിയിരിക്കുന്നു.</translation>
+<translation id="5391010642126249196">നിങ്ങൾ സന്ദർശിച്ചത്:</translation>
 <translation id="539203134595252721">ടേബിൾ ടെന്നീസ്</translation>
 <translation id="5392506727170022660">മെറ്റൽ (സെമി ഗ്ലോസ്)</translation>
 <translation id="5394069166371280357">കുടുംബ-കേന്ദ്രീകൃത ടിവി ഷോകൾ</translation>
@@ -3092,7 +3092,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ക്യാമറ</translation>
 <translation id="6734506549556896534">സിമുലേഷൻ ഗെയിമുകൾ</translation>
-<translation id="6735783933931458444">നിങ്ങൾ എല്ലാ ദിവസവും ഈ സമയത്ത് പതിവായി സന്ദർശിക്കുന്ന ടാബ്</translation>
 <translation id="6737708609449480586">ബേക്ക് ചെയ്ത ഭക്ഷണസാധനങ്ങൾ</translation>
 <translation id="6738516213925468394"><ph name="TIME" />-ന് നിങ്ങളുടെ <ph name="BEGIN_LINK" />സമന്വയ പാസ്‌ഫ്രെയ്‌സ്<ph name="END_LINK" /> ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് ഇത് നൽകുക.</translation>
 <translation id="6739943577740687354">ഈ ഫീച്ചർ AI ഉപയോഗിക്കും, ഇത് എപ്പോഴും ശരിയാകണമെന്നില്ല</translation>
@@ -4130,6 +4129,7 @@
 <translation id="865032292777205197">മോഷൻ സെൻസറുകൾ</translation>
 <translation id="865255447216708819">ബാക്ക് പ്രിന്റ് ഫിലിം</translation>
 <translation id="8654126188050905496">55 x 91 മി.മീ</translation>
+<translation id="8660780831677950176">നിങ്ങൾ പതിവായി ഈ സമയത്ത് സന്ദർശിക്കുന്നു</translation>
 <translation id="8662463432865928030">വാണിജ്യപരമായ പ്രോപ്പർട്ടികൾ</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="8663909737634214500">ഒപ്‌റ്റിക്കൽ ഡിസ്‌ക്</translation>
@@ -4420,7 +4420,6 @@
 <translation id="9191834167571392248">താഴെ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="9192361865877479444">മെറ്റൽ (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="9192947025498305328">പ്രകൃതിദത്ത സൗന്ദര്യം</translation>
-<translation id="919455784772793601">ഈ ഉൽപ്പന്നം വിൽക്കുന്ന മറ്റ് സ്റ്റോറുകൾ കാണിക്കുന്ന ഒരു പേജ് തുറക്കുക.</translation>
 <translation id="9199905725844810519">പ്രിന്റ് ചെയ്യൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="9205078245616868884">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് ഇത് നൽകുക.</translation>
 <translation id="920643408853370361">യാത്രാ ഇൻഷുറൻസ്</translation>

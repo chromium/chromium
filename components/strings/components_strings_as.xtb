@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1975457531113383421">ইনপুট ট্ৰে’</translation>
 <translation id="1975584088563498795">মেইলবক্স ১০</translation>
-<translation id="1976610264358655503">আপোনাৰ ডিভাইচত সঘনাই খোলা টেবসমূহ</translation>
 <translation id="1978555033938440688">ফাৰ্মৱেৰৰ সংস্কৰণ</translation>
 <translation id="1979156660928743046">মিডিয়াৰ তথ্য</translation>
 <translation id="1988881251331415125">যদি বানান ঠিকে আছে, <ph name="BEGIN_LINK" />সংযোগ সম্পৰ্কীয় ডায়গন’ষ্টিক্স চলাই চাওক<ph name="END_LINK" />।</translation>
@@ -1244,7 +1243,6 @@
 <translation id="3307649904964670439">Chrome কাষ্টমাইজ কৰাৰ বুটাম, আপোনাৰ ব্ৰাউজাৰৰ ৰূপ কাষ্টমাইজ কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="3308006649705061278">প্ৰতিষ্ঠানৰ ইউনিট (অ’ইউ)</translation>
 <translation id="3318016344440038475">টিভিৰ হাস্য-ব্যংগৰ অনুষ্ঠান</translation>
-<translation id="3321152582690622182">ট্ৰেক কৰি থকা নাই</translation>
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
 <translation id="3324983252691184275">ক্ৰিমছন</translation>
 <translation id="3325027355611702542">কেম্পাৰ আৰু RV</translation>
@@ -1450,6 +1448,7 @@
 <translation id="365641980390710834">অনানুষ্ঠানিক পোছাক</translation>
 <translation id="3658742229777143148">পুনৰীক্ষণ</translation>
 <translation id="3659521826520353662">প্ৰশাসক-নিৰ্ধাৰিত কোনবোৰ ৱেবছাইটলৈ কেতিয়া যোৱা হয়: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">এই প্ৰ’ডাক্টটো বিক্ৰী কৰা অন্য ষ্ট’ৰৰ পৰা ক্ৰয় কৰাৰ অধিক বিকল্প সন্ধান কৰক।</translation>
 <translation id="3664782872746246217">মূল শব্দ:</translation>
 <translation id="3665100783276035932">অধিকাংশ ছাইটে আশা কৰা ধৰণে কাম কৰিব লাগে</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />অধিক জানক<ph name="LINK_END1" /></translation>
@@ -3088,7 +3087,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">কেমেৰা</translation>
 <translation id="6734506549556896534">ছিমুলেশ্বন গে’ম</translation>
-<translation id="6735783933931458444">দিনৰ এই সময়ত, আপোনাৰ ডিভাইচত সঘনাই খোলা টেব</translation>
 <translation id="6737708609449480586">চুলাত সেকা সামগ্ৰী</translation>
 <translation id="6738516213925468394">আপোনাৰ ডেটাখিনি আপুনি <ph name="BEGIN_LINK" />ছিংক কৰি থোৱা পাছফ্ৰে'জ<ph name="END_LINK" />ৰ সহায়ত <ph name="TIME" />ত এনক্রিপ্ট কৰা হৈছিল। ছিংক আৰম্ভ কৰিবলৈ এইটো দিয়ক।</translation>
 <translation id="6739943577740687354">এই সুবিধাটোৱে AI ব্যৱহাৰ কৰে আৰু ই সদায় শুদ্ধ ফলাফল প্ৰদৰ্শন নকৰে</translation>
@@ -4418,7 +4416,6 @@
 <translation id="9191834167571392248">বাওঁফালে তলৰ অংশত পাঞ্চ কৰক</translation>
 <translation id="9192361865877479444">মেটেল (Matte)</translation>
 <translation id="9192947025498305328">প্ৰাকৃতিক সৌন্দৰ্য সম্পৰ্কীয় প্ৰ’ডাক্ট</translation>
-<translation id="919455784772793601">এই প্ৰ’ডাক্টটো বিক্ৰী কৰা অন্য ষ্ট’ৰসমূহ দেখুওৱা এখন পৃষ্ঠা খোলক।</translation>
 <translation id="9199905725844810519">প্ৰিণ্ট কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="9205078245616868884">আপোনাৰ ডেটা নিজৰ ছিংক পাছফ্ৰেজৰ জৰিয়তে এনক্ৰিপ্ট কৰা হৈছে। ছিংক কৰিবলৈ পাছফ্ৰেজ দিয়ক।</translation>
 <translation id="920643408853370361">ভ্ৰমণ বীমা</translation>

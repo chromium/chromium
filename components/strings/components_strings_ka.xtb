@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">გაფართოებული</translation>
 <translation id="1975457531113383421">მიმწოდებელი ლანგარი</translation>
 <translation id="1975584088563498795">საფოსტო ყუთი 10</translation>
-<translation id="1976610264358655503">თქვენ ხშირად სტუმრობთ</translation>
 <translation id="1978555033938440688">ჩაშენებული პროგრამული უზრუნველყოფის ვერსია</translation>
 <translation id="1979156660928743046">ინფორმაცია მედიის შესახებ</translation>
 <translation id="1988881251331415125">თუ სწორად არის აკრეფილი, <ph name="BEGIN_LINK" />ცადეთ კავშირის დიაგნოსტიკა<ph name="END_LINK" />.</translation>
@@ -1246,7 +1245,6 @@
 <translation id="3307649904964670439">ღილაკი Chrome-ის პარამეტრების დაყენება, თქვენი ბრაუზერის იერსახის დასაყენებლად გაააქტიურეთ ის</translation>
 <translation id="3308006649705061278">ორგანიზაციული ერთეული (OU)</translation>
 <translation id="3318016344440038475">სატელევიზიო კომედიები</translation>
-<translation id="3321152582690622182">არ მიმდინარეობს თვალყურის დევნება</translation>
 <translation id="3324687287337751929">4 x 6 დუიმი</translation>
 <translation id="3324983252691184275">ალისფერი</translation>
 <translation id="3325027355611702542">მისაბმელი სახლები და ავტოფურგონები</translation>
@@ -1453,6 +1451,7 @@
 <translation id="365641980390710834">ყოველდღიური ტანსაცმელი</translation>
 <translation id="3658742229777143148">რედაქცია</translation>
 <translation id="3659521826520353662">ადმინისტრატორის მიერ განსაზღვრული რომელი ვებსაიტები არის მონახულებული და როდის: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">მოიძიეთ შეძენის სხვა ვარიანტები სხვა მაღაზიებიდან, რომლებიც ამ პროდუქტს ყიდის.</translation>
 <translation id="3664782872746246217">საკვანძო სიტყვები:</translation>
 <translation id="3665100783276035932">საიტების უმეტესობამ მოლოდინისამებრ უნდა იმუშაოს</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />შეიტყვეთ მეტი<ph name="LINK_END1" /></translation>
@@ -1531,6 +1530,7 @@
 <translation id="3793574014653384240">ახლახან დაფიქსირებული ავარიული გათიშვების ნომრები და გამომწვევი მიზეზები</translation>
 <translation id="3799805948399000906">შრიფტი მოთხოვნილია</translation>
 <translation id="3801265110651850478">„Do Not Track“ მოთხოვნის გაგზავნა თქვენი ბრაუზერის საშუალებით</translation>
+<translation id="3801297763951514916">თქვენ მიერ ხშირად მონახულებული</translation>
 <translation id="380329542618494757">სახელი</translation>
 <translation id="3803801106042434208">თქვენს რეგიონში პოპულარულია ეს საძიებო სისტემები</translation>
 <translation id="3807366285948165054">სურათის წანაცვლება X ღერძზე</translation>
@@ -2367,6 +2367,7 @@
 <translation id="5385857628869214740">იუმორი</translation>
 <translation id="5385966243497224160">არა-HTTPS URL-ის გადახედვა ვერ მოხერხდება</translation>
 <translation id="5386426401304769735">ამ საიტის სერტიფიკატთა ჯაჭვი SHA-1-ის მეშვეობით ხელმოწერილ სერტიფიკატს შეიცავს.</translation>
+<translation id="5391010642126249196">თქვენ მოინახულეთ</translation>
 <translation id="539203134595252721">მაგიდის ჩოგბურთი</translation>
 <translation id="5392506727170022660">ლითონი (ნახევარპრიალა)</translation>
 <translation id="5394069166371280357">საოჯახო სატელევიზიო შოუები</translation>
@@ -3093,7 +3094,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">კამერა</translation>
 <translation id="6734506549556896534">სიმულაციური თამაშები</translation>
-<translation id="6735783933931458444">თქვენ ხშირად სტუმრობთ დღის ამ მონაკვეთში</translation>
 <translation id="6737708609449480586">პურ-ფუნთუშეული</translation>
 <translation id="6738516213925468394"><ph name="TIME" />-დან თქვენი მონაცემები დაშიფრულია <ph name="BEGIN_LINK" />სინქრონიზაციის საიდუმლო ფრაზით<ph name="END_LINK" />. შეიყვანეთ ის სინქრონიზაციის დასაწყებად.</translation>
 <translation id="6739943577740687354">ეს ფუნქცია იყენებს ხელოვნურ ინტელექტს და ის ყოველთვის არ იქნება ზუსტი</translation>
@@ -4133,6 +4133,7 @@
 <translation id="865032292777205197">მოძრაობის სენსორები</translation>
 <translation id="865255447216708819">ყუაზე ბეჭდვის აფსკი</translation>
 <translation id="8654126188050905496">55 x 91 მმ</translation>
+<translation id="8660780831677950176">თქვენ ამ დროს ხშირად სტუმრობთ</translation>
 <translation id="8662463432865928030">კომერციული უძრავი ქონება</translation>
 <translation id="8663226718884576429">შეკვეთის რეზიუმე, <ph name="TOTAL_LABEL" />, დამატებითი ინფორმაცია</translation>
 <translation id="8663909737634214500">ოპტიკური დისკი</translation>
@@ -4423,7 +4424,6 @@
 <translation id="9191834167571392248">ქვედა მარცხენა ნაწილის გახვრეტა</translation>
 <translation id="9192361865877479444">ლითონი (მქრქალი)</translation>
 <translation id="9192947025498305328">სუფთა სილამაზე</translation>
-<translation id="919455784772793601">გახსენით გვერდი, რომელზეც ნაჩვენებია სხვა მაღაზიები, სადაც იყიდება აღნიშნული პროდუქტი.</translation>
 <translation id="9199905725844810519">ბეჭდვა დაბლოკილია</translation>
 <translation id="9205078245616868884">თქვენი მონაცემები დაშიფრულია სინქრონიზაციის საიდუმლო ფრაზის მეშვეობით. სინქრონიზაციის დასაწყებად, შეიყვანეთ საიდუმლო ფრაზა.</translation>
 <translation id="920643408853370361">სამოგზაურო დაზღვევა</translation>

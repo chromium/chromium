@@ -545,7 +545,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1974060860693918893">Qo‘shimcha</translation>
 <translation id="1975457531113383421">Kiritish tarnovi</translation>
 <translation id="1975584088563498795">Pochta qutisi 10</translation>
-<translation id="1976610264358655503">Koʻp ochilgan sahifalar</translation>
 <translation id="1978555033938440688">Mikrodastur versiyasi</translation>
 <translation id="1979156660928743046">Media axborot</translation>
 <translation id="1988881251331415125">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Ulanish diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
@@ -1243,7 +1242,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3307649904964670439">Chromeni moslash tugmasi, brauzer koʻrinishini moslash uchun faollashtiring</translation>
 <translation id="3308006649705061278">Bo‘lim (OU)</translation>
 <translation id="3318016344440038475">TV komediyalar</translation>
-<translation id="3321152582690622182">Kuzatuvda emas</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Malina rang</translation>
 <translation id="3325027355611702542">Avtofurgonlar</translation>
@@ -1448,6 +1446,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="365641980390710834">Kazual kiyim-kechak</translation>
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3659521826520353662">Administrator sozlagan qaysi saytlarga va qaysi vaqtda foydalanuvchilar tashrif buyuradi: <ph name="ALLOWLISTED_WEBSITES" />.</translation>
+<translation id="3664479564786885722">Bu mahsulot sotiladigan doʻkonlardan boshqa xarid variantlarini qidirish.</translation>
 <translation id="3664782872746246217">Kalit soʻzlar:</translation>
 <translation id="3665100783276035932">Koʻplab saytlar kutilganidek ishlashi kerak</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Batafsil<ph name="LINK_END1" /></translation>
@@ -1526,6 +1525,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3793574014653384240">Oxirgi ishdan chiqishlar va ularning sabablari</translation>
 <translation id="3799805948399000906">Shrift talabi qilindi</translation>
 <translation id="3801265110651850478">Brauzerda kezish trafigi bilan “Kuzatilmasin” soʻrovini yuborish</translation>
+<translation id="3801297763951514916">Tez-tez kirgansiz</translation>
 <translation id="380329542618494757">Ism</translation>
 <translation id="3803801106042434208">Bu qidiruv tizimlari mintaqangizda mashhur</translation>
 <translation id="3807366285948165054">Tasvirning X oʻqidagi siljishi</translation>
@@ -2362,6 +2362,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5385857628869214740">Hazil-mutoyiba</translation>
 <translation id="5385966243497224160">Himoyasiz (non-HTTPS) URL manzilga razm solish imkonsiz</translation>
 <translation id="5386426401304769735">Bu veb-saytning sertifikatlari zanjiridagi sertifikat SHA-1 algoritmi asosida yozilgan.</translation>
+<translation id="5391010642126249196">Oxirgi tashrifingiz</translation>
 <translation id="539203134595252721">Stol tennisi</translation>
 <translation id="5392506727170022660">Metall (yarim yaltiroq)</translation>
 <translation id="5394069166371280357">Oilaviy TV seriallar</translation>
@@ -3087,7 +3088,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulyatorlar</translation>
-<translation id="6735783933931458444">Odatda bu vaqtda ochiladigan sahifalar</translation>
 <translation id="6737708609449480586">Pishiriqlar</translation>
 <translation id="6738516213925468394">Maʼlumotlaringiz <ph name="TIME" /> sanasida <ph name="BEGIN_LINK" />kodli ibora<ph name="END_LINK" /> bilan shifrlangan. Sinxronizatsiyani boshlash uchun uni kiriting.</translation>
 <translation id="6739943577740687354">Bu funksiya AI ishlatadi va ishlashida xatolar chiqishi mumkin</translation>
@@ -4127,6 +4127,7 @@ Batafsil axborot:
 <translation id="865032292777205197">harakat sensorlari</translation>
 <translation id="865255447216708819">Teskari bosib chiqarish uchun film</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
+<translation id="8660780831677950176">Odatda bu vaqtda ochiladigan sahifalar</translation>
 <translation id="8662463432865928030">Tijoriy koʻchmas mulk</translation>
 <translation id="8663226718884576429">Buyurtma axboroti, <ph name="TOTAL_LABEL" />, Batafsil</translation>
 <translation id="8663909737634214500">Optik disk</translation>
@@ -4417,7 +4418,6 @@ Batafsil axborot:
 <translation id="9191834167571392248">Quyi chapdan teshik ochish</translation>
 <translation id="9192361865877479444">Metall (jilosiz)</translation>
 <translation id="9192947025498305328">Pardozsiz goʻzallik</translation>
-<translation id="919455784772793601">Bu mahsulotni sotuvchi boshqa doʻkonlar chiqarilgan sahifani ochish.</translation>
 <translation id="9199905725844810519">Chop etish taqiqlangan</translation>
 <translation id="9205078245616868884">Ma’lumotlaringiz kodli ibora bilan shifrlangan. Sinxronlashuvni boshlash uchun uni kiriting.</translation>
 <translation id="920643408853370361">Sayohat sugʻurtasi</translation>

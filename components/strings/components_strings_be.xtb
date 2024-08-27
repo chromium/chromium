@@ -546,7 +546,6 @@
 <translation id="1974060860693918893">Пашыраныя налады</translation>
 <translation id="1975457531113383421">Уваходны латок</translation>
 <translation id="1975584088563498795">Паштовая скрынка 10</translation>
-<translation id="1976610264358655503">Вы часта наведваеце</translation>
 <translation id="1978555033938440688">Версія ўбудаванага ПЗ</translation>
 <translation id="1979156660928743046">Мультымедыйныя даныя</translation>
 <translation id="1988881251331415125">Калі напісанне правільнае, <ph name="BEGIN_LINK" />паспрабуйце запусціць дыягностыку падключэнняў<ph name="END_LINK" />.</translation>
@@ -1247,7 +1246,6 @@
 <translation id="3307649904964670439">Кнопка "Наладзіць Chrome". Каб наладзіць выгляд браўзера, націсніце яе.</translation>
 <translation id="3308006649705061278">Арганізацыйная адзінка (АА)</translation>
 <translation id="3318016344440038475">Камедыйныя праграмы</translation>
-<translation id="3321152582690622182">Не адсочваецца</translation>
 <translation id="3324687287337751929">4 x 6 цаляў</translation>
 <translation id="3324983252691184275">Цёмна-чырвоны</translation>
 <translation id="3325027355611702542">Жылыя аўтафургоны і іншыя транспартныя сродкі для адпачынку</translation>
@@ -1453,6 +1451,7 @@
 <translation id="365641980390710834">Паўсядзённае адзенне</translation>
 <translation id="3658742229777143148">Рэдакцыя</translation>
 <translation id="3659521826520353662">Якія вызначаныя адміністратарам вэб-сайты наведваюцца і калі: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Вы можаце шукаць прапановы пэўнага тавару ад іншых крам, якія яго прадаюць.</translation>
 <translation id="3664782872746246217">Ключавыя словы:</translation>
 <translation id="3665100783276035932">Большасць сайтаў павінны працаваць як належыць</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Даведацца больш<ph name="LINK_END1" /></translation>
@@ -1531,6 +1530,7 @@
 <translation id="3793574014653384240">Колькасць і прычыны нядаўніх збояў</translation>
 <translation id="3799805948399000906">Запытаны шрыфт</translation>
 <translation id="3801265110651850478">Адпраўляць запыт Do Not Track пры праглядзе старонак у інтэрнэце</translation>
+<translation id="3801297763951514916">Вы часта наведваеце гэты вэб-сайт</translation>
 <translation id="380329542618494757">Імя</translation>
 <translation id="3803801106042434208">Пошукавыя сістэмы, папулярныя ў вашым рэгіёне</translation>
 <translation id="3807366285948165054">Зрух відарыса па восі X</translation>
@@ -2367,6 +2367,7 @@
 <translation id="5385857628869214740">Гумар</translation>
 <translation id="5385966243497224160">Для URL-адрасоў, якія не выкарыстоўваюць пратакол HTTPS, перадпрагляд не падтрымліваецца</translation>
 <translation id="5386426401304769735">Ланцужок сертыфікатаў для гэтага сайта змяшчае сертыфікат, падпісаны з выкарыстаннем алгарытму SHA-1.</translation>
+<translation id="5391010642126249196">Наведана</translation>
 <translation id="539203134595252721">Настольны тэніс</translation>
 <translation id="5392506727170022660">Паўглянцавы метал</translation>
 <translation id="5394069166371280357">Сямейныя тэлеперадачы</translation>
@@ -3093,7 +3094,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6734506549556896534">Гульні-сімулятары</translation>
-<translation id="6735783933931458444">Вы часта наведваеце ў гэты час сутак</translation>
 <translation id="6737708609449480586">Хлебабулачныя вырабы</translation>
 <translation id="6738516213925468394">Даныя былі зашыфраваны з дапамогай <ph name="BEGIN_LINK" />фразы-пароля для сінхранізацыі<ph name="END_LINK" /> <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="6739943577740687354">Гэта функцыя выкарыстоўвае штучны інтэлект, таму яна не заўсёды працуе бездакорна</translation>
@@ -4134,6 +4134,7 @@
 <translation id="865032292777205197">датчыкі руху</translation>
 <translation id="865255447216708819">Плёнка для друку на адваротным баку</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
+<translation id="8660780831677950176">Вы часта наведваеце вэб-сайт у гэты час</translation>
 <translation id="8662463432865928030">Камерцыйная маёмасць</translation>
 <translation id="8663226718884576429">Зводка па заказе, <ph name="TOTAL_LABEL" />, дадатковая інфармацыя</translation>
 <translation id="8663909737634214500">Аптычны дыск</translation>
@@ -4424,7 +4425,6 @@
 <translation id="9191834167571392248">Дзірка знізу злева</translation>
 <translation id="9192361865877479444">Матавы метал</translation>
 <translation id="9192947025498305328">Натуральная касметыка</translation>
-<translation id="919455784772793601">Адкрыць старонку з іншымі крамамі, якія прадаюць гэты тавар.</translation>
 <translation id="9199905725844810519">Друкаванне заблакіравана</translation>
 <translation id="9205078245616868884">Вашы даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="920643408853370361">Турыстычнае страхаванне</translation>
