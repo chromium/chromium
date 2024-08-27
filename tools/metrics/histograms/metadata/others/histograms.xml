@@ -3436,6 +3436,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DemoMode.Setup.ComponentInitialLoadingResult"
+    enum="DemoModeSetupComponentLoadingResult" expires_after="2025-08-26">
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    This records the result of each component initial loading during the demo
+    mode setup process. This setup process will only proceed if both the app and
+    the resources components loading succeeds.
+  </summary>
+</histogram>
+
+<histogram name="DemoMode.Setup.ComponentLoadingRetryResult"
+    enum="DemoModeSetupComponentLoadingResult" expires_after="2025-08-26">
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    This records the result of each component loading retry during the demo mode
+    setup process. The retry is manually initiated after the setup process has
+    encountered an error during the loading screen and been required to retry
+    setup. This setup process will only proceed if both the app and the
+    resources components loading succeeds.
+  </summary>
+</histogram>
+
 <histogram name="DemoMode.Setup.DownloadDuration" units="ms"
     expires_after="2025-02-28">
   <owner>llin@chromium.org</owner>

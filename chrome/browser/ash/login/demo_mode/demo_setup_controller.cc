@@ -57,6 +57,10 @@ constexpr char kDemoSetupEnrollDurationHistogram[] =
 constexpr char kDemoSetupLoadingDurationHistogram[] =
     "DemoMode.Setup.LoadingDuration";
 constexpr char kDemoSetupNumRetriesHistogram[] = "DemoMode.Setup.NumRetries";
+constexpr char kDemoSetupComponentInitialLoadingResultHistogram[] =
+    "DemoMode.Setup.ComponentInitialLoadingResult";
+constexpr char kDemoSetupComponentLoadingRetryResultHistogram[] =
+    "DemoMode.Setup.ComponentLoadingRetryResult";
 
 struct DemoSetupStepInfo {
   DemoSetupController::DemoSetupStep step;
@@ -578,21 +582,51 @@ void DemoSetupController::OnDemoComponentsLoaded() {
   auto resources_component_error =
       demo_components_->resources_component_error().value_or(
           component_updater::ComponentManagerAsh::Error::NOT_FOUND);
+  auto app_component_error = demo_components_->app_component_error().value_or(
+      component_updater::ComponentManagerAsh::Error::NOT_FOUND);
+  // We determine it's an initial loading or retry based on the
+  // `num_setup_retries_` count.
+  const std::string kDemoSetupComponentlLoadingResultHistogram =
+      num_setup_retries_ == 0 ? kDemoSetupComponentInitialLoadingResultHistogram
+                              : kDemoSetupComponentLoadingRetryResultHistogram;
+
   if (resources_component_error !=
       component_updater::ComponentManagerAsh::Error::NONE) {
+    // Reporting the corresponding enum based on the app component error.
+    base::UmaHistogramEnumeration(
+        kDemoSetupComponentlLoadingResultHistogram,
+        app_component_error ==
+                component_updater::ComponentManagerAsh::Error::NONE
+            ? DemoSetupComponentLoadingResult::kAppSuccessResourcesFailure
+            : DemoSetupComponentLoadingResult::kAppFailureResourcesFailure);
+
     SetupFailed(DemoSetupError::CreateFromComponentError(
         resources_component_error,
         DemoComponents::kDemoModeResourcesComponentName));
     return;
   }
-  auto app_component_error = demo_components_->app_component_error().value_or(
-      component_updater::ComponentManagerAsh::Error::NOT_FOUND);
+
   if (app_component_error !=
       component_updater::ComponentManagerAsh::Error::NONE) {
+    // There should be no error on the resources component loading if we've got
+    // to this point. It should've been handled in the previous "if block".
+    DCHECK(resources_component_error ==
+           component_updater::ComponentManagerAsh::Error::NONE);
+    base::UmaHistogramEnumeration(
+        kDemoSetupComponentlLoadingResultHistogram,
+        DemoSetupComponentLoadingResult::kAppFailureResourcesSuccess);
+
     SetupFailed(DemoSetupError::CreateFromComponentError(
         app_component_error, DemoComponents::kDemoModeAppComponentName));
     return;
   }
+
+  // There should be no error on both the app and the resources components
+  // loading if we've got to this point. It should've been handled in the
+  // previous two "if blocks".
+  base::UmaHistogramEnumeration(
+      kDemoSetupComponentlLoadingResultHistogram,
+      DemoSetupComponentLoadingResult::kAppSuccessResourcesSuccess);
 
   VLOG(1) << "Starting online enrollment";
 

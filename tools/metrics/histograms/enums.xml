@@ -4233,6 +4233,22 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="4" label="Removal failed"/>
 </enum>
 
+<enum name="DemoModeSetupComponentLoadingResult">
+  <summary>
+    The result of each component loading during the demo mode setup process.
+  </summary>
+  <int value="0"
+      label="Both the app and the resources components loading success"/>
+  <int value="1"
+      label="The app component loading success and the resources components
+             loading failure"/>
+  <int value="2"
+      label="The app component loading failure and the resources components
+             loading success"/>
+  <int value="3"
+      label="Both the app and the resources components loading failure"/>
+</enum>
+
 <enum name="DemoModeSetupError">
   <summary>The failure reason of the demo mode setup process error.</summary>
   <int value="0"
