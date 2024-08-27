@@ -374,6 +374,14 @@ class SyncServiceImpl : public SyncService,
   // Returns the types that have a non-null DataTypeLocalDataBatchUploader.
   DataTypeSet GetDataTypesWithLocalDataBatchUploader() const;
 
+  // The actual implementation of GetLocalDataDescriptions(), where some code
+  // paths can be synchronous. GetLocalDataDescriptions() posts a task before
+  // invoking this, to ensure that the public call is always async.
+  void GetLocalDataDescriptionsImpl(
+      DataTypeSet types,
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
+          callback);
+
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
 

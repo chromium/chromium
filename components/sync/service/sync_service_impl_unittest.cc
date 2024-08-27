@@ -13,11 +13,13 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -62,7 +64,9 @@ using testing::IsEmpty;
 using testing::IsNull;
 using testing::Not;
 using testing::NotNull;
+using testing::Pair;
 using testing::Return;
+using testing::UnorderedElementsAre;
 
 namespace syncer {
 
@@ -2074,7 +2078,7 @@ TEST_F(SyncServiceImplTest, EarlyCallToGetTypesWithUnsyncedDataShouldNotCrash) {
 }
 
 TEST_F(SyncServiceImplTest,
-       ShouldOnlyForwardEnabledTypesToSyncClientUponGetLocalDataDescriptions) {
+       ShouldOnlyForwardEnabledTypesUponGetLocalDataDescriptions) {
   SignInWithoutSyncConsent();
 
   // Both DEVICE_INFO and AUTOFILL will be passed to GetLocalDataDescription(),
@@ -2084,7 +2088,8 @@ TEST_F(SyncServiceImplTest,
       std::make_unique<MockDataTypeLocalDataBatchUploader>();
   auto autofill_uploader =
       std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription);
+  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription)
+      .WillOnce(base::test::RunOnceCallback<0>(syncer::LocalDataDescription()));
   EXPECT_CALL(*autofill_uploader, GetLocalDataDescription).Times(0);
 
   std::vector<FakeControllerInitParams> params;
@@ -2098,12 +2103,14 @@ TEST_F(SyncServiceImplTest,
   ASSERT_EQ(service()->GetActiveDataTypes(),
             DataTypeSet({NIGORI, DEVICE_INFO}));
 
+  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
   service()->GetLocalDataDescriptions({DEVICE_INFO, AUTOFILL},
-                                      base::DoNothing());
+                                      descriptions.GetCallback());
+  EXPECT_TRUE(descriptions.Wait());
 }
 
 TEST_F(SyncServiceImplTest,
-       ShouldNotForwardTypesWithErrorToSyncClientUponGetLocalDataDescriptions) {
+       ShouldNotForwardTypesWithErrorUponGetLocalDataDescriptions) {
   SignInWithoutSyncConsent();
 
   // Both DEVICE_INFO and AUTOFILL_WALLET_DATA will be passed to
@@ -2112,7 +2119,8 @@ TEST_F(SyncServiceImplTest,
   auto device_info_uploader =
       std::make_unique<MockDataTypeLocalDataBatchUploader>();
   auto wallet_uploader = std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription);
+  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription)
+      .WillOnce(base::test::RunOnceCallback<0>(syncer::LocalDataDescription()));
   EXPECT_CALL(*wallet_uploader, GetLocalDataDescription).Times(0);
 
   std::vector<FakeControllerInitParams> params;
@@ -2127,12 +2135,14 @@ TEST_F(SyncServiceImplTest,
   service()->ReportDataTypeErrorForTest(AUTOFILL_WALLET_DATA);
   ASSERT_FALSE(service()->GetActiveDataTypes().Has(AUTOFILL_WALLET_DATA));
 
+  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
   service()->GetLocalDataDescriptions({DEVICE_INFO, AUTOFILL_WALLET_DATA},
-                                      base::DoNothing());
+                                      descriptions.GetCallback());
+  EXPECT_TRUE(descriptions.Wait());
 }
 
 TEST_F(SyncServiceImplTest,
-       ShouldNotForwardToSyncClientUponGetLocalDataDescriptionsIfSyncDisabled) {
+       ShouldNotForwardUponGetLocalDataDescriptionsIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
 
@@ -2155,11 +2165,14 @@ TEST_F(SyncServiceImplTest,
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
 
-  service()->GetLocalDataDescriptions({DEVICE_INFO}, base::DoNothing());
+  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
+  service()->GetLocalDataDescriptions({DEVICE_INFO},
+                                      descriptions.GetCallback());
+  EXPECT_TRUE(descriptions.Wait());
 }
 
 TEST_F(SyncServiceImplTest,
-       ShouldReturnEmptyUponGetLocalDataDescriptionsForNotSignedInUsers) {
+       ShouldReturnEmptyUponGetLocalDataDescriptionsForSignedOutUsers) {
   // DEVICE_INFO will be passed to GetLocalDataDescription(), but the user is
   // signed out. So the uploader should not be queried.
   auto device_info_uploader =
@@ -2174,7 +2187,10 @@ TEST_F(SyncServiceImplTest,
 
   ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
 
-  service()->GetLocalDataDescriptions({DEVICE_INFO}, base::DoNothing());
+  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
+  service()->GetLocalDataDescriptions({DEVICE_INFO},
+                                      descriptions.GetCallback());
+  EXPECT_THAT(descriptions.Get(), IsEmpty());
 }
 
 TEST_F(SyncServiceImplTest,
@@ -2196,16 +2212,47 @@ TEST_F(SyncServiceImplTest,
 
   ASSERT_TRUE(service()->GetPreferredDataTypes().Has(DEVICE_INFO));
 
-  // Returns empty.
-  base::MockOnceCallback<void(std::map<DataType, LocalDataDescription>)>
-      callback;
-  EXPECT_CALL(callback, Run(IsEmpty()));
+  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
+  service()->GetLocalDataDescriptions({DEVICE_INFO},
+                                      descriptions.GetCallback());
 
-  service()->GetLocalDataDescriptions({DEVICE_INFO}, callback.Get());
+  EXPECT_THAT(descriptions.Get(), IsEmpty());
+}
+
+TEST_F(SyncServiceImplTest, ShouldJoinLocalDataDescriptionsForDifferentTypes) {
+  SignInWithoutSyncConsent();
+
+  auto device_info_uploader =
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  auto wallet_uploader = std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  syncer::LocalDataDescription device_info_description;
+  device_info_description.item_count = 42;
+  syncer::LocalDataDescription wallet_description;
+  wallet_description.item_count = 43;
+  EXPECT_CALL(*device_info_uploader, GetLocalDataDescription)
+      .WillOnce(base::test::RunOnceCallback<0>(device_info_description));
+  EXPECT_CALL(*wallet_uploader, GetLocalDataDescription)
+      .WillOnce(base::test::RunOnceCallback<0>(wallet_description));
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true,
+                      std::move(device_info_uploader));
+  params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true,
+                      std::move(wallet_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::map<DataType, LocalDataDescription>> descriptions;
+  service()->GetLocalDataDescriptions({DEVICE_INFO, AUTOFILL_WALLET_DATA},
+                                      descriptions.GetCallback());
+  EXPECT_THAT(
+      descriptions.Get(),
+      UnorderedElementsAre(Pair(DEVICE_INFO, device_info_description),
+                           Pair(AUTOFILL_WALLET_DATA, wallet_description)));
 }
 
 TEST_F(SyncServiceImplTest,
-       ShouldOnlyForwardEnabledTypesToSyncClientUponTriggerLocalDataMigration) {
+       ShouldOnlyForwardEnabledTypesUponTriggerLocalDataMigration) {
   SignInWithoutSyncConsent();
 
   // Both DEVICE_INFO and AUTOFILL will be passed to TriggerLocalDataMigration()
@@ -2234,9 +2281,8 @@ TEST_F(SyncServiceImplTest,
   service()->TriggerLocalDataMigration({DEVICE_INFO, AUTOFILL});
 }
 
-TEST_F(
-    SyncServiceImplTest,
-    ShouldNotForwardTypesWithErrorToSyncClientUponTriggerLocalDataMigration) {
+TEST_F(SyncServiceImplTest,
+       ShouldNotForwardTypesWithErrorUponTriggerLocalDataMigration) {
   SignInWithoutSyncConsent();
 
   // Both DEVICE_INFO and AUTOFILL_WALLET_DATA will be passed to
@@ -2263,9 +2309,8 @@ TEST_F(
   service()->TriggerLocalDataMigration({DEVICE_INFO, AUTOFILL_WALLET_DATA});
 }
 
-TEST_F(
-    SyncServiceImplTest,
-    ShouldNotForwardToSyncClientUponTriggerLocalDataMigrationIfSyncDisabled) {
+TEST_F(SyncServiceImplTest,
+       ShouldNotForwardUponTriggerLocalDataMigrationIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
 
