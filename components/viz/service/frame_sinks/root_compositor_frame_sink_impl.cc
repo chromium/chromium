@@ -653,6 +653,7 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
   // TODO(crbug.com/346732738): This is only correctly configured for Android
   // and ChromeOS. Support other platforms / configurations.
 
+  // Note that matcher order defines precedence.
   std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
   matchers.push_back(std::make_unique<InputBoostMatcher>());
 
@@ -663,6 +664,9 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(features::kSingleVideoFrameRateThrottling)) {
+    matchers.push_back(std::make_unique<OnlyVideoMatcher>());
+  }
   // Only desktop platforms get VideoConferenceMatcher.
   matchers.push_back(std::make_unique<VideoConferenceMatcher>());
 #endif
