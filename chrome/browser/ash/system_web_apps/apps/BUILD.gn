@@ -150,6 +150,7 @@ static_library("apps") {
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:channel_info",
     "//chrome/common:constants",
+    "//chromeos/ash/components/boca",
     "//chromeos/constants",
     "//chromeos/crosapi/cpp",
     "//chromeos/strings:strings_grit",

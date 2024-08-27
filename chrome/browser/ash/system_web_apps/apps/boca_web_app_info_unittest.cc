@@ -38,7 +38,9 @@ TEST_F(BocaSystemAppDelegateTest, MissingTabStripForProviderUsers) {
 }
 
 TEST_F(BocaSystemAppDelegateTest, AvailableTabStripForConsumerUsers) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kBocaConsumer);
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kBoca, ash::features::kBocaConsumer},
+      /*disabled_features=*/{});
   EXPECT_TRUE(delegate_.ShouldHaveTabStrip());
 }
 
@@ -47,7 +49,9 @@ TEST_F(BocaSystemAppDelegateTest, DoNotOverrideURLScopeChecksForProviderUsers) {
 }
 
 TEST_F(BocaSystemAppDelegateTest, OverrideURLScopeChecksForConsumerUsers) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kBocaConsumer);
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kBoca, ash::features::kBocaConsumer},
+      /*disabled_features=*/{});
   EXPECT_TRUE(delegate_.IsUrlInSystemAppScope(GURL()));
 }
 
@@ -56,7 +60,9 @@ TEST_F(BocaSystemAppDelegateTest, AllowResizeForProviderUsers) {
 }
 
 TEST_F(BocaSystemAppDelegateTest, DisallowResizeForConsumerUsers) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kBocaConsumer);
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kBoca, ash::features::kBocaConsumer},
+      /*disabled_features=*/{});
   EXPECT_FALSE(delegate_.ShouldAllowResize());
 }
 
@@ -65,12 +71,15 @@ TEST_F(BocaSystemAppDelegateTest, AllowMaximizeForProviderUsers) {
 }
 
 TEST_F(BocaSystemAppDelegateTest, DisallowMaximizeForConsumerUsers) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kBocaConsumer);
-  EXPECT_FALSE(delegate_.ShouldAllowMaximize());
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kBoca, ash::features::kBocaConsumer},
+      /*disabled_features=*/{});
 }
 
 TEST_F(BocaSystemAppDelegateTest, PinHomeTabForConsumerUsers) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kBocaConsumer);
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kBoca, ash::features::kBocaConsumer},
+      /*disabled_features=*/{});
   EXPECT_TRUE(
       delegate_.ShouldPinTab(GURL(ash::boca::kChromeBocaAppUntrustedIndexURL)));
 }

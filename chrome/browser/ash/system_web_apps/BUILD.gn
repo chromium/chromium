@@ -57,6 +57,7 @@ static_library("system_web_apps") {
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:chrome_features",
+    "//chromeos/ash/components/boca",
     "//chromeos/components/kiosk",
     "//components/pref_registry",
     "//components/version_info",

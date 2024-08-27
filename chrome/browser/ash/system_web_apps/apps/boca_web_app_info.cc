@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "url/gurl.h"
 
@@ -40,7 +41,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
 // the delegate to tailor SWA UX.
 // TODO(b/352675698): Identify Boca consumer profile without feature flags.
 bool IsConsumerProfile(Profile* profile) {
-  return ash::features::IsBocaConsumerEnabled();
+  return ash::boca_util::IsConsumer();
 }
 
 BocaSystemAppDelegate::BocaSystemAppDelegate(Profile* profile)
@@ -82,5 +83,5 @@ bool BocaSystemAppDelegate::ShouldPinTab(GURL url) const {
 }
 
 bool BocaSystemAppDelegate::IsAppEnabled() const {
-  return ash::features::IsBocaEnabled();
+  return ash::boca_util::IsEnabled();
 }
