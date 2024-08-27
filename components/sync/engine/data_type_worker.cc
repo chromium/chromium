@@ -50,8 +50,6 @@ namespace syncer {
 
 namespace {
 
-const char kTimeUntilEncryptionKeyFoundHistogramName[] =
-    "Sync.DataTypeTimeUntilEncryptionKeyFound";
 const char kUndecryptablePendingUpdatesDroppedHistogramName[] =
     "Sync.DataTypeUndecryptablePendingUpdatesDropped";
 const char kBlockedByUndecryptableUpdateHistogramName[] =
@@ -1015,23 +1013,9 @@ void DataTypeWorker::DecryptStoredEntities() {
     }
   }
 
-  // Note this can perfectly contain keys that were encrypting corrupt updates
-  // (FAILED_TO_DECRYPT above); all that matters is the key was found.
-  const std::vector<UnknownEncryptionKeyInfo> newly_found_keys =
-      RemoveKeysNoLongerUnknown();
-  for (const UnknownEncryptionKeyInfo& newly_found_key : newly_found_keys) {
-    // Don't record UMA for the dominant case where the key was only unknown
-    // while the cryptographer was pending external interaction.
-    if (newly_found_key.get_updates_while_should_have_been_known > 0) {
-      base::UmaHistogramCounts1000(
-          kTimeUntilEncryptionKeyFoundHistogramName,
-          newly_found_key.get_updates_while_should_have_been_known);
-      base::UmaHistogramCounts1000(
-          base::StrCat({kTimeUntilEncryptionKeyFoundHistogramName, ".",
-                        DataTypeToHistogramSuffix(type_)}),
-          newly_found_key.get_updates_while_should_have_been_known);
-    }
-  }
+  // Note this can perfectly remove keys that were encrypting corrupt updates
+  // (FAILED_TO_DECRYPT above).
+  RemoveKeysNoLongerUnknown();
 }
 
 void DataTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
@@ -1169,8 +1153,7 @@ void DataTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
   }
 }
 
-std::vector<DataTypeWorker::UnknownEncryptionKeyInfo>
-DataTypeWorker::RemoveKeysNoLongerUnknown() {
+void DataTypeWorker::RemoveKeysNoLongerUnknown() {
   std::set<std::string> keys_blocking_updates;
   for (const auto& [id, update] : entries_pending_decryption_) {
     const std::string key_name = GetEncryptionKeyName(update);
@@ -1178,17 +1161,10 @@ DataTypeWorker::RemoveKeysNoLongerUnknown() {
     keys_blocking_updates.insert(key_name);
   }
 
-  std::vector<DataTypeWorker::UnknownEncryptionKeyInfo> removed_keys;
-  for (const auto& [key_name, info] : unknown_encryption_keys_by_name_) {
-    if (!keys_blocking_updates.contains(key_name)) {
-      removed_keys.push_back(info);
-    }
-  }
   std::erase_if(unknown_encryption_keys_by_name_,
                 [&](const auto& key_and_info) {
                   return !keys_blocking_updates.contains(key_and_info.first);
                 });
-  return removed_keys;
 }
 
 bool DataTypeWorker::HasNonDeletionUpdates() const {

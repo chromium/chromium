@@ -840,25 +840,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.DataTypeTimeUntilEncryptionKeyFound{SyncDataType}"
-    units="GetUpdates" expires_after="2024-10-10">
-  <owner>victorvianna@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records how long it took from the moment the first update encrypted with
-    this key was received by DataTypeWorker, to the moment where the key was
-    available to the Cryptographer. The time is measured by the number of
-    GetUpdates cycles performed by the worker *while* the Cryptographer didn't
-    have pending keys (and thus the key should have been known in theory).
-
-    This replaced Sync.DataTypeTimeUntilEncryptionKeyFound which used to measure
-    the same time in GetUpdatesResponse-s.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Sync.DataTypeUndecryptablePendingUpdatesDropped{SyncDataType}"
     units="SyncEntity" expires_after="2024-12-15">
   <owner>victorvianna@google.com</owner>

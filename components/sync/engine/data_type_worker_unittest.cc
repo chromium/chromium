@@ -1492,63 +1492,6 @@ TEST_F(DataTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
   EXPECT_EQ(1u, processor()->GetNthUpdateResponse(0).size());
 }
 
-TEST_F(DataTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
-  base::HistogramTester histogram_tester;
-  NormalInitialize();
-  int get_updates_while_should_have_been_known = 0;
-
-  // Send a GetUpdatesResponse containing data encrypted with an unknown key.
-  // The cryptographer doesn't have pending keys, so in theory this key should
-  // have been known by now. This will cause
-  // |get_updates_while_should_have_been_known| to be incremented by the end
-  // of this GetUpdates cycle.
-  SetUpdateEncryptionFilter(1);
-  TriggerPartialUpdateFromServer(10, kTag1, kValue1);
-
-  // The fact that the data type is now blocked should have been recorded.
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeBlockedDueToUndecryptableUpdate",
-      DataTypeForHistograms::kPreferences, 1);
-
-  // Send empty GetUpdatesResponse. The counter shouldn't change.
-  TriggerEmptyUpdateFromServer();
-
-  // Finish the GetUpdates cycle. The counter should be set to 1.
-  get_updates_while_should_have_been_known++;
-
-  // An empty GetUpdates cycle. The counter should be set to 2.
-  TriggerEmptyUpdateFromServer();
-  get_updates_while_should_have_been_known++;
-
-  // Send the Nigori containing the missing key. The key isn't available yet
-  // though.
-  AddPendingKey();
-
-  // Another empty GetUpdates cycle. This one shouldn't be counted, since the
-  // cryptographer now knows it's lacking some keys.
-  TriggerEmptyUpdateFromServer();
-
-  // Double check the histogram hasn't been recorded so far.
-  EXPECT_TRUE(
-      histogram_tester.GetAllSamples("Sync.DataTypeTimeUntilEncryptionKeyFound")
-          .empty());
-  EXPECT_TRUE(
-      histogram_tester
-          .GetAllSamples("Sync.DataTypeTimeUntilEncryptionKeyFound.PREFERENCE")
-          .empty());
-
-  // Make the key available. The correct number of GetUpdates cycles should
-  // have been recorded.
-  DecryptPendingKey();
-  ASSERT_EQ(2, get_updates_while_should_have_been_known);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeTimeUntilEncryptionKeyFound",
-      get_updates_while_should_have_been_known, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeTimeUntilEncryptionKeyFound.PREFERENCE",
-      get_updates_while_should_have_been_known, 1);
-}
-
 TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   base::HistogramTester histogram_tester;
 
