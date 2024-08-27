@@ -1,0 +1,53 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/ash/shelf/app_service",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/app/vector_icons",
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/apps/platform_apps",
+  "+chrome/browser/ash/app_list/arc",
+  "+chrome/browser/ash/app_list/extension_app_utils.h",
+  "+chrome/browser/ash/app_restore",
+  "+chrome/browser/ash/arc/arc_optin_uma.h",
+  "+chrome/browser/ash/arc/arc_util.h",
+  "+chrome/browser/ash/arc/pip",
+  "+chrome/browser/ash/arc/session",
+  "+chrome/browser/ash/borealis",
+  "+chrome/browser/ash/bruschetta",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/crostini",
+  "+chrome/browser/ash/guest_os",
+  "+chrome/browser/ash/plugin_vm",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/system_web_apps",
+  "+chrome/browser/extensions/context_menu_matcher.h",
+  "+chrome/browser/extensions/launch_util.h",
+  "+chrome/browser/extensions/menu_manager.h",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/multi_user",
+  "+chrome/browser/ui/ash/shelf",
+  "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/chrome_pages.h",
+  "+chrome/browser/ui/tabs",
+  "+chrome/browser/ui/views/crostini",
+  "+chrome/browser/ui/web_applications",
+  "+chrome/browser/ui/webui/ash/settings/app_management",
+  "+chrome/browser/web_applications",
+  "+chrome/common",
+  "+chrome/grit",
+  "+chrome/test",
+]
