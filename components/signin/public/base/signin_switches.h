@@ -111,6 +111,13 @@ extern const base::FeatureParam<bool>
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsExplicitBrowserSigninUIOnDesktopEnabled();
 
+// Requires `kExplicitBrowserSigninUIOnDesktop`.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kImprovedSigninUIOnDesktop);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsImprovedSigninUIOnDesktopEnabled();
+
 // Controls the view mode for (history) sync screen.
 #if BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

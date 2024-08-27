@@ -1080,6 +1080,11 @@ const char kImageDescriptionsAlternateRoutingDescription[] =
     "When adding automatic captions to images, use a different route to aquire "
     "descriptions.";
 
+const char kImprovedSigninUIOnDesktopName[] = "Improved signin UI";
+const char kImprovedSigninUIOnDesktopDescription[] =
+    "Enables redesign of profile menu and signin settings ; new signin promos "
+    "and better signin errors.";
+
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =
@@ -2023,6 +2028,10 @@ const char kObservableAPIName[] = "Observable API";
 const char kObservableAPIDescription[] =
     "A reactive programming primitive for ergonomically handling streams of "
     "async data. See https://github.com/WICG/observable.";
+
+const char kOutlineSilhouetteIconName[] = "Outline Silhouette Icon";
+const char kOutlineSilhouetteIconDescription[] =
+    "Enables the improved silhouette icon for signed out profiles";
 
 const char kAtomicMoveAPIName[] = "Atomic DOM move (Node.moveBefore)";
 const char kAtomicMoveAPIDescription[] =

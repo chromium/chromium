@@ -16769,6 +16769,7 @@ from previous Chrome versions.
   <int value="-1585733447" label="ContextualSearchUnityIntegration:disabled"/>
   <int value="-1585618394" label="FeedBoCSigninInterstitial:disabled"/>
   <int value="-1584944853" label="TrilinearFiltering:enabled"/>
+  <int value="-1584851742" label="ImprovedSigninUIOnDesktop:enabled"/>
   <int value="-1584795743" label="AccessibilityOSSettingsVisibility:enabled"/>
   <int value="-1584499823" label="EnableZeroStateSuggestions:enabled"/>
   <int value="-1583728573" label="AutofillCreditCardSigninPromo:disabled"/>
@@ -19664,6 +19665,7 @@ from previous Chrome versions.
   <int value="-371103035" label="OmniboxTouchDownTriggerForPrefetch:enabled"/>
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
   <int value="-370229772" label="RefreshFeedOnRestart:enabled"/>
+  <int value="-369891035" label="OutlineSilhouetteIcon:disabled"/>
   <int value="-369565225" label="SkipServiceWorkerCheckInstallOnly:disabled"/>
   <int value="-369150124" label="SendTabToSelfV2:enabled"/>
   <int value="-368811558" label="DynamicTopChrome:enabled"/>
@@ -20028,6 +20030,7 @@ from previous Chrome versions.
   <int value="-225552103" label="SearchInCCT:enabled"/>
   <int value="-225505731" label="CCTModule:enabled"/>
   <int value="-225228149" label="ContentSettingsRedesign:enabled"/>
+  <int value="-224262386" label="OutlineSilhouetteIcon:enabled"/>
   <int value="-223595595" label="OSKResizesVisualViewportByDefault:enabled"/>
   <int value="-223197964" label="MediaSessionEnterPictureInPicture:enabled"/>
   <int value="-222282965"
@@ -23577,6 +23580,7 @@ from previous Chrome versions.
   <int value="1266156008" label="IdentityDisc:disabled"/>
   <int value="1266525177"
       label="AutofillUpstreamUseGooglePayOnAndroidBranding:disabled"/>
+  <int value="1266619643" label="ImprovedSigninUIOnDesktop:disabled"/>
   <int value="1266886673" label="delay-reload-stop-button-change"/>
   <int value="1267279578" label="NtpDriveModuleShowSixFiles:disabled"/>
   <int value="1267585140" label="ShareSheetMigrationAndroid:enabled"/>

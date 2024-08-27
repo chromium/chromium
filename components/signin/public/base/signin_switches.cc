@@ -132,6 +132,15 @@ bool IsExplicitBrowserSigninUIOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);
 }
 
+BASE_FEATURE(kImprovedSigninUIOnDesktop,
+             "ImprovedSigninUIOnDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsImprovedSigninUIOnDesktopEnabled() {
+  return IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+         base::FeatureList::IsEnabled(kImprovedSigninUIOnDesktop);
+}
+
 #if BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,

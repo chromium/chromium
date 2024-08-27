@@ -5214,6 +5214,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "improved-signin-ui-on-desktop",
+    "owners": [
+      "uno-desktop@google.com",
+      "//components/signin/OWNERS"
+    ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "in-product-help-demo-mode-choice",
     "owners": [ "dtrainor@chromium.org", "nyquist@chromium.org" ],
     // This flag is used by teams as they develop in-product help integrations,
@@ -6839,6 +6847,14 @@
     "name": "os-settings-revamp-wayfinding",
     "owners": [ "wesokuhara@google.com", "cros-settings@google.com" ],
     "expiry_milestone": 132
+  },
+  {
+    "name": "outline-silhouette-icon",
+    "owners": [
+      "uno-desktop@google.com",
+      "//components/signin/OWNERS"
+    ],
+    "expiry_milestone": 136
   },
   {
     "name": "overflow-menu-customization",

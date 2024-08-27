@@ -284,6 +284,9 @@ extern const char kEnableAutoDisableAccessibilityDescription[];
 extern const char kImageDescriptionsAlternateRoutingName[];
 extern const char kImageDescriptionsAlternateRoutingDescription[];
 
+extern const char kImprovedSigninUIOnDesktopName[];
+extern const char kImprovedSigninUIOnDesktopDescription[];
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 extern const char kAutofillEnableAmountExtractionDesktopName[];
@@ -1144,6 +1147,9 @@ extern const char kGoogleOneOfferFilesBannerDescription[];
 
 extern const char kObservableAPIName[];
 extern const char kObservableAPIDescription[];
+
+extern const char kOutlineSilhouetteIconName[];
+extern const char kOutlineSilhouetteIconDescription[];
 
 extern const char kAtomicMoveAPIName[];
 extern const char kAtomicMoveAPIDescription[];

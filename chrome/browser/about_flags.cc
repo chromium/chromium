@@ -11930,6 +11930,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableCvcStorageAndFillingEnhancement)},
 
+    {"improved-signin-ui-on-desktop",
+     flag_descriptions::kImprovedSigninUIOnDesktopName,
+     flag_descriptions::kImprovedSigninUIOnDesktopDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kImprovedSigninUIOnDesktop)},
+
+    {"outline-silhouette-icon", flag_descriptions::kOutlineSilhouetteIconName,
+     flag_descriptions::kOutlineSilhouetteIconDescription,
+     kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(kOutlineSilhouetteIcon)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
