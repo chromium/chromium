@@ -324,8 +324,7 @@ bool IsSynthesizedType(FieldType field_type, AddressCountryCode country_code) {
 
 std::u16string GetFormattingExpression(FieldType field_type,
                                        AddressCountryCode country_code) {
-  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
-      GroupTypeOfFieldType(field_type) == FieldTypeGroup::kAddress) {
+  if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kAddress) {
     // If `country_code` is specified, return the corresponding formatting
     // expression if they exist. Note that it should not fallback to a legacy
     // expression, as these ones refer to a different hierarchy.
@@ -404,8 +403,7 @@ bool IsTypeEnabledForCountry(FieldType field_type,
 }
 
 bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
-  if (country_code->empty() || country_code == kLegacyHierarchyCountryCode ||
-      !base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+  if (country_code->empty() || country_code == kLegacyHierarchyCountryCode) {
     return false;
   }
 

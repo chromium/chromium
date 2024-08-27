@@ -322,8 +322,7 @@ TEST_F(ManualTestingImportTest,
 class ManualTestingImportTesti18n : public ManualTestingImportTest {
  public:
   ManualTestingImportTesti18n() {
-    features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                features::kAutofillUseAUAddressModel,
+    features_.InitWithFeatures({features::kAutofillUseAUAddressModel,
                                 features::kAutofillUseCAAddressModel,
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseFRAddressModel,

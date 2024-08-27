@@ -381,15 +381,6 @@ BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
              "AutofillReplaceCachedWebElementsByRendererIds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using the newer i18n address model, overriding the legacy one.
-// This includes:
-// - Using newer i18n address hierarchies.
-// - Using newer i18n address format strings.
-// - Using newer i18n address parsing rules.
-BASE_FEATURE(kAutofillUseI18nAddressModel,
-             "AutofillUseI18nAddressModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using the a custom address model for Australia, overriding the legacy
 // one.
 BASE_FEATURE(kAutofillUseAUAddressModel,

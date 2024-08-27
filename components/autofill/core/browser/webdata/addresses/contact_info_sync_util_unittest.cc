@@ -679,16 +679,14 @@ class ContactInfoSyncUtilTest
       public testing::WithParamInterface<I18nCountryModel> {
  public:
   ContactInfoSyncUtilTest() {
-    features_.InitWithFeatures(
-        {features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseAUAddressModel,
-         features::kAutofillUseCAAddressModel,
-         features::kAutofillUseDEAddressModel,
-         features::kAutofillUseFRAddressModel,
-         features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillTrackMultipleUseDates},
-        {});
+    features_.InitWithFeatures({features::kAutofillUseAUAddressModel,
+                                features::kAutofillUseCAAddressModel,
+                                features::kAutofillUseDEAddressModel,
+                                features::kAutofillUseFRAddressModel,
+                                features::kAutofillUseINAddressModel,
+                                features::kAutofillUseITAddressModel,
+                                features::kAutofillTrackMultipleUseDates},
+                               {});
   }
 
   AutofillProfile GetAutofillProfileForCountry(I18nCountryModel country_model) {

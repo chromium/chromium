@@ -50,7 +50,6 @@ class AutofillI18nApiTest : public testing::Test {
   AutofillI18nApiTest() {
     feature_list_.InitWithFeatures(
         {
-            features::kAutofillUseI18nAddressModel,
             features::kAutofillUseAUAddressModel,
             features::kAutofillUseCAAddressModel,
             features::kAutofillUseDEAddressModel,

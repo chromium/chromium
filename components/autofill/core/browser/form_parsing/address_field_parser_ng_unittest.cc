@@ -38,9 +38,6 @@ class AddressFieldParserTestNG
                                          AutofillScanner* scanner) override {
     return AddressFieldParserNG::Parse(context, scanner);
   }
-
-  base::test::ScopedFeatureList default_features{
-      features::kAutofillUseI18nAddressModel};
 };
 
 INSTANTIATE_TEST_SUITE_P(

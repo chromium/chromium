@@ -21,8 +21,7 @@ class AddressFieldParserTest
       public ::testing::TestWithParam<PatternProviderFeatureState> {
  public:
   AddressFieldParserTest() : FormFieldParserTestBase(GetParam()) {
-    default_features.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                       features::kAutofillUseAUAddressModel,
+    default_features.InitWithFeatures({features::kAutofillUseAUAddressModel,
                                        features::kAutofillUseCAAddressModel,
                                        features::kAutofillUseDEAddressModel,
                                        features::kAutofillUseFRAddressModel,

@@ -143,8 +143,6 @@ bool AddressComponent::SameAs(const AddressComponent& other) const {
   }
 
   if (subcomponents_.size() != other.subcomponents_.size()) {
-    CHECK(base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel))
-        << GetStorageTypeName();
     return false;
   }
   for (size_t i = 0; i < other.subcomponents_.size(); i++) {
@@ -488,8 +486,7 @@ void AddressComponent::ParseValueAndAssignSubcomponents() {
   }
 
   bool parsing_successful =
-      base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
-              GroupTypeOfFieldType(GetStorageType()) == FieldTypeGroup::kAddress
+      GroupTypeOfFieldType(GetStorageType()) == FieldTypeGroup::kAddress
           ? ParseValueAndAssignSubcomponentsByI18nParsingRules()
           : ParseValueAndAssignSubcomponentsByRegularExpressions();
 
@@ -526,8 +523,7 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpressions() {
 
 void AddressComponent::
     TryParseValueAndAssignSubcomponentsRespectingSetValues() {
-  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
-      GroupTypeOfFieldType(GetStorageType()) == FieldTypeGroup::kAddress) {
+  if (GroupTypeOfFieldType(GetStorageType()) == FieldTypeGroup::kAddress) {
     i18n_model_definition::ValueParsingResults results =
         i18n_model_definition::ParseValueByI18nRegularExpression(
             base::UTF16ToUTF8(GetValue()), GetStorageType(), GetCountryCode());
@@ -1058,9 +1054,6 @@ bool AddressComponent::IsMergeableWithComponent(
     bool is_mergeable = true;
 
     if (subcomponents_.size() != newer_component.subcomponents_.size()) {
-      CHECK(
-          base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel))
-          << GetStorageTypeName();
       return false;
     }
     for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {

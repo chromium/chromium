@@ -917,8 +917,7 @@ class AutofillProfileSyncUtilTest
   AutofillProfileSyncUtilTest() {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
-    features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                features::kAutofillUseAUAddressModel,
+    features_.InitWithFeatures({features::kAutofillUseAUAddressModel,
                                 features::kAutofillUseCAAddressModel,
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseFRAddressModel,

@@ -225,14 +225,10 @@ void TestCompoundNameMerging(AddressComponentTestValues older_values,
 
 class AutofillStructuredAddressAddressComponent : public testing::Test {
  public:
-  AutofillStructuredAddressAddressComponent() {
-    features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                features::kAutofillUseINAddressModel},
-                               {});
-  }
+  AutofillStructuredAddressAddressComponent() = default;
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{features::kAutofillUseINAddressModel};
 };
 
 // Tests that the destructor does not crash

@@ -1361,8 +1361,7 @@ TEST_F(AutofillProfileTest, Compare) {
 // TODO(crbug.com/40275657): Extend this test to cover i18n profiles.
 TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                 features::kAutofillUseAUAddressModel,
+  feature_list.InitWithFeatures({features::kAutofillUseAUAddressModel,
                                  features::kAutofillUseCAAddressModel,
                                  features::kAutofillUseDEAddressModel,
                                  features::kAutofillUseFRAddressModel,
@@ -1522,8 +1521,6 @@ TEST_F(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
 }
 
 TEST_F(AutofillProfileTest, SetRawInfoWorksForLandmark) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillUseI18nAddressModel};
   AutofillProfile profile(AddressCountryCode("MX"));
 
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
@@ -1531,8 +1528,6 @@ TEST_F(AutofillProfileTest, SetRawInfoWorksForLandmark) {
 }
 
 TEST_F(AutofillProfileTest, SetRawInfoWorksForBetweenStreets) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillUseI18nAddressModel};
   AutofillProfile profile(AddressCountryCode("MX"));
 
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");
@@ -1622,8 +1617,7 @@ TEST_F(AutofillProfileTest, ConvertToAccountProfile) {
 
 TEST_F(AutofillProfileTest, RemoveInaccessibleProfileValues) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                 features::kAutofillUseDEAddressModel,
+  feature_list.InitWithFeatures({features::kAutofillUseDEAddressModel,
                                  features::kAutofillUseINAddressModel},
                                 {});
   // Returns true if at least one field was removed.

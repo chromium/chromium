@@ -78,8 +78,7 @@ std::ostream& operator<<(std::ostream& out,
 class AutofillStructuredAddress : public testing::Test {
  public:
   AutofillStructuredAddress() {
-    features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                features::kAutofillUseAUAddressModel,
+    features_.InitWithFeatures({features::kAutofillUseAUAddressModel,
                                 features::kAutofillUseCAAddressModel,
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseINAddressModel,
