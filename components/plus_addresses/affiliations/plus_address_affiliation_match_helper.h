@@ -64,10 +64,12 @@ class PlusAddressAffiliationMatchHelper {
   // facet, even when no entries were found on the local cache.
   void RequestGroupInfo(AffiliatedPlusProfilesCallback result_callback,
                         const affiliations::FacetURI& facet,
+                        base::TimeTicks start_time,
                         const base::flat_set<std::string>& psl_extensions);
 
   void OnGroupingInfoReceived(
       AffiliatedPlusProfilesCallback result_callback,
+      base::TimeTicks start_time,
       const base::flat_set<std::string>& psl_extensions,
       const std::vector<affiliations::GroupedFacets>& results);
 

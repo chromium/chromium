@@ -6,6 +6,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -37,7 +38,8 @@ constexpr const char kAffiliatedAndroidApp[] =
     "android://"
     "5Z0D_o6B8BqileZyWhXmqO_wkO8uO0etCEXvMn5tUzEqkWUgfTSjMcTM7eMMTY_"
     "FGJC9RlpRNt_8Qp5tgDocXw==@com.bambuna.podcastaddict/";
-
+constexpr char kUmaKeyResponseTime[] =
+    "PlusAddresses.AffiliationRequest.ResponseTime";
 }  // namespace
 
 class PlusAddressAffiliationMatchHelperTest : public testing::Test {
@@ -92,10 +94,13 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
     return match_helper_.get();
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList features_{features::kPlusAddressAffiliations};
   base::test::TaskEnvironment task_environment_;
   test::PlusAddressTestEnvironment plus_environment_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<PlusAddressService> plus_address_service_;
   std::unique_ptr<PlusAddressAffiliationMatchHelper> match_helper_;
 };
@@ -162,6 +167,7 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, EmptyResult) {
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(facet, {}));
+  histogram_tester().ExpectTotalCount(kUmaKeyResponseTime, 1u);
 }
 
 // Verifies that exact and PSL matches (respecting the PSL extensions list) are
@@ -194,6 +200,7 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, ExactAndPslMatchesTest) {
   // `profile4` is not a match due to the PSL extension list exception.
   EXPECT_TRUE(
       ExpectMatchHelperToReturnProfiles(profile1.facet, {profile1, profile2}));
+  histogram_tester().ExpectTotalCount(kUmaKeyResponseTime, 1u);
 }
 
 // Verifies that group affiliation matches are returned.
@@ -344,6 +351,7 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, SupportGroupHttpDomainMatches) {
 
   EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(requested_facet,
                                                 {stored_https_profile}));
+  histogram_tester().ExpectTotalCount(kUmaKeyResponseTime, 1u);
 }
 
 }  // namespace plus_addresses

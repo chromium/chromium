@@ -44,6 +44,18 @@ chromium-metrics-reviews@google.com.
   <variant name="Reserve" summary="Reserve a Plus Address"/>
 </variants>
 
+<histogram name="PlusAddresses.AffiliationRequest.ResponseTime" units="ms"
+    expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Measures the latency of plus address affiliation requests. Latency is
+    measured as the difference between when affiliated plus profiles are
+    requested on PlusAddressAffiliationMatchHelper and when it retrieves a
+    response. The metric is emmited right before the final response is returned.
+  </summary>
+</histogram>
+
 <histogram name="PlusAddresses.Blocklist.ParsingResult"
     enum="PlusAddressBlocklistDataParsingResult" expires_after="2025-01-26">
   <owner>jkeitel@google.com</owner>

@@ -9,6 +9,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/features.h"
@@ -18,6 +19,8 @@
 namespace plus_addresses {
 namespace {
 using affiliations::FacetURI;
+constexpr char kUmaKeyResponseTime[] =
+    "PlusAddresses.AffiliationRequest.ResponseTime";
 }  // namespace
 
 PlusAddressAffiliationMatchHelper::PlusAddressAffiliationMatchHelper(
@@ -43,9 +46,10 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
     return;
   }
 
-  GetPSLExtensions(base::BindOnce(
-      &PlusAddressAffiliationMatchHelper::RequestGroupInfo,
-      weak_factory_.GetWeakPtr(), std::move(result_callback), facet));
+  GetPSLExtensions(
+      base::BindOnce(&PlusAddressAffiliationMatchHelper::RequestGroupInfo,
+                     weak_factory_.GetWeakPtr(), std::move(result_callback),
+                     facet, base::TimeTicks::Now()));
 }
 
 void PlusAddressAffiliationMatchHelper::GetPSLExtensions(
@@ -81,16 +85,18 @@ void PlusAddressAffiliationMatchHelper::OnPSLExtensionsReceived(
 void PlusAddressAffiliationMatchHelper::RequestGroupInfo(
     AffiliatedPlusProfilesCallback result_callback,
     const FacetURI& facet,
+    base::TimeTicks start_time,
     const base::flat_set<std::string>& psl_extensions) {
   affiliation_service_->GetGroupingInfo(
       {facet},
       base::BindOnce(&PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived,
                      weak_factory_.GetWeakPtr(), std::move(result_callback),
-                     psl_extensions));
+                     start_time, psl_extensions));
 }
 
 void PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived(
     AffiliatedPlusProfilesCallback result_callback,
+    base::TimeTicks start_time,
     const base::flat_set<std::string>& psl_extensions,
     const std::vector<affiliations::GroupedFacets>& results) {
   // GetGroupingInfo() returns an affiliation group for each facet. Asking for
@@ -124,6 +130,9 @@ void PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived(
   // Remove duplicates.
   std::sort(matches.begin(), matches.end(), PlusProfileFacetComparator());
   matches.erase(std::unique(matches.begin(), matches.end()), matches.end());
+
+  base::UmaHistogramTimes(kUmaKeyResponseTime,
+                          base::TimeTicks::Now() - start_time);
 
   std::move(result_callback).Run(std::move(matches));
 }
