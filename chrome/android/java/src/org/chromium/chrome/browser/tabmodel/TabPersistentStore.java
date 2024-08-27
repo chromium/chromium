@@ -103,6 +103,8 @@ public class TabPersistentStore {
     private TabModelObserver mTabModelObserver;
     private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
 
+    private int mDuplicateTabIdsSeen;
+
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActiveTabState {
@@ -293,6 +295,7 @@ public class TabPersistentStore {
         }
     }
 
+    private final Set<Integer> mSeenTabIds = new HashSet<>();
     private final String mClientTag;
     private final TabPersistencePolicy mPersistencePolicy;
     private final TabModelSelector mTabModelSelector;
@@ -812,8 +815,13 @@ public class TabPersistentStore {
                 }
             }
         }
-
         int tabId = tabToRestore.id;
+        if (ChromeFeatureList.sAndroidTabDeclutterDedupeTabIdsKillSwitch.isEnabled()
+                && mSeenTabIds.contains(tabId)) {
+            mDuplicateTabIdsSeen++;
+            return;
+        }
+
         if (tabState != null) {
             @TabRestoreMethod int tabRestoreMethod = TabRestoreMethod.TAB_STATE;
             RecordHistogram.recordEnumeratedHistogram(
@@ -830,6 +838,8 @@ public class TabPersistentStore {
                 RecordHistogram.recordBooleanHistogram(
                         "Tabs.TabRestoreUrlMatch", tabToRestore.url.equals(tab.getUrl().getSpec()));
             }
+
+            mSeenTabIds.add(tabId);
         } else {
             Log.w(TAG, "Failed to restore TabState; creating Tab with last known URL.");
             Tab fallbackTab =
@@ -1702,11 +1712,23 @@ public class TabPersistentStore {
                             + mTabModelSelector.getModel(false).getCount()
                             + ","
                             + mTabModelSelector.getModel(true).getCount());
+
+            // If there were any duplicate tab ids seen, then force a write to overwrite tab ids.
+            if (ChromeFeatureList.sAndroidTabDeclutterDedupeTabIdsKillSwitch.isEnabled()
+                    && mDuplicateTabIdsSeen > 0) {
+                recordDuplicateTabIdMetrics();
+                saveState();
+            }
         } else {
             TabRestoreDetails tabToRestore = mTabsToRestore.removeFirst();
             mTabLoader = new TabLoader(tabToRestore);
             mTabLoader.load();
         }
+    }
+
+    private void recordDuplicateTabIdMetrics() {
+        RecordHistogram.recordCount1000Histogram(
+                "Tabs.Startup.TabCount2." + mClientTag + ".DuplicateTabIds", mDuplicateTabIdsSeen);
     }
 
     protected void recordLegacyTabCountMetrics() {
