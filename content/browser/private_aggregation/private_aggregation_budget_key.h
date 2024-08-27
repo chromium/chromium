@@ -23,6 +23,7 @@ namespace content {
 // `PrivateAggregationBudgeter::kLargerScopeValues.budget_scope_duration`.
 class CONTENT_EXPORT PrivateAggregationBudgetKey {
  public:
+  // TODO(crbug.com/362431899): Lift `Api` out of `PrivateAggregationBudgetKey`.
   enum class Api { kProtectedAudience, kSharedStorage };
 
   static constexpr Api kAllApis[] = {Api::kProtectedAudience,

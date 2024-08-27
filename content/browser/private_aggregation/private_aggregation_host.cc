@@ -152,6 +152,7 @@ struct PrivateAggregationHost::ReceiverContext {
   std::optional<std::string> context_id;
   std::optional<url::Origin> aggregation_coordinator_origin;
   size_t filtering_id_max_bytes;
+  size_t max_num_contributions;
 
   // If contributions have been truncated, tracks this for triggering the right
   // histogram value.
@@ -227,7 +228,7 @@ PrivateAggregationHost::~PrivateAggregationHost() {
 bool PrivateAggregationHost::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
-    PrivateAggregationBudgetKey::Api api_for_budgeting,
+    PrivateAggregationBudgetKey::Api api,
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
@@ -266,15 +267,39 @@ bool PrivateAggregationHost::BindNewReceiver(
       filtering_id_max_bytes == kDefaultFilteringIdMaxBytes) {
     return false;
   }
-  mojo::ReceiverId id = receiver_set_.Add(
-      this, std::move(pending_receiver),
-      ReceiverContext{.worklet_origin = std::move(worklet_origin),
-                      .top_frame_origin = std::move(top_frame_origin),
-                      .api_for_budgeting = api_for_budgeting,
-                      .context_id = std::move(context_id),
-                      .aggregation_coordinator_origin =
-                          std::move(aggregation_coordinator_origin),
-                      .filtering_id_max_bytes = filtering_id_max_bytes});
+
+  // These constants define the maximum number of contributions that can go in
+  // an `AggregatableReport` after merging.
+  static constexpr size_t kMaxNumContributionsSharedStorage = 20;
+  static constexpr size_t kMaxNumContributionsProtectedAudience = 20;
+  static constexpr size_t kMaxNumContributionsProtectedAudienceIncreased = 100;
+
+  size_t max_num_contributions = 0;
+  switch (api) {
+    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+      max_num_contributions = kMaxNumContributionsSharedStorage;
+      break;
+    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+      max_num_contributions =
+          base::FeatureList::IsEnabled(
+              kPrivateAggregationApi100ContributionsForProtectedAudience)
+              ? kMaxNumContributionsProtectedAudienceIncreased
+              : kMaxNumContributionsProtectedAudience;
+      break;
+  }
+
+  mojo::ReceiverId id =
+      receiver_set_.Add(this, std::move(pending_receiver),
+                        ReceiverContext{
+                            .worklet_origin = std::move(worklet_origin),
+                            .top_frame_origin = std::move(top_frame_origin),
+                            .api_for_budgeting = api,
+                            .context_id = std::move(context_id),
+                            .aggregation_coordinator_origin =
+                                std::move(aggregation_coordinator_origin),
+                            .filtering_id_max_bytes = filtering_id_max_bytes,
+                            .max_num_contributions = max_num_contributions,
+                        });
 
   if (timeout) {
     CHECK(timeout->is_positive());
@@ -377,9 +402,12 @@ void PrivateAggregationHost::ContributeToHistogram(
         receiver_set_.current_context()
             .accepted_contributions_if_merging_disabled;
 
-    CHECK_LE(accepted_contributions.size(), kMaxNumberOfContributions);
+    const size_t max_num_contributions =
+        receiver_set_.current_context().max_num_contributions;
+
+    CHECK_LE(accepted_contributions.size(), max_num_contributions);
     const size_t num_remaining =
-        kMaxNumberOfContributions - accepted_contributions.size();
+        max_num_contributions - accepted_contributions.size();
 
     if (incoming_ptrs.size() > num_remaining) {
       receiver_set_.current_context().did_truncate_contributions = true;
@@ -406,13 +434,13 @@ void PrivateAggregationHost::ContributeToHistogram(
     ContributionMergeKey merge_key(contribution);
 
     CHECK_LE(accepted_contributions.size(),
-             PrivateAggregationHost::kMaxNumberOfContributions);
+             receiver_set_.current_context().max_num_contributions);
 
     auto accepted_contributions_it = accepted_contributions.find(merge_key);
 
     if (accepted_contributions_it == accepted_contributions.end()) {
       if (accepted_contributions.size() ==
-          PrivateAggregationHost::kMaxNumberOfContributions) {
+          receiver_set_.current_context().max_num_contributions) {
         receiver_set_.current_context().did_truncate_contributions = true;
 
         // Bound worst-case memory usage
@@ -445,6 +473,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
     std::optional<std::string> context_id,
     std::optional<url::Origin> aggregation_coordinator_origin,
     size_t specified_filtering_id_max_bytes,
+    size_t max_num_contributions,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions) {
   CHECK(context_id.has_value() || !contributions.empty());
@@ -482,7 +511,8 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
       std::move(contributions),
       // TODO(alexmt): Consider allowing this to be set.
       blink::mojom::AggregationServiceMode::kDefault,
-      std::move(aggregation_coordinator_origin), kMaxNumberOfContributions,
+      std::move(aggregation_coordinator_origin),
+      /*max_contributions_allowed=*/max_num_contributions,
       applied_filtering_id_max_bytes);
 
   AggregatableReportSharedInfo shared_info(
@@ -706,7 +736,8 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
       reporting_origin, receiver_context.api_for_budgeting,
       std::move(receiver_context.context_id),
       std::move(receiver_context.aggregation_coordinator_origin),
-      receiver_context.filtering_id_max_bytes);
+      receiver_context.filtering_id_max_bytes,
+      receiver_context.max_num_contributions);
 
   RecordPipeResultHistogram(
       receiver_context.did_truncate_contributions

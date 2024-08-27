@@ -87,11 +87,6 @@ class CONTENT_EXPORT PrivateAggregationHost
   static constexpr char kApiReportVersionWithoutFilteringId[] = "0.1";
   static constexpr char kApiReportVersionWithFilteringId[] = "1.0";
 
-  // The maximum number of contributions that can go in an `AggregatableReport`,
-  // after merging. Aligns with
-  // `attribution_reporting::kMaxAggregationKeysPerSource`.
-  static constexpr size_t kMaxNumberOfContributions = 20;
-
   static constexpr size_t kDefaultFilteringIdMaxBytes = 1;
 
   // The maximum allowed context_id string length.
@@ -135,7 +130,7 @@ class CONTENT_EXPORT PrivateAggregationHost
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      PrivateAggregationBudgetKey::Api api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
@@ -170,6 +165,7 @@ class CONTENT_EXPORT PrivateAggregationHost
       std::optional<std::string> context_id,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t specified_filtering_id_max_bytes,
+      size_t max_num_contributions,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions);
 

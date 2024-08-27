@@ -145,7 +145,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
             // TODO(alexmt): Generate golden reports for multiple coordinators.
             /*aggregation_coordinator_origin=*/std::nullopt,
             /*specified_filtering_id_max_bytes=*/filtering_id_max_bytes,
-            std::move(contributions));
+            /*max_num_contributions=*/20, std::move(contributions));
 
     base::RunLoop run_loop;
 
