@@ -13,6 +13,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -35,7 +36,7 @@ public class PasswordAccessLossExportDialogCoordinator {
         mFragment = new PasswordAccessLossExportDialogFragment();
         mMediator =
                 new PasswordAccessLossExportDialogMediator(
-                        activity, profile, dialogView, mFragment);
+                        activity, profile, dialogView, mFragment, new PasswordStoreBridge(profile));
         initialize(dialogView);
     }
 

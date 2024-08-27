@@ -13,7 +13,16 @@ import android.view.View;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge.PasswordStoreObserver;
+import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
+import org.chromium.chrome.browser.password_manager.R;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /**
  * The mediator for the password access loss warning export flow. It implements the {@link
@@ -22,22 +31,30 @@ import org.chromium.chrome.browser.profiles.Profile;
 class PasswordAccessLossExportDialogMediator
         implements ExportFlowInterface.Delegate,
                 PasswordAccessLossExportDialogFragment.Delegate,
-                PasswordListObserver {
+                PasswordListObserver,
+                PasswordStoreObserver {
+    /** The delay after which the progress bar will be displayed. */
+    private static final int PROGRESS_BAR_DELAY_MS = 500;
+
     private final FragmentActivity mActivity;
     private final Profile mProfile;
     private final View mDialogView;
     private final PasswordAccessLossExportDialogFragment mExportDialogFragment;
     private ExportFlow mExportFlow;
+    private PasswordStoreBridge mPasswordStoreBridge;
+    private DialogManager mProgressBarManager;
 
     public PasswordAccessLossExportDialogMediator(
             FragmentActivity activity,
             Profile profile,
             View dialogView,
-            PasswordAccessLossExportDialogFragment exportDialogFragment) {
+            PasswordAccessLossExportDialogFragment exportDialogFragment,
+            PasswordStoreBridge passwordStoreBridge) {
         mActivity = activity;
         mProfile = profile;
         mDialogView = dialogView;
         mExportDialogFragment = exportDialogFragment;
+        mPasswordStoreBridge = passwordStoreBridge;
     }
 
     public void handlePositiveButtonClicked() {
@@ -73,8 +90,7 @@ class PasswordAccessLossExportDialogMediator
 
     @Override
     public void onExportFlowSucceeded() {
-        // TODO(crbug.com/356850960): Remove passwords here.
-        destroy();
+        deletePasswords();
     }
 
     @Override
@@ -119,8 +135,61 @@ class PasswordAccessLossExportDialogMediator
         destroy();
     }
 
+    // Implementation of PasswordStoreObserver.
+    @Override
+    public void onSavedPasswordsChanged(int count) {
+        if (count == 0) {
+            onPasswordDeletionCompleted();
+        }
+    }
+
+    @Override
+    public void onEdit(PasswordStoreCredential credential) {
+        // Won't be used. It's overridden to implement {@link PasswordStoreObserver}.
+    }
+
+    private void deletePasswords() {
+        // This additional check protects from the case when migration succeeds while export flow
+        // was executing. In this case the `UseUpmLocalAndSeparateStoresState` preference would have
+        // been changed to `kOn`;
+        // TODO (crbug.com/354876446): Introduce passwords deleted metrics in a separate CL.
+        if (!shouldDeleteAllPAsswords()) {
+            destroy();
+            return;
+        }
+
+        mProgressBarManager = new DialogManager(null);
+        NonCancelableProgressBar progressBarDialogFragment =
+                new NonCancelableProgressBar(
+                        R.string.exported_passwords_deletion_in_progress_title);
+        mProgressBarManager.showWithDelay(
+                progressBarDialogFragment,
+                mActivity.getSupportFragmentManager(),
+                PROGRESS_BAR_DELAY_MS);
+        mPasswordStoreBridge.addObserver(this, true);
+        mPasswordStoreBridge.clearAllPasswordsFromProfileStore();
+    }
+
+    private boolean shouldDeleteAllPAsswords() {
+        PrefService prefService = UserPrefs.get(mProfile);
+        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
+                == PasswordAccessLossWarningType.NO_GMS_CORE) return true;
+        if (prefService.getInteger(Pref.PASSWORDS_USE_UPM_LOCAL_AND_SEPARATE_STORES)
+                == /* UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending */ 1) return true;
+        return false;
+    }
+
+    private void onPasswordDeletionCompleted() {
+        mProgressBarManager.hide(
+                () -> {
+                    destroy();
+                    mPasswordStoreBridge.removeObserver(this);
+                    mPasswordStoreBridge.destroy();
+                });
+    }
+
     private void destroy() {
-        if (mExportDialogFragment.getShowsDialog()) {
+        if (mExportDialogFragment.getDialog() != null) {
             mExportDialogFragment.dismiss();
         }
         mExportFlow = null;

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentActivity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -45,12 +47,21 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.FakePasswordManagerHandler;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.R;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,20 +74,28 @@ import java.io.OutputStream;
 public class PasswordAccessLossExportDialogTest {
     private static final Uri TEMP_EXPORT_FILE_URI = Uri.parse("tmp/fake/test/path/file.ext");
     private static final Uri SAVED_EXPORT_FILE_URI = Uri.parse("fake/test/path/file.ext");
+
+    @Rule public JniMocker mJniMocker = new JniMocker();
     private PasswordAccessLossExportDialogCoordinator mCoordinator;
     private PasswordAccessLossExportDialogMediator mMediator;
     private PasswordAccessLossExportDialogFragment mFragment;
     private FragmentActivity mActivity;
     @Mock private Profile mProfile;
+    @Mock private PrefService mPrefService;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private FileProviderUtil mFileProviderUtil;
     @Mock private InputStream mInputStream;
     @Mock private OutputStream mOutputStream;
+    @Mock private PasswordStoreBridge mPasswordStoreBridge;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     private FakePasswordManagerHandler mPasswordManagerHandler;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
         mActivity =
@@ -91,7 +110,7 @@ public class PasswordAccessLossExportDialogTest {
         mFragment = new PasswordAccessLossExportDialogFragment();
         mMediator =
                 new PasswordAccessLossExportDialogMediator(
-                        mActivity, mProfile, dialogView, mFragment);
+                        mActivity, mProfile, dialogView, mFragment, mPasswordStoreBridge);
         mCoordinator =
                 new PasswordAccessLossExportDialogCoordinator(
                         mActivity, mFragment, mMediator, dialogView);
@@ -103,6 +122,16 @@ public class PasswordAccessLossExportDialogTest {
         PasswordManagerHandlerProvider provider =
                 PasswordManagerHandlerProvider.getForProfile(mProfile);
         provider.setPasswordManagerHandlerForTest(mPasswordManagerHandler);
+    }
+
+    private void setUpPasswordStoreBridge() {
+        doAnswer(
+                        invocation -> {
+                            mMediator.onSavedPasswordsChanged(0);
+                            return null;
+                        })
+                .when(mPasswordStoreBridge)
+                .clearAllPasswordsFromProfileStore();
     }
 
     private void setUpReauthenticationManager() {
@@ -121,6 +150,11 @@ public class PasswordAccessLossExportDialogTest {
                 shadowOf(ContextUtils.getApplicationContext().getContentResolver());
         shadowContentResolver.registerInputStream(TEMP_EXPORT_FILE_URI, mInputStream);
         shadowContentResolver.registerOutputStream(SAVED_EXPORT_FILE_URI, mOutputStream);
+    }
+
+    private void setUpAccessLossWarningType(@PasswordAccessLossWarningType int type) {
+        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(any()))
+                .thenReturn(type);
     }
 
     @Test
@@ -151,8 +185,10 @@ public class PasswordAccessLossExportDialogTest {
     public void testPositiveButtonClick() throws IOException {
         mCoordinator.showExportDialog();
         setUpPasswordManagerHandler();
+        setUpPasswordStoreBridge();
         setUpReauthenticationManager();
         setUpContentResolver();
+        setUpAccessLossWarningType(PasswordAccessLossWarningType.NO_GMS_CORE);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         Dialog dialog = ShadowDialog.getLatestDialog();
@@ -192,6 +228,7 @@ public class PasswordAccessLossExportDialogTest {
         // Verify that writing to the exported file was called.
         verify(mInputStream, times(2)).read(any(byte[].class));
         verify(mOutputStream).write(any(byte[].class), anyInt(), anyInt());
+        verify(mPasswordStoreBridge).clearAllPasswordsFromProfileStore();
     }
 
     @Test
@@ -222,6 +259,29 @@ public class PasswordAccessLossExportDialogTest {
 
         // Dialog is expected to be dismissed now.
         assertFalse(dialog.isShowing());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
+    public void testPasswordsAreNotDeletedIfUseUpmLocalAndSeparateStoresIsOn() {
+        // This test checks the edge case, when the export dialog was displayed, but the migration
+        // succeeded in while it was showing.
+        setUpAccessLossWarningType(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getInteger(Pref.PASSWORDS_USE_UPM_LOCAL_AND_SEPARATE_STORES))
+                .thenReturn(/* UseUpmLocalAndSeparateStoresState::kOn */ 2);
+        // setUpPasswordStoreBridge();
+        // setUpSyncService();
+        // setUpUpm();
+        // Notification that the export flow succeeded should trigger passwords deletion.
+        mMediator.onExportFlowSucceeded();
+        Robolectric.flushForegroundThreadScheduler();
+
+        // Password deletion should not be triggered in this case (because it would remove passwords
+        // from GMS Core).
+        verify(mPasswordStoreBridge, times(0)).clearAllPasswordsFromProfileStore();
     }
 
     @Test
