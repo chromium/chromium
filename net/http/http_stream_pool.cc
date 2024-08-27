@@ -36,7 +36,7 @@ namespace net {
 // An implementation of HttpStreamRequest::Helper that is used to create a
 // request when the pool can immediately provide an HttpStream from existing
 // QUIC/SPDY sessions. This eliminates unnecessary creation/destruction of
-// Group/Job when QUIC/SPDY sessions are already available.
+// Group/AttemptManager when QUIC/SPDY sessions are already available.
 class HttpStreamPool::PooledStreamRequestHelper
     : public HttpStreamRequest::Helper {
  public:

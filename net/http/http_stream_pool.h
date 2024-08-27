@@ -79,7 +79,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       base::Milliseconds(250);
 
   class NET_EXPORT_PRIVATE Group;
-  class NET_EXPORT_PRIVATE Job;
+  class NET_EXPORT_PRIVATE AttemptManager;
   class NET_EXPORT_PRIVATE QuicTask;
 
   explicit HttpStreamPool(HttpNetworkSession* http_network_session,

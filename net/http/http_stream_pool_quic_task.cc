@@ -15,8 +15,8 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/http/http_stream_pool_group.h"
-#include "net/http/http_stream_pool_job.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_session_alias_key.h"
@@ -26,27 +26,28 @@
 
 namespace net {
 
-HttpStreamPool::QuicTask::QuicTask(Job* job,
+HttpStreamPool::QuicTask::QuicTask(AttemptManager* manager,
                                    quic::ParsedQuicVersion quic_version)
-    : job_(job),
-      quic_session_alias_key_(job_->group()->stream_key().destination(),
+    : manager_(manager),
+      quic_session_alias_key_(manager_->group()->stream_key().destination(),
                               quic_session_key()),
       quic_version_(quic_version),
       net_log_(NetLogWithSource::Make(
-          job->net_log().net_log(),
+          manager->net_log().net_log(),
           NetLogSourceType::HTTP_STREAM_POOL_QUIC_TASK)) {
-  CHECK(job_);
+  CHECK(manager_);
   CHECK(service_endpoint_request());
   CHECK(service_endpoint_request()->EndpointsCryptoReady());
 
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_QUIC_TASK_ALIVE, [&] {
     base::Value::Dict dict;
     dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version_));
-    job_->net_log().source().AddToEventParameters(dict);
+    manager_->net_log().source().AddToEventParameters(dict);
     return dict;
   });
-  job_->net_log().AddEventReferencingSource(
-      NetLogEventType::HTTP_STREAM_POOL_JOB_QUIC_TASK_BOUND, net_log_.source());
+  manager_->net_log().AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND,
+      net_log_.source());
 }
 
 HttpStreamPool::QuicTask::~QuicTask() {
@@ -64,7 +65,7 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
 
   std::optional<QuicEndpoint> quic_endpoint = GetQuicEndpointToAttempt();
   if (!quic_endpoint.has_value()) {
-    if (job_->is_service_endpoint_request_finished()) {
+    if (manager_->is_service_endpoint_request_finished()) {
       // TODO(crbug.com/346835898): Use a different error code?
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -79,14 +80,15 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
       stream_key().disable_cert_network_fetches();
   int cert_verify_flags = ssl_config.GetCertVerifyFlags();
 
-  base::TimeTicks dns_resolution_start_time = job_->dns_resolution_start_time();
+  base::TimeTicks dns_resolution_start_time =
+      manager_->dns_resolution_start_time();
   // The DNS resolution end time could be null when the resolution is still
   // ongoing. In that case, use the current time to make sure the connect
   // start time is already greater than the DNS resolution end time.
   base::TimeTicks dns_resolution_end_time =
-      job_->dns_resolution_end_time().is_null()
+      manager_->dns_resolution_end_time().is_null()
           ? base::TimeTicks::Now()
-          : job_->dns_resolution_end_time();
+          : manager_->dns_resolution_end_time();
 
   std::set<std::string> dns_aliases =
       service_endpoint_request()->GetDnsAliasResults();
@@ -109,7 +111,7 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
 }
 
 QuicSessionPool* HttpStreamPool::QuicTask::GetQuicSessionPool() {
-  return job_->group()->http_network_session()->quic_session_pool();
+  return manager_->group()->http_network_session()->quic_session_pool();
 }
 
 const QuicSessionAliasKey& HttpStreamPool::QuicTask::GetKey() {
@@ -121,20 +123,20 @@ const NetLogWithSource& HttpStreamPool::QuicTask::GetNetLog() {
 }
 
 const HttpStreamKey& HttpStreamPool::QuicTask::stream_key() const {
-  return job_->group()->stream_key();
+  return manager_->group()->stream_key();
 }
 
 const QuicSessionKey& HttpStreamPool::QuicTask::quic_session_key() const {
-  return job_->group()->quic_session_key();
+  return manager_->group()->quic_session_key();
 }
 
 QuicSessionPool* HttpStreamPool::QuicTask::quic_session_pool() {
-  return job_->group()->http_network_session()->quic_session_pool();
+  return manager_->group()->http_network_session()->quic_session_pool();
 }
 
 HostResolver::ServiceEndpointRequest*
 HttpStreamPool::QuicTask::service_endpoint_request() {
-  return job_->service_endpoint_request();
+  return manager_->service_endpoint_request();
 }
 
 std::optional<QuicEndpoint>
@@ -189,7 +191,7 @@ void HttpStreamPool::QuicTask::OnSessionAttemptComplete(int rv) {
   // TODO(crbug.com/346835898): Attempt other endpoints when failed.
   quic_session_pool()->set_is_quic_known_to_work_on_current_network(rv == OK);
   session_attempt_.reset();
-  job_->OnQuicTaskComplete(rv);
+  manager_->OnQuicTaskComplete(rv);
   // `this` is deleted.
 }
 

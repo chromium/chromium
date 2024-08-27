@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_HTTP_HTTP_STREAM_POOL_JOB_H_
-#define NET_HTTP_HTTP_STREAM_POOL_JOB_H_
+#ifndef NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_H_
+#define NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_H_
 
 #include <memory>
 #include <optional>
@@ -42,7 +42,7 @@ class NetLog;
 class HttpStreamKey;
 
 // Maintains in-flight HTTP stream requests. Peforms DNS resolution.
-class HttpStreamPool::Job
+class HttpStreamPool::AttemptManager
     : public HostResolver::ServiceEndpointRequest::Delegate,
       public TlsStreamAttempt::SSLConfigProvider {
  public:
@@ -52,12 +52,12 @@ class HttpStreamPool::Job
   static constexpr base::TimeDelta kSpdyThrottleDelay = base::Milliseconds(300);
 
   // `group` must outlive `this`.
-  Job(Group* group, NetLog* net_log);
+  AttemptManager(Group* group, NetLog* net_log);
 
-  Job(const Job&) = delete;
-  Job& operator=(const Job&) = delete;
+  AttemptManager(const AttemptManager&) = delete;
+  AttemptManager& operator=(const AttemptManager&) = delete;
 
-  ~Job() override;
+  ~AttemptManager() override;
 
   Group* group() { return group_; }
 
@@ -110,7 +110,7 @@ class HttpStreamPool::Job
   // Tries to process a single pending request/preconnect.
   void ProcessPendingRequest();
 
-  // Returns the number of total requests in this job.
+  // Returns the number of total requests in this manager.
   size_t RequestCount() const { return requests_.size(); }
 
   // Returns the number of in-flight attempts.
@@ -129,7 +129,8 @@ class HttpStreamPool::Job
   size_t PendingPreconnectCount() const;
 
   // Returns the highest priority in `requests_` when there is at least one
-  // request. Otherwise, returns IDLE assuming this job is doing preconnects.
+  // request. Otherwise, returns IDLE assuming this manager is doing
+  // preconnects.
   RequestPriority GetPriority() const;
 
   // Returns true when `this` is blocked by the pool's stream limit.
@@ -167,7 +168,7 @@ class HttpStreamPool::Job
   // pointer and implements HttpStreamRequest::Helper.
   class RequestEntry : public HttpStreamRequest::Helper {
    public:
-    explicit RequestEntry(Job* job);
+    explicit RequestEntry(AttemptManager* manager);
 
     RequestEntry(RequestEntry&) = delete;
     RequestEntry& operator=(const RequestEntry&) = delete;
@@ -189,7 +190,7 @@ class HttpStreamPool::Job
     void SetPriority(RequestPriority priority) override;
 
    private:
-    const raw_ptr<Job> job_;
+    const raw_ptr<AttemptManager> manager_;
     raw_ptr<HttpStreamRequest> request_;
     raw_ptr<HttpStreamRequest::Delegate> delegate_;
   };
@@ -444,9 +445,9 @@ class HttpStreamPool::Job
   bool should_block_stream_attempt_ = false;
   base::OneShotTimer stream_attempt_delay_timer_;
 
-  base::WeakPtrFactory<Job> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AttemptManager> weak_ptr_factory_{this};
 };
 
 }  // namespace net
 
-#endif  // NET_HTTP_HTTP_STREAM_POOL_JOB_H_
+#endif  // NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_H_

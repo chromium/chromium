@@ -149,12 +149,14 @@ class HttpStreamPool::Group {
   // if exists.
   void OnRequiredHttp11();
 
-  // Called when the in-flight job has completed.
-  void OnJobComplete();
+  // Called when the attempt manager has completed.
+  void OnAttemptManagerComplete();
 
   void CleanupTimedoutIdleStreamSocketsForTesting();
 
-  Job* GetJobForTesting() const { return in_flight_job_.get(); }
+  AttemptManager* GetAttemptManagerForTesting() const {
+    return attempt_manager_.get();
+  }
 
  private:
   struct IdleStreamSocket {
@@ -186,7 +188,7 @@ class HttpStreamPool::Group {
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
 
-  void EnsureInFlightJob();
+  void EnsureAttemptManager();
 
   void MaybeComplete();
 
@@ -201,7 +203,7 @@ class HttpStreamPool::Group {
   int64_t generation_ = 0;
   std::list<IdleStreamSocket> idle_stream_sockets_;
 
-  std::unique_ptr<Job> in_flight_job_;
+  std::unique_ptr<AttemptManager> attempt_manager_;
 };
 
 }  // namespace net
