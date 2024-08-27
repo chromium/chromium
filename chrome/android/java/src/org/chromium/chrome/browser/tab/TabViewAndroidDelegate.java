@@ -44,7 +44,12 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         containerView.addOnDragListener(getDragStateTracker());
 
         if (ContentFeatureMap.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
-            mDragAndDropBrowserDelegate = new ChromeDragAndDropBrowserDelegate(tab.getContext());
+            mDragAndDropBrowserDelegate =
+                    new ChromeDragAndDropBrowserDelegate(
+                            () -> {
+                                if (mTab == null || mTab.getWindowAndroid() == null) return null;
+                                return mTab.getWindowAndroid().getActivity().get();
+                            });
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         }
 

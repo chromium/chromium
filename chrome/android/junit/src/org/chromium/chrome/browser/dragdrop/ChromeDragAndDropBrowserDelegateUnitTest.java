@@ -81,7 +81,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         when(mActivity.getApplicationContext())
                 .thenReturn(ApplicationProvider.getApplicationContext());
 
-        mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
+        mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
     }
 
     @After
@@ -95,7 +95,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
                 ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
                 "true");
-        mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
+        mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
         assertTrue("SupportDropInChrome should be true.", mDelegate.getSupportDropInChrome());
         assertFalse(
                 "SupportAnimatedImageDragShadow should be false.",
@@ -111,7 +111,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
                 ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
                 "false");
-        mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
+        mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
         assertFalse("SupportDropInChrome should be false.", mDelegate.getSupportDropInChrome());
 
         AssertionError error = null;

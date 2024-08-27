@@ -10,7 +10,6 @@ import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.ClipDescription;
-import android.content.Context;
 import android.content.Intent;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
@@ -21,9 +20,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,17 +53,15 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                 MimeTypeUtils.CHROME_MIMETYPE_LINK
             };
 
-    private final Context mContext;
-    private final Activity mActivity;
+    private final Supplier<Activity> mActivitySupplier;
     private final boolean mSupportDropInChrome;
     private final boolean mSupportAnimatedImageDragShadow;
 
     /**
-     * @param context The current context this delegate is associated with.
+     * @param activitySupplier The supplier to get the Activity this delegate is associated with.
      */
-    public ChromeDragAndDropBrowserDelegate(Context context) {
-        mContext = context;
-        mActivity = ContextUtils.activityFromContext(mContext);
+    public ChromeDragAndDropBrowserDelegate(Supplier<Activity> activitySupplier) {
+        mActivitySupplier = activitySupplier;
         mSupportDropInChrome =
                 ContentFeatureMap.getInstance()
                         .getFieldTrialParamByFeatureAsBoolean(
@@ -97,21 +94,22 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent) {
         assert mSupportDropInChrome : "Should only be accessed when drop in Chrome.";
 
-        if (mActivity == null) {
+        if (mActivitySupplier.get() == null) {
             return null;
         }
-        return mActivity.requestDragAndDropPermissions(dropEvent);
+        return mActivitySupplier.get().requestDragAndDropPermissions(dropEvent);
     }
 
     @Override
     public Intent createUrlIntent(String urlString, @UrlIntentSource int intentSrc) {
         Intent intent = null;
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+        Activity activity = mActivitySupplier.get();
+        if (activity != null && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             intent =
                     DragAndDropLauncherActivity.getLinkLauncherIntent(
-                            mContext,
+                            activity,
                             urlString,
-                            MultiWindowUtils.getInstanceIdForLinkIntent(mActivity),
+                            MultiWindowUtils.getInstanceIdForLinkIntent(activity),
                             intentSrc);
         }
         return intent;

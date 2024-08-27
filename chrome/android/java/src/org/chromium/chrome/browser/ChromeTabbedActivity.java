@@ -798,7 +798,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             View toolbarContainerView = findViewById(R.id.toolbar_container);
             mDragDropDelegate = new DragAndDropDelegateImpl();
             mDragDropDelegate.setDragAndDropBrowserDelegate(
-                    new ChromeDragAndDropBrowserDelegate(this));
+                    new ChromeDragAndDropBrowserDelegate(() -> this));
 
             assert getToolbarManager() != null;
 
