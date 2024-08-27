@@ -52,6 +52,7 @@ static_library("autotest_private") {
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui/ash/default_pinned_apps",
+    "//chrome/browser/ui/views/bruschetta",
     "//chrome/browser/ui/views/crostini",
     "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/common",
