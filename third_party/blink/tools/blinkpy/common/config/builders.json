@@ -62,9 +62,6 @@
             "high_dpi_blink_wpt_tests": {
                 "flag_specific": "highdpi"
             },
-            "high_dpi_headless_shell_wpt_tests": {
-                "flag_specific": "highdpi"
-            },
             "vulkan_swiftshader_blink_web_tests": {
                 "flag_specific": "skia-vulkan-swiftshader"
             },
@@ -72,9 +69,6 @@
                 "flag_specific": "disable-site-isolation-trials"
             },
             "not_site_per_process_blink_wpt_tests": {
-                "flag_specific": "disable-site-isolation-trials"
-            },
-            "not_site_per_process_headless_shell_wpt_tests": {
                 "flag_specific": "disable-site-isolation-trials"
             },
             "webdriver_wpt_tests": {}
@@ -88,8 +82,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -100,8 +93,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -112,8 +104,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -124,8 +115,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -136,8 +126,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -148,8 +137,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -163,9 +151,6 @@
             },
             "graphite_enabled_blink_wpt_tests": {
                 "flag_specific": "enable-skia-graphite"
-            },
-            "graphite_enabled_headless_shell_wpt_tests": {
-                "flag_specific": "enable-skia-graphite"
             }
         },
         "is_try_builder": true
@@ -177,8 +162,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -189,8 +173,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -201,8 +184,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -213,8 +195,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -225,8 +206,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -240,8 +220,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -252,8 +231,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -265,14 +243,10 @@
             "blink_web_tests": {},
             "blink_wpt_tests": {},
             "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {},
             "high_dpi_blink_web_tests": {
                 "flag_specific": "highdpi"
             },
             "high_dpi_blink_wpt_tests": {
-                "flag_specific": "highdpi"
-            },
-            "high_dpi_headless_shell_wpt_tests": {
                 "flag_specific": "highdpi"
             },
             "vulkan_swiftshader_blink_web_tests": {
@@ -282,9 +256,6 @@
                 "flag_specific": "disable-site-isolation-trials"
             },
             "not_site_per_process_blink_wpt_tests": {
-                "flag_specific": "disable-site-isolation-trials"
-            },
-            "not_site_per_process_headless_shell_wpt_tests": {
                 "flag_specific": "disable-site-isolation-trials"
             }
         },
@@ -298,8 +269,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true,
         "is_cq_builder": true
@@ -311,8 +281,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
+            "chrome_wpt_tests": {}
         },
         "is_try_builder": true,
         "is_cq_builder": true

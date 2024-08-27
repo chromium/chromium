@@ -2918,12 +2918,6 @@
     },
   },
   'headless_shell_wpt_tests': {
-    'remove_from': [
-      # TODO(crbug.com/360008882): Add the line below once the issue is fixed.
-      'WebKit Linux MSAN',
-    ],
-  },
-  'headless_shell_wpt_tests_include_all': {
     'modifications': {
       'linux-wpt-chromium-rel': {
         'args': [

@@ -1520,7 +1520,6 @@ if (use_blink && !is_cronet_build) {
     args += [
       "--wpt-only",
       "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-      "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
     ]
 
     data_deps = [
