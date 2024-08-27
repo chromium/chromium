@@ -1982,6 +1982,13 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
 actions::ActionItem* BrowserCommandController::FindAction(
     actions::ActionId action_id) {
   BrowserActions* browser_actions = browser_->browser_actions();
+
+  // If there is no root action item then ActionManager falls back to the
+  // root_action_parent_ which might contain actions from other browser windows.
+  if (!browser_actions->root_action_item()) {
+    return nullptr;
+  }
+
   return actions::ActionManager::Get().FindAction(
       action_id, browser_actions->root_action_item());
 }
