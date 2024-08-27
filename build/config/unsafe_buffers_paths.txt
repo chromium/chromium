@@ -116,7 +116,6 @@
 -crypto/
 -data/
 -fuchsia_web/
--gin/
 -google_apis/
 -gpu/
 -ios/
