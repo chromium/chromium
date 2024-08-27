@@ -265,22 +265,16 @@ static_library("content_native_lib") {
     "//v8",
   ]
 
-  if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy" ]
-  } else {
-    deps += [
-      "//components/crash/content/browser",
-      "//components/crash/core/app",
-    ]
-  }
+  deps += [
+    "//components/crash/content/browser",
+    "//components/crash/core/app",
+  ]
 
-  if (is_android) {
-    deps += [
-      "//components/embedder_support/android:view",
-      "//content/shell/android:content_shell_jni_headers",
-      "//ui/android",
-    ]
-  }
+  deps += [
+    "//components/embedder_support/android:view",
+    "//content/shell/android:content_shell_jni_headers",
+    "//ui/android",
+  ]
 }
 
 generate_build_config_srcjar("build_config_gen") {
