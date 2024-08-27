@@ -157,6 +157,7 @@ export class AppElement extends AppElementBase {
       speechPlayingState: {type: Object},
       imagesEnabled: {type: Boolean, reflect: true},
       enabledLangs: {type: Array},
+      settingsPrefs_: {type: Object},
       selectedVoice_: {type: Object},
       availableVoices_: {type: Array},
       voiceStatusLocalState_: {type: Object},
