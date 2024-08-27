@@ -71,7 +71,8 @@ void BrowserUpdaterClient::GetUpdaterVersionCompleted(
 }
 
 void BrowserUpdaterClient::CheckForUpdate(
-    updater::UpdateService::StateChangeCallback version_updater_callback) {
+    base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
+        version_updater_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   updater::UpdateService::UpdateState update_state;
@@ -88,7 +89,8 @@ void BrowserUpdaterClient::CheckForUpdate(
 }
 
 void BrowserUpdaterClient::UpdateCompleted(
-    updater::UpdateService::StateChangeCallback callback,
+    base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
+        callback,
     updater::UpdateService::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Result of update was: " << result;

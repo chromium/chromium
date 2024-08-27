@@ -33,33 +33,35 @@ class UpdateServiceStubWin : public UpdateService {
   void GetAppStates(
       base::OnceCallback<void(const std::vector<AppState>&)>) override;
   void RunPeriodicTasks(base::OnceClosure callback) override;
-  void CheckForUpdate(const std::string& app_id,
-                      Priority priority,
-                      PolicySameVersionUpdate policy_same_version_update,
-                      StateChangeCallback state_update,
-                      base::OnceCallback<void(Result)> callback) override;
+  void CheckForUpdate(
+      const std::string& app_id,
+      Priority priority,
+      PolicySameVersionUpdate policy_same_version_update,
+      base::RepeatingCallback<void(const UpdateState&)> state_update,
+      base::OnceCallback<void(Result)> callback) override;
   void Update(const std::string& app_id,
               const std::string& install_data_index,
               Priority priority,
               PolicySameVersionUpdate policy_same_version_update,
-              StateChangeCallback state_update,
+              base::RepeatingCallback<void(const UpdateState&)> state_update,
               base::OnceCallback<void(Result)> callback) override;
-  void UpdateAll(StateChangeCallback state_update,
+  void UpdateAll(base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback) override;
   void Install(const RegistrationRequest& registration,
                const std::string& client_install_data,
                const std::string& install_data_index,
                Priority priority,
-               StateChangeCallback state_update,
+               base::RepeatingCallback<void(const UpdateState&)> state_update,
                base::OnceCallback<void(Result)> callback) override;
   void CancelInstalls(const std::string& app_id) override;
-  void RunInstaller(const std::string& app_id,
-                    const base::FilePath& installer_path,
-                    const std::string& install_args,
-                    const std::string& install_data,
-                    const std::string& install_settings,
-                    StateChangeCallback state_update,
-                    base::OnceCallback<void(Result)> callback) override;
+  void RunInstaller(
+      const std::string& app_id,
+      const base::FilePath& installer_path,
+      const std::string& install_args,
+      const std::string& install_data,
+      const std::string& install_settings,
+      base::RepeatingCallback<void(const UpdateState&)> state_update,
+      base::OnceCallback<void(Result)> callback) override;
 
  private:
   ~UpdateServiceStubWin() override;

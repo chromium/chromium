@@ -45,7 +45,8 @@ namespace {
 class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
  public:
   UpdaterObserver(
-      UpdateService::StateChangeCallback state_update_callback,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update_callback,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback)
       : state_update_callback_(state_update_callback),
@@ -209,7 +210,8 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
   }
 
   // Called by IUpdaterObserver::OnStateChange when update state changes occur.
-  UpdateService::StateChangeCallback state_update_callback_;
+  base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+      state_update_callback_;
 
   // Called by IUpdaterObserver::OnComplete when the COM RPC call is done.
   base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -447,7 +449,8 @@ class UpdateServiceProxyImplImpl
       const std::string& app_id,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     PostRPCTask(
@@ -461,7 +464,8 @@ class UpdateServiceProxyImplImpl
       const std::string& install_data_index,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     PostRPCTask(base::BindOnce(&UpdateServiceProxyImplImpl::UpdateOnTaskRunner,
@@ -471,7 +475,8 @@ class UpdateServiceProxyImplImpl
   }
 
   void UpdateAll(
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     PostRPCTask(
@@ -484,7 +489,8 @@ class UpdateServiceProxyImplImpl
       const std::string& client_install_data,
       const std::string& install_data_index,
       UpdateService::Priority priority,
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     PostRPCTask(base::BindOnce(&UpdateServiceProxyImplImpl::InstallOnTaskRunner,
@@ -504,7 +510,8 @@ class UpdateServiceProxyImplImpl
       const std::string& install_args,
       const std::string& install_data,
       const std::string& install_settings,
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     PostRPCTask(
@@ -644,7 +651,8 @@ class UpdateServiceProxyImplImpl
       const std::string& app_id,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -677,7 +685,8 @@ class UpdateServiceProxyImplImpl
       const std::string& install_data_index,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -718,7 +727,8 @@ class UpdateServiceProxyImplImpl
   }
 
   void UpdateAllOnTaskRunner(
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -740,7 +750,8 @@ class UpdateServiceProxyImplImpl
       const std::string& client_install_data,
       const std::string& install_data_index,
       UpdateService::Priority priority,
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -822,7 +833,8 @@ class UpdateServiceProxyImplImpl
       const std::string& install_args,
       const std::string& install_data,
       const std::string& install_settings,
-      UpdateService::StateChangeCallback state_update,
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -925,7 +937,8 @@ void UpdateServiceProxyImpl::CheckForUpdate(
     const std::string& app_id,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -941,7 +954,8 @@ void UpdateServiceProxyImpl::Update(
     const std::string& install_data_index,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -953,7 +967,8 @@ void UpdateServiceProxyImpl::Update(
 }
 
 void UpdateServiceProxyImpl::UpdateAll(
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -967,7 +982,8 @@ void UpdateServiceProxyImpl::Install(
     const std::string& client_install_data,
     const std::string& install_data_index,
     UpdateService::Priority priority,
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -989,7 +1005,8 @@ void UpdateServiceProxyImpl::RunInstaller(
     const std::string& install_args,
     const std::string& install_data,
     const std::string& install_settings,
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

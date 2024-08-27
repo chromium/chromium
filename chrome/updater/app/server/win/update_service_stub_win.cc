@@ -63,7 +63,7 @@ void UpdateServiceStubWin::CheckForUpdate(
     const std::string& app_id,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
-    StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -77,7 +77,7 @@ void UpdateServiceStubWin::Update(
     const std::string& install_data_index,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
-    StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -87,7 +87,7 @@ void UpdateServiceStubWin::Update(
 }
 
 void UpdateServiceStubWin::UpdateAll(
-    StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -95,12 +95,13 @@ void UpdateServiceStubWin::UpdateAll(
                    std::move(callback).Then(task_end_listener_));
 }
 
-void UpdateServiceStubWin::Install(const RegistrationRequest& registration,
-                                   const std::string& client_install_data,
-                                   const std::string& install_data_index,
-                                   Priority priority,
-                                   StateChangeCallback state_update,
-                                   base::OnceCallback<void(Result)> callback) {
+void UpdateServiceStubWin::Install(
+    const RegistrationRequest& registration,
+    const std::string& client_install_data,
+    const std::string& install_data_index,
+    Priority priority,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->Install(registration, client_install_data, install_data_index,
@@ -121,7 +122,7 @@ void UpdateServiceStubWin::RunInstaller(
     const std::string& install_args,
     const std::string& install_data,
     const std::string& install_settings,
-    StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();

@@ -427,8 +427,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   HRESULT CheckForUpdate() {
     current_operation_ = CurrentOperation::kCheckingForUpdates;
     AppWebImplPtr obj(this);
-    UpdateService::StateChangeCallback state_change_callback =
-        base::BindRepeating(
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_change_callback = base::BindRepeating(
             [](AppWebImplPtr obj,
                const UpdateService::UpdateState& state_update) {
               obj->task_runner_->PostTask(
@@ -445,7 +445,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
             },
             obj);
     AppServerWin::PostRpcTask(base::BindOnce(
-        [](UpdateService::StateChangeCallback state_change_callback,
+        [](base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+               state_change_callback,
            base::OnceCallback<void(UpdateService::Result)> complete_callback,
            AppWebImplPtr obj) {
           scoped_refptr<UpdateService> update_service =
@@ -471,8 +472,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   HRESULT Install() {
     AppWebImplPtr obj(this);
-    UpdateService::StateChangeCallback state_change_callback =
-        base::BindRepeating(
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_change_callback = base::BindRepeating(
             [](AppWebImplPtr obj,
                const UpdateService::UpdateState& state_update) {
               obj->task_runner_->PostTask(
@@ -490,7 +491,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
             obj);
 
     AppServerWin::PostRpcTask(base::BindOnce(
-        [](UpdateService::StateChangeCallback state_change_callback,
+        [](base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+               state_change_callback,
            base::OnceCallback<void(UpdateService::Result)> complete_callback,
            AppWebImplPtr obj) {
           scoped_refptr<UpdateService> update_service =
@@ -518,8 +520,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   HRESULT Update() {
     AppWebImplPtr obj(this);
-    UpdateService::StateChangeCallback state_change_callback =
-        base::BindRepeating(
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_change_callback = base::BindRepeating(
             [](AppWebImplPtr obj,
                const UpdateService::UpdateState& state_update) {
               obj->task_runner_->PostTask(
@@ -536,7 +538,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
             },
             obj);
     AppServerWin::PostRpcTask(base::BindOnce(
-        [](UpdateService::StateChangeCallback state_change_callback,
+        [](base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+               state_change_callback,
            base::OnceCallback<void(UpdateService::Result)> complete_callback,
            AppWebImplPtr obj) {
           scoped_refptr<UpdateService> update_service =

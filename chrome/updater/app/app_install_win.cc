@@ -457,9 +457,9 @@ class AppInstallControllerImpl : public AppInstallController,
   // and the UI thread.
   std::unique_ptr<AppInstallProgressIPC> install_progress_observer_ipc_;
 
-  // Contains the result of installing the application. This is populated
-  // by the `StateChangeCallback` or the completion callback, if the
-  // former callback was not posted.
+  // Contains the result of installing the application. This is populated by the
+  // state change callback or the completion callback, if the former callback
+  // was not posted.
   std::optional<ObserverCompletionInfo> observer_completion_info_;
 
   // Called when InstallApp is done.

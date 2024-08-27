@@ -44,7 +44,8 @@ class BrowserUpdaterClient
   // completes. Must be called on the sequence on which the BrowserUpdateClient
   // was created. `version_updater_callback` will be run on the same sequence.
   void CheckForUpdate(
-      updater::UpdateService::StateChangeCallback version_updater_callback);
+      base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
+          version_updater_callback);
 
   // Launches the updater to run its periodic background tasks. This is a
   // mechanism to act as a backup periodic scheduler for the updater.
@@ -78,8 +79,10 @@ class BrowserUpdaterClient
   void GetUpdaterVersionCompleted(
       base::OnceCallback<void(const base::Version&)> callback,
       const base::Version& version);
-  void UpdateCompleted(updater::UpdateService::StateChangeCallback callback,
-                       updater::UpdateService::Result result);
+  void UpdateCompleted(
+      base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
+          callback,
+      updater::UpdateService::Result result);
   void RunPeriodicTasksCompleted(base::OnceClosure callback);
   void IsBrowserRegisteredCompleted(
       base::OnceCallback<void(bool)> callback,
