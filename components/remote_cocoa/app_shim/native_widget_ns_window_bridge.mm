@@ -404,7 +404,13 @@ void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
   // NativeWidgetMac.
   NativeWidgetNSWindowBridge* new_parent =
       NativeWidgetNSWindowBridge::GetFromId(new_parent_id);
-  DCHECK(new_parent);
+  if (!new_parent) {
+    // When the OS tells us a window is closing it is removed from the id map.
+    // Since nothing is stopping the browser process from still trying to use
+    // that id until the browser process has been informed that the window is
+    // gone, it is totally possible to be passed no longer valid ids here.
+    return;
+  }
 
   parent_ = new_parent;
   parent_->child_windows_.push_back(this);
