@@ -152,6 +152,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   bool InitializeInputOutputParameters(VideoCodecProfile output_profile,
                                        bool is_constrained_h264);
 
+  // Sets the SW implementation of the BRC, if the encoder supports it.
+  void SetSWRateControl();
+
   // Initializes encoder parameters for real-time use.
   bool SetEncoderModes();
 

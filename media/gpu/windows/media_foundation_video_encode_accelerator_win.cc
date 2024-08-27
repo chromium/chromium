@@ -88,6 +88,12 @@ constexpr uint8_t kAV1MaxQuantizer = 56;
 constexpr gfx::Size kMaxResolution(1920, 1088);
 constexpr gfx::Size kMinResolution(32, 32);
 
+// The range for the quantization parameter is determined by examining the
+// estamitaed QP values from the SW bitrate controller in various encoding
+// scenarios.
+constexpr uint8_t kH264MinQuantizer = 16;
+constexpr uint8_t kH264MaxQuantizer = 51;
+
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // For H.265, ideally we may reuse Min/MaxQp for H.264 from
 // media/gpu/vaapi/h264_vaapi_video_encoder_delegate.cc. However
@@ -116,6 +122,13 @@ BASE_FEATURE(kMediaFoundationVP9L1T3Support,
              "MediaFoundationVP9L1T3Support",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !defined(ARCH_CPU_X86)
+
+BASE_FEATURE(kMediaFoundationUseSWBRCForH264Camera,
+             "MediaFoundationUseSWBRCForH264Camera",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaFoundationUseSWBRCForH264Desktop,
+             "MediaFoundationUseSWBRCForH264Desktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // For H.265 encoding at L1T1/L1T2 we may use SW bitrate controller when
@@ -627,6 +640,11 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
       config.min_quantizer = kAV1MinQuantizer;
       break;
     }
+    case VideoCodec::kH264: {
+      config.max_quantizer = kH264MaxQuantizer;
+      config.min_quantizer = kH264MinQuantizer;
+      break;
+    }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case VideoCodec::kHEVC: {
       config.max_quantizer = kH265MaxQuantizer;
@@ -891,47 +909,9 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  // Use SW BRC only in the case CBR encoding with number of temporal layers no
-  // more than 3.
-  // Qualcomm (and possibly other vendor) AV1 HMFT does not work with SW BRC.
-  // More info: https://crbug.com/343757696
-  const bool use_sw_brc =
-      bitrate_allocation_.GetMode() == Bitrate::Mode::kConstant &&
-      base::FeatureList::IsEnabled(kMediaFoundationUseSoftwareRateCtrl) &&
-      vendor_ != DriverVendor::kQualcomm &&  // SW BRC and QCOM AV1 HMFT not ok
-      num_temporal_layers_ <= 3;
-
-  if (use_sw_brc &&
-      (codec_ == VideoCodec::kVP9
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-       || (codec_ == VideoCodec::kHEVC && num_temporal_layers_ <= 2 &&
-           ((vendor_ == DriverVendor::kIntel &&
-             workarounds_.disable_hevc_hmft_cbr_encoding) ||
-            base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH265)))
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#if BUILDFLAG(ENABLE_LIBAOM)
-       || codec_ == VideoCodec::kAV1
-#endif
-       )) {
-    VideoRateControlWrapper::RateControlConfig rate_config =
-        CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
-                                   frame_rate_, num_temporal_layers_, codec_,
-                                   content_type_);
-    if (codec_ == VideoCodec::kVP9) {
-      rate_ctrl_ = VP9RateControl::Create(rate_config);
-    } else if (codec_ == VideoCodec::kAV1) {
-#if BUILDFLAG(ENABLE_LIBAOM)
-      // If libaom is not enabled, |rate_ctrl_| will not be initialized.
-      rate_ctrl_ = AV1RateControl::Create(rate_config);
-#endif
-    }
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    else if (codec_ == VideoCodec::kHEVC) {
-      // Reuse the H.264 rate controller for HEVC.
-      rate_ctrl_ = H264RateControl::Create(rate_config);
-    }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  }
+  // Set the SW implementation of the rate controller. Do nothing if SW RC is
+  // not supported.
+  SetSWRateControl();
 
   if (!SetEncoderModes()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
@@ -1670,6 +1650,97 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
   return true;
 }
 
+void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Use SW BRC only in the case CBR encoding with number of temporal layers no
+  // more than 3.
+  if (bitrate_allocation_.GetMode() != Bitrate::Mode::kConstant ||
+      !base::FeatureList::IsEnabled(kMediaFoundationUseSoftwareRateCtrl) ||
+      num_temporal_layers_ > 3) {
+    return;
+  }
+
+  // The following codecs support SW BRC: VP9, H264, HEVC, and AV1.
+  VideoCodec kCodecsHaveSWBRC[] = {
+      VideoCodec::kVP9,
+      VideoCodec::kH264,
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+      VideoCodec::kHEVC,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_LIBAOM)
+      VideoCodec::kAV1,
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+  };
+  if (!base::Contains(kCodecsHaveSWBRC, codec_)) {
+    return;
+  }
+
+#if BUILDFLAG(ENABLE_LIBAOM)
+  // Qualcomm (and possibly other vendor) AV1 HMFT does not work with SW BRC.
+  // More info: https://crbug.com/343757696
+  if (codec_ == VideoCodec::kAV1 && vendor_ == DriverVendor::kQualcomm) {
+    return;  // SW BRC and QCOM AV1 HMFT not ok
+  }
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+
+  if (codec_ == VideoCodec::kH264) {
+    // H264 SW BRC supports up to two temporal layers.
+    if (num_temporal_layers_ > 2) {
+      return;
+    }
+
+    // Check feature flag for the camera source.
+    if (content_type_ == VideoEncodeAccelerator::Config::ContentType::kCamera &&
+        !base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH264Camera)) {
+      return;
+    }
+
+    // Check feature flag for the desktop source.
+    if (content_type_ ==
+            VideoEncodeAccelerator::Config::ContentType::kDisplay &&
+        !base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH264Desktop)) {
+      return;
+    }
+  }
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  if (codec_ == VideoCodec::kHEVC) {
+    // H264 SW BRC supports up to two temporal layers.
+    if (num_temporal_layers_ > 2) {
+      return;
+    }
+
+    // Check feature flag.
+    if ((vendor_ != DriverVendor::kIntel ||
+         !workarounds_.disable_hevc_hmft_cbr_encoding) &&
+        !base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH265)) {
+      return;
+    }
+  }
+#endif
+
+  VideoRateControlWrapper::RateControlConfig rate_config =
+      CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
+                                 frame_rate_, num_temporal_layers_, codec_,
+                                 content_type_);
+  if (codec_ == VideoCodec::kVP9) {
+    rate_ctrl_ = VP9RateControl::Create(rate_config);
+  } else if (codec_ == VideoCodec::kAV1) {
+#if BUILDFLAG(ENABLE_LIBAOM)
+    // If libaom is not enabled, |rate_ctrl_| will not be initialized.
+    rate_ctrl_ = AV1RateControl::Create(rate_config);
+#endif
+  } else if (codec_ == VideoCodec::kH264) {
+    rate_ctrl_ = H264RateControl::Create(rate_config);
+  } else if (codec_ == VideoCodec::kHEVC) {
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    // Reuse the H.264 rate controller for HEVC.
+    rate_ctrl_ = H264RateControl::Create(rate_config);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  }
+}
+
 bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(encoder_);
@@ -1882,7 +1953,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
           input.options.key_frame
               ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
               : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
-      // H.265 SW BRC needs timestamp information.
+      // H.264 and H.265 SW BRC need timestamp information.
       frame_params.timestamp = input.frame->timestamp().InMilliseconds();
       temporal_id =
           svc_parser_->AssignTemporalIdBySvcSpec(input_since_keyframe_count_);
@@ -1892,14 +1963,29 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       // If there exists a rate_ctrl_, the qp computed by rate_ctrl_ should be
       // set on sample metadata and carried over from input to output.
       metadata_qp = rate_ctrl_->ComputeQP(frame_params);
+      if (codec_ == VideoCodec::kH264) {
+        if (metadata_qp.value() >= 0) {
+          // For H.264, the qp value should be in the range of 1-51.
+          metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
+          quantizer = metadata_qp;
+        } else {
+          // Negative QP values mean that the frame should be dropped. We use
+          // maximum QP in that case.
+          // Drop frame functionality is not supported yet.
+          // TODO(b/361250558): Support drop frame for H.264 Rate Controller
+          quantizer = kH264MaxQuantizer;
+          metadata_qp = quantizer;
+        }
+      }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      if (codec_ == VideoCodec::kHEVC) {
+      else if (codec_ == VideoCodec::kHEVC) {
         // For HEVC, the qp value should be in the range of 1-51.
         metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
         quantizer = metadata_qp;
-      } else
+      }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      {
+      else {
+        // VP9 or AV1 codec.
         quantizer = QindextoAVEncQP(metadata_qp.value());
       }
     } else if (input.discard_output) {
