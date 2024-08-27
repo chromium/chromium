@@ -8,7 +8,9 @@ namespace metrics::structured {
 
 StorageManager::StorageManager() = default;
 
-StorageManager::~StorageManager() = default;
+StorageManager::~StorageManager() {
+  delegate_ = nullptr;
+}
 
 void StorageManager::NotifyOnFlushed(const FlushedKey& key) {
   CHECK(delegate_);
