@@ -91,7 +91,7 @@ std::vector<std::string> GetWebUISchemesCached() {
 
 }  // namespace
 
-URLDataManagerBackend::URLDataManagerBackend() : next_request_id_(0) {
+URLDataManagerBackend::URLDataManagerBackend() {
   {
     // Add a shared data source for chrome://resources.
     auto* source = new WebUIDataSourceImpl(kChromeUIResourcesHost);
