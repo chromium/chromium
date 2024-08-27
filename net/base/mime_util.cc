@@ -45,8 +45,8 @@ class MimeUtil : public PlatformMimeUtil {
       const std::string& mime_type,
       base::FilePath::StringType* extension) const;
 
-  bool MatchesMimeType(const std::string& mime_type_pattern,
-                       const std::string& mime_type) const;
+  bool MatchesMimeType(std::string_view mime_type_pattern,
+                       std::string_view mime_type) const;
 
   bool ParseMimeTypeWithoutParameter(std::string_view type_string,
                                      std::string* top_level_type,
@@ -368,12 +368,12 @@ MimeUtil::MimeUtil() = default;
 // or may not be case-sensitive, but they are usually case-sensitive. So, this
 // function matches values in *case-sensitive* manner, however note that this
 // may produce some false negatives.
-bool MatchesMimeTypeParameters(const std::string& mime_type_pattern,
-                               const std::string& mime_type) {
+bool MatchesMimeTypeParameters(std::string_view mime_type_pattern,
+                               std::string_view mime_type) {
   typedef std::map<std::string, std::string> StringPairMap;
 
-  const std::string::size_type semicolon = mime_type_pattern.find(';');
-  const std::string::size_type test_semicolon = mime_type.find(';');
+  const std::string_view::size_type semicolon = mime_type_pattern.find(';');
+  const std::string_view::size_type test_semicolon = mime_type.find(';');
   if (semicolon != std::string::npos) {
     if (test_semicolon == std::string::npos)
       return false;
@@ -420,20 +420,20 @@ bool MatchesMimeTypeParameters(const std::string& mime_type_pattern,
 //      *
 // Also tests mime parameters -- all parameters in the pattern must be present
 // in the tested type for a match to succeed.
-bool MimeUtil::MatchesMimeType(const std::string& mime_type_pattern,
-                               const std::string& mime_type) const {
+bool MimeUtil::MatchesMimeType(std::string_view mime_type_pattern,
+                               std::string_view mime_type) const {
   if (mime_type_pattern.empty())
     return false;
 
-  std::string::size_type semicolon = mime_type_pattern.find(';');
-  const std::string base_pattern(mime_type_pattern.substr(0, semicolon));
+  std::string_view::size_type semicolon = mime_type_pattern.find(';');
+  const std::string_view base_pattern = mime_type_pattern.substr(0, semicolon);
   semicolon = mime_type.find(';');
-  const std::string base_type(mime_type.substr(0, semicolon));
+  const std::string_view base_type = mime_type.substr(0, semicolon);
 
   if (base_pattern == "*" || base_pattern == "*/*")
     return MatchesMimeTypeParameters(mime_type_pattern, mime_type);
 
-  const std::string::size_type star = base_pattern.find('*');
+  const std::string_view::size_type star = base_pattern.find('*');
   if (star == std::string::npos) {
     if (base::EqualsCaseInsensitiveASCII(base_pattern, base_type))
       return MatchesMimeTypeParameters(mime_type_pattern, mime_type);
@@ -634,8 +634,8 @@ bool GetPreferredExtensionForMimeType(const std::string& mime_type,
                                                             extension);
 }
 
-bool MatchesMimeType(const std::string& mime_type_pattern,
-                     const std::string& mime_type) {
+bool MatchesMimeType(std::string_view mime_type_pattern,
+                     std::string_view mime_type) {
   return g_mime_util.Get().MatchesMimeType(mime_type_pattern, mime_type);
 }
 

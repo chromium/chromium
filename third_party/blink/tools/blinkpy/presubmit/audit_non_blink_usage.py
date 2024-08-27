@@ -356,6 +356,19 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/common/mime_util/'],
+        'allowed': [
+            # sets of ASCII strings are used
+            'base::StartsWith',
+            'base::ToLowerASCII',
+            'base::MakeFixedFlatSet',
+
+            # delegating to MIME utilities in other components
+            'net::MatchesMimeType',
+            'media::IsSupportedMediaMimeType',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/'],
         'allowed': [
             # TODO(dcheng): Should these be in a more specific config?

@@ -538,23 +538,25 @@ bool IsHTTPTabOrSpace(UChar c) {
 // Note that `mime_type` should already have been stripped of parameters by
 // `ExtractMIMETypeFromMediaType`.
 AtomicString MinimizedMIMEType(const AtomicString& mime_type) {
-  if (blink::IsSupportedJavascriptMimeType(mime_type.GetString().Utf8())) {
+  StringUTF8Adaptor mime_utf8(mime_type);
+
+  if (IsSupportedJavascriptMimeType(mime_utf8.AsStringView())) {
     return AtomicString("text/javascript");
   }
 
-  if (blink::IsJSONMimeType(mime_type.GetString().Utf8())) {
+  if (IsJSONMimeType(mime_utf8.AsStringView())) {
     return AtomicString("application/json");
   }
 
-  if (blink::IsSVGMimeType(mime_type.GetString().Utf8())) {
+  if (IsSVGMimeType(mime_utf8.AsStringView())) {
     return AtomicString("image/svg+xml");
   }
 
-  if (blink::IsXMLMimeType(mime_type.GetString().Utf8())) {
+  if (IsXMLMimeType(mime_utf8.AsStringView())) {
     return AtomicString("application/xml");
   }
 
-  if (blink::IsSupportedMimeType(mime_type.GetString().Utf8())) {
+  if (IsSupportedMimeType(mime_utf8.AsStringView())) {
     return mime_type;
   }
 
