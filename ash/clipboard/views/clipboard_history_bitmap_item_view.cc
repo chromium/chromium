@@ -243,8 +243,14 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
         .close();
   }
 
-  int GetHeightForWidth(int width) const override {
-    return ClipboardHistoryViews::kImageViewPreferredHeight;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    const int preferred_width =
+        ClipboardHistoryBitmapItemView::ContentsView::CalculatePreferredSize(
+            available_size)
+            .width();
+    return gfx::Size(preferred_width,
+                     ClipboardHistoryViews::kImageViewPreferredHeight);
   }
 
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
