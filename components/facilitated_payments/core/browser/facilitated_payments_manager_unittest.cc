@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
@@ -911,7 +912,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
        ApiClientAvailable_RiskDataLoaded_DoesNotTriggerLoadRiskData) {
   EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
 
-  manager_->OnRiskDataLoaded("seems pretty risky");
+  manager_->OnRiskDataLoaded(base::TimeTicks::Now(), "seems pretty risky");
   manager_->OnApiAvailabilityReceived(true);
 }
 
@@ -924,11 +925,37 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnApiAvailabilityReceived(true);
 }
 
+// Verify risk data metrics are logged when risk data is fetched successfully.
+TEST_F(FacilitatedPaymentsManagerTest, RiskDataNotEmpty_HistogramsLogged) {
+  base::HistogramTester histogram_tester;
+
+  manager_->OnRiskDataLoaded(base::TimeTicks::Now() - base::Seconds(2),
+                             "seems pretty risky");
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.LoadRiskData.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
+// Verify risk data metrics are logged when risk data is empty.
+TEST_F(FacilitatedPaymentsManagerTest, RiskDataEmpty_HistogramsLogged) {
+  base::HistogramTester histogram_tester;
+
+  manager_->OnRiskDataLoaded(base::TimeTicks::Now() - base::Seconds(2), "");
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.LoadRiskData.Failure.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
 // If the risk data is empty, then the PaymentNotOfferedReason histogram should
 // be logged.
 TEST_F(FacilitatedPaymentsManagerTest, PaymentNotOfferedReason_RiskDataEmpty) {
   base::HistogramTester histogram_tester;
-  manager_->OnRiskDataLoaded("");
+
+  manager_->OnRiskDataLoaded(base::TimeTicks::Now(), "");
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PaymentNotOfferedReason",

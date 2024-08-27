@@ -28,6 +28,18 @@ TEST(FacilitatedPaymentsMetricsTest, LogIsAvailableResult) {
       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogLoadRiskDataResult) {
+  base::HistogramTester histogram_tester;
+
+  LogLoadRiskDataResultAndLatency(/*was_successful=*/true,
+                                  base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.LoadRiskData.Success.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest, LogGetClientTokenResult) {
   base::HistogramTester histogram_tester;
 

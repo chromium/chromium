@@ -271,7 +271,7 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
   if (initiate_payment_request_details_->risk_data_.empty()) {
     client_->LoadRiskData(
         base::BindOnce(&FacilitatedPaymentsManager::OnRiskDataLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
   }
 
   bool promptShown = client_->ShowPixPaymentPrompt(
@@ -285,7 +285,10 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
 }
 
 void FacilitatedPaymentsManager::OnRiskDataLoaded(
+    base::TimeTicks start_time,
     const std::string& risk_data) {
+  LogLoadRiskDataResultAndLatency(/*was_successful=*/!risk_data.empty(),
+                                  base::TimeTicks::Now() - start_time);
   if (risk_data.empty()) {
     // TODO: b/348143700 - Show error screen if the loading screen is being
     // shown.

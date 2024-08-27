@@ -19,6 +19,11 @@ reviewer.
 
 <histograms>
 
+<variants name="BooleanResult">
+  <variant name="Failure" summary="failure"/>
+  <variant name="Success" summary="success"/>
+</variants>
+
 <!-- Note: Update the histogram summaries when adding a new variant.-->
 
 <variants name="FacilitatedPaymentsTypes">
@@ -206,6 +211,24 @@ reviewer.
     valid payment code for {FacilitatedPaymentsType}.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.LoadRiskData.{Result}.Latency"
+    units="ms" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Latency for the call to fetch risk data which was a {Result}. The risk data
+    gives device's risk fingerprint which is used to decide whether or not to
+    process the transaction. [Frequency] Logged at most once per page load.
+    [Trigger] The browser gets signal that a {FacilitatedPaymentsType} code
+    exists on the page.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram

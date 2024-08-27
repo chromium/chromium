@@ -43,6 +43,12 @@ enum class TriggerSource {
 // Log the result of whether the facilitated payments is available or not.
 void LogIsApiAvailableResult(bool result, base::TimeDelta duration);
 
+// Logs the result and latency for fetching the risk data. If the risk data was
+// fetched successfully, `was_successful` is true. The call took `duration` to
+// complete.
+void LogLoadRiskDataResultAndLatency(bool was_successful,
+                                     base::TimeDelta duration);
+
 // Log the result of the GetClientToken call made to api client.
 void LogGetClientTokenResult(bool result, base::TimeDelta duration);
 

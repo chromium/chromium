@@ -127,11 +127,14 @@ class FacilitatedPaymentsManager {
       FacilitatedPaymentsManagerTest,
       ApiClientAvailable_RiskDataNotLoaded_TriggersLoadRiskData);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PaymentNotOfferedReason_RiskDataEmpty);
-
+                           RiskDataNotEmpty_HistogramsLogged);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           RiskDataEmpty_HistogramsLogged);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       ApiClientAvailable_RiskDataLoaded_DoesNotTriggerLoadRiskData);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           PaymentNotOfferedReason_RiskDataEmpty);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       DoesNotRetrieveClientTokenIfPixPaymentPromptRejected);
@@ -285,8 +288,10 @@ class FacilitatedPaymentsManager {
   // payment.
   void OnApiAvailabilityReceived(bool is_api_available);
 
-  // Invoked when risk data is fetched.
-  void OnRiskDataLoaded(const std::string& risk_data);
+  // Invoked when risk data is fetched. The call to fetch the risk data was made
+  // at `start_time`.
+  void OnRiskDataLoaded(base::TimeTicks start_time,
+                        const std::string& risk_data);
 
   // Called after showing the PIX the payment prompt.
   void OnPixPaymentPromptResult(bool is_prompt_accepted,
