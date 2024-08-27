@@ -8050,3 +8050,6 @@ crbug.com/362280773 [ Mac11 ] external/wpt/pointerevents/coalesced_events_attrib
 # Disable to land https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/5803963
 crbug.com/362431898 http/tests/devtools/storage-panel-dom-storage.js [ Failure Pass ]
 crbug.com/362431898 http/tests/devtools/storage-panel-dom-storage-update.js [ Failure Pass ]
+
+# Flaky on Linux
+crbug.com/336354179 [ Linux ] http/tests/origin_trials/valid-token-window-open-meta-enabled.html [ Failure Pass ]
