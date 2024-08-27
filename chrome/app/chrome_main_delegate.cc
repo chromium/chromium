@@ -1591,13 +1591,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
 
   // Register component_updater PathProvider after DIR_USER_DATA overridden by
   // command line flags. Maybe move the chrome PathProvider down here also?
-  int alt_preinstalled_components_dir =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      ash::DIR_PREINSTALLED_COMPONENTS;
-#else
-      chrome::DIR_INTERNAL_PLUGINS;
-#endif
-
   int updated_components_dir =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR);
@@ -1606,7 +1599,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #endif
 
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
-                                          alt_preinstalled_components_dir,
+                                          chrome::DIR_INTERNAL_PLUGINS,
                                           updated_components_dir);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)

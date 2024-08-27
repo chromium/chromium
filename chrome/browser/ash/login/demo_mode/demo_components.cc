@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
@@ -13,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/path_service.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -31,6 +29,10 @@ constexpr base::FilePath::CharType kDemoAndroidAppsPath[] =
 
 constexpr base::FilePath::CharType kExternalExtensionsPrefsPath[] =
     FILE_PATH_LITERAL("demo_extensions.json");
+
+// Used in tests to override default location where deprecated
+// preinstalled offline demo mode resources component used to be located.
+const base::FilePath* g_preinstalled_resources_root_override = nullptr;
 
 PrefService* LocalState() {
   if (!g_browser_process) {
@@ -74,11 +76,18 @@ const char DemoComponents::kOfflineDemoModeResourcesComponentName[] =
 
 // static
 base::FilePath DemoComponents::GetPreInstalledPath() {
-  base::FilePath preinstalled_components_root;
-  base::PathService::Get(DIR_PREINSTALLED_COMPONENTS,
-                         &preinstalled_components_root);
+  base::FilePath preinstalled_components_root =
+      g_preinstalled_resources_root_override
+          ? *g_preinstalled_resources_root_override
+          : base::FilePath("/mnt/stateful_partition/unencrypted");
   return preinstalled_components_root.AppendASCII("cros-components")
       .AppendASCII(kOfflineDemoModeResourcesComponentName);
+}
+
+// static
+void DemoComponents::OverridePreinstalledResourcesRootPathForTesting(
+    const base::FilePath* path) {
+  g_preinstalled_resources_root_override = path;
 }
 
 DemoComponents::DemoComponents(DemoSession::DemoModeConfig config)

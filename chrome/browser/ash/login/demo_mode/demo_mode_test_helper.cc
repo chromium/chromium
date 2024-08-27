@@ -32,8 +32,8 @@ DemoModeTestHelper::DemoModeTestHelper()
   DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kNone);
 
   CHECK(components_temp_dir_.CreateUniqueTempDir());
-  components_path_override_ = std::make_unique<base::ScopedPathOverride>(
-      DIR_PREINSTALLED_COMPONENTS, components_temp_dir_.GetPath());
+  DemoComponents::OverridePreinstalledResourcesRootPathForTesting(
+      &components_temp_dir_.GetPath());
 
   CHECK(base::CreateDirectory(GetDemoResourcesPath()));
   CHECK(base::CreateDirectory(GetPreinstalledDemoResourcesPath()));
@@ -43,7 +43,10 @@ DemoModeTestHelper::~DemoModeTestHelper() {
   if (concierge_client_initialized_) {
     ConciergeClient::Shutdown();
   }
+
   DemoSession::ShutDownIfInitialized();
+  DemoComponents::OverridePreinstalledResourcesRootPathForTesting(nullptr);
+
   DemoSession::ResetDemoConfigForTesting();
   if (fake_component_manager_ash_) {
     fake_component_manager_ash_ = nullptr;

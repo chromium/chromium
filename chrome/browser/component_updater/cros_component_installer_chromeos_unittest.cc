@@ -209,7 +209,7 @@ class CrOSComponentInstallerTest : public testing::Test {
                                         .AppendASCII("cros-components");
     preinstalled_components_path_override_ =
         std::make_unique<base::ScopedPathOverride>(
-            ash::DIR_PREINSTALLED_COMPONENTS,
+            chrome::DIR_INTERNAL_PLUGINS,
             preinstalled_cros_components_.DirName());
 
     user_cros_components_ =

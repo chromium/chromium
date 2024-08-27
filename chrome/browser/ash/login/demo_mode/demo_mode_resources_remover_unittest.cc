@@ -69,6 +69,7 @@ class DemoModeResourcesRemoverTest : public testing::Test {
 
   void TearDown() override {
     demo_mode_test_helper_.reset();
+    activity_detector_->ResetStateForTesting();
     UserDataAuthClient::Shutdown();
   }
 

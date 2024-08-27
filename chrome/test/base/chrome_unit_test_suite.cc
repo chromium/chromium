@@ -163,11 +163,7 @@ void ChromeUnitTestSuite::InitializeProviders() {
   content::RegisterPathProvider();
   ui::RegisterPathProvider();
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-                                          ash::DIR_PREINSTALLED_COMPONENTS,
-#else
                                           chrome::DIR_INTERNAL_PLUGINS,
-#endif
                                           chrome::DIR_USER_DATA);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
