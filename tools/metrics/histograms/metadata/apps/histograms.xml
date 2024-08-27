@@ -1054,7 +1054,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.Search.Continue.FileSuggestionType.{SearchAction}"
-    enum="AppListContinueFileSuggestionType" expires_after="2024-12-24">
+    enum="AppListContinueFileSuggestionType" expires_after="2025-02-23">
   <owner>tbarzic@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1400,7 +1400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SearchFileScan.ExecutionTime" units="ms"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -2536,7 +2536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.NewUserFirstLauncherAction{TabletOrClamshell}"
-    enum="AppListLaunchedFrom" expires_after="2024-12-24">
+    enum="AppListLaunchedFrom" expires_after="2025-02-23">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -2571,7 +2571,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.NumberOfPages" units="page(s)" expires_after="2024-12-23">
+<histogram name="Apps.NumberOfPages" units="page(s)" expires_after="2025-02-23">
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -2672,7 +2672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.PromiseApp.LifecycleEvent"
-    enum="PromiseAppLifecycleEvent" expires_after="2024-12-24">
+    enum="PromiseAppLifecycleEvent" expires_after="2025-02-23">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2684,7 +2684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.PromiseApp.PromiseAppIconType" enum="PromiseAppIconType"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2697,7 +2697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.PromiseApp.PromiseAppType" enum="PromiseAppType"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2753,7 +2753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreBrowserResult" enum="RestoreTabResult"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>

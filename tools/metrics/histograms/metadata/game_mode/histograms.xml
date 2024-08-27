@@ -22,7 +22,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="GameMode.TimeInGameMode.Borealis" units="ms"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>matvore@google.com</owner>
   <owner>src/chrome/browser/ash/game_mode/OWNERS</owner>
   <summary>

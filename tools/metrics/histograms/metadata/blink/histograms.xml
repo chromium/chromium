@@ -804,7 +804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.CSSStyleSheetResource.ParseTime" units="microseconds"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <owner>blink-network-dev@chromium.org</owner>
@@ -2132,7 +2132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Fetch.RequestResourceTime2{SchemeOrPreload}"
-    units="microseconds" expires_after="2024-12-24">
+    units="microseconds" expires_after="2025-02-23">
   <owner>cduvall@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -2413,7 +2413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLFastPathParser.TotalParseTime2" units="microseconds"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
@@ -2553,7 +2553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.PreloadRequestCount" units="count"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2961,7 +2961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.BoostImagePriorityReason"
-    enum="BoostImagePriorityReason" expires_after="2024-12-24">
+    enum="BoostImagePriorityReason" expires_after="2025-02-23">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3315,7 +3315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.RecordedFontUrlHitCountForPagesWithFonts"
-    units="count" expires_after="2024-12-01">
+    units="count" expires_after="2025-02-23">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3346,7 +3346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.RecordedFontUrlMatchCountForPagesWithFonts"
-    units="count" expires_after="2024-12-24">
+    units="count" expires_after="2025-02-23">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3363,7 +3363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.RecordedFontUrlPredictionHitPercent" units="%"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3379,7 +3379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.RecordedFontUrlPredictionHitPercentInRecordedFonts"
-    units="%" expires_after="2024-12-24">
+    units="%" expires_after="2025-02-23">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3411,7 +3411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.RecordedFontUrlReenterCountForPagesWithFonts"
-    units="count" expires_after="2024-12-24">
+    units="count" expires_after="2025-02-23">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3427,7 +3427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.RecordedFontUrlReenterPercentInRecordedFonts"
-    units="%" expires_after="2024-12-24">
+    units="%" expires_after="2025-02-23">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -4355,7 +4355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.SVGImage.DataChanged" units="microseconds"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>

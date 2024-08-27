@@ -758,7 +758,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.VideoPresentationMode"
-    enum="DirectCompositionVideoPresentationMode" expires_after="2024-12-24">
+    enum="DirectCompositionVideoPresentationMode" expires_after="2025-02-23">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
@@ -1303,7 +1303,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2024-12-19">
+<histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2025-02-23">
   <owner>akhna@google.com</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
@@ -1474,7 +1474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Event{ThreadType}"
-    enum="GpuWatchdogThreadEvent" expires_after="2024-12-24">
+    enum="GpuWatchdogThreadEvent" expires_after="2025-02-23">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1489,7 +1489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Timeout{WatchdogStage}{ThreadType}"
-    enum="GpuWatchdogTimeoutEvent" expires_after="2024-12-24">
+    enum="GpuWatchdogTimeoutEvent" expires_after="2025-02-23">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>

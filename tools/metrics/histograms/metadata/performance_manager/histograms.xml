@@ -143,7 +143,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.CPUMonitorMemoryUse.{ResourceContextType}.{ResourceContextState}"
-    units="KB" expires_after="2024-12-24">
+    units="KB" expires_after="2025-02-23">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -315,7 +315,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.WriteCompleted.{SiteDBWriteTrigger}"
-    enum="BooleanCompleted" expires_after="2024-12-24">
+    enum="BooleanCompleted" expires_after="2025-02-23">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -328,7 +328,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger}"
-    enum="BooleanAttempted" expires_after="2024-12-24">
+    enum="BooleanAttempted" expires_after="2025-02-23">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

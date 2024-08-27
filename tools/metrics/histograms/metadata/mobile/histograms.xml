@@ -961,7 +961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.FromLaunch.{Target}" units="ms"
-    expires_after="2024-12-22">
+    expires_after="2025-02-23">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>

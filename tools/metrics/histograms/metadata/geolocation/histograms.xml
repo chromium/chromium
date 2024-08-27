@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Source"
-    enum="NetworkLocationRequestSource" expires_after="2024-12-24">
+    enum="NetworkLocationRequestSource" expires_after="2025-02-23">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

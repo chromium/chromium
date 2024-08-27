@@ -1703,7 +1703,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.IsDefaultBrowser{NumberOfDays}" enum="Boolean"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>sebsg@chromium.org</owner>
   <owner>gujen@chromium.org</owner>
   <summary>
@@ -1902,7 +1902,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.MostVisited" units="index"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3061,7 +3061,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ParcelTracking.OptInStatus"
-    enum="IOSParcelTrackingOptInStatus" expires_after="2024-12-24">
+    enum="IOSParcelTrackingOptInStatus" expires_after="2025-02-23">
   <owner>hiramahmood@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3350,7 +3350,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PushNotification.APNSDeviceRegistration"
-    enum="BooleanSuccess" expires_after="2024-12-24">
+    enum="BooleanSuccess" expires_after="2025-02-23">
   <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
   <summary>
@@ -3558,7 +3558,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Reauth.CreditCard.Autofill" enum="ReauthenticationEvent"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>sugoi@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -3568,7 +3568,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>sugoi@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -4052,7 +4052,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SaveToPhotos" enum="IOSSaveToPhotosType"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -4076,7 +4076,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.ContextMenu"
-    enum="IOSSaveToPhotosContextMenuType" expires_after="2024-12-24">
+    enum="IOSSaveToPhotosContextMenuType" expires_after="2025-02-23">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -4135,7 +4135,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.UploadSuccessLatency" units="ms"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
