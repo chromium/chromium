@@ -53,6 +53,14 @@
 
 using lens::CameraOpenEntryPoint;
 
+namespace {
+
+// Lens results web page loading progress threshold to transition from LVF to
+// results page.
+static const double kLensWebPageTransitionLoadingProgressThreshold = 0.5;
+
+}  // namespace
+
 @interface LensCoordinator () <ChromeLensControllerDelegate,
                                LensCommands,
                                CRWWebStateObserver,
@@ -376,8 +384,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 
 - (void)webState:(web::WebState*)webState
     didChangeLoadingProgress:(double)progress {
-  if (base::FeatureList::IsEnabled(kLensWebPageEarlyTransitionEnabled) &&
-      progress >= LensWebPageEarlyTransitionLoadingProgressThreshold()) {
+  if (progress >= kLensWebPageTransitionLoadingProgressThreshold) {
     [self transitionToLensWebPageWithWebState:webState];
   }
 }

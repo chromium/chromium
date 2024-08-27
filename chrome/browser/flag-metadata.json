@@ -5758,11 +5758,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "lens-web-page-early-transition-enabled",
-    "owners": ["cmyang@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "lens-web-page-load-optimization-enabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 140

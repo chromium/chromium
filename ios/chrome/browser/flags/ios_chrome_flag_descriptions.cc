@@ -648,11 +648,6 @@ const char kLensTranslateToggleModeEnabledName[] =
 const char kLensTranslateToggleModeEnabledDescription[] =
     "Enables the translate toggle mode.";
 
-const char kLensWebPageEarlyTransitionEnabledName[] =
-    "Lens web page early transition";
-const char kLensWebPageEarlyTransitionEnabledDescription[] =
-    "Enables earlier transitions from Lens UI to web page.";
-
 const char kLensWebPageLoadOptimizationEnabledName[] =
     "Lens web page load optimization";
 const char kLensWebPageLoadOptimizationEnabledDescription[] =

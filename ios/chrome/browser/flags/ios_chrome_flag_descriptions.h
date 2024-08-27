@@ -546,11 +546,6 @@ extern const char kLensFiltersAblationModeEnabledDescription[];
 extern const char kLensTranslateToggleModeEnabledName[];
 extern const char kLensTranslateToggleModeEnabledDescription[];
 
-// Title and description for the flag to enable the Lens web page early
-// transition.
-extern const char kLensWebPageEarlyTransitionEnabledName[];
-extern const char kLensWebPageEarlyTransitionEnabledDescription[];
-
 // Title and description for the flag to enable the Lens web page load
 // optimization.
 extern const char kLensWebPageLoadOptimizationEnabledName[];

@@ -1755,10 +1755,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)},
-    {"lens-web-page-early-transition-enabled",
-     flag_descriptions::kLensWebPageEarlyTransitionEnabledName,
-     flag_descriptions::kLensWebPageEarlyTransitionEnabledDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensWebPageEarlyTransitionEnabled)},
     {"omnibox-suggestion-answer-migration",
      flag_descriptions::kOmniboxSuggestionAnswerMigrationName,
      flag_descriptions::kOmniboxSuggestionAnswerMigrationDescription,
