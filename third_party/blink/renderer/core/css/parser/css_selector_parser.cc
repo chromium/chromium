@@ -1207,12 +1207,16 @@ bool IsSimpleSelectorValidAfterPseudoElement(
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
     case CSSSelector::kPseudoNot:
-    case CSSSelector::kPseudoHas:
       // These pseudo-classes are themselves always valid.
       // CSSSelectorParser::restricting_pseudo_element_ ensures that invalid
       // nested selectors will be dropped if they are invalid according to
       // this function.
       return true;
+    case CSSSelector::kPseudoHas:
+      if (!RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled()) {
+        return true;
+      }
+      [[fallthrough]];
     default:
       break;
   }

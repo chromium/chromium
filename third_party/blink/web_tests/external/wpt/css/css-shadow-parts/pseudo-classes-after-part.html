@@ -74,8 +74,9 @@ test_invalid_selector("::part(mypart):active-view-transition-type(mytype)");
 
 // Test that pseudo-classes that match based on tree information are not allowed after ::part.
 test_invalid_selector("::part(mypart):host");
-test_invalid_selector("::part(mypart):host-context()");
+test_invalid_selector("::part(mypart):host-context(:hover)");
 test_invalid_selector("::part(mypart):has(p)");
+test_invalid_selector("::part(mypart):has(:hover)");
 test_invalid_selector("::part(mypart):scope)");
 
 // Test that :not() applies appropriate constraints for being after ::part(),
