@@ -61,6 +61,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(TopicsConsentUpdateSource::kDefaultValue));
   registry->RegisterStringPref(
       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "");
+  registry->RegisterTimePref(prefs::kPrivacySandboxSentimentSurveyLastSeen,
+                             base::Time());
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord);
   registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord2);

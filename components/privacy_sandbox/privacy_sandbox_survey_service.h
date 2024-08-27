@@ -21,6 +21,13 @@ class PrivacySandboxSurveyService : public KeyedService {
   PrivacySandboxSurveyService& operator=(const PrivacySandboxSurveyService&) =
       delete;
 
+  // Determines if the sentiment survey should be surfaced. Returning `true`
+  // does not guarantee that a survey is shown.
+  bool ShouldShowSentimentSurvey();
+
+  // Called after the sentiment survey is successfully shown to the user.
+  void OnSuccessfulSentimentSurvey();
+
  private:
   raw_ptr<PrefService> pref_service_;
 };

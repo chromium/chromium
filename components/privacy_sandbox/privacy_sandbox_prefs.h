@@ -153,6 +153,12 @@ inline constexpr char kPrivacySandboxActivityTypeRecord[] =
 // Version 2 after enum values changed.
 inline constexpr char kPrivacySandboxActivityTypeRecord2[] =
     "privacy_sandbox.activity_type.record2";
+
+// Pref that records the timestamp of when a profile was shown a sentiment
+// survey.
+inline constexpr char kPrivacySandboxSentimentSurveyLastSeen[] =
+    "privacy_sandbox.sentiment_survey.last_seen";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {
