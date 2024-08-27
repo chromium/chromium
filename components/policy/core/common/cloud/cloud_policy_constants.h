@@ -84,6 +84,7 @@ extern const char kChromeMachineLevelUserCloudPolicyType[];
 extern const char kChromeMachineLevelExtensionCloudPolicyType[];
 extern const char kChromeRemoteCommandPolicyType[];
 extern const char kGoogleUpdateMachineLevelAppsPolicyType[];
+extern const char kGoogleUpdateMachineLevelOmahaPolicyType[];
 
 // Remote command type for `type` field in DeviceRemoteCommandRequest.
 // Command for Chrome OS Ash user.

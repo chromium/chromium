@@ -118,6 +118,9 @@ const char kChromeRemoteCommandPolicyType[] = "google/chromeos/remotecommand";
 const char kGoogleUpdateMachineLevelAppsPolicyType[] =
     "google/machine-level-apps";
 
+const char kGoogleUpdateMachineLevelOmahaPolicyType[] =
+    "google/machine-level-omaha";
+
 const char kChromeAshUserRemoteCommandType[] = "google/ash/user/remotecommand";
 const char kChromeDeviceRemoteCommandType[] = "google/ash/device/remotecommand";
 const char kChromeBrowserRemoteCommandType[] =

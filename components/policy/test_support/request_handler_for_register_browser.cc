@@ -143,7 +143,10 @@ RequestHandlerForRegisterPolicyAgent::ValidateRegisterBrowserRequest(
 constexpr base::flat_set<std::string>
 RequestHandlerForRegisterPolicyAgent::allowed_policy_types() {
   return base::MakeFlatSet<std::string>(
-      std::vector({dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType}));
+      std::vector({dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,
+                   dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+                   dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+                   dm_protocol::kChromeMachineLevelExtensionCloudPolicyType}));
 }
 
 }  // namespace policy
