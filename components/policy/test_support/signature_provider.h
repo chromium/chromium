@@ -94,8 +94,14 @@ class SignatureProvider {
   // Set the signing key signature for child domain (gmail.com).
   void SetSigningKeysForChildDomain();
 
+  bool SignVerificationData(const std::string& data,
+                            std::string* signature) const;
+
+  std::string GetVerificationPublicKey();
+
  private:
   std::vector<SigningKey> signing_keys_;
+  std::unique_ptr<crypto::RSAPrivateKey> verification_key_;
 
   // The key version to be used if no key version is defined by the client.
   int current_key_version_ = 1;

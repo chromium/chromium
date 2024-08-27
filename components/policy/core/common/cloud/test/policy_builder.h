@@ -30,6 +30,8 @@ class CloudPolicySettings;
 
 namespace policy {
 
+extern const uint8_t kVerificationPrivateKey[1218];
+
 // A helper class for testing that provides a straightforward interface for
 // constructing policy blobs for use in testing. NB: This uses fake data and
 // hard-coded signing keys by default, so should not be used in production code.
@@ -186,8 +188,9 @@ class TypedPolicyBuilder : public PolicyBuilder {
 
   // PolicyBuilder:
   void Build() override {
-    if (payload_)
+    if (payload_) {
       CHECK(payload_->SerializeToString(policy_data().mutable_policy_value()));
+    }
 
     PolicyBuilder::Build();
   }

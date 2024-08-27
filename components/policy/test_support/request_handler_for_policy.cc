@@ -13,6 +13,7 @@
 #include "components/policy/test_support/policy_storage.h"
 #include "components/policy/test_support/signature_provider.h"
 #include "components/policy/test_support/test_server_helpers.h"
+#include "crypto/rsa_private_key.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
@@ -245,6 +246,23 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
     if (!fetch_request.has_public_key_version() ||
         public_key_version != signing_key_version) {
       fetch_response->set_new_public_key(signing_key->public_key());
+
+      // Add the new public key verification data.
+      em::PublicKeyVerificationData new_signing_key_verification_data;
+      new_signing_key_verification_data.set_new_public_key(
+          signing_key->public_key());
+      new_signing_key_verification_data.set_domain(domain);
+      new_signing_key_verification_data.set_new_public_key_version(
+          signing_key_version);
+      std::string new_signing_key_verification_data_as_string;
+      CHECK(new_signing_key_verification_data.SerializeToString(
+          &new_signing_key_verification_data_as_string));
+      fetch_response->set_new_public_key_verification_data(
+          new_signing_key_verification_data_as_string);
+      CHECK(signature_provider->SignVerificationData(
+          new_signing_key_verification_data_as_string,
+          fetch_response
+              ->mutable_new_public_key_verification_data_signature()));
     }
 
     // Set the verification signature appropriate for the policy domain.
