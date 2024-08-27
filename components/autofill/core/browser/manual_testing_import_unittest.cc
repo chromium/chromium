@@ -185,7 +185,7 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Valid) {
         "NAME_LAST_SECOND" : "last"
       },
       {
-        "source" : "account",
+        "record_type" : "account",
         "initial_creator_id": 999,
         "ADDRESS_HOME_STREET_ADDRESS" : "street 123",
         "ADDRESS_HOME_STREET_NAME" : "street",
@@ -263,14 +263,15 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Invalid_UnrecognizedType) {
   EXPECT_FALSE(LoadProfilesFromFile(file_path).has_value());
 }
 
-// Tests that the conversion fails when the "source" has an unrecognized value.
+// Tests that the conversion fails when the "record_type" has an unrecognized
+// value.
 TEST_F(ManualTestingImportTest,
-       LoadProfilesFromFile_Invalid_UnrecognizedSource) {
+       LoadProfilesFromFile_Invalid_UnrecognizedRecordType) {
   base::FilePath file_path = GetFilePath();
   base::WriteFile(file_path, R"({
     "profiles" : [
       {
-        "source" : "invalid"
+        "record_type" : "invalid"
       }
     ]
   })");

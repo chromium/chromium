@@ -43,9 +43,7 @@ struct AutofillProfilesAndCreditCards {
 
 constexpr std::string_view kKeyProfiles = "profiles";
 constexpr std::string_view kKeyCreditCards = "credit-cards";
-// TODO(crbug.com/354706653): Rename to "record_type", by first renaming the key
-// inside existing JSON files.
-constexpr std::string_view kKeyRecordType = "source";
+constexpr std::string_view kKeyRecordType = "record_type";
 constexpr std::string_view kKeyNickname = "nickname";
 constexpr auto kRecordTypeMapping =
     base::MakeFixedFlatMap<std::string_view, AutofillProfile::RecordType>(
