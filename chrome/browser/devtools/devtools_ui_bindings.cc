@@ -927,10 +927,7 @@ void DevToolsUIBindings::OnAidaConversationRequest(
   }
   DevToolsUIBindings::NetworkResourceLoader::URLLoaderFactoryHolder
       url_loader_factory;
-  url_loader_factory = DevToolsWindow::AsDevToolsWindow(web_contents_)
-                           ->GetInspectedWebContents()
-                           ->GetPrimaryMainFrame()
-                           ->GetStoragePartition()
+  url_loader_factory = profile_->GetDefaultStoragePartition()
                            ->GetURLLoaderFactoryForBrowserProcess();
   auto resource_request =
       absl::get<network::ResourceRequest>(resource_request_or_error);
@@ -958,10 +955,7 @@ void DevToolsUIBindings::OnRegisterAidaClientEventRequest(
     std::move(callback).Run(&response_value);
     return;
   }
-  auto url_loader_factory = DevToolsWindow::AsDevToolsWindow(web_contents_)
-                                ->GetInspectedWebContents()
-                                ->GetPrimaryMainFrame()
-                                ->GetStoragePartition()
+  auto url_loader_factory = profile_->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   auto resource_request = std::make_unique<network::ResourceRequest>(
       absl::get<network::ResourceRequest>(resource_request_or_error));
