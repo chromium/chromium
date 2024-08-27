@@ -130,6 +130,7 @@ crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateContro
 crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
 crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/361615553 [ chromeos chromeos-board-jacuzzi ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-hardware [ Failure ]
 
 
 crbug.com/1466102 [ nvidia-0x2184 nvidia_lt_31.0.15.4601 win ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
