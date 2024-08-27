@@ -38,6 +38,7 @@ namespace {
 
 constexpr char kShortcutFileName[] = "Test Name.lnk";
 constexpr char16_t kShortcutName[] = u"Test Name";
+constexpr char16_t kShortcutWithInvalidCharsName[] = u"Test|Name";
 
 struct ImageDesc {
   int size;
@@ -112,6 +113,26 @@ TEST_F(ShortcutCreatorWinTest, ShortcutCreated) {
 
   ShortcutMetadata metadata(default_profile_path(), kUrl, kShortcutName,
                             std::move(images));
+  base::test::TestFuture<const base::FilePath&, ShortcutCreatorResult> future;
+
+  CreateShortcutOnUserDesktop(std::move(metadata), future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(ShortcutCreatorResult::kSuccess,
+            future.Get<ShortcutCreatorResult>());
+
+  VerifyShortcut(future.Get<base::FilePath>());
+}
+
+TEST_F(ShortcutCreatorWinTest, ShortcutWithInvalidCharsInNameCreated) {
+  gfx::ImageFamily images =
+      CreateImageFamily({{.size = 16, .color = SK_ColorCYAN},
+                         {.size = 32, .color = SK_ColorBLUE},
+                         {.size = 256, .color = SK_ColorGREEN}});
+
+  // The '|' in kShortcutWithInvalidCharsName should be replaced with ' ' and
+  // match kShortcutFileName.
+  ShortcutMetadata metadata(default_profile_path(), kUrl,
+                            kShortcutWithInvalidCharsName, std::move(images));
   base::test::TestFuture<const base::FilePath&, ShortcutCreatorResult> future;
 
   CreateShortcutOnUserDesktop(std::move(metadata), future.GetCallback());
