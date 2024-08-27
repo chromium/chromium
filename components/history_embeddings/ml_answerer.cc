@@ -68,8 +68,8 @@ class MlAnswerer::SessionManager {
   ~SessionManager() {
     // Run the existing callback if not called yet with canceled status.
     if (!callback_.is_null()) {
-      Finish(AnswererResult{ComputeAnswerStatus::EXECUTION_CANCELLED, query_,
-                            Answer()});
+      Finish(AnswererResult(ComputeAnswerStatus::EXECUTION_CANCELLED, query_,
+                            Answer()));
     }
   }
 
@@ -123,17 +123,15 @@ class MlAnswerer::SessionManager {
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result) {
     if (!result.response.has_value()) {
-      Finish(AnswererResult{ComputeAnswerStatus::EXECUTION_FAILURE, query_,
-                            Answer()});
+      Finish(AnswererResult(ComputeAnswerStatus::EXECUTION_FAILURE, query_,
+                            Answer()));
     } else if (result.response->is_complete) {
       auto response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::HistoryAnswerResponse>(
           std::move(result.response).value().response);
-      Finish(AnswererResult{ComputeAnswerStatus::SUCCESS,
-                            query_,
-                            response->answer(),
-                            urls_[session_index],
-                            {}});
+      Finish(AnswererResult(ComputeAnswerStatus::SUCCESS, query_,
+                            response->answer(), std::move(result.log_entry),
+                            urls_[session_index], {}));
     }
   }
 
@@ -204,8 +202,8 @@ void MlAnswerer::ComputeAnswer(std::string query,
         optimization_guide::ModelBasedCapabilityKey::kHistorySearch,
         /*config_params=*/std::nullopt);
     if (session == nullptr) {
-      session_manager_->Finish(AnswererResult{
-          ComputeAnswerStatus::MODEL_UNAVAILABLE, query, Answer()});
+      session_manager_->Finish(AnswererResult(
+          ComputeAnswerStatus::MODEL_UNAVAILABLE, query, Answer()));
       return;
     }
 
