@@ -10,8 +10,6 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
-#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
@@ -23,6 +21,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 

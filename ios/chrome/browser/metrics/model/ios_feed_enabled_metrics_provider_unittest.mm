@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
-
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
@@ -11,8 +10,8 @@
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_view_controller.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_view_controller_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_util.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
+#import "ios/chrome/browser/ui/ntp/incognito/incognito_view_util.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 @interface IncognitoInterstitialCoordinator () <

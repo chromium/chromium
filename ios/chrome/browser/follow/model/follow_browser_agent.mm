@@ -18,8 +18,6 @@
 #import "ios/chrome/browser/follow/model/follow_service.h"
 #import "ios/chrome/browser/follow/model/follow_service_factory.h"
 #import "ios/chrome/browser/follow/model/web_page_urls.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -28,6 +26,8 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

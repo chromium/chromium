@@ -5,18 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_NTP_SHARED_METRICS_FEED_REFRESH_STATE_TRACKER_H_
 #define IOS_CHROME_BROWSER_NTP_SHARED_METRICS_FEED_REFRESH_STATE_TRACKER_H_
 
-// Tracks state of the feed with regards to refreshing the feed, such as whether
-// the feed is user visible, or if the user has engaged with the latest refresh
-// content.
-@protocol FeedRefreshStateTracker
-
-// Returns YES if the user has engaged with the latest refreshed content. The
-// term "engaged" is an implementation detail of the receiver.
-- (BOOL)hasEngagedWithLatestRefreshedContent;
-
-// Returns YES if the NTP is visible to the user.
-- (BOOL)isNTPVisible;
-
-@end
+// Temporary include for downstream compatibility.
+#import "ios/chrome/browser/ui/ntp/metrics/feed_refresh_state_tracker.h"
 
 #endif  // IOS_CHROME_BROWSER_NTP_SHARED_METRICS_FEED_REFRESH_STATE_TRACKER_H_

@@ -136,14 +136,14 @@ source_set("browser_agent") {
     "//ios/chrome/browser/follow/model:service_factory",
     "//ios/chrome/browser/follow/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/ntp/shared/metrics",
-    "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/ntp/metrics:constants",
     "//ui/base",
   ]
 }
