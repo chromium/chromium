@@ -205,6 +205,11 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
             return make_result(
                 StoreSourceResult::ExceedsMaxTriggerStateCardinality(
                     attribution_reporting::MaxTriggerStateCardinality()));
+          case attribution_reporting::RandomizedResponseError::
+              kExceedsMaxEventStatesLimit:
+            return make_result(StoreSourceResult::ExceedsMaxEventStatesLimit(
+                source.registration()
+                    .attribution_scopes_data->max_event_states()));
         }
       });
   DCHECK(attribution_reporting::IsValid(randomized_response_data.response(),

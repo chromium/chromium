@@ -763,6 +763,8 @@ const sourceRegistrationStatusText:
           'Rejected: destination per day reporting limit reached',
       [StoreSourceResult.kExceedsMaxScopesChannelCapacity]:
           'Rejected: scopes channel capacity exceeds max allowed',
+      [StoreSourceResult.kExceedsMaxEventStatesLimit]:
+          'Rejected: event states exceeds limit',
     };
 
 const commonResult = {

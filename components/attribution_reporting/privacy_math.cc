@@ -638,6 +638,12 @@ DoRandomizedResponseWithCache(
   }
 
   if (scopes_data.has_value()) {
+    if (source_type == mojom::SourceType::kEvent &&
+        num_states > scopes_data->max_event_states()) {
+      return base::unexpected(
+          RandomizedResponseError::kExceedsMaxEventStatesLimit);
+    }
+
     double scopes_channel_capacity = internal::ComputeChannelCapacityScopes(
         num_states, scopes_data->max_event_states(),
         scopes_data->attribution_scope_limit());

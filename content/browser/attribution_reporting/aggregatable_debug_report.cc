@@ -97,6 +97,8 @@ std::optional<DebugDataType> GetDebugType(const StoreSourceResult& result) {
       return DebugDataType::kSourceDestinationPerDayRateLimit;
     case StoreSourceStatus::kExceedsMaxScopesChannelCapacity:
       return DebugDataType::kSourceScopesChannelCapacityLimit;
+    case StoreSourceStatus::kExceedsMaxEventStatesLimit:
+      return DebugDataType::kSourceMaxEventStatesLimit;
   }
 }
 

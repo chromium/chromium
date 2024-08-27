@@ -79,6 +79,11 @@ class CONTENT_EXPORT StoreSourceResult {
     explicit ExceedsMaxTriggerStateCardinality(uint32_t limit) : limit(limit) {}
   };
 
+  struct ExceedsMaxEventStatesLimit {
+    uint32_t limit;
+    explicit ExceedsMaxEventStatesLimit(uint32_t limit) : limit(limit) {}
+  };
+
   using Result = absl::variant<Success,
                                InternalError,
                                InsufficientSourceCapacity,
@@ -92,6 +97,7 @@ class CONTENT_EXPORT StoreSourceResult {
                                ExceedsMaxChannelCapacity,
                                ExceedsMaxScopesChannelCapacity,
                                ExceedsMaxTriggerStateCardinality,
+                               ExceedsMaxEventStatesLimit,
                                DestinationPerDayReportingLimitReached>;
 
   StoreSourceResult(StorableSource,

@@ -27,5 +27,6 @@ enum StoreSourceResult {
   kExceedsMaxTriggerStateCardinality = 13,
   kDestinationPerDayReportingLimitReached = 14,
   kExceedsMaxScopesChannelCapacity = 15,
+  kExceedsMaxEventStatesLimit = 16,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionStorageSourceStatus)

@@ -143,6 +143,10 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
                 DebugDataType::kSourceTriggerStateCardinalityLimit,
                 GetLimit(v.limit));
           },
+          [&](StoreSourceResult::ExceedsMaxEventStatesLimit v) {
+            return make_report_body(DebugDataType::kSourceMaxEventStatesLimit,
+                                    GetLimit(v.limit));
+          },
       },
       result.result());
 }

@@ -45,6 +45,7 @@ enum class RandomizedResponseError {
   kExceedsChannelCapacityLimit,
   kExceedsScopesChannelCapacityLimit,
   kExceedsTriggerStateCardinalityLimit,
+  kExceedsMaxEventStatesLimit,
 };
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RandomizedResponseData {

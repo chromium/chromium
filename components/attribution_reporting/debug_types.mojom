@@ -48,5 +48,6 @@ enum DebugDataType {
   kSourceDestinationPerDayRateLimit = 36,
   kSourceDestinationLimitReplaced = 37,
   kSourceScopesChannelCapacityLimit = 38,
+  kSourceMaxEventStatesLimit = 39,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionVerboseDebugReportType)
