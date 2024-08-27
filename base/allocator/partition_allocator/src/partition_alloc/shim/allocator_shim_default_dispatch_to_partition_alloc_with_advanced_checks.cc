@@ -74,13 +74,12 @@ namespace internal {
 
 void FreeWithAdvancedChecks(void* address, void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
-  PA_MUSTTAIL return delegate->free_function(delegate, address, context);
+  PA_MUSTTAIL return delegate->free_function(address, context);
 }
 
 void* ReallocWithAdvancedChecks(void* address, size_t size, void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
-  PA_MUSTTAIL return delegate->realloc_function(delegate, address, size,
-                                                context);
+  PA_MUSTTAIL return delegate->realloc_function(address, size, context);
 }
 
 }  // namespace internal
