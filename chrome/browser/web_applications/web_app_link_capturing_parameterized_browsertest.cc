@@ -876,8 +876,14 @@ class WebAppLinkCapturingParameterizedBrowserTest
   std::optional<base::Value> test_expectations_;
 };
 
+// TODO(crbug.com/359600606): Enable on CrOS if needed.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CheckLinkCaptureCombinations DISABLED_CheckLinkCaptureCombinations
+#else
+#define MAYBE_CheckLinkCaptureCombinations CheckLinkCaptureCombinations
+#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
-                       CheckLinkCaptureCombinations) {
+                       MAYBE_CheckLinkCaptureCombinations) {
   testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
 
   const base::Value::Dict& test_case = GetTestCaseDataFromParam();
@@ -1034,9 +1040,9 @@ INSTANTIATE_TEST_SUITE_P(
     Capturable,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
-        // TODO: Add kNavigateExisting.
         testing::Values(
-            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting),
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1048,7 +1054,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementLink,
                         NavigationElement::kElementButton),
-        // TODO: Add shift and middle click cases.
         testing::Values(ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
@@ -1058,10 +1063,16 @@ INSTANTIATE_TEST_SUITE_P(
 // no longer exist in code but still exist in the expectations json file.
 // Additionally if this test is run with the --rebaseline-link-capturing-test
 // flag any left-over expectations will be cleaned up.
+// TODO(crbug.com/359600606): Enable on CrOS if needed.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CleanupExpectations DISABLED_CleanupExpectations
+#else
+#define MAYBE_CleanupExpectations CleanupExpectations
+#endif  // BUILDFLAG(IS_CHROMEOS)
 using WebAppLinkCapturingParameterizedExpectationTest =
     WebAppLinkCapturingParameterizedBrowserTest;
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedExpectationTest,
-                       CleanupExpectations) {
+                       MAYBE_CleanupExpectations) {
   std::set<std::string> test_cases;
   const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
   for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
