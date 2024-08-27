@@ -11,6 +11,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -90,18 +91,24 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final ExternalAuthUtils mExternalAuthUtils;
         private final Verifier mVerifier;
         private final @ActivityType int mActivityType;
+        private final BrowserServicesIntentDataProvider mIntentDataProvider;
+        private final Activity mActivity;
 
         /** Constructs a new instance of {@link CustomTabNavigationDelegate}. */
         CustomTabNavigationDelegate(
                 Tab tab,
                 ExternalAuthUtils authUtils,
                 Verifier verifier,
-                @ActivityType int activityType) {
+                @ActivityType int activityType,
+                BrowserServicesIntentDataProvider intentDataProvider,
+                Activity activity) {
             super(tab);
             mClientPackageName = TabAssociatedApp.from(tab).getAppId();
             mExternalAuthUtils = authUtils;
             mVerifier = verifier;
             mActivityType = activityType;
+            mIntentDataProvider = intentDataProvider;
+            mActivity = activity;
         }
 
         @Override
@@ -134,6 +141,26 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             // within the Webapp/TWA's scope.
             // TODO(crbug.com/40549331): Migrate verifier hierarchy to GURL.
             return mVerifier != null && mVerifier.shouldIgnoreExternalIntentHandlers(url.getSpec());
+        }
+
+        @Override
+        public boolean shouldDisableAllExternalIntents() {
+            return mActivityType == ActivityType.AUTH_TAB;
+        }
+
+        @Override
+        public boolean shouldReturnAsActivityResult(GURL url) {
+            if (!shouldDisableAllExternalIntents()) return false;
+            String redirectScheme = mIntentDataProvider.getAuthRedirectScheme();
+            return !TextUtils.isEmpty(redirectScheme) && url.getScheme().equals(redirectScheme);
+        }
+
+        @Override
+        public void returnAsActivityResult(GURL url) {
+            Intent intent = new Intent();
+            intent.setData(Uri.parse(url.getSpec()));
+            mActivity.setResult(Activity.RESULT_OK, intent);
+            mActivity.finish();
         }
     }
 
@@ -490,7 +517,12 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         } else {
             mNavigationDelegate =
                     new CustomTabNavigationDelegate(
-                            tab, mExternalAuthUtils, mVerifier, mActivityType);
+                            tab,
+                            mExternalAuthUtils,
+                            mVerifier,
+                            mActivityType,
+                            mIntentDataProvider,
+                            mActivity);
         }
         return new ExternalNavigationHandler(mNavigationDelegate);
     }

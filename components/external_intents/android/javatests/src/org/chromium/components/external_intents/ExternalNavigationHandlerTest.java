@@ -403,6 +403,51 @@ public class ExternalNavigationHandlerTest {
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
     }
 
+    private void assertOverrideUrlToNavigateToTab() {
+        mDelegate.setCanResolveActivityForExternalSchemes(false);
+        checkUrl(INTENT_URL_WITH_FALLBACK_URL, redirectHandlerForLinkClick())
+                .withReferrer(SEARCH_RESULT_URL_FOR_TOM_HANKS)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, IGNORE);
+        mDelegate.setCanResolveActivityForExternalSchemes(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldReturnAsActivityResult_externalIntent() {
+        checkUrl("tel:012345678", redirectHandlerForLinkClick())
+                .expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+
+        mDelegate.setShouldDisableAllExternalIntents(true);
+        // With #shouldDisableAllExternalIntents() returning true,
+        // #OVERRIDE_WITH_EXTERNAL_INTENT is replaced with #NO_OVERRIDE.
+        checkUrl("tel:012345678", redirectHandlerForLinkClick())
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+
+        mDelegate.setShouldReturnAsActivityResult(true);
+        checkUrl("tel:012345678", redirectHandlerForLinkClick())
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldReturnAsActivityResult_preserveOtherResultTypes() {
+        checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+        assertOverrideUrlToNavigateToTab();
+
+        mDelegate.setShouldDisableAllExternalIntents(true);
+        checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+        assertOverrideUrlToNavigateToTab();
+
+        mDelegate.setShouldReturnAsActivityResult(true);
+        checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+        assertOverrideUrlToNavigateToTab();
+    }
+
     @Test
     @SmallTest
     public void testIgnore() {
@@ -3319,6 +3364,19 @@ public class ExternalNavigationHandlerTest {
             return SELF_SCHEME;
         }
 
+        @Override
+        public boolean shouldDisableAllExternalIntents() {
+            return mShouldDisableAllExternalIntents;
+        }
+
+        @Override
+        public boolean shouldReturnAsActivityResult(GURL url) {
+            return mShouldReturnAsActivityResult;
+        }
+
+        @Override
+        public void returnAsActivityResult(GURL url) {}
+
         public void reset() {
             startIncognitoIntentCalled = false;
         }
@@ -3395,6 +3453,14 @@ public class ExternalNavigationHandlerTest {
             mWindowAndroid = windowAndroid;
         }
 
+        public void setShouldDisableAllExternalIntents(boolean disable) {
+            mShouldDisableAllExternalIntents = disable;
+        }
+
+        public void setShouldReturnAsActivityResult(boolean returnResult) {
+            mShouldReturnAsActivityResult = returnResult;
+        }
+
         public boolean startIncognitoIntentCalled;
         public boolean maybeSetRequestMetadataCalled;
         public Callback<Boolean> incognitoDialogUserDecisionCallback;
@@ -3416,6 +3482,8 @@ public class ExternalNavigationHandlerTest {
         private Context mContext;
         private boolean mShouldEmbedderInitiatedNavigationsStayInBrowser = true;
         private boolean mResolvesToOtherBrowser;
+        private boolean mShouldDisableAllExternalIntents;
+        private boolean mShouldReturnAsActivityResult;
     }
 
     private void checkIntentSanity(Intent intent, String name) {

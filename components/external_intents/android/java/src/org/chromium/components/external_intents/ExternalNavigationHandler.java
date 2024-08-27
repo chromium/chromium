@@ -952,13 +952,14 @@ public class ExternalNavigationHandler {
 
     /**
      * @return whether something along the navigation chain prevents the current navigation from
-     * leaving Chrome.
+     *     leaving Chrome.
      */
     private @NavigationChainResult int navigationChainBlocksExternalNavigation(
             ExternalNavigationParams params,
             Intent targetIntent,
             QueryIntentActivitiesSupplier resolvingInfos,
-            boolean isExternalProtocol) {
+            boolean isExternalProtocol,
+            boolean shouldReturnAsResult) {
         RedirectHandler handler = params.getRedirectHandler();
         RedirectHandler.InitialNavigationState initialState = handler.getInitialNavigationState();
 
@@ -998,7 +999,8 @@ public class ExternalNavigationHandler {
 
         // If the intent targets the calling app, we can bypass the gesture requirements and any
         // signals from the initial intent that suggested the intent wanted to stay in Chrome.
-        if (mDelegate.isForTrustedCallingApp(resolvingInfos)) {
+        // This also takes effect if the url is overridden for Activity#setResult.
+        if (mDelegate.isForTrustedCallingApp(resolvingInfos) || shouldReturnAsResult) {
             return NavigationChainResult.FOR_TRUSTED_CALLER;
         }
 
@@ -1613,10 +1615,15 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
+        boolean shouldReturnAsResult = mDelegate.shouldReturnAsActivityResult(intentTargetUrl);
         @NavigationChainResult
         int navigationChainResult =
                 navigationChainBlocksExternalNavigation(
-                        params, targetIntent, resolvingInfos, isExternalProtocol);
+                        params,
+                        targetIntent,
+                        resolvingInfos,
+                        isExternalProtocol,
+                        shouldReturnAsResult);
 
         // Short-circuit expensive quertyIntentActivities calls below since we won't prompt anyways
         // for protocols the browser can handle.
@@ -1628,6 +1635,16 @@ public class ExternalNavigationHandler {
         // fallback URL (unless we have to prompt).
         if (navigationChainResult == NavigationChainResult.ALLOWED) {
             canLaunchExternalFallbackResult.set(true);
+        }
+
+        if (shouldReturnAsResult) {
+            // TODO(b/353586171): Consider adding a new override type.
+            mDelegate.returnAsActivityResult(intentTargetUrl);
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
+
+        if (mDelegate.shouldDisableAllExternalIntents()) {
+            return OverrideUrlLoadingResult.forNoOverride();
         }
 
         if (resolvingInfos.get().isEmpty()) {

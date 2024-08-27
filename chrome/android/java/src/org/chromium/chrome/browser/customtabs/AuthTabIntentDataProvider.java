@@ -37,6 +37,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     private final @Nullable String mClientPackageName;
     private final @NonNull ColorProvider mColorProvider;
     private final @NonNull Drawable mCloseButtonIcon;
+    private final @Nullable String mRedirectScheme;
 
     @Nullable private String mUrlToLoad;
 
@@ -59,6 +60,11 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
                         intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
         mColorProvider = new AuthTabColorProvider(context);
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
+        // TODO(crbug.com/353586171): We should disallow http/https and other known schemes such as
+        // content://, file://, chrome:// etc. Can be handled using methods in UrlUtilities, but we
+        // might want to disallow more.
+        mRedirectScheme =
+                IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_REDIRECT_SCHEME);
     }
 
     @Override
@@ -129,5 +135,10 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     @Override
     public boolean isAuthTab() {
         return true;
+    }
+
+    @Override
+    public String getAuthRedirectScheme() {
+        return mRedirectScheme;
     }
 }

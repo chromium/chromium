@@ -658,4 +658,9 @@ public abstract class BrowserServicesIntentDataProvider {
     public boolean isAuthTab() {
         return false;
     }
+
+    /** Return the redirect scheme for AuthTab. */
+    public String getAuthRedirectScheme() {
+        return null;
+    }
 }
