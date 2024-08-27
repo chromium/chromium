@@ -235,8 +235,11 @@ void LensOverlayQueryController::StartQueryFlow(
 }
 
 void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
-  DCHECK(query_controller_state_ !=
-         QueryControllerState::kAwaitingFullImageResponse);
+  // There can be multiple full image requests that are called. For example,
+  // when translate mode is enabled after opening the overlay or when turning
+  // translate mode back off after enabling. Reset if there is one pending.
+  latest_full_image_sequence_id_ = -1;
+  full_image_endpoint_fetcher_.reset();
   query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
 
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
@@ -355,6 +358,7 @@ void LensOverlayQueryController::FetchFullImageRequest(
 
   int64_t query_start_time_ms =
       base::Time::Now().InMillisecondsSinceUnixEpoch();
+  latest_full_image_sequence_id_ = request_id->sequence_id();
 
   // Fetch the request.
   CreateAndFetchEndpointFetcher(
@@ -363,12 +367,20 @@ void LensOverlayQueryController::FetchFullImageRequest(
           &LensOverlayQueryController::OnFullImageEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&LensOverlayQueryController::FullImageFetchResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr(), query_start_time_ms));
+                     weak_ptr_factory_.GetWeakPtr(), query_start_time_ms,
+                     latest_full_image_sequence_id_));
 }
 
 void LensOverlayQueryController::FullImageFetchResponseHandler(
     int64_t query_start_time_ms,
+    int request_sequence_id,
     std::unique_ptr<EndpointResponse> response) {
+  // If this request sequence ID does not match the latest sent then we should
+  // ignore the response.
+  if (request_sequence_id != latest_full_image_sequence_id_) {
+    return;
+  }
+
   DCHECK_EQ(query_controller_state_,
             QueryControllerState::kAwaitingFullImageResponse);
 

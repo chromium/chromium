@@ -201,6 +201,7 @@ class LensOverlayQueryController {
   // Handles the endpoint fetch response for the initial request.
   void FullImageFetchResponseHandler(
       int64_t query_start_time_ms,
+      int request_sequence_id,
       std::unique_ptr<EndpointResponse> response);
 
   // Handles the response from a latency gen204 request.
@@ -381,6 +382,10 @@ class LensOverlayQueryController {
 
   // The current gen204 id for logging, set on each overlay invocation.
   uint64_t gen204_id_;
+
+  // The latest full image request sequence id. Used for cancelling any full
+  // image requests that have been superseded by another.
+  int latest_full_image_sequence_id_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };
