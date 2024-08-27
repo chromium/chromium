@@ -5,6 +5,8 @@
 #include "content/browser/web_contents/web_contents_view_aura.h"
 
 #include <stddef.h>
+
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -118,10 +120,11 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
   void StartTestWithPage(const std::string& url) {
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL test_url;
-    if (url == "about:blank")
+    if (url == "about:blank") {
       test_url = GURL(url);
-    else
+    } else {
       test_url = GURL(embedded_test_server()->GetURL(url));
+    }
     EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
     frame_observer_ = std::make_unique<RenderFrameSubmissionObserver>(
@@ -204,8 +207,9 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     EXPECT_FALSE(controller.CanGoForward());
     EXPECT_EQ(0, EvalJs(main_frame, "get_current()"));
 
-    if (touch_handler)
+    if (touch_handler) {
       ASSERT_TRUE(content::ExecJs(main_frame, "install_touch_handler()"));
+    }
 
     ASSERT_TRUE(content::ExecJs(main_frame, "navigate_next()"));
     ASSERT_TRUE(content::ExecJs(main_frame, "navigate_next()"));
@@ -294,8 +298,9 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
   }
 
   void WaitAFrame() {
-    while (!GetRenderWidgetHost()->RequestRepaintForTesting())
+    while (!GetRenderWidgetHost()->RequestRepaintForTesting()) {
       GiveItSomeTime();
+    }
     frame_observer_->WaitForAnyFrameSubmission();
   }
 
@@ -781,7 +786,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, ContentWindowClose) {
 // For linux, see http://crbug.com/381294.
 // For ChromeOS, see http://crbug.com/668128.
 // For Fuchsia, see https://crbug.com/1318245.
-#define MAYBE_RepeatedQuickOverscrollGestures DISABLED_RepeatedQuickOverscrollGestures
+#define MAYBE_RepeatedQuickOverscrollGestures \
+  DISABLED_RepeatedQuickOverscrollGestures
 #else
 #define MAYBE_RepeatedQuickOverscrollGestures RepeatedQuickOverscrollGestures
 #endif
@@ -817,7 +823,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   // right.
   std::u16string expected_title = u"Title: #2";
   content::TitleWatcher title_watcher(web_contents, expected_title);
-  TestNavigationManager nav_watcher(web_contents,
+  TestNavigationManager nav_watcher(
+      web_contents,
       embedded_test_server()->GetURL("/overscroll_navigation.html#2"));
 
   generator.GestureScrollSequence(
@@ -892,10 +899,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define MAYBE_OverscrollNavigationTouchThrottling \
-        DISABLED_OverscrollNavigationTouchThrottling
+  DISABLED_OverscrollNavigationTouchThrottling
 #else
 #define MAYBE_OverscrollNavigationTouchThrottling \
-        DISABLED_OverscrollNavigationTouchThrottling
+  DISABLED_OverscrollNavigationTouchThrottling
 #endif
 
 // Tests that touch moves are not throttled when performing a scroll gesture on
@@ -997,10 +1004,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
         ->ForwardGestureEventWithLatencyInfo(scroll_end, ui::LatencyInfo());
     WaitAFrame();
 
-    if (!navigated)
+    if (!navigated) {
       EXPECT_EQ(10, EvalJs(shell(), "touchmoveCount"));
-    else
+    } else {
       EXPECT_GT(10, EvalJs(shell(), "touchmoveCount"));
+    }
   }
 }
 
@@ -1065,6 +1073,20 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
 
   EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
+}
+
+// Tests that the content is not focusable when inputs are ignored, and that it
+// is focusable when inputs are not ignored.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, IgnoreInputs_Focus) {
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/simple_page.html"));
+  WebContentsImpl* contents = GetWebContentsImpl();
+  aura::WindowDelegate* view = GetWebContentsViewAura();
+
+  std::optional<WebContents::ScopedIgnoreInputEvents> ignore_inputs =
+      contents->IgnoreInputEvents(std::nullopt);
+  EXPECT_FALSE(view->CanFocus());
+  ignore_inputs.reset();
+  EXPECT_TRUE(view->CanFocus());
 }
 
 }  // namespace content

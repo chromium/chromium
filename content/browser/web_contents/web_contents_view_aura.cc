@@ -1269,10 +1269,15 @@ bool WebContentsViewAura::CanFocus() {
   // this window can handle key events.
   RenderWidgetHostViewAura* view = ToRenderWidgetHostViewAura(
       web_contents_->GetRenderWidgetHostView());
-  if (view != nullptr && !view->IsClosing())
-    return true;
+  if (view == nullptr || view->IsClosing()) {
+    return false;
+  }
 
-  return false;
+  if (web_contents_->ShouldIgnoreInputEvents()) {
+    return false;
+  }
+
+  return true;
 }
 
 void WebContentsViewAura::OnCaptureLost() {
