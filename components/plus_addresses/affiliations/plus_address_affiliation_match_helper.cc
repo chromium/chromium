@@ -43,22 +43,9 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
     return;
   }
 
-  // The barrier is used to collect affiliated plus addresses from multiple
-  // sources (i.e. grouped affiliations, PSL matches), combine and return them.
-  const int kCallsNumber = 2;
-  auto barrier_callback = base::BarrierCallback<std::vector<PlusProfile>>(
-      kCallsNumber,
-      base::BindOnce(&PlusAddressAffiliationMatchHelper::MergeResults,
-                     weak_factory_.GetWeakPtr(), std::move(result_callback)));
-
   GetPSLExtensions(base::BindOnce(
-      &PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches,
-      weak_factory_.GetWeakPtr(), barrier_callback, facet));
-
-  affiliation_service_->GetGroupingInfo(
-      {facet},
-      base::BindOnce(&PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived,
-                     weak_factory_.GetWeakPtr(), barrier_callback));
+      &PlusAddressAffiliationMatchHelper::RequestGroupInfo,
+      weak_factory_.GetWeakPtr(), std::move(result_callback), facet));
 }
 
 void PlusAddressAffiliationMatchHelper::GetPSLExtensions(
@@ -91,62 +78,54 @@ void PlusAddressAffiliationMatchHelper::OnPSLExtensionsReceived(
   }
 }
 
-void PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches(
-    base::RepeatingCallback<void(std::vector<PlusProfile>)>
-        matches_received_callback,
+void PlusAddressAffiliationMatchHelper::RequestGroupInfo(
+    AffiliatedPlusProfilesCallback result_callback,
     const FacetURI& facet,
     const base::flat_set<std::string>& psl_extensions) {
-  std::vector<PlusProfile> matches;
-  for (const PlusProfile& stored_profile :
-       plus_address_service_->GetPlusProfiles()) {
-    // Note that exact matches are also PSL matches.
-    // The use of `potentially_invalid_spec()` is due to potential `http`
-    // facets which are considered invalid by the FacetURI class. Note that
-    // `IsExtendedPublicSuffixDomainMatch` excludes truly invalid URLs.
-    if (affiliations::IsExtendedPublicSuffixDomainMatch(
-            GURL(stored_profile.facet.potentially_invalid_spec()),
-            GURL(facet.potentially_invalid_spec()), psl_extensions)) {
-      matches.push_back(std::move(stored_profile));
-    }
-  }
-  std::move(matches_received_callback).Run(std::move(matches));
+  affiliation_service_->GetGroupingInfo(
+      {facet},
+      base::BindOnce(&PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived,
+                     weak_factory_.GetWeakPtr(), std::move(result_callback),
+                     psl_extensions));
 }
 
 void PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived(
-    base::RepeatingCallback<void(std::vector<PlusProfile>)>
-        matches_received_callback,
+    AffiliatedPlusProfilesCallback result_callback,
+    const base::flat_set<std::string>& psl_extensions,
     const std::vector<affiliations::GroupedFacets>& results) {
-  // GetGroupingInfo() returns a an affiliation group for each facet. Asking for
-  // only one facet means that it must return only one group that includes
-  // requested facet itself.
+  // GetGroupingInfo() returns an affiliation group for each facet. Asking for
+  // only one facet means that it must return only one group that **always**
+  // includes requested facet itself.
   CHECK_EQ(1U, results.size());
 
   std::vector<PlusProfile> matches;
-  for (const affiliations::Facet& facet : results[0].facets) {
-    // TODO(crbug.com/360180378): Add PSL matching on group results. This will
-    // also add filling support on the group's http facets.
-    std::optional<PlusProfile> profile =
-        plus_address_service_->GetPlusProfile(facet.uri);
-    if (profile) {
-      matches.push_back(std::move(*profile));
+  for (const affiliations::Facet& group_facet : results[0].facets) {
+    // Android facets
+    if (group_facet.uri.IsValidAndroidFacetURI()) {
+      if (std::optional<PlusProfile> profile =
+              plus_address_service_->GetPlusProfile(group_facet.uri)) {
+        matches.push_back(std::move(*profile));
+      }
+      continue;
+    }
+
+    // Web facets
+    for (const PlusProfile& stored_profile :
+         plus_address_service_->GetPlusProfiles()) {
+      if (affiliations::IsExtendedPublicSuffixDomainMatch(
+              GURL(stored_profile.facet.potentially_invalid_spec()),
+              GURL(group_facet.uri.potentially_invalid_spec()),
+              psl_extensions)) {
+        matches.push_back(std::move(stored_profile));
+      }
     }
   }
-  std::move(matches_received_callback).Run(std::move(matches));
-}
 
-void PlusAddressAffiliationMatchHelper::MergeResults(
-    AffiliatedPlusProfilesCallback result_callback,
-    std::vector<std::vector<PlusProfile>> results) {
-  std::vector<PlusProfile> response;
-  for (std::vector<PlusProfile>& profiles : results) {
-    response.insert(response.end(), std::make_move_iterator(profiles.begin()),
-                    std::make_move_iterator(profiles.end()));
-  }
   // Remove duplicates.
-  std::sort(response.begin(), response.end(), PlusProfileFacetComparator());
-  response.erase(std::unique(response.begin(), response.end()), response.end());
+  std::sort(matches.begin(), matches.end(), PlusProfileFacetComparator());
+  matches.erase(std::unique(matches.begin(), matches.end()), matches.end());
 
-  std::move(result_callback).Run(std::move(response));
+  std::move(result_callback).Run(std::move(matches));
 }
 
 }  // namespace plus_addresses

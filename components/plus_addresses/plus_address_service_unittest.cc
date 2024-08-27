@@ -1624,6 +1624,7 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLSuggestions) {
 
   // Empty affiliation group.
   affiliations::GroupedFacets group;
+  group.facets.emplace_back(profile1.facet);
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
@@ -1796,6 +1797,7 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLProfiles) {
 
   // Empty affiliation group.
   affiliations::GroupedFacets group;
+  group.facets.emplace_back(profile1.facet);
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));

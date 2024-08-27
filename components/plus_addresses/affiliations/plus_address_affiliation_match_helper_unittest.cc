@@ -257,6 +257,38 @@ TEST_F(PlusAddressAffiliationMatchHelperTest,
       profile1.facet, {profile1, psl_match, group_profile}));
 }
 
+// Verifies that facets that PSL-match entries in the affiliation group are
+// returned.
+TEST_F(PlusAddressAffiliationMatchHelperTest, GroupePSLMatchesTest) {
+  PlusProfile requested_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example.com"));
+  PlusProfile psl_match = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://foo.example.com"));
+  PlusProfile group_psl_match = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://group.foo.com"));
+
+  SaveProfiles({psl_match, group_psl_match});
+  ASSERT_THAT(plus_address_service()->GetPlusProfiles(),
+              UnorderedElementsAreArray({psl_match, group_psl_match}));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(requested_profile.facet);
+  // The `group_psl_match` matches the following entry in the affiliation group.
+  group.facets.emplace_back(FacetURI::FromCanonicalSpec("https://foo.com"));
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  // The expected results:
+  // * `psl_match` is a PSL match with the requested facet. It is *not* part of
+  // group results.
+  // * `group_psl_match` is a PSL match with an entry in the affiliation group.
+  EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(requested_profile.facet,
+                                                {psl_match, group_psl_match}));
+}
+
 // Verifies a case where affiliations are requested on an http domain, and
 // client has existing plus addresses for PSL matched (https) domains.
 TEST_F(PlusAddressAffiliationMatchHelperTest, SupportHttpPSLMatchedDomains) {
@@ -281,6 +313,37 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, SupportHttpPSLMatchedDomains) {
 
   EXPECT_TRUE(
       ExpectMatchHelperToReturnProfiles(http_profile.facet, {https_profile}));
+}
+
+// Verifies that http domains that are part of the affiliation group of
+// the requested domain are returned.
+TEST_F(PlusAddressAffiliationMatchHelperTest, SupportGroupHttpDomainMatches) {
+  PlusProfile http_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("http://example.com"));
+  PlusProfile stored_https_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example.com"));
+
+  // The user has the `profile` stored.
+  SaveProfiles({stored_https_profile});
+  ASSERT_THAT(plus_address_service()->GetPlusProfiles(),
+              testing::UnorderedElementsAreArray({stored_https_profile}));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+
+  FacetURI requested_facet =
+      FacetURI::FromPotentiallyInvalidSpec("http://foo.com");
+
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(requested_facet);
+  // Include http domain as part of the group results.
+  group.facets.emplace_back(http_profile.facet);
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(requested_facet,
+                                                {stored_https_profile}));
 }
 
 }  // namespace plus_addresses
