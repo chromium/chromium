@@ -1281,18 +1281,6 @@
     ],
     'machines': {
       'android-angle-chromium-arm64-builder': {},
-      'android-angle-chromium-arm64-nexus5x': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'oreo_fleet',
-          'bullhead',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
-        },
-      },
       'android-angle-chromium-arm64-pixel2': {
         'browser_config': 'android-chromium',
         'os_type': 'android',

@@ -32,8 +32,7 @@ try_.builder(
     executable = "recipe:angle_chromium_trybot",
     mirrors = [
         "ci/android-angle-chromium-arm64-builder",
-        # (crbug.com/355671260): Switch to pixel2 CI builder once it's stable
-        "ci/android-angle-chromium-arm64-nexus5x",
+        "ci/android-angle-chromium-arm64-pixel2",
     ],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,

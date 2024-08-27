@@ -273,7 +273,6 @@ exempted_from_description_builders = {
         "android-13-x64-fyi-rel",
         "android-androidx-packager",
         "android-angle-chromium-arm64-builder",
-        "android-angle-chromium-arm64-nexus5x",
         "android-annotator-rel",
         "android-archive-rel",
         "android-arm64-archive-rel",
