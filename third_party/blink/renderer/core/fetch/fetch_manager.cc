@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -1778,12 +1779,28 @@ FetchLaterManager::PrepareNetworkRequest(
   FetchParameters params(std::move(request), options);
   WebScopedVirtualTimePauser unused_virtual_time_pauser;
   params.OverrideContentType(kFetchLaterContentType);
-  if (PrepareResourceRequest(
-          kFetchLaterResourceType,
-          fetcher->GetProperties().GetFetchClientSettingsObject(), params,
-          fetcher->Context(), unused_virtual_time_pauser,
-          WTF::BindOnce(&ComputeFetchLaterLoadPriority)) != std::nullopt) {
-    return nullptr;
+  const FetchClientSettingsObject& fetch_client_settings_object =
+      fetcher->GetProperties().GetFetchClientSettingsObject();
+
+  if (!RuntimeEnabledFeatures::
+          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
+    if (PrepareResourceRequest(kFetchLaterResourceType,
+                               fetch_client_settings_object, params,
+                               fetcher->Context(), unused_virtual_time_pauser,
+                               WTF::BindOnce(&ComputeFetchLaterLoadPriority),
+                               base::NullCallback(), KURL()) != std::nullopt) {
+      return nullptr;
+    }
+  } else {
+    if (PrepareResourceRequestForCacheAccess(
+            kFetchLaterResourceType, fetch_client_settings_object, KURL(),
+            WTF::BindOnce(&ComputeFetchLaterLoadPriority), fetcher->Context(),
+            params) != std::nullopt) {
+      return nullptr;
+    }
+    UpgradeResourceRequestForLoaderNew(
+        kFetchLaterResourceType, params, fetcher->Context(),
+        unused_virtual_time_pauser, base::NullCallback());
   }
 
   // From `ResourceFetcher::StartLoad()`:

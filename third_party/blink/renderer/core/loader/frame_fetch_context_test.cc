@@ -1564,7 +1564,7 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
 
   dummy_page_holder = nullptr;
 
-  GetFetchContext()->PopulateResourceRequest(
+  GetFetchContext()->UpgradeResourceRequestForLoader(
       ResourceType::kRaw, std::nullopt /* resource_width */, request, options);
   // Should not crash.
 }
@@ -1688,7 +1688,7 @@ class FrameFetchContextDisableReduceAcceptLanguageTest
     if (is_detached)
       dummy_page_holder = nullptr;
 
-    GetFetchContext()->PopulateResourceRequest(
+    GetFetchContext()->UpgradeResourceRequestForLoader(
         ResourceType::kRaw, std::nullopt /* resource_width */, request,
         options);
   }

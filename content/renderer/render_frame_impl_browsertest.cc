@@ -501,10 +501,13 @@ TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
   for (const auto& test_case : kTestCases) {
     WebURLRequest request;
     request.SetUrl(GURL(test_case.original));
-    GetMainRenderFrame()->WillSendRequest(
-        request, blink::WebLocalFrameClient::ForRedirect(false),
-        /*upstream_url=*/GURL());
-    EXPECT_EQ(test_case.transformed, request.Url().GetString().Utf8());
+    std::optional<blink::WebURL> updated =
+        GetMainRenderFrame()->WillSendRequest(
+            request.Url(), request.RequestorOrigin(), request.SiteForCookies(),
+            blink::WebLocalFrameClient::ForRedirect(false), blink::WebURL());
+    EXPECT_EQ(test_case.transformed, updated.has_value()
+                                         ? updated->GetString().Utf8()
+                                         : request.Url().GetString().Utf8());
   }
 }
 

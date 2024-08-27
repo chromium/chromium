@@ -95,7 +95,7 @@ class AttributionSrcLocalFrameClient : public EmptyLocalFrameClient {
     return URLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
   }
 
-  void DispatchWillSendRequest(ResourceRequest& request) override {
+  void DispatchFinalizeRequest(ResourceRequest& request) override {
     if (request.GetRequestContext() ==
         mojom::blink::RequestContextType::ATTRIBUTION_SRC) {
       request_head_ = request;

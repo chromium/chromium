@@ -47,11 +47,26 @@ using ResourceLoadPriorityCalculator =
 using ResourceRequestTraceCallback =
     base::OnceCallback<void(const ResourceRequest&)>;
 
+// Prepares the underlying ResourceRequest for `params` with enough information
+// to do a cache lookup. If a cached value is not used,
+// PrepareResourceRequest() must be called.
+//
 // Returns std::nullopt if loading the ResourceRequest in `params` is not
 // blocked. Otherwise, returns a blocked reason.
 // This method may modify the ResourceRequest in `params` according to
 // `context` and `resource_type`.
 //
+// This function should only be called if
+// MinimimalResourceRequestPrepBeforeCacheLookupEnabled is enabled.
+BLINK_PLATFORM_EXPORT std::optional<ResourceRequestBlockedReason>
+PrepareResourceRequestForCacheAccess(
+    ResourceType type,
+    const FetchClientSettingsObject& fetch_client_settings_object,
+    const KURL& bundle_url_for_uuid_resources,
+    ResourceLoadPriorityCalculator compute_load_priority_callback,
+    FetchContext& context,
+    FetchParameters& params);
+
 // `virtual_time_pauser` may be set by this method.
 //
 // `compute_load_priority_callback` is used to compute the priority of the
@@ -63,17 +78,24 @@ using ResourceRequestTraceCallback =
 // `bundle_url_for_uuid_resources` is an optional bundle URL for
 // uuid-in-package: resources for security checks. Should only be set when the
 // request is WebBundle.
-std::optional<ResourceRequestBlockedReason> BLINK_PLATFORM_EXPORT
+// NOTE: PrepareResourceRequest  is temporary and will only enabled if a bug is
+// encountered (it's behind a kill switch).
+BLINK_PLATFORM_EXPORT std::optional<ResourceRequestBlockedReason>
 PrepareResourceRequest(
-    const ResourceType& resource_type,
+    ResourceType resource_type,
     const FetchClientSettingsObject& fetch_client_settings_object,
     FetchParameters& params,
     FetchContext& context,
     WebScopedVirtualTimePauser& virtual_time_pauser,
-    ResourceLoadPriorityCalculator compute_load_priority_callback =
-        base::NullCallback(),
-    ResourceRequestTraceCallback trace_callback = base::NullCallback(),
-    const KURL& bundle_url_for_uuid_resources = KURL());
+    ResourceLoadPriorityCalculator compute_load_priority_callback,
+    ResourceRequestTraceCallback trace_callback,
+    const KURL& bundle_url_for_uuid_resources);
+BLINK_PLATFORM_EXPORT void UpgradeResourceRequestForLoaderNew(
+    ResourceType resource_type,
+    FetchParameters& params,
+    FetchContext& context,
+    WebScopedVirtualTimePauser& virtual_time_pauser,
+    ResourceRequestTraceCallback trace_callback);
 
 }  // namespace blink
 

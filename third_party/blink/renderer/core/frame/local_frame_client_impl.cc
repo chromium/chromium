@@ -373,21 +373,26 @@ void LocalFrameClientImpl::Detached(FrameDetachType type) {
   web_frame_->SetCoreFrame(nullptr);
 }
 
-void LocalFrameClientImpl::DispatchWillSendRequest(ResourceRequest& request) {
-  // Set upstream url based on the request's redirect info.
-  KURL upstream_url;
-  if (request.GetRedirectInfo().has_value()) {
-    upstream_url = KURL(request.GetRedirectInfo()->previous_url);
-  }
-
+void LocalFrameClientImpl::DispatchFinalizeRequest(ResourceRequest& request) {
   // Give the WebLocalFrameClient a crack at the request.
   if (web_frame_->Client()) {
     WrappedResourceRequest webreq(request);
-    web_frame_->Client()->WillSendRequest(
-        webreq,
-        WebLocalFrameClient::ForRedirect(request.GetRedirectInfo().has_value()),
-        upstream_url);
+    web_frame_->Client()->FinalizeRequest(webreq);
   }
+}
+
+std::optional<KURL> LocalFrameClientImpl::DispatchWillSendRequest(
+    const KURL& requested_url,
+    const scoped_refptr<const SecurityOrigin>& requestor_origin,
+    const net::SiteForCookies& site_for_cookies,
+    bool has_redirect_info,
+    const KURL& upstream_url) {
+  if (!web_frame_->Client()) {
+    return std::nullopt;
+  }
+  return web_frame_->Client()->WillSendRequest(
+      requested_url, requestor_origin, site_for_cookies,
+      WebLocalFrameClient::ForRedirect(has_redirect_info), upstream_url);
 }
 
 void LocalFrameClientImpl::DispatchDidDispatchDOMContentLoadedEvent() {

@@ -291,7 +291,7 @@ void FetchUtils::LogFetchKeepAliveRequestSentToServiceMetric(
   auto resource_type =
       static_cast<mojom::blink::ResourceType>(resource_request.resource_type);
   FetchKeepAliveRequestMetricType sample_type;
-  // See also blink::PopulateResourceRequest().
+  // See also blink::UpgradeResourceRequestForLoader().
   switch (resource_type) {
     case mojom::blink::ResourceType::kXhr:
       sample_type = FetchKeepAliveRequestMetricType::kFetch;

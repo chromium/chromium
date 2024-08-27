@@ -350,7 +350,6 @@ class PLATFORM_EXPORT ResourceFetcher
     scheduler_->SetThrottleOptionOverride(throttle_option_override);
   }
 
-  void AttachWebBundleTokenIfNeeded(ResourceRequest&) const;
   SubresourceWebBundleList* GetOrCreateSubresourceWebBundleList();
 
   BackForwardCacheLoaderHelper* GetBackForwardCacheLoaderHelper() {
@@ -402,6 +401,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
  private:
   friend class ResourceCacheValidationSuppressor;
+  class ResourcePrepareHelper;
+
   enum class StopFetchingTarget {
     kExcludingKeepaliveLoaders,
     kIncludingKeepaliveLoaders,
@@ -458,13 +459,17 @@ class PLATFORM_EXPORT ResourceFetcher
       const std::optional<float> resource_height,
       const bool is_potentially_lcp_element);
 
+  std::optional<ResourceRequestBlockedReason>
+  UpdateRequestForTransparentPlaceholderImage(FetchParameters& params);
+
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
   // create a new WebScopedVirtualTimePauser and set it to
   // |virtual_time_pauser|.
   std::optional<ResourceRequestBlockedReason> PrepareRequest(
       FetchParameters&,
       const ResourceFactory&,
-      WebScopedVirtualTimePauser& virtual_time_pauser);
+      WebScopedVirtualTimePauser& virtual_time_pauser,
+      const KURL& bundle_url_for_uuid_resources);
 
   Resource* CreateResourceForStaticData(const FetchParameters&,
                                         const ResourceFactory&);
@@ -567,6 +572,10 @@ class PLATFORM_EXPORT ResourceFetcher
       base::OnceCallback<void(Vector<KURL> unused_preloads)> callback);
 
   void RemoveResourceStrongReference(Resource* resource);
+
+  KURL PrepareRequestForWebBundle(ResourceRequest& resource_request) const;
+
+  void AttachWebBundleTokenIfNeeded(ResourceRequest&) const;
 
   // Information about a resource fetch that had started but not completed yet.
   // Would be added to the response data when the response arrives.

@@ -644,6 +644,19 @@ class PLATFORM_EXPORT ResourceRequestHead {
     return known_transparent_placeholder_image_index_;
   }
 
+  // Indicates that both FetchContext::PrepareResourceRequestForCacheAccess()
+  // and FetchContext::UpgradeResourceRequestForLoader() must be called. See
+  // FetchContext::UpgradeResourceRequestForLoader() for details.
+  void SetRequiresUpgradeForLoader() { requires_upgrade_for_loader_ = true; }
+  bool RequiresUpgradeForLoader() const { return requires_upgrade_for_loader_; }
+
+  // See comment in SetUrl().
+  void SetCanChangeUrl(bool value) {
+#if DCHECK_IS_ON()
+    is_set_url_allowed_ = value;
+#endif
+  }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -699,6 +712,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // TODO(crbug.com/1413922): Remove this flag when we launch
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled_ : 1;
+  bool requires_upgrade_for_loader_ : 1;
   mojom::blink::FetchCacheMode cache_mode_;
   ResourceLoadPriority initial_priority_;
   ResourceLoadPriority priority_;
@@ -787,6 +801,9 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   std::optional<base::UnguessableToken>
       service_worker_race_network_request_token_;
+#if DCHECK_IS_ON()
+  bool is_set_url_allowed_ = true;
+#endif
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

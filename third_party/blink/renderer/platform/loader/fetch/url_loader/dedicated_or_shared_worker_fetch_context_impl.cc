@@ -371,7 +371,15 @@ DedicatedOrSharedWorkerFetchContextImpl::WrapURLLoaderFactory(
       cors_exempt_header_list_, terminate_sync_load_event_);
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(
+std::optional<WebURL> DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(
+    const WebURL& url) {
+  if (g_rewrite_url) {
+    return g_rewrite_url(url.GetString().Utf8(), false);
+  }
+  return std::nullopt;
+}
+
+void DedicatedOrSharedWorkerFetchContextImpl::FinalizeRequest(
     WebURLRequest& request) {
   if (renderer_preferences_.enable_do_not_track) {
     request.SetHttpHeaderField(WebString::FromUTF8(kDoNotTrackHeader), "1");
@@ -379,9 +387,6 @@ void DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(
 
   auto url_request_extra_data = base::MakeRefCounted<WebURLRequestExtraData>();
   request.SetURLRequestExtraData(std::move(url_request_extra_data));
-
-  if (g_rewrite_url)
-    request.SetUrl(g_rewrite_url(request.Url().GetString().Utf8(), false));
 
   if (!renderer_preferences_.enable_referrers) {
     request.SetReferrerString(WebString());

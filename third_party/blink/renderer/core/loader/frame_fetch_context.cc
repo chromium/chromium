@@ -116,6 +116,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -393,8 +394,12 @@ void FrameFetchContext::PrepareRequest(
   // TODO(yhirano): Clarify which statements are actually needed when
   // this is called during redirect.
   const bool for_redirect = request.GetRedirectInfo().has_value();
+  const bool minimal_prep = RuntimeEnabledFeatures::
+      MinimimalResourceRequestPrepBeforeCacheLookupEnabled();
 
-  SetFirstPartyCookie(request);
+  if (!minimal_prep) {
+    SetFirstPartyCookie(request);
+  }
   if (request.GetRequestContext() ==
       mojom::blink::RequestContextType::SERVICE_WORKER) {
     // The top frame origin is defined to be null for service worker main
@@ -413,8 +418,9 @@ void FrameFetchContext::PrepareRequest(
   request.SetStorageAccessApiStatus(
       document_->GetExecutionContext()->GetStorageAccessApiStatus());
 
-  if (document_loader_->ForceFetchCacheMode())
+  if (!minimal_prep && document_loader_->ForceFetchCacheMode()) {
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
+  }
 
   if (const AttributionSrcLoader* attribution_src_loader =
           GetFrame()->GetAttributionSrcLoader()) {
@@ -440,7 +446,10 @@ void FrameFetchContext::PrepareRequest(
       RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
           GetExecutionContext()));
 
-  GetLocalFrameClient()->DispatchWillSendRequest(request);
+  if (!minimal_prep) {
+    WillSendRequest(request);
+  }
+  GetLocalFrameClient()->DispatchFinalizeRequest(request);
   FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler();
   if (!for_redirect && frame_scheduler) {
     virtual_time_pauser = frame_scheduler->CreateWebScopedVirtualTimePauser(
@@ -802,15 +811,58 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
   }
 }
 
-void FrameFetchContext::PopulateResourceRequest(
+void FrameFetchContext::WillSendRequest(ResourceRequest& resource_request) {
+  // Set upstream url based on the request's redirect info.
+  KURL upstream_url;
+  if (resource_request.GetRedirectInfo().has_value()) {
+    upstream_url = KURL(resource_request.GetRedirectInfo()->previous_url);
+  }
+  std::optional<KURL> overriden_url =
+      GetLocalFrameClient()->DispatchWillSendRequest(
+          resource_request.Url(), resource_request.RequestorOrigin(),
+          resource_request.SiteForCookies(),
+          resource_request.GetRedirectInfo().has_value(), upstream_url);
+  if (overriden_url.has_value()) {
+    resource_request.SetUrl(overriden_url.value());
+  }
+}
+
+void FrameFetchContext::PopulateResourceRequestBeforeCacheAccess(
+    const ResourceLoaderOptions& options,
+    ResourceRequest& request) {
+  DCHECK(RuntimeEnabledFeatures::
+             MinimimalResourceRequestPrepBeforeCacheLookupEnabled());
+  if (!GetResourceFetcherProperties().IsDetached()) {
+    probe::SetDevToolsIds(Probe(), request, options.initiator_info);
+  }
+
+  // CSP may change the url.
+  ModifyRequestForCSP(request);
+  if (!request.Url().IsValid()) {
+    return;
+  }
+  SetFirstPartyCookie(request);
+  if (CoreProbeSink::HasAgentsGlobal(CoreProbeSink::kInspectorEmulationAgent |
+                                     CoreProbeSink::kInspectorNetworkAgent)) {
+    request.SetRequiresUpgradeForLoader();
+  }
+  if (document_loader_->ForceFetchCacheMode()) {
+    request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
+  }
+}
+
+void FrameFetchContext::UpgradeResourceRequestForLoader(
     ResourceType type,
     const std::optional<float> resource_width,
     ResourceRequest& request,
     const ResourceLoaderOptions& options) {
-  if (!GetResourceFetcherProperties().IsDetached())
-    probe::SetDevToolsIds(Probe(), request, options.initiator_info);
-
-  ModifyRequestForCSP(request);
+  if (!RuntimeEnabledFeatures::
+          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
+    if (!GetResourceFetcherProperties().IsDetached()) {
+      probe::SetDevToolsIds(Probe(), request, options.initiator_info);
+    }
+    ModifyRequestForCSP(request);
+  }
   AddClientHintsIfNecessary(resource_width, request);
   AddReducedAcceptLanguageIfNecessary(request);
 }
@@ -1154,8 +1206,9 @@ std::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
     ReportingDisposition reporting_disposition,
     base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
     const {
-  if (!GetResourceFetcherProperties().IsDetached() &&
-      document_->IsFreezingInProgress() && !resource_request.GetKeepalive()) {
+  const bool detached = GetResourceFetcherProperties().IsDetached();
+  if (!detached && document_->IsFreezingInProgress() &&
+      !resource_request.GetKeepalive()) {
     GetDetachableConsoleLogger().AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
@@ -1164,8 +1217,20 @@ std::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
                 url.GetString()));
     return ResourceRequestBlockedReason::kOther;
   }
-  return BaseFetchContext::CanRequest(type, resource_request, url, options,
-                                      reporting_disposition, redirect_info);
+  std::optional<ResourceRequestBlockedReason> blocked_reason =
+      BaseFetchContext::CanRequest(type, resource_request, url, options,
+                                   reporting_disposition, redirect_info);
+  if (blocked_reason) {
+    return blocked_reason;
+  }
+  if (detached || !RuntimeEnabledFeatures::
+                      MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
+    return std::nullopt;
+  }
+  if (!resource_request.Url().IsValid()) {
+    return ResourceRequestBlockedReason::kOther;
+  }
+  return std::nullopt;
 }
 
 CoreProbeSink* FrameFetchContext::Probe() const {

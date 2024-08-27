@@ -150,7 +150,7 @@ URLLoaderFactory* WebServiceWorkerFetchContextImpl::GetScriptLoaderFactory() {
   return web_script_loader_factory_.get();
 }
 
-void WebServiceWorkerFetchContextImpl::WillSendRequest(WebURLRequest& request) {
+void WebServiceWorkerFetchContextImpl::FinalizeRequest(WebURLRequest& request) {
   if (renderer_preferences_.enable_do_not_track) {
     request.SetHttpHeaderField(WebString::FromUTF8(kDoNotTrackHeader), "1");
   }

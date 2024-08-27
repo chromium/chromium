@@ -944,42 +944,43 @@ std::unique_ptr<DocumentState> BuildDocumentStateFromParams(
   return document_state;
 }
 
-void ApplyFilePathAlias(blink::WebURLRequest* request) {
+std::optional<WebURL> ApplyFilePathAlias(const WebURL& target) {
   const base::CommandLine::StringType file_url_path_alias =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
           switches::kFileUrlPathAlias);
-  if (file_url_path_alias.empty())
-    return;
+  if (file_url_path_alias.empty()) {
+    return std::nullopt;
+  }
 
   const auto alias_mapping =
       base::SplitString(file_url_path_alias, FILE_PATH_LITERAL("="),
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (alias_mapping.size() != 2) {
     LOG(ERROR) << "Invalid file path alias format.";
-    return;
+    return std::nullopt;
   }
 
 #if BUILDFLAG(IS_WIN)
-  std::wstring path = base::UTF16ToWide(request->Url().GetString().Utf16());
+  std::wstring path = base::UTF16ToWide(target.GetString().Utf16());
   const std::wstring file_prefix =
       base::ASCIIToWide(url::kFileScheme) +
       base::ASCIIToWide(url::kStandardSchemeSeparator);
 #else
-  std::string path = request->Url().GetString().Utf8();
+  std::string path = target.GetString().Utf8();
   const std::string file_prefix =
       std::string(url::kFileScheme) + url::kStandardSchemeSeparator;
 #endif
   if (!base::StartsWith(path, file_prefix + alias_mapping[0],
                         base::CompareCase::SENSITIVE)) {
-    return;
+    return std::nullopt;
   }
 
   base::ReplaceFirstSubstringAfterOffset(&path, 0, alias_mapping[0],
                                          alias_mapping[1]);
 #if BUILDFLAG(IS_WIN)
-  request->SetUrl(blink::WebURL(GURL(base::WideToUTF8(path))));
+  return blink::WebURL(GURL(base::WideToUTF8(path)));
 #else
-  request->SetUrl(blink::WebURL(GURL(path)));
+  return blink::WebURL(GURL(path));
 #endif
 }
 
@@ -4531,41 +4532,59 @@ void RenderFrameImpl::OnLargeStickyAdDetected() {
   }
 }
 
-void RenderFrameImpl::WillSendRequest(blink::WebURLRequest& request,
-                                      ForRedirect for_redirect,
-                                      const blink::WebURL& upstream_url) {
+void RenderFrameImpl::FinalizeRequest(blink::WebURLRequest& request) {
   // This method is called for subresources, while transition type is
   // a navigation concept. We pass ui::PAGE_TRANSITION_LINK as default one.
-  WillSendRequestInternal(request, /*for_outermost_main_frame=*/false,
-                          ui::PAGE_TRANSITION_LINK, for_redirect, upstream_url);
+  FinalizeRequestInternal(request, /*for_outermost_main_frame=*/false,
+                          ui::PAGE_TRANSITION_LINK);
   for (auto& observer : observers_) {
+    // TODO(sky): rename to FinalizeRequest.
     observer.WillSendRequest(request);
   }
 }
 
-void RenderFrameImpl::WillSendRequestInternal(
+std::optional<blink::WebURL> RenderFrameImpl::WillSendRequest(
+    const blink::WebURL& target,
+    const blink::WebSecurityOrigin& security_origin,
+    const net::SiteForCookies& site_for_cookies,
+    ForRedirect for_redirect,
+    const blink::WebURL& upstream_url) {
+  return WillSendRequestInternal(target, security_origin, site_for_cookies,
+                                 for_redirect, upstream_url,
+                                 ui::PAGE_TRANSITION_LINK);
+}
+
+std::optional<blink::WebURL> RenderFrameImpl::WillSendRequestInternal(
+    const blink::WebURL& target,
+    const blink::WebSecurityOrigin& security_origin,
+    const net::SiteForCookies& site_for_cookies,
+    ForRedirect for_redirect,
+    const blink::WebURL& upstream_url,
+    ui::PageTransition transition_type) {
+  std::optional<blink::WebURL> adjusted = ApplyFilePathAlias(target);
+
+  GURL new_url;
+  std::optional<url::Origin> initiator_origin =
+      security_origin.IsNull() ? std::optional<url::Origin>()
+                               : std::optional<url::Origin>(security_origin);
+  GetContentClient()->renderer()->WillSendRequest(
+      frame_, transition_type, upstream_url,
+      adjusted.has_value() ? *adjusted : target, site_for_cookies,
+      base::OptionalToPtr(initiator_origin), &new_url);
+  if (!new_url.is_empty()) {
+    return WebURL(new_url);
+  }
+  return adjusted;
+}
+
+void RenderFrameImpl::FinalizeRequestInternal(
     blink::WebURLRequest& request,
     bool for_outermost_main_frame,
-    ui::PageTransition transition_type,
-    ForRedirect for_redirect,
-    const GURL& upstream_url) {
+    ui::PageTransition transition_type) {
   if (GetWebView()->GetRendererPreferences().enable_do_not_track) {
     request.SetHttpHeaderField(
         blink::WebString::FromUTF8(blink::kDoNotTrackHeader), "1");
   }
-
-  ApplyFilePathAlias(&request);
-  GURL new_url;
-  std::optional<url::Origin> initiator_origin =
-      request.RequestorOrigin().IsNull()
-          ? std::optional<url::Origin>()
-          : std::optional<url::Origin>(request.RequestorOrigin());
-  GetContentClient()->renderer()->WillSendRequest(
-      frame_, transition_type, upstream_url, request.Url(),
-      request.SiteForCookies(), base::OptionalToPtr(initiator_origin),
-      &new_url);
-  if (!new_url.is_empty())
-    request.SetUrl(WebURL(new_url));
 
   // The request's extra data may indicate that we should set a custom user
   // agent. This needs to be done here, after WebKit is through with setting the
@@ -6116,11 +6135,19 @@ void RenderFrameImpl::BeginNavigationInternal(
   // TODO(clamy): Make sure that navigation requests are not modified somewhere
   // else in blink.
   bool for_outermost_main_frame = frame_->IsOutermostMainFrame();
-  // upstream_url can be false here because ForRedirect(false) implies that this
-  // isn't a browser intiated navigation.
-  WillSendRequestInternal(info->url_request, for_outermost_main_frame,
-                          transition_type, ForRedirect(false),
-                          /*upstream_url=*/GURL());
+  {
+    // upstream_url can be empty here because ForRedirect(false) implies that
+    // this isn't a browser intiated navigation.
+    std::optional<blink::WebURL> adjusted_request_url = WillSendRequestInternal(
+        info->url_request.Url(), info->url_request.RequestorOrigin(),
+        info->url_request.SiteForCookies(), ForRedirect(false),
+        /*upstream_url=*/GURL(), transition_type);
+    if (adjusted_request_url.has_value()) {
+      info->url_request.SetUrl(adjusted_request_url.value());
+    }
+  }
+  FinalizeRequestInternal(info->url_request, for_outermost_main_frame,
+                          transition_type);
   // The extra data was created in WillSendRequestInternal if it didn't exist.
   DCHECK(info->url_request.GetURLRequestExtraData());
 

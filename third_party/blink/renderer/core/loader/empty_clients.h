@@ -271,7 +271,7 @@ class EmptyWebWorkerFetchContext : public WebWorkerFetchContext {
           url_loader_factory) override {
     return nullptr;
   }
-  void WillSendRequest(WebURLRequest&) override {}
+  void FinalizeRequest(WebURLRequest&) override {}
   WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest&) override {
     return {};
@@ -307,7 +307,15 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
   void WillBeDetached() override {}
   void Detached(FrameDetachType) override {}
 
-  void DispatchWillSendRequest(ResourceRequest&) override {}
+  void DispatchFinalizeRequest(ResourceRequest&) override {}
+  std::optional<KURL> DispatchWillSendRequest(
+      const KURL& requested_url,
+      const scoped_refptr<const SecurityOrigin>& requestor_origin,
+      const net::SiteForCookies& site_for_cookies,
+      bool has_redirect_info,
+      const KURL& upstream_url) override {
+    return std::nullopt;
+  }
   void DispatchDidLoadResourceFromMemoryCache(
       const ResourceRequest&,
       const ResourceResponse&) override {}

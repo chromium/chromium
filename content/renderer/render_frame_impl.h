@@ -617,9 +617,13 @@ class CONTENT_EXPORT RenderFrameImpl
   void OnMainFrameImageAdRectangleChanged(
       int element_id,
       const gfx::Rect& image_ad_rect) override;
-  void WillSendRequest(blink::WebURLRequest& request,
-                       ForRedirect for_redirect,
-                       const blink::WebURL& upstream_url) override;
+  void FinalizeRequest(blink::WebURLRequest& request) override;
+  std::optional<blink::WebURL> WillSendRequest(
+      const blink::WebURL& target,
+      const blink::WebSecurityOrigin& security_origin,
+      const net::SiteForCookies& site_for_cookies,
+      ForRedirect for_redirect,
+      const blink::WebURL& upstream_url) override;
   void OnOverlayPopupAdDetected() override;
   void OnLargeStickyAdDetected() override;
   void DidLoadResourceFromMemoryCache(
@@ -1063,12 +1067,17 @@ class CONTENT_EXPORT RenderFrameImpl
                      std::string* data,
                      GURL* base_url);
 
-  // |transition_type| corresponds to the document which triggered this request.
-  void WillSendRequestInternal(blink::WebURLRequest& request,
+  void FinalizeRequestInternal(blink::WebURLRequest& request,
                                bool for_outermost_main_frame,
-                               ui::PageTransition transition_type,
-                               ForRedirect for_redirect,
-                               const GURL& upstream_url);
+                               ui::PageTransition transition_type);
+  // |transition_type| corresponds to the document which triggered this request.
+  std::optional<blink::WebURL> WillSendRequestInternal(
+      const blink::WebURL& target,
+      const blink::WebSecurityOrigin& security_origin,
+      const net::SiteForCookies& site_for_cookies,
+      ForRedirect for_redirect,
+      const blink::WebURL& upstream_url,
+      ui::PageTransition transition_type);
 
   // Returns the URL being loaded by the |frame_|'s request.
   GURL GetLoadingUrl() const;

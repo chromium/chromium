@@ -162,7 +162,7 @@ class FakeWebServiceWorkerFetchContext final
           url_loader_factory) override {
     return nullptr;
   }
-  void WillSendRequest(WebURLRequest&) override {}
+  void FinalizeRequest(WebURLRequest&) override {}
   WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest& request) override {
     return {};

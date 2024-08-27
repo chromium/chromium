@@ -115,6 +115,7 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       is_favicon_(false),
       prefetch_maybe_for_top_level_navigation_(false),
       shared_dictionary_writer_enabled_(false),
+      requires_upgrade_for_loader_(false),
       cache_mode_(mojom::blink::FetchCacheMode::kDefault),
       initial_priority_(ResourceLoadPriority::kUnresolved),
       priority_(ResourceLoadPriority::kUnresolved),
@@ -256,6 +257,12 @@ const KURL& ResourceRequestHead::Url() const {
 }
 
 void ResourceRequestHead::SetUrl(const KURL& url) {
+  // Loading consists of a number of phases. After cache lookup the url should
+  // not change (otherwise checks would not be valid). This DCHECK verifies
+  // that.
+#if DCHECK_IS_ON()
+  DCHECK(is_set_url_allowed_);
+#endif
   url_ = url;
 }
 
