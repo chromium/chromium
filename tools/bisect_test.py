@@ -10,7 +10,7 @@ import re
 import subprocess
 import sys
 import unittest
-from unittest.mock import ANY, Mock, MagicMock, mock_open, patch
+from unittest.mock import ANY, Mock, MagicMock, mock_open, patch, call
 
 bisect_builds = __import__('bisect-builds')
 
@@ -831,6 +831,121 @@ class LinuxReleaseBuildTest(BisectTestCase):
         bufsize=-1,
         stdout=ANY,
         stderr=ANY)
+
+
+class IOSReleaseBuildTest(BisectTestCase):
+
+  @maybe_patch(
+      'bisect-builds.GsutilList',
+      side_effect=[[
+          'gs://chrome-unsigned/ios-G1N/127.0.6533.76/',
+          'gs://chrome-unsigned/ios-G1N/127.0.6533.77/',
+          'gs://chrome-unsigned/ios-G1N/127.0.6533.78/'
+      ],
+                   [
+                       'gs://chrome-unsigned/ios-G1N'
+                       '/127.0.6533.76/iphoneos17.5/ios/10863/canary.ipa',
+                       'gs://chrome-unsigned/ios-G1N'
+                       '/127.0.6533.77/iphoneos17.5/ios/10866/canary.ipa',
+                       'gs://chrome-unsigned/ios-G1N'
+                       '/127.0.6533.78/iphoneos17.5/ios/10868/canary.ipa'
+                   ]])
+  def test_list_rev(self, mock_GsutilList):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'ios', '--ipa=canary.ipa', '--device-id', '321', '-g',
+        '127.0.6533.74', '-b', '127.0.6533.78'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.IOSReleaseBuild)
+    self.assertEqual(build.get_rev_list(),
+                     ['127.0.6533.76', '127.0.6533.77', '127.0.6533.78'])
+    mock_GsutilList.assert_any_call('gs://chrome-unsigned/ios-G1N')
+    mock_GsutilList.assert_any_call(*[
+        'gs://chrome-unsigned/ios-G1N/%s/*/ios/*/canary.ipa' % x
+        for x in ['127.0.6533.76', '127.0.6533.77', '127.0.6533.78']
+    ],
+                                    ignore_fail=True)
+
+  @patch('bisect-builds.UnzipFilenameToDir')
+  @patch('glob.glob', return_value=['Payload/canary.app/Info.plist'])
+  @patch('subprocess.Popen', spec=subprocess.Popen)
+  def test_install_revision(self, mock_Popen, mock_glob,
+                            mock_UnzipFilenameToDir):
+    mock_Popen.return_value.communicate.return_value = ('', '')
+    mock_Popen.return_value.returncode = 0
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'ios', '--ipa=canary.ipa', '--device-id', '321', '-g',
+        '127.0.6533.74', '-b', '127.0.6533.78'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.IOSReleaseBuild)
+    build._install_revision('canary.ipa', 'tempdir')
+    mock_glob.assert_called_once_with('tempdir/Payload/*/Info.plist')
+    mock_Popen.assert_has_calls([
+        call([
+            'xcrun', 'devicectl', 'device', 'install', 'app', '--device', '321',
+            'canary.ipa'
+        ],
+             cwd=None,
+             bufsize=-1,
+             stdout=-1,
+             stderr=-1),
+        call([
+            'plutil', '-extract', 'CFBundleIdentifier', 'raw',
+            'Payload/canary.app/Info.plist'
+        ],
+             cwd=None,
+             bufsize=-1,
+             stdout=-1,
+             stderr=-1)
+    ],
+                                any_order=True)
+
+  @patch('subprocess.Popen', spec=subprocess.Popen)
+  def test_launch_revision(self, mock_Popen):
+    mock_Popen.return_value.communicate.return_value = ('', '')
+    mock_Popen.return_value.returncode = 0
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'ios', '--ipa=canary.ipa', '--device-id', '321', '-g',
+        '127.0.6533.74', '-b', '127.0.6533.78'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.IOSReleaseBuild)
+    build._launch_revision('tempdir', 'com.google.chrome.ios',
+                           ['args1', 'args2'])
+    mock_Popen.assert_any_call([
+        'xcrun', 'devicectl', 'device', 'process', 'launch', '--device', '321',
+        'com.google.chrome.ios', 'args1', 'args2'
+    ],
+                               cwd=None,
+                               bufsize=-1,
+                               stdout=-1,
+                               stderr=-1)
+
+  @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
+                       'The test only valid when NO_MOCK_SERVER')
+  @patch('bisect-builds.IOSReleaseBuild._run', return_value=(0, 'stdout', ''))
+  def test_run_revision(self, mock_run):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'ios', '--ipa=canary.ipa', '--device-id', '321', '-g',
+        '127.0.6533.74', '-b', '127.0.6533.78'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.IOSReleaseBuild)
+    job = build.get_download_job('127.0.6533.76')
+    ipa = job.start().wait_for()
+    build.run_revision(ipa, args)
+    mock_run.assert_has_calls([
+        call([
+            'xcrun', 'devicectl', 'device', 'install', 'app', '--device', '321',
+            ANY
+        ]),
+        call(['plutil', '-extract', 'CFBundleIdentifier', 'raw', ANY]),
+        call([
+            'xcrun', 'devicectl', 'device', 'process', 'launch', '--device',
+            '321', 'stdout'
+        ])
+    ])
 
 
 if __name__ == '__main__':

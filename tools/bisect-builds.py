@@ -60,6 +60,10 @@ ANDROID_RELEASE_BASE_URL_SIGNED = 'gs://chrome-signed/android-B0urB0N'
 # A special bucket that need to be skipped.
 ANDROID_INVALID_BUCKET = 'gs://chrome-signed/android-B0urB0N/Test'
 
+# iOS bucket
+IOS_RELEASE_BASE_URL = 'gs://chrome-unsigned/ios-G1N'
+IOS_RELEASE_BASE_URL_SIGNED = 'gs://chrome-signed/ios-G1N'
+
 # Base URL for downloading release builds.
 GOOGLE_APIS_URL = 'commondatastorage.googleapis.com'
 
@@ -128,6 +132,12 @@ PATH_CONTEXT = {
             'listing_platform_dir': 'x86_64/',
             'archive_name': None,
             'archive_extract_dir': 'android-x64'
+        },
+        'ios': {
+            'binary_name': None,
+            'listing_platform_dir': 'ios/',
+            'archive_name': None,
+            'archive_extract_dir': None,
         },
         'linux64': {
             'binary_name': 'chrome',
@@ -677,7 +687,7 @@ class ArchiveBuild(abc.ABC):
     (stdout, stderr) = subproc.communicate()
     return subproc.returncode, stdout, stderr
 
-  def run_revision(self, download, args):
+  def run_revision(self, download, args=()):
     """Run downloaded archive"""
     # Create a temp directory and unzip the revision into it.
     with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
@@ -1156,9 +1166,11 @@ class AndroidTrichromeOfficialBuild(AndroidTrichromeMixin, OfficialBuild):
   def _install_revision(self, download, tempdir):
     UnzipFilenameToDir(download, tempdir)
     trichrome_library_filename = self._get_library_filename()
-    trichrome_library_path = glob.glob(f'{tempdir}/*/apks/{trichrome_library_filename}')
+    trichrome_library_path = glob.glob(
+        f'{tempdir}/*/apks/{trichrome_library_filename}')
     if len(trichrome_library_path) == 0:
-      raise Exception(f'Can not find {trichrome_library_filename} from {tempdir}')
+      raise Exception(
+          f'Can not find {trichrome_library_filename} from {tempdir}')
     trichrome_filename = self._get_apk_filename()
     trichrome_path = glob.glob(f'{tempdir}/*/apks/{trichrome_filename}')
     if len(trichrome_path) == 0:
@@ -1185,6 +1197,86 @@ class AndroidSnapshotBuild(AndroidBuildMixin, SnapshotBuild):
   pass
 
 
+class IOSReleaseBuild(ReleaseBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.signed = options.signed
+    if not self.signed:
+      print('WARNING: --signed is recommended for iOS release builds.')
+    self.device_id = options.device_id
+    if not self.device_id:
+      raise BisectException('--device-id is required for iOS builds.')
+    self.ipa = options.ipa
+    if not self.ipa:
+      raise BisectException('--ipa is required for iOS builds.')
+    if self.ipa.endswith('.ipa'):
+      self.ipa = self.ipa[:-4]
+    self.binary_name = self.archive_name = f'{self.ipa}.ipa'
+
+  def _get_release_bucket(self):
+    if self.signed:
+      return IOS_RELEASE_BASE_URL_SIGNED
+    return IOS_RELEASE_BASE_URL
+
+  def _get_archive_path(self, build_number, archive_name=None):
+    if archive_name is None:
+      archive_name = self.archive_name
+    # The format for iOS build is
+    # {IOS_RELEASE_BASE_URL}/{build_number}/{sdk_version}
+    # /{builder_name}/{build_number}/{archive_name}
+    # that it's not possible to generate the actual archive_path for a build.
+    # That we are returning a path with wildcards and expecting only one match.
+    return (f'{self._get_release_bucket()}/{build_number}/*/'
+            f'{self.listing_platform_dir.rstrip("/")}/*/{archive_name}')
+
+  def _run(self, runcommand, tempdir=None):
+    if is_verbose:
+      print(('Running ' + str(runcommand)))
+    subproc = subprocess.Popen(runcommand,
+                               cwd=tempdir,
+                               bufsize=-1,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    (stdout, stderr) = subproc.communicate()
+    return subproc.returncode, stdout, stderr
+
+  def _install_revision(self, download, tempdir):
+    # install ipa
+    retcode, stdout, stderr = self._run([
+        'xcrun', 'devicectl', 'device', 'install', 'app', '--device',
+        self.device_id, download
+    ])
+    if retcode:
+      raise BisectException(f'Install app error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    # extract and return CFBundleIdentifier from ipa.
+    UnzipFilenameToDir(download, tempdir)
+    plist = glob.glob(f'{tempdir}/Payload/*/Info.plist')
+    if not plist:
+      raise BisectException(f'Could not find Info.plist from {tempdir}.')
+    retcode, stdout, stderr = self._run(
+        ['plutil', '-extract', 'CFBundleIdentifier', 'raw', plist[0]])
+    if retcode:
+      raise BisectException(f'Extract bundle identifier error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    bundle_identifier = stdout.strip()
+    return bundle_identifier
+
+  def _launch_revision(self, tempdir, bundle_identifier, args=()):
+    retcode, stdout, stderr = self._run([
+        'xcrun', 'devicectl', 'device', 'process', 'launch', '--device',
+        self.device_id, bundle_identifier, *args
+    ])
+    if retcode:
+      print(f'Warning: App launching error, code:{retcode}\n'
+            f'stdout:\n{stdout}\n'
+            f'stderr:\n{stderr}')
+    return retcode, stdout, stderr
+
+
 def create_archive_build(options):
   if options.release_builds:
     if options.archive == 'android-arm64-high':
@@ -1193,6 +1285,8 @@ def create_archive_build(options):
       return AndroidReleaseBuild(options)
     elif options.archive.startswith('linux'):
       return LinuxReleaseBuild(options)
+    elif options.archive.startswith('ios'):
+      return IOSReleaseBuild(options)
     return ReleaseBuild(options)
   elif options.official_builds:
     if options.archive == 'android-arm64-high':
@@ -1935,6 +2029,10 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
                     dest='apk',
                     default='chromium',
                     help='Apk you want to bisect.')
+  parser.add_option('--ipa',
+                    dest='ipa',
+                    default='canary.ipa',
+                    help='ipa you want to bisect.')
   parser.add_option('--signed',
                     dest='signed',
                     action='store_true',
@@ -1997,8 +2095,9 @@ def ParseCommandLine(args=None):
       parser.print_help()
       sys.exit(1)
 
-  if opts.signed and not opts.archive.startswith('android-'):
-    print('Signed bisection is only supported for Android platform.')
+  if opts.signed and not (opts.archive.startswith('android-')
+                          or opts.archive.startswith('ios')):
+    print('Signed bisection is only supported for Android and iOS platform.')
     exit(1)
 
   if opts.signed and not opts.release_builds:
