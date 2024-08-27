@@ -11,6 +11,8 @@
 
 namespace webauthn::user_actions {
 
+// TODO(crbug.com/358277466): Add actions for Windows Hello cases.
+
 // Emits what authenticators are visible to the user in the WebAuthn selection
 // dialog when there are multiple options are available. Targets only GPM,
 // iCloud Keychain and Windows Hello authenticators.
@@ -23,7 +25,22 @@ void RecordMultipleOptionsShown(
 void RecordPriorityOptionShown(
     const AuthenticatorRequestDialogModel::Mechanism& mechanism);
 
+void RecordMechanismClick(
+    const AuthenticatorRequestDialogModel::Mechanism& mech);
+
 void RecordCancelClick();
+
+void RecordAcceptClick();
+
+void RecordTrustDialogShown(bool is_create);
+
+void RecordCreateGpmDialogShown();
+
+void RecordRecoveryShown(bool is_create);
+
+void RecordRecoveryCancelled();
+
+void RecordRecoverySucceeded();
 
 void RecordICloudShown(bool is_create);
 

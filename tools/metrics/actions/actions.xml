@@ -43426,12 +43426,60 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.Dialog.Accepted">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user clicked accept / continue in the current WebAuthn
+    dialog.
+  </description>
+</action>
+
 <action name="WebAuthn.Dialog.Cancelled">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <description>
     Recorded when the user cancelled the request while the WebAuthn dialog is
     shown.
+  </description>
+</action>
+
+<action name="WebAuthn.Dialog.UserSelected.GpmOnly">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>User selected a GPM option in the WebAuthn dialog.</description>
+</action>
+
+<action name="WebAuthn.Dialog.UserSelected.ICloudOnly">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    User selected an iCloud option in the WebAuthn dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.Dialog.UserSelected.Others">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    User selected a different option other than GPM, iCloud, Chrome Profile nor
+    Windows Hello in the WebAuthn dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.Dialog.UserSelected.ProfileOnly">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    User selected a Chrome profile option in the WebAuthn dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.Dialog.UserSelected.WinOnly">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    User selected a Windows option in the WebAuthn dialog.
   </description>
 </action>
 
@@ -43599,6 +43647,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.GetAssertion.RecoverGpmShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed the window to enter the recovery factor
+    in order to use GPM passkeys. Recorded during a GetAssertion flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.TrustGpmDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed the dialog to bootstrap the device in
+    order to use GPM passkeys. Recorded during a GetAssertion flow.
+  </description>
+</action>
+
 <action name="WebAuthn.ICloud.Cancelled">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -43613,6 +43680,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded when a request is successful (e.g. UV completed via biometrics) in
     the ICloud Keychain Window.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.CreateGpmDialogShown">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a dialog to create a passkey in GPM.
   </description>
 </action>
 
@@ -43731,6 +43806,41 @@ should be able to be added at any place in this file.
     Recorded when the user is displayed options to store passkeys in Windows
     only in the selection dialog. The dialog may also contain an entry point to
     hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.RecoverGpmShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed the window to enter the recovery factor
+    in order to use GPM passkeys. Recorded during a MakeCredential flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.TrustGpmDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed the dialog to bootstrap the device in
+    order to use GPM passkeys. Recorded during a MakeCredential flow.
+  </description>
+</action>
+
+<action name="WebAuthn.Window.RecoverGpmCancelled">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>Recorded when the user closes MagicArch window.</description>
+</action>
+
+<action name="WebAuthn.Window.RecoverGpmSucceeded" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the recovery is successful in the MagicArch window. This means
+    that the user successfully entered an existing recovery factor.
   </description>
 </action>
 

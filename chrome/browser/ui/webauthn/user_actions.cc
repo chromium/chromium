@@ -14,6 +14,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "device/fido/fido_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace webauthn::user_actions {
 
@@ -171,8 +172,63 @@ void RecordPriorityOptionShown(const Mechanism& mechanism) {
   }
 }
 
+void RecordMechanismClick(const Mechanism& mech) {
+  std::string_view metric_to_emit;
+  switch (CategoryFromMechanism(mech)) {
+    case AuthenticatorCategory::kGpm:
+      metric_to_emit = kGpmOnly;
+      break;
+    case AuthenticatorCategory::kProfile:
+      metric_to_emit = kProfileOnly;
+      break;
+    case AuthenticatorCategory::kICloud:
+      metric_to_emit = kICloudOnly;
+      break;
+    case AuthenticatorCategory::kWindows:
+      metric_to_emit = kWinOnly;
+      break;
+    case AuthenticatorCategory::kOther:
+      metric_to_emit = kOthers;
+      break;
+  }
+
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({"WebAuthn.Dialog.UserSelected.", metric_to_emit}).c_str()));
+}
+
 void RecordCancelClick() {
   base::RecordAction(base::UserMetricsAction("WebAuthn.Dialog.Cancelled"));
+}
+
+void RecordAcceptClick() {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.Dialog.Accepted"));
+}
+
+void RecordTrustDialogShown(bool is_create) {
+  std::string type = is_create ? "MakeCredential" : "GetAssertion";
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({"WebAuthn.", type, ".TrustGpmDialogShown"}).c_str()));
+}
+
+void RecordCreateGpmDialogShown() {
+  base::RecordAction(
+      base::UserMetricsAction("WebAuthn.MakeCredential.CreateGpmDialogShown"));
+}
+
+void RecordRecoveryShown(bool is_create) {
+  std::string type = is_create ? "MakeCredential" : "GetAssertion";
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({"WebAuthn.", type, ".RecoverGpmShown"}).c_str()));
+}
+
+void RecordRecoveryCancelled() {
+  base::RecordAction(
+      base::UserMetricsAction("WebAuthn.Window.RecoverGpmCancelled"));
+}
+
+void RecordRecoverySucceeded() {
+  base::RecordAction(
+      base::UserMetricsAction("WebAuthn.Window.RecoverGpmSucceeded"));
 }
 
 void RecordICloudShown(bool is_create) {

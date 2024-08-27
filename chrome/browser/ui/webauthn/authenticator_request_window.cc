@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
@@ -235,6 +236,9 @@ class AuthenticatorRequestWindow
         url = GaiaUrls::GetInstance()->gaia_url().Resolve(
             base::StrCat({"/encryption/unlock/desktop?kdi=", kKdi}));
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
+        webauthn::user_actions::RecordRecoveryShown(
+            /*is_create=*/model_->request_type ==
+            device::FidoRequestType::kMakeCredential);
         if (base::FeatureList::IsEnabled(device::kWebAuthnPasskeysReset)) {
           passkey_reset_observer_ =
               std::make_unique<PasskeyResetWebContentsObserver>(
@@ -293,6 +297,7 @@ class AuthenticatorRequestWindow
       return;
     }
     if (model_->step() == step_) {
+      webauthn::user_actions::RecordRecoveryCancelled();
       model_->OnRecoverSecurityDomainClosed();
     }
   }

@@ -164,8 +164,8 @@ void AuthenticatorSheetModelBase::OnAccept() {
 
 void AuthenticatorSheetModelBase::OnCancel() {
   if (dialog_model()) {
-    dialog_model()->CancelAuthenticatorRequest();
     webauthn::user_actions::RecordCancelClick();
+    dialog_model()->CancelAuthenticatorRequest();
   }
 }
 
@@ -1871,6 +1871,8 @@ AuthenticatorTrustThisComputerAssertionSheetModel::
                                   OtherMechanismButtonVisibility::kHidden) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_LAPTOP_LIGHT,
                                 IDR_WEBAUTHN_LAPTOP_DARK);
+
+  webauthn::user_actions::RecordTrustDialogShown(/*is_create=*/false);
 }
 
 AuthenticatorTrustThisComputerAssertionSheetModel::
@@ -1931,6 +1933,7 @@ void AuthenticatorTrustThisComputerAssertionSheetModel::OnBack() {
 }
 
 void AuthenticatorTrustThisComputerAssertionSheetModel::OnAccept() {
+  webauthn::user_actions::RecordAcceptClick();
   dialog_model()->OnTrustThisComputer();
 }
 
@@ -1943,6 +1946,8 @@ AuthenticatorCreateGpmPasskeySheetModel::
                                   OtherMechanismButtonVisibility::kVisible) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_GPM_PASSKEY_DARK);
+
+  webauthn::user_actions::RecordCreateGpmDialogShown();
 }
 
 AuthenticatorCreateGpmPasskeySheetModel::
@@ -1979,6 +1984,7 @@ std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetAcceptButtonLabel()
 }
 
 void AuthenticatorCreateGpmPasskeySheetModel::OnAccept() {
+  webauthn::user_actions::RecordAcceptClick();
   dialog_model()->OnGPMCreatePasskey();
 }
 
@@ -2036,6 +2042,8 @@ AuthenticatorTrustThisComputerCreationSheetModel::
                                   OtherMechanismButtonVisibility::kVisible) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_LAPTOP_LIGHT,
                                 IDR_WEBAUTHN_LAPTOP_DARK);
+
+  webauthn::user_actions::RecordTrustDialogShown(/*is_create=*/true);
 }
 
 AuthenticatorTrustThisComputerCreationSheetModel::
@@ -2081,6 +2089,7 @@ AuthenticatorTrustThisComputerCreationSheetModel::GetOtherMechanismButtonLabel()
 }
 
 void AuthenticatorTrustThisComputerCreationSheetModel::OnAccept() {
+  webauthn::user_actions::RecordAcceptClick();
   dialog_model()->OnTrustThisComputer();
 }
 

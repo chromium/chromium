@@ -40,6 +40,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
@@ -755,6 +756,7 @@ void GPMEnclaveController::OnKeysStored() {
     recovered_with_icloud_keychain_ = false;
   } else if (model_->step() == Step::kRecoverSecurityDomain) {
     // MagicArch recovery.
+    webauthn::user_actions::RecordRecoverySucceeded();
     device::enclave::RecordEvent(device::enclave::Event::kRecoverySuccessful);
   } else {
     // Keys were stored but we were not expecting it, e.g. because it happened
