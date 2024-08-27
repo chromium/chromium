@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ClosedTabIsAboutBlank" enum="Boolean"
-    expires_after="2024-09-07">
+    expires_after="2025-09-07">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -342,7 +342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
-    expires_after="2024-09-07">
+    expires_after="2025-09-07">
   <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CommittedURLMatchesCurrentItem" enum="Boolean"
-    expires_after="2024-09-07">
+    expires_after="2025-09-07">
   <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -2047,7 +2047,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MainFrameNavigationIsInBrowserLockdownMode" enum="Boolean"
-    expires_after="2024-11-03">
+    expires_after="2025-11-03">
   <owner>joemerramos@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
@@ -2059,7 +2059,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MainFrameNavigationIsInLockdownMode" enum="Boolean"
-    expires_after="2024-10-06">
+    expires_after="2025-10-06">
   <owner>ajuma@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
