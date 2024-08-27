@@ -1751,7 +1751,7 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
       .Run(successful_auth ? CreditCardFetchResult::kSuccess
                            : CreditCardFetchResult::kTransientError,
            card);
-  // `accessor->OnCreditCardFetched()` makes a copy of `card` and `cvc` before
+  // `on_credit_card_fetched_callback_` makes a copy of `card` and `cvc` before
   // it asynchronously fills them into the form. Thus we can safely call
   // `Reset()` here, and we should as from this class' point of view the
   // authentication flow is complete.
@@ -1761,13 +1761,17 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
 void CreditCardAccessManager::OnVcn3dsAuthenticationComplete(
     payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response) {
   if (response.card.has_value()) {
-    card_ = std::make_unique<CreditCard>(std::move(response.card.value()));
+    // `on_credit_card_fetched_callback_` makes a copy of `card` and `cvc`
+    // before it asynchronously fills them into the form. Thus it is safe to
+    // pass the address of `response.card.value()` here, as by the time it goes
+    // out of scope, a copy will have already been made to fill the form.
     std::move(on_credit_card_fetched_callback_)
-        .Run(CreditCardFetchResult::kSuccess, card_.get());
+        .Run(CreditCardFetchResult::kSuccess, &response.card.value());
   } else {
     std::move(on_credit_card_fetched_callback_)
         .Run(CreditCardFetchResult::kTransientError, nullptr);
   }
+  Reset();
 }
 
 }  // namespace autofill

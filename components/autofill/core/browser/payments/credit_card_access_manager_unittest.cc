@@ -4057,6 +4057,8 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(accessor_->number(), response.card->number());
   EXPECT_EQ(accessor_->cvc(), response.card->cvc());
+  EXPECT_FALSE(
+      test_api(credit_card_access_manager()).is_authentication_in_progress());
 }
 
 // Test that a failure response for a VCN 3DS authentication is handled
@@ -4076,6 +4078,8 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Check that `accessor_` was triggered with the expected error.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
+  EXPECT_FALSE(
+      test_api(credit_card_access_manager()).is_authentication_in_progress());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
