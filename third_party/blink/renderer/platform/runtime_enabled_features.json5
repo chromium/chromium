@@ -723,10 +723,6 @@
       status: "experimental",
     },
     {
-      name: "ClipboardSvg",
-      status: "stable",
-    },
-    {
       name: "ClipPathRejectEmptyPaths",
       status: "stable",
     },

@@ -92,13 +92,9 @@ bool ClipboardItem::supports(const String& type) {
     return true;
   }
 
-  if (type == kMimeTypeImageSvg) {
-    return RuntimeEnabledFeatures::ClipboardSvgEnabled();
-  }
-
   // TODO(https://crbug.com/1029857): Add support for other types.
   return type == kMimeTypeImagePng || type == kMimeTypeTextPlain ||
-         type == kMimeTypeTextHTML;
+         type == kMimeTypeTextHTML || type == kMimeTypeImageSvg;
 }
 
 void ClipboardItem::Trace(Visitor* visitor) const {

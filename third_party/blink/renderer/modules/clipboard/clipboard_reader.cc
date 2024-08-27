@@ -345,8 +345,7 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                                      sanitize_html);
   }
 
-  if (mime_type == kMimeTypeImageSvg &&
-      RuntimeEnabledFeatures::ClipboardSvgEnabled()) {
+  if (mime_type == kMimeTypeImageSvg) {
     return MakeGarbageCollected<ClipboardSvgReader>(system_clipboard, promise);
   }
 

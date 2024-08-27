@@ -292,8 +292,7 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
     return MakeGarbageCollected<ClipboardHtmlWriter>(system_clipboard, promise);
   }
 
-  if (mime_type == kMimeTypeImageSvg &&
-      RuntimeEnabledFeatures::ClipboardSvgEnabled()) {
+  if (mime_type == kMimeTypeImageSvg) {
     return MakeGarbageCollected<ClipboardSvgWriter>(system_clipboard, promise);
   }
 
