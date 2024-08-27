@@ -38,3 +38,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, MediaTabs) {
 IN_PROC_BROWSER_TEST_F(TabSearchTest, Declutter) {
   RunTest("tab_search/declutter_page_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(TabSearchTest, OrganizationSelector) {
+  RunTest("tab_search/tab_organization_selector_test.js", "mocha.run()");
+}

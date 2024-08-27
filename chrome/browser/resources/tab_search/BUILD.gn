@@ -51,6 +51,8 @@ build_webui("build") {
     "auto_tab_groups/auto_tab_groups_results.ts",
     "declutter/declutter_page.html.ts",
     "declutter/declutter_page.ts",
+    "tab_organization_selector.html.ts",
+    "tab_organization_selector.ts",
     "tab_search_api_proxy.ts",
     "tab_search_group_item.html.ts",
     "tab_search_group_item.ts",
@@ -81,6 +83,7 @@ build_webui("build") {
     "auto_tab_groups/auto_tab_groups_results.css",
     "auto_tab_groups/auto_tab_groups_shared_style.css",
     "declutter/declutter_page.css",
+    "tab_organization_selector.css",
     "tab_search_group_item.css",
     "tab_search_item.css",
   ]

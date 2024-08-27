@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './auto_tab_groups/auto_tab_groups_page.js';
-import './declutter/declutter_page.js';
+import './tab_organization_selector.js';
 import './tab_search_page.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
