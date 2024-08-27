@@ -4,8 +4,10 @@
 
 def _CheckChangeOnUploadOrCommit(input_api, output_api):
   results = []
-  webui_sources = set(
-      ['rollup_plugin.js', 'generate_grd.py', 'minify_js.py', 'bundle_js.py'])
+  webui_sources = set([
+      'rollup_plugin.mjs', 'generate_grd.py', 'generate_grd_test.py',
+      'minify_js.py', 'minify_js_test.py', 'bundle_js.py', 'bundle_js_test.py'
+  ])
   affected = input_api.AffectedFiles()
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
   if webui_sources.intersection(set(affected_files)):

@@ -145,7 +145,7 @@ class BundleJsTest(unittest.TestCase):
     self.assertTrue('shared.rollup.js' in manifest['files'])
 
     self.assertEqual(
-        os.path.relpath(self._out_folder, _CWD).replace('\\', '/'),
+        os.path.normpath(os.path.relpath(self._out_folder, _CWD)),
         os.path.relpath(manifest['base_dir'], _CWD))
 
   def testSimpleBundleExcludes(self):
@@ -231,12 +231,9 @@ class BundleJsTest(unittest.TestCase):
 
   def testSimpleBundleWithCustomConfig(self):
     args = [
-        '--host',
-        'fake-host',
-        '--js_module_in_files',
-        'bar_wrapper.js',
+        '--host', 'fake-host', '--js_module_in_files', 'bar_wrapper.js',
         '--rollup_config',
-        os.path.join('tests', 'bundle_js', 'dummy.config.mjs')
+        os.path.join(_HERE_DIR, 'tests', 'bundle_js', 'dummy.config.mjs')
     ]
     self._run_bundle(args)
 
