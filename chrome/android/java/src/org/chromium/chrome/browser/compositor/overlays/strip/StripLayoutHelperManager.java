@@ -36,6 +36,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -215,6 +217,7 @@ public class StripLayoutHelperManager
     private float mWidth; // in dp units
     private float mHeight; // Height of the entire tab strip compositor layer in DP.
     private final float mScrollableStripHeight; // Height of the scrollable tab strip layer in DP.
+    private boolean mIsVerticalScrollInProgress; // Is the tab strip is being scrolled by a gesture.
 
     // Padding regions that tabs should remain untouchable.
     private float mLeftPadding; // in dp units
@@ -772,6 +775,11 @@ public class StripLayoutHelperManager
             mStatusBarColorController.setTabStripColorOverlay(
                     getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
 
+            yOffset = 0;
+        } else if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                && mIsVerticalScrollInProgress) {
+            // With bciv, we don't want anything else controlling the offset while scrolling.
+            // Tabstrip currently has no min height, so setting to 0 is ok.
             yOffset = 0;
         } else if (getStripVisibilityState() == StripVisibilityState.GONE) {
             // When the tab strip is hidden by a height transition, the stable offset of this scene
@@ -1352,6 +1360,23 @@ public class StripLayoutHelperManager
                     @Override
                     public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
                         updateTitleForTab(tab);
+                    }
+
+                    @Override
+                    public void onBrowserControlsConstraintsChanged(
+                            Tab tab,
+                            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+                            BrowserControlsOffsetTagsInfo offsetTagsInfo,
+                            @BrowserControlsState int constraints) {
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                            mTabStripTreeProvider.updateOffsetTag(
+                                    offsetTagsInfo.getTopControlsOffsetTag());
+                        }
+                    }
+
+                    @Override
+                    public void onContentViewScrollingStateChanged(boolean scrolling) {
+                        mIsVerticalScrollInProgress = scrolling;
                     }
                 };
 

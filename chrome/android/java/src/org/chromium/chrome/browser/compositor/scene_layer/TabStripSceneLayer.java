@@ -9,12 +9,14 @@ import androidx.annotation.ColorInt;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.resources.ResourceManager;
@@ -91,6 +93,18 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             float topPaddingDp) {
         if (mNativePtr == 0) return;
         final boolean visible = yOffset > -layoutHelper.getHeight();
+
+        // When BrowserControlsInViz is enabled, this function will be called sparingly during a
+        // scroll to reduce/remove browser frames. If the tab strip isn't visible,
+        // beginBuildingFrame would cause the layer tree to be hidden. Later, when the TabStrip is
+        // scrolled back into view, beginBuildingFrame would need to be called again to unhide the
+        // layer tree, but we don't want either of these 2 calls to happen because it would result
+        // in 2 more browser frames. So, we short circuit to keep the layer tree always visible.
+
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && !visible) {
+            return;
+        }
+
         // This will hide the tab strips if necessary.
         TabStripSceneLayerJni.get()
                 .beginBuildingFrame(mNativePtr, TabStripSceneLayer.this, visible);
@@ -101,6 +115,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             float leftPaddingPx = (float) Math.ceil(leftPaddingDp * mDpToPx);
             float rightPaddingPx = (float) Math.ceil(rightPaddingDp * mDpToPx);
             float topPaddingPx = (float) Math.ceil(topPaddingDp * mDpToPx);
+
             pushButtonsAndBackground(
                     layoutHelper,
                     resourceManager,
@@ -120,6 +135,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             pushGroupIndicators(stripLayoutGroupTitlesToRender, layerTitleCache);
         }
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
+    }
+
+    public void updateOffsetTag(OffsetTag offsetTag) {
+        TabStripSceneLayerJni.get().updateOffsetTag(mNativePtr, TabStripSceneLayer.this, offsetTag);
     }
 
     private void pushButtonsAndBackground(
@@ -305,6 +324,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
 
         void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
+
+        void updateOffsetTag(
+                long nativeTabStripSceneLayer, TabStripSceneLayer caller, OffsetTag offsetTag);
 
         void updateTabStripLayer(
                 long nativeTabStripSceneLayer,
