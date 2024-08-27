@@ -25,7 +25,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -1483,6 +1485,27 @@ void PasswordFormManager::UpdatePredictionsForObservedForm(
     return;
   }
 
+  // Don't accept server predictions if they do not have 1:1 match by field
+  // renderer id for credential fields predictions. Otherwise, the field
+  // predictions can not be matched to the corresponding field at the form
+  // parsing stage. Number of text fields are the same due to the form signature
+  // match and each field renderer id is assumed to be unique within one form.
+  // The correct predictions will be loaded by autofill calling
+  // `PasswordManager::ProcessAutofillPredictions` at some point.
+  for (const PasswordFieldPrediction& field_prediction : it->second.fields) {
+    if (DeriveFromFieldType(field_prediction.type) ==
+        CredentialFieldType::kNone) {
+      continue;
+    }
+    auto matched_iterator = base::ranges::find_if(
+        observed_form()->fields(),
+        [&field_prediction](const autofill::FormFieldData& field) {
+          return field_prediction.renderer_id == field.renderer_id();
+        });
+    if (matched_iterator == observed_form()->fields().end()) {
+      return;
+    }
+  }
   ReportTimeBetweenStoreAndServerUMA();
   parser_.set_predictions(it->second);
 }

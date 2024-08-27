@@ -5541,6 +5541,52 @@ TEST_P(PasswordManagerTest, SubmittedManagerClearingOnSuccessfulLogin) {
   EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
 }
 
+// Tests that server predictions are correctly assigned even though forms have
+// the same form signature.
+TEST_P(PasswordManagerTest, ProcessingPredictionsOnSameFormSignatureForms) {
+  constexpr int kPasswordFieldIndex = 1;
+  FormData observed_form(MakeSimpleFormData());
+  FormData similar_form(MakeSimpleFormData());
+
+  // Similar form has different renderer ids.
+  ASSERT_THAT(similar_form.fields(), SizeIs(2));
+  test_api(similar_form)
+      .field(kPasswordFieldIndex)
+      .set_renderer_id(FieldRendererId(-10));
+  similar_form.set_renderer_id(FormRendererId(-20));
+
+  manager()->OnPasswordFormsParsed(&driver_, {observed_form});
+  manager()->ProcessAutofillPredictions(
+      &driver_, observed_form,
+      CreateServerPredictions(
+          observed_form, {{0, FieldType::USERNAME}, {1, FieldType::PASSWORD}}));
+  manager()->OnPasswordFormSubmitted(&driver_, observed_form);
+
+  manager()->OnPasswordFormsParsed(&driver_, {similar_form});
+  manager()->ProcessAutofillPredictions(
+      &driver_, similar_form,
+      CreateServerPredictions(similar_form, {{0, FieldType::USERNAME},
+                                             {1, FieldType::NEW_PASSWORD}}));
+  // Wait for password store response before parsing.
+  task_environment_.RunUntilIdle();
+  manager()->OnPasswordFormSubmitted(&driver_, similar_form);
+
+  EXPECT_THAT(manager()->form_managers(), SizeIs(2));
+
+  const PasswordForm* form_with_new_password_prediction =
+      manager()->GetParsedObservedForm(
+          &driver_, similar_form.fields()[kPasswordFieldIndex].renderer_id());
+  const PasswordForm* form_with_password_prediction =
+      manager()->GetParsedObservedForm(
+          &driver_, observed_form.fields()[kPasswordFieldIndex].renderer_id());
+
+  ASSERT_THAT(form_with_new_password_prediction, NotNull());
+  ASSERT_THAT(form_with_password_prediction, NotNull());
+
+  EXPECT_TRUE(form_with_new_password_prediction->HasNewPasswordElement());
+  EXPECT_FALSE(form_with_password_prediction->HasNewPasswordElement());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_P(PasswordManagerTest, FormSubmissionTrackingAfterTouchToFill) {
   PasswordForm saved_match(MakeSavedForm());
