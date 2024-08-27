@@ -8,6 +8,7 @@
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
@@ -1415,6 +1417,26 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_nil()];
 
   // TODO(crbug.com/40072328): Test that items were actually moved.
+}
+
+// Tests that the batch upload card in account settings can be displayed without
+// crashing when the passwords data type is disabled. Regression test for
+// crbug.com/360304897.
+- (void)testBulkUploadCardWhenPasswordsDisabled {
+  SaveBookmark(@"foo", @"https://www.foo.com");
+  SaveBookmark(@"bar", @"https://www.bar.com");
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyAppInterface
+      setSelectedType:syncer::UserSelectableType::kPasswords
+              enabled:NO];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  ExpectBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM, 2,
+      fakeIdentity.userEmail);
 }
 
 // Before crbug.com/40265120, the autofill and payments toggles used to be
