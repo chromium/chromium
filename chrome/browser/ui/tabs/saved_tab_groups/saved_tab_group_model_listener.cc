@@ -122,12 +122,12 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
 
 void SavedTabGroupModelListener::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> new_local_group_id,
-    content::WebContents* contents,
+    tabs::TabModel* tab,
     int index) {
   // Remove `contents` from its current saved group, if it's in one.
   for (auto& [local_group_id, listener] : local_tab_group_listeners_) {
     if (local_group_id != new_local_group_id) {
-      if (listener.MaybeRemoveWebContentsFromLocal(contents) ==
+      if (listener.MaybeRemoveWebContentsFromLocal(tab->contents()) ==
           LocalTabGroupListener::Liveness::kGroupDeleted) {
         // If this emptied the group, the saved group was removed, so we must
         // stop listening to `local_group_id`.
@@ -147,8 +147,8 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
     const Browser* const browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
         new_local_group_id.value());
     CHECK(browser);
-    listener.AddWebContentsFromLocal(contents, browser->tab_strip_model(),
-                                     index);
+    listener.AddWebContentsFromLocal(tab->contents(),
+                                     browser->tab_strip_model(), index);
   }
 }
 

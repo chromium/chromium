@@ -877,7 +877,7 @@ class TabStripModel : public TabGroupController {
   // and `final_group` and updates the `group_model_`.
   void TabGroupStateChanged(
       int index,
-      content::WebContents* web_contents,
+      tabs::TabModel* tab,
       const std::optional<tab_groups::TabGroupId> initial_group,
       const std::optional<tab_groups::TabGroupId> new_group);
 

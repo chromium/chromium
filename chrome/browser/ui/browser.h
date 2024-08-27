@@ -78,6 +78,10 @@ class TabStripModel;
 class TabStripModelDelegate;
 class TabMenuModelDelegate;
 
+namespace tabs {
+class TabModel;
+}
+
 namespace tab_groups {
 class DeletionDialogController;
 }
@@ -716,7 +720,7 @@ class Browser : public TabStripModelObserver,
                              content::WebContents* contents,
                              int index) override;
   void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
-                              content::WebContents* contents,
+                              tabs::TabModel* tab,
                               int index) override;
   void TabStripEmpty() override;
 

@@ -49,7 +49,7 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override;
   void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
-                              content::WebContents* contents,
+                              tabs::TabModel* tab,
                               int index) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
