@@ -557,6 +557,10 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("browser_version",
                     std::string(version_info::GetVersionNumber()));
   source->AddString("os_version", base::SysInfo::OperatingSystemVersion());
+
+  // BigBuffer doesn't work well on ARM devices. See b/360028048.
+  std::string arch = base::SysInfo::ProcessCPUArchitecture();
+  source->AddBoolean("can_use_big_buffer", !base::StartsWith(arch, "ARM"));
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {
