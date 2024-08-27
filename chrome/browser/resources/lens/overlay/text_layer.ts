@@ -72,12 +72,6 @@ function isInRange(index: number, start: number, end: number): boolean {
   return (index >= start && index <= end) || (index >= end && index <= start);
 }
 
-// Returns true if the provided `text` is entirely whitespace.
-function isWhitespace(text: string): boolean {
-  const whitespaceRegex = /^\s*$/;
-  return whitespaceRegex.test(text);
-}
-
 export interface TextLayerElement {
   $: {
     textRenderCanvas: HTMLCanvasElement,
@@ -543,9 +537,7 @@ export class TextLayerElement extends PolymerElement {
     this.translatedWordsInOrder = receivedWords;
   }
 
-  private calculateFontSizePixels(
-      translatedLine: TranslatedLineData, parentHeight: number,
-      parentWidth: number): number {
+  private calculateFontSizePixels(translatedLine: TranslatedLineData): number {
     const line = translatedLine.line;
     if (!line.geometry) {
       return MIN_FONT_SIZE;
@@ -559,8 +551,18 @@ export class TextLayerElement extends PolymerElement {
     }
 
     // Convert the normalized line geometry to pixels.
-    const lineWidth = (line.geometry.boundingBox.box.width * parentWidth);
-    const lineHeight = (line.geometry.boundingBox.box.height * parentHeight);
+    const isTopToBottom = this.isTranslatedLineVertical(translatedLine);
+    const translatedLineWidth =
+        (line.geometry.boundingBox.box.width * this.selectionOverlayRect.width);
+    const translatedLineHeight =
+        (line.geometry.boundingBox.box.height *
+         this.selectionOverlayRect.height);
+
+    // Swap width and height if we are rendering the text vertically.
+    const lineWidth =
+        isTopToBottom ? translatedLineHeight : translatedLineWidth;
+    const lineHeight =
+        isTopToBottom ? translatedLineWidth : translatedLineHeight;
 
     const ctx = this.$.textRenderCanvas.getContext('2d');
     this.$.textRenderCanvas.width = lineWidth;
@@ -573,7 +575,7 @@ export class TextLayerElement extends PolymerElement {
     for (let i = 0; i < line.words.length; i++) {
       const word = line.words[i];
       text += word.plainText;
-      text += this.getTextSeparatorForTranslatedWord(word);
+      text += getTextSeparator(word);
     }
 
     if (ctx === null) {
@@ -600,14 +602,6 @@ export class TextLayerElement extends PolymerElement {
       }
     }
     return Math.min(low - 1, MAX_FONT_SIZE);
-  }
-
-  private getTextSeparatorForTranslatedWord(word: Word) {
-    if (word.textSeparator && isWhitespace(word.textSeparator)) {
-      return word.textSeparator;
-    }
-
-    return '';
   }
 
   // Returns the rectangle circumscribing the given lines.
@@ -759,14 +753,10 @@ export class TextLayerElement extends PolymerElement {
     const selectedWords = this.shouldRenderTranslateWords ?
         this.translatedWordsInOrder.slice(startIndex, endIndex + 1) :
         this.renderedWords.slice(startIndex, endIndex + 1);
-    const textSeparatorFunction = this.shouldRenderTranslateWords ?
-        this.getTextSeparatorForTranslatedWord :
-        getTextSeparator;
     return selectedWords
         .map((word, index) => {
           return word.plainText +
-              (index < selectedWords.length - 1 ? textSeparatorFunction(word) :
-                                                  '');
+              (index < selectedWords.length - 1 ? getTextSeparator(word) : '');
         })
         .join('');
   }
@@ -834,10 +824,7 @@ export class TextLayerElement extends PolymerElement {
           skColorToHexColor(translatedLine.backgroundPrimaryColor)}`,
       `color: ${skColorToHexColor(translatedLine.textColor)}`,
       `justify-content: ${this.getLineAlignment(translatedLineData.alignment)}`,
-      `font-size: ${
-          this.calculateFontSizePixels(
-              translatedLineData, this.selectionOverlayRect.height,
-              this.selectionOverlayRect.width)}px`,
+      `font-size: ${this.calculateFontSizePixels(translatedLineData)}px`,
       `width: ${toPercent(lineBoundingBox.box.width)}`,
       `height: ${toPercent(lineBoundingBox.box.height)}`,
       `top: ${
@@ -850,10 +837,14 @@ export class TextLayerElement extends PolymerElement {
     return styles.join(';');
   }
 
-  private getWritingModeForLine(line: TranslatedLineData): string {
+  private isTranslatedLineVertical(line: TranslatedLineData): boolean {
     const writingDirection =
         this.renderedTranslateParagraphs[line.paragraphIndex].writingDirection;
-    if (writingDirection === WritingDirection.kTopToBottom) {
+    return writingDirection === WritingDirection.kTopToBottom;
+  }
+
+  private getWritingModeForLine(line: TranslatedLineData): string {
+    if (this.isTranslatedLineVertical(line)) {
       return 'vertical-lr';
     }
     return 'horizontal-tb';

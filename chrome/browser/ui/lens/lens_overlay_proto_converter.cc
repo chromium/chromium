@@ -13,6 +13,7 @@
 #include "chrome/browser/lens/core/mojom/polygon.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/lens_server_proto/lens_overlay_deep_gleam_data.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_geometry.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_polygon.pb.h"
@@ -245,17 +246,43 @@ lens::mojom::TranslatedLinePtr CreateTranslatedLineMojomFromProto(
   std::vector<std::string> word_translations;
   std::vector<std::string> word_text_separators;
   std::vector<float> word_widths;
-  for (const auto& translated_proto_word : translated_line.word()) {
+  for (int i = 0; i < translated_line.word_size(); i++) {
+    const auto& translated_proto_word = translated_line.word()[i];
     int substring_length =
         translated_proto_word.end() - translated_proto_word.start();
-    const std::string translation = line_translation.substr(
-        translated_proto_word.start(), substring_length);
-    const std::string separator =
-        line_translation.substr(translated_proto_word.end(), 1);
+
+    // If the start index of the next word is not equal to the end index of this
+    // word, it is a text separator.
+    int text_separator_index = translated_proto_word.end();
+    if (i + 1 < translated_line.word_size()) {
+      const auto& next_translated_proto_word = translated_line.word()[i + 1];
+      if (text_separator_index == next_translated_proto_word.start()) {
+        text_separator_index = -1;
+      }
+    }
+
+    // We need to convert the string to a unicode string in case there are
+    // multi-byte characters that we need to substring.
+    icu::UnicodeString unicode_translation(line_translation.c_str());
+    const icu::UnicodeString unicode_translation_substr =
+        unicode_translation.tempSubString(translated_proto_word.start(),
+                                          substring_length);
+    const icu::UnicodeString unicode_separator =
+        text_separator_index > 0
+            ? unicode_translation.tempSubString(text_separator_index, 1)
+            : "";
+
+    // Convert the unicode substring back into UTF-8 strings to send to WebUI.
+    std::string translation;
+    unicode_translation_substr.toUTF8String(translation);
+    std::string separator;
+    unicode_separator.toUTF8String(separator);
+
+    // Calculate the word width from the UTF-8 strings.
     float word_width =
         gfx::GetStringWidthF(base::UTF8ToUTF16(translation), gfx::FontList());
-
     total_translated_words_width += word_width;
+
     word_widths.push_back(word_width);
     word_text_separators.push_back(std::move(separator));
     word_translations.push_back(std::move(translation));
