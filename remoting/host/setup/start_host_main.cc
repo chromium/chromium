@@ -68,6 +68,8 @@ constexpr char kCorpUserSwitchName[] = "corp-user";
 // Specifies the account email to be used when configuring a machine using the
 // Cloud registration process.
 constexpr char kCloudUserSwitchName[] = "cloud-user";
+// Specifies the API_KEY to use when registering the cloud host instance.
+constexpr char kCloudApiKeySwitchName[] = "cloud-api-key";
 
 // TODO: joedow - switch to using `display-name` for consistency. Remove `name`
 // after we no longer need to support start_host for Pre-M125 packages.
@@ -76,6 +78,9 @@ constexpr char kDisplayNameSwitchName[] = "display-name";
 
 // Used to disable crash reporting.
 constexpr char kDisableCrashReportingSwitchName[] = "disable-crash-reporting";
+
+constexpr char kInvalidPinErrorMessage[] =
+    "Please provide a numeric PIN consisting of at least six digits.\n";
 
 // True if the host was started successfully.
 bool g_started = false;
@@ -110,12 +115,15 @@ void PrintCorpUserHelpMessage(const char* process_name) {
 }
 
 void PrintCloudUserHelpMessage(const char* process_name) {
+  // TODO: joedow - Add a link to public documentation and/or samples when they
+  // are available.
   fprintf(stdout,
           "Setting up a machine for a cloud user requires the email address of "
-          "that user, a 6+ digit numeric PIN, and an optional display name.\n"
-          "Example usage:\n%s --%s=<user_email_address> --%s=<6+ digit pin> "
+          "that user, an API_KEY created for the project the request is being "
+          "made from, and an optional display name.\n"
+          "Example usage:\n%s --%s=<user_email_address> --%s=<API_KEY> "
           "[--%s=cloud-instance-name] [--%s]\n",
-          process_name, kCloudUserSwitchName, kPinSwitchName,
+          process_name, kCloudUserSwitchName, kCloudApiKeySwitchName,
           kDisplayNameSwitchName, kDisableCrashReportingSwitchName);
 }
 
@@ -237,8 +245,7 @@ bool InitializeParamsForOAuthFlow(HostStarter::Params& params,
       fflush(stdout);
       params.pin = ReadString(true);
       if (!remoting::IsPinValid(params.pin)) {
-        fprintf(stdout,
-                "Please use a PIN consisting of at least six digits.\n");
+        fprintf(stdout, kInvalidPinErrorMessage);
         fflush(stdout);
         continue;
       }
@@ -255,7 +262,7 @@ bool InitializeParamsForOAuthFlow(HostStarter::Params& params,
     }
   } else {
     if (!remoting::IsPinValid(params.pin)) {
-      fprintf(stderr, "Please use a PIN consisting of at least six digits.\n");
+      fprintf(stderr, kInvalidPinErrorMessage);
       return false;
     }
   }
@@ -320,14 +327,22 @@ bool InitializeCloudMachineParams(HostStarter::Params& params,
     params.name = command_line->GetSwitchValueASCII(kDisplayNameSwitchName);
   }
 
-  // Require a PIN when setting an instance up for a cloud user since the
-  // session authorization service is not available to them.
-  params.pin = command_line->GetSwitchValueASCII(kPinSwitchName);
-  if (!remoting::IsPinValid(params.pin)) {
-    fprintf(stdout, "Please provide a numeric PIN consisting of at least six digits.\n");
-    return false;
+  if (command_line->HasSwitch(kCloudApiKeySwitchName)) {
+    // Using a cloud API_KEY means the host will be configured to use session
+    // authorization and does not require a PIN.
+    params.api_key = command_line->GetSwitchValueASCII(kCloudApiKeySwitchName);
+    cloud_arg_count++;
+  } else {
+    // Require a PIN when setting an instance up for a cloud user since the
+    // session authorization service is not available to them.
+    // TODO: joedow - Remove this node once the API_KEY path is fully supported.
+    params.pin = command_line->GetSwitchValueASCII(kPinSwitchName);
+    if (!remoting::IsPinValid(params.pin)) {
+      fprintf(stdout, kInvalidPinErrorMessage);
+      return false;
+    }
+    cloud_arg_count++;
   }
-  cloud_arg_count++;
 
   bool has_disable_crash_reporting_switch =
       command_line->HasSwitch(kDisableCrashReportingSwitchName);

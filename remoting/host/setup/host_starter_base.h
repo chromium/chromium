@@ -66,8 +66,8 @@ class HostStarterBase : public HostStarter {
   void OnUserTokensRetrieved(const std::string& user_email,
                              const std::string& access_token,
                              const std::string& refresh_token);
-  virtual void RegisterNewHost(const std::string& access_token,
-                               const std::string& public_key) = 0;
+  virtual void RegisterNewHost(const std::string& public_key,
+                               std::optional<std::string> access_token) = 0;
   void OnNewHostRegistered(const std::string& directory_id,
                            const std::string& owner_account_email,
                            const std::string& service_account_email,

@@ -140,6 +140,7 @@ source_set("start_host_main") {
     "//remoting/host:common",
     "//remoting/host/setup",
     "//remoting/host/setup:start_host_main_headers",
+    "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/remoting/v1:cloud_proto",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",

@@ -91,7 +91,7 @@ void HostStarterBase::OnExistingConfigLoaded(
             base::BindOnce(&HostStarterBase::OnUserTokensRetrieved, weak_ptr_),
             base::BindOnce(&HostStarterBase::HandleError, weak_ptr_));
   } else {
-    RegisterNewHost(std::string(), key_pair_->GetPublicKey());
+    RegisterNewHost(key_pair_->GetPublicKey(), /*access_token=*/std::nullopt);
   }
 }
 
@@ -108,7 +108,7 @@ void HostStarterBase::OnUserTokensRetrieved(const std::string& user_email,
 
   // We don't need a `refresh_token` for the user so ignore it even if the
   // authorization_code was created with the offline param.
-  RegisterNewHost(access_token, key_pair_->GetPublicKey());
+  RegisterNewHost(key_pair_->GetPublicKey(), access_token);
 }
 
 void HostStarterBase::OnNewHostRegistered(

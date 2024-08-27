@@ -40,8 +40,8 @@ class CorpHostStarter : public HostStarterBase {
   ~CorpHostStarter() override;
 
   // HostStarterBase implementation.
-  void RegisterNewHost(const std::string& access_token,
-                       const std::string& public_key) override;
+  void RegisterNewHost(const std::string& public_key,
+                       std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
   void ReportError(const std::string& error_message,
                    base::OnceClosure on_error_reported) override;
@@ -67,13 +67,13 @@ CorpHostStarter::CorpHostStarter(
 
 CorpHostStarter::~CorpHostStarter() = default;
 
-void CorpHostStarter::RegisterNewHost(const std::string& access_token,
-                                      const std::string& public_key) {
+void CorpHostStarter::RegisterNewHost(const std::string& public_key,
+                                      std::optional<std::string> access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We don't expect |access_token| to be populated for this flow but
   // |public_key| is required.
-  DCHECK(access_token.empty());
   DCHECK(!public_key.empty());
+  DCHECK(!access_token.has_value());
 
   corp_service_client_->ProvisionCorpMachine(
       params().username, params().name, public_key, existing_host_id(),

@@ -26,12 +26,16 @@ class ServiceUrls {
     return ftl_server_endpoint_;
   }
 
-  const std::string& remoting_server_endpoint() const {
-    return remoting_server_endpoint_;
+  const std::string& remoting_cloud_endpoint() const {
+    return remoting_cloud_endpoint_;
   }
 
   const std::string& remoting_corp_endpoint() const {
     return remoting_corp_endpoint_;
+  }
+
+  const std::string& remoting_server_endpoint() const {
+    return remoting_server_endpoint_;
   }
 
  private:
@@ -41,8 +45,9 @@ class ServiceUrls {
   virtual ~ServiceUrls();
 
   std::string ftl_server_endpoint_;
-  std::string remoting_server_endpoint_;
+  std::string remoting_cloud_endpoint_;
   std::string remoting_corp_endpoint_;
+  std::string remoting_server_endpoint_;
 };
 
 }  // namespace remoting

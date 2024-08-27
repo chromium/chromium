@@ -63,6 +63,11 @@ class HostStarter {
     std::string owner_email;
     std::string username;
 
+    // The API_KEY to use when calling the cloud registration service endpoint.
+    // Not set for public, corp, or legacy cloud configurations.
+    // TODO: joedow - Update this comment once the API_KEY flow is supported.
+    std::string api_key;
+
     // Optional parameter used to indicate whether or not to enable crash
     // reporting. The default is true and can be opted-out via a command line
     // parameter.
