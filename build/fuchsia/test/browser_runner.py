@@ -69,6 +69,13 @@ class BrowserRunner:
         assert self._log_fs
         return self._log_fs.name
 
+    @property
+    def browser_pid(self) -> int:
+        """Returns the process id of the ffx instance which starts the browser
+        on the test device, shouldn't be called before executing the start."""
+        assert self._browser_proc
+        return self._browser_proc.pid
+
     def _read_devtools_port(self):
         search_regex = r'Remote debugging port: (\d+)'
 
@@ -138,8 +145,8 @@ class BrowserRunner:
 
     def stop_browser(self) -> None:
         """Stops the browser on the target, as well as the local symbolizer, the
-    _log_fs is preserved. Calling this function for a second time won't have any
-    effect."""
+        _log_fs is preserved. Calling this function for a second time won't have
+        any effect."""
         if not self.is_browser_running():
             return
         self._browser_proc.kill()
@@ -147,7 +154,9 @@ class BrowserRunner:
         self._symbolizer_proc.kill()
         self._symbolizer_proc = None
         self._devtools_port = None
-        ssh_run(['killall', 'web_instance.cmx'], self._target_id)
+        # The process may be stopped already, ignoring the no process found
+        # error.
+        ssh_run(['killall', 'web_instance.cmx'], self._target_id, check=False)
 
     def is_browser_running(self) -> bool:
         """Checks if the browser is still running."""
