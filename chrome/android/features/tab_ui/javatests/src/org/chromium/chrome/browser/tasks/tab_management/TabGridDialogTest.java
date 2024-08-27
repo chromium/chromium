@@ -863,7 +863,7 @@ public class TabGridDialogTest {
                                         .getBottomControlOffset()
                                 == 0);
         ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
     }
 
     @Test
@@ -1815,7 +1815,7 @@ public class TabGridDialogTest {
                                         .getBottomControlOffset()
                                 == 0);
         ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1872,7 +1872,7 @@ public class TabGridDialogTest {
                                         .getBottomControlOffset()
                                 == 0);
         ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1915,7 +1915,7 @@ public class TabGridDialogTest {
                                         .getBottomControlOffset()
                                 == 0);
         ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1953,7 +1953,7 @@ public class TabGridDialogTest {
         // Create a tab by tapping "+" on the dialog.
         onView(
                         allOf(
-                                withId(R.id.toolbar_right_button),
+                                withId(R.id.toolbar_new_tab_button),
                                 isDescendantOfA(withId(R.id.tab_grid_dialog_toolbar_container))))
                 .perform(click());
         waitForDialogHidingAnimation(cta);
@@ -1972,7 +1972,7 @@ public class TabGridDialogTest {
             // Create a tab by tapping "+" on the dialog.
             onView(
                             allOf(
-                                    withId(R.id.toolbar_right_button),
+                                    withId(R.id.toolbar_new_tab_button),
                                     isDescendantOfA(
                                             withId(R.id.tab_grid_dialog_toolbar_container))))
                     .perform(click());
@@ -2141,7 +2141,7 @@ public class TabGridDialogTest {
                         isCompletelyDisplayed()));
         onViewWaiting(
                         allOf(
-                                withId(R.id.toolbar_left_button),
+                                withId(R.id.toolbar_show_group_dialog_button),
                                 isDescendantOfA(withId(R.id.bottom_controls))))
                 .perform(click());
     }
@@ -2453,7 +2453,7 @@ public class TabGridDialogTest {
         assertTrue(isDialogFullyVisible(cta));
         onViewWaiting(
                         allOf(
-                                withId(R.id.toolbar_left_button),
+                                withId(R.id.toolbar_back_button),
                                 isDescendantOfA(withId(R.id.tab_grid_dialog_toolbar_container))))
                 .check((v, e) -> assertEquals(s, v.getContentDescription()));
     }

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -45,10 +44,7 @@ import java.util.List;
  * A coordinator for TabGroupUi component. Manages the communication with {@link TabListCoordinator}
  * as well as the life-cycle of shared component objects.
  */
-public class TabGroupUiCoordinator
-        implements TabGroupUiMediator.ResetHandler,
-                TabGroupUi,
-                TabGroupUiMediator.TabGroupUiController {
+public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, TabGroupUi {
     static final String COMPONENT_NAME = "TabStrip";
 
     /** Set by {@code mMediator}, but owned by the coordinator so access is safe pre-native. */
@@ -291,18 +287,5 @@ public class TabGroupUiCoordinator
         if (mMediator != null) {
             mMediator.destroy();
         }
-    }
-
-    // TabGroupUiController implementation.
-    @Override
-    public void setupLeftButtonDrawable(int drawableId) {
-        assert mMediator != null;
-        mMediator.setupLeftButtonDrawable(drawableId);
-    }
-
-    @Override
-    public void setupLeftButtonOnClickListener(View.OnClickListener listener) {
-        assert mMediator != null;
-        mMediator.setupLeftButtonOnClickListener(listener);
     }
 }

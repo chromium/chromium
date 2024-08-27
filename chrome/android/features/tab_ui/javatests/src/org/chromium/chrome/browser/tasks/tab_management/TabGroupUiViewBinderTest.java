@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +39,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Tests for {@link TabGroupUiViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
-    private ImageView mLeftButton;
-    private ImageView mRightButton;
+    private ImageView mShowGroupDialogButton;
+    private ImageView mNewTabButton;
     private ViewGroup mContainerView;
     private View mMainContent;
 
@@ -62,8 +61,9 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
                                                     R.layout.bottom_tab_strip_toolbar,
                                                     parentView,
                                                     false);
-                    mLeftButton = toolbarView.findViewById(R.id.toolbar_left_button);
-                    mRightButton = toolbarView.findViewById(R.id.toolbar_right_button);
+                    mShowGroupDialogButton =
+                            toolbarView.findViewById(R.id.toolbar_show_group_dialog_button);
+                    mNewTabButton = toolbarView.findViewById(R.id.toolbar_new_tab_button);
                     mContainerView = toolbarView.findViewById(R.id.toolbar_container_view);
                     mMainContent = toolbarView.findViewById(R.id.main_content);
                     RecyclerView recyclerView =
@@ -98,34 +98,34 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetLeftButtonOnClickListener() {
+    public void testSetShowGroupDialogButtonOnClickListener() {
         AtomicBoolean leftButtonClicked = new AtomicBoolean();
         leftButtonClicked.set(false);
-        mLeftButton.performClick();
+        mShowGroupDialogButton.performClick();
         assertFalse(leftButtonClicked.get());
 
         mModel.set(
-                TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER,
+                TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_ON_CLICK_LISTENER,
                 (View view) -> leftButtonClicked.set(true));
 
-        mLeftButton.performClick();
+        mShowGroupDialogButton.performClick();
         assertTrue(leftButtonClicked.get());
     }
 
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetRightButtonOnClickListener() {
+    public void testSetNewTabButtonOnClickListener() {
         AtomicBoolean rightButtonClicked = new AtomicBoolean();
         rightButtonClicked.set(false);
-        mRightButton.performClick();
+        mNewTabButton.performClick();
         assertFalse(rightButtonClicked.get());
 
         mModel.set(
-                TabGroupUiProperties.RIGHT_BUTTON_ON_CLICK_LISTENER,
+                TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER,
                 (View view) -> rightButtonClicked.set(true));
 
-        mRightButton.performClick();
+        mNewTabButton.performClick();
         assertTrue(rightButtonClicked.get());
     }
 
@@ -147,29 +147,14 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetLeftButtonDrawable() {
-        int expandLessDrawableId = R.drawable.ic_expand_less_black_24dp;
-        int expandMoreDrawableId = R.drawable.ic_expand_more_black_24dp;
-
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_DRAWABLE_ID, expandLessDrawableId);
-        Drawable expandLessDrawable = mLeftButton.getDrawable();
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_DRAWABLE_ID, expandMoreDrawableId);
-        Drawable expandMoreDrawable = mLeftButton.getDrawable();
-
-        assertNotEquals(expandLessDrawable, expandMoreDrawable);
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetIncognito() {
         mModel.set(TabGroupUiProperties.IS_INCOGNITO, false);
-        ColorStateList lightRightImageTint = mRightButton.getImageTintList();
-        ColorStateList lightLeftImageTint = mLeftButton.getImageTintList();
+        ColorStateList lightNewTabImageTint = mNewTabButton.getImageTintList();
+        ColorStateList lightShowGroupDialogImageTint = mShowGroupDialogButton.getImageTintList();
 
         mModel.set(TabGroupUiProperties.IS_INCOGNITO, true);
-        assertNotEquals(lightRightImageTint, mLeftButton.getImageTintList());
-        assertNotEquals(lightLeftImageTint, mRightButton.getImageTintList());
+        assertNotEquals(lightNewTabImageTint, mShowGroupDialogButton.getImageTintList());
+        assertNotEquals(lightShowGroupDialogImageTint, mNewTabButton.getImageTintList());
     }
 
     @Test
@@ -186,24 +171,12 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetLeftButtonContentDescription() {
-        assertNull(mLeftButton.getContentDescription());
+    public void testSetShowGroupDialogButtonContentDescription() {
+        assertNull(mShowGroupDialogButton.getContentDescription());
 
-        String string = "left button content";
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_CONTENT_DESCRIPTION, string);
+        String string = "show group dialog button content";
+        mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_CONTENT_DESCRIPTION, string);
 
-        assertEquals(string, mLeftButton.getContentDescription());
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    public void testSetRightButtonContentDescription() {
-        assertNull(mRightButton.getContentDescription());
-
-        String string = "right button content";
-        mModel.set(TabGroupUiProperties.RIGHT_BUTTON_CONTENT_DESCRIPTION, string);
-
-        assertEquals(string, mRightButton.getContentDescription());
+        assertEquals(string, mShowGroupDialogButton.getContentDescription());
     }
 }

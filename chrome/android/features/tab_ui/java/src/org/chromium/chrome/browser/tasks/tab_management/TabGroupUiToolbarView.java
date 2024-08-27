@@ -23,8 +23,8 @@ import org.chromium.ui.widget.ChromeImageView;
 
 /** Toolbar for the bottom tab strip see {@link TabGroupUiCoordinator}. */
 public class TabGroupUiToolbarView extends FrameLayout {
-    private ChromeImageView mRightButton;
-    private ChromeImageView mLeftButton;
+    private ChromeImageView mNewTabButton;
+    private ChromeImageView mShowGroupDialogButton;
     private ChromeImageView mFadingEdgeStart;
     private ChromeImageView mFadingEdgeEnd;
     private ViewGroup mContainerView;
@@ -38,20 +38,20 @@ public class TabGroupUiToolbarView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mLeftButton = findViewById(R.id.toolbar_left_button);
-        mRightButton = findViewById(R.id.toolbar_right_button);
+        mShowGroupDialogButton = findViewById(R.id.toolbar_show_group_dialog_button);
+        mNewTabButton = findViewById(R.id.toolbar_new_tab_button);
         mFadingEdgeStart = findViewById(R.id.tab_strip_fading_edge_start);
         mFadingEdgeEnd = findViewById(R.id.tab_strip_fading_edge_end);
         mContainerView = findViewById(R.id.toolbar_container_view);
         mMainContent = findViewById(R.id.main_content);
     }
 
-    void setLeftButtonOnClickListener(OnClickListener listener) {
-        mLeftButton.setOnClickListener(listener);
+    void setShowGroupDialogButtonOnClickListener(OnClickListener listener) {
+        mShowGroupDialogButton.setOnClickListener(listener);
     }
 
-    void setRightButtonOnClickListener(OnClickListener listener) {
-        mRightButton.setOnClickListener(listener);
+    void setNewTabButtonOnClickListener(OnClickListener listener) {
+        mNewTabButton.setOnClickListener(listener);
     }
 
     ViewGroup getViewContainer() {
@@ -87,26 +87,21 @@ public class TabGroupUiToolbarView extends FrameLayout {
     }
 
     void setTint(ColorStateList tint) {
-        ImageViewCompat.setImageTintList(mLeftButton, tint);
-        ImageViewCompat.setImageTintList(mRightButton, tint);
+        ImageViewCompat.setImageTintList(mShowGroupDialogButton, tint);
+        ImageViewCompat.setImageTintList(mNewTabButton, tint);
     }
 
     void setBackgroundColorTint(int color) {
         DrawableCompat.setTint(getBackground(), color);
     }
 
-    /** Setup the drawable in the left button. */
-    void setLeftButtonDrawableId(int drawableId) {
-        mLeftButton.setImageResource(drawableId);
+    /** Set the content description of the show group dialog button. */
+    void setShowGroupDialogButtonContentDescription(String string) {
+        mShowGroupDialogButton.setContentDescription(string);
     }
 
-    /** Set the content description of the left button. */
-    void setLeftButtonContentDescription(String string) {
-        mLeftButton.setContentDescription(string);
-    }
-
-    /** Set the content description of the right button. */
-    void setRightButtonContentDescription(String string) {
-        mRightButton.setContentDescription(string);
+    /** Set the content description of the new tab button. */
+    void setNewTabButtonContentDescription(String string) {
+        mNewTabButton.setContentDescription(string);
     }
 }

@@ -94,8 +94,8 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private TabGridDialogToolbarView mToolbarView;
     private RecyclerView mContentView;
     private TabGridDialogView mTabGridDialogView;
-    private ChromeImageView mRightButton;
-    private ChromeImageView mLeftButton;
+    private ChromeImageView mNewTabButton;
+    private ChromeImageView mBackButton;
     private EditText mTitleTextView;
     private FrameLayout mColorIconContainer;
     private ImageView mColorIcon;
@@ -143,8 +143,8 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                             .inflate(R.layout.tab_grid_dialog_layout, parentView, true);
                     mTabGridDialogView = parentView.findViewById(R.id.dialog_parent_view);
                     mHairline = mTabGridDialogView.findViewById(R.id.tab_grid_dialog_hairline);
-                    mLeftButton = mToolbarView.findViewById(R.id.toolbar_left_button);
-                    mRightButton = mToolbarView.findViewById(R.id.toolbar_right_button);
+                    mBackButton = mToolbarView.findViewById(R.id.toolbar_back_button);
+                    mNewTabButton = mToolbarView.findViewById(R.id.toolbar_new_tab_button);
                     mTitleTextView = mToolbarView.findViewById(R.id.title);
                     mColorIconContainer =
                             mToolbarView.findViewById(R.id.tab_group_color_icon_container);
@@ -208,14 +208,14 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetCollapseClickListener() {
         AtomicBoolean leftButtonClicked = new AtomicBoolean();
         leftButtonClicked.set(false);
-        mLeftButton.performClick();
+        mBackButton.performClick();
         assertFalse(leftButtonClicked.get());
 
         mModel.set(
                 TabGridDialogProperties.COLLAPSE_CLICK_LISTENER,
                 (View view) -> leftButtonClicked.set(true));
 
-        mLeftButton.performClick();
+        mBackButton.performClick();
         assertTrue(leftButtonClicked.get());
     }
 
@@ -225,14 +225,14 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetAddClickListener() {
         AtomicBoolean rightButtonClicked = new AtomicBoolean();
         rightButtonClicked.set(false);
-        mRightButton.performClick();
+        mNewTabButton.performClick();
         assertFalse(rightButtonClicked.get());
 
         mModel.set(
                 TabGridDialogProperties.ADD_CLICK_LISTENER,
                 (View view) -> rightButtonClicked.set(true));
 
-        mRightButton.performClick();
+        mNewTabButton.performClick();
         assertTrue(rightButtonClicked.get());
     }
 
@@ -284,16 +284,16 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetTint() {
         ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(getActivity(), true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            assertNotEquals(tint, mLeftButton.getImageTintList());
-            assertNotEquals(tint, mRightButton.getImageTintList());
+            assertNotEquals(tint, mBackButton.getImageTintList());
+            assertNotEquals(tint, mNewTabButton.getImageTintList());
         }
         assertNotEquals(tint, mTitleTextView.getTextColors());
 
         mModel.set(TabGridDialogProperties.TINT, tint);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            assertEquals(tint, mLeftButton.getImageTintList());
-            assertEquals(tint, mRightButton.getImageTintList());
+            assertEquals(tint, mBackButton.getImageTintList());
+            assertEquals(tint, mNewTabButton.getImageTintList());
         }
         assertEquals(tint, mTitleTextView.getTextColors());
     }

@@ -119,9 +119,9 @@ class TabGridDialogViewBinder {
         // 2) ALL_KEYS are being re-bound upon changing BINDING_TOKEN and a value is unset in the
         //    newly bound model.
         if (COLLAPSE_CLICK_LISTENER == propertyKey) {
-            viewHolder.toolbarView.setLeftButtonOnClickListener(model.get(COLLAPSE_CLICK_LISTENER));
+            viewHolder.toolbarView.setBackButtonOnClickListener(model.get(COLLAPSE_CLICK_LISTENER));
         } else if (ADD_CLICK_LISTENER == propertyKey) {
-            viewHolder.toolbarView.setRightButtonOnClickListener(model.get(ADD_CLICK_LISTENER));
+            viewHolder.toolbarView.setNewTabButtonOnClickListener(model.get(ADD_CLICK_LISTENER));
         } else if (HEADER_TITLE == propertyKey) {
             if (model.get(HEADER_TITLE) != null) {
                 viewHolder.toolbarView.setTitle(model.get(HEADER_TITLE));
@@ -228,7 +228,7 @@ class TabGridDialogViewBinder {
         } else if (IS_KEYBOARD_VISIBLE == propertyKey) {
             viewHolder.toolbarView.updateKeyboardVisibility(model.get(IS_KEYBOARD_VISIBLE));
         } else if (COLLAPSE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
-            viewHolder.toolbarView.setLeftButtonContentDescription(
+            viewHolder.toolbarView.setBackButtonContentDescription(
                     model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
         } else if (SHARE_BUTTON_CLICK_LISTENER == propertyKey) {
             viewHolder.toolbarView.setShareButtonClickListener(

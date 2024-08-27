@@ -214,7 +214,6 @@ public class TabGroupUiMediatorUnitTest {
 
         // Verify strip button content description setup.
         verify(mContext).getString(R.string.accessibility_bottom_tab_strip_expand_tab_sheet);
-        verify(mContext).getString(R.string.bottom_tab_grid_new_tab);
 
         verify(mTabModelSupplier).addObserver(mTabModelSupplierObserverCaptor.capture());
 
@@ -341,11 +340,11 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void onClickLeftButton_TabGroup() {
+    public void onClickShowGroupDialogButton_TabGroup() {
         initAndAssertProperties(mTab2);
 
         View.OnClickListener listener =
-                mModel.get(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER);
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_ON_CLICK_LISTENER);
         assertThat(listener, instanceOf(View.OnClickListener.class));
 
         listener.onClick(mView);
@@ -355,13 +354,13 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void onClickLeftButton_TabGroup_ShowingOrAnimation() {
+    public void onClickShowGroupDialogButton_TabGroup_ShowingOrAnimation() {
         initAndAssertProperties(mTab2);
         mDialogControllerSupplier.get();
         mTabGridDialogShowingOrAnimationSupplier.set(true);
 
         View.OnClickListener listener =
-                mModel.get(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER);
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_ON_CLICK_LISTENER);
         assertThat(listener, instanceOf(View.OnClickListener.class));
 
         listener.onClick(mView);
@@ -374,11 +373,11 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void onClickRightButton_TabGroup() {
+    public void onClickNewTabButton_TabGroup() {
         initAndAssertProperties(mTab1);
 
         View.OnClickListener listener =
-                mModel.get(TabGroupUiProperties.RIGHT_BUTTON_ON_CLICK_LISTENER);
+                mModel.get(TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER);
         assertThat(listener, instanceOf(View.OnClickListener.class));
 
         listener.onClick(mView);
@@ -1029,28 +1028,17 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void testSetLeftButtonDrawable() {
-        initAndAssertProperties(mTab3);
-        int drawableId = 321;
-
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_DRAWABLE_ID, 0);
-
-        mTabGroupUiMediator.setupLeftButtonDrawable(drawableId);
-
-        assertThat(mModel.get(TabGroupUiProperties.LEFT_BUTTON_DRAWABLE_ID), equalTo(drawableId));
-    }
-
-    @Test
-    public void testSetLeftButtonOnClickListener() {
+    public void testSetShowGroupDialogButtonOnClickListener() {
         initAndAssertProperties(mTab3);
         View.OnClickListener listener = v -> {};
 
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER, null);
+        mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_ON_CLICK_LISTENER, null);
 
-        mTabGroupUiMediator.setupLeftButtonOnClickListener(listener);
+        mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_ON_CLICK_LISTENER, listener);
 
         assertThat(
-                mModel.get(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER), equalTo(listener));
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_ON_CLICK_LISTENER),
+                equalTo(listener));
     }
 
     @Test

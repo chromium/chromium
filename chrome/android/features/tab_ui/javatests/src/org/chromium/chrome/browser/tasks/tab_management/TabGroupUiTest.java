@@ -296,7 +296,7 @@ public class TabGroupUiTest {
                 });
         onView(
                         allOf(
-                                withId(R.id.toolbar_right_button),
+                                withId(R.id.toolbar_new_tab_button),
                                 withParent(withId(R.id.main_content)),
                                 withEffectiveVisibility(VISIBLE)))
                 .perform(click());

@@ -53,29 +53,11 @@ import java.util.List;
 
 /** A mediator for the TabGroupUi. Responsible for managing the internal state of the component. */
 public class TabGroupUiMediator implements BackPressHandler {
-    /** An interface to control the TabGroupUi component. */
-    interface TabGroupUiController {
-        /**
-         * Setup the drawable in TabGroupUi left button with a drawable ID.
-         * @param drawableId Resource ID of the drawable to setup the left button.
-         */
-        void setupLeftButtonDrawable(int drawableId);
-
-        /**
-         * Setup the {@link View.OnClickListener} of the left button in TabGroupUi.
-         * @param listener {@link View.OnClickListener} to setup the left button.
-         */
-        void setupLeftButtonOnClickListener(View.OnClickListener listener);
-    }
-
-    /**
-     * Defines an interface for a {@link TabGroupUiMediator} reset event
-     * handler.
-     */
+    /** Defines an interface for a {@link TabGroupUiMediator} reset event handler. */
     interface ResetHandler {
         /**
-         * Handles a reset event originated from {@link TabGroupUiMediator}
-         * when the bottom sheet is collapsed or the dialog is hidden.
+         * Handles a reset event originated from {@link TabGroupUiMediator} when the bottom sheet is
+         * collapsed or the dialog is hidden.
          *
          * @param tabs List of Tabs to reset.
          */
@@ -396,16 +378,8 @@ public class TabGroupUiMediator implements BackPressHandler {
         mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, backgroundColor);
     }
 
-    void setupLeftButtonDrawable(int drawableId) {
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_DRAWABLE_ID, drawableId);
-    }
-
-    void setupLeftButtonOnClickListener(View.OnClickListener listener) {
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER, listener);
-    }
-
     private void setupToolbarButtons() {
-        View.OnClickListener leftButtonOnClickListener =
+        View.OnClickListener showGroupDialogButtonOnClickListener =
                 view -> {
                     // Don't handle taps until fully visible and done animating.
                     @Nullable DialogController controller = getTabGridDialogControllerIfExists();
@@ -422,9 +396,11 @@ public class TabGroupUiMediator implements BackPressHandler {
                     mResetHandler.resetGridWithListOfTabs(getTabsToShowForId(currentTab.getId()));
                     RecordUserAction.record("TabGroup.ExpandedFromStrip.TabGridDialog");
                 };
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER, leftButtonOnClickListener);
+        mModel.set(
+                TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_ON_CLICK_LISTENER,
+                showGroupDialogButtonOnClickListener);
 
-        View.OnClickListener rightButtonOnClickListener =
+        View.OnClickListener newTabButtonOnClickListener =
                 view -> {
                     Tab parentTabToAttach = null;
                     Tab currentTab = mTabModelSelector.getCurrentTab();
@@ -442,16 +418,14 @@ public class TabGroupUiMediator implements BackPressHandler {
                     RecordUserAction.record(
                             "MobileNewTabOpened." + TabGroupUiCoordinator.COMPONENT_NAME);
                 };
-        mModel.set(TabGroupUiProperties.RIGHT_BUTTON_ON_CLICK_LISTENER, rightButtonOnClickListener);
+        mModel.set(
+                TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER, newTabButtonOnClickListener);
 
-        String leftButtonContentDescription =
+        String showGroupDialogButtonContentDescription =
                 mContext.getString(R.string.accessibility_bottom_tab_strip_expand_tab_sheet);
-        String rightButtonContentDescription = mContext.getString(R.string.bottom_tab_grid_new_tab);
         mModel.set(
-                TabGroupUiProperties.LEFT_BUTTON_CONTENT_DESCRIPTION, leftButtonContentDescription);
-        mModel.set(
-                TabGroupUiProperties.RIGHT_BUTTON_CONTENT_DESCRIPTION,
-                rightButtonContentDescription);
+                TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_CONTENT_DESCRIPTION,
+                showGroupDialogButtonContentDescription);
     }
 
     /**
