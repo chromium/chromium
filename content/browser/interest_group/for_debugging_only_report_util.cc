@@ -31,11 +31,11 @@ base::Time CeilToNearestNextHour(base::TimeDelta delta) {
 }
 
 bool IsInDebugReportLockout(
-    const std::optional<base::Time>& last_report_sent_time) {
+    const std::optional<base::Time>& last_report_sent_time,
+    const base::Time now) {
   if (!last_report_sent_time.has_value()) {
     return false;
   }
-  base::Time now = base::Time::Now();
   base::Time filtering_starting_from = base::Time::FromDeltaSinceWindowsEpoch(
       blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get()
           .CeilToMultiple(base::Hours(1)));

@@ -703,7 +703,6 @@ void InterestGroupManagerImpl::GetInterestGroupAdAuctionData(
   state.serializer.SetPublisher(top_level_origin.host());
   state.serializer.SetGenerationId(std::move(generation_id));
   state.serializer.SetTimestamp(timestamp);
-  // state.serializer.SetDebugReportInLockout(debug_report_in_lockout);
   state.callback = std::move(callback);
   if (config->per_buyer_configs.size() == 0) {
     state.serializer.SetConfig(std::move(config));
@@ -786,7 +785,7 @@ void InterestGroupManagerImpl::OnInterestGroupAdAuctionDataLoadComplete(
     AdAuctionDataLoaderState state) {
   if (blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
       base::Milliseconds(0)) {
-    GetDebugReportLockout(
+    caching_storage_.GetDebugReportLockout(
         base::BindOnce(&InterestGroupManagerImpl::OnAdAuctionDataLoadComplete,
                        weak_factory_.GetWeakPtr(), std::move(state)));
   } else {
@@ -798,7 +797,7 @@ void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
     AdAuctionDataLoaderState state,
     std::optional<base::Time> last_report_sent_time) {
   state.serializer.SetDebugReportInLockout(
-      IsInDebugReportLockout(last_report_sent_time));
+      IsInDebugReportLockout(last_report_sent_time, base::Time::Now()));
   BiddingAndAuctionData data = state.serializer.Build();
   base::UmaHistogramTimes(
       "Ads.InterestGroup.ServerAuction.AdAuctionDataLoadTime",
@@ -901,11 +900,6 @@ void InterestGroupManagerImpl::GetInterestGroupsForUpdate(
         callback) {
   caching_storage_.GetInterestGroupsForUpdate(owner, groups_limit,
                                               std::move(callback));
-}
-
-void InterestGroupManagerImpl::GetDebugReportLockout(
-    base::OnceCallback<void(std::optional<base::Time>)> callback) {
-  caching_storage_.GetDebugReportLockout(std::move(callback));
 }
 
 void InterestGroupManagerImpl::GetDebugReportLockoutAndCooldowns(

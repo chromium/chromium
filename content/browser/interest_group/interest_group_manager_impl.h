@@ -462,10 +462,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                         const base::Time update_time,
                         bool initial_update);
 
-  // Gets lockout for sending forDebuggingOnly reports.
-  void GetDebugReportLockout(
-      base::OnceCallback<void(std::optional<base::Time>)> callback);
-
   // Gets lockout and cooldown for sending forDebuggingOnly reports.
   void GetDebugReportLockoutAndCooldowns(
       base::flat_set<url::Origin> origins,

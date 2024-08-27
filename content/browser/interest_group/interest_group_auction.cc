@@ -568,16 +568,19 @@ void TakeRealTimeContributionsForBidState(
 // reports. Ignore the cooldown or lockout if they started from a time which was
 // earlier than kFledgeEnableFilteringDebugReportStartingFrom (i.e., before the
 // time filtering debug report is enabled).
+// TODO(crbug.com/362299758): For parameter `now`, use the same timestamp for
+// all callers of the same auction.
 bool IsOriginInDebugReportCooldownOrLockout(
     const url::Origin& origin,
     const std::optional<DebugReportLockoutAndCooldowns>&
-        debug_report_lockout_and_cooldowns) {
+        debug_report_lockout_and_cooldowns,
+    const base::Time now) {
   if (!debug_report_lockout_and_cooldowns.has_value()) {
     return false;
   }
 
   if (IsInDebugReportLockout(
-          debug_report_lockout_and_cooldowns->last_report_sent_time)) {
+          debug_report_lockout_and_cooldowns->last_report_sent_time, now)) {
     return true;
   }
 
@@ -595,7 +598,7 @@ bool IsOriginInDebugReportCooldownOrLockout(
               blink::features::kFledgeEnableFilteringDebugReportStartingFrom
                   .Get());
       bool is_in_cooldown =
-          cooldown_it->second.starting_time + *duration >= base::Time::Now();
+          cooldown_it->second.starting_time + *duration >= now;
       if (!is_cooldown_before_filtering_starting && is_in_cooldown) {
         return true;
       }
@@ -674,10 +677,11 @@ bool KeepDebugReport(
   }
 
   bool can_send_debug_report = false;
+  base::Time now = base::Time::Now();
   if (!IsOriginInDebugReportCooldownOrLockout(
-          origin, debug_report_lockout_and_cooldowns) &&
+          origin, debug_report_lockout_and_cooldowns, now) &&
       !IsOriginInDebugReportCooldownOrLockout(
-          origin, new_debug_report_lockout_and_cooldowns)) {
+          origin, new_debug_report_lockout_and_cooldowns, now)) {
     // `SampleDebugReport()` may modify the lockout and cooldown state.
     can_send_debug_report =
         SampleDebugReport(origin, new_debug_report_lockout_and_cooldowns);
@@ -2753,7 +2757,8 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
   for (const auto& buyer_helper : buyer_helpers_) {
     buyer_helper->SetForDebuggingOnlyInCooldownOrLockout(
         IsOriginInDebugReportCooldownOrLockout(
-            buyer_helper->owner(), debug_report_lockout_and_cooldowns_));
+            buyer_helper->owner(), debug_report_lockout_and_cooldowns_,
+            base::Time::Now()));
     buyer_helper->StartGeneratingBids();
   }
 
@@ -4802,7 +4807,8 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       maybe_buyer_and_seller_reporting_id, bid_raw->GetAdComponentUrls(),
       bid_raw->bid_duration.InMilliseconds(), bid_raw->ad_descriptor.size,
       IsOriginInDebugReportCooldownOrLockout(
-          config_->seller, debug_report_lockout_and_cooldowns_),
+          config_->seller, debug_report_lockout_and_cooldowns_,
+          base::Time::Now()),
       SellerTimeout(), bid_trace_id, std::move(score_ad_remote));
 }
 

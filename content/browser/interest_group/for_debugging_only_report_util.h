@@ -18,7 +18,8 @@ CONTENT_EXPORT std::optional<base::Time> GetSampleDebugReportStartingFrom();
 
 // Returns true if the client is under forDebuggingOnly API's lockout period.
 CONTENT_EXPORT bool IsInDebugReportLockout(
-    const std::optional<base::Time>& last_report_sent_time);
+    const std::optional<base::Time>& last_report_sent_time,
+    const base::Time now);
 
 // Ceil `detla` to its nearest next hour.
 CONTENT_EXPORT base::Time CeilToNearestNextHour(base::TimeDelta delta);
