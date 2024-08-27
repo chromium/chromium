@@ -36,6 +36,7 @@
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/input_delegate.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace segmentation_platform {
 
@@ -192,7 +193,18 @@ void SegmentationPlatformServiceImpl::CollectTrainingData(
     const TrainingLabels& param,
     SuccessCallback callback) {
   execution_service_.training_data_collector()->CollectTrainingData(
-      segment_id, request_id, param, std::move(callback));
+      segment_id, request_id, ukm::kInvalidSourceId, param,
+      std::move(callback));
+}
+
+void SegmentationPlatformServiceImpl::CollectTrainingData(
+    SegmentId segment_id,
+    TrainingRequestId request_id,
+    ukm::SourceId ukm_source_id,
+    const TrainingLabels& param,
+    SuccessCallback callback) {
+  execution_service_.training_data_collector()->CollectTrainingData(
+      segment_id, request_id, ukm_source_id, param, std::move(callback));
 }
 
 void SegmentationPlatformServiceImpl::EnableMetrics(

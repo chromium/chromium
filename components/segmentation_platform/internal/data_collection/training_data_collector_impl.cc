@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/data_collection/training_data_collector_impl.h"
+
 #include <cstdint>
 
 #include "base/containers/contains.h"
@@ -32,6 +33,7 @@
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace segmentation_platform {
 namespace {
@@ -399,12 +401,15 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
     output_indexes.emplace_back(i);
   }
 
+  ukm::SourceId client_ukm_source_id = ukm::kInvalidSourceId;
+
   // TODO(haileywang): Find the right output index from the metadata using the
   // matching hash value, in case the client has 2 different histogram triggers
   // in the metadata, the server cannot identify which one was triggered.
   if (param.has_value()) {
     output_indexes.emplace_back(output_tensors.size());
     output_values.emplace_back(param->output_value);
+    client_ukm_source_id = param->ukm_source_id;
   }
 
   // Cached results are stored in two formats depending on whether the model is
@@ -425,8 +430,9 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
   }
 
   auto ukm_source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
-      segment_info.segment_id(), segment_info.model_version(), input_tensors,
-      output_values, output_indexes, prediction_result, selected_segment);
+      segment_info.segment_id(), segment_info.model_version(),
+      client_ukm_source_id, input_tensors, output_values, output_indexes,
+      prediction_result, selected_segment);
   if (ukm_source_id == ukm::kInvalidSourceId) {
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
@@ -472,6 +478,7 @@ void TrainingDataCollectorImpl::ReportCollectedContinuousTrainingData() {
 void TrainingDataCollectorImpl::CollectTrainingData(
     SegmentId segment_id,
     TrainingRequestId request_id,
+    ukm::SourceId ukm_source_id,
     const TrainingLabels& param,
     SuccessCallback callback) {
   auto available_segments =
@@ -493,6 +500,7 @@ void TrainingDataCollectorImpl::CollectTrainingData(
         base::HashMetricName(param.output_metric.value().first);
     immediate_param->output_value =
         static_cast<float>(param.output_metric.value().second);
+    immediate_param->ukm_source_id = ukm_source_id;
   }
   VLOG(1) << "Observation ended for " << proto::SegmentId_Name(segment_id)
           << " " << (param.output_metric ? param.output_metric->first : "");
