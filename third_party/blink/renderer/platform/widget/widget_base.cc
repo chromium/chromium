@@ -1500,13 +1500,6 @@ void WidgetBase::CursorVisibilityChange(bool is_visible) {
   client_->SetCursorVisibilityState(is_visible);
 }
 
-void WidgetBase::SetMouseCapture(bool capture) {
-  if (mojom::blink::WidgetInputHandlerHost* host =
-          widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
-    host->SetMouseCapture(capture);
-  }
-}
-
 void WidgetBase::ImeSetComposition(
     const String& text,
     const Vector<ui::ImeTextSpan>& ime_text_spans,
