@@ -49,7 +49,8 @@
 </div>
 <template is="dom-if" if="[[shouldShowPrivacySandbox_]]">
   <cr-link-row id="privacySandboxRow" using-slotted-label
-      sub-label="[[privacySandboxRowSubLabel_]]"
+      sub-label="[[computePrivacySandboxRowSubLabel_(
+        shouldShowV2AdPrivacySubLabel_)]]"
       start-icon="privacy20:ads-click" external
       on-click="onPrivacySandboxClick_">
       <div slot="label" class="label">

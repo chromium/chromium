@@ -384,4 +384,93 @@ TEST_F(PrivacySandboxPrivacyGuideAdTopicsEnabledTest, TopicsToggleChanged) {
   }
 }
 
+TEST_F(PrivacySandboxPrivacyGuideAdTopicsEnabledTest,
+       CompletetionCardAdTopicsSubLabelShown) {
+  base::Value::List args;
+  args.Append(kCallbackId1);
+  web_ui()->ProcessWebUIMessage(
+      GURL(),
+      "privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel",
+      std::move(args));
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);
+  EXPECT_EQ(data.function_name(), "cr.webUIResponse");
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_TRUE(data.arg3()->GetBool());
+}
+
+class PrivacySandboxPrivacyGuideAdTopicsDisabledTest
+    : public PrivacySandboxMessageHandlerTest {
+ public:
+  void SetUp() override {
+    PrivacySandboxMessageHandlerTest::SetUp();
+    feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(PrivacySandboxPrivacyGuideAdTopicsDisabledTest,
+       AdTopicsCardNotShownForUserInConsentCountry) {
+  ON_CALL(*handler()->GetPrivacySandboxCountries(), IsConsentCountry())
+      .WillByDefault(Return(true));
+
+  base::Value::List args;
+  args.Append(kCallbackId1);
+  web_ui()->ProcessWebUIMessage(
+      GURL(), "privacySandboxPrivacyGuideShouldShowAdTopicsCard",
+      std::move(args));
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);
+  EXPECT_EQ(data.function_name(), "cr.webUIResponse");
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_FALSE(data.arg3()->GetBool());
+}
+
+TEST_F(PrivacySandboxPrivacyGuideAdTopicsDisabledTest,
+       AdTopicsCardNotShownForUserNotInConsentCountry) {
+  ON_CALL(*handler()->GetPrivacySandboxCountries(), IsConsentCountry())
+      .WillByDefault(Return(false));
+
+  base::Value::List args;
+  args.Append(kCallbackId1);
+  web_ui()->ProcessWebUIMessage(
+      GURL(), "privacySandboxPrivacyGuideShouldShowAdTopicsCard",
+      std::move(args));
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);
+  EXPECT_EQ(data.function_name(), "cr.webUIResponse");
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_FALSE(data.arg3()->GetBool());
+}
+
+TEST_F(PrivacySandboxPrivacyGuideAdTopicsDisabledTest,
+       CompletetionCardAdTopicsSubLabelNotShown) {
+  base::Value::List args;
+  args.Append(kCallbackId1);
+  web_ui()->ProcessWebUIMessage(
+      GURL(),
+      "privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel",
+      std::move(args));
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);
+  EXPECT_EQ(data.function_name(), "cr.webUIResponse");
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_FALSE(data.arg3()->GetBool());
+}
+
 }  // namespace settings

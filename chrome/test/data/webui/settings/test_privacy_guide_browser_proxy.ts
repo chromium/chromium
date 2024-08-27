@@ -8,18 +8,27 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestPrivacyGuideBrowserProxy extends TestBrowserProxy implements
     PrivacyGuideBrowserProxy {
   private shouldShowAdTopicsCard_ = false;
+  private privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel_ =
+      false;
 
   constructor() {
     super([
       'getPromoImpressionCount',
       'incrementPromoImpressionCount',
       'privacySandboxPrivacyGuideShouldShowAdTopicsCard',
+      'privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel',
     ]);
   }
 
   // Setters for test.
   setShouldShowAdTopicsCardForTesting(shouldShow: boolean) {
     this.shouldShowAdTopicsCard_ = shouldShow;
+  }
+
+  setPrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel(
+      shouldShow: boolean) {
+    this.privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel_ =
+        shouldShow;
   }
 
   // Getters for test.
@@ -40,5 +49,12 @@ export class TestPrivacyGuideBrowserProxy extends TestBrowserProxy implements
   privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
     this.methodCalled('privacySandboxPrivacyGuideShouldShowAdTopicsCard');
     return Promise.resolve(this.shouldShowAdTopicsCard_);
+  }
+
+  privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel() {
+    this.methodCalled(
+        'privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel');
+    return Promise.resolve(
+        this.privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel_);
   }
 }

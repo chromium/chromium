@@ -43,7 +43,16 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
   void HandleTopicsToggleChanged(const base::Value::List& args);
   void HandleGetFirstLevelTopics(const base::Value::List& args);
   void HandleGetChildTopicsCurrentlyAssigned(const base::Value::List& args);
-  void HandleShouldShowAdTopicsCard(const base::Value::List& args);
+  // Determines if the Ad Topics card in the Privacy Guide should be displayed.
+  // This requires the PrivacySandboxPrivacyGuideAdTopics feature to be enabled
+  // AND the user to be located in a Privacy Sandbox Consent Country.
+  void HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
+      const base::Value::List& args);
+  // Determines if the V2 Ad Privacy sub-label should be shown on the completion
+  // card of the Privacy Guide. This decision is based on the status of the
+  // PrivacySandboxPrivacyGuideAdTopics feature.
+  void HandlePrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel(
+      const base::Value::List& args);
 
   virtual PrivacySandboxCountries* GetPrivacySandboxCountries();
   virtual PrivacySandboxService* GetPrivacySandboxService();

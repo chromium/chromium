@@ -18,8 +18,15 @@ export interface PrivacyGuideBrowserProxy {
   /** Increment The number of times the privacy guide promo was shown. */
   incrementPromoImpressionCount(): void;
 
-  /** @return True or False if the Ad Topics Card should be shown. */
+  /** @return If the Ad Topics Card should be shown. */
   privacySandboxPrivacyGuideShouldShowAdTopicsCard(): Promise<boolean>;
+
+  /**
+   * @return If the V2 of the Ad Privacy row sub label should be shown in the
+   *     completion card.
+   */
+  privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel():
+      Promise<boolean>;
 }
 
 export class PrivacyGuideBrowserProxyImpl implements PrivacyGuideBrowserProxy {
@@ -39,6 +46,11 @@ export class PrivacyGuideBrowserProxyImpl implements PrivacyGuideBrowserProxy {
 
   privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
     return sendWithPromise('privacySandboxPrivacyGuideShouldShowAdTopicsCard');
+  }
+
+  privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel() {
+    return sendWithPromise(
+        'privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel');
   }
 
   static getInstance(): PrivacyGuideBrowserProxy {
