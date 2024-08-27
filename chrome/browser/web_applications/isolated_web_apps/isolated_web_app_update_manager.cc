@@ -364,33 +364,28 @@ void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(
     return;
   }
 
+  base::flat_map<web_package::SignedWebBundleId,
+                 std::reference_wrapper<const WebApp>>
+      installed_iwas = GetInstalledIwas(provider_->registrar_unsafe());
+
   // Queue updates for all apps affected by key rotation.
-  for (const WebApp& app : provider_->registrar_unsafe().GetApps()) {
-    if (!app.isolation_data()) {
-      continue;
-    }
-    const auto& isolation_data = *app.isolation_data();
-
-    auto url_info = IsolatedWebAppUrlInfo::Create(app.manifest_id());
-    if (!url_info.has_value()) {
-      continue;
-    }
-
-    auto result = LookupRotatedKey(url_info->web_bundle_id());
+  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
+    auto result = LookupRotatedKey(web_bundle_id);
     // If the rotated key is null, there's no point in updating the
     // app (as the update won't succeed anyway).
     if (result != KeyRotationLookupResult::kKeyFound) {
       continue;
     }
+
     KeyRotationData data =
-        GetKeyRotationData(url_info->web_bundle_id(), isolation_data);
+        GetKeyRotationData(web_bundle_id, *iwa.get().isolation_data());
     // If either the bundle or the pending update already includes the rotated
     // key, there's no need to rush with updates.
     if (data.current_installation_has_rk || data.pending_update_has_rk) {
       continue;
     }
 
-    MaybeDiscoverUpdatesForApp(app.app_id());
+    MaybeDiscoverUpdatesForApp(iwa.get().app_id());
   }
 }
 

@@ -100,29 +100,6 @@ std::vector<IsolatedWebAppExternalInstallOptions> ParseIwaPolicyValues(
   return iwa_install_options;
 }
 
-base::flat_map<web_package::SignedWebBundleId,
-               std::reference_wrapper<const WebApp>>
-GetInstalledIwas(const WebAppRegistrar& registrar) {
-  base::flat_map<web_package::SignedWebBundleId,
-                 std::reference_wrapper<const WebApp>>
-      installed_iwas;
-  for (const WebApp& web_app : registrar.GetApps()) {
-    if (!web_app.isolation_data().has_value()) {
-      continue;
-    }
-    auto url_info = IsolatedWebAppUrlInfo::Create(web_app.start_url());
-    if (!url_info.has_value()) {
-      LOG(ERROR) << "Unable to calculate IsolatedWebAppUrlInfo from "
-                 << web_app.start_url();
-      continue;
-    }
-
-    installed_iwas.try_emplace(url_info->web_bundle_id(), std::ref(web_app));
-  }
-
-  return installed_iwas;
-}
-
 // Add the install source to the already installed app.
 struct AppActionAddPolicyInstallSource {
   AppActionAddPolicyInstallSource() {}

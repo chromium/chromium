@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/url_constants.h"
+#include "components/web_package/signed_web_bundles/identity_validator.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "url/gurl.h"
@@ -46,6 +47,11 @@ IsolatedWebAppValidator::ValidateIntegrityBlock(
         derived_web_bundle_id.id().c_str(),
         expected_web_bundle_id.id().c_str()));
   }
+
+  RETURN_IF_ERROR(
+      web_package::IdentityValidator::GetInstance()->ValidateWebBundleIdentity(
+          derived_web_bundle_id.id(),
+          integrity_block.signature_stack().public_keys()));
 
   IsolatedWebAppTrustChecker::Result result =
       trust_checker.IsTrusted(expected_web_bundle_id, dev_mode);

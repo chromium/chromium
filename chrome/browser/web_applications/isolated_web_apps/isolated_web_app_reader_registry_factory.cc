@@ -50,7 +50,7 @@ IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceForBrowserContext(
   auto reader_factory = std::make_unique<IsolatedWebAppResponseReaderFactory>(
       profile, std::move(validator));
   return std::make_unique<IsolatedWebAppReaderRegistry>(
-      std::move(reader_factory));
+      profile, std::move(reader_factory));
 }
 
 content::BrowserContext*

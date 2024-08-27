@@ -145,6 +145,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         web_package::test::GetAttributesForSignedWebBundleId(kWebBundleId.id());
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
+        *profile_,
         std::make_unique<IsolatedWebAppResponseReaderFactory>(
             *profile_,
             std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
@@ -309,6 +310,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
   auto* validator_ref = validator.get();
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
+      *profile_,
       std::make_unique<IsolatedWebAppResponseReaderFactory>(
           *profile_, std::move(validator),
           base::BindRepeating(
@@ -447,6 +449,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
   size_t num_signature_verifications = 0;
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
+      *profile_,
       std::make_unique<IsolatedWebAppResponseReaderFactory>(
           *profile_, std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
           base::BindLambdaForTesting(
@@ -609,6 +612,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
   resource_request.url = kUrl;
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
+      *profile_,
       std::make_unique<IsolatedWebAppResponseReaderFactory>(
           *profile_,
           std::make_unique<FakeIsolatedWebAppValidator>(
@@ -649,6 +653,7 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
   resource_request.url = kUrl;
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
+      *profile_,
       std::make_unique<IsolatedWebAppResponseReaderFactory>(
           *profile_, std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
           base::BindRepeating(
