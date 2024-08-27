@@ -385,8 +385,9 @@ class FrameNodeImplPrerenderBrowserTest : public FrameNodeImplBrowserTest {
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
+// TODO(362360274): Fix this flaky test.
 IN_PROC_BROWSER_TEST_F(FrameNodeImplPrerenderBrowserTest,
-                       Bind_PrerenderNavigation) {
+                       DISABLED_Bind_PrerenderNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
