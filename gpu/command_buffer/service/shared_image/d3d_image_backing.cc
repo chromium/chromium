@@ -593,20 +593,37 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         return nullptr;
       }
 
-      auto* dawn_context_provider = context_state->dawn_context_provider();
-      if (dawn_context_provider &&
-          dawn_context_provider->GetDevice().Get() == device.Get()) {
-        // Cache SharedTextureMemory only for Graphite device.
-        // TODO(crbug.com/345674550): Cache the textures for WebGPU device.
-        dawn_shared_texture_holder_.MaybeCacheSharedTextureMemory(
-            device, shared_texture_memory);
-      }
       if (dxgi_shared_handle_state_) {
         dxgi_shared_handle_state_->MaybeCacheSharedTextureMemory(
             device, shared_texture_memory);
       }
     }
-  }
+
+    auto* dawn_context_provider = context_state->dawn_context_provider();
+    if (dawn_context_provider &&
+        dawn_context_provider->GetDevice().Get() == device.Get()) {
+      // Cache SharedTextureMemory only for Graphite device.
+      // TODO(crbug.com/345674550): Cache the textures for WebGPU device.
+      DCHECK(shared_texture_memory);
+      auto cached_shared_texture_memory =
+          dawn_shared_texture_holder_.GetSharedTextureMemory(device);
+      if (!cached_shared_texture_memory) {
+        // GetSharedTextureMemory() might return non-null while nothing is
+        // cached inside dawn_shared_texture_holder_. This can happen if a 2nd
+        // backing is created from an existing DXGISharedHandleState. The STM is
+        // stored inside DXGISharedHandleState but not in the 2nd backing's
+        // dawn_shared_texture_holder_ yet. In this case, we also need to cache
+        // the STM in dawn_shared_texture_holder_ to allow wgpu::Texture to be
+        // cached. Otherwise the wgpu::Texture would have been destroyed in
+        // EndAccessDawn.
+        dawn_shared_texture_holder_.MaybeCacheSharedTextureMemory(
+            device, shared_texture_memory);
+      } else {
+        CHECK_EQ(cached_shared_texture_memory.Get(),
+                 shared_texture_memory.Get());
+      }
+    }
+  }  // AutoLock scope
 
   return std::make_unique<DawnD3DImageRepresentation>(
       manager, this, tracker, device, backend_type, view_formats);
@@ -681,7 +698,7 @@ D3DImageBacking::GetPendingWaitFences(
   // Also wait for all previous reads for read-write access.
   if (write_access) {
     for (const auto& read_fence : read_fences_) {
-        wait_fences.push_back(read_fence);
+      wait_fences.push_back(read_fence);
     }
     // The presence of a DComp texture fence is considered an outstanding read
     // that must be waited on.
