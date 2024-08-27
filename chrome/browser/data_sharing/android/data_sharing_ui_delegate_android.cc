@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/data_sharing/data_sharing_ui_delegate_android.h"
+#include "chrome/browser/data_sharing/android/data_sharing_ui_delegate_android.h"
 
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"

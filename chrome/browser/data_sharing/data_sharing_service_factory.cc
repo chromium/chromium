@@ -22,8 +22,8 @@
 #include "content/public/browser/storage_partition.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/data_sharing/android/data_sharing_ui_delegate_android.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory_bridge.h"
-#include "chrome/browser/data_sharing/data_sharing_ui_delegate_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/data_sharing/desktop/data_sharing_sdk_delegate_desktop.h"
 #include "chrome/browser/data_sharing/desktop/data_sharing_ui_delegate_desktop.h"

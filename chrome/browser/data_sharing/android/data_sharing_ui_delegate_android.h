@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DATA_SHARING_DATA_SHARING_UI_DELEGATE_ANDROID_H_
-#define CHROME_BROWSER_DATA_SHARING_DATA_SHARING_UI_DELEGATE_ANDROID_H_
+#ifndef CHROME_BROWSER_DATA_SHARING_ANDROID_DATA_SHARING_UI_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_DATA_SHARING_ANDROID_DATA_SHARING_UI_DELEGATE_ANDROID_H_
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -30,4 +30,4 @@ class DataSharingUIDelegateAndroid : public DataSharingUIDelegate {
 
 }  // namespace data_sharing
 
-#endif  // CHROME_BROWSER_DATA_SHARING_DATA_SHARING_UI_DELEGATE_ANDROID_H_
+#endif  // CHROME_BROWSER_DATA_SHARING_ANDROID_DATA_SHARING_UI_DELEGATE_ANDROID_H_
