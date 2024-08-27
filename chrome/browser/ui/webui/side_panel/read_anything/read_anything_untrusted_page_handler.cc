@@ -17,6 +17,7 @@
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
@@ -40,6 +41,7 @@
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
+#include "pdf/pdf_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -692,37 +694,48 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
 void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
   pdf_observer_.reset();
   content::WebContents* main_contents = main_observer_->web_contents();
-  // TODO(crbug.com/339864546): Make it compatible with OOPIF PDF Viewer.
-  std::vector<content::WebContents*> inner_contents =
-      main_contents ? main_contents->GetInnerWebContents()
-                    : std::vector<content::WebContents*>();
-  // Check if this is a pdf.
-  if (inner_contents.size() == 1 &&
-      IsPdfExtensionOrigin(
-          inner_contents[0]->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
-        weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
-    if (features::IsPdfOcrEnabled()) {
-      screen_ai::PdfOcrControllerFactory::GetForProfile(browser_->profile())
-          ->Activate();
+  // TODO(crbug.com/340272378): When removing this feature flag, delete
+  // `pdf_observer_` and integrate ReadAnythingWebContentsObserver with
+  // ReadAnythingUntrustedPageHandler.
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    std::vector<content::WebContents*> inner_contents =
+        main_contents ? main_contents->GetInnerWebContents()
+                      : std::vector<content::WebContents*>();
+    // Check if this is a pdf.
+    if (inner_contents.size() == 1 &&
+        IsPdfExtensionOrigin(inner_contents[0]
+                                 ->GetPrimaryMainFrame()
+                                 ->GetLastCommittedOrigin())) {
+      pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
+          weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
     }
+  }
+  if (features::IsPdfOcrEnabled()) {
+    screen_ai::PdfOcrControllerFactory::GetForProfile(browser_->profile())->Activate();
   }
 }
 
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
-  bool is_pdf = !!pdf_observer_;
   if (!main_observer_ || !active_) {
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
-                                   is_pdf);
+                                   /*is_pdf=*/false);
     return;
   }
 
-  content::WebContents* contents =
-      is_pdf ? pdf_observer_->web_contents() : main_observer_->web_contents();
+  content::WebContents* contents = !!pdf_observer_
+                                       ? pdf_observer_->web_contents()
+                                       : main_observer_->web_contents();
   if (!contents) {
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
-                                   is_pdf);
+                                   /*is_pdf=*/false);
     return;
+  }
+
+  bool is_pdf;
+  if (chrome_pdf::features::IsOopifPdfEnabled()) {
+    is_pdf = !!pdf::PdfViewerStreamManager::FromWebContents(contents);
+  } else {
+    is_pdf = !!pdf_observer_;
   }
 
   // Observe the new contents so we can get the page language once it's
@@ -764,7 +777,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   if (!rfh) {
-    // THis case doesn't seem possible.
+    // This case doesn't seem possible.
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
                                    /*is_pdf=*/false);
     return;
