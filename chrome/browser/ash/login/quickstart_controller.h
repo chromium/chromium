@@ -288,6 +288,12 @@ class QuickStartController
 
   bool should_resume_quick_start_after_update_ = false;
 
+  // Used for sanity checks in order to discard unrequested data from the phone.
+  // Similar checks exist on the TargetDeviceBootstrapController level.
+  bool did_request_wifi_credentials_ = false;
+  bool did_request_account_info_ = false;
+  bool did_request_account_transfer_ = false;
+
   base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};
 };
