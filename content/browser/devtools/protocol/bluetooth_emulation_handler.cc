@@ -106,17 +106,12 @@ Response BluetoothEmulationHandler::Enable(const String& in_state) {
 }
 
 Response BluetoothEmulationHandler::Disable() {
-  // TODO(crbug.com/342191615): Removal of an emulated BT device isn't well
-  // supported yet in the backend. In order to complete the Disable
-  // API implementation, FakeBluetooth mojo interface needs to implement
-  // removeCentral that calls BluetoothFactoryAdapterWrapper's
-  // SetBluetoothAdapterOverride with null. Additionally, the factory wrapper
-  // will need to preserve the original adapter reference and revert back to it
-  // on receiving a null override adapter.
   if (fake_central_.is_bound()) {
     CHECK(emulation_enabled_);
     fake_central_.reset();
     // reset this only if this is the instance holding the bound central.
+    content::BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(
+        nullptr);
     emulation_enabled_ = false;
   }
   return Response::Success();
