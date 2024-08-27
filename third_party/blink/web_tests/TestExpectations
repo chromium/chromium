@@ -2629,22 +2629,6 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/362400077 [ Mac15 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
-crbug.com/362400077 [ Mac14-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
-crbug.com/362400077 [ Mac14 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
-crbug.com/362400077 [ Mac13-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
-crbug.com/362400077 [ Mac13 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
-crbug.com/362400077 [ Mac12-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
-crbug.com/362400077 [ Mac12 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
-crbug.com/362400077 [ Mac11-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
-crbug.com/362400077 [ Mac15-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
-crbug.com/362400077 [ Mac15 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
-crbug.com/362400077 [ Mac14-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
-crbug.com/362400077 [ Mac14 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
-crbug.com/362400077 [ Mac13-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
-crbug.com/362400077 [ Mac13 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
-crbug.com/362400077 [ Mac12 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
-crbug.com/362400077 [ Mac11-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-circle-closest-corner.html [ Failure ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-circle-farthest-corner.html [ Failure ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-ellipse-closest-farthest-corner.html [ Failure ]
@@ -8052,14 +8036,6 @@ crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/cs
 
 # Gardener 2024-08-23
 crbug.com/361671577 [ Linux ] fast/forms/validationMessage.html [ Failure Pass ]
-
-# Gardener 2024-08-26
-# Failing on Mac since https://crrev.com/c/5806434. Not sure if it's on the test
-# or on the infra.
-crbug.com/362280773 [ Mac11 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Failure Pass ]
-crbug.com/362280773 [ Mac12-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Failure Pass ]
-crbug.com/362280773 [ Mac11 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Failure Pass ]
-crbug.com/362280773 [ Mac15-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Failure Pass ]
 
 # Disable to land https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/5803963
 crbug.com/362431898 http/tests/devtools/storage-panel-dom-storage.js [ Failure Pass ]
