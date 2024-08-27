@@ -452,6 +452,43 @@ new command, add it to `_processCommand`, write and call processor for it.
 
 ### Publish new `npm` release
 
+#### Release branches
+
+`chromium-bidi` maintains release branches corresponding to Chrome releases. The
+branches are named using the following pattern: `releases/m$MAJOR_VERSION`.
+
+The new release branch is created as soon a new major browser version is
+published by the
+[update-browser-version](https://github.com/GoogleChromeLabs/chromium-bidi/blob/main/.github/workflows/update-browser-version.yml)
+job:
+
+- the PR created by this job should be marked as a feature and it should cause the
+  major package version to be bumped.
+- once the browser version is bumped, the commit preceding the version bump
+  should be used to create a release branch for major version pinned before the bump.
+
+Changes that need to be cherry-picked into the release branch should be marked
+as patches. Either major or minor version bumps are not allowed on the release
+branch.
+
+Example workflow:
+
+```mermaid
+gitGraph
+       commit id: "feat: featA"
+       commit id: "release: v0.5.0"
+       branch release/m129
+       checkout main
+       commit id: "feat: roll Chrome to M130 from 129"
+       commit id: "release: v0.6.0"
+       commit id: "fix: for m129"
+       checkout release/m129
+       cherry-pick id: "fix: for m129"
+       commit id: "release: v0.5.1 "
+```
+
+Currently, the releases from release branches are not automated.
+
 #### Automatic release
 
 We use [release-please](https://github.com/googleapis/release-please) to automate releases. When a release should be done, check for the release PR in our [pull requests](https://github.com/GoogleChromeLabs/chromium-bidi/pulls) and merge it.
