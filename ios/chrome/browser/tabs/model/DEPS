@@ -11,7 +11,7 @@ include_rules = [
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/synced_sessions/model",
-  "+ios/chrome/browser/ui/ntp/new_tab_page_feature.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
 ]
 
 specific_include_rules = {

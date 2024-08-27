@@ -9,8 +9,8 @@ include_rules = [
   "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
   "+ios/chrome/browser/ui/lens",
-  "+ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h",
   "+ios/chrome/browser/ui/sharing",
-  "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_util.h",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h",
 ]
