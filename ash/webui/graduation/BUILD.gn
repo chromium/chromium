@@ -15,7 +15,6 @@ static_library("graduation") {
   ]
   deps = [
     "resources:resources",
-    "//ash:ash",
     "//ash/constants:constants",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
