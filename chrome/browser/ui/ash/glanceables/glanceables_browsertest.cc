@@ -915,4 +915,69 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, SwitchTaskListsWithError) {
   EXPECT_EQ(error_view->GetButtonForTest()->GetText(), u"Dismiss");
 }
 
+IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest,
+                       SavelyRemoveTaskViewInEditState) {
+  // Click the date tray to show the glanceable bubbles.
+  ToggleDateTray();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  // Check that task list items from the first list are shown.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
+
+  // Close the glanceables.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+
+  // Turn on the pause_on_fetch to pause in between the cached tasks is shown
+  // and the tasks has started fetching.
+  auto* const client = fake_glanceables_tasks_client();
+  client->set_paused_on_fetch(true);
+
+  // Delete the whole task list.
+  client->DeleteTaskList(/*task_list_id=*/"TaskListID1");
+
+  // Open the glanceables again.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+
+  // Check that the deleted task list is still shown.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
+
+  GetTasksView()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Before fetch, click on the cached task and see if the textfield shows up.
+  auto* first_task_view_label =
+      GetTaskItemView(/*item_index=*/0)
+          ->GetViewByID(
+              base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel));
+  GetEventGenerator()->MoveMouseTo(
+      first_task_view_label->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  auto* first_task_view_textfield =
+      GetTaskItemView(/*item_index=*/0)
+          ->GetViewByID(
+              base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
+  ASSERT_TRUE(first_task_view_textfield);
+  ASSERT_TRUE(first_task_view_textfield->GetVisible());
+
+  // Start fetching new data.
+  client->RunPendingGetTaskListsCallbacks();
+  EXPECT_FALSE(GetTasksView()->GetCanProcessEventsWithinSubtree());
+  client->RunPendingGetTasksCallbacks();
+  EXPECT_TRUE(GetTasksView()->GetCanProcessEventsWithinSubtree());
+
+  // Check if the second list is shown after fetch and nothing crashed.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>({"Task List 2 Item 1 Title",
+                                      "Task List 2 Item 2 Title",
+                                      "Task List 2 Item 3 Title"}));
+}
+
 }  // namespace ash
