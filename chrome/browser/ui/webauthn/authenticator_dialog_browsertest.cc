@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/trusted_vault/features.h"
 #include "content/public/browser/render_frame_host.h"
@@ -62,6 +64,12 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   AuthenticatorDialogTest() = default;
   AuthenticatorDialogTest(const AuthenticatorDialogTest&) = delete;
   AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        "user@example.com", signin::ConsentLevel::kSync);
+  }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -622,6 +630,12 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
         /*disabled_features=*/{});
   }
 
+  void SetUpOnMainThread() override {
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        "user@example.com", signin::ConsentLevel::kSync);
+  }
+
   // AuthenticatorDialogTest:
   void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
@@ -634,7 +648,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
                                         ->GetPrimaryMainFrame();
     model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(rfh);
     model_->relying_party_id = "example.com";
-    model_->account_name = "example@gmail.com";
     controller_ = std::make_unique<AuthenticatorRequestDialogController>(
         model_.get(), rfh);
     controller_->SetAccountPreselectedCallback(base::DoNothing());

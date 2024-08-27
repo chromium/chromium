@@ -40,7 +40,8 @@ namespace gfx {
 struct VectorIcon;
 }
 
-class ProfileAttributesEntry;
+struct AccountInfo;
+class Profile;
 
 //                ┌───────┐
 //                │ View  │
@@ -407,9 +408,6 @@ struct AuthenticatorRequestDialogModel
 
   void DisableUiOrShowLoadingDialog();
 
-  // Returns profile attributes. May return nullptr.
-  ProfileAttributesEntry* GetProfileAttributesEntry();
-
   // generation is incremented each time the request is restarted so that events
   // from different request generations can be distinguished.
   int generation = 0;
@@ -473,10 +471,6 @@ struct AuthenticatorRequestDialogModel
   // a notification.
   std::optional<std::string> selected_phone_name;
 
-  // The name of the current GPM account, or else empty. E.g.
-  // "example@gmail.com".
-  std::string account_name;
-
   // Number of remaining GPM pin entry attempts before getting locked out or
   // `std::nullopt` if there was no failed attempts during that request.
   std::optional<int> gpm_pin_remaining_attempts_;
@@ -494,9 +488,22 @@ struct AuthenticatorRequestDialogModel
   std::optional<crypto::ScopedLAContext> lacontext;
 #endif  // BUILDFLAG(IS_MAC)
 
+  // Returns the AccountInfo for the profile associated with the request.
+  std::optional<AccountInfo> GetGpmAccountInfo();
+
+  // Returns the account email for the profile associated with the request,
+  // which may be empty.
+  std::string GetGpmAccountEmail();
+
  private:
   friend class base::RefCounted<AuthenticatorRequestDialogModel>;
   ~AuthenticatorRequestDialogModel();
+
+  // The Profile for the request, which may be an off-the-record profile.
+  //
+  // Returns nullptr if the RenderFrameHost for the request doesn't exist
+  // anymore.
+  Profile* GetProfile();
 
   Step step_ = Step::kNotStarted;
   const std::optional<content::GlobalRenderFrameHostId> frame_host_id;

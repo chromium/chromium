@@ -19,15 +19,13 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -36,6 +34,7 @@
 #include "device/fido/pin.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -77,8 +76,6 @@ std::u16string PossibleResidentKeyWarning(
   NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
-
-constexpr int kAvatarIconSize = 32;
 
 }  // namespace
 
@@ -563,7 +560,7 @@ std::u16string AuthenticatorTouchIdSheetModel::GetStepDescription() const {
     case device::FidoRequestType::kMakeCredential:
       return l10n_util::GetStringFUTF16(
           IDS_WEBAUTHN_GPM_CREATE_PASSKEY_DESC,
-          base::UTF8ToUTF16(dialog_model()->account_name));
+          base::UTF8ToUTF16(dialog_model()->GetGpmAccountEmail()));
 
     case device::FidoRequestType::kGetAssertion:
       return l10n_util::GetStringFUTF16(
@@ -1637,25 +1634,36 @@ AuthenticatorGpmPinSheetModelBase::~AuthenticatorGpmPinSheetModelBase() =
     default;
 
 std::u16string AuthenticatorGpmPinSheetModelBase::GetGpmAccountEmail() const {
-  ProfileAttributesEntry* entry = dialog_model()->GetProfileAttributesEntry();
-  return entry ? entry->GetUserName() : std::u16string();
+  std::optional<AccountInfo> account_info = dialog_model()->GetGpmAccountInfo();
+  if (!account_info) {
+    return std::u16string();
+  }
+  return base::UTF8ToUTF16(account_info->email);
 }
 
 std::u16string AuthenticatorGpmPinSheetModelBase::GetGpmAccountName() const {
-  ProfileAttributesEntry* entry = dialog_model()->GetProfileAttributesEntry();
-  return entry ? entry->GetGAIAName() : std::u16string();
+  std::optional<AccountInfo> account_info = dialog_model()->GetGpmAccountInfo();
+  if (!account_info) {
+    return std::u16string();
+  }
+  return base::UTF8ToUTF16(account_info->full_name);
 }
 
 gfx::Image AuthenticatorGpmPinSheetModelBase::GetGpmAccountImage() const {
-  ProfileAttributesEntry* entry = dialog_model()->GetProfileAttributesEntry();
-  if (!entry || !entry->IsUsingGAIAPicture()) {
+  std::optional<AccountInfo> account_info = dialog_model()->GetGpmAccountInfo();
+  if (!account_info) {
     return gfx::Image();
   }
-  return profiles::GetSizedAvatarIcon(
-      gfx::Image(
-          entry->GetAvatarIcon(kAvatarIconSize, /*use_high_res_file=*/false)),
-      /*width=*/kAvatarIconSize, /*height=*/kAvatarIconSize,
-      profiles::SHAPE_CIRCLE);
+  gfx::Image account_image = account_info->account_image;
+  if (account_image.IsEmpty()) {
+    account_image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
+  }
+  constexpr int kAvatarIconSize = 32;
+  return profiles::GetSizedAvatarIcon(account_image,
+                                      /*width=*/kAvatarIconSize,
+                                      /*height=*/kAvatarIconSize,
+                                      profiles::SHAPE_CIRCLE);
 }
 
 std::u16string AuthenticatorGpmPinSheetModelBase::GetAccessibleDescription()
@@ -1949,7 +1957,7 @@ std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetStepDescription()
     const {
   return l10n_util::GetStringFUTF16(
       IDS_WEBAUTHN_GPM_CREATE_PASSKEY_DESC,
-      base::UTF8ToUTF16(dialog_model()->account_name));
+      base::UTF8ToUTF16(dialog_model()->GetGpmAccountEmail()));
 }
 
 bool AuthenticatorCreateGpmPasskeySheetModel::IsCancelButtonVisible() const {
@@ -2043,7 +2051,7 @@ std::u16string
 AuthenticatorTrustThisComputerCreationSheetModel::GetStepDescription() const {
   return l10n_util::GetStringFUTF16(
       IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_CREATION_DESC,
-      base::UTF8ToUTF16(dialog_model()->account_name));
+      base::UTF8ToUTF16(dialog_model()->GetGpmAccountEmail()));
 }
 
 bool AuthenticatorTrustThisComputerCreationSheetModel::IsCancelButtonVisible()

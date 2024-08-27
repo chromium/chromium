@@ -1141,7 +1141,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
           FIDO_LOG(EVENT)
               << "Creation in GPM not offered (same primary account)";
         } else {
-          dialog_model_->account_name = std::move(account_info.email);
           enclave_controller_ = std::make_unique<GPMEnclaveController>(
               GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
               user_verification_requirement,

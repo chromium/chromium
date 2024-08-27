@@ -38,6 +38,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -2084,7 +2085,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         Mechanism::Enclave(), name, name, vector_icons::kPasswordManagerIcon,
         base::BindRepeating(&AuthenticatorRequestDialogController::StartEnclave,
                             base::Unretained(this)));
-    mechanism.description = base::UTF8ToUTF16(model_->account_name);
+    mechanism.description = base::UTF8ToUTF16(model_->GetGpmAccountEmail());
     model_->mechanisms.emplace_back(std::move(mechanism));
   }
   if (enclave_needs_reauth_ && !use_conditional_mediation_) {
