@@ -268,9 +268,18 @@ public abstract class TabModelSelectorBase
 
     @Override
     public boolean closeTab(Tab tab) {
+        boolean isClosing = tab.isClosing() && !tab.isDestroyed();
         for (int i = 0; i < getModels().size(); i++) {
             TabModel model = mTabModels.get(i);
-            if (model.indexOf(tab) >= 0) {
+            if (isClosing) {
+                // If the tab is closing and not destroyed it should be in the comprehensive model
+                // of one of the tab models. Find its model and commit the tab closure.
+                TabList comprehensiveModel = model.getComprehensiveModel();
+                if (comprehensiveModel.indexOf(tab) > TabList.INVALID_TAB_INDEX) {
+                    model.commitTabClosure(tab.getId());
+                    return true;
+                }
+            } else if (model.indexOf(tab) > TabList.INVALID_TAB_INDEX) {
                 return model.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
             }
         }
