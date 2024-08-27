@@ -61,6 +61,14 @@ LogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
 
 }  // namespace
 
+bool FragmentBuilder::IsRoot() const {
+  return node_ && node_.IsView() && !space_.IsAnonymous();
+}
+
+bool FragmentBuilder::IsPaginatedRoot() const {
+  return IsRoot() && node_.IsPaginatedRoot();
+}
+
 PhysicalFragment::BoxType FragmentBuilder::GetBoxType() const {
   if (box_type_ != PhysicalFragment::BoxType::kNormalBox) {
     return box_type_;
@@ -415,8 +423,14 @@ void FragmentBuilder::AddOutOfFlowChildCandidate(
     const LogicalOffset& child_offset,
     LogicalStaticPosition::InlineEdge inline_edge,
     LogicalStaticPosition::BlockEdge block_edge,
-    bool is_hidden_for_paint) {
+    bool is_hidden_for_paint,
+    bool allow_top_layer_nodes) {
   DCHECK(child);
+  // Top-layer elements are processed separately in the OutOfFlowLayoutPart.
+  if (child.IsInTopOrViewTransitionLayer() && !allow_top_layer_nodes) {
+    return;
+  }
+
   oof_candidates_may_have_anchor_queries_ |= child.MayHaveAnchorQuery();
   oof_positioned_candidates_.emplace_back(
       child, LogicalStaticPosition{child_offset, inline_edge, block_edge},

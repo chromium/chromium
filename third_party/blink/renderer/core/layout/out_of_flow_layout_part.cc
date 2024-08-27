@@ -465,12 +465,13 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
       has_block_fragmentation_(
           InvolvedInBlockFragmentation(*container_builder)) {
   // If there are no OOFs inside, we can return early, except if this is the
-  // paginated root, in which case we might not have hauled any OOFs inside the
-  // fragmentainers yet. See HandleFragmentation().
+  // root. There may be top-layer nodes still to be added. Additionally, for
+  // pagination, we might not have hauled any OOFs inside the fragmentainers
+  // yet. See HandleFragmentation().
   if (!container_builder->HasOutOfFlowPositionedCandidates() &&
       !container_builder->HasOutOfFlowFragmentainerDescendants() &&
       !container_builder->HasMulticolsWithPendingOOFs() &&
-      !container_builder->Node().IsPaginatedRoot()) {
+      !container_builder->IsRoot()) {
     return;
   }
 
@@ -496,22 +497,85 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
 }
 
 void OutOfFlowLayoutPart::Run() {
-  HandleFragmentation();
-  if (!container_builder_->HasOutOfFlowPositionedCandidates()) {
-    container_builder_
-        ->AdjustFixedposContainingBlockForFragmentainerDescendants();
-    container_builder_->AdjustFixedposContainingBlockForInnerMulticols();
-    return;
+  if (container_builder_->IsPaginatedRoot()) {
+    PropagateOOFsFromPageAreas();
   }
+
+  HandleFragmentation();
 
   // If the container is display-locked, then we skip the layout of descendants,
   // so we can early out immediately.
-  if (container_builder_->GetLayoutObject()
-          ->ChildLayoutBlockedByDisplayLock()) {
+  const BlockNode& node = container_builder_->Node();
+  if (node.ChildLayoutBlockedByDisplayLock()) {
     return;
   }
 
-  LayoutCandidates();
+  HeapVector<LogicalOofPositionedNode> candidates;
+  ClearCollectionScope<HeapVector<LogicalOofPositionedNode>> clear_scope(
+      &candidates);
+  container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
+
+  if (!candidates.empty()) {
+    LayoutCandidates(&candidates);
+  } else {
+    container_builder_
+        ->AdjustFixedposContainingBlockForFragmentainerDescendants();
+    container_builder_->AdjustFixedposContainingBlockForInnerMulticols();
+  }
+
+  // If this is for the root fragment, now process top-layer elements.
+  // We do this last as:
+  //  - Additions/removals may occur while processing normal out-of-flow
+  //    positioned elements (e.g. via a container-query).
+  //  - They correctly reference any anchor()s from preceding elements.
+  if (!container_builder_->IsRoot()) {
+    return;
+  }
+
+  for (LayoutInputNode child = node.FirstChild(); child;
+       child = child.NextSibling()) {
+    if (!child.IsBlock()) {
+      continue;
+    }
+    BlockNode block_child = To<BlockNode>(child);
+    if (!block_child.IsInTopOrViewTransitionLayer() ||
+        !block_child.IsOutOfFlowPositioned()) {
+      continue;
+    }
+
+    // https://drafts.csswg.org/css-position-4/#top-styling
+    // The static position for top-layer elements is just 0x0.
+    container_builder_->AddOutOfFlowChildCandidate(
+        block_child, LogicalOffset(),
+        LogicalStaticPosition::InlineEdge::kInlineStart,
+        LogicalStaticPosition::BlockEdge::kBlockStart,
+        /*is_hidden_for_paint=*/false,
+        /*allow_top_layer_nodes=*/true);
+
+    // With one top-layer node added, run through the machinery again. Note that
+    // we need to do this separately for each node, as laying out a node may
+    // cause top-layer nodes to be added or removed.
+    HandleFragmentation();
+    container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
+    LayoutCandidates(&candidates);
+  }
+}
+
+void OutOfFlowLayoutPart::PropagateOOFsFromPageAreas() {
+  DCHECK(container_builder_->IsPaginatedRoot());
+  LogicalOffset offset_adjustment;
+  for (wtf_size_t i = 0; i < ChildCount(); i++) {
+    // Propagation from children stopped at the fragmentainers (the page area
+    // fragments). Now collect any pending OOFs, and lay them out.
+    const PhysicalBoxFragment& fragmentainer = GetChildFragment(i);
+    if (fragmentainer.NeedsOOFPositionedInfoPropagation()) {
+      container_builder_->PropagateOOFPositionedInfo(
+          fragmentainer, LogicalOffset(), LogicalOffset(), offset_adjustment);
+    }
+    if (const auto* break_token = fragmentainer.GetBreakToken()) {
+      offset_adjustment.block_offset = break_token->ConsumedBlockSize();
+    }
+  }
 }
 
 void OutOfFlowLayoutPart::HandleFragmentation() {
@@ -529,23 +593,6 @@ void OutOfFlowLayoutPart::HandleFragmentation() {
   }
 
   if (container_builder_->Node().IsPaginatedRoot()) {
-    // Column balancing only affects multicols.
-    DCHECK(!column_balancing_info_);
-
-    LogicalOffset offset_adjustment;
-    for (wtf_size_t i = 0; i < ChildCount(); i++) {
-      // Propagation from children stopped at the fragmentainers (the page area
-      // fragments). Now collect any pending OOFs, and lay them out.
-      const PhysicalBoxFragment& fragmentainer = GetChildFragment(i);
-      if (fragmentainer.NeedsOOFPositionedInfoPropagation()) {
-        container_builder_->PropagateOOFPositionedInfo(
-            fragmentainer, LogicalOffset(), LogicalOffset(), offset_adjustment);
-      }
-      if (const auto* break_token = fragmentainer.GetBreakToken()) {
-        offset_adjustment.block_offset = break_token->ConsumedBlockSize();
-      }
-    }
-
     HeapVector<LogicalOofPositionedNode> candidates;
     ClearCollectionScope<HeapVector<LogicalOofPositionedNode>> scope(
         &candidates);
@@ -1027,20 +1074,18 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
   }
 }
 
-void OutOfFlowLayoutPart::LayoutCandidates() {
-  HeapVector<LogicalOofPositionedNode> candidates;
-  ClearCollectionScope<HeapVector<LogicalOofPositionedNode>> clear_scope(
-      &candidates);
-  container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
-
-  while (candidates.size() > 0) {
+void OutOfFlowLayoutPart::LayoutCandidates(
+    HeapVector<LogicalOofPositionedNode>* candidates) {
+  while (candidates->size() > 0) {
     if (!has_block_fragmentation_ ||
-        container_builder_->IsInitialColumnBalancingPass())
-      ComputeInlineContainingBlocks(candidates);
-    for (auto& candidate : candidates) {
+        container_builder_->IsInitialColumnBalancingPass()) {
+      ComputeInlineContainingBlocks(*candidates);
+    }
+    for (auto& candidate : *candidates) {
       LayoutBox* layout_box = candidate.box;
-      if (!container_builder_->IsBlockFragmentationContextRoot())
+      if (!container_builder_->IsBlockFragmentationContextRoot()) {
         SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
+      }
       if (IsContainingBlockForCandidate(candidate)) {
         if (has_block_fragmentation_) {
           container_builder_->SetHasOutOfFlowInFragmentainerSubtree(true);
@@ -1077,10 +1122,11 @@ void OutOfFlowLayoutPart::LayoutCandidates() {
         container_builder_->AddOutOfFlowDescendant(candidate);
       }
     }
+
     // Sweep any candidates that might have been added.
     // This happens when an absolute container has a fixed child.
-    candidates.Shrink(0);
-    container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
+    candidates->Shrink(0);
+    container_builder_->SwapOutOfFlowPositionedCandidates(candidates);
   }
 }
 

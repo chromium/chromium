@@ -106,6 +106,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     SetChildFragmentStorage(child_fragment_storage);
   }
 
+  // Go through each page area fragment and propagate OOF descendants.
+  void PropagateOOFsFromPageAreas();
+
   // Handle the layout of any OOF elements in a fragmentation context.
   void HandleFragmentation();
 
@@ -299,7 +302,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       LogicalOffset containing_block_offset = LogicalOffset(),
       bool adjust_for_fragmentation = false);
 
-  void LayoutCandidates();
+  void LayoutCandidates(HeapVector<LogicalOofPositionedNode>*);
 
   void HandleMulticolsWithPendingOOFs(BoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(
