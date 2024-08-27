@@ -196,6 +196,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                            StepName::STEP_SUBMIT_COMPOSITOR_FRAME);
         local_surface_id_.WriteIntoTrace(
             ctx.Wrap(data->set_local_surface_id()));
+        data->set_display_trace_id(frame.metadata.begin_frame_ack.trace_id);
       });
   if (local_surface_id_ == last_submitted_local_surface_id_) {
     DCHECK_EQ(last_submitted_device_scale_factor_, frame.device_scale_factor());
@@ -275,6 +276,7 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_DID_NOT_PRODUCE_FRAME);
         data->set_frame_skipped_reason(to_proto_enum(reason));
+        data->set_display_trace_id(ack.trace_id);
       });
   compositor_frame_sink_ptr_->DidNotProduceFrame(ack);
 }
@@ -328,6 +330,7 @@ void AsyncLayerTreeFrameSink::OnBeginFrame(
         if (needs_begin_frames_) {
           data->set_frame_sequence(adjusted_args.frame_id.sequence_number);
         }
+        data->set_display_trace_id(adjusted_args.trace_id);
       });
 
   if (features::IsOnBeginFrameAcksEnabled()) {

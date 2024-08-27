@@ -747,6 +747,7 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
           auto* data = event->set_chrome_graphics_pipeline();
           data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                              StepName::STEP_SEND_BEGIN_MAIN_FRAME);
+          data->set_display_trace_id(args.trace_id);
         });
     TRACE_EVENT_WITH_FLOW0("viz,benchmark",
                            "MainFrame.SendBeginMainFrameOnImpl",

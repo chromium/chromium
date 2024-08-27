@@ -1626,6 +1626,7 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_GENERATE_RENDER_PASS);
+        data->set_display_trace_id(CurrentBeginFrameArgs().trace_id);
       });
   if (input_delegate_)
     input_delegate_->WillDraw();
@@ -2785,6 +2786,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_GENERATE_COMPOSITOR_FRAME);
+        data->set_display_trace_id(CurrentBeginFrameArgs().trace_id);
       });
 
   rendering_stats_instrumentation_->IncrementFrameCount(1);

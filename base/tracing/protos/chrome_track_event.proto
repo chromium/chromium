@@ -1448,7 +1448,11 @@ message ChromeGraphicsPipeline {
   }
   optional StepName step = 1;
   optional FrameSinkId frame_sink_id = 2;
+
+  // Id used to link `ChromeGraphicsPipeline`s corresponding to work done
+  // on creating and presenting one frame.
   optional int64 display_trace_id = 3;
+
   optional LocalSurfaceId local_surface_id = 4;
   optional int64 frame_sequence = 5;
   optional FrameSkippedReason frame_skipped_reason = 6;

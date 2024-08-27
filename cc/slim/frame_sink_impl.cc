@@ -341,6 +341,7 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
           auto* data = event->set_chrome_graphics_pipeline();
           data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                              StepName::STEP_SUBMIT_COMPOSITOR_FRAME);
+          data->set_display_trace_id(begin_frame_args.trace_id);
         });
     frame_sink_->SubmitCompositorFrame(
         local_surface_id_, std::move(frame),
@@ -365,6 +366,7 @@ void FrameSinkImpl::SendDidNotProduceFrame(
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_DID_NOT_PRODUCE_FRAME);
+        data->set_display_trace_id(begin_frame_args.trace_id);
       });
   frame_sink_->DidNotProduceFrame(viz::BeginFrameAck(begin_frame_args, false));
 }
