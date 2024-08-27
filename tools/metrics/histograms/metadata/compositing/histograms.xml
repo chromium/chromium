@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.RenderPassDamageType"
-    enum="RenderPassDamage" expires_after="2024-09-01">
+    enum="RenderPassDamage" expires_after="2025-03-01">
   <owner>petermcneeley@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
