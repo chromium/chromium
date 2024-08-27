@@ -9,9 +9,13 @@ import type {DescriptionSectionElement} from './description_section.js';
 export function getHtml(this: DescriptionSectionElement) {
   return html`
   <div id="attributes">
-    ${this.description.attributes.map((attrItem) => html`
+    ${
+      this.description.attributes.map(
+          (attrItem) => html`
       <div class="attribute-chip">
-        ${attrItem.label && html`<b>${attrItem.label}</b>:`}
+        ${
+              attrItem.label &&
+              html`<span class="attribute-title">${attrItem.label}</span>:`}
         ${attrItem.value}
       </div>
     `)}

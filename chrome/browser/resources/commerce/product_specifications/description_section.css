@@ -22,9 +22,14 @@
 .attribute-chip {
   background-color: var(--color-product-specifications-detail-chip-background);
   border-radius: 6px;
-  display: inline-block;
+  display: block;
   margin: 4px 0;
   padding: 4px 6px;
+  width: fit-content;
+}
+
+.attribute-title {
+  font-weight: 500;
 }
 
 #summary {

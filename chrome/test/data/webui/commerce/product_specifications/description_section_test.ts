@@ -71,14 +71,15 @@ suite('DescriptionSectionTest', () => {
   });
 
   test('summaries render correctly', async () => {
-    const spans =
-        descriptionSectionElement.shadowRoot!.querySelectorAll('span');
+    const summaries =
+        descriptionSectionElement.shadowRoot!.querySelectorAll('.summary-text');
 
-    assertEquals(description.summary.length, spans.length);
-    spans.forEach((_item, index) => {
-      assertTrue(!!spans[index]!.textContent);
+    assertEquals(description.summary.length, summaries.length);
+    summaries.forEach((_item, index) => {
+      assertTrue(!!summaries[index]!.textContent);
       assertEquals(
-          description.summary[index]!.text, spans[index]!.textContent!.trim());
+          description.summary[index]!.text,
+          summaries[index]!.textContent!.trim());
     });
   });
 
