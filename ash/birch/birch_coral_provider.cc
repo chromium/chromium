@@ -5,6 +5,7 @@
 #include "ash/birch/birch_coral_provider.h"
 
 #include "ash/birch/birch_model.h"
+#include "ash/public/cpp/coral_util.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "ash/shell.h"
@@ -61,14 +62,15 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
 void BirchCoralProvider::HandleInSessionDataRequest() {
   // TODO(yulunwu, zxdan) add more tab metadata, app data,
   // and handle in-session use cases.
-  std::vector<coral_util::TabData> active_tab_data;
+  std::vector<coral_util::ContentItem> active_tab_app_data;
   for (const std::unique_ptr<TabClusterUIItem>& tab :
        Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
-    active_tab_data.emplace_back(
+    coral_util::ContentItem curr_tab =
         coral_util::TabData{.tab_title = tab->current_info().title,
-                            .source = tab->current_info().source});
+                            .source = tab->current_info().source};
+    active_tab_app_data.emplace_back(std::move(curr_tab));
   }
-  request_.set_tab_data(std::move(active_tab_data));
+  request_.set_content(std::move(active_tab_app_data));
 }
 
 void BirchCoralProvider::HandleCoralResponse(
