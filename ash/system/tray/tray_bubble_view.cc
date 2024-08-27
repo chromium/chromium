@@ -47,6 +47,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -392,6 +393,9 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
 
   message_center::MessageCenter::Get()->AddObserver(this);
   Shell::Get()->display_manager()->AddDisplayObserver(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
+  UpdateAccessibleIgnoredState();
 }
 
 TrayBubbleView::~TrayBubbleView() {
@@ -409,6 +413,7 @@ TrayBubbleView::~TrayBubbleView() {
 void TrayBubbleView::InitializeAndShowBubble() {
   GetWidget()->Show();
   UpdateBubble();
+  UpdateAccessibleIgnoredState();
 
   // Manually sets the shadow position since `CreateShadowOnTextureLayer` only
   // constructs the shadow but doesn't deal with shadow positioning.
@@ -469,6 +474,7 @@ void TrayBubbleView::ResetDelegate() {
   reroute_event_handler_.reset();
 
   delegate_ = nullptr;
+  UpdateAccessibleIgnoredState();
 }
 
 void TrayBubbleView::ChangeAnchorView(views::View* anchor_view) {
@@ -628,7 +634,6 @@ void TrayBubbleView::OnMouseExited(const ui::MouseEvent& event) {
 
 void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (delegate_ && CanActivate()) {
-    node_data->role = ax::mojom::Role::kWindow;
     node_data->SetNameChecked(delegate_->GetAccessibleNameForBubble());
   }
 }
@@ -746,6 +751,10 @@ void TrayBubbleView::SetBubbleBorderInsets(gfx::Insets insets) {
   if (GetBubbleFrameView()->bubble_border()) {
     GetBubbleFrameView()->bubble_border()->set_insets(insets);
   }
+}
+
+void TrayBubbleView::UpdateAccessibleIgnoredState() {
+  GetViewAccessibility().SetIsIgnored(!delegate_ || !CanActivate());
 }
 
 BEGIN_METADATA(TrayBubbleView)

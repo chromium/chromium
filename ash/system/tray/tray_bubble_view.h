@@ -317,6 +317,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     raw_ptr<TrayBubbleView> tray_bubble_view_;
   };
 
+  void UpdateAccessibleIgnoredState();
+
   InitParams params_;
   raw_ptr<views::BoxLayout, DanglingUntriaged> layout_;
   base::WeakPtr<Delegate> delegate_;

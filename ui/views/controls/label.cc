@@ -652,6 +652,11 @@ base::CallbackListSubscription Label::AddTextChangedCallback(
       std::move(callback));
 }
 
+base::CallbackListSubscription Label::AddTextContextChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&text_context_, std::move(callback));
+}
+
 int Label::GetBaseline() const {
   return GetInsets().top() + font_list().GetBaseline();
 }

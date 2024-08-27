@@ -321,6 +321,9 @@ class VIEWS_EXPORT Label : public View,
   [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback);
 
+  [[nodiscard]] base::CallbackListSubscription AddTextContextChangedCallback(
+      PropertyChangedCallback callback);
+
   // View:
   int GetBaseline() const override;
   gfx::Size CalculatePreferredSize(
