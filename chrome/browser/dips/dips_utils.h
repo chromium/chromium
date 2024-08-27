@@ -17,8 +17,6 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "url/gurl.h"
 
-class ProfileSelections;
-
 namespace base {
 class TimeDelta;
 }
@@ -48,11 +46,6 @@ const base::FilePath::CharType kDIPSFilename[] = FILE_PATH_LITERAL("DIPS");
 // NOTE: This returns the same value regardless of if there is actually a
 // persisted DIPSDatabase for the BrowserContext or not.
 base::FilePath GetDIPSFilePath(content::BrowserContext* context);
-
-// The ProfileSelections used to dictate when the DIPSService should be created,
-// if `features::kDIPS` is enabled, and when the DIPSCleanupService
-// should be created, if `features::kDIPS` is NOT enabled.
-ProfileSelections GetHumanProfileSelections();
 
 // SiteDataAccessType:
 // NOTE: We use this type as a bitfield, and will soon be logging it. Don't

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -16,6 +17,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -42,11 +45,30 @@ std::vector<std::string> GetEngagedSitesInBackground(
   return std::vector(unique_sites.begin(), unique_sites.end());
 }
 
+ProfileSelections GetHumanProfileSelections() {
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kOwnInstance)
+      .WithGuest(ProfileSelection::kOffTheRecordOnly)
+      .WithSystem(ProfileSelection::kNone)
+      .WithAshInternals(ProfileSelection::kNone)
+      .Build();
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<content::DipsDelegate> ChromeDipsDelegate::Create() {
   return std::make_unique<ChromeDipsDelegate>();
+}
+
+bool ChromeDipsDelegate::ShouldEnableDips(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  Profile* result = GetHumanProfileSelections().ApplyProfileSelection(profile);
+  // TODO: crbug.com/358137275 - Use CHECK() once we know it's safe.
+  DUMP_WILL_BE_CHECK(!result || result == profile)
+      << "ApplyProfileSelection() returned a different profile";
+  return result == profile;
 }
 
 void ChromeDipsDelegate::GetEngagedSites(

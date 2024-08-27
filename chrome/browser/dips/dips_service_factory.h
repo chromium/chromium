@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_DIPS_DIPS_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -14,13 +14,11 @@ class BrowserContext;
 
 class DIPSServiceImpl;
 
-class DIPSServiceFactory : public ProfileKeyedServiceFactory {
+class DIPSServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static DIPSServiceFactory* GetInstance();
   static DIPSServiceImpl* GetForBrowserContext(
       content::BrowserContext* context);
-
-  static ProfileSelections CreateProfileSelections();
 
  private:
   friend base::NoDestructor<DIPSServiceFactory>;
@@ -29,6 +27,8 @@ class DIPSServiceFactory : public ProfileKeyedServiceFactory {
   ~DIPSServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };

@@ -7,11 +7,13 @@
 #include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_service.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 /* static */
 OpenerHeuristicService* OpenerHeuristicServiceFactory::GetForBrowserContext(
@@ -25,25 +27,32 @@ OpenerHeuristicServiceFactory* OpenerHeuristicServiceFactory::GetInstance() {
   return instance.get();
 }
 
-/* static */
-ProfileSelections OpenerHeuristicServiceFactory::CreateProfileSelections() {
-  if (!base::FeatureList::IsEnabled(
-          content_settings::features::kTpcdHeuristicsGrants)) {
-    return ProfileSelections::BuildNoProfilesSelected();
-  }
-
-  return GetHumanProfileSelections();
-}
-
 OpenerHeuristicServiceFactory::OpenerHeuristicServiceFactory()
-    : ProfileKeyedServiceFactory("OpenerHeuristicService",
-                                 CreateProfileSelections()) {
+    : BrowserContextKeyedServiceFactory(
+          "OpenerHeuristicService",
+          BrowserContextDependencyManager::GetInstance()) {
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(DIPSServiceFactory::GetInstance());
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
 OpenerHeuristicServiceFactory::~OpenerHeuristicServiceFactory() = default;
+
+content::BrowserContext* OpenerHeuristicServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kTpcdHeuristicsGrants)) {
+    return nullptr;
+  }
+
+  // Enable the heuristic for the same profiles as DIPS -- profiles associated
+  // with a human user.
+  if (!ChromeDipsDelegate::Create()->ShouldEnableDips(context)) {
+    return nullptr;
+  }
+
+  return context;
+}
 
 std::unique_ptr<KeyedService>
 OpenerHeuristicServiceFactory::BuildServiceInstanceForBrowserContext(

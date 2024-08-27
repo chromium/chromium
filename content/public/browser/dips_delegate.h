@@ -28,6 +28,9 @@ class CONTENT_EXPORT DipsDelegate {
 
   virtual ~DipsDelegate();
 
+  // DIPS will be enabled in browser contexts for which this returns true.
+  virtual bool ShouldEnableDips(BrowserContext* browser_context) = 0;
+
   // On the first startup, GetEngagedSites() will be called and the DIPS
   // Database will be prepopulated with the sites passed to `callback`.
   virtual void GetEngagedSites(BrowserContext* browser_context,

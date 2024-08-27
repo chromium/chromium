@@ -25,6 +25,8 @@ class ChromeDipsDelegate : public content::DipsDelegate {
   // implementation if it returned null, once DIPS has moved to //content.
   static std::unique_ptr<content::DipsDelegate> Create();
 
+  bool ShouldEnableDips(content::BrowserContext* browser_context) override;
+
   void GetEngagedSites(content::BrowserContext* browser_context,
                        EngagedSitesCallback callback) override;
 
