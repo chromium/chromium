@@ -134,6 +134,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
     ash::prefs::kShouldAlwaysShowAccessibilityMenu,
     ash::prefs::kAccessibilityDisableTrackpadEnabled,
+    ash::prefs::kAccessibilityDisableTrackpadMode,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_ANDROID)
     kAnimationPolicyAllowed,

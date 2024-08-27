@@ -190,7 +190,7 @@ AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifyAcceleratorDialog);
 AX_BASE_EXPORT bool IsAccessibilityMagnifyAcceleratorDialogEnabled();
 
-// Controls whether the Select to Speak keyboard shortcut is enabled.
+// Controls whether the disable trackpad feature is enabled.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDisableTrackpad);
 AX_BASE_EXPORT bool IsAccessibilityDisableTrackpadEnabled();
 

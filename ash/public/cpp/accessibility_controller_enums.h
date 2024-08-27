@@ -278,6 +278,15 @@ enum class AccessibilityScrollDirection {
   kRight,
 };
 
+// The different modes in which the internal trackpad can be disabled.
+// These values are written to prefs so should not be changed.
+enum class DisableTrackpadMode {
+  kNever = 0,
+  kAlways = 1,
+  kOnExternalMouseConnected = 2,
+  kMaxValue = kOnExternalMouseConnected,
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_ENUMS_H_

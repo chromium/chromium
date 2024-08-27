@@ -2307,12 +2307,14 @@ TEST_F(AccessibilityControllerDisableTrackpadTest,
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityDisableTrackpadEnabled));
   ASSERT_FALSE(controller->disable_trackpad().enabled());
+  ASSERT_EQ(prefs->GetInteger(prefs::kAccessibilityDisableTrackpadMode),
+            static_cast<int>(DisableTrackpadMode::kNever));
 
   // AccessibilityController should have a reference to the
   // DisableTrackpadEventRewriter and it should also be off by default.
   auto* disable_trackpad_event_rewriter =
       controller->GetDisableTrackpadEventRewriterForTest();
-  ASSERT_NE(nullptr, disable_trackpad_event_rewriter);
+  ASSERT_NE(disable_trackpad_event_rewriter, nullptr);
   ASSERT_FALSE(disable_trackpad_event_rewriter->IsEnabled());
 
   // Enabling the disable trackpad feature should enable the
