@@ -2148,7 +2148,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.EndRecordingReason.{TabletOrClamshell}"
-    enum="EndRecordingReason" expires_after="2024-10-06">
+    enum="EndRecordingReason" expires_after="2025-08-25">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
