@@ -218,7 +218,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1363819917331173092">Ne nudi prevod stranica na jeziku <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Ove smernice su blokirane. Njihova vrednost će biti zanemarena.</translation>
 <translation id="1368318639262510626">Igra sa dinosaurusom. Pikselizovani dinosaurus izbegava kaktuse i pterodaktile dok trči pustim pejzažem. Kada čujete zvučni signal dodirnite taster za razmak da biste preskakali prepreke.</translation>
-<translation id="1370751323199669551">Saznajte više o funkciji Uporedi.</translation>
 <translation id="1374468813861204354">predlozi</translation>
 <translation id="1375198122581997741">O verziji</translation>
 <translation id="1375293861397106342">Sve opcije su obično <ph name="LOW_PRICE" />–<ph name="HIGH_PRICE" /></translation>
@@ -1293,6 +1292,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3402261774528610252">Veza korišćena za učitavanje ovog sajta je koristila TLS 1.0 ili TLS 1.1, koji su zastareli i biće onemogućeni u budućnosti. Kada budu onemogućeni, korisnici neće moći da učitaju ovaj sajt. Server treba da omogući TLS 1.2 ili noviju verziju.</translation>
 <translation id="3405664148539009465">Prilagodi fontove</translation>
 <translation id="3407789382767355356">prijavljivanje treće strane</translation>
+<translation id="340924996148642843">Poređenje trenutno nije dostupno</translation>
 <translation id="3409896703495473338">Upravljajte bezbednosnim podešavanjima</translation>
 <translation id="3414275587143250384">Distribuirano računarstvo i računarstvo u klaudu</translation>
 <translation id="3414952576877147120">Veličina:</translation>
@@ -1390,7 +1390,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3568886473829759308">Pristupite veb-sajtu da biste videli informacije, resurse ili usluge koje preduzeće pruža.</translation>
 <translation id="3570079787344939099">Skrolovanje i zumiranje</translation>
 <translation id="357244642999988503">Ukloni kolonu</translation>
-<translation id="3572827863357388784">Ovo je eksperimentalna funkcija i neće uvek raditi kako treba.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Dozvoli za ovaj sajt</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1451,6 +1450,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="365641980390710834">Ležerna odeća</translation>
 <translation id="3658742229777143148">Revizija</translation>
 <translation id="3659521826520353662">Koji veb-sajtovi koje je definisao administrator se posećuju i kada: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Pretražite još opcija kupovine u drugim prodavnicama koje prodaju ovaj proizvod.</translation>
 <translation id="3664782872746246217">Ključne reči:</translation>
 <translation id="3665100783276035932">Većina sajtova bi trebalo da radi na očekivani način</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Saznajte više<ph name="LINK_END1" /></translation>
@@ -1890,6 +1890,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4451135742916150903">Može da traži da se povezuje sa HID uređajima</translation>
 <translation id="4451684391620232683">Tekst predstavljen korisniku:</translation>
 <translation id="4452328064229197696">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Da biste zaštitili naloge, Google menadžer lozinki preporučuje da proverite sačuvane lozinke.</translation>
+<translation id="4452957520362597816">Pitaj da instaliraš veb-aplikacije</translation>
 <translation id="4456937135469235202">Avanturistička putovanja</translation>
 <translation id="4464826014807964867">Veb-sajtovi sa podacima iz vaše organizacije</translation>
 <translation id="4466576951214254884">Studentski krediti i stipendiranje</translation>
@@ -2999,6 +3000,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6529602333819889595">&amp;Ponovi brisanje</translation>
 <translation id="6535617236508021606">Ova kartica se čuva na Google nalogu da biste mogli da je koristite u svim Google uslugama.</translation>
 <translation id="6536221421038631327">Uklanjanjem Passpoint pretplate sa uređaja <ph name="DEVICE_TYPE" /> uklanjaju se povezane mreže. Obratite se aplikaciji <ph name="FRIENDLY_NAME" /> da biste uneli izmene u pretplatnički paket. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Da biste videli tabele za poređenje, uključite sinhronizaciju</translation>
 <translation id="6539092367496845964">Došlo je do greške. Probajte ponovo kasnije.</translation>
 <translation id="6540488083026747005">Dozvolili ste kolačiće treće strane za ovaj sajt</translation>
 <translation id="6545864417968258051">Bluetooth skeniranje</translation>

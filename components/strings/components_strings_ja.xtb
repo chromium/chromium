@@ -218,7 +218,6 @@
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> のページを翻訳するか尋ねない</translation>
 <translation id="1364822246244961190">このポリシーはブロックされているため、値は無視されます。</translation>
 <translation id="1368318639262510626">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、Space キーを押して障害物を飛び越えましょう。</translation>
-<translation id="1370751323199669551">「比較」の詳細</translation>
 <translation id="1374468813861204354">ヒント</translation>
 <translation id="1375198122581997741">バージョン情報</translation>
 <translation id="1375293861397106342">すべてのオプションでの一般的な価格帯: <ph name="LOW_PRICE" />～<ph name="HIGH_PRICE" /></translation>
@@ -1292,6 +1291,7 @@
 <translation id="3402261774528610252">このサイトの読み込みで、TLS 1.0 または TLS 1.1 の接続が使用されました。これらの TLS バージョンのサポートは終了し、今後無効となる予定です。無効になると、このサイトは読み込めなくなります。サーバーで TLS 1.2 以降を有効にする必要があります。</translation>
 <translation id="3405664148539009465">フォントをカスタマイズ</translation>
 <translation id="3407789382767355356">サードパーティのログイン</translation>
+<translation id="340924996148642843">比較機能は現在使用できません</translation>
 <translation id="3409896703495473338">セキュリティ設定を管理</translation>
 <translation id="3414275587143250384">分散コンピューティング、クラウド コンピューティング</translation>
 <translation id="3414952576877147120">サイズ:</translation>
@@ -1389,7 +1389,6 @@
 <translation id="3568886473829759308">ウェブサイトにアクセスして、ビジネスが提供する情報、リソース、サービスを確認します。</translation>
 <translation id="3570079787344939099">スクロールとズーム</translation>
 <translation id="357244642999988503">列を削除</translation>
-<translation id="3572827863357388784">これは試験運用版の機能であり、常に適切な結果が得られるとは限りません。</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /> <ph name="STATE" /> <ph name="CITY" /></translation>
 <translation id="3575121482199441727">このサイトの通知を許可</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1450,6 +1449,7 @@
 <translation id="365641980390710834">カジュアル衣料</translation>
 <translation id="3658742229777143148">変更履歴</translation>
 <translation id="3659521826520353662">管理者が定義したウェブサイトとアクセスした日時: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">この商品を販売している他のショップの購入オプションを検索します。</translation>
 <translation id="3664782872746246217">キーワード:</translation>
 <translation id="3665100783276035932">ほとんどのサイトは適切に機能します</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />詳細<ph name="LINK_END1" /></translation>
@@ -1887,6 +1887,7 @@
 <translation id="4451135742916150903">HID デバイスへの接続を要求できる</translation>
 <translation id="4451684391620232683">ユーザーに表示されるテキスト:</translation>
 <translation id="4452328064229197696">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために保存したパスワードを確認することをおすすめします。</translation>
+<translation id="4452957520362597816">ウェブアプリのインストール</translation>
 <translation id="4456937135469235202">冒険旅行</translation>
 <translation id="4464826014807964867">組織の情報を使用しているウェブサイト</translation>
 <translation id="4466576951214254884">学生ローン、大学ローン</translation>
@@ -2820,6 +2821,7 @@
 <translation id="6240964651812394252">お使いのオペレーティング システムで Google パスワード マネージャーを使用するには、Chrome を再起動してパソコンのパスワード マネージャーへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="6241121617266208201">候補を非表示にする</translation>
 <translation id="624499991300733384">印刷コンポジター サービス</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> 日前</translation>
 <translation id="6246868321321344665">仕事用プロファイルと個人用プロファイルの両方の閲覧データ（パスワードや履歴など）が組織によって確認される可能性があります</translation>
 <translation id="6250932670816326647">バス、ボディ商品</translation>
 <translation id="6251906504834538140">{0,plural, =1{ファイルの移動がブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルの移動がブロックされています}}</translation>
@@ -2993,6 +2995,7 @@
 <translation id="6529602333819889595">削除のやり直し（&amp;R）</translation>
 <translation id="6535617236508021606">このカードは Google アカウントに保存されるため、Google サービス全体で使用できます。</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> から Passpoint の登録を削除すると、関連付けられているネットワークが削除されます。登録プランを変更するには「<ph name="FRIENDLY_NAME" />」にお問い合わせください。<ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">比較表を表示するには、同期をオンにしてください</translation>
 <translation id="6539092367496845964">エラーが発生しました。しばらくしてからもう一度お試しください。</translation>
 <translation id="6540488083026747005">このサイトのサードパーティ Cookie を許可しました</translation>
 <translation id="6545864417968258051">Bluetooth のスキャン</translation>
@@ -3408,6 +3411,7 @@
 <translation id="7346081071264046066">「この結婚式の招待状に、喜んで参加すると返事する」</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7353601530677266744">コマンドライン</translation>
+<translation id="7356678400607112844">最終アクセス日:</translation>
 <translation id="7359588939039777303">広告がブロックされました。</translation>
 <translation id="7360451453306104998">Google が特定した割引は、ご購入手続きの際に適用されます</translation>
 <translation id="7363096869660964304">あらゆる場所に記録が一切残らないわけではありません。シークレット モードを使っても、雇用主、インターネット サービス プロバイダ、訪問先のウェブサイトに閲覧内容が知られる可能性はあります。</translation>

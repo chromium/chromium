@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Įjungus svetainėse gali būti prašoma naudoti fotoaparatą. Išjungus svetainėse negalima naudoti fotoaparato.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{„Chrome“ vėl užblokuos slapukus rytoj}one{Liko # diena, kol „Chrome“ vėl užblokuos slapukus}few{Liko # dienos, kol „Chrome“ vėl užblokuos slapukus}many{Liko # dienos, kol „Chrome“ vėl užblokuos slapukus}other{Liko # dienų, kol „Chrome“ vėl užblokuos slapukus}}</translation>
 <translation id="3521663503435878242">Svetainės, priklausančios <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Neleisti svetainėms stebėti rankų</translation>
 <translation id="3536227077203206203">Leidžiama šį kartą</translation>
 <translation id="3538390592868664640">Blokuoti, kad svetainės nekurtų jūsų aplinkos 3D žemėlapio ir nestebėtų kameros padėties</translation>
 <translation id="3544058026430919413">Įmonė gali nustatyti svetainių, kurios gali naudoti slapukus jūsų veiklai grupėje bendrinti, grupę. Ši funkcija inkognito režimu išjungta.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">Įjungus svetainėse galima naudoti „JavaScript“. Išjungus svetainėse negalima naudoti „JavaScript“.</translation>
 <translation id="5099358668261120049">Bus ištrinti visi duomenys ir slapukai, kuriuos domenas <ph name="ORIGIN" /> arba jo programa saugo jūsų pagrindiniame ekrane.</translation>
 <translation id="5100237604440890931">Sutraukta – spustelėkite, kad išskleistumėte</translation>
+<translation id="5116239826668864748">Galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sumažinta kaina atidarytuose skirtukuose}one{Sumažinta kaina atidarytuose skirtukuose}few{Sumažinta kaina atidarytuose skirtukuose}many{Sumažinta kaina atidarytuose skirtukuose}other{Sumažinta kaina atidarytuose skirtukuose}}</translation>
 <translation id="5186036860380548585">Parinktis pasiekiama netoli ekrano viršaus</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Ši svetainė yra grupėje, kuri gali peržiūrėti jūsų veiklą. Grupę nustato <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilio nuotraukos</translation>
 <translation id="6697925417670533197">Aktyvūs atsisiuntimai</translation>
+<translation id="6709432001666529933">Klausti prieš leidžiant svetainėms stebėti jūsų rankas (rekomenduojama)</translation>
 <translation id="6722828510648505498">Blokuoti raginimus prisijungti iš tapatybės nustatymo paslaugų.</translation>
 <translation id="6746124502594467657">Perkelti žemyn</translation>
 <translation id="6749077623962119521">Iš naujo nustatyti leidimus?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">Pasirinkite <ph name="SITE_NAME" /> parinktį</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="6818926723028410516">Pasirinkite elementus</translation>
+<translation id="6838525730752203626">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="6840760312327750441">Norėdami grupuoti skirtukus, palieskite ir palaikykite skirtuką. Tada nuvilkite jį į kitą skirtuką.</translation>
 <translation id="6864395892908308021">Šis įrenginys negali nuskaityti ALR</translation>
 <translation id="6870169401250095575">Slėpti saugos patikros kortelę</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7667547420449112975">Nuostabusis Ozo šalies burtininkas</translation>
 <translation id="7684642910516280563">Neleisti svetainei naudoti trečiųjų šalių slapukų</translation>
+<translation id="7688240020069572972">Slėpti „Chrome“ patarimų kortelę</translation>
 <translation id="7719367874908701697">Puslapio mastelis</translation>
 <translation id="7759147511335618829">MIDI įrenginio valdymas ir programavimas iš naujo</translation>
 <translation id="7781829728241885113">Vakar</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Perkelti į viršų</translation>
 <translation id="8617611086246832542">Įjungus rodoma svetainių rodinio versija staliniams kompiuteriams. Išjungus rodoma svetainių rodinio versija mobiliesiems.</translation>
 <translation id="8649036394979866943">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą, siekiant stebėti jus, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti stebėjimo apsaugas<ph name="END_LINK" />.</translation>
+<translation id="8676316391139423634">Įjungus svetainėse gali būti prašoma stebėti jūsų rankas. Išjungus svetainės negali stebėti jūsų rankų.</translation>
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
 <translation id="8681886425883659911">Skelbimai blokuojami svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="868929229000858085">Ieškokite savo kontaktuose</translation>

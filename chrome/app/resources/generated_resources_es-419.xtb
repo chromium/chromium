@@ -982,7 +982,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="168991973552362966">Agregar una impresora cercana</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
 <translation id="1690068335127678634">Configuración de pantalla dividida</translation>
-<translation id="1690443285859726589">Ajusta el umbral de detección para que puedas activar el gesto de forma cómoda</translation>
 <translation id="1692115862433274081">Usar otra cuenta</translation>
 <translation id="1692118695553449118">La sincronización está activada.</translation>
 <translation id="1692210323591458290">Púrpura oscuro</translation>
@@ -1424,6 +1423,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="199610894463449797">{0,plural, =1{Cerrar este perfil}other{Cerrar este perfil (# ventanas)}}</translation>
 <translation id="1997433994358798851">Chrome necesita permiso para conectarse a tu dispositivo mediante Bluetooth.</translation>
 <translation id="1997616988432401742">Tus certificados</translation>
+<translation id="1998715278591719161">Pueden hacer un seguimiento de tus manos</translation>
 <translation id="1999115740519098545">Al iniciar</translation>
 <translation id="2002109485265116295">En tiempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
@@ -2110,6 +2110,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="247051149076336810">URL del sistema de archivos compartidos</translation>
 <translation id="2471469610750100598">Negro (predeterminado)</translation>
 <translation id="2471506181342525583">Se permite el acceso a ubicaciones</translation>
+<translation id="2471632709106952369">Tablas de comparación</translation>
 <translation id="2473195200299095979">Traducir esta página</translation>
 <translation id="2475982808118771221">Se ha producido un error</translation>
 <translation id="247616523300581745">Ocultar estos archivos</translation>
@@ -3534,6 +3535,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3521606918211282604">Cambiar el tamaño del disco</translation>
 <translation id="3522088408596898827">Hay muy poco espacio disponible en el disco. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="3522979239100719575">Se están buscando perfiles disponibles. Este proceso puede demorar unos minutos.</translation>
+<translation id="3523447078673133727">No permitir que los sitios hagan un seguimiento de tus manos</translation>
 <translation id="3524518036046613664">Mostrar los dispositivos de la red local, como impresoras</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
 <translation id="3525426269008462093">Revisar la sincronización del dispositivo cuando finaliza la configuración</translation>
@@ -5912,6 +5914,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="52550593576409946">No se pudo iniciar la aplicación del kiosco.</translation>
 <translation id="5255726914791076208">Cuando editas tu clave de acceso, no se cambia la cuenta <ph name="RP_ID" /></translation>
 <translation id="5255859108402770436">Volver a acceder</translation>
+<translation id="5256174546894739043">Preguntar cuando un sitio quiera hacer un seguimiento de tus manos</translation>
 <translation id="52566111838498928">Cargando las fuentes…</translation>
 <translation id="5256861893479663409">En todos los sitios</translation>
 <translation id="5258992782919386492">Instalar en este dispositivo</translation>
@@ -6081,7 +6084,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5384401776498845256">Quién puede compartir contenido contigo</translation>
 <translation id="5385628342687007304">Esta contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu Cuenta de Google.</translation>
 <translation id="5387116558048951800">Editar <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Especificaciones del producto</translation>
 <translation id="538822246583124912">Se modificó la política empresarial. Se agregó el botón de experimentos a la barra de herramientas. Si haces clic en el botón, se abrirá un diálogo donde podrás habilitar los experimentos.</translation>
 <translation id="5388436023007579456">Pueden usar la cámara los servicios del sistema, además de las apps y los sitios web con el permiso correspondiente. Es posible que debas reiniciar la app o actualizar la página para usar la cámara.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Se encontró 1 sitio con muchas notificaciones}other{Se encontraron {NUM_SITES} sitios con muchas notificaciones}}</translation>
@@ -6660,6 +6662,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5801051031414037185">Configurar el teléfono</translation>
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5803689677801500549">Las contraseñas guardadas aparecerán aquí. Si quieres importar contraseñas a <ph name="BRAND" /> para <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />selecciona un archivo CSV.<ph name="END_LINK" /></translation>
+<translation id="5804198298544152115">Por lo general, los sitios hacen un seguimiento de tus manos y dedos para mejorar las experiencias envolventes</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804259315582798390">No se pudo habilitar la recuperación de datos locales</translation>
 <translation id="5805268472388605531">Mantén presionadas las teclas para ver acentos y caracteres especiales</translation>
@@ -7761,6 +7764,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6622980291894852883">Continuar con el bloqueo de imágenes</translation>
 <translation id="6624036901798307345">En el modo tablet, presiona el botón de la barra de herramientas del contador de pestañas para abrir la nueva barra de pestañas que muestra miniaturas de cada pestaña.</translation>
 <translation id="6624687053722465643">Dulzura</translation>
+<translation id="6627743754845412571">No pueden hacer un seguimiento de tus manos</translation>
 <translation id="6628316682330029452">Los certificados de clientes so certificados que te identifican ante otros servidores.</translation>
 <translation id="6628328486509726751">Fecha y hora de carga: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Mayor seguridad</translation>
@@ -8128,6 +8132,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6876469544038980967">Poco útil</translation>
 <translation id="6878422606530379992">Se permite el acceso a los sensores</translation>
+<translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">Se bloquearon las imágenes en esta página.</translation>
 <translation id="6881845890692344060">Tu administrador salió de la cuenta. Ahora tienes el control.</translation>
 <translation id="6882210908253838664">Si un sitio no funciona, intenta otorgarle permiso temporal para usar cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -9666,6 +9671,7 @@ Archivo de clave: <ph name="KEY_FILE" />
 
 Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones de tu extensión.</translation>
 <translation id="8000020256436988724">Barra de herramientas</translation>
+<translation id="800117767980299235">Momento destacado de voz</translation>
 <translation id="8002274832045662704">Configuración avanzada de la impresora</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ya no está disponible</translation>
 <translation id="8004092996156083991">Te informaremos si hackean tus contraseñas.</translation>

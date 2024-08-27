@@ -218,7 +218,6 @@
 <translation id="1363819917331173092">Ne pas proposer de traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Cette politique est bloquée, sa valeur sera ignorée.</translation>
 <translation id="1368318639262510626">Jeu du dinosaure. Un dinosaure pixelisé traverse un paysage désolé en esquivant les cactus et les ptérodactyles. Lorsque vous entendez un signal audio, appuyez sur la barre d'espacement pour le faire sauter par-dessus les obstacles.</translation>
-<translation id="1370751323199669551">Apprenez-en plus sur Comparer.</translation>
 <translation id="1374468813861204354">suggestions</translation>
 <translation id="1375198122581997741">À propos de la version</translation>
 <translation id="1375293861397106342">Gamme de prix habituel de toutes les options : <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -1389,7 +1388,6 @@
 <translation id="3568886473829759308">Accédez au site Web pour afficher des informations, des ressources ou des services fournis par l'entreprise.</translation>
 <translation id="3570079787344939099">Défilement et zoom</translation>
 <translation id="357244642999988503">Retirer la colonne</translation>
-<translation id="3572827863357388784">Il s'agit d'une fonctionnalité expérimentale qui ne donne pas toujours le bon résultat.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Autoriser pour ce site</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
@@ -1861,7 +1859,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">Le téléversement de fichiers vers Microsoft OneDrive a été suspendu</translation>
 <translation id="4390472908992056574">Bord</translation>
-<translation id="4397059608630092079">Toujours vérifier lors de l'utilisation du Remplissage automatique</translation>
+<translation id="4397059608630092079">Toujours vérifier lors de l'utilisation du remplissage automatique</translation>
 <translation id="4397978002248035985">Ouvre une fenêtre contextuelle pour vérifier sur le site Web de votre banque</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4406896451731180161">résultats de recherche</translation>

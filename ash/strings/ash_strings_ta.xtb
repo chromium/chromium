@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">முழுத்திரை பெரிதாக்கி</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">சொல்வதை எழுதும் வசதியை இயக்கவா?</translation>
+<translation id="3392702002175498061">இதுவரை இணையத்தில் பார்த்த உள்ளடக்கம் அனைத்தையும் காட்டும்</translation>
 <translation id="3394432020929931914">, விரிவாக்கப்பட்டது</translation>
 <translation id="3401474642070997151">பரிந்துரைகளைப் பிரத்தியேகமாக்க, வலது கிளிக் செய்யவும் அல்லது பரிந்துரையை அழுத்திப் பிடித்திருக்கவும்.</translation>
 <translation id="3405101454990027959">மைக்ரோஃபோனுக்கான அணுகலை வழங்கு</translation>
@@ -813,6 +814,7 @@
 <translation id="385300504083504382">தொடக்கம்</translation>
 <translation id="3859364108019690">ஆப்ஸை ஸ்ட்ரீம் செய்ய முடியவில்லை</translation>
 <translation id="3861651314799684201">முழுத்திரையை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
+<translation id="3870197372373144624">உங்கள் சாதனத்தை ஷட் டவுன் செய்து பார்க்கவும்.</translation>
 <translation id="3886872229787704059">இன்று திறக்கப்பட்டது</translation>
 <translation id="3891340733213178823">வெளியேற Ctrl+Shift+Q ஐ இருமுறை அழுத்தவும்.</translation>
 <translation id="3893630138897523026">ChromeVox (பேச்சுவடிவ கருத்து)</translation>
@@ -928,6 +930,7 @@
 <translation id="4264977415328155183">, சுருக்கப்பட்டது</translation>
 <translation id="4265259722091164182">தலைப்பெழுத்து</translation>
 <translation id="4269883910223712419">இந்தச் சாதனத்தின் நிர்வாகி இவற்றைச் செய்ய முடியும்:</translation>
+<translation id="4271841440229266861">Files உள்ளடக்கம் அனைத்தையும் காட்டும்</translation>
 <translation id="4274537685965975248">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Ctrl + Alt + கீழ்நோக்கிய அம்புக்குறி. End பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + வலது அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
 <translation id="4275283744500212192">சாளரத் தளவமைப்பு விருப்பங்களைத் திறக்கும்</translation>
 <translation id="4275663329226226506">ஊடகம்</translation>
@@ -955,6 +958,7 @@
 <translation id="4327147325944669226">கேமை ரெக்கார்டு செய்</translation>
 <translation id="4333628967105022692">பல பயனர்கள் உள்நுழைந்திருக்கும்போது Lacros உலாவியைப் பயன்படுத்த இயலாது.</translation>
 <translation id="4338109981321384717">உருப்பெருக்கி</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ஒலியடக்கப்பட்டது</translation>
 <translation id="4351244548802238354">அறிவிப்பை மூடு</translation>
 <translation id="4356872429719185452">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட் இயக்கப்படுகிறது.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> ரெக்கார்டு செய்கிறது</translation>
@@ -1301,6 +1305,7 @@
 <translation id="5503884284981862082">Google Assistantடைத் திற/மூடுக</translation>
 <translation id="550391772491508736">அலைபரப்பைத் தொடங்கு</translation>
 <translation id="5506975627792768506">மேக்னிஃபயரை இயக்கு அல்லது முடக்கு</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, Enter பட்டனை அழுத்தினால் ஆடியோ ஒலியடக்கப்படும்.</translation>
 <translation id="5512042095225963688">முந்தைய வார்த்தையை நீக்கும்</translation>
 <translation id="5519005148254860683">Google Tasksஸை விரிவாக்கும்</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2111,6 +2116,7 @@
 <translation id="8239034820133090126">வலதுபுறத்தில் உள்ள டெஸ்க்கை இயக்கு</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ஆப்ஸ்</translation>
+<translation id="825129991941217170">Google Drive உள்ளடக்கம் அனைத்தையும் காட்டும்</translation>
 <translation id="8257510091797044096">சாதனத்தை அமைத்தல்</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8262312463845990408">பிளேபேக்கை இடைநிறுத்தும்/மீண்டும் தொடங்கும்</translation>
@@ -2341,6 +2347,7 @@
 <translation id="9098969848082897657">மொபைலை நிசப்தமாக்குதல்</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> அல்லது <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">கடைசிச் செயலைச் செயல்தவிர்க்கும்</translation>
+<translation id="9126642911267312373">புளூடூத் இணைப்பு கிடைக்கவில்லை</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 நிமி}other{# நிமி}}</translation>
 <translation id="9129245940793250979">பின்பக்க பட்டன்</translation>
 <translation id="9133335900048457298">பாதுகாக்கப்பட்ட உள்ளடக்கம் இருப்பதால் ரெக்கார்டு செய்ய முடியாது</translation>

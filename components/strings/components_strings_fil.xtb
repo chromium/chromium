@@ -218,7 +218,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1363819917331173092">Huwag mag-alok na isalin ang mga page sa <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Naka-block ang patakarang ito, babalewalain ang value nito.</translation>
 <translation id="1368318639262510626">Dino game. Umiiwas ang isang pixelated na dinosaur sa mga cactus at pterodactyl habang tumatakbo ito sa isang bakanteng landscape. Kapag may narinig kang audio na cue, pindutin ang space para tumalon sa mga balakid.</translation>
-<translation id="1370751323199669551">Matuto pa tungkol sa Maghambing.</translation>
 <translation id="1374468813861204354">mga suhestiyon</translation>
 <translation id="1375198122581997741">Tungkol sa Bersyon</translation>
 <translation id="1375293861397106342">Karaniwang <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> ang lahat ng opsyon</translation>
@@ -1292,6 +1291,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3402261774528610252">Ang koneksyong ginamit para i-load ang site na ito ay gumamit ng TLS 1.0 o TLS 1.1, na hindi na ginagamit at idi-disable sa hinaharap. Kapag na-disable, pipigilan ang mga user na i-load ang site na ito. Dapat i-enable ng server ang TLS 1.2 o mas bago.</translation>
 <translation id="3405664148539009465">I-customize ang mga font</translation>
 <translation id="3407789382767355356">third-party na pag-sign in</translation>
+<translation id="340924996148642843">Hindi available ang maghambing sa ngayon</translation>
 <translation id="3409896703495473338">Pamahalaan ang mga setting ng seguridad</translation>
 <translation id="3414275587143250384">Distributed Computing at Cloud Computing</translation>
 <translation id="3414952576877147120">Laki:</translation>
@@ -1389,7 +1389,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3568886473829759308">I-access ang website para tumingin ng impormasyon, mga resource, o serbisyong ibinibigay ng negosyo.</translation>
 <translation id="3570079787344939099">Pag-scroll at pag-zoom</translation>
 <translation id="357244642999988503">Alisin ang column</translation>
-<translation id="3572827863357388784">Isa itong pang-eksperimentong feature at hindi ito palaging tama.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Payagan para sa site na ito</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1450,6 +1449,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="365641980390710834">Casual na Kasuotan</translation>
 <translation id="3658742229777143148">Rebisyon</translation>
 <translation id="3659521826520353662">Aling mga website na tinukoy ng administrator ang binisita at kailan: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Maghanap pa ng mga opsyon sa pagbili mula sa iba pang store na nagbebenta ng produktong ito.</translation>
 <translation id="3664782872746246217">Mga Keyword:</translation>
 <translation id="3665100783276035932">Gagana dapat ang karamihan ng mga site na gaya ng inaasahan</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Matuto pa<ph name="LINK_END1" /></translation>
@@ -1887,6 +1887,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4451135742916150903">Puwedeng hilinging kumonekta sa mga HID device</translation>
 <translation id="4451684391620232683">Text na ipinakita sa user:</translation>
 <translation id="4452328064229197696">Nakita sa isang paglabag sa data ang password na kakagamit mo lang. Para ma-secure ang iyong mga account, inirerekomenda ng Google Password Manager na tingnan mo ang iyong mga naka-save na password.</translation>
+<translation id="4452957520362597816">Magtanong na mag-install ng mga web app</translation>
 <translation id="4456937135469235202">Adventure na Pagbiyahe</translation>
 <translation id="4464826014807964867">Mga website na may impormasyon mula sa iyong organisasyon</translation>
 <translation id="4466576951214254884">Mga Loan para sa Mag-aaral at Pagpopondo para sa Kolehiyo</translation>
@@ -2993,6 +2994,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6529602333819889595">&amp;Gawing Muli ang Pagtanggal</translation>
 <translation id="6535617236508021606">Na-save ang card na ito sa iyong Google Account, kaya magagamit mo ito sa mga serbisyo ng Google.</translation>
 <translation id="6536221421038631327">Kapag nag-alis ng subscription sa Passpoint sa iyong <ph name="DEVICE_TYPE" />, maaalis ang mga nauugnay na network. Makipag-ugnayan sa "<ph name="FRIENDLY_NAME" />" para gumawa ng mga pagbabago sa iyong plan ng subscription. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Para makakita ng mga talahanayan sa paghahambing, i-on ang pag-sync</translation>
 <translation id="6539092367496845964">Nagkaproblema. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6540488083026747005">Pinayagan mo ang third-party na cookies sa site na ito</translation>
 <translation id="6545864417968258051">Pag-scan ng Bluetooth</translation>

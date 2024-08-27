@@ -985,7 +985,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="168991973552362966">Aggiungi una stampante vicina</translation>
 <translation id="1689945336726856614">Copia &amp;URL</translation>
 <translation id="1690068335127678634">Configurazione dello schermo diviso</translation>
-<translation id="1690443285859726589">Regola la soglia di rilevamento in modo da poter attivare comodamente il gesto</translation>
 <translation id="1692115862433274081">Utilizza un altro account</translation>
 <translation id="1692118695553449118">La sincronizzazione è attiva</translation>
 <translation id="1692210323591458290">Viola scuro</translation>
@@ -2113,6 +2112,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="247051149076336810">URL condivisione file</translation>
 <translation id="2471469610750100598">Nero (predefinito)</translation>
 <translation id="2471506181342525583">Accesso alla posizione consentito</translation>
+<translation id="2471632709106952369">Tabelle di confronto</translation>
 <translation id="2473195200299095979">Traduci questa pagina</translation>
 <translation id="2475982808118771221">Si è verificato un errore</translation>
 <translation id="247616523300581745">Nascondi questi file</translation>
@@ -6082,7 +6082,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5384401776498845256">Chi può condividere con te</translation>
 <translation id="5385628342687007304">La password viene salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google.</translation>
 <translation id="5387116558048951800">Modifica <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Specifiche prodotto</translation>
 <translation id="538822246583124912">Criterio aziendale modificato. Pulsante Esperimenti aggiunto alla barra degli strumenti. Fai clic sul pulsante per aprire una finestra di dialogo in cui puoi attivare esperimenti.</translation>
 <translation id="5388436023007579456">Le app e i siti web che dispongono dell'autorizzazione di accesso alla fotocamera, nonché i servizi di sistema, possono utilizzare la fotocamera. Per usare la fotocamera, potrebbe essere necessario riavviare l'app o aggiornare la pagina.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{È stato trovato un sito con molte notifiche}other{Sono stati trovati {NUM_SITES} siti con molte notifiche}}</translation>

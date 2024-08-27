@@ -987,7 +987,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="168991973552362966">Bæta nálægum prentara við</translation>
 <translation id="1689945336726856614">Afrita &amp;vefslóð</translation>
 <translation id="1690068335127678634">Uppsetning skjáskiptingar</translation>
-<translation id="1690443285859726589">Lagfærðu greiningarmörkin svo að þú getir virkjað bendinguna á þægilegan hátt</translation>
 <translation id="1692115862433274081">Nota annan reikning</translation>
 <translation id="1692118695553449118">Kveikt er á samstillingu</translation>
 <translation id="1692210323591458290">Dökkfjólublár</translation>
@@ -1438,6 +1437,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="199610894463449797">{0,plural, =1{Loka þessum prófíl}one{Loka þessum prófíl (# gluggi)}other{Loka þessum prófíl (# gluggar)}}</translation>
 <translation id="1997433994358798851">Chrome þarf leyfi til að nota Bluetooth til að tengjast tækinu þínu</translation>
 <translation id="1997616988432401742">Vottorðin þín</translation>
+<translation id="1998715278591719161">Leyfilegt að rekja handahreyfingar</translation>
 <translation id="1999115740519098545">Við ræsingu</translation>
 <translation id="2002109485265116295">Rauntími</translation>
 <translation id="2002160221914907025">Gervigreind á tilraunastigi</translation>
@@ -2127,6 +2127,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="247051149076336810">Vefslóð skráageymslu</translation>
 <translation id="2471469610750100598">Svartur (sjálfgefið)</translation>
 <translation id="2471506181342525583">Aðgangur að staðsetningu veittur</translation>
+<translation id="2471632709106952369">Samanburðartöflur</translation>
 <translation id="2473195200299095979">Þýða þessa síðu</translation>
 <translation id="2475982808118771221">Villa kom upp</translation>
 <translation id="247616523300581745">Fela þessar skrár</translation>
@@ -3551,6 +3552,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3521606918211282604">Breyta diskstærð</translation>
 <translation id="3522088408596898827">Mjög lítið pláss er á diskinum. Losaðu um pláss á diskinum og reyndu aftur.</translation>
 <translation id="3522979239100719575">Leitar að tiltækum prófílum. Þetta gæti tekið nokkrar mínútur.</translation>
+<translation id="3523447078673133727">Ekki leyfa vefsvæðum að rekja handahreyfingar</translation>
 <translation id="3524518036046613664">Finna tæki á staðarnetinu, eins og prentara</translation>
 <translation id="3524965460886318643">Flytja út aðgerðir</translation>
 <translation id="3525426269008462093">Yfirfara samstillingu tækis eftir uppsetningu</translation>
@@ -5929,6 +5931,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="52550593576409946">Ekki tókst að opna sjálfsalaforrit.</translation>
 <translation id="5255726914791076208"><ph name="RP_ID" />-reikningurinn þinn mun ekki breytast þegar þú breytir aðgangslyklinum þínum</translation>
 <translation id="5255859108402770436">Skrá inn aftur</translation>
+<translation id="5256174546894739043">Biðja um leyfi þegar vefsvæði vill rekja handahreyfingar</translation>
 <translation id="52566111838498928">Hleður leturgerðum...</translation>
 <translation id="5256861893479663409">Á öllum vefsvæðum</translation>
 <translation id="5258992782919386492">Setja upp í þessu tæki</translation>
@@ -6098,7 +6101,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5384401776498845256">Hver getur deilt með þér</translation>
 <translation id="5385628342687007304">Þetta aðgangsorð er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum.</translation>
 <translation id="5387116558048951800">Breyta <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Vörulýsing</translation>
 <translation id="538822246583124912">Fyrirtækjareglu var breytt. Tilraunahnapp var bætt við tækjastiku. Smelltu á hnappinn til að opna svarglugga og virkja tilraunir.</translation>
 <translation id="5388436023007579456">Forrit og vefsvæði með myndavélarheimild, sem og kerfisþjónustur, geta notað myndavélina. Þú þarft hugsanlega að endurræsa forritið eða endurnýja síðuna til að nota myndavélina.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 vefsvæði með mörgum tilkynningum fannst}one{{NUM_SITES} vefsvæði með mörgum tilkynningum fannst}other{{NUM_SITES} vefsvæði með mörgum tilkynningum fundust}}</translation>
@@ -6677,6 +6679,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5801051031414037185">Setja upp síma</translation>
 <translation id="5801568494490449797">Kjörstillingar</translation>
 <translation id="5803689677801500549">Vistuð aðgangsorð munu birtast hér. <ph name="BEGIN_LINK" />Veldu CVS-skrá<ph name="END_LINK" /> til að flytja aðgangsorð inn í <ph name="BRAND" /> fyrir <ph name="USER_EMAIL" />.</translation>
+<translation id="5804198298544152115">Vefsvæði rekja yfirleitt handa- og fingrahreyfingarnar þínar til að veita þér enn áhrifameiri upplifun</translation>
 <translation id="5804241973901381774">Heimildir</translation>
 <translation id="5804259315582798390">Ekki tókst að virkja endurheimt staðbundinna gagna</translation>
 <translation id="5805268472388605531">Haltu lyklum á lyklaborðinu inni til að sjá áherslumerki og sérstafi</translation>
@@ -7779,6 +7782,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6622980291894852883">Halda áfram að útiloka myndir</translation>
 <translation id="6624036901798307345">Í spjaldtölvustillingu skaltu ýta á tækjastikuhnapp flipateljara til að opna nýja fliparæmu sem birtir smámyndir af hverjum flipa.</translation>
 <translation id="6624687053722465643">Sætabrauð</translation>
+<translation id="6627743754845412571">Ekki leyfilegt að rekja handahreyfingar</translation>
 <translation id="6628316682330029452">Biðlaravottorð eru vottorð sem auðkenna þig gagnvart öðrum biðlurum.</translation>
 <translation id="6628328486509726751">Hlaðið inn <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Sterkara öryggi</translation>

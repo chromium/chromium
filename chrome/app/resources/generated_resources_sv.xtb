@@ -986,7 +986,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="168991973552362966">Lägg till en skrivare i närheten</translation>
 <translation id="1689945336726856614">Kopiera webbadress</translation>
 <translation id="1690068335127678634">Konfigurera delad skärm</translation>
-<translation id="1690443285859726589">Justera identifieringsgränsen så att du bekvämt kan utlösa rörelsen</translation>
 <translation id="1692115862433274081">Använd ett annat konto</translation>
 <translation id="1692118695553449118">Synkronisering är på</translation>
 <translation id="1692210323591458290">Mörklila</translation>
@@ -2126,6 +2125,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="247051149076336810">Webbadress för filresurs</translation>
 <translation id="2471469610750100598">Svart (standard)</translation>
 <translation id="2471506181342525583">Platsåtkomst tillåts</translation>
+<translation id="2471632709106952369">Jämförelsetabeller</translation>
 <translation id="2473195200299095979">Översätt den här sidan</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
 <translation id="247616523300581745">Dölj de här filerna</translation>
@@ -6097,7 +6097,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5384401776498845256">Vem som kan dela med dig</translation>
 <translation id="5385628342687007304">Lösenordet sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot.</translation>
 <translation id="5387116558048951800">Redigera <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Produktspecifikationer</translation>
 <translation id="538822246583124912">Företagets policy har ändrats. En knapp för experiment har lagts till i verktygsfältet. Om du klickar på den öppnas en dialogruta där du kan aktivera experiment.</translation>
 <translation id="5388436023007579456">Appar och webbplatser med kamerabehörighet samt systemtjänster kan använda kameran. Du kan behöva starta om appen eller uppdatera sidan för att använda kameran.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 webbplats med många aviseringar hittades}other{{NUM_SITES} webbplatser med många aviseringar hittades}}</translation>

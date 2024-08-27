@@ -989,7 +989,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="168991973552362966">Dodajanje tiskalnika v bližini</translation>
 <translation id="1689945336726856614">Kopiranje &amp;URL-ja</translation>
 <translation id="1690068335127678634">Nastavitev razdeljenega zaslona</translation>
-<translation id="1690443285859726589">Prilagodite prag zaznavanja, da boste lahko udobno sprožili potezo</translation>
 <translation id="1692115862433274081">Uporaba drugega računa</translation>
 <translation id="1692118695553449118">Sinhroniziranje je vklopljeno</translation>
 <translation id="1692210323591458290">Temno vijolična</translation>
@@ -1440,6 +1439,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="199610894463449797">{0,plural, =1{Zapri ta profil}one{Zapri ta profil (# okno)}two{Zapri ta profil (# okni)}few{Zapri ta profil (# okna)}other{Zapri ta profil (# oken)}}</translation>
 <translation id="1997433994358798851">Chrome za vzpostavitev povezave z napravo potrebuje dovoljenje za uporabo Bluetootha.</translation>
 <translation id="1997616988432401742">Vaša potrdila</translation>
+<translation id="1998715278591719161">Dovoljeno je sledenje potezam z dlanmi</translation>
 <translation id="1999115740519098545">Ob zagonu</translation>
 <translation id="2002109485265116295">Sprotno</translation>
 <translation id="2002160221914907025">Preizkusna umetna inteligenca</translation>
@@ -2129,6 +2129,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="247051149076336810">URL datotečnega sredstva v skupni rabi</translation>
 <translation id="2471469610750100598">Črna (privzeto)</translation>
 <translation id="2471506181342525583">Dostop do lokacije je dovoljen</translation>
+<translation id="2471632709106952369">Primerjalne tabele</translation>
 <translation id="2473195200299095979">Prevede to stran</translation>
 <translation id="2475982808118771221">Prišlo je do napake</translation>
 <translation id="247616523300581745">Skrij te datoteke</translation>
@@ -3553,6 +3554,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3521606918211282604">Spremeni velikost diska</translation>
 <translation id="3522088408596898827">Na disku kritično primanjkuje prostora. Sprostite prostor na disku in poskusite znova.</translation>
 <translation id="3522979239100719575">Iskanje razpoložljivih profilov. To lahko traja nekaj minut.</translation>
+<translation id="3523447078673133727">Spletnim mestom ni dovoljeno sledenje potezam z dlanmi</translation>
 <translation id="3524518036046613664">Odkrivanje naprav v krajevnem omrežju, kot so tiskalniki</translation>
 <translation id="3524965460886318643">Izvoz dejavnosti</translation>
 <translation id="3525426269008462093">Pregled sinhroniziranja naprave po nastavitvi</translation>
@@ -5931,6 +5933,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="52550593576409946">Aplikacije Kiosk ni bilo mogoče zagnati.</translation>
 <translation id="5255726914791076208">Ko boste uredili ključ za dostop, se račun <ph name="RP_ID" /> ne bo spremenil.</translation>
 <translation id="5255859108402770436">Vnovična prijava</translation>
+<translation id="5256174546894739043">Vprašaj, ko želi spletno mesto slediti potezam z dlanmi</translation>
 <translation id="52566111838498928">Nalaganje pisav …</translation>
 <translation id="5256861893479663409">Na vseh spletnih mestih</translation>
 <translation id="5258992782919386492">Namesti v to napravo</translation>
@@ -6100,7 +6103,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5384401776498845256">Kdo lahko deli z vami</translation>
 <translation id="5385628342687007304">To geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google.</translation>
 <translation id="5387116558048951800">Uredi <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Tehnični podatki izdelka</translation>
 <translation id="538822246583124912">Pravilnik podjetja se je spremenil. Gumb za preizkuse je bil dodan v orodno vrstico. Kliknite gumb, če želite odpreti pogovorno okno za omogočanje preizkusov.</translation>
 <translation id="5388436023007579456">Kamero lahko uporabljajo aplikacije in spletna mesta, ki imajo dovoljenje za kamero, ter sistemske storitve. Če želite uporabljati kamero, morate znova zagnati aplikacijo ali osvežiti stran.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Najdeno je bilo 1 spletno mesto z veliko obvestili}one{Najdeno je bilo {NUM_SITES} spletno mesto z veliko obvestili}two{Najdeni sta bili {NUM_SITES} spletni mesti z veliko obvestili}few{Najdena so bila {NUM_SITES} spletna mesta z veliko obvestili}other{Najdenih je bilo {NUM_SITES} spletnih mest z veliko obvestili}}</translation>
@@ -6681,6 +6683,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5801051031414037185">Nastavitev telefona</translation>
 <translation id="5801568494490449797">Nastavitve</translation>
 <translation id="5803689677801500549">Shranjena gesla bodo prikazana tukaj. Če želite v izdelek <ph name="BRAND" /> uvoziti gesla za račun <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />izberite datoteko CSV<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">Spletna mesta običajno sledijo potezam z dlanmi in prsti zaradi izboljšanja prostornih izkušenj</translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="5804259315582798390">Obnovitev lokalnih podatkov ni uspela</translation>
 <translation id="5805268472388605531">Pridržite tipke na tipkovnici, če si želite ogledati naglasna znamenja in posebne znake.</translation>
@@ -7788,6 +7791,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6622980291894852883">Še naprej blokiraj slike</translation>
 <translation id="6624036901798307345">V načinu tabličnega računalnika se dotaknite gumba za štetje zavihkov v orodni vrstici, če želite odpreti nov trak z zavihki, ki prikazuje sličice posameznih zavihkov.</translation>
 <translation id="6624687053722465643">Sladkorček</translation>
+<translation id="6627743754845412571">Ni dovoljeno sledenje potezam z dlanmi</translation>
 <translation id="6628316682330029452">Potrdila odjemalca so potrdila, ki vas identificirajo drugim strežnikom.</translation>
 <translation id="6628328486509726751">Preneseno: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Večja varnost</translation>

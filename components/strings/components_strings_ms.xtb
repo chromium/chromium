@@ -218,7 +218,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1363819917331173092">Jangan tawarkan untuk menterjemahkan halaman dalam <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Dasar ini disekat, nilainya akan diabaikan.</translation>
 <translation id="1368318639262510626">Permainan Dino. Dinosaur berpiksel mengelak daripada terlanggar kaktus dan pterodaktil ketika berlari merentas daratan yang tandus. Apabila anda mendengar kiu audio, tekan kekunci ruang untuk melompat melepasi halangan.</translation>
-<translation id="1370751323199669551">Ketahui lebih lanjut tentang Banding.</translation>
 <translation id="1374468813861204354">cadangan</translation>
 <translation id="1375198122581997741">Mengenai Versi</translation>
 <translation id="1375293861397106342">Semua pilihan biasanya <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -1293,6 +1292,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3402261774528610252">Sambungan yang digunakan untuk memuatkan tapak ini menggunakan TLS 1.0 atau TLS 1.1, yang telah ditamatkan dan akan dilumpuhkan pada masa hadapan. Apabila dilumpuhkan, pengguna akan dihalang daripada memuatkan tapak ini. Pelayan harus mendayakan TLS 1.2 atau yang lebih baharu.</translation>
 <translation id="3405664148539009465">Sesuaikan fon</translation>
 <translation id="3407789382767355356">log masuk pihak ketiga</translation>
+<translation id="340924996148642843">Perbandingan tidak tersedia sekarang</translation>
 <translation id="3409896703495473338">Urus tetapan keselamatan</translation>
 <translation id="3414275587143250384">Pengkomputeran Awan &amp; Teragih</translation>
 <translation id="3414952576877147120">Saiz:</translation>
@@ -1390,7 +1390,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3568886473829759308">Akses laman web untuk melihat maklumat, sumber atau perkhidmatan yang disediakan oleh perniagaan.</translation>
 <translation id="3570079787344939099">Menatal &amp; mengezum</translation>
 <translation id="357244642999988503">Alih keluar lajur</translation>
-<translation id="3572827863357388784">Ciri ini merupakan ciri percubaan dan tidak akan sentiasa memberikan hasil yang betul.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Benarkan untuk tapak ini</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1452,6 +1451,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="365641980390710834">Pakaian Kasual</translation>
 <translation id="3658742229777143148">Semakan</translation>
 <translation id="3659521826520353662">Jenis dan masa laman web ditakrifkan pentadbir dilawati: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Cari lebih banyak pilihan pembelian daripada kedai lain yang menjual produk ini.</translation>
 <translation id="3664782872746246217">Kata kunci:</translation>
 <translation id="3665100783276035932">Kebanyakan laman harus berfungsi seperti yang dijangkakan</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Ketahui lebih lanjut<ph name="LINK_END1" /></translation>
@@ -1891,6 +1891,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4451135742916150903">Boleh meminta untuk menyambung kepada peranti HID</translation>
 <translation id="4451684391620232683">Teks yang disajikan kepada pengguna:</translation>
 <translation id="4452328064229197696">Kata laluan yang baru sahaja anda gunakan telah ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, Pengurus Kata Laluan Google mengesyorkan agar anda menyemak kata laluan yang disimpan.</translation>
+<translation id="4452957520362597816">Minta kebenaran untuk memasang apl web</translation>
 <translation id="4456937135469235202">Perjalanan Pengembaraan</translation>
 <translation id="4464826014807964867">Laman web yang mempunyai maklumat daripada organisasi anda</translation>
 <translation id="4466576951214254884">Pinjaman Pelajar &amp; Pembiayaan Kolej</translation>
@@ -3001,6 +3002,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6529602333819889595">&amp;Buat Semula Pemadaman</translation>
 <translation id="6535617236508021606">Kad ini disimpan dalam Google Account anda, maka anda boleh menggunakan kad ini merentas perkhidmatan Google.</translation>
 <translation id="6536221421038631327">Tindakan mengalih keluar langganan Passpoint daripada <ph name="DEVICE_TYPE" /> anda akan turut mengalih keluar rangkaian yang berkaitan. Hubungi "<ph name="FRIENDLY_NAME" />" untuk membuat perubahan pada pelan langganan anda. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Untuk melihat jadual perbandingan, hidupkan penyegerakan</translation>
 <translation id="6539092367496845964">Kesilapan telah berlaku. Cuba sebentar lagi.</translation>
 <translation id="6540488083026747005">Anda membenarkan kuki pihak ketiga pada laman ini</translation>
 <translation id="6545864417968258051">Pengimbasan Bluetooth</translation>

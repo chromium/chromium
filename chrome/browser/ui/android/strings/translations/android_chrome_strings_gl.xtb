@@ -1018,6 +1018,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="587735546353481577">Para seguir un sitio, entra nel, abre o menú de Chrome e toca Seguir.</translation>
 <translation id="5879072387416556377">Recibe mellores suxestións</translation>
 <translation id="5885378508678660271">Notificacións <ph name="SEPARATOR" /> Chrome quitou estes permisos porque este sitio é perigoso</translation>
+<translation id="5895834791314695851">Os contrasinais poden deixar de funcionar en breve neste dispositivo. Para poder seguir usándoos, actualiza os servizos de Google Play. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Non se pechou ningunha folla de claves de acceso</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5919204609460789179">Actualiza <ph name="PRODUCT_NAME" /> para iniciar a sincronización</translation>
@@ -1557,6 +1558,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="820568752112382238">Sitios máis visitados</translation>
 <translation id="8209050860603202033">Abrir imaxe</translation>
 <translation id="8210770465353466621">Aquí atoparás as túas pestanas</translation>
+<translation id="8211101263765532799">Algúns contrasinais deixarán de funcionar en breve</translation>
 <translation id="8215740705341534369">Panel lateral</translation>
 <translation id="8218622182176210845">Xestiona a túa conta</translation>
 <translation id="8221401890884589479">Podes bloquear os sitios que non che interesen. Chrome tamén elimina automaticamente da lista os sitios que teñan máis de 30 días de antigüidade. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -1657,6 +1659,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="864544049772947936">Xestionar ventás (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Utiliza Chrome ao teu xeito</translation>
 <translation id="8664979001105139458">Xa existe un ficheiro con este nome</translation>
+<translation id="8672883760227492369">Algúns contrasinais deste dispositivo deixarán de funcionar en breve. Podes movelos ao xestor de contrasinais de Google.</translation>
 <translation id="8676276370198826499">Rexístrate en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verificacións inicio de sesión</translation>
 <translation id="8683039184091909753">imaxe</translation>

@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Jika diaktifkan, situs dapat meminta untuk menggunakan kamera Anda. Jika dinonaktifkan, situs tidak dapat menggunakan kamera Anda.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome akan memblokir cookie lagi besok}other{# hari sebelum Chrome memblokir cookie lagi}}</translation>
 <translation id="3521663503435878242">Situs di domain <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Jangan izinkan situs melacak tangan Anda</translation>
 <translation id="3536227077203206203">Diizinkan kali ini</translation>
 <translation id="3538390592868664640">Blokir situs agar tidak membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
 <translation id="3544058026430919413">Perusahaan dapat menentukan grup situs yang dapat menggunakan cookie untuk membagikan aktivitas Anda di grup tersebut. Ini nonaktif dalam mode Samaran.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">Jika diaktifkan, situs dapat menggunakan JavaScript. Jika dinonaktifkan, situs tidak dapat menggunakan JavaScript.</translation>
 <translation id="5099358668261120049">Tindakan ini akan menghapus semua data dan cookie yang disimpan oleh <ph name="ORIGIN" /> atau aplikasinya di Layar utama Anda.</translation>
 <translation id="5100237604440890931">Diciutkan - klik untuk memperluas.</translation>
+<translation id="5116239826668864748">Anda dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya</translation>
 <translation id="5123685120097942451">Tab samaran</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Penurunan harga di tab yang terbuka}other{Penurunan harga di tab yang terbuka}}</translation>
 <translation id="5186036860380548585">Opsi tersedia di dekat bagian atas layar</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Situs ini berada dalam grup yang dapat melihat aktivitas Anda. Grup ditentukan oleh <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Download aktif</translation>
+<translation id="6709432001666529933">Tanyakan sebelum mengizinkan situs melacak tangan Anda (disarankan)</translation>
 <translation id="6722828510648505498">Blokir perintah login dari layanan identitas.</translation>
 <translation id="6746124502594467657">Berpindah ke bawah</translation>
 <translation id="6749077623962119521">Reset izin?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">Pilih opsi untuk <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6818926723028410516">Pilih item</translation>
+<translation id="6838525730752203626">Gunakan Chrome secara Default</translation>
 <translation id="6840760312327750441">Untuk mengelompokkan tab, sentuh lama sebuah tab. Lalu, tarik ke tab lainnya.</translation>
 <translation id="6864395892908308021">Perangkat ini tidak dapat membaca NFC</translation>
 <translation id="6870169401250095575">Sembunyikan kartu Pemeriksaan Keselamatan</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7667547420449112975">Penyihir Oz yang Menakjubkan</translation>
 <translation id="7684642910516280563">Jangan izinkan situs menggunakan cookie pihak ketiga</translation>
+<translation id="7688240020069572972">Sembunyikan kartu tips Chrome</translation>
 <translation id="7719367874908701697">Perkecil/perbesar halaman</translation>
 <translation id="7759147511335618829">Program ulang &amp; kontrol perangkat MIDI</translation>
 <translation id="7781829728241885113">Kemarin</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Berpindah ke atas</translation>
 <translation id="8617611086246832542">Jika diaktifkan, tampilan desktop situs akan ditampilkan. Jika dinonaktifkan, tampilan seluler situs akan ditampilkan.</translation>
 <translation id="8649036394979866943">Chrome membatasi sebagian besar situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="BEGIN_LINK" />mengelola fitur anti-pelacakan<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Jika diaktifkan, situs dapat meminta untuk melacak tangan Anda. Jika dinonaktifkan, situs tidak dapat melacak tangan Anda.</translation>
 <translation id="8676374126336081632">Hapus masukan</translation>
 <translation id="8681886425883659911">Iklan diblokir di situs yang dikenal menampilkan iklan yang mengganggu atau menyesatkan</translation>
 <translation id="868929229000858085">Telusuri kontak Anda</translation>

@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">'ডিকটেশন' চালু করবেন?</translation>
+<translation id="3392702002175498061">ব্রাউজিং ইতিহাস সংক্রান্ত সব কন্টেন্ট দেখুন</translation>
 <translation id="3394432020929931914">, বড় করা হয়েছে</translation>
 <translation id="3401474642070997151">সাজেশন কাস্টমাইজ করতে, সাজেশনের উপরে মাউসের ডানদিকের বোতামে ক্লিক করুন অথবা প্রেস করে ধরে রাখুন</translation>
 <translation id="3405101454990027959">মাইক্রোফোন অ্যাক্সেস চালু করুন</translation>
@@ -813,6 +814,7 @@
 <translation id="385300504083504382">শুরুর দিকে</translation>
 <translation id="3859364108019690">অ্যাপ স্ট্রিম করা যাবে না</translation>
 <translation id="3861651314799684201">ফুল স্ক্রিন রেকর্ড করার জন্য Enter প্রেস করুন</translation>
+<translation id="3870197372373144624">আপনার ডিভাইস বন্ধ করার চেষ্টা করুন।</translation>
 <translation id="3886872229787704059">আজ খোলা হয়েছে</translation>
 <translation id="3891340733213178823">সাইন-আউট করার জন্য দু'বার Ctrl+Shift+Q টিপুন৷</translation>
 <translation id="3893630138897523026">ChromeVox (কথ্য প্রতিবার্তা)</translation>
@@ -928,6 +930,7 @@
 <translation id="4264977415328155183">, আড়াল করা হয়েছে</translation>
 <translation id="4265259722091164182">টাইটেল কেস</translation>
 <translation id="4269883910223712419">এই ডিভাইসের প্রশাসক এগুলি করতে পারেন:</translation>
+<translation id="4271841440229266861">ফাইলের সব কন্টেন্ট দেখুন</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। End কী ব্যবহার করতে <ph name="LAUNCHER_KEY_NAME" /> + Right Arrow কী প্রেস করুন।</translation>
 <translation id="4275283744500212192">উইন্ডো লেআউট বিকল্প খুলুন</translation>
 <translation id="4275663329226226506">মাধ্যম</translation>
@@ -955,6 +958,7 @@
 <translation id="4327147325944669226">গেম রেকর্ড করুন</translation>
 <translation id="4333628967105022692">একাধিক ব্যবহারকারী সাইন-ইন করে থাকাকালীন, Lacros কাজ করে না।</translation>
 <translation id="4338109981321384717">আতস কাচ</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, মিউট করা হয়েছে</translation>
 <translation id="4351244548802238354">ডায়ালগ বন্ধ করুন</translation>
 <translation id="4356872429719185452">হটস্পটের বিবরণ দেখুন। হটস্পট চালু করা হচ্ছে।</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  রেকর্ডিং</translation>
@@ -1301,6 +1305,7 @@
 <translation id="5503884284981862082">Google Assistant খুলুন/বন্ধ করুন</translation>
 <translation id="550391772491508736">কাস্ট করা আবার চালু করুন</translation>
 <translation id="5506975627792768506">ম্যাগনিফায়ার চালু বা বন্ধ করুন</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, Enter 'কী' প্রেস করলে অডিও মিউট হয়ে যাবে।</translation>
 <translation id="5512042095225963688">আগের শব্দ মুছে দিন</translation>
 <translation id="5519005148254860683">Google Tasks বড় করুন</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2112,6 +2117,7 @@
 <translation id="8239034820133090126">ডানদিকের ডেস্ক চালু করুন</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, অ্যাপ</translation>
+<translation id="825129991941217170">Google Drive-এ থাকা সব কন্টেন্ট দেখুন</translation>
 <translation id="8257510091797044096">আপনার ডিভাইস সেট-আপ করুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8262312463845990408">প্লেব্যাক টগল করুন</translation>
@@ -2342,6 +2348,7 @@
 <translation id="9098969848082897657">সাইলেন্স ফোন</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> বা <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">শেষ অ্যাকশনটি আগের অবস্থায় ফেরান</translation>
+<translation id="9126642911267312373">ব্লুটুথ উপলভ্য নেই</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{১ মিনিটের মধ্যে}one{# মিনিটের মধ্যে}other{# মিনিটের মধ্যে}}</translation>
 <translation id="9129245940793250979">পিছনের বোতাম</translation>
 <translation id="9133335900048457298">সুরক্ষিত কন্টেন্ট রেকর্ড করা যাবে না</translation>

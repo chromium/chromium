@@ -986,7 +986,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="168991973552362966">Voeg 'n nabygeleë drukker by</translation>
 <translation id="1689945336726856614">Kopieer &amp;URL</translation>
 <translation id="1690068335127678634">Verdeeldeskermopstelling</translation>
-<translation id="1690443285859726589">Verstel die bespeuringsdrempel sodat jy die gebaar gemaklik kan aktiveer</translation>
 <translation id="1692115862433274081">Gebruik 'n ander rekening</translation>
 <translation id="1692118695553449118">Sinkronisering is aan</translation>
 <translation id="1692210323591458290">Donkerpers</translation>
@@ -1437,6 +1436,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="199610894463449797">{0,plural, =1{Maak hierdie profiel toe}other{Maak hierdie profiel (# vensters) toe}}</translation>
 <translation id="1997433994358798851">Chrome het toestemming nodig om Bluetooth te gebruik om jou toestel te koppel</translation>
 <translation id="1997616988432401742">Jou sertifikate</translation>
+<translation id="1998715278591719161">Word toegelaat om jou hande na te spoor</translation>
 <translation id="1999115740519098545">Met afskop</translation>
 <translation id="2002109485265116295">Intyds</translation>
 <translation id="2002160221914907025">Eksperimentele AI</translation>
@@ -2126,6 +2126,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="247051149076336810">Lêerdeling-URL</translation>
 <translation id="2471469610750100598">Swart (verstek)</translation>
 <translation id="2471506181342525583">Liggingtoegang word toegelaat</translation>
+<translation id="2471632709106952369">Vergelykingtabelle</translation>
 <translation id="2473195200299095979">Vertaal hierdie bladsy</translation>
 <translation id="2475982808118771221">'n Fout het voorgekom</translation>
 <translation id="247616523300581745">Versteek hierdie lêers</translation>
@@ -3550,6 +3551,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3521606918211282604">Verander skyfgrootte</translation>
 <translation id="3522088408596898827">Skyfspasie is gevaarlik min. Maak skyfspasie beskikbaar en probeer weer.</translation>
 <translation id="3522979239100719575">Soek tans beskikbare profiele. Dit kan ’n paar minute neem.</translation>
+<translation id="3523447078673133727">Moenie werwe toelaat om jou hande na te spoor nie</translation>
 <translation id="3524518036046613664">Ontdek toestelle op jou plaaslike netwerk, soos drukkers</translation>
 <translation id="3524965460886318643">Voer aktiwiteite uit</translation>
 <translation id="3525426269008462093">Gaan toestelsinkronisering ná opstelling na</translation>
@@ -5928,6 +5930,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="52550593576409946">Kioskprogram kon nie begin word nie.</translation>
 <translation id="5255726914791076208">Jou <ph name="RP_ID" />-rekening sal nie verander wanneer jy jou toegangsleutel verander nie</translation>
 <translation id="5255859108402770436">Meld weer aan</translation>
+<translation id="5256174546894739043">Vra wanneer ’n werf jou hande wil naspoor</translation>
 <translation id="52566111838498928">Laai tans lettertipes …</translation>
 <translation id="5256861893479663409">Op alle werwe</translation>
 <translation id="5258992782919386492">Installeer op hierdie toestel</translation>
@@ -6097,7 +6100,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5384401776498845256">Wie kan met jou deel</translation>
 <translation id="5385628342687007304">Hierdie wagwoord word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, om dit op jou ander toestelle te gebruik.</translation>
 <translation id="5387116558048951800">Wysig <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Produkspesifikasies</translation>
 <translation id="538822246583124912">Ondernemingsbeleid het verander. Eksperimente-knoppie is by nutsbalk gevoeg. Klik die knoppie om 'n dialoog oop te maak om eksperimente te aktiveer.</translation>
 <translation id="5388436023007579456">Apps en webwerwe met die kameratoestemming, sowel as stelseldienste, kan jou kamera gebruik. Jy moet dalk die app herbegin of die bladsy herlaai om die kamera te gebruik.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 werf met baie kennisgewings is gevind}other{{NUM_SITES} werwe met baie kennisgewings is gevind}}</translation>
@@ -6677,6 +6679,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5801051031414037185">Stel foon op</translation>
 <translation id="5801568494490449797">Voorkeure</translation>
 <translation id="5803689677801500549">Gestoorde wagwoorde sal hier verskyn. <ph name="BEGIN_LINK" />Kies ’n CSV-lêer<ph name="END_LINK" /> om wagwoorde na <ph name="BRAND" /> vir <ph name="USER_EMAIL" /> in te voer.</translation>
+<translation id="5804198298544152115">Werwe spoor gewoonlik jou hande en vingers na om meesleurende ervarings aan te vul</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
 <translation id="5804259315582798390">Kon nie terugstelling van plaaslike data aktiveer nie</translation>
 <translation id="5805268472388605531">Druk en hou sleutelbordsleutels om aksentmerke en spesiale karakters te sien</translation>
@@ -7777,6 +7780,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6622980291894852883">Hou aan om prente te blokkeer</translation>
 <translation id="6624036901798307345">Tik in tabletmodus op die oortjietellernutsbalkknoppie om die nuwe oortjiestrook oop te maak wat miniprente van elke oortjie wys.</translation>
 <translation id="6624687053722465643">Soetigheid</translation>
+<translation id="6627743754845412571">Word nie toegelaat om jou hande na te spoor nie</translation>
 <translation id="6628316682330029452">Kliëntsertifikate is sertifikate wat jou vir ander bedieners identifiseer.</translation>
 <translation id="6628328486509726751">Het <ph name="WEBRTC_LOG_UPLOAD_TIME" /> opgelaai</translation>
 <translation id="6630117778953264026">Sterker sekuriteit</translation>

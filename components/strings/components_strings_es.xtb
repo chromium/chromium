@@ -218,7 +218,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1363819917331173092">No ofrecer que se traduzcan páginas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Esta política está bloqueada, su valor será ignorado.</translation>
 <translation id="1368318639262510626">Juego del dinosaurio. Un dinosaurio pixelado esquiva cactus y pterodáctilos mientras corre por un paisaje desértico. Cuando escuches una señal sonora, pulsa la barra espaciadora para saltar los obstáculos.</translation>
-<translation id="1370751323199669551">Más información sobre las comparaciones</translation>
 <translation id="1374468813861204354">sugerencias</translation>
 <translation id="1375198122581997741">Información de la versión</translation>
 <translation id="1375293861397106342">Normalmente <ph name="LOW_PRICE" />-<ph name="HIGH_PRICE" /> para todas las opciones</translation>
@@ -1292,6 +1291,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3402261774528610252">La conexión que se usa para cargar este sitio web utiliza TLS 1.0 o TLS 1.1, que están obsoletas y se inhabilitarán en el futuro. Cuando se inhabiliten, los usuarios no podrán cargar este sitio web. El servidor debería habilitar el uso de TLS 1.2 o versiones posteriores.</translation>
 <translation id="3405664148539009465">Personalizar fuentes</translation>
 <translation id="3407789382767355356">inicio de sesión de terceros</translation>
+<translation id="340924996148642843">Comparación no está disponible en este momento</translation>
 <translation id="3409896703495473338">Gestionar ajustes de seguridad</translation>
 <translation id="3414275587143250384">Computación distribuida y cloud computing</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
@@ -1389,7 +1389,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3568886473829759308">Accede al sitio web para ver información, recursos o servicios que ofrece la empresa.</translation>
 <translation id="3570079787344939099">Desplazamiento y zoom</translation>
 <translation id="357244642999988503">Quitar columna</translation>
-<translation id="3572827863357388784">Se trata de una función experimental y no siempre acierta.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Permitir en este sitio web</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1450,6 +1449,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="365641980390710834">Ropa informal</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3659521826520353662">Qué sitios web definidos por el administrador se visitan y cuándo: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Busca más opciones de compra en otras tiendas que vendan este producto.</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3665100783276035932">La mayoría de los sitios deberían funcionar según lo previsto</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Más información<ph name="LINK_END1" /></translation>
@@ -1887,6 +1887,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4451135742916150903">Puede solicitar permiso para conectarse a dispositivos HID</translation>
 <translation id="4451684391620232683">Texto presentado al usuario:</translation>
 <translation id="4452328064229197696">La contraseña que acabas de usar se ha visto expuesta en una brecha de seguridad de datos. Para proteger tus cuentas, el gestor de contraseñas de Google te recomienda que compruebes las contraseñas que tengas guardadas.</translation>
+<translation id="4452957520362597816">Solicitar instalar aplicaciones web</translation>
 <translation id="4456937135469235202">Viajes de aventura</translation>
 <translation id="4464826014807964867">Sitios web con información de tu organización</translation>
 <translation id="4466576951214254884">Préstamos para estudiantes y financiación universitaria</translation>
@@ -2993,6 +2994,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6529602333819889595">&amp;Rehacer eliminación</translation>
 <translation id="6535617236508021606">Esta tarjeta se ha guardado en tu cuenta de Google para que la puedas usar en todos los servicios de Google.</translation>
 <translation id="6536221421038631327">Si quitas una suscripción a Passpoint de tu <ph name="DEVICE_TYPE" />, se quitarán las redes asociadas. Ponte en contacto con <ph name="FRIENDLY_NAME" /> para hacer cambios en tu plan de suscripción. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Para ver las tablas comparativas, activa la sincronización</translation>
 <translation id="6539092367496845964">Se ha producido un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="6540488083026747005">Has permitido el uso de cookies de terceros en este sitio</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>

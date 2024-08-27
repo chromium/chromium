@@ -218,7 +218,6 @@
 <translation id="1363819917331173092">ترجمه صفحه‌های <ph name="SOURCE_LANGUAGE" /> پیشنهاد نشود</translation>
 <translation id="1364822246244961190">این خط‌مشی مسدود شده است، ارزش آن نادیده گرفته خواهد شد.</translation>
 <translation id="1368318639262510626">بازی داینو. دایناسوری نقطه‌ای همان‌طور که در دشتی دورافتاده می‌دود، موقع رسیدن به کاکتوس‌ها و پتروداکتیل‌ها جاخالی می‌دهد. وقتی صدای نشانه صوتی را شنیدید، برای پریدن از روی موانع کلید فاصله را فشار دهید.</translation>
-<translation id="1370751323199669551">درباره «مقایسه» بیشتر بدانید.</translation>
 <translation id="1374468813861204354">پیشنهادات</translation>
 <translation id="1375198122581997741">درباره نسخه</translation>
 <translation id="1375293861397106342">همه گزینه‌ها در محدوده قیمت معمول <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> قرار دارند</translation>
@@ -719,6 +718,7 @@
 <translation id="2276057643614339130">پایه چاپ</translation>
 <translation id="2277103315734023688">رفتن به جلو</translation>
 <translation id="2277753418458118549">نمایش جزئیات اتصال</translation>
+<translation id="2277949605527755300">‫<ph name="URL" /> می‌خواهد دست‌هایتان را ردیابی کند</translation>
 <translation id="22792995594807632">قبل‌از بارگیری باید بررسی شود</translation>
 <translation id="2283340219607151381">ذخیره و تکمیل نشانی</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» حذف شد</translation>
@@ -1390,7 +1390,6 @@
 <translation id="3568886473829759308">برای مشاهده اطلاعات، منابع، یا خدمات ارائه‌شده توسط کسب‌وکار، به وب‌سایت مراجعه کنید.</translation>
 <translation id="3570079787344939099">پیمایش و بزرگ‌نمایی</translation>
 <translation id="357244642999988503">برداشتن ستون</translation>
-<translation id="3572827863357388784">این یک ویژگی آزمایشی است و همیشه درست عمل نمی‌کند.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />، <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">مجاز برای این سایت</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1531,6 +1530,7 @@
 <translation id="3793574014653384240">تعداد و دلیل خرابی‌هایی که اخیراً اتفاق افتاده است</translation>
 <translation id="3799805948399000906">قلم درخواست شد</translation>
 <translation id="3801265110651850478">‏ارسال درخواست «Do Not Track» با ترافیک مرور</translation>
+<translation id="3801297763951514916">اغلب بازدید می‌کنید</translation>
 <translation id="380329542618494757">نام</translation>
 <translation id="3803801106042434208">این موتورهای جستجو در منطقه شما پرطرفدار هستند</translation>
 <translation id="3807366285948165054">‏تغییر جهت تصویر حول محور X</translation>
@@ -1624,6 +1624,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">کمتر از ۱ مگابایت</translation>
 <translation id="3990250421422698716">‏آفست Z شکل</translation>
+<translation id="3990532701115075684">ردیابی کردن دست‌هایتان</translation>
 <translation id="3992684624889376114">درباره این صفحه</translation>
 <translation id="3995639283717357522">اعمال خط‌مشی‌ها</translation>
 <translation id="399754345297554962">آزمون‌های استاندارد و پذیرش</translation>
@@ -2369,6 +2370,7 @@
 <translation id="5385857628869214740">شوخی</translation>
 <translation id="5385966243497224160">‏نمی‌توان نشانی وب غیرHTTPS را پیش‌دید کرد</translation>
 <translation id="5386426401304769735">‏زنجیره گواهی این سایت حاوی یک گواهی با امضای SHA-1 است.</translation>
+<translation id="5391010642126249196">آخرین بازدید:</translation>
 <translation id="539203134595252721">تنیس روی میز</translation>
 <translation id="5392506727170022660">فلز (نیمه‌براق)</translation>
 <translation id="5394069166371280357">نمایش تلویزیونی خانوادگی</translation>
@@ -2568,6 +2570,7 @@
 <translation id="5742806904559466333">میخانه، باشگاه، و تفریحات شبانه</translation>
 <translation id="5743684619253032786">محصولات مراقبت از ناخن</translation>
 <translation id="5745733273847572235">می‌تواند برای استفاده از مکان درخواست دهد</translation>
+<translation id="5750869797196646528">ردیابی دست</translation>
 <translation id="5759751709240058861">استفاده از دوربین و حرکت دادن آن</translation>
 <translation id="5763042198335101085">نشانی ایمیل معتبری وارد کنید</translation>
 <translation id="5764725887548570807">قالب مبدأ نامعتبر است.</translation>
@@ -2987,6 +2990,7 @@
 <translation id="6513005815064132016">می‌تواند ردیابی موقعیت دوربین را درخواست دهد</translation>
 <translation id="6517596291481585650">این خط‌مشی به‌عنوان فهرستی که خط‌مشی مشخص کرده است ادغام نشد، زیرا فهرست نیست.</translation>
 <translation id="6518133107902771759">تأیید</translation>
+<translation id="6519885440226079262">می‌تواند برای ردیابی دست‌هایتان درخواست دهد</translation>
 <translation id="6520026037299163656">برنامه وب و ابزار آنلاین</translation>
 <translation id="65203098586853226">ترجمه <ph name="SOURCE" /> به <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">غیرفعال</translation>
@@ -3027,6 +3031,7 @@
 <translation id="6599642189720630047">محصولات پیگیری‌شده</translation>
 <translation id="6606309334576464871">‏Chrome سایت‌هایی را که بااستفاده از کوکی‌های شخص ثالث، شما را هنگام مرور وب ردیابی می‌کنند مسدود می‌کند.
             <ph name="NEW_LINE" />اگر ویژگی‌های سایت کار نمی‌کند، <ph name="START_LINK" />کوکی‌های شخص ثالث را موقتاً مجاز کنید<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">ردیابی دست</translation>
 <translation id="6613866251791999074">‏درباره موتور جستجویتان در Chrome بیشتر بدانید</translation>
 <translation id="6615297766614333076">پشته‌ساز ۲</translation>
 <translation id="6619496928666593220">‏IBAN تکمیل نشده است</translation>
@@ -3479,6 +3484,7 @@
 <translation id="7440140511386898319">کاوش درحالت آفلاین</translation>
 <translation id="7441627299479586546">موضوع خط‌مشی اشتباه است</translation>
 <translation id="7441864845853794192">غذاهای لذیذ و ویژه</translation>
+<translation id="7442389976360981500">ردیابی دست مجاز شود؟</translation>
 <translation id="7442725080345379071">نارنجی روشن</translation>
 <translation id="7444046173054089907">این سایت مسدود شده است</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{کوکی‌ها امروز دوباره مسدود خواهد شد}=1{کوکی‌ها فردا دوباره مسدود خواهد شد}one{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}other{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}}</translation>
@@ -4137,6 +4143,7 @@
 <translation id="865032292777205197">حسگرهای حرکتی</translation>
 <translation id="865255447216708819">فیلم چاپ معکوس</translation>
 <translation id="8654126188050905496">۹۱ × ۵۵ میلی‌متر</translation>
+<translation id="8660780831677950176">اغلب در این زمان بازدید می‌کنید</translation>
 <translation id="8662463432865928030">املاک تجاری</translation>
 <translation id="8663226718884576429">خلاصه سفارش، <ph name="TOTAL_LABEL" />، جزئيات بیشتر</translation>
 <translation id="8663909737634214500">لوح نوری</translation>

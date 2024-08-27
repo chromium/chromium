@@ -79,6 +79,7 @@
 <translation id="4371591986692297148">غير مفعّلة</translation>
 <translation id="4460014764210899310">إلغاء التجميع</translation>
 <translation id="4590027107044272416">يمكنك الآن فتح علامة تبويب جديدة هنا</translation>
+<translation id="4619615317237390068">علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{هل تريد إغلاق علامة تبويب واحدة غير نشطة؟}zero{هل تريد إغلاق <ph name="TAB_COUNT_MANY" /> علامة تبويب غير نشطة؟}two{هل تريد إغلاق علامتَي تبويب (<ph name="TAB_COUNT_MANY" />) غير نشطتَين؟}few{هل تريد إغلاق <ph name="TAB_COUNT_MANY" /> علامات تبويب غير نشطة؟}many{هل تريد إغلاق <ph name="TAB_COUNT_MANY" /> علامة تبويب غير نشطة؟}other{هل تريد إغلاق <ph name="TAB_COUNT_MANY" /> علامة تبويب غير نشطة؟}}</translation>
 <translation id="4648718555153979859">يتم جمع علامات التبويب معًا هنا</translation>
 <translation id="4686942373615810936">تم إنشاء المجموعة للتو</translation>

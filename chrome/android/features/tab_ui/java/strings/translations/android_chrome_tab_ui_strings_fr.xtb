@@ -79,6 +79,7 @@
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4460014764210899310">Dégrouper</translation>
 <translation id="4590027107044272416">Vous pouvez désormais ouvrir un nouvel onglet ici</translation>
+<translation id="4619615317237390068">Onglets d'autres appareils</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fermer 1 onglet inactif ?}one{Fermer <ph name="TAB_COUNT_MANY" /> onglet inactif ?}other{Fermer <ph name="TAB_COUNT_MANY" /> onglets inactifs ?}}</translation>
 <translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>

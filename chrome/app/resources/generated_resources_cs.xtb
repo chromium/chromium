@@ -987,7 +987,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="168991973552362966">Přidání tiskárny v okolí</translation>
 <translation id="1689945336726856614">Kopírovat adresu &amp;URL</translation>
 <translation id="1690068335127678634">Nastavení rozdělené obrazovky</translation>
-<translation id="1690443285859726589">Upravte práh detekce, abyste gesto dokázali pohodlně aktivovat</translation>
 <translation id="1692115862433274081">Použít jiný účet</translation>
 <translation id="1692118695553449118">Synchronizace je zapnuta</translation>
 <translation id="1692210323591458290">Tmavě nachová</translation>
@@ -2115,6 +2114,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="247051149076336810">Adresa URL sdíleného úložiště</translation>
 <translation id="2471469610750100598">Černá (výchozí)</translation>
 <translation id="2471506181342525583">Přístup k poloze povolen</translation>
+<translation id="2471632709106952369">Srovnávací tabulky</translation>
 <translation id="2473195200299095979">Přeložit tuto stránku</translation>
 <translation id="2475982808118771221">Došlo k chybě</translation>
 <translation id="247616523300581745">Skrýt tyto soubory</translation>
@@ -6081,7 +6081,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5384401776498845256">Kdo s vámi může sdílet</translation>
 <translation id="5385628342687007304">Heslo se uloží pouze do tohoto zařízení. Pokud ho chcete používat v jiných zařízeních, uložte ho do svého účtu Google.</translation>
 <translation id="5387116558048951800">Upravit identifikační údaj typu <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Specifikace produktů</translation>
 <translation id="538822246583124912">Podnikové zásady se změnily. Na lištu bylo přidáno tlačítko experimentálních funkcí. Kliknutím na něj otevřete dialogové okno k aktivaci experimentálních funkcí.</translation>
 <translation id="5388436023007579456">Aplikace a weby s oprávněním ke kameře a systémové služby mohou používat vaši kameru. Je možné, že k použití kamery budete muset restartovat aplikaci nebo obnovit stránku.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Byl nalezen 1 web se spoustou oznámení}few{Byly nalezeny {NUM_SITES} weby se spoustou oznámení}many{Bylo nalezeno {NUM_SITES} webu se spoustou oznámení}other{Bylo nalezeno {NUM_SITES} webů se spoustou oznámení}}</translation>
@@ -8128,6 +8127,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6876155724392614295">Kolo</translation>
 <translation id="6876469544038980967">Neužitečné</translation>
 <translation id="6878422606530379992">Použití senzorů je povoleno</translation>
+<translation id="6878862640969460273">Na šířku</translation>
 <translation id="6880587130513028875">Na této stránce byly zablokovány obrázky.</translation>
 <translation id="6881845890692344060">Váš administrátor se odhlásil. Nyní nad zařízením máte kontrolu vy.</translation>
 <translation id="6882210908253838664">Pokud web nefunguje, můžete mu zkusit udělit dočasné povolení k používání souborů cookie třetích stran. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -9665,6 +9665,7 @@ Soubor klíče: <ph name="KEY_FILE" />
 
 Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat při vytváření nových verzí svého rozšíření.</translation>
 <translation id="8000020256436988724">Lišta</translation>
+<translation id="800117767980299235">Hlasová poznámka</translation>
 <translation id="8002274832045662704">Rozšířená konfigurace tiskárny</translation>
 <translation id="8002670234429879764">Tiskárna <ph name="PRINTER_NAME" /> už není dostupná</translation>
 <translation id="8004092996156083991">Pokud dojde k prolomení hesel, dáme vám vědět</translation>

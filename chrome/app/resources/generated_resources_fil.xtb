@@ -987,7 +987,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="168991973552362966">Magdagdag ng kalapit na printer</translation>
 <translation id="1689945336726856614">Kopyahin ang &amp;URL</translation>
 <translation id="1690068335127678634">Pag-set up ng split screen</translation>
-<translation id="1690443285859726589">I-adjust ang threshold sa pag-detect para komportable mong ma-trigger ang galaw</translation>
 <translation id="1692115862433274081">Gumamit ng ibang account</translation>
 <translation id="1692118695553449118">Naka-on ang pag-sync</translation>
 <translation id="1692210323591458290">Dark purple</translation>
@@ -1438,6 +1437,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="199610894463449797">{0,plural, =1{Isara ang Profile na Ito}one{Isara ang Profile na Ito (# Window)}other{Isara ang Profile na Ito (# na Window)}}</translation>
 <translation id="1997433994358798851">Kailangan ng Chrome ng pahintulot para gamitin ang Bluetooth para kumonekta sa iyong device</translation>
 <translation id="1997616988432401742">Iyong mga certificate</translation>
+<translation id="1998715278591719161">Pinapayagang i-track ang iyong mga kamay</translation>
 <translation id="1999115740519098545">Sa startup</translation>
 <translation id="2002109485265116295">Real-time</translation>
 <translation id="2002160221914907025">Pang-eksperimentong AI</translation>
@@ -2127,6 +2127,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="247051149076336810">URL ng file share</translation>
 <translation id="2471469610750100598">Itim (default)</translation>
 <translation id="2471506181342525583">Pinapayagan ang access sa lokasyon</translation>
+<translation id="2471632709106952369">Mga talahanayan sa paghahambing</translation>
 <translation id="2473195200299095979">I-translate ang pahinang ito</translation>
 <translation id="2475982808118771221">May isang naganap na error</translation>
 <translation id="247616523300581745">I-hide ang mga file na ito</translation>
@@ -3551,6 +3552,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3521606918211282604">Baguhin ang laki ng disk</translation>
 <translation id="3522088408596898827">Kaunting-kaunti na lang ang espasyo sa disk. Magbakante ng espasyo sa disk at subukan ulit.</translation>
 <translation id="3522979239100719575">Naghahanap ng mga available na profile. Puwede itong tumagal nang ilang minuto.</translation>
+<translation id="3523447078673133727">Huwag payagan ang mga site na i-track ang iyong mga kamay</translation>
 <translation id="3524518036046613664">Tumuklas ng mga device sa iyong lokal na network, gaya ng mga printer</translation>
 <translation id="3524965460886318643">I-export ang Mga Aktibidad</translation>
 <translation id="3525426269008462093">Suriin ang pag-sync ng device pagkatapos ng pag-set up</translation>
@@ -5929,6 +5931,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="52550593576409946">Hindi mailunsad ang Kiosk application.</translation>
 <translation id="5255726914791076208">Kapag na-edit mo ang iyong passkey, hindi magbabago ang <ph name="RP_ID" /> account mo</translation>
 <translation id="5255859108402770436">Muling mag-sign in</translation>
+<translation id="5256174546894739043">Magtanong kapag gustong i-track ng isang site ang iyong mga kamay</translation>
 <translation id="52566111838498928">Nilo-load ang mga font...</translation>
 <translation id="5256861893479663409">Sa Lahat ng Site</translation>
 <translation id="5258992782919386492">I-install sa device na ito</translation>
@@ -6098,7 +6101,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5384401776498845256">Sino ang makakapag-share sa iyo</translation>
 <translation id="5385628342687007304">Mase-save lang ang password na ito sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account.</translation>
 <translation id="5387116558048951800">I-edit ang <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Mga specification ng produkto</translation>
 <translation id="538822246583124912">Binago ang patakaran sa enterprise. Idinagdag ang button ng mga eksperimento sa toolbar. I-click ang button para magbukas ng dialog para i-enable ang mga eksperimento.</translation>
 <translation id="5388436023007579456">Magagamit ng mga app at website na may pahintulot sa camera, at ng mga serbisyo ng system, ang iyong camera. Para magamit ang camera, posibleng kailanganin mong i-restart ang app o i-refresh ang page.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Nakakita ng 1 site na may napakaraming notification}one{Nakakita ng {NUM_SITES} site na may napakaraming notification}other{Nakakita ng {NUM_SITES} na site na may napakaraming notification}}</translation>
@@ -6677,6 +6679,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5801051031414037185">I-set up ang telepono</translation>
 <translation id="5801568494490449797">Mga Kagustuhan</translation>
 <translation id="5803689677801500549">Lalabas dito ang mga naka-save na password. Para mag-import ng mga password sa <ph name="BRAND" /> para sa <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" /> pumili ng CSV file.<ph name="END_LINK" /></translation>
+<translation id="5804198298544152115">Karaniwang tina-track ng mga site ang iyong mga kamay at daliri para pahusayin ang mga immersive na experience</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5804259315582798390">Hindi na-enable ang pag-recover ng lokal na data</translation>
 <translation id="5805268472388605531">Pindutin nang matagal ang mga keyboard key para makita ang mga accent mark at special character</translation>
@@ -7779,6 +7782,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6622980291894852883">Magpatuloy sa paghaharang ng mga larawan</translation>
 <translation id="6624036901798307345">Sa tablet mode, i-tap ang button ng toolbar para sa pagbibilang ng tab para mabuksan ang bagong tabstrip na nagpapakita ng mga thumbnail ng bawat tab.</translation>
 <translation id="6624687053722465643">Cupcake</translation>
+<translation id="6627743754845412571">Hindi pinapayagang i-track ang iyong mga kamay</translation>
 <translation id="6628316682330029452">Ang mga certificate ng client ay mga certificate na tumutukoy sa iyo sa iba pang server.</translation>
 <translation id="6628328486509726751">Na-upload noong <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Mas pinaigting na seguridad</translation>

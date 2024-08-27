@@ -982,7 +982,6 @@
 <translation id="168991973552362966">નજીકનું પ્રિન્ટર ઉમેરો</translation>
 <translation id="1689945336726856614">&amp;URLને કૉપિ કરો</translation>
 <translation id="1690068335127678634">વિભાજિત સ્ક્રીનનું સેટઅપ</translation>
-<translation id="1690443285859726589">ભાળ મેળવવાની મર્યાદા ગોઠવો, જેથી તમે આરામદાયક રીતે સંકેત ટ્રિગર કરી શકો</translation>
 <translation id="1692115862433274081">બીજા એકાઉન્ટનો ઉપયોગ કરો</translation>
 <translation id="1692118695553449118">સમન્વયન ચાલુ છે</translation>
 <translation id="1692210323591458290">ઘેરો જાંબલી</translation>
@@ -2112,6 +2111,7 @@
 <translation id="247051149076336810">ફાઇલ શેર URL</translation>
 <translation id="2471469610750100598">કાળો (ડિફૉલ્ટ)</translation>
 <translation id="2471506181342525583">સ્થાન ઍક્સેસની મંજૂરી આપેલી છે</translation>
+<translation id="2471632709106952369">સરખામણી ટેબલ</translation>
 <translation id="2473195200299095979">આ પેજનો અનુવાદ કરો</translation>
 <translation id="2475982808118771221">કોઈ ભૂલ આવી છે</translation>
 <translation id="247616523300581745">આ ફાઇલો છુપાવો</translation>
@@ -6085,7 +6085,6 @@
 <translation id="5384401776498845256">તમારી સાથે કોણ શેર કરી શકે</translation>
 <translation id="5385628342687007304">આ પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" />માં ફેરફાર કરો</translation>
-<translation id="5387496897058645038">પ્રોડક્ટની વિશિષ્ટતાઓ</translation>
 <translation id="538822246583124912">એન્ટરપ્રાઇઝ પૉલિસી બદલાઈ ગઈ છે. ટૂલબારમાં પ્રયોગોનું બટન ઉમેરવામાં આવ્યું છે. પ્રયોગો ચાલુ કરવા માટે બટન પર ક્લિક કરીને સંવાદ ખોલો.</translation>
 <translation id="5388436023007579456">કૅમેરાની પરવાનગી ધરાવતી ઍપ અને વેબસાઇટ તેમજ સિસ્ટમ સર્વિસ, તમારા કૅમેરાનો ઉપયોગ કરી શકે છે. કૅમેરાનો ઉપયોગ કરવા માટે, તમારે ઍપને ફરી શરુ કરવાની અથવા પેજને રિફ્રેશ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{ઘણા બધા નોટિફિકેશન ધરાવતી 1 સાઇટ મળી છે}one{ઘણા બધા નોટિફિકેશન ધરાવતી {NUM_SITES} સાઇટ મળી છે}other{ઘણા બધા નોટિફિકેશન ધરાવતી {NUM_SITES} સાઇટ મળી છે}}</translation>
@@ -8138,6 +8137,7 @@ USB ડિવાઇસ</translation>
 <translation id="6876155724392614295">બાઇક</translation>
 <translation id="6876469544038980967">સહાયરૂપ નથી</translation>
 <translation id="6878422606530379992">સેન્સરને મંજૂરી છે</translation>
+<translation id="6878862640969460273">લૅન્ડસ્કેપ</translation>
 <translation id="6880587130513028875">આ પેજ પર છબીઓ બ્લૉક હતી.</translation>
 <translation id="6881845890692344060">તમારા ઍડમિનિસ્ટ્રેટરે લૉગ આઉટ કર્યું છે. હવે તમારી પાસે નિયંત્રણ છે.</translation>
 <translation id="6882210908253838664">જો કોઈ સાઇટ કાર્ય કરતી ન હોય, તો તમે તેને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાની પરવાનગી હંગામી રીતે આપવાનું અજમાવી શકો છો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -9670,6 +9670,7 @@ USB ડિવાઇસ</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">નીચેની ફાઇલો બનાવાઈ: એક્સટેન્શન: <ph name="EXTENSION_FILE" />કી ફાઇલ: <ph name="KEY_FILE" />તમારી કી ફાઇલને સુરક્ષિત સ્થાન પર મૂકો. તમને તેની જરૂરિયાત તમારા એક્સટેન્શનના નવા વર્ઝન બનાવવા માટે પડશે.</translation>
 <translation id="8000020256436988724">ટૂલબાર</translation>
+<translation id="800117767980299235">વૉઇસ હાઇલાઇટ</translation>
 <translation id="8002274832045662704">વિગતવાર પ્રિન્ટરની ગોઠવણી</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> હવે ઉપલબ્ધ નથી</translation>
 <translation id="8004092996156083991">જો તમારા પાસવર્ડ સાથે ચેડાં કરાયેલા હોય, તો અમે તમને જણાવીશું.</translation>

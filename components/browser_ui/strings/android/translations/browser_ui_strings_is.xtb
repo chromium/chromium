@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota myndavélina þína. Þegar slökkt er á þessu geta vefsvæði ekki notað myndavélina þína.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome mun aftur loka fyrir fótspor á morgun}one{Chrome lokar aftur fyrir fótspor eftir # dag}other{Chrome lokar aftur fyrir fótspor eftir # daga}}</translation>
 <translation id="3521663503435878242">Vefsvæði undir <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Ekki leyfa vefsvæðum að rekja handahreyfingar</translation>
 <translation id="3536227077203206203">Leyft í þetta skipti</translation>
 <translation id="3538390592868664640">Komdu í veg fyrir að vefsvæði búi til þrívíddarkort af umhverfinu eða reki staðsetningu myndavélarinnar</translation>
 <translation id="3544058026430919413">Fyrirtæki getur skilgreint vefsvæðahóp sem getur notað fótspor til að deila virkni þinni með hópnum. Slökkt er á þessu í huliðsstillingu.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">Þegar kveikt er á þessu geta vefsvæði notað JavaScript. Þegar slökkt er á þessu geta vefsvæði ekki notað JavaScript.</translation>
 <translation id="5099358668261120049">Þetta eyðir öllum gögnum og fótsporum sem <ph name="ORIGIN" /> eða forrit þess hafa vistað á heimaskjánum</translation>
 <translation id="5100237604440890931">Minnkað – smelltu til að stækka.</translation>
+<translation id="5116239826668864748">Þú getur notað Chrome til að opna tengla úr skilaboðum, skjölum og öðrum forritum hvenær sem er</translation>
 <translation id="5123685120097942451">Huliðsflipi</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Verðlækkun á opnum flipum}one{Verðlækkanir á opnum flipum}other{Verðlækkanir á opnum flipum}}</translation>
 <translation id="5186036860380548585">Valkosturinn er við efri brún skjásins</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Þetta vefsvæði er í hóp sem getur séð virknina þína. Hópurinn er skilgreindur af <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Prófílmyndir</translation>
 <translation id="6697925417670533197">Niðurhal í gangi</translation>
+<translation id="6709432001666529933">Biðja um leyfi fyrir því að vefsvæði reki handahreyfingar (ráðlagt)</translation>
 <translation id="6722828510648505498">Útiloka innskráningartilkynningar frá auðkenningarþjónustum.</translation>
 <translation id="6746124502594467657">Færa niður</translation>
 <translation id="6749077623962119521">Endurstilla heimildir?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">Veldu valkost fyrir <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6818926723028410516">Veldu atriði</translation>
+<translation id="6838525730752203626">Notaðu Chrome sem sjálfgefinn vafra</translation>
 <translation id="6840760312327750441">Haltu fingri á flipa til að flokka hann. Dragðu hann svo ofan á annan flipa.</translation>
 <translation id="6864395892908308021">Þetta tæki getur ekki lesið NFC</translation>
 <translation id="6870169401250095575">Fela spjaldið „Öryggisathugun“</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7667547420449112975">Galdrakarlinn í Oz</translation>
 <translation id="7684642910516280563">Ekki leyfa vefsvæði að nota fótspor þriðju aðila</translation>
+<translation id="7688240020069572972">Fela ábendingarspjald Chrome</translation>
 <translation id="7719367874908701697">Síðuaðdráttur</translation>
 <translation id="7759147511335618829">Stjórn og endurforritun MIDI-tækja</translation>
 <translation id="7781829728241885113">Í gær</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Færa upp</translation>
 <translation id="8617611086246832542">Þegar kveikt er á þessu er tölvuútgáfa vefsvæða sýnd. Þegar slökkt er á þessu er símaútgáfa vefsvæða sýnd.</translation>
 <translation id="8649036394979866943">Chrome takmarkar getu flestra vefsvæða til að nota fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn. Farðu í stillingar til að <ph name="BEGIN_LINK" />hafa umsjón með rakningarvörn þinni<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að rekja handahreyfingarnar þínar. Þegar slökkt er á þessu geta vefsvæði ekki rakið handahreyfingarnar þínar.</translation>
 <translation id="8676374126336081632">Hreinsa innslátt</translation>
 <translation id="8681886425883659911">Lokað er fyrir auglýsingar á vefsvæðum sem eru þekkt fyrir að birta ágengar eða villandi auglýsingar</translation>
 <translation id="868929229000858085">Leita í tengiliðum</translation>

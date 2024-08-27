@@ -218,7 +218,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1363819917331173092">Peidiwch â chynnig cyfieithu tudalennau yn <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Mae'r polisi hwn wedi'i rwystro, bydd ei werth yn cael ei anwybyddu.</translation>
 <translation id="1368318639262510626">Gêm Dino. Mae deinosor picsel yn osgoi cacti a pterodactyliaid wrth iddo redeg ar draws tirwedd anghyfannedd. Pan fyddwch yn clywed ciw sain, pwyswch Space i neidio dros rwystrau.</translation>
-<translation id="1370751323199669551">Dysgu rhagor am Cymharu.</translation>
 <translation id="1374468813861204354">awgrymiadau</translation>
 <translation id="1375198122581997741">Ynglŷn â'r Fersiwn</translation>
 <translation id="1375293861397106342">Pob opsiwn fel arfer <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -1389,7 +1388,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3568886473829759308">Ewch i'r wefan i weld gwybodaeth, adnoddau neu wasanaethau a ddarperir gan y busnes.</translation>
 <translation id="3570079787344939099">Sgrolio a chwyddo</translation>
 <translation id="357244642999988503">Tynnu'r golofn</translation>
-<translation id="3572827863357388784">Mae hon yn nodwedd arbrofol ac ni fydd bob amser yn ei chael yn iawn.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Caniatáu ar gyfer y wefan hon</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -2820,6 +2818,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6240964651812394252">I ddefnyddio Rheolwr Cyfrineiriau Google gyda'ch system weithredu, ail-lansiwch Chrome a chaniatáu mynediad at reolwr cyfrineiriau eich cyfrifiadur. Bydd eich tabiau yn ailagor ar ôl ail-lansio.</translation>
 <translation id="6241121617266208201">Cuddio awgrymiadau</translation>
 <translation id="624499991300733384">Gwasanaeth Cysodwr Argraffu</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> diwrnod yn ôl</translation>
 <translation id="6246868321321344665">Gall eich sefydliad weld data pori, fel cyfrineiriau a hanes mewn proffiliau gwaith a phroffiliau personol</translation>
 <translation id="6250932670816326647">Cynhyrchion Bath a Chorff</translation>
 <translation id="6251906504834538140">{0,plural, =1{Ffeil wedi'i rhwystro rhag cael ei symud}zero{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}two{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}few{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}many{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}other{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}}</translation>
@@ -3407,6 +3406,7 @@ Manylion ychwanegol:
 <translation id="7346081071264046066">"ateb yn gadarnhaol i'r gwahoddiad priodas hwn gyda chyffro"</translation>
 <translation id="7352651011704765696">Aeth rhywbeth o'i le</translation>
 <translation id="7353601530677266744">Llinell Orchymyn</translation>
+<translation id="7356678400607112844">Ymwelwyd Ddiwethaf</translation>
 <translation id="7359588939039777303">Rhwystrwyd hysbysebion.</translation>
 <translation id="7360451453306104998">Pan fydd Google yn dod o hyd i ostyngiadau sydd ar gael, byddant yn dangos wrth i chi dalu</translation>
 <translation id="7363096869660964304">Fodd bynnag, nid ydych yn anweledig. Nid yw defnyddio'r modd Anhysbys yn cuddio'ch pori oddi wrth eich cyflogwr, eich darparwr gwasanaeth rhyngrwyd, na'r gwefannau rydych yn ymweld â nhw.</translation>

@@ -1018,6 +1018,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="587735546353481577">Wenn du einer Website folgen möchtest, rufe die Website auf, öffne das Chrome-Menü und tippe auf „Folgen“.</translation>
 <translation id="5879072387416556377">Bessere Vorschläge erhalten</translation>
 <translation id="5885378508678660271">Benachrichtigungen <ph name="SEPARATOR" /> Chrome hat diese Berechtigungen entfernt, weil diese Website gefährlich ist</translation>
+<translation id="5895834791314695851">Deine Passwörter könnten auf diesem Gerät bald nicht mehr funktionieren. Aktualisiere die Google Play-Dienste, um deine Passwörter weiterhin verwenden zu können. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Die Ansicht „Keine Passkeys“ wurde geschlossen</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5919204609460789179">Zur Synchronisierung musst du <ph name="PRODUCT_NAME" /> aktualisieren</translation>
@@ -1557,6 +1558,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="820568752112382238">Am häufigsten besuchte Websites</translation>
 <translation id="8209050860603202033">Bild öffnen</translation>
 <translation id="8210770465353466621">Hier werden deine Tabs angezeigt</translation>
+<translation id="8211101263765532799">Einige Passwörter funktionieren bald nicht mehr</translation>
 <translation id="8215740705341534369">Seitenblatt</translation>
 <translation id="8218622182176210845">Konto verwalten</translation>
 <translation id="8221401890884589479">Du kannst unerwünschte Websites blockieren. Außerdem werden Websites, die länger als 30 Tage gelistet sind, von Chrome automatisch aus der Liste gelöscht. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -1657,6 +1659,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="864544049772947936">Fenster verwalten (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Chrome für dich anpassen</translation>
 <translation id="8664979001105139458">Dateiname schon vorhanden</translation>
+<translation id="8672883760227492369">Einige Passwörter auf diesem Gerät funktionieren bald nicht mehr. Du kannst diese Passwörter in den Google Passwortmanager verschieben.</translation>
 <translation id="8676276370198826499">Bei <ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8676789164135894283">Anmeldebestätigungen</translation>
 <translation id="8683039184091909753">Bild</translation>

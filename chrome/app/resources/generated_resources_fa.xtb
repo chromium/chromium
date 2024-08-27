@@ -984,7 +984,6 @@
 <translation id="168991973552362966">افزودن چاپگری در این اطراف</translation>
 <translation id="1689945336726856614">کپی کردن &amp;نشانی وب</translation>
 <translation id="1690068335127678634">راه‌اندازی صفحهٔ دونیمه</translation>
-<translation id="1690443285859726589">آستانه تشخیص را طوری تنظیم کنید که بتوانید به‌راحتی اشاره را راه‌اندازی کنید</translation>
 <translation id="1692115862433274081">استفاده از یک حساب دیگر</translation>
 <translation id="1692118695553449118">همگام‌سازی روشن است</translation>
 <translation id="1692210323591458290">بنفش تیره</translation>
@@ -2124,6 +2123,7 @@
 <translation id="247051149076336810">نشانی وب دستگاه ذخیره‌سازی متصل به شبکه</translation>
 <translation id="2471469610750100598">سیاه (پیش‌فرض)</translation>
 <translation id="2471506181342525583">دسترسی به مکان مجاز شد</translation>
+<translation id="2471632709106952369">جدول‌های مقایسه</translation>
 <translation id="2473195200299095979">ترجمه این صفحه</translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
 <translation id="247616523300581745">پنهان کردن این فایل‌ها</translation>
@@ -3100,6 +3100,7 @@
 <translation id="3184591616546256659">برای تغییر دادن تنظیمات کنترل‌های والدین از این پین استفاده می‌کنید.
     اگر پین را فراموش کنید، باید این دستگاه را بازنشانی کارخانه‌ای کنید و دوباره راه‌اندازی کنید.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{این برنامه مسدود شده است}one{برخی برنامه‌ها مسدود شده‌اند}other{برخی برنامه‌ها مسدود شده‌اند}}</translation>
+<translation id="3185454065699440434">مجاز کردن افزونه‌ها در <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">سنجش آگهی</translation>
 <translation id="3187556136478864255">‏آیا می‌توانید دستگاه پخش را در
     <ph name="BEGIN_LINK" />
@@ -3898,6 +3899,7 @@
 <translation id="3760460896538743390">بازرسی صفحه &amp;پس‌زمینه</translation>
 <translation id="37613671848467444">باز کردن در پنجره &amp;ناشناس</translation>
 <translation id="3761556954875533505">به سایت اجازه می‌دهید فایل‌ها را ویرایش کند؟</translation>
+<translation id="3761560059647741692">منظره</translation>
 <translation id="3761733456040768239">‏کنش‌های بیشتر برای <ph name="CARD_DESCRIPTION" />، کد تأیید کارت (CVC) ذخیره شده است</translation>
 <translation id="3763433740586298940">‏می‌توانید سایت‌هایی را که نمی‌خواهید مسدود کنید. Chrome همچنین سایت‌هایی را که قدیمی‌تر از ۳۰ روز باشند به‌طور خودکار از فهرست حذف می‌کند.</translation>
 <translation id="3763549179847864476">دکمه برگشت «راهنمای حریم خصوصی»</translation>
@@ -6097,7 +6099,6 @@
 <translation id="5384401776498845256">چه کسانی می‌توانند با شما هم‌رسانی کنند</translation>
 <translation id="5385628342687007304">‏این گذرواژه فقط در این دستگاه ذخیره می‌شود. برای استفاده از این گذرواژه در دستگاه‌های دیگر، آن را در «حساب Google» خود ذخیره کنید.</translation>
 <translation id="5387116558048951800">ویرایش <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">مشخصات محصول</translation>
 <translation id="538822246583124912">خط‌مشی شرکت تغییر کرد. دکمه آزمایش به نوار ابزار اضافه شد. برای فعال کردن آزمایش‌ها، روی دکمه کلیک کنید تا کادر گفتگو را باز کنید.</translation>
 <translation id="5388436023007579456">برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین، و همچنین خدمات سیستم می‌توانند از دوربین استفاده کنند. برای استفاده از دوربین، شاید لازم باشد برنامه را بازراه‌اندازی کنید یا صفحه را بازآوری کنید.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{۱ سایت با اعلان‌های فراوان پیدا شد}one{{NUM_SITES} سایت با اعلان‌های فراوان پیدا شد}other{{NUM_SITES} سایت با اعلان‌های فراوان پیدا شد}}</translation>
@@ -7427,6 +7428,7 @@
 <translation id="6351178441572658285">زبان برنامه‌ها</translation>
 <translation id="6354918092619878358">‏منحنی بیضوی SECG مدل secp256r1 (به‌نام ANSI X9.62 prime256v1، ‏NIST P-256)</translation>
 <translation id="635609604405270300">روشن نگه‌داشتن دستگاه</translation>
+<translation id="6356537493253478650">آرام</translation>
 <translation id="63566973648609420">‏فقط فردی که گذرعبارت شما را دارد می‌تواند اطلاعات رمزگذاری‌شده‌تان را بخواند. این گذرعبارت به Google ارسال یا در سرورهای آن ذخیره نمی‌شود. اگر گذرعبارتتان را فراموش کنید، باید همگام‌سازی را بازنشانی کنید. <ph name="BEGIN_LINK" />بازنشانی همگام‌سازی<ph name="END_LINK" /></translation>
 <translation id="6356718524173428713">برای رفتن به‌پایین صفحه، به‌بالا پیمایش کنید</translation>
 <translation id="6356893102071098867">بررسی کنید حساب درست را انتخاب کرده باشید</translation>
@@ -8148,6 +8150,7 @@
 <translation id="6876155724392614295">دوچرخه‌</translation>
 <translation id="6876469544038980967">مفید نبودند</translation>
 <translation id="6878422606530379992">دسترسی به حسگرها مجاز شده است</translation>
+<translation id="6878862640969460273">افقی</translation>
 <translation id="6880587130513028875">تصاویر این صفحه مسدود شده‌اند.</translation>
 <translation id="6881845890692344060">سرپرستتان از سیستم خارج شده است. اکنون کنترل در دستان شما است.</translation>
 <translation id="6882210908253838664">اگر سایتی کار نمی‌کند، می‌توانید موقتاً به آن اجازه دهید از کوکی‌های شخص ثالث استفاده کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -8185,6 +8188,7 @@
 <translation id="6909422577741440844">از این دستگاه دریافت شود؟</translation>
 <translation id="6910190732484284349">حذف گذرکلید برای نام کاربری: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">حذف شد</translation>
+<translation id="6910274140210351823">تیره</translation>
 <translation id="6911734910326569517">مصرف حافظه</translation>
 <translation id="6912007319859991306">پین سیم‌کارت شبکه تلفن همراه</translation>
 <translation id="6912380255120084882">دستگاه دیگری را امتحان کنید</translation>
@@ -8336,6 +8340,7 @@
 <translation id="7014174261166285193">نصب انجام نشد.</translation>
 <translation id="7014480873681694324">برداشتن برجسته‌سازی</translation>
 <translation id="7014741021609395734">سطح بزرگ‌نمایی</translation>
+<translation id="7015135594296285641">همه افزونه‌ها</translation>
 <translation id="7016995776279438971">قرمز-سبز، ضعف در قرمز (قرمزدشواربینی)</translation>
 <translation id="7017004637493394352">‏دوباره بگویید «Ok Google»</translation>
 <translation id="7017219178341817193">افزودن صفحه جدید</translation>
@@ -9685,6 +9690,7 @@
 
 فایل کلید خود را در جای امن نگه دارید. برای ایجاد نسخه‌های جدید برنامهٔ افزودنی خود به آن نیاز دارید.</translation>
 <translation id="8000020256436988724">نوارابزار</translation>
+<translation id="800117767980299235">نکات برجسته صوتی</translation>
 <translation id="8002274832045662704">پیکربندی پیشرفته چاپگر</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> دیگر دردسترس نیست.</translation>
 <translation id="8004092996156083991">اگر گذرواژه‌هایتان لو برود، به شما اطلاع خواهیم داد.</translation>

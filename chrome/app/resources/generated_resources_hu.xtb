@@ -986,7 +986,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="168991973552362966">Közeli nyomtató hozzáadása</translation>
 <translation id="1689945336726856614">&amp;URL másolása</translation>
 <translation id="1690068335127678634">Osztott képernyő beállítása</translation>
-<translation id="1690443285859726589">Állítsa be az észlelési küszöbértéket úgy, hogy a kézmozdulattal aktiválás kényelmes legyen</translation>
 <translation id="1692115862433274081">Másik fiók használata</translation>
 <translation id="1692118695553449118">Szinkronizálás bekapcsolva</translation>
 <translation id="1692210323591458290">Sötétlila</translation>
@@ -2125,6 +2124,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="247051149076336810">Fájlmegosztási URL</translation>
 <translation id="2471469610750100598">Fekete (alapértelmezett)</translation>
 <translation id="2471506181342525583">Helyhozzáférés engedélyezve</translation>
+<translation id="2471632709106952369">Összehasonlító táblázatok</translation>
 <translation id="2473195200299095979">Oldal lefordítása</translation>
 <translation id="2475982808118771221">Hiba történt</translation>
 <translation id="247616523300581745">Ezeknek a fájloknak az elrejtése</translation>
@@ -6095,7 +6095,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5384401776498845256">Ki oszthat meg Önnel tartalmakat?</translation>
 <translation id="5385628342687007304">Ezt a jelszót csak erre az eszközre menti a rendszer. Ha szeretné más eszközökön is használni, mentse a Google-fiókjába.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> szerkesztése</translation>
-<translation id="5387496897058645038">Termékjellemzők</translation>
 <translation id="538822246583124912">A vállalati házirend módosult. A Kísérletek gomb bekerült az eszköztárba. A gombra kattintva megnyithatja a párbeszédpanelt a kísérletek engedélyezéséhez.</translation>
 <translation id="5388436023007579456">A kamerahasználati engedéllyel rendelkező alkalmazások és webhelyek, valamint a rendszerszolgáltatások használhatják a kamerát. Előfordulhat, hogy a kamera használatához újra kell indítania az alkalmazást, vagy frissítenie kell az oldalt.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 webhelyet találtunk sok értesítéssel}other{{NUM_SITES} webhelyet találtunk sok értesítéssel}}</translation>

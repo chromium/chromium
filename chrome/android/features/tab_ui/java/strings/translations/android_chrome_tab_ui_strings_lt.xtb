@@ -79,6 +79,7 @@
 <translation id="4371591986692297148">Neaktyvus</translation>
 <translation id="4460014764210899310">Išgrupuoti</translation>
 <translation id="4590027107044272416">Dabar čia galite atidaryti naują skirtuką</translation>
+<translation id="4619615317237390068">Skirtukai iš kitų įrenginių</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Uždaryti vieną neaktyvų skirtuką?}one{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvų skirtuką?}few{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvius skirtukus?}many{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvaus skirtuko?}other{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvių skirtukų?}}</translation>
 <translation id="4648718555153979859">Čia skirtukai suskirstyti į grupes</translation>
 <translation id="4686942373615810936">Ką tik sukurta</translation>

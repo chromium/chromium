@@ -984,7 +984,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="168991973552362966">Dodajte štampač u blizini</translation>
 <translation id="1689945336726856614">Kopiraj &amp;URL</translation>
 <translation id="1690068335127678634">Podešavanje podeljenog ekrana</translation>
-<translation id="1690443285859726589">Prilagodite graničnu vrednost za otkrivanje da biste lako mogli da aktivirate pokret</translation>
 <translation id="1692115862433274081">Koristi drugi nalog</translation>
 <translation id="1692118695553449118">Sinhronizacija je uključena</translation>
 <translation id="1692210323591458290">Tamnoljubičasta</translation>
@@ -1426,6 +1425,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="199610894463449797">{0,plural, =1{Zatvori ovaj profil}one{Zatvori ovaj profil (# prozor)}few{Zatvori ovaj profil (# prozora)}other{Zatvori ovaj profil (# prozora)}}</translation>
 <translation id="1997433994358798851">Chrome-u treba dozvola da bi koristio Bluetooth za povezivanje sa uređajem</translation>
 <translation id="1997616988432401742">Vaši sertifikati</translation>
+<translation id="1998715278591719161">Dozvoljeno im je da prate ruke</translation>
 <translation id="1999115740519098545">Pri pokretanju</translation>
 <translation id="2002109485265116295">U realnom vremenu</translation>
 <translation id="2002160221914907025">Eksperimentalna veštačka inteligencija</translation>
@@ -2111,6 +2111,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="247051149076336810">URL za deljenje datoteka</translation>
 <translation id="2471469610750100598">Crna (podrazumevano)</translation>
 <translation id="2471506181342525583">Dozvoljen je pristup lokaciji</translation>
+<translation id="2471632709106952369">Tabele za poređenje</translation>
 <translation id="2473195200299095979">Prevedite ovu stranicu</translation>
 <translation id="2475982808118771221">Došlo je do greške</translation>
 <translation id="247616523300581745">Sakrij ove fajlove</translation>
@@ -3536,6 +3537,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3521606918211282604">Promenite veličinu diska</translation>
 <translation id="3522088408596898827">Prostor na disku je izuzetno mali. Oslobodite prostor na disku i probajte ponovo.</translation>
 <translation id="3522979239100719575">Traže se dostupni profili. To može da potraje nekoliko minuta.</translation>
+<translation id="3523447078673133727">Ne dozvoljavaj sajtovima da prate moje ruke</translation>
 <translation id="3524518036046613664">Otkrivanje uređaja na lokalnoj mreži, poput štampača</translation>
 <translation id="3524965460886318643">Izvezi aktivnosti</translation>
 <translation id="3525426269008462093">Pregledajte sinhronizaciju uređaja posle podešavanja</translation>
@@ -5915,6 +5917,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="52550593576409946">Nije moguće pokrenuti kiosk aplikaciju.</translation>
 <translation id="5255726914791076208">Kada izmenite pristupni kôd, nalog za uslugu <ph name="RP_ID" /> se neće promeniti</translation>
 <translation id="5255859108402770436">Prijavite se ponovo</translation>
+<translation id="5256174546894739043">Pitaj kada sajt želi da prati ruke</translation>
 <translation id="52566111838498928">Fontovi se učitavaju…</translation>
 <translation id="5256861893479663409">Na svim sajtovima</translation>
 <translation id="5258992782919386492">Instaliraj na ovom uređaju</translation>
@@ -6083,7 +6086,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5384401776498845256">Ko može da deli sa vama</translation>
 <translation id="5385628342687007304">Ova lozinka je sačuvana samo na ovom uređaju. Da biste je koristili na drugim uređajima, sačuvajte je na Google nalogu.</translation>
 <translation id="5387116558048951800">Izmenite akreditiv <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Specifikacije proizvoda</translation>
 <translation id="538822246583124912">Smernice za preduzeća su promenjene. Dugme za eksperimente je dodato u traku s alatkama. Kliknite na dugme da biste otvorili dijalog i omogućili eksperimente.</translation>
 <translation id="5388436023007579456">Aplikacije i veb-sajtovi sa dozvolom za kameru, kao i sistemske usluge, mogu da koriste kameru. Da biste koristili kameru, možda ćete morati da restartujete aplikaciju ili da osvežite stranicu.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Pronađen je 1 sajt sa mnogo obaveštenja}one{Pronađen je {NUM_SITES} sajt sa mnogo obaveštenja}few{Pronađena su {NUM_SITES} sajta sa mnogo obaveštenja}other{Pronađeno je {NUM_SITES} sajtova sa mnogo obaveštenja}}</translation>
@@ -6662,6 +6664,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5801051031414037185">Podesite telefon</translation>
 <translation id="5801568494490449797">Podešavanja</translation>
 <translation id="5803689677801500549">Sačuvane lozinke će se pojaviti ovde. Da biste uvezli lozinke u <ph name="BRAND" /> za <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />izaberite CSV fajl<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">Sajtovi obično prate ruke i prste da bi poboljšali realistične doživljaje</translation>
 <translation id="5804241973901381774">Dozvole</translation>
 <translation id="5804259315582798390">Omogućavanje oporavka lokalnih podataka nije uspelo</translation>
 <translation id="5805268472388605531">Pritisnite i zadržite tastere na tastaturi da biste videli oznake akcenta i specijalne znakove</translation>
@@ -7768,6 +7771,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6622980291894852883">Nastavi blokiranje slika</translation>
 <translation id="6624036901798307345">U režimu tableta dodirnite dugme brojača kartica na traci s alatkama da biste otvorili novu traku sa karticama koja prikazuje sličice svake kartice.</translation>
 <translation id="6624687053722465643">Slatkiš</translation>
+<translation id="6627743754845412571">Nije im dozvoljeno da prate ruke</translation>
 <translation id="6628316682330029452">Sertifikati klijenta su sertifikati koji vas identifikuju za druge servere.</translation>
 <translation id="6628328486509726751">Otpremljeno <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Veća bezbednost</translation>

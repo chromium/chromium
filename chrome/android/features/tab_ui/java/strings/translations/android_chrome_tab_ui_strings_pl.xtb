@@ -79,6 +79,7 @@
 <translation id="4371591986692297148">Nieaktywna</translation>
 <translation id="4460014764210899310">Rozgrupuj</translation>
 <translation id="4590027107044272416">Tutaj możesz otworzyć nową kartę</translation>
+<translation id="4619615317237390068">Karty z innych urządzeń</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Zamknąć 1 nieaktywną kartę?}few{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywne karty?}many{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywnych kart?}other{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywnej karty?}}</translation>
 <translation id="4648718555153979859">Tutaj są zgrupowane Twoje karty</translation>
 <translation id="4686942373615810936">Utworzono przed chwilą</translation>

@@ -218,7 +218,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> dilindeki sayfaları çevirmeyi önerme</translation>
 <translation id="1364822246244961190">Bu politika engellendiği için politikanın değeri yoksayılacak.</translation>
 <translation id="1368318639262510626">Dinozor oyunu. Pikselleşmiş bir dinozor, kaktüslerden ve pterodaktillerden sakınarak terk edilmiş bir düzlükte koşuyor. Sesli ipucu duyduğunuzda engellerin üzerinden atlamak için boşluk tuşuna basın.</translation>
-<translation id="1370751323199669551">Karşılaştırma hakkında daha fazla bilgi edinin.</translation>
 <translation id="1374468813861204354">öneriler</translation>
 <translation id="1375198122581997741">Sürüm Hakkında</translation>
 <translation id="1375293861397106342">Tüm seçenekler genellikle <ph name="LOW_PRICE" />-<ph name="HIGH_PRICE" /> aralığındadır</translation>
@@ -1389,7 +1388,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3568886473829759308">İşletme tarafından sağlanan bilgileri, kaynakları veya hizmetleri görüntülemek için web sitesine erişin.</translation>
 <translation id="3570079787344939099">Kaydırma ve yakınlaştırma</translation>
 <translation id="357244642999988503">Sütunu kaldır</translation>
-<translation id="3572827863357388784">Bu, deneysel bir özellik olduğundan her zaman doğru sonuç vermeyebilir.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Bu site için izin ver</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -2820,6 +2818,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6240964651812394252">Google Şifre Yöneticisi'ni işletim sisteminizle kullanmak için Chrome'u yeniden başlatıp bilgisayarınızın şifre yöneticisine erişim izni verin. Chromium yeniden başlatıldıktan sonra sekmeleriniz tekrar açılır.</translation>
 <translation id="6241121617266208201">Önerileri gizle</translation>
 <translation id="624499991300733384">Yazdırma Birleştirme Hizmeti</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> gün önce</translation>
 <translation id="6246868321321344665">Kuruluşunuz hem iş profilindeki hem de kişisel profildeki şifreler ve geçmiş gibi tarama verilerini görebilir</translation>
 <translation id="6250932670816326647">Banyo ve Vücut Ürünleri</translation>
 <translation id="6251906504834538140">{0,plural, =1{Dosyanın taşınması engellendi}other{<ph name="FILE_COUNT" /> dosyanın taşınması engellendi}}</translation>
@@ -3408,6 +3407,7 @@ Ek ayrıntılar:
 <translation id="7346081071264046066">"bu düğün davetini kabul edin ve ne kadar sevindiğinizi belirtin"</translation>
 <translation id="7352651011704765696">Bir şeyler ters gitti</translation>
 <translation id="7353601530677266744">Komut Satırı</translation>
+<translation id="7356678400607112844">Son Ziyaret Tarihi</translation>
 <translation id="7359588939039777303">Reklamlar engellendi.</translation>
 <translation id="7360451453306104998">Google'ın bulduğu indirimler ödeme aşamasında gösterilir</translation>
 <translation id="7363096869660964304">Ancak görünmez olmazsınız. Gizli moda geçmek göz atma etkinliğinizi işvereninizden, İnternet servis sağlayıcınızdan veya ziyaret ettiğiniz web sitelerinden gizlemez.</translation>

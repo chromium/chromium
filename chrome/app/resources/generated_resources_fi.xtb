@@ -986,7 +986,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="168991973552362966">Lisää lähellä oleva tulostin</translation>
 <translation id="1689945336726856614">Kopioi &amp;URL-osoite</translation>
 <translation id="1690068335127678634">Jaetun näytön käyttöönotto</translation>
-<translation id="1690443285859726589">Säädä tunnistuksen kynnystä niin, että voit käynnistää eleen mukavalla tavalla</translation>
 <translation id="1692115862433274081">Käytä toista tiliä</translation>
 <translation id="1692118695553449118">Synkronointi on päällä</translation>
 <translation id="1692210323591458290">Tummanvioletti</translation>
@@ -2126,6 +2125,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="247051149076336810">Tiedostonjaon URL-osoite</translation>
 <translation id="2471469610750100598">Musta (oletus)</translation>
 <translation id="2471506181342525583">Sijainnin käyttöoikeus sallittu</translation>
+<translation id="2471632709106952369">Vertailutaulukot</translation>
 <translation id="2473195200299095979">Käännä tämä sivu</translation>
 <translation id="2475982808118771221">Tapahtui virhe</translation>
 <translation id="247616523300581745">Piilota nämä tiedostot</translation>
@@ -6097,7 +6097,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5384401776498845256">Kuka voi jakaa sinulle sisältöä</translation>
 <translation id="5385628342687007304">Salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, tallenna se Google-tilillesi.</translation>
 <translation id="5387116558048951800">Muokkaa: <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Tuotetiedot</translation>
 <translation id="538822246583124912">Yritysversion käytäntöä muutettiin. Kokeilut-painike lisättiin yläpalkkiin. Avaa kokeilun käyttöönoton valintaikkuna klikkaamalla painiketta.</translation>
 <translation id="5388436023007579456">Sovellukset ja verkkosivustot, joilla on kameralupa, sekä järjestelmäpalvelut voivat käyttää kameraa. Jos haluat käyttää kameraa, sinun on ehkä käynnistettävä sovellus uudelleen tai päivitettävä sivu.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Löytyi 1 sivusto, joka lähetti paljon ilmoituksia}other{Löytyi {NUM_SITES} sivustoa, jotka lähettivät paljon ilmoituksia}}</translation>
@@ -7764,6 +7763,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="661266467055912436">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>
 <translation id="6613267708691765962">Haittaohjelmien tarkistus käynnissä…</translation>
 <translation id="6613668613087513143">Laitteen tila ei riitä päivityksen viimeistelyyn. Vapauta laitteelta <ph name="NECESSARY_SPACE" /> ja yritä uudelleen Chrome-selaimesta.</translation>
+<translation id="6614172284067813496">Sivu lisätty lukulistalle</translation>
 <translation id="6615455863669487791">Näytä</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
 <translation id="6619058681307408113">Line Printer Daemon ‑protokolla (LPD)</translation>
@@ -8145,6 +8145,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6876155724392614295">Pyörä</translation>
 <translation id="6876469544038980967">Ei hyödyllinen</translation>
 <translation id="6878422606530379992">Tunnistimet sallittu</translation>
+<translation id="6878862640969460273">Vaaka</translation>
 <translation id="6880587130513028875">Kuvat estettiin tällä sivulla.</translation>
 <translation id="6881845890692344060">Järjestelmänvalvoja on kirjautunut ulos. Päätösvalta on nyt sinulla.</translation>
 <translation id="6882210908253838664">Jos sivusto ei toimi, voit antaa sille väliaikaisen luvan käyttää kolmannen osapuolen evästeitä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -9682,6 +9683,7 @@ Avaintiedosto: <ph name="KEY_FILE" />
 
 Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda uusia laajennusversioita.</translation>
 <translation id="8000020256436988724">Työkalupalkki</translation>
+<translation id="800117767980299235">Kohokohdat ääneen</translation>
 <translation id="8002274832045662704">Tulostimen lisämääritykset</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ei ole enää käytettävissä</translation>
 <translation id="8004092996156083991">Kerromme, jos salasanojasi vaarantuu</translation>
@@ -10765,6 +10767,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="876956356450740926">Käytä kehittäjän työkaluja, IDEjä ja muokkaustoimintoja. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Laajennuksen juurihakemisto</translation>
 <translation id="8771300903067484968">Aloitussivun taustakuvaksi on palautettu oletustaustakuva.</translation>
+<translation id="8773535891252326047">Linkki kopioitu korostukseen</translation>
 <translation id="8774379074441005279">Vahvista palautus</translation>
 <translation id="8774934320277480003">Yläreuna</translation>
 <translation id="8775144690796719618">Virheellinen URL-osoite</translation>

@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">ሲበራ፣ ጣቢያዎች ካሜራዎን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ካሜራዎን መጠቀም አይችሉም።</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome ነገ እንደገና ኩኪዎችን ያግዳል}one{Chrome እንደገና ኩኪዎችን እስከሚያግድ ድረስ # ቀን}other{Chrome እንደገና ኩኪዎችን እስከሚያግድ ድረስ # ቀናት}}</translation>
 <translation id="3521663503435878242">ከ<ph name="DOMAIN" /> ስር ያሉ ጣቢያዎች</translation>
+<translation id="3523447078673133727">ጣቢያዎች እጆችዎን እንዲከታተሉ አይፍቀዱ</translation>
 <translation id="3536227077203206203">ለዚህ ጊዜ የሚፈቀድ</translation>
 <translation id="3538390592868664640">ጣቢያዎች የዙሪያዎ የ3ል ካርታ እንዳይፈጥሩ ወይም የካሜራ ቦታን እንዳይከታተሉ ያግዷቸው</translation>
 <translation id="3544058026430919413">አንድ ኩባንያ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ ለማጋራት ኩኪዎችን መጠቀም የሚችሉ የጣቢያዎች ቡድንን ሊገልጽ ይችላል። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">ሲበራ፣ ጣቢያዎች ጃቫስክሪፕትን መጠቀም ይችላሉ። ሲጠፋ፣ ጣቢያዎች ጃቫስክሪፕትን መጠቀም አይችሉም።</translation>
 <translation id="5099358668261120049">ይህ በ<ph name="ORIGIN" /> ወይም በመነሻ ገፅዎ ላይ ባለው መተግበሪያው የተከማቹ ሁሉንም ውሂብ እና ኩኪዎች ይሰርዛል።</translation>
 <translation id="5100237604440890931">ተሰብስቧል - ለመዘርጋት ጠቅ ያድርጉ</translation>
+<translation id="5116239826668864748">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት በማንኛውም ጊዜ Chrome መጠቀም ይችላሉ</translation>
 <translation id="5123685120097942451">ማንነት የማያሳውቅ ትር</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ክፍት በሆኑ ትሮችዎ ላይ የዋጋ ቅናሽ}one{ክፍት በሆኑ ትሮችዎ ላይ የዋጋ ቅናሽ}other{ክፍት በሆኑ ትሮችዎ ላይ የዋጋዎች ቅናሽ}}</translation>
 <translation id="5186036860380548585">አማራጮች ከማያ ገጹ አናት አጠገብ ይገኛሉ</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">ይህ ጣቢያ እንቅስቃሴዎን ማየት በሚችል አንድ ቡድን ውስጥ ነው። ይህ ቡድን በ<ph name="RWS_OWNER" /> የሚገለጽ ነው።</translation>
 <translation id="6689172468748959065">የመገለጫ ፎቶዎች</translation>
 <translation id="6697925417670533197">ንቁ ውርዶች</translation>
+<translation id="6709432001666529933">ጣቢያዎች እጆችዎን እንዲከታተሉ ከመፍቀድዎ በፊት ይጠይቁ (የሚመከር)</translation>
 <translation id="6722828510648505498">የመግቢያ መጠይቆችን ከማንነት አገልግሎቶች ያግዱ።</translation>
 <translation id="6746124502594467657">ወደታች አውርድ</translation>
 <translation id="6749077623962119521">ፈቃዶችን ዳግም ይጀመሩ?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">ለ<ph name="SITE_NAME" /> አንድ አማራጭ ይምረጡ</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6818926723028410516">ንጥሎችን ይምረጡ</translation>
+<translation id="6838525730752203626">በነባሪነት Chrome ይጠቀሙ</translation>
 <translation id="6840760312327750441">ትሮችን ለመቦደን፣ ትርን ነካ አድርገው ይያዙ። በመቀጠል፣ ወደ ሌላ ትር ይጎትቱት።</translation>
 <translation id="6864395892908308021">ይህ መሣሪያ NFCን ማንበብ አይችልም</translation>
 <translation id="6870169401250095575">የደህንነት ፍተሻ ካርድን ደብቅ</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7667547420449112975">አስደናቂው የኦዝ ምትሃተኛ</translation>
 <translation id="7684642910516280563">አንድ ጣቢያ የሦስተኛ ወገን ኩኪዎችን እንዲጠቀም አይፍቀዱ</translation>
+<translation id="7688240020069572972">የChrome ጠቃሚ ምክሮች ካርድ</translation>
 <translation id="7719367874908701697">ገፅ አጉላ</translation>
 <translation id="7759147511335618829">የMIDI መሣሪያ ቁጥጥር እና ዳግም ፕሮግራም</translation>
 <translation id="7781829728241885113">ትናንት</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">ወደላይ አውጣ</translation>
 <translation id="8617611086246832542">ሲበራ፣ የድር ጣቢያዎች የዴስክቶፕ እይታ ይታያል። ሲጠፋ፣ የድር ጣቢያዎች የሞባይል እይታ ይታያል።</translation>
 <translation id="8649036394979866943">Chrome በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ አብዛኛዎቹን ጣቢያዎች ይገድባል። <ph name="BEGIN_LINK" />የእርስዎን የመከታተል ጥበቃዎች ለማስተዳደር<ph name="END_LINK" /> ቅንብሮችን ይጎብኙ</translation>
+<translation id="8676316391139423634">በሚበራበት ጊዜ ጣቢያዎች እጆችዎን መከታተል ይችላሉ። በሚጠፋበት ጊዜ ጣቢያዎች እጆችዎን መከታተል አይችሉም።</translation>
 <translation id="8676374126336081632">ግቤቱን አጽዳ</translation>
 <translation id="8681886425883659911">ማስታወቂያዎች ጣልቃ ገቢ ወይም አሳሳች ማስታወቂያዎችን በማሳየት በሚታወቁ ጣቢያዎች ላይ ታግደዋል</translation>
 <translation id="868929229000858085">እውቂያዎችዎን ይፈልጉ</translation>

@@ -984,7 +984,6 @@
 <translation id="168991973552362966">近くのプリンタを追加</translation>
 <translation id="1689945336726856614">URL をコピー(&amp;U)</translation>
 <translation id="1690068335127678634">分割画面の設定</translation>
-<translation id="1690443285859726589">検出しきい値を調整して、操作がスムーズにトリガーされるようにする</translation>
 <translation id="1692115862433274081">別のアカウントを使用</translation>
 <translation id="1692118695553449118">同期は有効です</translation>
 <translation id="1692210323591458290">暗い紫</translation>
@@ -1424,6 +1423,7 @@
 <translation id="199610894463449797">{0,plural, =1{このプロフィールを閉じる}other{このプロフィールを閉じる（# 個のウィンドウ）}}</translation>
 <translation id="1997433994358798851">Chrome からデバイスに接続するには、Bluetooth の使用を許可する必要があります</translation>
 <translation id="1997616988432401742">ユーザーの証明書</translation>
+<translation id="1998715278591719161">ハンド トラッキングを許可するサイト</translation>
 <translation id="1999115740519098545">起動時</translation>
 <translation id="2002109485265116295">リアルタイム</translation>
 <translation id="2002160221914907025">試験運用版 AI</translation>
@@ -2108,6 +2108,7 @@
 <translation id="247051149076336810">ファイル共有 URL</translation>
 <translation id="2471469610750100598">黒（デフォルト）</translation>
 <translation id="2471506181342525583">位置情報へのアクセスが許可されています</translation>
+<translation id="2471632709106952369">比較表</translation>
 <translation id="2473195200299095979">このページを翻訳</translation>
 <translation id="2475982808118771221">エラーが発生しました</translation>
 <translation id="247616523300581745">これらのファイルを非表示にする</translation>
@@ -3529,6 +3530,7 @@
 <translation id="3521606918211282604">ディスクのサイズを変更</translation>
 <translation id="3522088408596898827">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてもう一度お試しください。</translation>
 <translation id="3522979239100719575">使用可能なプロファイルを検出しています。この処理には数分かかることがあります。</translation>
+<translation id="3523447078673133727">サイトにハンド トラッキングを許可しない</translation>
 <translation id="3524518036046613664">プリンタなどのローカル ネットワーク上のデバイスを検出</translation>
 <translation id="3524965460886318643">アクティビティをエクスポート</translation>
 <translation id="3525426269008462093">設定後にデバイスの同期を確認する</translation>
@@ -5902,6 +5904,7 @@
 <translation id="52550593576409946">キオスク アプリケーションを起動できませんでした。</translation>
 <translation id="5255726914791076208">パスキーを編集しても、<ph name="RP_ID" /> のアカウントは変更されません</translation>
 <translation id="5255859108402770436">もう一度ログインする</translation>
+<translation id="5256174546894739043">サイトがハンド トラッキングを求めたときに確認する</translation>
 <translation id="52566111838498928">フォントを読み込んでいます...</translation>
 <translation id="5256861893479663409">すべてのサイト</translation>
 <translation id="5258992782919386492">このデバイスにインストール</translation>
@@ -6070,7 +6073,6 @@
 <translation id="5384401776498845256">共有を許可する対象</translation>
 <translation id="5385628342687007304">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、Google アカウントに保存してください。</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> を編集</translation>
-<translation id="5387496897058645038">商品の仕様</translation>
 <translation id="538822246583124912">エンタープライズ ポリシーが変更され、ツールバーにテストボタンが追加されました。ボタンをクリックすると、ダイアログを開いてテストを有効にできます。</translation>
 <translation id="5388436023007579456">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスでカメラを使用できます。カメラを使用するには、アプリの再起動やページの更新が必要になることがあります。</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{通知の数が多いサイトが 1 件見つかりました}other{通知の数が多いサイトが {NUM_SITES} 件見つかりました}}</translation>
@@ -6648,6 +6650,7 @@
 <translation id="5801051031414037185">スマートフォンを設定</translation>
 <translation id="5801568494490449797">設定</translation>
 <translation id="5803689677801500549">保存したパスワードはこちらに表示されます。<ph name="BRAND" /> に <ph name="USER_EMAIL" /> のパスワードをインポートするには、<ph name="BEGIN_LINK" />CSV ファイルを選択<ph name="END_LINK" />してください。</translation>
+<translation id="5804198298544152115">サイトは、没入感を高めるために手や指の動きを追跡します</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5804259315582798390">ローカルデータの復元を有効にできませんでした</translation>
 <translation id="5805268472388605531">キーボードのキーを長押しすると、アクセント記号と特殊文字が表示されます</translation>
@@ -7734,6 +7737,7 @@
 <translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
 <translation id="6613267708691765962">マルウェアをスキャンしています...</translation>
 <translation id="6613668613087513143">更新を完了するのに十分な容量がデバイスにありません。デバイスで <ph name="NECESSARY_SPACE" /> の容量を確保してから、Chrome ブラウザでもう一度お試しください。</translation>
+<translation id="6614172284067813496">リーディング リストにページを追加しました</translation>
 <translation id="6615455863669487791">表示</translation>
 <translation id="6618744767048954150">実行中</translation>
 <translation id="6619058681307408113">ラインプリンタ デーモン（LPD）</translation>
@@ -7747,6 +7751,7 @@
 <translation id="6622980291894852883">画像を引き続きブロックする</translation>
 <translation id="6624036901798307345">タブレット モードのときに、ツールバーのタブカウンタ ボタンをタップして、各タブのサムネイルが表示された新しいタブバーを開きます。</translation>
 <translation id="6624687053722465643">スイーツ</translation>
+<translation id="6627743754845412571">ハンド トラッキングを許可しないサイト</translation>
 <translation id="6628316682330029452">クライアント証明書は、他のサーバーに対してユーザーの認証を行う証明書です。</translation>
 <translation id="6628328486509726751">アップロード日時: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">セキュリティの強化</translation>
@@ -8113,6 +8118,7 @@
 <translation id="6876155724392614295">自転車</translation>
 <translation id="6876469544038980967">役に立たなかった</translation>
 <translation id="6878422606530379992">センサーが許可されました</translation>
+<translation id="6878862640969460273">横向き</translation>
 <translation id="6880587130513028875">このページの画像はブロックされました。</translation>
 <translation id="6881845890692344060">管理者がログアウトしました。ご自身で管理できるようになりました。</translation>
 <translation id="6882210908253838664">サイトが機能しない場合は、サードパーティ Cookie の使用を一時的に許可してみてください。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -9649,6 +9655,7 @@
 
 鍵ファイルは安全な場所に保管してください。拡張機能の新しいバージョンの作成時に必要となります。</translation>
 <translation id="8000020256436988724">ツールバー</translation>
+<translation id="800117767980299235">音声ハイライト</translation>
 <translation id="8002274832045662704">プリンタの詳細設定</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> は利用できなくなりました</translation>
 <translation id="8004092996156083991">パスワードが不正使用された場合はお知らせします。</translation>
@@ -10732,6 +10739,7 @@
 <translation id="876956356450740926">デベロッパー ツール、IDE、エディタを実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">拡張機能のルート ディレクトリ</translation>
 <translation id="8771300903067484968">スタートページの背景をデフォルトの背景にリセットしました。</translation>
+<translation id="8773535891252326047">選択箇所にリンクをコピーしました</translation>
 <translation id="8774379074441005279">復元を実行</translation>
 <translation id="8774934320277480003">上余白</translation>
 <translation id="8775144690796719618">無効なURL</translation>

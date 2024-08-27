@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Izbrisati grupu kartica?</translation>
 <translation id="2195124168004379331">Izgleda da je vaš preglednik siguran</translation>
 <translation id="2199562093267256223">Ovo će izbrisati grupu sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Kupujte, prevodite i identificirajte ono što vidite pomoću kamere.</translation>
 <translation id="2218443599109088993">Umanji</translation>
 <translation id="2220529011494928058">Prijavite problem</translation>
 <translation id="2230173723195178503">Web lokacija je učitana</translation>
@@ -470,6 +471,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3268451620468152448">Otvorene kartice</translation>
 <translation id="3269051798482119531">Nastavi s ovom karticom</translation>
 <translation id="3272527697863656322">Otkaži</translation>
+<translation id="3273510436356991673">Prilagodite početni zaslon</translation>
 <translation id="3277021493514034324">Adresa web lokacije je kopirana</translation>
 <translation id="3285962946108803577">Dijeli stranicu...</translation>
 <translation id="3289505634533552500">Glasovno pretraživanje</translation>
@@ -1317,6 +1319,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7272437679830969316">Nije moguće potvrditi identitet. Lozinka nije kopirana.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Prati se novi paket}one{Prate se novi paketi}few{Prate se novi paketi}other{Prate se novi paketi}}</translation>
 <translation id="7291368939935408496">Pripremanje lozinki...</translation>
+<translation id="7300448350764260141">Dodajte još jednu razinu zaštite od online prijetnji.</translation>
 <translation id="7302503784943202842">Koristite lozinke na svim svojim uređajima</translation>
 <translation id="7313347584264171202">Anonimne kartice ćete pronaći ovdje</translation>
 <translation id="7335132237885014335">Primajte obavještenja</translation>

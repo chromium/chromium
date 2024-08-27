@@ -166,6 +166,7 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
 
 Si no estableces la política, no se permitirán excepciones a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1068801725746725727">Habilitar la recepción de encuestas de Navegación segura</translation>
+<translation id="107045325503547419">Depender del proceso de lanzamiento de la función.</translation>
 <translation id="1073983258515362346">Envía información sobre la luz de fondo del dispositivo.
 
       Si se establece la política como falsa o no se establece, no se enviará la información.
@@ -2375,6 +2376,15 @@ El sistema solo consulta registros AAAA cuando el dispositivo es accesible para 
 <translation id="2672012807430078509">Controlar el uso de NTLM como protocolo de autenticación para las activaciones de archivos compartidos SMB</translation>
 <translation id="2673363037046384711">El usuario final puede habilitar o inhabilitar el modo de alta eficiencia</translation>
 <translation id="2673968385134502798">Juegos</translation>
+<translation id="2675787568059234526">Generative AI VC Background permite a los usuarios expresarse con funciones potenciadas por IA generativa para crear fondos personalizados de videoconferencias en <ph name="PRODUCT_OS_NAME" />.
+
+0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Inhabilita la función.
+
+Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2678503605767349615">Certificados de cliente obligatorios en todo el dispositivo</translation>
 <translation id="268134026533587276">Habilitar la pantalla de bloqueo del protector de pantalla de usuario</translation>
 <translation id="268577405881275241">Habilitar la función del proxy de compresión de datos</translation>
@@ -3193,6 +3203,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       podrá descargar la imagen de fondo de pantalla y un hash criptográfico (en formato JPEG con un tamaño de archivo de hasta 16 MB) para verificar su integridad.
 
       Si no estableces la política, los usuarios podrán elegir la imagen de fondo para la pantalla de acceso y el escritorio.</translation>
+<translation id="3313395530427546108">No usar firmas de código ad-hoc.</translation>
 <translation id="3315324240256767419">Habilitar la función de ventana fantasma</translation>
 <translation id="3321099611644751329">Certificados TLS en los que debe confiar <ph name="PRODUCT_NAME" /> para la autenticación del servidor con restricciones</translation>
 <translation id="3323819750604111729">Habilitar la importación de favoritos en la primera ejecución</translation>
@@ -4490,6 +4501,7 @@ Las funciones potenciadas por IA generativa de Herramientas para desarrolladores
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falsa.</translation>
 <translation id="4298476374822550051">Habilitar el acuerdo de claves poscuántico Kyber en TLS</translation>
+<translation id="4301478455179579340">Firma de aplicaciones nativas durante la instalación de aplicaciones web progresivas</translation>
 <translation id="4303167373847512281">Permitir el modo de desarrollador</translation>
 <translation id="4307116964468610577">La política prolonga la vida útil de las baterías del sistema, ya que las carga a la capacidad máxima solo una vez por día. Durante el resto del día, las baterías se mantienen en un estado de carga más bajo, que es mejor para el almacenamiento, incluso cuando el sistema está conectado a una fuente de alimentación.
 
@@ -8535,6 +8547,7 @@ Si se inhabilita esta política, las contraseñas no se recordarán nunca y se q
 <translation id="7146198347561863646">Si habilitas la política o no la estableces, se permitirán los bloqueos de activación para la administración de energía. Las extensiones pueden solicitar estos bloqueos mediante la API de extensión de administración de energía. Las apps de ARC también pueden solicitarlos.
 
       Si inhabilitas la política, se ignorarán las solicitudes de bloqueos de activación.</translation>
+<translation id="7146363485174988200">Usar firmas de código ad-hoc.</translation>
 <translation id="7148958378210448356">Una lista predeterminada de combinaciones de teclas con la tecla del Selector nunca realizará una acción solo en pantalla completa.</translation>
 <translation id="7149042336307555519"> Esta política controla los tipos de conexiones permitidos en las actualizaciones del SO. Es posible que el tamaño de las actualizaciones del SO sobrecargue la conexión, lo que podría generar costos adicionales para el usuario. Por lo tanto, no están habilitadas de forma predeterminada en conexiones que se consideren costosas (actualmente, solo "celular").
 
@@ -9455,6 +9468,11 @@ Si inhabilitas la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el va
 <translation id="793473937901685727">Establecer la disponibilidad de certificados para apps de ARC</translation>
 <translation id="7936302526928951356">El string usuario-agente no bloqueará los cambios para la versión principal</translation>
 <translation id="7937766917976512374">Permitir o rechazar la captura de video</translation>
+<translation id="7937825205289116563">Si habilitas la política o no la estableces, se habilitará el uso de firmas de ad-hoc para la aplicación nativa que se crea cuando se instala una aplicación web progresiva (AWP). Esto garantiza que cada aplicación instalada tenga una identidad única para los componentes del sistema <ph name="MAC_OS_NAME" />.
+
+Si inhabilitas la política, todas las aplicaciones nativas que se creen cuando se instale una aplicación web progresiva tendrán la misma identidad. Esto puede interferir con la funcionalidad de <ph name="MAC_OS_NAME" />.
+
+Solo desactiva la política si usas una solución de seguridad de endpoint que bloquea las aplicaciones con una firma de ad-hoc.</translation>
 <translation id="7941528208359969119">Permitir que se realicen verificaciones en línea de <ph name="OCSP_CRL_LABEL" /></translation>
 <translation id="7941975817681987555">No predecir acciones de la red en ninguna conexión de red</translation>
 <translation id="7945445169067895719">Habilitar el bloqueo cuando el dispositivo se suspenda o se cierra la tapa</translation>
@@ -10029,6 +10047,15 @@ del dispositivo durante el acceso del usuario.</translation>
 <translation id="8357681633047935212">Limitar la duración de la sesión de usuario</translation>
 <translation id="8357989008292691856">Lista de usuarios que tienen permitido acceder</translation>
 <translation id="8359734107661430198">Habilitar la API ExampleDeprecatedFeature hasta el 02/09/2008</translation>
+<translation id="836477228517805144">Generative AI Wallpaper permite a los usuarios expresarse con funciones potenciadas por IA generativa para crear fondos de pantalla personalizados en <ph name="PRODUCT_OS_NAME" />.
+
+0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Inhabilita la función.
+
+Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8367069206652407172">Si inhabilitas la política, los usuarios no podrán finalizar procesos en el Administrador de tareas.
 
       Si habilitas la política o no la estableces, los usuarios podrán finalizar procesos en el Administrador de tareas.</translation>
@@ -10377,6 +10404,7 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="8619748440665904084">Inhabilitar la importación de datos para autocompletar formularios en la primera ejecución</translation>
 <translation id="862621549134406761">Habilitar la verificación de uso de la clave RSA</translation>
 <translation id="8626826495474944836">Solicitar el aislamiento de sitios para todos los sitios</translation>
+<translation id="8630797597241896082">Permitir Generative AI VC Background y mejorar los modelos de IA</translation>
 <translation id="8631314130868563649">Inhabilitar la administración de carga fuera del horario de mayor consumo</translation>
 <translation id="8631434304112909927">hasta la versión <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Lista de apps para tomar notas permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>

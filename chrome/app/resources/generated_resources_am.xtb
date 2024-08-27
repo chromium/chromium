@@ -986,7 +986,6 @@
 <translation id="168991973552362966">በአቅራቢያ ያለ አታሚን ያክሉ</translation>
 <translation id="1689945336726856614">&amp;ዩአርኤል ቅዳ</translation>
 <translation id="1690068335127678634">የተከፈለ ማያ ገጽ መዋቀር</translation>
-<translation id="1690443285859726589">ምልክቱን በምቾት መቀስቀስ እንዲችሉ የማወቂያ መባቻውን ያስተካክሉ</translation>
 <translation id="1692115862433274081">ሌላ መለያ ተጠቀም</translation>
 <translation id="1692118695553449118">አመሳስል በርቷል</translation>
 <translation id="1692210323591458290">ጠቆር ያለ ወይን ጠጅ</translation>
@@ -1435,6 +1434,7 @@
 <translation id="199610894463449797">{0,plural, =1{ይህን መገለጫ ዝጋ}one{ይህን መገለጫ ዝጋ (# መስኮት)}other{ይህን መገለጫ ዝጋ (# መስኮቶች)}}</translation>
 <translation id="1997433994358798851">Chrome ከእርስዎ መሣሪያ ጋር ለመገናኘት ብሉቱዝን ለመጠቀም ፈቃድ ይፈልጋል</translation>
 <translation id="1997616988432401742">የእርስዎ እውቅና ማረጋገጫዎች</translation>
+<translation id="1998715278591719161">እጆችዎን ለመከታተል ተፈቅዷል</translation>
 <translation id="1999115740519098545">በሚነሳበት ጊዜ</translation>
 <translation id="2002109485265116295">እውነተኛ ጊዜ</translation>
 <translation id="2002160221914907025">የሙከራ ሰው ሠራሽ አስተውሎት</translation>
@@ -2121,6 +2121,7 @@
 <translation id="247051149076336810">የፋይል ማጋራት ዩአርኤል</translation>
 <translation id="2471469610750100598">ጥቁር (ነባሪ)</translation>
 <translation id="2471506181342525583">የአካባቢ መዳረሻ ተፈቅዷል</translation>
+<translation id="2471632709106952369">የንጽጽር ሠንጠረዦች</translation>
 <translation id="2473195200299095979">ይህን ገፅ መተርጎም</translation>
 <translation id="2475982808118771221">ስህተት ተከስቷል</translation>
 <translation id="247616523300581745">እነዚህን ፋይሎች ደብቅ</translation>
@@ -3545,6 +3546,7 @@
 <translation id="3521606918211282604">የዲስክ መጠንን ለውጥ</translation>
 <translation id="3522088408596898827">የዲስክ ቦታ በጣም ዝቅተኛ ነው። የዲስክ ቦታ ያስለቅቁ እና እንደገና ይሞክሩ።</translation>
 <translation id="3522979239100719575">የሚገኙ መገለጫዎችን በመፈለግ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
+<translation id="3523447078673133727">ጣቢያዎች እጆችዎን እንዲከታተሉ አይፍቀዱ</translation>
 <translation id="3524518036046613664">እንደ አታሚዎች ያሉ በአከባቢዎ አውታረ መረብ ላይ መሣሪያዎችን ያግኙ</translation>
 <translation id="3524965460886318643">ወደ ውጭ የመላክ እንቅስቃሴዎች</translation>
 <translation id="3525426269008462093">ከውቅረት በኋላ የመሣሪያ ስምረትን ይገምግሙ</translation>
@@ -5921,6 +5923,7 @@
 <translation id="52550593576409946">የኪዮስክ መተግበሪያ ሊጀመር አልቻለም።</translation>
 <translation id="5255726914791076208">የእርስዎን የይለፍ ቁልፍ በሚያርትዑበት ጊዜ የእርስዎ የ<ph name="RP_ID" /> መለያ አይለወጥም</translation>
 <translation id="5255859108402770436">እንደገና በመለያ ይግቡ</translation>
+<translation id="5256174546894739043">አንድ ጣቢያ እጆችዎን መከታተል የሚፈልግበትን ጊዜ ጠይቅ</translation>
 <translation id="52566111838498928">ቅርጸ-ቁምፊ በመጫን ላይ...</translation>
 <translation id="5256861893479663409">በሁሉም ጣቢያዎች</translation>
 <translation id="5258992782919386492">በዚህ መሣሪያ ላይ ጫን</translation>
@@ -6090,7 +6093,6 @@
 <translation id="5384401776498845256">ማን ከእርስዎ ጋር ማጋራት ይችላል</translation>
 <translation id="5385628342687007304">ይህ የይለፍ ቃል የተቀመጠው በዚሀ መሣሪያ ላይ ብቻ ነው። በሌሎች መሣሪያዎቸዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" />ን ያርትዑ</translation>
-<translation id="5387496897058645038">የምርት ዝርዝር መግለጫዎች</translation>
 <translation id="538822246583124912">የድርጅት መመሪያ ተለውጧል የሙከራዎች አዝራር ወደ መሣሪያ አሞሌ ታክሏል። ሙከራዎችን ለማንቃት መገናኛን ለመክፈት ቁልፉን ጠቅ ያድርጉ።</translation>
 <translation id="5388436023007579456">የካሜራ ፈቃድ ያላቸው መተግበሪያዎች እና ድር ጣቢያዎች እንዲሁም የሥርዓት አገልግሎቶች ካሜራዎን መጠቀም ይችላሉ። ካሜራውን ለመጠቀም መተግበሪያውን እንደገና ማስጀመር ወይም ገጹን ማደስ ሊኖርብዎት ይችላል።</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{ብዙ ማሳወቂያዎች ያሉት 1 ጣቢያ ተገኝቷል}one{ብዙ ማሳወቂያዎች ያሉት {NUM_SITES} ጣቢያ ተገኝቷል}other{ብዙ ማሳወቂያዎች ያሏቸው {NUM_SITES} ጣቢያዎች ተገኝተዋል}}</translation>
@@ -6669,6 +6671,7 @@
 <translation id="5801051031414037185">ስልክን አዋቅር</translation>
 <translation id="5801568494490449797">አማራጮች</translation>
 <translation id="5803689677801500549">የተቀመጡ የይለፍ ቃላት እዚህ ይታያሉ። ለ<ph name="USER_EMAIL" /> የይለፍ ቃላትን ወደ <ph name="BRAND" /> ለማስመጣት <ph name="BEGIN_LINK" /> የCSV ፋይልን ይምረጡ።<ph name="END_LINK" /></translation>
+<translation id="5804198298544152115">ጣቢያዎች መሳጭ ተሞክሮዎችን ለማጉላት በአብዛኛው እጆችዎን እና ጣቶችዎን ይከታተላሉ</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5804259315582798390">የአካባቢያዊ ውሂብ መልሶ ማግኘትን ማንቃት አልተሳካም</translation>
 <translation id="5805268472388605531">የአጽንዖት ምልክቶች እና ልዩ ቁምፊዎችን ለማየት የቁልፍ ሰሌዳ ቁልፎችን ተጭነው ይያዙ</translation>
@@ -7771,6 +7774,7 @@
 <translation id="6622980291894852883">ምስሎችን ማገድ ቀጥል</translation>
 <translation id="6624036901798307345">በጡባዊ ሁኔታ ላይ የእያንዳንዱ ትር ድንክዬዎችን የሚያሳየው አዲሱን የትር ድርድር ለመክፈት የትሩ ቆጣሪ መሣሪያ አሞሌ አዝራርን መታ ያድርጉ።</translation>
 <translation id="6624687053722465643">Sweetness</translation>
+<translation id="6627743754845412571">እጆችዎን ለመከታተል አልተፈቀደም</translation>
 <translation id="6628316682330029452">የደንበኛ የዕውቅና ማረጋገጫዎች እርስዎን ከሌሎች አገልጋዮች ጋር የሚለዩ የዕውቅና ማረጋገጫዎች ናቸው።ደደ</translation>
 <translation id="6628328486509726751">የተሰቀለው በ<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">ይበልጥ ጠንካራ ደህንነት</translation>
@@ -8138,6 +8142,7 @@
 <translation id="6876155724392614295">ቢስክሌት</translation>
 <translation id="6876469544038980967">አጋዥ አይደለም</translation>
 <translation id="6878422606530379992">ዳሳሾች ተፈቅደዋል</translation>
+<translation id="6878862640969460273">የአግድም</translation>
 <translation id="6880587130513028875">በዚህ ገፅ ላይ ምስሎች ታግደዋል።</translation>
 <translation id="6881845890692344060">አስተዳዳሪዎ ዘግተው ወጥተዋል። አሁን ተቆጣጣሪው እርስዎ ነዎት።</translation>
 <translation id="6882210908253838664">ጣቢያው የማይሠራ ከሆነ የሦስተኛ ወገን ኩኪዎችን ለመጠቀም ጊዜያዊ ፈቃድ መስጠት ይሞክሩ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
@@ -9681,6 +9686,7 @@ nil
 ቁልፍ ፋይልዎ የቅጥያዎን አዲስ ስሪት ለመፍጠር ስለሚያስፈልግዎ ደህንነቱ በተጠበቀ ቦታ ያስቀምጡ። '
 nil</translation>
 <translation id="8000020256436988724">የመሳሪያ አሞሌ</translation>
+<translation id="800117767980299235">ዋና ዋና ዜናዎች በድምጽ</translation>
 <translation id="8002274832045662704">የላቀ የአታሚ ውቅረት</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ከእንግዲህ አይገኝም</translation>
 <translation id="8004092996156083991">የእርስዎ የይለፍ ቃላት ከተጠለፉ እኛ እናሳውቅዎታለን።</translation>

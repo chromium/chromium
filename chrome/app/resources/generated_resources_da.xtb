@@ -987,7 +987,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="168991973552362966">Tilføj en printer i nærheden</translation>
 <translation id="1689945336726856614">Kopiér &amp;webadresse</translation>
 <translation id="1690068335127678634">Konfiguration af opdelt skærm</translation>
-<translation id="1690443285859726589">Juster registreringsgrænsen, så du nemt kan aktivere bevægelsen</translation>
 <translation id="1692115862433274081">Brug en anden konto</translation>
 <translation id="1692118695553449118">Synkronisering er slået til</translation>
 <translation id="1692210323591458290">Mørklilla</translation>
@@ -2127,6 +2126,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="247051149076336810">Webadresse til fildeling</translation>
 <translation id="2471469610750100598">Sort (standard)</translation>
 <translation id="2471506181342525583">Lokationsadgang blev tilladt</translation>
+<translation id="2471632709106952369">Sammenligningstabeller</translation>
 <translation id="2473195200299095979">Oversæt denne side</translation>
 <translation id="2475982808118771221">Der opstod en fejl</translation>
 <translation id="247616523300581745">Skjul disse filer</translation>
@@ -6098,7 +6098,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5384401776498845256">Hvem kan dele med dig</translation>
 <translation id="5385628342687007304">Adgangskoden gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto.</translation>
 <translation id="5387116558048951800">Rediger <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Produktspecifikationer</translation>
 <translation id="538822246583124912">Virksomhedspolitikken blev ændret. Knappen Eksperimenter er føjet til værktøjslinjen. Klik på knappen for at åbne en dialogboks og aktivere eksperimenter.</translation>
 <translation id="5388436023007579456">Apps og websites, der har kameratilladelsen, samt systemtjenester kan bruge dit kamera. Du skal muligvis genstarte appen eller opdatere siden for at bruge kameraet.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Der blev fundet 1 website med mange notifikationer}one{Der blev fundet {NUM_SITES} website med mange notifikationer}other{Der blev fundet {NUM_SITES} websites med mange notifikationer}}</translation>
@@ -8146,6 +8145,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6876155724392614295">Cykel</translation>
 <translation id="6876469544038980967">Ikke nyttig</translation>
 <translation id="6878422606530379992">Der er givet adgang til sensorer</translation>
+<translation id="6878862640969460273">Liggende format</translation>
 <translation id="6880587130513028875">Billeder blev blokeret på denne side.</translation>
 <translation id="6881845890692344060">Din administrator er logget ud. Nu er det dig, der bestemmer.</translation>
 <translation id="6882210908253838664">Hvis et website ikke fungerer, kan du prøve at give det midlertidig tilladelse til at bruge tredjepartscookies. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -9683,6 +9683,7 @@ Nøglefil: <ph name="KEY_FILE" />
 
 Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye versioner af din udvidelse.</translation>
 <translation id="8000020256436988724">Værktøjslinje</translation>
+<translation id="800117767980299235">Optagelse af højdepunkter</translation>
 <translation id="8002274832045662704">Avanceret konfiguration af printer</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> er ikke længere tilgængelig</translation>
 <translation id="8004092996156083991">Hvis dine adgangskoder kompromitteres, kontakter vi dig.</translation>

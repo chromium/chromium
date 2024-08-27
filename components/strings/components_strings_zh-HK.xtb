@@ -218,7 +218,6 @@
 <translation id="1363819917331173092">不要詢問是否翻譯<ph name="SOURCE_LANGUAGE" />的網頁</translation>
 <translation id="1364822246244961190">此政策被封鎖，系統會忽略其設定值。</translation>
 <translation id="1368318639262510626">喺呢款恐龍遊戲入面，你要協助喺荒野入面奔馳嘅像素化恐龍避開仙人掌同翼手龍。當您聽到音效提示嘅時候，㩒空格鍵就可以跳過障礙物。</translation>
-<translation id="1370751323199669551">進一步了解「比較」。</translation>
 <translation id="1374468813861204354">建議</translation>
 <translation id="1375198122581997741">關於版本</translation>
 <translation id="1375293861397106342">所有選項一般為 <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -1292,6 +1291,7 @@
 <translation id="3402261774528610252">用於載入此網站的連線使用 TLS 1.0 或 TLS 1.1 版本現已被淘汰，並會於日後停用。停用後，使用者將無法載入此網站。伺服器應啟用 TLS 1.2 或以上版本。</translation>
 <translation id="3405664148539009465">自訂字型</translation>
 <translation id="3407789382767355356">第三方登入</translation>
+<translation id="340924996148642843">目前無法使用比較功能</translation>
 <translation id="3409896703495473338">管理安全性設定</translation>
 <translation id="3414275587143250384">分散式和雲端運算</translation>
 <translation id="3414952576877147120">大小：</translation>
@@ -1388,7 +1388,6 @@
 <translation id="3568886473829759308">前往網站查看商家提供的資料、資源或服務。</translation>
 <translation id="3570079787344939099">捲動和縮放</translation>
 <translation id="357244642999988503">移除欄</translation>
-<translation id="3572827863357388784">這是實驗版功能，提供的建議不一定符合需求。</translation>
 <translation id="3574305903863751447"><ph name="CITY" />，<ph name="STATE" />，<ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">允許此網站的通知</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1449,6 +1448,7 @@
 <translation id="365641980390710834">休閒服裝</translation>
 <translation id="3658742229777143148">修訂</translation>
 <translation id="3659521826520353662">瀏覽過哪些管理員定義的網站和瀏覽時間：<ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">搜尋其他出售此產品的店舖的更多購買選項。</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3665100783276035932">大部份網站應該都能正常運作</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />瞭解詳情<ph name="LINK_END1" /></translation>
@@ -1886,6 +1886,7 @@
 <translation id="4451135742916150903">可要求連接 HID 裝置</translation>
 <translation id="4451684391620232683">向使用者顯示的文字：</translation>
 <translation id="4452328064229197696">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，Google 密碼管理工具建議您檢查已儲存的密碼。</translation>
+<translation id="4452957520362597816">要求安裝網絡應用程式</translation>
 <translation id="4456937135469235202">探險旅遊</translation>
 <translation id="4464826014807964867">有來自您機構資料的網站</translation>
 <translation id="4466576951214254884">學生貸款和大專貸款</translation>
@@ -2819,6 +2820,7 @@
 <translation id="6240964651812394252">如要在作業系統上使用「Google 密碼管理工具」，請重新啟動 Chrome，並允許存取電腦的密碼管理工具。分頁會在重新啟動後再次開啟。</translation>
 <translation id="6241121617266208201">隱藏建議</translation>
 <translation id="624499991300733384">列印建立服務</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6246868321321344665">你的機構可以查看瀏覽資料，例如工作和個人設定檔中的密碼及記錄</translation>
 <translation id="6250932670816326647">沐浴和身體護理產品</translation>
 <translation id="6251906504834538140">{0,plural, =1{禁止移動檔案}other{禁止移動 <ph name="FILE_COUNT" /> 個檔案}}</translation>
@@ -2992,6 +2994,7 @@
 <translation id="6529602333819889595">重做刪除(&amp;R)</translation>
 <translation id="6535617236508021606">此付款卡已儲存至 Google 帳戶，你可在各項 Google 服務中使用。</translation>
 <translation id="6536221421038631327">從 <ph name="DEVICE_TYPE" /> 移除 Passpoint 訂閱後，系統將一併移除相關網絡。如要變更訂閱計劃，請聯絡「<ph name="FRIENDLY_NAME" />」。<ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">如要查看比較表格，請開啟同步功能</translation>
 <translation id="6539092367496845964">發生錯誤，請稍後再試。</translation>
 <translation id="6540488083026747005">你已允許此網站使用第三方 Cookie</translation>
 <translation id="6545864417968258051">藍牙掃瞄</translation>
@@ -3407,6 +3410,7 @@
 <translation id="7346081071264046066">「懷著興奮心情答應出席婚禮」</translation>
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7353601530677266744">命令列</translation>
+<translation id="7356678400607112844">上次瀏覽日期</translation>
 <translation id="7359588939039777303">已封鎖廣告。</translation>
 <translation id="7360451453306104998">Google 找到可用折扣後，就會在結帳時顯示相關資料</translation>
 <translation id="7363096869660964304">然而，您並非處於隱藏狀態。使用無痕模式時，您的僱主、互聯網服務供應商或您所瀏覽的網站仍然可以追蹤您的瀏覽行為。</translation>

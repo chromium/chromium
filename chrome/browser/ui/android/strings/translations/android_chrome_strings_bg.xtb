@@ -1018,6 +1018,7 @@
 <translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
 <translation id="5879072387416556377">Получавайте по-добри предложения</translation>
 <translation id="5885378508678660271">Известия <ph name="SEPARATOR" /> Chrome премахна тези разрешения, защото сайтът е опасен</translation>
+<translation id="5895834791314695851">Паролите скоро може да спрат да работят на това устройство. За да продължите да ги използвате, актуализирайте услугите за Google Play. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Долният лист без налични ключове за достъп бе затворен</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5919204609460789179">Актуализирайте <ph name="PRODUCT_NAME" />, за да стартира синхронизирането</translation>
@@ -1557,6 +1558,7 @@
 <translation id="820568752112382238">Най-посещавани сайтове</translation>
 <translation id="8209050860603202033">Отваряне на изображението</translation>
 <translation id="8210770465353466621">Тук ще се показват разделите ви</translation>
+<translation id="8211101263765532799">Някои пароли скоро ще спрат да работят</translation>
 <translation id="8215740705341534369">Страничен лист</translation>
 <translation id="8218622182176210845">Управление на профила ви</translation>
 <translation id="8221401890884589479">Можете да блокирате нежеланите сайтове. Също така Chrome автоматично изтрива от списъка сайтовете, посетени преди повече от 30 дни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -1657,6 +1659,7 @@
 <translation id="864544049772947936">Управление на прозорците (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Използвайте Chrome по предпочитания от вас начин</translation>
 <translation id="8664979001105139458">Името на файла вече съществува</translation>
+<translation id="8672883760227492369">Някои пароли на това устройство скоро ще спрат да работят. Можете да преместите тези пароли в Google Мениджър на пароли.</translation>
 <translation id="8676276370198826499">Регистрирайте се за <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Потвърждения при вход</translation>
 <translation id="8683039184091909753">изображение</translation>

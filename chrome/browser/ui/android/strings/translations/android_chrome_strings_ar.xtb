@@ -1020,6 +1020,7 @@
 <translation id="587735546353481577">‏لمتابعة موقع إلكتروني، انتقِل إلى الموقع الإلكتروني وافتح قائمة Chrome وانقر على "متابعة".</translation>
 <translation id="5879072387416556377">الحصول على اقتراحات أفضل</translation>
 <translation id="5885378508678660271">‏الإشعارات <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنّ هذا الموقع الإلكتروني خطير</translation>
+<translation id="5895834791314695851">‏ستفقد قريبًا إمكانية الوصول إلى كلمات المرور المحفوظة على هذا الجهاز. لمواصلة استخدام كلمات المرور، يجب تحديث "خدمات Google Play". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">تمّ إغلاق صفحة "ما من مفاتيح مرور"</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5919204609460789179">تحديث <ph name="PRODUCT_NAME" /> لبدء المزامنة</translation>
@@ -1561,6 +1562,7 @@
 </translation>
 <translation id="8209050860603202033">فتح الصورة</translation>
 <translation id="8210770465353466621">ستظهر لك علامات التبويب هنا.</translation>
+<translation id="8211101263765532799">ستفقد قريبًا إمكانية الوصول إلى بعض كلمات المرور</translation>
 <translation id="8215740705341534369">بطاقة جانبية</translation>
 <translation id="8218622182176210845">إدارة حسابك</translation>
 <translation id="8221401890884589479">‏يمكنك حظر المواقع الإلكترونية التي لا تريدها. بالإضافة إلى ذلك، يحذف Chrome تلقائيًا المواقع الإلكترونية التي يمر أكثر من 30 يومًا على إضافتها إلى قائمة "المواقع الإلكترونية التي تقترح الإعلانات". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -1661,6 +1663,7 @@
 <translation id="864544049772947936">إدارة النوافذ (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">‏استخدام Chrome بإعداداتك الخاصة</translation>
 <translation id="8664979001105139458">اسم الملف موجود</translation>
+<translation id="8672883760227492369">‏ستفقد قريبًا إمكانية الوصول إلى بعض كلمات المرور المحفوظة على هذا الجهاز. لذا يمكنك نقل كلمات المرور هذه إلى "مدير كلمات المرور في Google".</translation>
 <translation id="8676276370198826499">الاشتراك في <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">عمليات التحقّق من تسجيل الدخول</translation>
 <translation id="8683039184091909753">صورة</translation>

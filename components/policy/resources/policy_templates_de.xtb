@@ -155,6 +155,7 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
 
 Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“ möglich.</translation>
 <translation id="1068801725746725727">Empfang von Safe Browsing-Umfragen aktivieren</translation>
+<translation id="107045325503547419">Abhängig vom Funktionseinführungsprozess.</translation>
 <translation id="1073983258515362346">Diese Richtlinie gibt Informationen zur Hintergrundbeleuchtung eines Geräts aus.
 
       Wenn sie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
@@ -2261,6 +2262,15 @@ Das System fragt AAAA-Einträge nur dann ab, wenn es für einen globalen IPv6-Ho
 <translation id="2672012807430078509">Steuerung, durch die NTLM als Authentifizierungsprotokoll für SMB-Bereitstellungen aktiviert wird</translation>
 <translation id="2673363037046384711">Der Endnutzer kann den Modus für hohe Effizienz aktivieren oder deaktivieren.</translation>
 <translation id="2673968385134502798">Spiele</translation>
+<translation id="2675787568059234526">Mit „VC‑Hintergrund basierend auf generativer KI“ können Nutzer mithilfe von Funktionen basierend auf generativer KI personalisierte Hintergründe für Videokonferenzen in <ph name="PRODUCT_OS_NAME" /> erstellen.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI-Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.
+
+Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2678503605767349615">Erforderliche geräteübergreifende Clientzertifikate</translation>
 <translation id="268134026533587276">Der Bildschirmschoner für den Sperrbildschirm des Nutzers ist aktiviert.</translation>
 <translation id="268577405881275241">Funktion für Datenkomprimierungs-Proxy aktivieren</translation>
@@ -3071,6 +3081,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       das Hintergrundbild herunterladen kann, sowie einen kryptografischen Hash (im JPEG-Format mit einer Dateigröße von bis zu 16 MB), um die Integrität des Downloads zu verifizieren.
 
       Ist die Richtlinie nicht konfiguriert, können Nutzer das Hintergrundbild für den Desktop und den Anmeldebildschirm selbst auswählen.</translation>
+<translation id="3313395530427546108">Keine Ad‑hoc‑Codesignaturen verwenden.</translation>
 <translation id="3315324240256767419">Funktion für ghost-Dialogfelder aktivieren.</translation>
 <translation id="3321099611644751329">TLS-Zertifikate, die von <ph name="PRODUCT_NAME" /> für die Serverauthentifizierung mit Einschränkungen als vertrauenswürdig eingestuft werden sollen</translation>
 <translation id="3323819750604111729">Import von Lesezeichen bei der ersten Ausführung aktivieren</translation>
@@ -3182,6 +3193,7 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhinder
 <translation id="3417418267404583991">Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, sind Gastanmeldungen in <ph name="PRODUCT_OS_NAME" /> möglich. Eine Anmeldung als Gast erfolgt anonym und erfordert keine Passworteingabe.
 
       Ist die Richtlinie auf "false" eingestellt, können in <ph name="PRODUCT_OS_NAME" /> keine Gastsitzungen gestartet werden.</translation>
+<translation id="3419726087743433857">Auf generativer KI basierende Funktionen ohne Verbesserung von KI-Modellen zulassen</translation>
 <translation id="3423703250826790403">Android-Apps</translation>
 <translation id="3426434797050451264">Mit dieser Richtlinie können auch Android-Apps als Standard-Handler für Dateien festgelegt werden.</translation>
 <translation id="3428247105888806363">Netzwerkvorhersage aktivieren</translation>
@@ -3655,6 +3667,7 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 <translation id="377044054160169374">Zwingende Maßnahmen bei irreführenden Inhalten</translation>
 <translation id="3778689139323007309">Widerrufsprüfung für Serverzertifikate durchführen, die erfolgreich bestätigt und von lokal installierten CA-Zertifikaten signiert wurden</translation>
 <translation id="3780152581321609624">Nicht-Standard-Port in Kerberos-SPN einschließen</translation>
+<translation id="3785423718413114598">Auf generativer KI basierende Funktionen nicht zulassen</translation>
 <translation id="3788662722837364290">Einstellungen für die Energieverwaltung bei Inaktivität des Nutzers</translation>
 <translation id="3788876528643861853">Microsoft®-Cloudauthentifizierung deaktivieren</translation>
 <translation id="3790085888761753785">Wenn diese Einstellung aktiviert ist, können Nutzer sich mit Smart Lock in ihren Konten anmelden. Du hast dann mehr Möglichkeiten als mit den üblichen Smart Lock-Einstellungen, mit denen sie lediglich ihre Bildschirme entsperren können.
@@ -4298,6 +4311,7 @@ Zu den auf generativer KI basierenden Funktionen der Entwicklertools gehören f
 
 Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirksam, wenn <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>
 <translation id="4298476374822550051">Kyber-Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit TLS aktivieren</translation>
+<translation id="4301478455179579340">Signatur nativer Anwendungen während der Installation einer progressiven Webanwendung</translation>
 <translation id="4303167373847512281">Entwicklermodus zulassen</translation>
 <translation id="4307116964468610577">Die Richtlinie verlängert die Lebensdauer von Systemakkus, indem sie nur einmal pro Tag vollständig aufgeladen werden. Für den Rest des Tages werden die Akkus in einem niedrigeren Ladezustand gehalten. So werden sie geschont, auch wenn das System an eine Stromquelle angeschlossen ist.
 
@@ -5375,6 +5389,17 @@ Wenn du diese Richtlinie aktivierst oder nicht konfigurierst, wird die Funktion 
 
 Wenn du diese Richtlinie deaktivierst, wird die Funktion „QR‑Code‑Generator“ deaktiviert.</translation>
 <translation id="5170018694841697392">Verwendung von SafeSearch in der Google Suche nicht erzwingen</translation>
+<translation id="5172783335366295717">Diese Richtlinie definiert die Standardeinstellung für alle abgedeckten, auf generativer KI basierenden Funktionen. Wenn diese Richtlinie beispielsweise auf den Wert 1 gesetzt ist, ist dies die Standardeinstellung für alle abgedeckten, auf generativer KI basierenden Funktionen. Manuell festgelegte Richtlinienwerte sind davon nicht betroffen. Unter https://support.google.com/chrome/a?p=generative_ai_settings findest du eine Liste der abgedeckten Funktionen.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI-Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI-Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.
+
+Wenn für eine abgedeckte Funktion kein entsprechender Richtlinienwert vorhanden ist, wird der nächsthöhere Wert verwendet. Weitere Informationen zur Interaktion mit Werten in dieser Richtlinie findest du in der Dokumentation der jeweiligen Funktion.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5172841243186654432">Wenn die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> nicht so konfiguriert ist, dass URLs aus vorherigen Sitzungen dauerhaft wiederhergestellt werden, lässt sich durch die Konfiguration von <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> eine Liste von URL-Mustern erstellen, die angeben, welche Websites Cookies für eine Sitzung setzen dürfen oder nicht.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird für alle Websites <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> verwendet, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet. Bei URLs, die nicht zu den angegebenen Mustern gehören, werden ebenfalls die Standardeinstellungen verwendet.
@@ -7247,6 +7272,7 @@ Wenn die Richtlinie nicht konfiguriert ist oder eine leere Liste mit URLs angege
 <translation id="6506486086262398387">Wenn die Richtlinie aktiviert ist, verwendet die Funktion zur Netzwerkfreigabe für <ph name="PRODUCT_OS_NAME" /> bei Bedarf NTLM zur Authentifizierung gegenüber SMB-Freigaben. Ist die Richtlinie deaktiviert, wird die NTLM-Authentifizierung gegenüber SMB-Freigaben ausgeschaltet.
 
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
+<translation id="6508403116553969858">Standardrichtlinienwert für die abgedeckten, auf generativer KI von <ph name="PRODUCT_NAME" /> basierenden Funktionen festlegen</translation>
 <translation id="6508882314969525299">Berichte mit Telemetriedaten von Kiosk Vision deaktivieren.</translation>
 <translation id="6509376413448002446">Dadurch wird der Bildschirmschoner des Nutzers für den Sperrbildschirm konfiguriert.
 
@@ -8156,6 +8182,7 @@ Wenn die Richtlinie deaktiviert ist, werden Passwörter nie gespeichert und alle
 <translation id="7146198347561863646">Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, sind Wakelocks für die Energieverwaltung zugelassen. Wakelocks können von Erweiterungen über die Power Management Extension API oder ARC-Apps angefordert werden.
 
       Wenn die Richtlinie deaktiviert wird, werden Wakelock-Anfragen ignoriert.</translation>
+<translation id="7146363485174988200">Ad‑hoc‑Codesignaturen verwenden.</translation>
 <translation id="7148958378210448356">Eine vordefinierte Liste von Tastenkombinationen mit der Launcher-Taste führt niemals eine Aktion aus.</translation>
 <translation id="7149042336307555519"> Verbindungstypen, die für Betriebssystem-Updates verwendet werden können. Betriebssystem-Updates stellen für Verbindungen aufgrund ihrer Größe eine starke Belastung dar und können zusätzliche Kosten verursachen. Aus diesem Grund sind sie für teure Verbindungstypen (derzeit nur "cellular") standardmäßig nicht aktiviert.
 
@@ -9064,6 +9091,11 @@ Wenn die Richtlinie „<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />“ deaktivi
 <translation id="793473937901685727">Verfügbarkeit von Zertifikaten für ARC-Apps festlegen</translation>
 <translation id="7936302526928951356">Im User-Agent-String wird die Hauptversion nicht festgeschrieben.</translation>
 <translation id="7937766917976512374">Videoaufzeichnung gestatten oder ablehnen</translation>
+<translation id="7937825205289116563">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die Verwendung von Ad‑hoc‑Signaturen für die native Anwendung erlaubt, die bei der Installation einer progressiven Webanwendung (PWA) erstellt wird. So wird sichergestellt, dass jede installierte Anwendung eine eindeutige Identität für <ph name="MAC_OS_NAME" />-Systemkomponenten hat.
+
+Wenn die Richtlinie deaktiviert ist, hat jede native Anwendung, die bei der Installation von progressiven Webanwendungen erstellt wird, dieselbe Identität. Dies kann die Funktionalität von <ph name="MAC_OS_NAME" /> beeinträchtigen.
+
+Deaktiviere die Richtlinie nur, wenn du eine Endpunkt-Sicherheitslösung verwendest, die Anwendungen mit einer Ad‑hoc-Signatur blockiert.</translation>
 <translation id="7941528208359969119">Ausführung von Onlineprüfungen von <ph name="OCSP_CRL_LABEL" /> zulassen</translation>
 <translation id="7941975817681987555">Netzwerkaktionen nicht über Netzwerkverbindungen vervollständigen</translation>
 <translation id="7945445169067895719">Sperre aktivieren, wenn das Gerät in den Ruhemodus versetzt oder zugeklappt wird</translation>
@@ -9600,6 +9632,15 @@ Hinweis: Diese Richtlinie ist eine vorübergehende Lösung, um die Umstellung vo
 <translation id="8357681633047935212">Dauer einer Nutzersitzung beschränken</translation>
 <translation id="8357989008292691856">Zulassungsliste für Nutzer, die sich anmelden dürfen</translation>
 <translation id="8359734107661430198">ExampleDeprecatedFeature API bis zum 02.09.2008 aktivieren</translation>
+<translation id="836477228517805144">Mit von generativer KI erstellten Hintergründen können Nutzer mithilfe von auf generativer KI basierenden Funktionen personalisierte Hintergründe in <ph name="PRODUCT_OS_NAME" /> erstellen.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI-Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.
+
+Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8367069206652407172">Wenn diese Richtlinie deaktiviert ist, können Nutzer Prozesse nicht im Task-Manager beenden.
 
       Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, können Nutzer Prozesse im Task-Manager beenden.</translation>
@@ -9715,6 +9756,7 @@ Mit den URL-Listen „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „
 Für die Ursprungsabgleichsmuster wird ein ähnliches Format wie für diejenigen der Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ verwendet. Diese sind unter https://support.google.com/chrome/a?p=url_blocklist_filter_format beschrieben.
 
 „<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />“ gibt die minimale Datenmenge in Byte an, die die Musterprüfung auslöst. Das bedeutet, dass ein Schreibvorgang in die Zwischenablage unter einer blockierten URL zulässig ist, wenn die Größe der kopierten Daten unter dem Wert in diesem Feld liegt. Wenn der Wert nicht festgelegt ist, gilt der Standardwert von 100 Byte.</translation>
+<translation id="8471860377920321311">Auf generativer KI basierende Funktionen und Verbesserung von KI-Modellen zulassen</translation>
 <translation id="8473107305327396242">Vom Nutzer hinzugefügte TLS-Serverzertifikate aus Plattform-Trust Stores importieren.</translation>
 <translation id="8473841363404590708">Lokale Dateien zu Microsoft OneDrive migrieren und lokale Ordner ausblenden</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
@@ -9931,6 +9973,7 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="8619748440665904084">Import von Autofill-Daten für Formulare bei der ersten Ausführung deaktivieren</translation>
 <translation id="862621549134406761">Prüfung der RSA-Schlüsselverwendung aktivieren</translation>
 <translation id="8626826495474944836">Website-Isolierung für jede Website erzwingen</translation>
+<translation id="8630797597241896082">VC‑Hintergrund basierend auf generativer KI zulassen und KI‑Modelle verbessern</translation>
 <translation id="8631314130868563649">Energieverwaltung zum Umschalten bei Leistungsspitzen deaktivieren</translation>
 <translation id="8631434304112909927">Bis Version <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Die Liste der Notizen-Apps, die auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> zulässig sind</translation>

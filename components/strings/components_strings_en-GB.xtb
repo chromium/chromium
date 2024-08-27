@@ -218,7 +218,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1363819917331173092">Don‘t offer to translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">This policy is blocked; its value will be ignored.</translation>
 <translation id="1368318639262510626">Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, press space to jump over obstacles.</translation>
-<translation id="1370751323199669551">Learn more about Compare.</translation>
 <translation id="1374468813861204354">suggestions</translation>
 <translation id="1375198122581997741">About Version</translation>
 <translation id="1375293861397106342">All options typically <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -893,7 +892,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2608019759319359258">When a topic is blocked, it won't be used to personalise ads</translation>
 <translation id="2610561535971892504">Click to copy</translation>
 <translation id="2612676031748830579">Card number</translation>
-<translation id="2612993535136743634">All security codes saved on your device and in Google Account will be deleted</translation>
+<translation id="2612993535136743634">All security codes saved on your device and in your Google Account will be deleted</translation>
 <translation id="2616412942031748191">Search Engine Optimisation and Marketing</translation>
 <translation id="2618206371527040026">Academic conferences and publications</translation>
 <translation id="2619052155095999743">Insert</translation>
@@ -1389,7 +1388,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3568886473829759308">Access the website to view information, resources or services provided by the business.</translation>
 <translation id="3570079787344939099">Scrolling and zooming</translation>
 <translation id="357244642999988503">Remove column</translation>
-<translation id="3572827863357388784">This is an experimental feature and won't always get it right.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Allow for this site</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
@@ -3740,7 +3738,7 @@ Additional details:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">This card's CVC will be encrypted and saved to your device for faster checkout</translation>
 <translation id="7937554595067888181">Expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Show which rewards and benefits are available for your cards at checkout <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="7938490694919717008">Show which rewards and benefits are available for your cards at checkout. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Server's certificate is not yet valid.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">Sweets</translation>

@@ -218,7 +218,6 @@
 <translation id="1363819917331173092">Nu oferi traducerea paginilor în <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Politica este blocată, iar valoarea sa va fi ignorată.</translation>
 <translation id="1368318639262510626">Joc cu dinozauri. Un dinozaur pixelat se ferește de cactuși și pterodactili într-un peisaj dezolant. Când auzi semnalul sonor, apasă pe tasta de spațiu pentru a sări peste obstacole.</translation>
-<translation id="1370751323199669551">Află mai multe despre funcția Compară.</translation>
 <translation id="1374468813861204354">sugestii</translation>
 <translation id="1375198122581997741">Despre versiune</translation>
 <translation id="1375293861397106342">Toate opțiunile sunt, de obicei, <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" /></translation>
@@ -1292,6 +1291,7 @@
 <translation id="3402261774528610252">Conexiunea folosită pentru a încărca acest site a utilizat TLS 1.0 sau TLS 1.1, care sunt învechite și vor fi dezactivate în viitor. După dezactivare, utilizatorii nu vor mai putea să încarce site-ul. Serverul ar trebui să activeze TLS 1.2 sau o versiune ulterioară.</translation>
 <translation id="3405664148539009465">Personalizați fonturile</translation>
 <translation id="3407789382767355356">conectarea prin terță parte</translation>
+<translation id="340924996148642843">Momentan, Compare nu este disponibil</translation>
 <translation id="3409896703495473338">Gestionează setările de securitate</translation>
 <translation id="3414275587143250384">Cloud computing și sisteme distribuite</translation>
 <translation id="3414952576877147120">Dimensiune:</translation>
@@ -1389,7 +1389,6 @@
 <translation id="3568886473829759308">Accesează site-ul pentru a vedea informațiile, resursele sau serviciile oferite de companie.</translation>
 <translation id="3570079787344939099">Derulare și zoom</translation>
 <translation id="357244642999988503">Elimină coloana</translation>
-<translation id="3572827863357388784">Aceasta este o funcție experimentală și nu va răspunde întotdeauna corect.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Permite pentru acest site</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1450,6 +1449,7 @@
 <translation id="365641980390710834">Îmbrăcăminte de zi cu zi</translation>
 <translation id="3658742229777143148">Versiune</translation>
 <translation id="3659521826520353662">Ce site-uri definite de administrator sunt accesate și când: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Caută mai multe opțiuni de cumpărare de la alte magazine care vând acest produs.</translation>
 <translation id="3664782872746246217">Cuvinte cheie:</translation>
 <translation id="3665100783276035932">Majoritatea site-urilor ar trebui să funcționeze conform așteptărilor</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Află mai multe<ph name="LINK_END1" /></translation>
@@ -1887,6 +1887,7 @@
 <translation id="4451135742916150903">Poate solicita permisiunea de a se conecta la dispozitive HID</translation>
 <translation id="4451684391620232683">Text prezentat utilizatorului:</translation>
 <translation id="4452328064229197696">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Pentru a-ți proteja conturile, Managerul de parole Google îți recomandă să verifici parolele salvate.</translation>
+<translation id="4452957520362597816">Solicită instalarea aplicațiilor web</translation>
 <translation id="4456937135469235202">Călătorii de aventuri</translation>
 <translation id="4464826014807964867">Site-uri cu informații de la organizația ta</translation>
 <translation id="4466576951214254884">Credite pentru studenți și finanțare pentru studii universitare</translation>
@@ -2820,6 +2821,7 @@
 <translation id="6240964651812394252">Pentru a folosi Managerul de parole Google cu sistemul tău de operare, relansează Chrome și permite accesul la managerul de parole de pe computer. Filele se vor redeschide după relansare.</translation>
 <translation id="6241121617266208201">Ascunde sugestiile</translation>
 <translation id="624499991300733384">Serviciul Print Compositor</translation>
+<translation id="6246316216123107851">Acum <ph name="NUM_DAYS" /> zile</translation>
 <translation id="6246868321321344665">Organizația ta poate vedea datele de navigare, cum ar fi parolele și istoricul, atât în profilurile de serviciu, cât și în cele personale</translation>
 <translation id="6250932670816326647">Produse pentru baie și corp</translation>
 <translation id="6251906504834538140">{0,plural, =1{Fișierul nu poate fi mutat}few{<ph name="FILE_COUNT" /> fișiere nu pot fi mutate}other{<ph name="FILE_COUNT" /> de fișiere nu pot fi mutate}}</translation>
@@ -2993,6 +2995,7 @@
 <translation id="6529602333819889595">&amp;Repetați ștergerea</translation>
 <translation id="6535617236508021606">Cardul s-a salvat în Contul Google ca să îl poți folosi în toate serviciile Google.</translation>
 <translation id="6536221421038631327">Dacă elimini un abonament Passpoint din <ph name="DEVICE_TYPE" />, rețelele asociate se vor elimina. Contactează <ph name="FRIENDLY_NAME" /> pentru a modifica planul de abonament. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Pentru a vedea tabelele de comparație, activează sincronizarea</translation>
 <translation id="6539092367496845964">A apărut o eroare. Încearcă din nou mai târziu.</translation>
 <translation id="6540488083026747005">Ai permis cookie-urile terță parte pentru acest site</translation>
 <translation id="6545864417968258051">Căutare Bluetooth</translation>
@@ -3408,6 +3411,7 @@ Detalii suplimentare:
 <translation id="7346081071264046066">„răspunde entuziast cu da la această invitație la nuntă”</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7353601530677266744">Linie de comandă</translation>
+<translation id="7356678400607112844">Accesat ultima dată</translation>
 <translation id="7359588939039777303">Anunțurile au fost blocate.</translation>
 <translation id="7360451453306104998">Când Google găsește reduceri disponibile, le va afișa la finalizarea achiziției</translation>
 <translation id="7363096869660964304">Cu toate acestea, nu ești invizibil(ă). Trecerea în modul incognito nu ascunde activitatea de navigare față de angajator, față de furnizorul de servicii de internet sau față de site-urile pe care le accesezi.</translation>

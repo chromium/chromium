@@ -218,7 +218,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1363819917331173092">Ne ponudi prevajanja strani v jeziku <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Ta pravilnik je blokiran in njegova vrednost bo prezrta.</translation>
 <translation id="1368318639262510626">Igra Dino. Kvadrirani dinozaver se med dirkanjem po neobljudeni pokrajini izogiba kaktusom in pterodaktilom. Ko zaslišite zvok, pritisnite preslednico, da začnete preskakovati ovire.</translation>
-<translation id="1370751323199669551">Preberite več o funkciji Primerjava.</translation>
 <translation id="1374468813861204354">predlogi</translation>
 <translation id="1375198122581997741">O različici</translation>
 <translation id="1375293861397106342">Vse možnosti so običajno med <ph name="LOW_PRICE" /> in <ph name="HIGH_PRICE" /></translation>
@@ -1292,6 +1291,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3402261774528610252">Povezava, prek katere je bilo naloženo to spletno mesto, uporablja standard TLS 1.0 ali TLS 1.1; ta standarda sta zastarela in bosta v prihodnje onemogočena. Ko bosta onemogočena, bo uporabnikom preprečeno naložiti to spletno mesto. V strežniku omogočite standard TLS 1.2 ali novejšega.</translation>
 <translation id="3405664148539009465">Prilagodi pisave</translation>
 <translation id="3407789382767355356">prijava prek zunanjih ponudnikov</translation>
+<translation id="340924996148642843">Primerjanje trenutno ni na voljo</translation>
 <translation id="3409896703495473338">Upravljanje varnostnih nastavitev</translation>
 <translation id="3414275587143250384">Porazdeljeno računalništvo in računalništvo v oblaku</translation>
 <translation id="3414952576877147120">Velikost:</translation>
@@ -1389,7 +1389,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3568886473829759308">Odprite spletno mesto, če si želite ogledati podatke, sredstva ali storitve, ki jih podjetje ponuja.</translation>
 <translation id="3570079787344939099">Pomikanje in povečava/pomanjšava</translation>
 <translation id="357244642999988503">Odstrani stolpec</translation>
-<translation id="3572827863357388784">To je preizkusna funkcija in se lahko včasih tudi zmoti.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Dovoli za to spletno mesto</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1450,6 +1449,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="365641980390710834">Oblačila za vsak dan</translation>
 <translation id="3658742229777143148">Različica</translation>
 <translation id="3659521826520353662">Katera spletna mesta, ki jih je določil skrbnik, so obiskana in kdaj: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Poiščite več možnosti nakupa v drugih trgovinah, ki prodajajo ta izdelek.</translation>
 <translation id="3664782872746246217">Ključne besede:</translation>
 <translation id="3665100783276035932">Večina spletnih mest bi morala delovati po pričakovanjih</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Več o tem<ph name="LINK_END1" /></translation>
@@ -1887,6 +1887,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4451135742916150903">Lahko zahteva vzpostavitev povezave z napravami HID.</translation>
 <translation id="4451684391620232683">Besedilo, prikazano uporabniku:</translation>
 <translation id="4452328064229197696">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Zaradi zavarovanja računov Google Upravitelj gesel priporoča, da preverite shranjena gesla.</translation>
+<translation id="4452957520362597816">Zahteva za namestitev spletnih aplikacij</translation>
 <translation id="4456937135469235202">Pustolovska potovanja</translation>
 <translation id="4464826014807964867">Spletna mesta s podatki vaše organizacije</translation>
 <translation id="4466576951214254884">Študentska posojila in financiranje študija</translation>
@@ -2994,6 +2995,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6529602333819889595">&amp;Uveljavi izbris</translation>
 <translation id="6535617236508021606">Ta kartica je shranjena v računu Google in jo lahko uporabljate v Googlovih storitvah.</translation>
 <translation id="6536221421038631327">Če iz naprave <ph name="DEVICE_TYPE" /> odstranite naročnino na Passpoint, boste odstranili povezana omrežja. Če želite spremeniti naročniško pogodbo, se obrnite na »<ph name="FRIENDLY_NAME" />«. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Če si želite ogledati primerjalne tabele, vklopite sinhronizacijo</translation>
 <translation id="6539092367496845964">Prišlo je do napake. Poskusite znova pozneje.</translation>
 <translation id="6540488083026747005">Na tem spletnem mestu ste dovolili piškotke tretjih oseb</translation>
 <translation id="6545864417968258051">Iskanje naprav Bluetooth</translation>

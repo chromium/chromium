@@ -986,7 +986,6 @@
 <translation id="168991973552362966">근처 프린터 추가</translation>
 <translation id="1689945336726856614">&amp;URL 복사</translation>
 <translation id="1690068335127678634">화면 분할 설정</translation>
-<translation id="1690443285859726589">동작을 편하게 실행할 수 있도록 감지 기준을 조정하세요.</translation>
 <translation id="1692115862433274081">다른 계정 사용</translation>
 <translation id="1692118695553449118">동기화 사용 중</translation>
 <translation id="1692210323591458290">진한 보라색</translation>
@@ -1438,6 +1437,7 @@
 <translation id="199610894463449797">{0,plural, =1{이 프로필 닫기}other{이 프로필 닫기(창 #개)}}</translation>
 <translation id="1997433994358798851">Chrome에서 블루투스를 사용하여 기기에 연결하려면 권한이 필요합니다.</translation>
 <translation id="1997616988432401742">내 인증서</translation>
+<translation id="1998715278591719161">손 추적이 허용됨</translation>
 <translation id="1999115740519098545">시작 그룹</translation>
 <translation id="2002109485265116295">실시간</translation>
 <translation id="2002160221914907025">실험용 AI</translation>
@@ -2128,6 +2128,7 @@
 <translation id="247051149076336810">파일 공유 URL</translation>
 <translation id="2471469610750100598">검정(기본)</translation>
 <translation id="2471506181342525583">위치 액세스 허용됨</translation>
+<translation id="2471632709106952369">비교 테이블</translation>
 <translation id="2473195200299095979">이 페이지 번역하기</translation>
 <translation id="2475982808118771221">오류가 발생했습니다.</translation>
 <translation id="247616523300581745">파일 숨기기</translation>
@@ -3552,6 +3553,7 @@
 <translation id="3521606918211282604">디스크 크기 변경</translation>
 <translation id="3522088408596898827">디스크 저장 공간이 매우 부족합니다. 여유 공간을 확보한 후 다시 시도해 보세요.</translation>
 <translation id="3522979239100719575">사용 가능한 프로필을 찾는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
+<translation id="3523447078673133727">사이트에서 내 손을 추적하도록 허용하지 않음</translation>
 <translation id="3524518036046613664">프린터와 같은 로컬 네트워크의 기기 검색</translation>
 <translation id="3524965460886318643">활동 내보내기</translation>
 <translation id="3525426269008462093">설정 후 기기 동기화 검토</translation>
@@ -5929,6 +5931,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="52550593576409946">키오스크 애플리케이션을 실행할 수 없습니다.</translation>
 <translation id="5255726914791076208">패스키를 수정해도 <ph name="RP_ID" /> 계정은 변경되지 않습니다.</translation>
 <translation id="5255859108402770436">다시 로그인</translation>
+<translation id="5256174546894739043">사이트에서 내 손을 추적하려고 할 때 확인</translation>
 <translation id="52566111838498928">글꼴 로드 중...</translation>
 <translation id="5256861893479663409">모든 사이트에서</translation>
 <translation id="5258992782919386492">이 기기에 설치</translation>
@@ -6098,7 +6101,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5384401776498845256">나와 공유할 수 있는 대상</translation>
 <translation id="5385628342687007304">비밀번호는 이 기기에만 저장됩니다. 다른 기기에서도 이 비밀번호를 사용하려면 Google 계정에 저장하세요.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> 수정</translation>
-<translation id="5387496897058645038">제품 사양</translation>
 <translation id="538822246583124912">기업 정책이 변경되었습니다. 툴바에 실험 버튼이 추가되었습니다. 실험 사용 설정 대화상자를 열려면 버튼을 클릭하세요.</translation>
 <translation id="5388436023007579456">카메라 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 카메라를 사용할 수 있습니다. 카메라를 사용하려면 앱을 다시 시작하거나 페이지를 새로고침해야 할 수 있습니다.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{알림이 많은 사이트 1개를 찾음}other{알림이 많은 사이트 {NUM_SITES}개를 찾음}}</translation>
@@ -6677,6 +6679,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5801051031414037185">휴대전화 설정</translation>
 <translation id="5801568494490449797">환경설정</translation>
 <translation id="5803689677801500549">저장한 비밀번호가 여기에 표시됩니다. <ph name="USER_EMAIL" />님을 위해 <ph name="BRAND" />로 비밀번호를 가져오려면 <ph name="BEGIN_LINK" />CSV 파일을 선택하세요.<ph name="END_LINK" /></translation>
+<translation id="5804198298544152115">사이트에서는 일반적으로 손과 손가락을 추적하여 몰입형 경험을 강화합니다.</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5804259315582798390">로컬 데이터 복구를 사용 설정할 수 없음</translation>
 <translation id="5805268472388605531">키보드 키를 길게 누르면 악센트 기호와 특수문자가 표시됩니다</translation>
@@ -7778,6 +7781,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6622980291894852883">이미지 계속 차단</translation>
 <translation id="6624036901798307345">태블릿 모드에서 탭 카운터 툴바 버튼을 탭하여 각 탭의 썸네일을 보여주는 새로운 탭 표시줄을 엽니다.</translation>
 <translation id="6624687053722465643">달콤</translation>
+<translation id="6627743754845412571">손 추적이 허용되지 않음</translation>
 <translation id="6628316682330029452">클라이언트 인증서는 다른 서버에 사용자를 식별하는 인증서입니다.</translation>
 <translation id="6628328486509726751">업로드 시간: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">보안 강화</translation>

@@ -218,7 +218,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1363819917331173092">Niet aanbieden om pagina's in het <ph name="SOURCE_LANGUAGE" /> te vertalen</translation>
 <translation id="1364822246244961190">Dit beleid is geblokkeerd. De waarde ervan wordt genegeerd.</translation>
 <translation id="1368318639262510626">Dino-game. Een gepixeleerde dinosaurus ontwijkt cactussen en pterodactylussen terwijl deze door een verlaten landschap rent. Als je een audiosignaal hoort, druk je op de spatiebalk om over obstakels te springen.</translation>
-<translation id="1370751323199669551">Meer informatie over Vergelijken.</translation>
 <translation id="1374468813861204354">suggesties</translation>
 <translation id="1375198122581997741">Over deze versie</translation>
 <translation id="1375293861397106342">Alle opties zijn meestal <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -1289,6 +1288,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3402261774528610252">De verbinding waarmee deze site is geladen, gebruikte TLS 1.0 of TLS 1.1. Deze versies zijn verouderd en worden in de toekomst niet meer gebruikt. Dan kunnen gebruikers deze site niet meer laden. Voor de server moet TLS 1.2 of hoger worden gebruikt.</translation>
 <translation id="3405664148539009465">Lettertypen aanpassen</translation>
 <translation id="3407789382767355356">externe login</translation>
+<translation id="340924996148642843">Vergelijken is op dit moment niet beschikbaar.</translation>
 <translation id="3409896703495473338">Beveiligingsinstellingen beheren</translation>
 <translation id="3414275587143250384">Gedistribueerde systemen en cloudcomputing</translation>
 <translation id="3414952576877147120">Grootte:</translation>
@@ -1385,7 +1385,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3568886473829759308">Ga naar de website om de informatie, bronnen en services te bekijken die het bedrijf levert.</translation>
 <translation id="3570079787344939099">Scrollen en zoomen</translation>
 <translation id="357244642999988503">Kolom verwijderen</translation>
-<translation id="3572827863357388784">Dit is een experimentele functie die het niet altijd juist heeft.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Toestaan voor deze site</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1445,11 +1444,12 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="365641980390710834">Vrijetijdskleding</translation>
 <translation id="3658742229777143148">Revisie</translation>
 <translation id="3659521826520353662">Welke door de beheerder gedefinieerde websites worden bezocht en wanneer: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Zoek meer koopopties van andere winkels die dit product verkopen.</translation>
 <translation id="3664782872746246217">Zoekwoorden:</translation>
 <translation id="3665100783276035932">De meeste sites werken zoals verwacht</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Meer informatie<ph name="LINK_END1" /></translation>
 <translation id="3670229581627177274">Bluetooth aanzetten</translation>
-<translation id="3671117652518853176">Als je dit uitzet, kan je af en toe worden gevraagd om verificatie uit veiligheidsoverwegingen</translation>
+<translation id="3671117652518853176">Als je dit uitzet, kun je af en toe om verificatie worden gevraagd. Dit is uit veiligheidsoverwegingen.</translation>
 <translation id="3671540257457995106">Formaat aanpassen toestaan?</translation>
 <translation id="3672568546897166916">Fout op <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Netwerkapparatuur</translation>
@@ -1881,6 +1881,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4451135742916150903">Kan vragen of deze site verbinding mag maken met HID-apparaten</translation>
 <translation id="4451684391620232683">Tekst die de gebruiker te zien krijgt:</translation>
 <translation id="4452328064229197696">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
+<translation id="4452957520362597816">Vragen om web-apps te installeren</translation>
 <translation id="4456937135469235202">Avontuurlijke reizen</translation>
 <translation id="4464826014807964867">Websites met gegevens van je organisatie</translation>
 <translation id="4466576951214254884">Studieleningen en studiefinanciering</translation>
@@ -2987,6 +2988,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6529602333819889595">&amp;Opnieuw verwijderen</translation>
 <translation id="6535617236508021606">Deze kaart is opgeslagen in je Google-account, zodat je deze in Google-services kunt gebruiken.</translation>
 <translation id="6536221421038631327">Als je een Passpoint-abonnement van je <ph name="DEVICE_TYPE" /> verwijdert, worden de bijbehorende netwerken verwijderd. Neem contact op met <ph name="FRIENDLY_NAME" /> om wijzigingen aan te brengen in je abonnement. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Zet synchronisatie aan om vergelijkingstabellen te bekijken</translation>
 <translation id="6539092367496845964">Er is iets misgegaan. Probeer het later opnieuw.</translation>
 <translation id="6540488083026747005">Je hebt cookies van derden toegestaan voor deze site</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>

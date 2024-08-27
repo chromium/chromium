@@ -218,7 +218,6 @@
 <translation id="1363819917331173092">不要詢問是否要翻譯<ph name="SOURCE_LANGUAGE" />的網頁</translation>
 <translation id="1364822246244961190">這項政策遭到封鎖，系統會忽略其設定值。</translation>
 <translation id="1368318639262510626">在這款恐龍遊戲中，你要協助在荒野中奔馳的像素風恐龍閃避仙人掌和翼手龍。聽見提示音效時，按下空白鍵即可躍過障礙物。</translation>
-<translation id="1370751323199669551">進一步瞭解「比較」。</translation>
 <translation id="1374468813861204354">建議</translation>
 <translation id="1375198122581997741">關於版本</translation>
 <translation id="1375293861397106342">所有選項一般介於 <ph name="LOW_PRICE" /> 到 <ph name="HIGH_PRICE" /> 之間</translation>
@@ -1387,7 +1386,6 @@
 <translation id="3568886473829759308">前往網站查看商家提供的資訊、資源或服務。</translation>
 <translation id="3570079787344939099">捲動及縮放</translation>
 <translation id="357244642999988503">移除欄</translation>
-<translation id="3572827863357388784">這項功能仍在實驗階段，提供的結果不一定準確。</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" />，<ph name="STATE" />，<ph name="CITY" /></translation>
 <translation id="3575121482199441727">允許這個網站的通知</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
@@ -2818,6 +2816,7 @@
 <translation id="6240964651812394252">如要在作業系統上使用 Google 密碼管理工具，請重新啟動 Chrome，並允許存取電腦的密碼管理工具。分頁會在重新啟動之後再次開啟。</translation>
 <translation id="6241121617266208201">隱藏建議項目</translation>
 <translation id="624499991300733384">列印合成器服務</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6246868321321344665">貴機構可查看瀏覽資料，例如工作和個人資料夾中的密碼和歷史記錄</translation>
 <translation id="6250932670816326647">沐浴與身體護理產品</translation>
 <translation id="6251906504834538140">{0,plural, =1{禁止移動這個檔案}other{禁止移動這 <ph name="FILE_COUNT" /> 個檔案}}</translation>
@@ -3406,6 +3405,7 @@
 <translation id="7346081071264046066">「用興奮的語氣答應出席婚禮」</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7353601530677266744">命令列</translation>
+<translation id="7356678400607112844">上次造訪時間</translation>
 <translation id="7359588939039777303">已封鎖廣告。</translation>
 <translation id="7360451453306104998">Google 找到可用折扣後，就會在結帳時顯示相關資訊</translation>
 <translation id="7363096869660964304">不過，這並不代表你的瀏覽記錄會完全不留痕跡。你使用無痕模式時，你的雇主、網際網路服務供應商和你所造訪的網站仍然可以追蹤你的瀏覽記錄。</translation>

@@ -79,6 +79,7 @@
 <translation id="4371591986692297148">已停用</translation>
 <translation id="4460014764210899310">取消分组</translation>
 <translation id="4590027107044272416">您现在可在此处打开新标签页</translation>
+<translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{要关闭 1 个闲置标签页吗？}other{要关闭 <ph name="TAB_COUNT_MANY" /> 个闲置标签页吗？}}</translation>
 <translation id="4648718555153979859">您的标签页会按组列在此处</translation>
 <translation id="4686942373615810936">创建时间：刚刚</translation>

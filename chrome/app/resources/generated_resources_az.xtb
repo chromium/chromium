@@ -981,7 +981,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="168991973552362966">Yaxınlıqdakı printeri əlavə edin</translation>
 <translation id="1689945336726856614">Linki kopyalayın</translation>
 <translation id="1690068335127678634">Bölünmüş ekran ayarlaması</translation>
-<translation id="1690443285859726589">Aşkarlama həddini elə tənzimləyin ki, jesti rahatlıqla işə sala biləsiniz</translation>
 <translation id="1692115862433274081">Başqa hesab istifadə edin</translation>
 <translation id="1692118695553449118">Sinxronizasiya aktivdir</translation>
 <translation id="1692210323591458290">Tünd-bənövşəyi</translation>
@@ -2112,6 +2111,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="247051149076336810">Fayl paylaşım Linki</translation>
 <translation id="2471469610750100598">Qara (defolt)</translation>
 <translation id="2471506181342525583">Məkana girişə icazə verilib</translation>
+<translation id="2471632709106952369">Müqayisə cədvəlləri</translation>
 <translation id="2473195200299095979">Bu səhifəni tərcümə edin</translation>
 <translation id="2475982808118771221">Xəta baş verdi</translation>
 <translation id="247616523300581745">Bu faylları gizlədin</translation>
@@ -6081,7 +6081,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5384401776498845256">Sizinlə kim paylaşa bilər</translation>
 <translation id="5385628342687007304">Bu parol yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında yadda saxlayın.</translation>
 <translation id="5387116558048951800">Redaktə edin: <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Məhsul spesifikasiyaları</translation>
 <translation id="538822246583124912">Müəssisə siyasəti dəyişdirilib. Təcrübələr düyməsi alətlər panelinə əlavə edilib. Təcrübələri aktivləşdirmək məqsədi ilə dialoqu açmaq üçün düyməyə toxunun.</translation>
 <translation id="5388436023007579456">Kamera icazəsi olan tətbiq və veb-saytlar, eləcə də sistem xidmətləri kameradan istifadə edə bilər. Kameradan istifadə üçün tətbiqi yenidən başlatmalı, yaxud səhifəni təzələməlisiniz.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Çoxlu bildiriş ilə 1 sayt tapıldı}other{Çoxlu bildiriş ilə {NUM_SITES} sayt tapıldı}}</translation>

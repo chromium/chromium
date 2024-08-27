@@ -773,7 +773,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1552752544932680961">Extensie beheren</translation>
 <translation id="1553538517812678578">onbeperkt</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /> over Microsoft 365 op je Chromebook</translation>
-<translation id="1554640914375980459">Laat het scherm flitsen als je meldingen krijgt. Wees voorzichtig met het gebruik van meldingen met flits als je gevoelig bent voor licht.</translation>
+<translation id="1554640914375980459">Laat het scherm flitsen wanneer je meldingen krijgt. Wees voorzichtig met het gebruik van meldingen met flits als je gevoelig bent voor licht.</translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="1556127816860282890">Achtergrondactiviteit en sommige visuele effecten, zoals vloeiend scrollen, kunnen beperkt zijn</translation>
 <translation id="1556537182262721003">Kan extensiedirectory niet verplaatsen naar profiel.</translation>
@@ -985,7 +985,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="168991973552362966">Een printer in de buurt toevoegen</translation>
 <translation id="1689945336726856614">&amp;URL kopiëren</translation>
 <translation id="1690068335127678634">Gesplitst scherm instellen</translation>
-<translation id="1690443285859726589">Pas de detectiedrempel aan zodat je het gebaar makkelijk kunt activeren</translation>
 <translation id="1692115862433274081">Een ander account gebruiken</translation>
 <translation id="1692118695553449118">Synchronisatie staat aan</translation>
 <translation id="1692210323591458290">Donkerpaars</translation>
@@ -1427,6 +1426,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="199610894463449797">{0,plural, =1{Dit profiel sluiten}other{Dit profiel sluiten (# vensters)}}</translation>
 <translation id="1997433994358798851">Je moet Chrome rechten geven via bluetooth verbinding te maken met je apparaat</translation>
 <translation id="1997616988432401742">Je certificaten</translation>
+<translation id="1998715278591719161">Toestemming om je handen te volgen</translation>
 <translation id="1999115740519098545">Bij opstarten</translation>
 <translation id="2002109485265116295">Realtime</translation>
 <translation id="2002160221914907025">Experimentele AI</translation>
@@ -2113,6 +2113,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="247051149076336810">URL voor fileshare</translation>
 <translation id="2471469610750100598">Zwart (standaard)</translation>
 <translation id="2471506181342525583">Locatietoegang toegestaan</translation>
+<translation id="2471632709106952369">Vergelijkingstabellen</translation>
 <translation id="2473195200299095979">Deze pagina vertalen</translation>
 <translation id="2475982808118771221">Er is een fout opgetreden</translation>
 <translation id="247616523300581745">Deze bestanden verbergen</translation>
@@ -3535,6 +3536,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3521606918211282604">Schijfgrootte wijzigen</translation>
 <translation id="3522088408596898827">Er is zeer weinig schijfruimte beschikbaar. Maak schijfruimte vrij en probeer het opnieuw.</translation>
 <translation id="3522979239100719575">Zoeken naar beschikbare profielen. Dit kan een paar minuten duren.</translation>
+<translation id="3523447078673133727">Niet toestaan dat sites je handen volgen</translation>
 <translation id="3524518036046613664">Apparaten vinden in je lokale netwerk, zoals printers</translation>
 <translation id="3524965460886318643">Activiteiten exporteren</translation>
 <translation id="3525426269008462093">Apparaatsynchronisatie checken na het instellen</translation>
@@ -5911,6 +5913,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="52550593576409946">Kiosk-app kan niet worden gestart.</translation>
 <translation id="5255726914791076208">Als je je toegangscode bewerkt, heeft dat geen effect op je <ph name="RP_ID" />-account.</translation>
 <translation id="5255859108402770436">Opnieuw inloggen</translation>
+<translation id="5256174546894739043">Vragen als een site je handen wil volgen</translation>
 <translation id="52566111838498928">Lettertypen laden...</translation>
 <translation id="5256861893479663409">Op alle sites</translation>
 <translation id="5258992782919386492">Installeren op dit apparaat</translation>
@@ -6079,7 +6082,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5384401776498845256">Wie met jou kan delen</translation>
 <translation id="5385628342687007304">Dit wachtwoord wordt alleen opgeslagen op dit apparaat. Als je het op je andere apparaten wilt gebruiken, sla je het op in je Google-account.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> bewerken</translation>
-<translation id="5387496897058645038">Productspecificaties</translation>
 <translation id="538822246583124912">Bedrijfsbeleid gewijzigd. Knop voor experimenten toegevoegd aan de werkbalk. Klik op de knop om een dialoogvenster te openen waarmee je experimenten kunt aanzetten.</translation>
 <translation id="5388436023007579456">Apps en websites met camerarechten en systeemservices kunnen je camera gebruiken. Als je de camera wilt gebruiken, moet je de app misschien opnieuw opstarten of de pagina vernieuwen.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site met veel meldingen gevonden}other{{NUM_SITES} sites met veel meldingen gevonden}}</translation>
@@ -6656,6 +6658,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5801051031414037185">Telefoon instellen</translation>
 <translation id="5801568494490449797">Voorkeuren</translation>
 <translation id="5803689677801500549">Opgeslagen wachtwoorden worden hier getoond. <ph name="BEGIN_LINK" />Selecteer een csv-bestand<ph name="END_LINK" /> om wachtwoorden te importeren in <ph name="BRAND" /> voor <ph name="USER_EMAIL" />.</translation>
+<translation id="5804198298544152115">Sites volgen meestal je handen en vingers om immersieve functionaliteit te verbeteren</translation>
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="5804259315582798390">Kan herstel van lokale gegevens niet aanzetten</translation>
 <translation id="5805268472388605531">Houd de toetsenbordtoetsen ingedrukt om accenttekens en speciale tekens te bekijken</translation>
@@ -7756,6 +7759,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6622980291894852883">Afbeeldingen blijven blokkeren</translation>
 <translation id="6624036901798307345">Tik in de tabletmodus op de werkbalkknop met de tabbladteller om de tabbladstrook te openen. Je ziet dan miniaturen van alle tabbladen.</translation>
 <translation id="6624687053722465643">Cupcake</translation>
+<translation id="6627743754845412571">Geen toestemming om je handen te volgen</translation>
 <translation id="6628316682330029452">Clientcertificaten zijn certificaten waarmee je wordt geïdentificeerd voor andere servers.</translation>
 <translation id="6628328486509726751">Geüploade <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Betere beveiliging</translation>

@@ -218,7 +218,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1363819917331173092">Ez eskaini <ph name="SOURCE_LANGUAGE" /> hizkuntzan dauden orriak itzultzea</translation>
 <translation id="1364822246244961190">Gidalerroa blokeatuta dago, eta ez ikusi egingo zaio haren balioari.</translation>
 <translation id="1368318639262510626">Dino jokoa. Pixelez egindako dinosauro bat paisaia lehor batean barrena doa kaktusei eta pterodaktiloei iskintxo eginez. Soinutxo bat entzuten duzunean, sakatu zuriune-barra oztopoen gainetik salto egiteko.</translation>
-<translation id="1370751323199669551">Lortu konparazioei buruzko informazio gehiago.</translation>
 <translation id="1374468813861204354">iradokizunak</translation>
 <translation id="1375198122581997741">Bertsioari buruz</translation>
 <translation id="1375293861397106342">Aukera guztiak normalean <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -1289,6 +1288,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3402261774528610252">Webgunea kargatzeko erabilitako konexioa TLS 1.0 edo TLS 1.1 da, baina hura zaharkituta dago eta desgaitu egingo da etorkizunean. Desgaitu ondoren, erabiltzaileek ezingo dute kargatu webgunea. Zerbitzariak TLS 1.2 bertsioa edo berriago bat gaitu behar du.</translation>
 <translation id="3405664148539009465">Pertsonalizatu letrak</translation>
 <translation id="3407789382767355356">Hirugarrenen bidez saioa hasteko aukera</translation>
+<translation id="340924996148642843">Konparatzeko eginbidea ez dago erabilgarri une honetan</translation>
 <translation id="3409896703495473338">Kudeatu segurtasun-ezarpenak</translation>
 <translation id="3414275587143250384">Informatika banatua eta hodeiko informatika</translation>
 <translation id="3414952576877147120">Tamaina:</translation>
@@ -1385,7 +1385,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3568886473829759308">Sartu webgunean enpresak eskaintzen dituen informazioa, baliabideak edo zerbitzuak ikusteko.</translation>
 <translation id="3570079787344939099">Gora/Behera egitea eta zooma erabiltzea</translation>
 <translation id="357244642999988503">Kendu zutabea</translation>
-<translation id="3572827863357388784">Eginbide esperimental bat da hau, eta ez du beti dena ongi egingo.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" />, <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Eman webgune honen jakinarazpenak ikusteko baimena</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1446,6 +1445,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="365641980390710834">Arropa informala</translation>
 <translation id="3658742229777143148">Zuzenketa</translation>
 <translation id="3659521826520353662">Administratzaileak definitutako zein webgune bisitatzen diren eta noiz: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Bilatu erosteko aukera gehiago produktu hau saltzen duten beste denda batzuetan.</translation>
 <translation id="3664782872746246217">Gako-hitzak:</translation>
 <translation id="3665100783276035932">Webgune gehienek espero bezala funtzionatu beharko lukete.</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Lortu informazio gehiago<ph name="LINK_END1" /></translation>
@@ -1883,6 +1883,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4451135742916150903">HID gailuetara konektatzea eska dezake</translation>
 <translation id="4451684391620232683">Erabiltzaileari aurkeztutako testua:</translation>
 <translation id="4452328064229197696">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, Google-ren Pasahitz-kudeatzailea zerbitzuak gordeta dauzkazun pasahitzak seguruak direla egiaztatzea gomendatzen du.</translation>
+<translation id="4452957520362597816">Sareko aplikazioak instalatzeko baimena eskatu</translation>
 <translation id="4456937135469235202">Abenturazko bidaiak</translation>
 <translation id="4464826014807964867">Zure erakundeari buruzko informazioa duten webguneak</translation>
 <translation id="4466576951214254884">Ikasleentzako maileguak eta unibertsitaterako finantzaketa</translation>
@@ -2988,6 +2989,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6529602333819889595">&amp;Berregin ezabatzea</translation>
 <translation id="6535617236508021606">Txartela zure Google-ko kontuan gorde da; beraz, Google-ren zerbitzu guztietan erabil dezakezu.</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> gailutik Passpoint-eko harpidetza kenduz gero, hari loturiko sareak ere kenduko dira. Harpidetza-plana aldatzeko, jarri "<ph name="FRIENDLY_NAME" />" hornitzailearekin harremanetan. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Konparazio-taulak ikusteko, aktibatu sinkronizazioa</translation>
 <translation id="6539092367496845964">Arazoren bat izan da. Saiatu berriro geroago.</translation>
 <translation id="6540488083026747005">Webgune honetan hirugarrenen cookieak erabiltzeko baimena eman duzu</translation>
 <translation id="6545864417968258051">Bluetooth bidezko bilaketa</translation>

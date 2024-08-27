@@ -986,7 +986,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="168991973552362966">Lähedalasuva printeri lisamine</translation>
 <translation id="1689945336726856614">Kopeeri &amp;URL</translation>
 <translation id="1690068335127678634">Jagatud ekraani seadistamine</translation>
-<translation id="1690443285859726589">Kohandage tuvastusläve, et saaksite liigutuse mugavalt käivitada</translation>
 <translation id="1692115862433274081">Kasuta teist kontot</translation>
 <translation id="1692118695553449118">Sünkroonimine on sisse lülitatud</translation>
 <translation id="1692210323591458290">Tumelilla</translation>
@@ -2117,6 +2116,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="247051149076336810">Failide võrguhoidla URL</translation>
 <translation id="2471469610750100598">Must (vaikeseade)</translation>
 <translation id="2471506181342525583">Juurdepääs asukohale on lubatud</translation>
+<translation id="2471632709106952369">Võrdlustabelid</translation>
 <translation id="2473195200299095979">Selle lehe tõlkimine</translation>
 <translation id="2475982808118771221">Tekkis viga</translation>
 <translation id="247616523300581745">Peida need failid</translation>
@@ -6088,7 +6088,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5384401776498845256">Kes saavad teiega jagada</translation>
 <translation id="5385628342687007304">See parool on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage see oma Google’i kontole.</translation>
 <translation id="5387116558048951800">Muutke mandaati <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Toote spetsifikatsioonid</translation>
 <translation id="538822246583124912">Ettevõtte reegel on muutunud. Tööriistaribale on lisatud katsete nupp. Klõpsake nupul, et avada katsete lubamise dialoog.</translation>
 <translation id="5388436023007579456">Teie kaamerat saavad kasutada kaameraloaga rakendused, veebisaidid ja süsteemiteenused. Kaamera kasutamiseks peate võib-olla taaskäivitama rakenduse või värskendama lehte.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Leiti 1 sait, kus on palju märguandeid}other{Leiti {NUM_SITES} saiti, kus on palju märguandeid}}</translation>

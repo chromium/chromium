@@ -989,7 +989,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="168991973552362966">Ychwanegu argraffydd gerllaw</translation>
 <translation id="1689945336726856614">Copïo &amp;URL</translation>
 <translation id="1690068335127678634">Gosod sgrîn hollt</translation>
-<translation id="1690443285859726589">Addasu'r trothwy canfod fel y gallwch chi sbarduno'r ystum yn gyfforddus</translation>
 <translation id="1692115862433274081">Defnyddio cyfrif arall</translation>
 <translation id="1692118695553449118">Mae cysoni ymlaen</translation>
 <translation id="1692210323591458290">Porffor tywyll</translation>
@@ -2129,6 +2128,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="247051149076336810">URL cyfran ffeil</translation>
 <translation id="2471469610750100598">Du (diofyn)</translation>
 <translation id="2471506181342525583">Caniateir mynediad at eich lleoliad</translation>
+<translation id="2471632709106952369">Tablau cymharu</translation>
 <translation id="2473195200299095979">Cyfieithu'r dudalen hon</translation>
 <translation id="2475982808118771221">Bu gwall</translation>
 <translation id="247616523300581745">Cuddio'r ffeiliau hyn</translation>
@@ -6099,7 +6099,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5384401776498845256">Pwy all rannu gyda chi</translation>
 <translation id="5385628342687007304">Mae'r cyfrinair hwn yn cael ei gadw i'r ddyfais hon yn unig. Er mwyn ei defnyddio ar eich dyfeisiau eraill, cadwch hi yn eich Cyfrif Google.</translation>
 <translation id="5387116558048951800">Golygu <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Manylebau cynnyrch</translation>
 <translation id="538822246583124912">Mae'r polisi menter wedi newid. Cafodd botwm Arbrofion ei ychwanegu at y bar offer. Cliciwch y botwm i agor deialog i alluogi arbrofion.</translation>
 <translation id="5388436023007579456">Gall apiau a gwefannau gyda chaniatâd camera, yn ogystal â gwasanaethau system, ddefnyddio'ch camera. I ddefnyddio'r camera, mae'n bosib y bydd angen i chi ailgychwyn yr ap neu ail-lwytho'r dudalen.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Canfuwyd 1 wefan gyda nifer o hysbysiadau}zero{Canfuwyd {NUM_SITES} gwefan gyda nifer o hysbysiadau}two{Canfuwyd {NUM_SITES} wefan gyda nifer o hysbysiadau}few{Canfuwyd {NUM_SITES} gwefan gyda nifer o hysbysiadau}many{Canfuwyd {NUM_SITES} gwefan gyda nifer o hysbysiadau}other{Canfuwyd {NUM_SITES} gwefan gyda nifer o hysbysiadau}}</translation>
@@ -7773,6 +7772,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="661266467055912436">Yn gwella diogelwch i chi a phawb ar y we.</translation>
 <translation id="6613267708691765962">Sganio am ddrwgwedd...</translation>
 <translation id="6613668613087513143">Nid oes digon o le ar y ddyfais hon i gwblhau'r diweddariad hwn. Glanhewch <ph name="NECESSARY_SPACE" /> ar eich dyfais a rhowch gynnig arall arni o'ch porwr Chrome.</translation>
+<translation id="6614172284067813496">Tudalen wedi'i hychwanegu at y rhestr ddarllen</translation>
 <translation id="6615455863669487791">Dangos i fi</translation>
 <translation id="6618744767048954150">wrthi'n rhedeg</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -10772,6 +10772,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="876956356450740926">Rhedeg offer datblygwyr, IDE, a golygyddion. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Cyfeiriadur gwraidd yr estyniad</translation>
 <translation id="8771300903067484968">Mae cefndir y dudalen gychwynnol wedi cael ei ailosod i'r cefndir diofyn.</translation>
+<translation id="8773535891252326047">Dolen wedi'i chopïo i'r testun a amlygir</translation>
 <translation id="8774379074441005279">Cadarnhau Adfer</translation>
 <translation id="8774934320277480003">Ymyl uchaf</translation>
 <translation id="8775144690796719618">URL Annilys</translation>

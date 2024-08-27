@@ -79,6 +79,7 @@
 <translation id="4371591986692297148">Mitteaktiivne</translation>
 <translation id="4460014764210899310">Tühista grupeerimine</translation>
 <translation id="4590027107044272416">Nüüd saate uue vahekaardi avada siin</translation>
+<translation id="4619615317237390068">Muudest seadmetest pärinevad vahelehed</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Kas sulgeda üks inaktiivne vaheleht?}other{Kas sulgeda <ph name="TAB_COUNT_MANY" /> inaktiivset vahelehte?}}</translation>
 <translation id="4648718555153979859">Teie vahelehed on siin grupeeritud</translation>
 <translation id="4686942373615810936">Loodud just praegu</translation>

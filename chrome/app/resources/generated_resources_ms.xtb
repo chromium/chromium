@@ -986,7 +986,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="168991973552362966">Tambahkan pencetak berdekatan</translation>
 <translation id="1689945336726856614">Salin &amp;URL</translation>
 <translation id="1690068335127678634">Persediaan skrin pisah</translation>
-<translation id="1690443285859726589">Laraskan ambang pengesanan agar anda boleh mencetuskan gerak isyarat dengan selesa</translation>
 <translation id="1692115862433274081">Gunakan akaun lain</translation>
 <translation id="1692118695553449118">Penyegerakan dihidupkan</translation>
 <translation id="1692210323591458290">Ungu gelap</translation>
@@ -1437,6 +1436,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="199610894463449797">{0,plural, =1{Tutup Profil Ini}other{Tutup Profil Ini (# Tetingkap)}}</translation>
 <translation id="1997433994358798851">Chrome memerlukan kebenaran untuk menggunakan Bluetooth untuk menyambung ke peranti anda</translation>
 <translation id="1997616988432401742">Sijil anda</translation>
+<translation id="1998715278591719161">Dibenarkan untuk menjejaki tangan anda</translation>
 <translation id="1999115740519098545">Pada permulaan</translation>
 <translation id="2002109485265116295">Masa nyata</translation>
 <translation id="2002160221914907025">AI percubaan</translation>
@@ -2126,6 +2126,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="247051149076336810">URL perkongsian fail</translation>
 <translation id="2471469610750100598">Hitam (lalai)</translation>
 <translation id="2471506181342525583">Akses lokasi.dibenarkan</translation>
+<translation id="2471632709106952369">Jadual perbandingan</translation>
 <translation id="2473195200299095979">Terjemahkan halaman ini</translation>
 <translation id="2475982808118771221">Ralat berlaku</translation>
 <translation id="247616523300581745">Sembunyikan fail ini</translation>
@@ -3551,6 +3552,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3521606918211282604">Tukar saiz cakera</translation>
 <translation id="3522088408596898827">Ruang cakera terlalu sedikit. Kosongkan ruang cakera dan cuba lagi.</translation>
 <translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin mengambil masa beberapa minit.</translation>
+<translation id="3523447078673133727">Jangan benarkan laman menjejaki tangan anda</translation>
 <translation id="3524518036046613664">Temukan peranti pada rangkaian setempat anda, seperti pencetak</translation>
 <translation id="3524965460886318643">Eksport Aktiviti</translation>
 <translation id="3525426269008462093">Semak penyegerakan peranti selepas persediaan</translation>
@@ -5930,6 +5932,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="52550593576409946">Aplikasi kios tidak dapat dilancarkan.</translation>
 <translation id="5255726914791076208">Apabila anda mengedit kunci laluan anda, akaun <ph name="RP_ID" /> anda tidak akan berubah</translation>
 <translation id="5255859108402770436">Log masuk semula</translation>
+<translation id="5256174546894739043">Tanya apabila laman mahu menjejaki tangan anda</translation>
 <translation id="52566111838498928">Memuatkan fon...</translation>
 <translation id="5256861893479663409">Di Semua Tapak</translation>
 <translation id="5258992782919386492">Pasang pada peranti ini</translation>
@@ -6099,7 +6102,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5384401776498845256">Orang yang boleh berkongsi dengan anda</translation>
 <translation id="5385628342687007304">Kata laluan ini disimpan untuk peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.</translation>
 <translation id="5387116558048951800">Edit <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Spesifikasi produk</translation>
 <translation id="538822246583124912">Dasar perusahaan berubah. Butang percubaan ditambahkan pada bar alat. Klik butang itu untuk membuka dialog untuk mendayakan percubaan.</translation>
 <translation id="5388436023007579456">Apl dan laman web dengan kebenaran kamera dan perkhidmatan sistem boleh menggunakan kamera anda. Untuk menggunakan kamera, anda perlu memulakan semula apl atau menyegarkan semula halaman.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Menemukan 1 laman dengan pemberitahuan yang banyak}other{Menemukan {NUM_SITES} laman dengan pemberitahuan yang banyak}}</translation>
@@ -6678,6 +6680,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5801051031414037185">Sediakan telefon</translation>
 <translation id="5801568494490449797">Keutamaan</translation>
 <translation id="5803689677801500549">Kata laluan yang disimpan akan dipaparkan di sini. Untuk mengimport kata laluan kepada <ph name="BRAND" /> bagi <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />pilih fail CSV.<ph name="END_LINK" /></translation>
+<translation id="5804198298544152115">Laman biasanya menjejaki tangan dan jari anda untuk mengimbuh pengalaman yang mengasyikkan</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5804259315582798390">Gagal mendayakan pemulihan data setempat</translation>
 <translation id="5805268472388605531">Tekan &amp; tahan kunci papan kekunci untuk melihat tanda aksen dan aksara khas</translation>
@@ -7780,6 +7783,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6622980291894852883">Terus menyekat imej</translation>
 <translation id="6624036901798307345">Dalam mod tablet, ketik butang bar alat pengira tab untuk membuka jalur tab baharu yang memaparkan lakaran kecil setiap tab.</translation>
 <translation id="6624687053722465643">Manis</translation>
+<translation id="6627743754845412571">Tidak dibenarkan untuk menjejaki tangan anda</translation>
 <translation id="6628316682330029452">Sijil klien ialah sijil yang mengenal pasti identiti anda kepada pelayan lain.</translation>
 <translation id="6628328486509726751">Dimuat naik <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Keselamatan yang lebih kukuh</translation>

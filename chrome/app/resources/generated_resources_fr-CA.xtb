@@ -986,7 +986,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="168991973552362966">Ajouter une imprimante à proximité</translation>
 <translation id="1689945336726856614">Copier l'&amp;URL</translation>
 <translation id="1690068335127678634">Configuration de l'Écran divisé</translation>
-<translation id="1690443285859726589">Ajustez le seuil de détection pour pouvoir déclencher confortablement le geste</translation>
 <translation id="1692115862433274081">Utiliser un autre compte</translation>
 <translation id="1692118695553449118">La synchronisation est activée</translation>
 <translation id="1692210323591458290">Violet foncé</translation>
@@ -2114,6 +2113,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="247051149076336810">URL de partage de fichiers</translation>
 <translation id="2471469610750100598">Noir (par défaut)</translation>
 <translation id="2471506181342525583">Accès à la position autorisé</translation>
+<translation id="2471632709106952369">Tableaux de comparaison</translation>
 <translation id="2473195200299095979">Traduire cette page</translation>
 <translation id="2475982808118771221">Une erreur s'est produite</translation>
 <translation id="247616523300581745">Masquer ces fichiers</translation>
@@ -6085,7 +6085,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5384401776498845256">Qui peut partager avec vous</translation>
 <translation id="5385628342687007304">Ce mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.</translation>
 <translation id="5387116558048951800">Modifier le <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Caractéristiques du produit</translation>
 <translation id="538822246583124912">La politique de l'entreprise a changé. Le bouton des fonctionnalités expérimentales a été ajouté à la barre d'outils. Cliquez sur ce bouton pour ouvrir une boîte de dialogue permettant d'activer des fonctionnalités expérimentales.</translation>
 <translation id="5388436023007579456">Les services système ainsi que les applications et les sites Web disposant de l'autorisation d'accéder à la caméra peuvent utiliser votre caméra. Pour utiliser la caméra, vous devrez peut-être redémarrer l'application ou actualiser la page.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site trouvé contenant de nombreuses notifications}one{{NUM_SITES} site trouvé contenant de nombreuses notifications}other{{NUM_SITES} sites trouvés contenant de nombreuses notifications}}</translation>

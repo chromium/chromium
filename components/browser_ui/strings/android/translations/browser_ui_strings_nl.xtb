@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Als deze optie aanstaat, kunnen sites vragen of ze je camera mogen gebruiken. Staat de optie uit, dan kunnen sites je camera niet gebruiken.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome blokkeert morgen weer cookies}other{Nog # dagen totdat Chrome weer cookies blokkeert}}</translation>
 <translation id="3521663503435878242">Sites onder <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Niet toestaan dat sites je handen volgen</translation>
 <translation id="3536227077203206203">Deze keer toegestaan</translation>
 <translation id="3538390592868664640">Voorkomen dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
 <translation id="3544058026430919413">Een bedrijf kan een groep sites definiëren die cookies kunnen gebruiken om je activiteit in de groep te delen. Dit staat uit in de incognitomodus.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">Als deze optie aanstaat, kunnen sites JavaScript gebruiken. Staat de optie uit, dan kunnen sites geen JavaScript gebruiken.</translation>
 <translation id="5099358668261120049">Hiermee verwijder je alle gegevens en cookies die zijn opgeslagen door <ph name="ORIGIN" /> of de bijbehorende app op je startscherm.</translation>
 <translation id="5100237604440890931">Samengevouwen; klik om uit te vouwen.</translation>
+<translation id="5116239826668864748">Je kunt Chrome gebruiken als je op links in berichten, documenten en andere apps tikt</translation>
 <translation id="5123685120097942451">Incognitotabblad</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prijsdaling op je geopende tabbladen}other{Prijsdalingen op je geopende tabbladen}}</translation>
 <translation id="5186036860380548585">Optie beschikbaar boven aan het scherm</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Deze site zit in een groep die je activiteit kan bekijken. De groep wordt gedefinieerd door <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Actieve downloads</translation>
+<translation id="6709432001666529933">Vragen voordat sites je handen mogen volgen (aanbevolen)</translation>
 <translation id="6722828510648505498">Hiermee worden inlogprompts van identiteitsservices geblokkeerd.</translation>
 <translation id="6746124502594467657">Omlaag</translation>
 <translation id="6749077623962119521">Rechten resetten?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">Selecteer een optie voor <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6818926723028410516">Items selecteren</translation>
+<translation id="6838525730752203626">Chrome standaard gebruiken</translation>
 <translation id="6840760312327750441">Groepeer tabbladen door ze vast te houden en naar andere tabbladen te slepen.</translation>
 <translation id="6864395892908308021">Dit apparaat kan NFC niet lezen</translation>
 <translation id="6870169401250095575">Kaart Veiligheidscheck verbergen</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7667547420449112975">De tovenaar van Oz</translation>
 <translation id="7684642910516280563">Niet toestaan dat een site cookies van derden gebruikt</translation>
+<translation id="7688240020069572972">Kaart met Chrome-tips verbergen</translation>
 <translation id="7719367874908701697">Zoomen op pagina</translation>
 <translation id="7759147511335618829">MIDI-apparaatbediening en -herprogrammering</translation>
 <translation id="7781829728241885113">Gisteren</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Omhoog</translation>
 <translation id="8617611086246832542">Als deze optie aanstaat, wordt de desktopweergave van websites getoond. Staat de optie uit, dan wordt de mobiele weergave van websites getoond.</translation>
 <translation id="8649036394979866943">Chrome beperkt het gebruik van cookies van derden voor de meeste sites om je te volgen terwijl je browst. Ga naar Instellingen om <ph name="BEGIN_LINK" />je trackingbeveiliging te beheren<ph name="END_LINK" />.</translation>
+<translation id="8676316391139423634">Als deze optie aanstaat, kunnen sites vragen of ze je handen mogen volgen. Staat de optie uit, dan kunnen sites je handen niet volgen.</translation>
 <translation id="8676374126336081632">Invoer wissen</translation>
 <translation id="8681886425883659911">Advertenties worden geblokkeerd op sites waarvan bekend is dat ze opdringerige of misleidende advertenties tonen</translation>
 <translation id="868929229000858085">Zoek in je contacten</translation>

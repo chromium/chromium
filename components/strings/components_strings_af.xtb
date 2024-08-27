@@ -218,7 +218,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1363819917331173092">Moenie aanbied om bladsye in <ph name="SOURCE_LANGUAGE" /> te vertaal nie</translation>
 <translation id="1364822246244961190">Hierdie beleid is geblokkeer; die waarde daarvan sal geïgnoreer word.</translation>
 <translation id="1368318639262510626">Dinosourusspeletjie. 'n Gepiekseleerde dinosourus systap kaktusse en pterodaktiele terwyl dit oor 'n verlate landskap hardloop. Druk 'n spasiebalk om oor hindernisse te spring wanneer jy 'n oudiowenk hoor.</translation>
-<translation id="1370751323199669551">Kry meer inligting oor Vergelyk.</translation>
 <translation id="1374468813861204354">voorstelle</translation>
 <translation id="1375198122581997741">Meer oor weergawe</translation>
 <translation id="1375293861397106342">Alle opsies is tipies <ph name="LOW_PRICE" />-<ph name="HIGH_PRICE" /></translation>
@@ -1292,6 +1291,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3402261774528610252">Die verbinding wat gebruik word om hierdie werf te laai, gebruik TLS 1.0 of TLS 1.1, wat opgeskort is en in die toekoms gedeaktiveer sal word. Nadat dit gedeaktiveer is, sal gebruikers verhinder word om hierdie werf te laai. Die bediener moet TLS 1.2 of nuwer aktiveer.</translation>
 <translation id="3405664148539009465">Pasmaak lettertipes</translation>
 <translation id="3407789382767355356">derdeparty-aanmelding</translation>
+<translation id="340924996148642843">Vergelyk is nie tans beskikbaar nie.</translation>
 <translation id="3409896703495473338">Bestuur sekuriteitinstellings</translation>
 <translation id="3414275587143250384">Verspreide en wolkverwerking</translation>
 <translation id="3414952576877147120">Grootte:</translation>
@@ -1389,7 +1389,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3568886473829759308">Gaan na die webwerf om inligting, hulpbronne of dienste te bekyk wat deur die besigheid verskaf word.</translation>
 <translation id="3570079787344939099">Rollees en zoem</translation>
 <translation id="357244642999988503">Verwyder kolom</translation>
-<translation id="3572827863357388784">Dit is ’n eksperimentele kenmerk en sal dit nie altyd regkry nie.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Laat vir hierdie werf toe</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1450,6 +1449,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="365641980390710834">Gemaklike klere</translation>
 <translation id="3658742229777143148">Hersiening</translation>
 <translation id="3659521826520353662">Watter admingedefinieerde webwerwe word besoek en wanneer: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Soek na meer koopopsies van ander winkels wat hierdie produk verkoop.</translation>
 <translation id="3664782872746246217">Sleutelwoorde:</translation>
 <translation id="3665100783276035932">Die meeste werwe behoort te werk soos verwag</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Meer inligting<ph name="LINK_END1" /></translation>
@@ -1887,6 +1887,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4451135742916150903">Kan vra om aan HID-toestelle te koppel</translation>
 <translation id="4451684391620232683">Teks voorgehou aan gebruiker:</translation>
 <translation id="4452328064229197696">Die wagwoord wat jy gebruik het, is in 'n dataskending gekry. Google Wagwoordbestuurder beveel aan dat jy jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
+<translation id="4452957520362597816">Vra om webapps te installeer</translation>
 <translation id="4456937135469235202">Avontuurreise</translation>
 <translation id="4464826014807964867">Webwerwe met inligting van jou organisasie</translation>
 <translation id="4466576951214254884">Studentelenings en universiteitsfinansiering</translation>
@@ -2993,6 +2994,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6529602333819889595">Herdoen uitvee</translation>
 <translation id="6535617236508021606">Hierdie kaart is in jou Google-rekening gestoor sodat jy dit in alle Google-dienste kan gebruik.</translation>
 <translation id="6536221421038631327">As ’n Passpoint-intekening van jou <ph name="DEVICE_TYPE" /> af verwyder word, sal die geassosieerde netwerke verwyder word. Kontak “<ph name="FRIENDLY_NAME" />” om veranderinge aan jou intekeningpakket te maak. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Skakel sinkronisering aan om vergelykingtabelle te sien</translation>
 <translation id="6539092367496845964">Iets is fout. Probeer later weer.</translation>
 <translation id="6540488083026747005">Jy het derdepartywebkoekies op hierdie werf toegelaat</translation>
 <translation id="6545864417968258051">Bluetooth-opsporing</translation>

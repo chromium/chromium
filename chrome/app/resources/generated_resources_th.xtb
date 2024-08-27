@@ -985,7 +985,6 @@
 <translation id="168991973552362966">เพิ่มเครื่องพิมพ์ใกล้เคียง</translation>
 <translation id="1689945336726856614">คัดลอก &amp;URL</translation>
 <translation id="1690068335127678634">การตั้งค่าการแยกหน้าจอ</translation>
-<translation id="1690443285859726589">ปรับเกณฑ์การตรวจจับเพื่อให้คุณทริกเกอร์ท่าทางสัมผัสได้อย่างสบายๆ</translation>
 <translation id="1692115862433274081">ใช้บัญชีอื่น</translation>
 <translation id="1692118695553449118">การซิงค์เปิดอยู่</translation>
 <translation id="1692210323591458290">สีม่วงเข้ม</translation>
@@ -2113,6 +2112,7 @@
 <translation id="247051149076336810">URL ของพื้นที่แชร์ไฟล์</translation>
 <translation id="2471469610750100598">ดำ (ค่าเริ่มต้น)</translation>
 <translation id="2471506181342525583">อนุญาตให้เข้าถึงตำแหน่ง</translation>
+<translation id="2471632709106952369">ตารางเปรียบเทียบ</translation>
 <translation id="2473195200299095979">แปลหน้านี้</translation>
 <translation id="2475982808118771221">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="247616523300581745">ซ่อนไฟล์เหล่านี้</translation>
@@ -6080,7 +6080,6 @@
 <translation id="5384401776498845256">คนที่จะแชร์กับคุณได้</translation>
 <translation id="5385628342687007304">รหัสผ่านข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google</translation>
 <translation id="5387116558048951800">แก้ไข<ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">ข้อมูลจำเพาะของผลิตภัณฑ์</translation>
 <translation id="538822246583124912">มีการเปลี่ยนแปลงนโยบายองค์กร เพิ่มปุ่มการทดสอบในแถบเครื่องมือแล้ว คลิกปุ่มดังกล่าวเพื่อเปิดกล่องโต้ตอบสำหรับเปิดใช้การทดสอบ</translation>
 <translation id="5388436023007579456">แอปและเว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง ตลอดจนบริการของระบบจะใช้กล้องได้ หากต้องการใช้กล้อง คุณอาจต้องรีสตาร์ทแอปหรือรีเฟรชหน้า</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{พบ 1 เว็บไซต์ที่มีการแจ้งเตือนจำนวนมาก}other{พบ {NUM_SITES} เว็บไซต์ที่มีการแจ้งเตือนจำนวนมาก}}</translation>
@@ -7743,6 +7742,7 @@
 <translation id="661266467055912436">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6613267708691765962">กำลังสแกนหามัลแวร์...</translation>
 <translation id="6613668613087513143">อุปกรณ์นี้มีพื้นที่ว่างไม่เพียงพอที่จะทำการอัปเดตนี้ให้เสร็จสมบูรณ์ ล้างข้อมูล <ph name="NECESSARY_SPACE" /> ในอุปกรณ์แล้วลองอีกครั้งจากเบราว์เซอร์ Chrome</translation>
+<translation id="6614172284067813496">เพิ่มหน้าไปยังเรื่องรออ่านแล้ว</translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -10743,6 +10743,7 @@
 <translation id="876956356450740926">เรียกใช้เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์, IDE และเครื่องมือแก้ไข <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">ไดเรกทอรีหลักของส่วนขยาย</translation>
 <translation id="8771300903067484968">มีการรีเซ็ตพื้นหลังของหน้าเริ่มต้นเป็นพื้นหลังเริ่มต้น</translation>
+<translation id="8773535891252326047">คัดลอกลิงก์ไปยังไฮไลต์แล้ว</translation>
 <translation id="8774379074441005279">ยืนยันการคืนค่า</translation>
 <translation id="8774934320277480003">ขอบบน</translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>

@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">사용 설정하면 사이트에서 카메라 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{내일 Chrome에서 다시 쿠키를 차단합니다}other{#일 후 Chrome에서 다시 쿠키를 차단합니다}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" />의 사이트</translation>
+<translation id="3523447078673133727">사이트에서 내 손을 추적하도록 허용하지 않음</translation>
 <translation id="3536227077203206203">현재 허용됨</translation>
 <translation id="3538390592868664640">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하지 못하도록 차단</translation>
 <translation id="3544058026430919413">쿠키를 사용하여 내 그룹 활동을 공유할 수 있는 사이트 그룹을 회사가 정의할 수 있습니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">사용 설정하면 사이트에서 JavaScript를 사용할 수 있습니다. 사용 중지하면 사이트에서 JavaScript를 사용할 수 없습니다.</translation>
 <translation id="5099358668261120049">이렇게 하면 <ph name="ORIGIN" /> 또는 홈 화면의 앱에 저장한 데이터 및 쿠키가 모두 삭제됩니다.</translation>
 <translation id="5100237604440890931">접힘 - 펼치려면 클릭</translation>
+<translation id="5116239826668864748">메시지, 문서, 다른 앱에서 링크를 탭하여 언제든지 Chrome을 사용할 수 있습니다.</translation>
 <translation id="5123685120097942451">시크릿 탭</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{열려 있는 탭의 가격 인하}other{열려 있는 탭의 가격 인하}}</translation>
 <translation id="5186036860380548585">화면 상단에서 옵션을 선택할 수 있습니다</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">이 사이트는 내 활동을 볼 수 있는 그룹에 있습니다. 그룹 정의 기준: <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">프로필 사진</translation>
 <translation id="6697925417670533197">진행 중인 다운로드</translation>
+<translation id="6709432001666529933">사이트에서 내 손을 추적하도록 허용하기 전에 확인(권장)</translation>
 <translation id="6722828510648505498">ID 서비스의 로그인 메시지를 차단합니다.</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="6749077623962119521">권한을 재설정하시겠습니까?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" />에 적용할 옵션 선택</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6818926723028410516">항목 선택</translation>
+<translation id="6838525730752203626">Chrome을 기본 브라우저로 사용</translation>
 <translation id="6840760312327750441">탭을 그룹화하려면 탭을 길게 터치한 다음 다른 탭으로 드래그하세요.</translation>
 <translation id="6864395892908308021">기기에서 NFC를 읽을 수 없음</translation>
 <translation id="6870169401250095575">안전 확인 숨기기 카드</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7667547420449112975">오즈의 마법사</translation>
 <translation id="7684642910516280563">사이트에서 서드 파티 쿠키를 사용하도록 허용하지 않습니다</translation>
+<translation id="7688240020069572972">Chrome 도움말 카드 숨기기</translation>
 <translation id="7719367874908701697">페이지 확대/축소</translation>
 <translation id="7759147511335618829">MIDI 기기 제어 및 다시 프로그래밍</translation>
 <translation id="7781829728241885113">어제</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8617611086246832542">사용 설정하면 웹사이트 데스크톱 뷰가 표시됩니다. 사용 중지하면 웹사이트 모바일 뷰가 표시됩니다.</translation>
 <translation id="8649036394979866943">Chrome은 대부분의 사이트에 대해 서드 파티 쿠키를 사용하여 탐색 중인 사용자를 추적하지 못하도록 제한합니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />추적 방지 기능을 관리<ph name="END_LINK" />하세요.</translation>
+<translation id="8676316391139423634">이 옵션을 사용 설정하면 사이트에서 손 추적을 요청할 수 있습니다. 사용 중지하면 사이트에서 내 손을 추적할 수 없습니다.</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8681886425883659911">방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려진 사이트에서 광고가 차단됩니다.</translation>
 <translation id="868929229000858085">연락처 검색</translation>

@@ -985,7 +985,6 @@
 <translation id="168991973552362966">הוספת מדפסת קרובה</translation>
 <translation id="1689945336726856614">העתקת &amp;כתובת אתר</translation>
 <translation id="1690068335127678634">הגדרת מסך מפוצל</translation>
-<translation id="1690443285859726589">צריך לכוונן את סף הגילוי כדי להפעיל את התנועה בצורה נוחה</translation>
 <translation id="1692115862433274081">חשבון אחר</translation>
 <translation id="1692118695553449118">סנכרון מופעל</translation>
 <translation id="1692210323591458290">סגול כהה</translation>
@@ -2125,6 +2124,7 @@
 <translation id="247051149076336810">כתובת אתר של התקן רשת לשיתוף קבצים</translation>
 <translation id="2471469610750100598">שחור (ברירת מחדל)</translation>
 <translation id="2471506181342525583">לאתר יש גישה למיקום שלך</translation>
+<translation id="2471632709106952369">טבלאות השוואה</translation>
 <translation id="2473195200299095979">תרגום הדף</translation>
 <translation id="2475982808118771221">אירעה שגיאה</translation>
 <translation id="247616523300581745">הסתרת הקבצים האלה</translation>
@@ -6097,7 +6097,6 @@
 <translation id="5384401776498845256">מי יכול לשתף איתך</translation>
 <translation id="5385628342687007304">‏הסיסמה הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, עליך לשמור אותה בחשבון Google.</translation>
 <translation id="5387116558048951800">עריכת <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">מפרטי מוצר</translation>
 <translation id="538822246583124912">מדיניות הארגון השתנתה. לחצן הניסויים התווסף לסרגל הכלים. יש ללחוץ על הלחצן כדי לפתוח תיבת דו-שיח ולהפעיל ניסויים.</translation>
 <translation id="5388436023007579456">שירותי מערכת וגם אפליקציות ואתרים עם הרשאת גישה למצלמה יכולים להשתמש במצלמה. כדי להשתמש במצלמה, יכול להיות שצריך להפעיל מחדש את האפליקציה או לרענן את הדף.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{נמצא אתר אחד עם הרבה התראות}one{נמצאו {NUM_SITES} אתרים עם הרבה התראות}two{נמצאו {NUM_SITES} אתרים עם הרבה התראות}other{נמצאו {NUM_SITES} אתרים עם הרבה התראות}}</translation>

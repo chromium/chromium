@@ -218,7 +218,6 @@
 <translation id="1363819917331173092">不询问是否翻译<ph name="SOURCE_LANGUAGE" />网页</translation>
 <translation id="1364822246244961190">此政策已被禁用，其值也会被忽略。</translation>
 <translation id="1368318639262510626">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时按一下空格键，即可让恐龙跃过障碍物。</translation>
-<translation id="1370751323199669551">详细了解“比较”功能。</translation>
 <translation id="1374468813861204354">建议</translation>
 <translation id="1375198122581997741">关于版本</translation>
 <translation id="1375293861397106342">所有选项的一般价格为 <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -379,7 +378,7 @@
 <translation id="1656489000284462475">取货</translation>
 <translation id="1658111267661135323">电视节目和视频</translation>
 <translation id="1658918301167915956">蓝牙设备</translation>
-<translation id="1662550410081243962">保存并填写付款方式</translation>
+<translation id="1662550410081243962">保存并自动填充付款方式</translation>
 <translation id="1663943134801823270">信用卡选项和地址选项均来自 Chrome。您可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理这些选项。</translation>
 <translation id="1664389769577564606">柔印光敏聚合物</translation>
 <translation id="166624440456221306">删除比较表格</translation>
@@ -1290,6 +1289,7 @@
 <translation id="3402261774528610252">用于加载此网站的连接使用的是 TLS 1.0 或 TLS 1.1，这两个 TLS 版本都已过时，将在不久后完全停用。届时，用户将无法再加载此网站。服务器应启用 TLS 1.2 或更高版本。</translation>
 <translation id="3405664148539009465">自定义字体</translation>
 <translation id="3407789382767355356">第三方登录</translation>
+<translation id="340924996148642843">目前无法使用比较功能</translation>
 <translation id="3409896703495473338">管理安全设置</translation>
 <translation id="3414275587143250384">分布式计算与云计算</translation>
 <translation id="3414952576877147120">大小：</translation>
@@ -1386,7 +1386,6 @@
 <translation id="3568886473829759308">访问网站查看商家提供的信息、资源或服务。</translation>
 <translation id="3570079787344939099">滚动和缩放</translation>
 <translation id="357244642999988503">移除列</translation>
-<translation id="3572827863357388784">这是一项实验性功能，并非始终准确无误。</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /><ph name="STATE" /><ph name="CITY" /></translation>
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1446,6 +1445,7 @@
 <translation id="365641980390710834">休闲服装</translation>
 <translation id="3658742229777143148">修订版本</translation>
 <translation id="3659521826520353662">访问了哪些管理员定义的网站以及访问时间：<ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">搜索销售此商品的其他商店的更多购买选项。</translation>
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3665100783276035932">大多数网站应该都会按预期运行</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />了解详情<ph name="LINK_END1" /></translation>
@@ -1883,6 +1883,7 @@
 <translation id="4451135742916150903">可以询问能否连接到 HID 设备</translation>
 <translation id="4451684391620232683">向用户显示的文本：</translation>
 <translation id="4452328064229197696">您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，Google 密码管理工具建议您检查已保存的所有密码。</translation>
+<translation id="4452957520362597816">请求安装 Web 应用</translation>
 <translation id="4456937135469235202">探险旅行</translation>
 <translation id="4464826014807964867">包含来自贵组织的信息的网站</translation>
 <translation id="4466576951214254884">学生贷款与大学助学金</translation>
@@ -2815,6 +2816,7 @@
 <translation id="6240964651812394252">若要在您的操作系统中使用 Google 密码管理工具，请重新启动 Chrome 并允许使用计算机的密码管理工具。待 Chrome 重新启动后，您的标签页会自动重新打开。</translation>
 <translation id="6241121617266208201">隐藏建议</translation>
 <translation id="624499991300733384">打印合成器服务</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6246868321321344665">贵组织可以查看浏览数据，例如工作资料与个人资料中的密码和历史记录</translation>
 <translation id="6250932670816326647">沐浴与身体护理产品</translation>
 <translation id="6251906504834538140">{0,plural, =1{此文件已被禁止移动}other{<ph name="FILE_COUNT" /> 个文件已被禁止移动}}</translation>
@@ -2988,6 +2990,7 @@
 <translation id="6529602333819889595">恢复删除(&amp;R)</translation>
 <translation id="6535617236508021606">此卡已保存在您的 Google 账号中，以便您在各项 Google 服务中使用此卡。</translation>
 <translation id="6536221421038631327">从<ph name="DEVICE_TYPE" />移除 Passpoint 订阅后，关联的网络也会一并移除。如需更改订阅方案，请与“<ph name="FRIENDLY_NAME" />”联系。<ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">如需查看比较表格，请开启同步功能</translation>
 <translation id="6539092367496845964">出了点问题。请稍后重试。</translation>
 <translation id="6540488083026747005">您已允许此网站使用第三方 Cookie</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
@@ -3403,6 +3406,7 @@
 <translation id="7346081071264046066">“兴奋地答应出席婚礼”</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353601530677266744">命令行</translation>
+<translation id="7356678400607112844">上次访问日期：</translation>
 <translation id="7359588939039777303">广告已被拦截。</translation>
 <translation id="7360451453306104998">如果 Google 发现您可以享受的折扣，就会在您结账时显示折扣信息</translation>
 <translation id="7363096869660964304">但是，这并不意味着您能完全隐身。即使您进入无痕模式，您的雇主、互联网服务提供商和您访问的网站仍然能看到您的浏览活动。</translation>

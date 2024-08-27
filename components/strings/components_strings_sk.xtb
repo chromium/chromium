@@ -218,7 +218,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1363819917331173092">Neponúkať preklad stránok v jazyku <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Toto pravidlo je blokované. Jeho hodnota sa bude ignorovať.</translation>
 <translation id="1368318639262510626">Hra s dinosaurom Pixelovaný dinosaurus beží pustou krajinou a vyhýba sa kaktusom a pterodaktylom. Keď začujete zvuk, stlačením medzerníka preskočte cez prekážky.</translation>
-<translation id="1370751323199669551">Ďalšie informácie o porovnávaní</translation>
 <translation id="1374468813861204354">návrhy</translation>
 <translation id="1375198122581997741">Informácie o verzii</translation>
 <translation id="1375293861397106342">Všetky ceny sú zvyčajne v rozsahu <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" /></translation>
@@ -1289,6 +1288,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3402261774528610252">Pripojenie, pomocou ktorého bol načítaný tento web, používa protokol TLS 1.0 alebo TLS 1.1, ktorého podpora je zastaraná a ktorý bude v budúcnosti zakázaný. Po jeho zakázaní už používatelia nebudú môcť tento web načítať. Daný server by mal aktivovať protokol TLS verzie 1.2 alebo novšej.</translation>
 <translation id="3405664148539009465">Prispôsobiť písma</translation>
 <translation id="3407789382767355356">prihlasovanie tretími stranami</translation>
+<translation id="340924996148642843">Porovnanie nie je momentálne k dispozícii</translation>
 <translation id="3409896703495473338">Spravovať nastavenia zabezpečenia</translation>
 <translation id="3414275587143250384">Distribuované programovanie a cloud computing</translation>
 <translation id="3414952576877147120">Veľkosť:</translation>
@@ -1386,7 +1386,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3568886473829759308">Prejdite na web a pozrite si informácie, zdroje alebo služby poskytované danou firmou.</translation>
 <translation id="3570079787344939099">Posúvanie a priblíženie</translation>
 <translation id="357244642999988503">Odstrániť stĺpec</translation>
-<translation id="3572827863357388784">Toto je experimentálna funkcia a nie vždy funguje správne.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Povoliť pre tento web</translation>
 <translation id="3575168918110434329">A4×7</translation>
@@ -1446,6 +1445,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="365641980390710834">Odevy na voľný čas</translation>
 <translation id="3658742229777143148">Verzia</translation>
 <translation id="3659521826520353662">Ktoré weby definované správcom budú navštívené a kedy: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Vyhľadajte ďalšie možnosti zakúpenia z iných obchodov, ktoré predávajú tento výrobok.</translation>
 <translation id="3664782872746246217">Kľúčové slová:</translation>
 <translation id="3665100783276035932">Väčšina webov by mala fungovať podľa očakávaní.</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Ďalšie informácie<ph name="LINK_END1" /></translation>
@@ -1883,6 +1883,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4451135742916150903">Môže žiadať o povolenie pripájať sa k zariadeniam HID</translation>
 <translation id="4451684391620232683">Text prezentovaný používateľovi:</translation>
 <translation id="4452328064229197696">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Ak chcete svoje účty zabezpečiť, správca hesiel od Googlu odporúča skontrolovať uložené heslá.</translation>
+<translation id="4452957520362597816">Žiadať o inštaláciu webových aplikácií</translation>
 <translation id="4456937135469235202">Dobrodružné cesty</translation>
 <translation id="4464826014807964867">Weby s informáciami od vašej organizácie</translation>
 <translation id="4466576951214254884">Študentské pôžičky a financovanie vyššieho vzdelania</translation>
@@ -2988,6 +2989,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6529602333819889595">&amp;Znova odstrániť</translation>
 <translation id="6535617236508021606">Táto karta je uložená vo vašom účte Google, takže ju môžete používať v službách Googlu.</translation>
 <translation id="6536221421038631327">Keď zo svojho zariadenia <ph name="DEVICE_TYPE" /> odstránite odber Passpoint, odstránia sa aj spojené siete. Ak chcete v paušále vykonať zmeny, kontaktujte službu <ph name="FRIENDLY_NAME" />. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Ak chcete zobraziť porovnávacie tabuľky, zapnite synchronizáciu</translation>
 <translation id="6539092367496845964">Vyskytol sa problém. Skúste to neskôr.</translation>
 <translation id="6540488083026747005">Pre tento web ste povolili súbory cookie tretej strany</translation>
 <translation id="6545864417968258051">Vyhľadávanie zariadení Bluetooth</translation>

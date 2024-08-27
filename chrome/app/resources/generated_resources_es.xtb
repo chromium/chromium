@@ -985,7 +985,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="168991973552362966">Añadir una impresora cercana</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
 <translation id="1690068335127678634">Configuración de pantalla dividida</translation>
-<translation id="1690443285859726589">Ajusta el umbral de detección para que puedas activar el gesto cómodamente</translation>
 <translation id="1692115862433274081">Usar otra cuenta</translation>
 <translation id="1692118695553449118">La sincronización está activada</translation>
 <translation id="1692210323591458290">Morado oscuro</translation>
@@ -1427,6 +1426,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="199610894463449797">{0,plural, =1{Cerrar este perfil}other{Cerrar este perfil (# ventanas)}}</translation>
 <translation id="1997433994358798851">Chrome necesita permiso para conectarse a tu dispositivo mediante Bluetooth.</translation>
 <translation id="1997616988432401742">Tus certificados</translation>
+<translation id="1998715278591719161">Con permiso para monitorizar tus manos</translation>
 <translation id="1999115740519098545">Al iniciar</translation>
 <translation id="2002109485265116295">En tiempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
@@ -2114,6 +2114,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="247051149076336810">URL del sistema de archivos compartidos</translation>
 <translation id="2471469610750100598">Negro (predeterminado)</translation>
 <translation id="2471506181342525583">Acceso a la ubicación permitido</translation>
+<translation id="2471632709106952369">Tablas comparativas</translation>
 <translation id="2473195200299095979">Traducir esta página</translation>
 <translation id="2475982808118771221">Se ha producido un error.</translation>
 <translation id="247616523300581745">Ocultar estos archivos</translation>
@@ -3537,6 +3538,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3521606918211282604">Cambiar tamaño de disco</translation>
 <translation id="3522088408596898827">Queda muy poco espacio en el disco. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="3522979239100719575">Buscando perfiles disponibles. Este proceso puede durar unos minutos.</translation>
+<translation id="3523447078673133727">No permitir que los sitios monitoricen tus manos</translation>
 <translation id="3524518036046613664">Descubrir dispositivos en tu red local (por ejemplo, impresoras)</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
 <translation id="3525426269008462093">Revisa la sincronización del dispositivo después de la configuración</translation>
@@ -5913,6 +5915,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="52550593576409946">La aplicación de kiosco no se ha podido iniciar.</translation>
 <translation id="5255726914791076208">Si editas tu llave de acceso, tu cuenta de <ph name="RP_ID" /> no cambiará</translation>
 <translation id="5255859108402770436">Vuelve a iniciar sesión</translation>
+<translation id="5256174546894739043">Preguntar cuando un sitio quiera monitorizar tus manos</translation>
 <translation id="52566111838498928">Cargando fuentes...</translation>
 <translation id="5256861893479663409">En todos los sitios</translation>
 <translation id="5258992782919386492">Instalar en este dispositivo</translation>
@@ -6081,7 +6084,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5384401776498845256">Quién puede compartir contigo</translation>
 <translation id="5385628342687007304">Esta contraseña está guardada solo en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google.</translation>
 <translation id="5387116558048951800">Editar <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Características del producto</translation>
 <translation id="538822246583124912">La política de Enterprise ha cambiado. Se ha añadido el botón Experimentos a la barra de herramientas. Haz clic en el botón para abrir un cuadro de diálogo donde habilitar los experimentos.</translation>
 <translation id="5388436023007579456">Las aplicaciones y los sitios web que tengan el permiso de cámara, así como los servicios del sistema, pueden usar la cámara. Para usar la cámara, puede que tengas que reiniciar la aplicación o actualizar la página.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Se ha encontrado 1 sitio con muchas notificaciones}other{Se han encontrado {NUM_SITES} sitios con muchas notificaciones}}</translation>
@@ -6660,6 +6662,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5801051031414037185">Configurar teléfono</translation>
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5803689677801500549">Las contraseñas guardadas aparecerán aquí. Para importar contraseñas a <ph name="BRAND" /> con <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />selecciona un archivo CSV<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">Los sitios suelen monitorizar las manos y los dedos para mejorar las experiencias inmersivas</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804259315582798390">No se ha podido habilitar la recuperación de datos locales</translation>
 <translation id="5805268472388605531">Mantén pulsadas las teclas del teclado para ver las tildes y los caracteres especiales</translation>
@@ -7760,6 +7763,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6622980291894852883">Seguir bloqueando imágenes</translation>
 <translation id="6624036901798307345">En modo tablet, toca el botón del contador de pestañas situado en la barra de herramientas para abrir la nueva barra de pestañas donde se muestran miniaturas de cada pestaña.</translation>
 <translation id="6624687053722465643">Dulzura</translation>
+<translation id="6627743754845412571">Sin permiso para monitorizar tus manos</translation>
 <translation id="6628316682330029452">Los certificados de cliente son certificados que te identifican en otros servidores.</translation>
 <translation id="6628328486509726751">Fecha y hora de subida: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Mayor seguridad</translation>
@@ -8127,6 +8131,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6876155724392614295">Bici</translation>
 <translation id="6876469544038980967">No es útil</translation>
 <translation id="6878422606530379992">Sensores permitidos</translation>
+<translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">Se han bloqueado las imágenes en esta página.</translation>
 <translation id="6881845890692344060">Tu administrador ha cerrado sesión. Ahora tú tienes el control.</translation>
 <translation id="6882210908253838664">Si un sitio no funciona, puedes probar a darle permiso temporal para usar cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -9665,6 +9670,7 @@ Archivo de clave: <ph name="KEY_FILE" />
 
 Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear nuevas versiones de tu extensión.</translation>
 <translation id="8000020256436988724">Barra de herramientas</translation>
+<translation id="800117767980299235">Fragmento destacado de voz</translation>
 <translation id="8002274832045662704">Configuración avanzada de la impresora</translation>
 <translation id="8002670234429879764">La impresora <ph name="PRINTER_NAME" /> ya no está disponible</translation>
 <translation id="8004092996156083991">Si se vulneran tus contraseñas, te avisaremos</translation>

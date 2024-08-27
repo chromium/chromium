@@ -218,7 +218,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1363819917331173092">Ekki bjóða upp á að þýða síður á <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Þessi regla er á bannlista, gildi hennar er hunsað.</translation>
 <translation id="1368318639262510626">Risaeðluleikur. Pixluð risaeðla sneiðir hjá kaktusum og flugeðlum þegar hún hleypur í gegnum eyðimörk. Ýttu á bilslána til að hoppa yfir hindranir um leið og hljóðmerki heyrist.</translation>
-<translation id="1370751323199669551">Nánar um „Samanburður“.</translation>
 <translation id="1374468813861204354">tillögur</translation>
 <translation id="1375198122581997741">Um útgáfu</translation>
 <translation id="1375293861397106342">Verð eru yfirleitt <ph name="LOW_PRICE" />–<ph name="HIGH_PRICE" /></translation>
@@ -1292,6 +1291,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3402261774528610252">Tengingin sem er notuð til að hlaða þessu vefsvæði notaði TLS 1.0 eða TLS 1.1, úreltar útgáfur sem verða gerðar óvirkar í framtíðinni. Þegar þær hafa verið gerðar óvirkar geta notendur ekki hlaðið þessu vefsvæði. Virkja ætti TLS 1.2 eða nýrri útgáfu á þjóninum.</translation>
 <translation id="3405664148539009465">Sérsníða letur</translation>
 <translation id="3407789382767355356">innskráning þriðja aðila</translation>
+<translation id="340924996148642843">Samanburður er ekki í boði í augnablikinu</translation>
 <translation id="3409896703495473338">Stjórna öryggisstillingum</translation>
 <translation id="3414275587143250384">Samtengd tölvuvinnsla og skýjatölvun</translation>
 <translation id="3414952576877147120">Stærð:</translation>
@@ -1389,7 +1389,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3568886473829759308">Opnaðu vefsvæðið til að skoða upplýsingar, gögn eða þjónustu sem fyrirtækið býður upp á.</translation>
 <translation id="3570079787344939099">Flett og stækkað/minnkað</translation>
 <translation id="357244642999988503">Fjarlægja dálk</translation>
-<translation id="3572827863357388784">Þessi eiginleiki er á tilraunastigi og er ekki fullkomlega áreiðanlegur.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Leyfa fyrir þetta vefsvæði</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1450,6 +1449,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="365641980390710834">Hversdagsklæðnaður</translation>
 <translation id="3658742229777143148">Endurskoðun</translation>
 <translation id="3659521826520353662">Hvaða vefsvæði sem stjórnandi hefur skilgreint eru opnuð og hvenær: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Leita að fleiri valkostum annarra verslana sem selja þessa vöru.</translation>
 <translation id="3664782872746246217">Leitarorð:</translation>
 <translation id="3665100783276035932">Flest vefsvæði ættu að virka sem skyldi</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Nánar<ph name="LINK_END1" /></translation>
@@ -1887,6 +1887,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4451135742916150903">Getur beðið um að tengjast HID-tækjum</translation>
 <translation id="4451684391620232683">Texti sem birtist notanda:</translation>
 <translation id="4452328064229197696">Aðgangsorðið sem þú varst að nota fannst nýverið í öryggisbroti. Aðgangsorðastjórnun Google mælir með að þú athugir vistuð aðgangsorð til að tryggja öryggi reikninganna þinna.</translation>
+<translation id="4452957520362597816">Biðja um leyfi fyrir að setja upp vefforrit</translation>
 <translation id="4456937135469235202">Ævintýraferðir</translation>
 <translation id="4464826014807964867">Vefsvæði með upplýsingar frá þínu fyrirtæki</translation>
 <translation id="4466576951214254884">Námslán og fjármögnun háskólanáms</translation>
@@ -2993,6 +2994,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6529602333819889595">Endu&amp;rtaka eyðingu</translation>
 <translation id="6535617236508021606">Þetta kort er vistað á Google-reikningnum þínum þannig að þú getur notað það í Google þjónustum.</translation>
 <translation id="6536221421038631327">Ef þú fjarlægir áskrift að Aðgangspunkti úr <ph name="DEVICE_TYPE" /> verða tengd netkerfi fjarlægð. Hafðu samband við „<ph name="FRIENDLY_NAME" />“ til að breyta áskriftinni þinni. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Kveiktu á samstillingu til að sjá samanburðartöflur</translation>
 <translation id="6539092367496845964">Eitthvað fór úrskeiðis. Reyndu aftur síðar.</translation>
 <translation id="6540488083026747005">Þú leyfðir fótspor þriðju aðila á þessu vefsvæði</translation>
 <translation id="6545864417968258051">Bluetooth-leit</translation>

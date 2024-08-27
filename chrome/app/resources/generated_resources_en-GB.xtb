@@ -986,7 +986,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="168991973552362966">Add a nearby printer</translation>
 <translation id="1689945336726856614">Copy &amp;URL</translation>
 <translation id="1690068335127678634">Split screen set up</translation>
-<translation id="1690443285859726589">Adjust the detection threshold so that you can comfortably trigger the gesture</translation>
 <translation id="1692115862433274081">Use another account</translation>
 <translation id="1692118695553449118">Sync is on</translation>
 <translation id="1692210323591458290">Dark purple</translation>
@@ -2126,6 +2125,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="247051149076336810">File share URL</translation>
 <translation id="2471469610750100598">Black (default)</translation>
 <translation id="2471506181342525583">Location access allowed</translation>
+<translation id="2471632709106952369">Comparison tables</translation>
 <translation id="2473195200299095979">Translate this page</translation>
 <translation id="2475982808118771221">An error occurred</translation>
 <translation id="247616523300581745">Hide these files</translation>
@@ -6097,7 +6097,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5384401776498845256">Who can share with you</translation>
 <translation id="5385628342687007304">This password is saved only to this device. To use it on your other devices, save it in your Google Account.</translation>
 <translation id="5387116558048951800">Edit <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Product specifications</translation>
 <translation id="538822246583124912">Enterprise policy changed. Experiments button added to toolbar. Click the button to open a dialogue to enable experiments.</translation>
 <translation id="5388436023007579456">Apps and websites with the camera permission, as well as system services, can use your camera. To use the camera, you may need to restart the app or refresh the page.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Found 1 site with lots of notifications}other{Found {NUM_SITES} sites with lots of notifications}}</translation>

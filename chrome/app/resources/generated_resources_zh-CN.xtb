@@ -980,7 +980,6 @@
 <translation id="168991973552362966">添加附近的打印机</translation>
 <translation id="1689945336726856614">复制网址(&amp;U)</translation>
 <translation id="1690068335127678634">分屏设置</translation>
-<translation id="1690443285859726589">调整检测阈值，以便您可以舒适地触发手势</translation>
 <translation id="1692115862433274081">使用其他账号</translation>
 <translation id="1692118695553449118">同步功能已开启</translation>
 <translation id="1692210323591458290">深紫色</translation>
@@ -1420,6 +1419,7 @@
 <translation id="199610894463449797">{0,plural, =1{关闭此个人资料}other{关闭此个人资料（# 个窗口）}}</translation>
 <translation id="1997433994358798851">Chrome 需要获得使用蓝牙的权限，才能连接到您的设备</translation>
 <translation id="1997616988432401742">您的证书</translation>
+<translation id="1998715278591719161">允许跟踪您的双手</translation>
 <translation id="1999115740519098545">启动时</translation>
 <translation id="2002109485265116295">实时</translation>
 <translation id="2002160221914907025">实验性 AI</translation>
@@ -2106,6 +2106,7 @@
 <translation id="247051149076336810">文件共享网址</translation>
 <translation id="2471469610750100598">黑色（默认）</translation>
 <translation id="2471506181342525583">已允许使用位置信息</translation>
+<translation id="2471632709106952369">比较表格</translation>
 <translation id="2473195200299095979">翻译此页</translation>
 <translation id="2475982808118771221">出现错误</translation>
 <translation id="247616523300581745">隐藏这些文件</translation>
@@ -3527,6 +3528,7 @@
 <translation id="3521606918211282604">更改磁盘大小</translation>
 <translation id="3522088408596898827">磁盘空间严重不足。请释放一些磁盘空间，然后重试。</translation>
 <translation id="3522979239100719575">正在查找可用的配置文件。这可能需要几分钟的时间。</translation>
+<translation id="3523447078673133727">不允许网站跟踪您的双手</translation>
 <translation id="3524518036046613664">查找您的本地网络中的设备，例如打印机</translation>
 <translation id="3524965460886318643">导出活动记录</translation>
 <translation id="3525426269008462093">在完成设置后查看设备同步情况</translation>
@@ -5903,6 +5905,7 @@
 <translation id="52550593576409946">无法启动自助服务终端应用。</translation>
 <translation id="5255726914791076208">修改通行密钥时，您的 <ph name="RP_ID" /> 账号不会改变</translation>
 <translation id="5255859108402770436">重新登录</translation>
+<translation id="5256174546894739043">在网站想要跟踪您的双手时询问您</translation>
 <translation id="52566111838498928">正在加载字体…</translation>
 <translation id="5256861893479663409">在所有网站上</translation>
 <translation id="5258992782919386492">在此设备上安装</translation>
@@ -6071,7 +6074,6 @@
 <translation id="5384401776498845256">哪些对象可与您分享内容</translation>
 <translation id="5385628342687007304">这个密码仅会保存到此设备上。若要在其他设备上使用该密码，请将它保存到您的 Google 账号。</translation>
 <translation id="5387116558048951800">修改<ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">产品规格</translation>
 <translation id="538822246583124912">企业政策已更改。实验按钮已添加到工具栏。点击此按钮即可打开对话框以启用实验。</translation>
 <translation id="5388436023007579456">系统服务以及具有摄像头使用权限的应用和网站可以使用您的摄像头。如需使用摄像头，您可能需要重启应用或刷新页面。</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{发现了 1 个向用户发送大量通知的网站}other{发现了 {NUM_SITES} 个向用户发送大量通知的网站}}</translation>
@@ -6648,6 +6650,7 @@
 <translation id="5801051031414037185">设置手机</translation>
 <translation id="5801568494490449797">偏好设置</translation>
 <translation id="5803689677801500549">已保存的密码将显示在这里。如需将密码导入 <ph name="USER_EMAIL" /> 的 <ph name="BRAND" />，请<ph name="BEGIN_LINK" />选择一个 CSV 文件<ph name="END_LINK" />。</translation>
+<translation id="5804198298544152115">网站通常会跟踪您的双手和手指，以增强沉浸式体验</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5804259315582798390">未能启用本地数据恢复功能</translation>
 <translation id="5805268472388605531">按住键盘按键即可查看重音符号和特殊字符</translation>
@@ -7734,6 +7737,7 @@
 <translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
 <translation id="6613668613087513143">此设备的空间不足，无法完成更新。请在设备上清理出 <ph name="NECESSARY_SPACE" /> 的空间，然后在 Chrome 浏览器中重试。</translation>
+<translation id="6614172284067813496">页面已添加到阅读清单</translation>
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6618744767048954150">正在运行</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7747,6 +7751,7 @@
 <translation id="6622980291894852883">继续拦截图片</translation>
 <translation id="6624036901798307345">在平板电脑模式下，只需点按工具栏中的标签页计数器按钮，即可打开会显示每个标签页的缩略图的新标签页栏。</translation>
 <translation id="6624687053722465643">杯型蛋糕</translation>
+<translation id="6627743754845412571">不允许跟踪您的双手</translation>
 <translation id="6628316682330029452">客户端证书是用于向其他服务器标识您身份的证书。</translation>
 <translation id="6628328486509726751">上传时间：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">更高的安全性</translation>
@@ -10735,6 +10740,7 @@
 <translation id="876956356450740926">运行开发者工具、IDE 和编辑器。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">扩展程序根目录</translation>
 <translation id="8771300903067484968">已将初始页背景重置为默认背景。</translation>
+<translation id="8773535891252326047">已复制指向突出显示内容的链接</translation>
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>

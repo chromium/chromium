@@ -987,7 +987,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="168991973552362966">Adicionar uma impressora próxima</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
 <translation id="1690068335127678634">Configuração de tela dividida</translation>
-<translation id="1690443285859726589">Ajuste o limite de detecção para acionar o gesto com conforto</translation>
 <translation id="1692115862433274081">Usar outra conta</translation>
 <translation id="1692118695553449118">Sincronização ativada</translation>
 <translation id="1692210323591458290">Roxo-escuro</translation>
@@ -2127,6 +2126,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="247051149076336810">URL de compartilhamento de arquivos</translation>
 <translation id="2471469610750100598">Preto (padrão)</translation>
 <translation id="2471506181342525583">Acesso à localização permitido</translation>
+<translation id="2471632709106952369">Tabelas de comparação</translation>
 <translation id="2473195200299095979">Traduzir esta página</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
 <translation id="247616523300581745">Ocultar esses arquivos</translation>
@@ -6098,7 +6098,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5384401776498845256">Quem pode compartilhar com você</translation>
 <translation id="5385628342687007304">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, salve-a na sua Conta do Google.</translation>
 <translation id="5387116558048951800">Editar <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Especificações do produto</translation>
 <translation id="538822246583124912">A política da empresa mudou. O botão "Experimentos" foi adicionado à barra de ferramentas. Clique nele para abrir uma caixa de diálogo e ativar os experimentos.</translation>
 <translation id="5388436023007579456">Apps e sites com permissões de uso da câmera e de serviços do sistema podem usar a câmera. Para usar a câmera, talvez seja necessário reiniciar o app ou atualizar a página.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site encontrado com muitas notificações}one{{NUM_SITES} site encontrado com muitas notificações}other{{NUM_SITES} sites encontrados com muitas notificações}}</translation>

@@ -218,7 +218,6 @@
 <translation id="1363819917331173092">በ<ph name="SOURCE_LANGUAGE" /> ውስጥ ገጾችን ለመተርጎም አታቅርብ</translation>
 <translation id="1364822246244961190">ይህ መመሪያ ታግዷል፣ እሴቱ ችላ ይባላል።</translation>
 <translation id="1368318639262510626">የዳይኖ ጨዋታ። በፒክስሎች የተሰራ የዳይኖሰር በረሃን ሮጦ እያቋረጠ ሳለ ቁልቋሎችን እና ቴሮዳክቲሎችን ያመልጣል። የድምጽ ምልክት ሲሰሙ መሰናክሎችን ለመዝለል ክፍተትን ይጫኑ።</translation>
-<translation id="1370751323199669551">ስለ ማነጻጸር የበለጠ ይወቁ።</translation>
 <translation id="1374468813861204354">የቀረቡ የጥቆማ አስተያየቶች</translation>
 <translation id="1375198122581997741">ስለ ስሪት</translation>
 <translation id="1375293861397106342">ሁሉም አማራጮች መደበኛ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -1291,6 +1290,7 @@
 <translation id="3402261774528610252">ይህን ጣቢያ ለመጫን ሥራ ላይ የዋለው ግንኙነት TLS 1.0 ወይም TLS 1.1 ነው የተጠቀመው፣ እነዚህም የተቋረጡ እና ለወደፊቱ የሚሰናከሉ ናቸው። አንዴ ከተሰናከለ በኋላ ተጠቃሚዎች ይህን ጣቢያ እንዳይጭኑት ይከለከላሉ። አገልጋዩ TLS 1.2 ወይም ከዚያ በኋላ ማንቃት አለበት።</translation>
 <translation id="3405664148539009465">ቅርጸ-ቁምፊዎችን አብጅ</translation>
 <translation id="3407789382767355356">የሶስተኛ ወገን መግቢያ</translation>
+<translation id="340924996148642843">ማነጻጸር አሁን ላይ አይገኝም</translation>
 <translation id="3409896703495473338">የደህንነት ቅንብሮችን ያቀናብሩ</translation>
 <translation id="3414275587143250384">የተሰራጨ እና በደመና የኮምፒዩተር ሥራ</translation>
 <translation id="3414952576877147120">መጠን፦</translation>
@@ -1388,7 +1388,6 @@
 <translation id="3568886473829759308">በንግዱ የሚቀርቡ መረጃዎችን፣ ንብረቶችን ወይም አገልግሎቶችን ለመመልከት ድር ጣቢያውን ይድረሱ።</translation>
 <translation id="3570079787344939099">ማሸብለል እና ማጉላት</translation>
 <translation id="357244642999988503">ዓምድን አስወግድ</translation>
-<translation id="3572827863357388784">ይህ የሙከራ ባህሪ ነው እና ሁልጊዜ በትክክል አያገኘውም።</translation>
 <translation id="3574305903863751447"><ph name="CITY" />፣ <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">ለዚህ ጣቢያ ፍቀድ</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1449,6 +1448,7 @@
 <translation id="365641980390710834">የአዘቦት ቀን አልባሳት</translation>
 <translation id="3658742229777143148">ክለሳ</translation>
 <translation id="3659521826520353662">የትኞቹ በአስተዳዳሪ-የተገለጹ ድር ጣቢያዎች እንደሚጎበኙ እና መቼ እንደሚሆን፦ <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">ይህን ምርት ከሚሸጡ ሌሎች መደብሮች ተጨማሪ የግዢ አማራጮችን ይፈልጉ።</translation>
 <translation id="3664782872746246217">ቁልፍ ቃላት፦</translation>
 <translation id="3665100783276035932">አብዛኞቹ ጣቢያዎች እንደተጠበቀው መሥራት አለባቸው</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />የበለጠ ለመረዳት<ph name="LINK_END1" /></translation>
@@ -1886,6 +1886,7 @@
 <translation id="4451135742916150903">ከHID መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላል</translation>
 <translation id="4451684391620232683">ለተጠቃሚ የሚቀርብ ጽሁፍ፦</translation>
 <translation id="4452328064229197696">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ፣ Google የይለፍ ቃል አስተዳዳሪ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ ይመክራል።</translation>
+<translation id="4452957520362597816">የድር መተግበሪያዎችን ለመጫን ጠይቅ</translation>
 <translation id="4456937135469235202">የጀብዱ ጉዞ</translation>
 <translation id="4464826014807964867">ከድርጅትዎ መረጃ ያላቸው ድርጣቢያዎች</translation>
 <translation id="4466576951214254884">የተማሪ ብድሮች እና የኮሌጅ ፋይናንስ</translation>
@@ -2992,6 +2993,7 @@
 <translation id="6529602333819889595">&amp;ሰርዝን ድገም</translation>
 <translation id="6535617236508021606">ይህ ካርድ በGoogle መለያዎ ውስጥ ተቀምጧል ስለዚህ በሁሉም የGoogle አገልግሎቶች መጠቀም ይችላሉ።</translation>
 <translation id="6536221421038631327">የመተላለፊያ የደንበኝነት ምዝገባን ከእርስዎ <ph name="DEVICE_TYPE" /> ማስወገድ ተጓዳኝ አውታረ መረቦችን ያስወግዳል። በደንበኝነት ምዝገባ ዕቅድዎ ላይ ለውጦችን ለማድረግ «<ph name="FRIENDLY_NAME" />»ን ያነጋግሩ። <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">የንጽጽር ሠንጠረዦችን ለማየት አስምርን ያብሩ</translation>
 <translation id="6539092367496845964">የሆነ ችግር ተፈጥሯል። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="6540488083026747005">በዚህ ጣቢያ ላይ የሦስተኛ ወገን ኩኪዎችን ፈቅደዋል</translation>
 <translation id="6545864417968258051">የብሉቱዝ ቅኝት</translation>

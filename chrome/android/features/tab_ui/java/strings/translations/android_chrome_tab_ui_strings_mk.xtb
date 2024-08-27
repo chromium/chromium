@@ -79,6 +79,7 @@
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4460014764210899310">Одгрупирајте</translation>
 <translation id="4590027107044272416">Отсега може да отворите нова картичка тука</translation>
+<translation id="4619615317237390068">Картички од другите уреди</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Да се затвори 1 неактивна картичка?}one{Да се затворат <ph name="TAB_COUNT_MANY" /> неактивна картичка?}other{Да се затворат <ph name="TAB_COUNT_MANY" /> неактивни картички?}}</translation>
 <translation id="4648718555153979859">Картичките тука се групирани заедно</translation>
 <translation id="4686942373615810936">Создадено пред малку</translation>

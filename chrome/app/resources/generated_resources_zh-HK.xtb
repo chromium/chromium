@@ -986,7 +986,6 @@
 <translation id="168991973552362966">新增附近的打印機</translation>
 <translation id="1689945336726856614">複製網址(&amp;U)</translation>
 <translation id="1690068335127678634">分割螢幕設定</translation>
-<translation id="1690443285859726589">調整偵測門檻以輕鬆觸發手勢</translation>
 <translation id="1692115862433274081">使用其他帳戶</translation>
 <translation id="1692118695553449118">同步處理已開啟</translation>
 <translation id="1692210323591458290">深紫色</translation>
@@ -1437,6 +1436,7 @@
 <translation id="199610894463449797">{0,plural, =1{關閉此個人檔案}other{關閉此個人檔案 (# 個視窗)}}</translation>
 <translation id="1997433994358798851">Chrome 需要權限才能透過藍牙連接您的裝置</translation>
 <translation id="1997616988432401742">您的憑證</translation>
+<translation id="1998715278591719161">已允許進行手部追蹤</translation>
 <translation id="1999115740519098545">起始螢幕</translation>
 <translation id="2002109485265116295">即時</translation>
 <translation id="2002160221914907025">實驗性 AI</translation>
@@ -2126,6 +2126,7 @@
 <translation id="247051149076336810">檔案共用網址</translation>
 <translation id="2471469610750100598">黑色 (預設)</translation>
 <translation id="2471506181342525583">目前允許存取位置</translation>
+<translation id="2471632709106952369">比較表格</translation>
 <translation id="2473195200299095979">翻譯這個網頁</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
 <translation id="247616523300581745">隱藏這些檔案</translation>
@@ -3547,6 +3548,7 @@
 <translation id="3521606918211282604">改變磁碟大小</translation>
 <translation id="3522088408596898827">磁碟空間嚴重不足。請騰出磁碟空間，然後再試一次。</translation>
 <translation id="3522979239100719575">正在尋找可用的個人檔案。請稍候片刻。</translation>
+<translation id="3523447078673133727">不允許網站進行手部追蹤</translation>
 <translation id="3524518036046613664">探索本機網絡中的裝置，例如打印機</translation>
 <translation id="3524965460886318643">匯出活動</translation>
 <translation id="3525426269008462093">在設定後查看裝置同步情況</translation>
@@ -5917,6 +5919,7 @@
 <translation id="52550593576409946">Kiosk 應用程式無法啟動。</translation>
 <translation id="5255726914791076208">編輯密鑰並不會變更 <ph name="RP_ID" /> 帳戶</translation>
 <translation id="5255859108402770436">重新登入</translation>
+<translation id="5256174546894739043">在網站想追蹤你的手部時詢問你</translation>
 <translation id="52566111838498928">正在載入字型…</translation>
 <translation id="5256861893479663409">在所有網站上</translation>
 <translation id="5258992782919386492">在此裝置上安裝</translation>
@@ -6085,7 +6088,6 @@
 <translation id="5384401776498845256">誰能與你分享內容</translation>
 <translation id="5385628342687007304">此密碼只會儲存至此裝置。如要在其他裝置上使用此密碼，請將密碼儲存至 Google 帳戶。</translation>
 <translation id="5387116558048951800">修改<ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">產品規格</translation>
 <translation id="538822246583124912">企業政策改咗，已經將實驗掣加咗去工具列。㩒一下粒掣就可以開對話框同埋啟用實驗。</translation>
 <translation id="5388436023007579456">系統服務與具備相機權限的應用程式和網站可使用相機。如要使用相機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{找到 1 個傳送大量通知的網站}other{找到 {NUM_SITES} 個傳送大量通知的網站}}</translation>
@@ -6662,6 +6664,7 @@
 <translation id="5801051031414037185">設定手機</translation>
 <translation id="5801568494490449797">偏好設定</translation>
 <translation id="5803689677801500549">已儲存的密碼會在這裡顯示。如要將 <ph name="USER_EMAIL" /> 的密碼匯入「<ph name="BRAND" />」，請<ph name="BEGIN_LINK" />選取 CSV 檔案<ph name="END_LINK" />。</translation>
+<translation id="5804198298544152115">網站通常會追蹤你的手部和手指，以擴充沉浸式體驗</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5804259315582798390">無法啟用本機資料復原功能</translation>
 <translation id="5805268472388605531">按住鍵盤按鍵以查看重音標記和特殊字元</translation>
@@ -7748,6 +7751,7 @@
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6613267708691765962">正在掃瞄惡意軟件…</translation>
 <translation id="6613668613087513143">裝置空間不足，無法完成此更新。請在裝置上騰出 <ph name="NECESSARY_SPACE" /> 的空間，然後前往 Chrome 瀏覽器再試一次。</translation>
+<translation id="6614172284067813496">頁面已加至閱讀清單</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6618744767048954150">正在執行</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7761,6 +7765,7 @@
 <translation id="6622980291894852883">繼續封鎖圖片</translation>
 <translation id="6624036901798307345">在平板電腦模式中，輕按分頁計數器工具列按鈕便可開啟新的分頁列，並顯示每個分頁的縮圖。</translation>
 <translation id="6624687053722465643">小蛋糕</translation>
+<translation id="6627743754845412571">不允許進行手部追蹤</translation>
 <translation id="6628316682330029452">用戶端憑證可用於向其他伺服器識別你的身分。</translation>
 <translation id="6628328486509726751">上載時間：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">安全再升級</translation>
@@ -8128,6 +8133,7 @@
 <translation id="6876155724392614295">單車</translation>
 <translation id="6876469544038980967">沒有幫助</translation>
 <translation id="6878422606530379992">已允許使用感應器</translation>
+<translation id="6878862640969460273">橫向</translation>
 <translation id="6880587130513028875">系統已封鎖此網頁的圖片。</translation>
 <translation id="6881845890692344060">管理員已登出帳戶，現在一切由你掌控。</translation>
 <translation id="6882210908253838664">如果網站無法運作，你可暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -9665,6 +9671,7 @@
 
 請妥善保管您的金鑰檔案；建立新版本的擴充功能時將需要使用該金鑰檔案。</translation>
 <translation id="8000020256436988724">工具列</translation>
+<translation id="800117767980299235">語音重點</translation>
 <translation id="8002274832045662704">進階打印機設定</translation>
 <translation id="8002670234429879764">「<ph name="PRINTER_NAME" />」已無法使用</translation>
 <translation id="8004092996156083991">如果您的密碼被盜用，我們會通知您</translation>
@@ -10748,6 +10755,7 @@
 <translation id="876956356450740926">執行 Developer Tools、IDE 和編輯器。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">擴充程式根目錄</translation>
 <translation id="8771300903067484968">起始網頁背景重設咗做預設背景。</translation>
+<translation id="8773535891252326047">已複製連結並突顯文字</translation>
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>

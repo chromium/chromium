@@ -985,7 +985,6 @@
 <translation id="168991973552362966">新增鄰近印表機</translation>
 <translation id="1689945336726856614">複製網址(&amp;U)</translation>
 <translation id="1690068335127678634">分割畫面設定</translation>
-<translation id="1690443285859726589">調整偵測門檻，以便輕鬆觸發手勢</translation>
 <translation id="1692115862433274081">使用其他帳戶</translation>
 <translation id="1692118695553449118">同步功能已啟用</translation>
 <translation id="1692210323591458290">深紫色</translation>
@@ -2113,6 +2112,7 @@
 <translation id="247051149076336810">檔案共用網址</translation>
 <translation id="2471469610750100598">黑色 (預設)</translation>
 <translation id="2471506181342525583">已允許存取位置資訊</translation>
+<translation id="2471632709106952369">比較表</translation>
 <translation id="2473195200299095979">翻譯這個網頁</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
 <translation id="247616523300581745">隱藏這些檔案</translation>
@@ -6078,7 +6078,6 @@
 <translation id="5384401776498845256">哪些人可與你分享內容</translation>
 <translation id="5385628342687007304">這個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。</translation>
 <translation id="5387116558048951800">編輯<ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">產品規格</translation>
 <translation id="538822246583124912">企業政策已變更，已將 [實驗性功能] 按鈕新增至工具列。按一下這個按鈕即可開啟對話方塊並啟用實驗性功能。</translation>
 <translation id="5388436023007579456">系統服務和具有攝影機權限的應用程式與網站可使用攝影機。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{找到 1 個傳送大量通知的網站}other{找到 {NUM_SITES} 個傳送大量通知的網站}}</translation>
@@ -7740,6 +7739,7 @@
 <translation id="661266467055912436">可為你和所有網路使用者提供更完善的安全防護。</translation>
 <translation id="6613267708691765962">正在掃描惡意軟體...</translation>
 <translation id="6613668613087513143">裝置空間不足，無法完成這項更新作業。請在裝置上釋出 <ph name="NECESSARY_SPACE" /> 的空間，然後在 Chrome 瀏覽器中再試一次。</translation>
+<translation id="6614172284067813496">已將頁面新增到閱讀清單</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6618744767048954150">檢查中</translation>
 <translation id="6619058681307408113">線上印表機服務精靈 (LPD)</translation>
@@ -10741,6 +10741,7 @@
 <translation id="876956356450740926">執行開發人員工具、IDE 和編輯器。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">擴充功能根目錄</translation>
 <translation id="8771300903067484968">起始網頁背景已重設為預設背景。</translation>
+<translation id="8773535891252326047">已複製醒目顯示文字的連結</translation>
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>

@@ -218,7 +218,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1363819917331173092">Älä ehdota sivujen kääntämistä, jos niiden alkuperäinen kieli on <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Tämä käytäntö on estetty, sen arvo jätetään huomiotta.</translation>
 <translation id="1368318639262510626">Dino-peli. Pikselöity dinosaurus väistelee kaktuksia ja lentoliskoja juostessaan halki aution maiseman. Kun kuulet äänimerkin, hyppää esteiden yli painamalla välilyöntiä.</translation>
-<translation id="1370751323199669551">Lue lisää Vertaa-ominaisuudesta.</translation>
 <translation id="1374468813861204354">ehdotuksia</translation>
 <translation id="1375198122581997741">Tietoja versiosta</translation>
 <translation id="1375293861397106342">Kaikki vaihtoehdot, yleensä <ph name="LOW_PRICE" />–<ph name="HIGH_PRICE" /></translation>
@@ -1391,7 +1390,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3568886473829759308">Sivustolta löydät yrityksen tarjoamat tiedot, materiaalit ja palvelut.</translation>
 <translation id="3570079787344939099">Vieritys ja zoomaus</translation>
 <translation id="357244642999988503">Poista sarake</translation>
-<translation id="3572827863357388784">Tämä on kokeellinen ominaisuus, joka ei välttämättä osu aina oikeaan.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Salli tällä sivustolla</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
@@ -2824,6 +2822,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6240964651812394252">Jos haluat käyttää Google Salasanoja käyttöjärjestelmäsi kanssa, käynnistä Chrome uudelleen ja salli pääsy tietokoneesi Salasanoihin. Välilehdet avataan uudelleen uudelleenkäynnistyksen jälkeen.</translation>
 <translation id="6241121617266208201">Piilota ehdotukset</translation>
 <translation id="624499991300733384">Tulosteiden koontipalvelu</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> päivää sitten</translation>
 <translation id="6246868321321344665">Organisaatiosi voi nähdä selausdatan, kuten salasanat ja historian, sekä työ- että henkilökohtaisissa profiileissa</translation>
 <translation id="6250932670816326647">Kylpy‑ ja vartalotuotteet</translation>
 <translation id="6251906504834538140">{0,plural, =1{Tiedoston siirtäminen estetty}other{<ph name="FILE_COUNT" /> tiedoston siirtäminen estetty}}</translation>
@@ -3413,6 +3412,7 @@ Lisätietoja:
 <translation id="7346081071264046066">"vastaa tähän hääkutsuun innokkaasti"</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
 <translation id="7353601530677266744">Komentorivi</translation>
+<translation id="7356678400607112844">Viimeksi avattu</translation>
 <translation id="7359588939039777303">Mainokset estetty</translation>
 <translation id="7360451453306104998">Kun Google löytää alennuksia, ne näkyvät kassalla</translation>
 <translation id="7363096869660964304">Et ole kuitenkaan näkymätön. Incognito-tilan käyttäminen ei kätke selaamistasi työnantajaltasi, internetpalveluntarjoajaltasi tai avaamiltasi sivustoilta.</translation>

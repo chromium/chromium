@@ -983,7 +983,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="168991973552362966">Legg til en skriver i nærheten</translation>
 <translation id="1689945336726856614">Kopiér &amp;nettadresse</translation>
 <translation id="1690068335127678634">Konfigurering av delt skjerm</translation>
-<translation id="1690443285859726589">Juster gjenkjenningsgrensen slik at det er lett å utløse bevegelsen</translation>
 <translation id="1692115862433274081">Bruk en annen konto</translation>
 <translation id="1692118695553449118">Synkronisering er slått på.</translation>
 <translation id="1692210323591458290">Mørk lilla</translation>
@@ -2120,6 +2119,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="247051149076336810">Nettadresse for fildeling</translation>
 <translation id="2471469610750100598">Svart (standard)</translation>
 <translation id="2471506181342525583">Posisjonstilgang tillates</translation>
+<translation id="2471632709106952369">Sammenligningstabeller</translation>
 <translation id="2473195200299095979">Oversett denne siden</translation>
 <translation id="2475982808118771221">Det oppsto en feil</translation>
 <translation id="247616523300581745">Skjul disse filene</translation>
@@ -6087,7 +6087,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5384401776498845256">Hvem kan dele ting med deg?</translation>
 <translation id="5385628342687007304">Dette passordet er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din.</translation>
 <translation id="5387116558048951800">Endre <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Produktspesifikasjoner</translation>
 <translation id="538822246583124912">En Enterprise-regel er endret. Eksperimenter-knappen er lagt til på verktøyraden. Klikk på knappen for å åpne en dialogboks for å slå på eksperimenter.</translation>
 <translation id="5388436023007579456">Apper og nettsteder med kameratillatelsen, samt systemtjenester, kan bruke kameraet. For å bruke kameraet må du kanskje starte appen på nytt eller laste inn siden på nytt.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Fant 1 nettsted med mange varsler}other{Fant {NUM_SITES} nettsteder med mange varsler}}</translation>

@@ -218,7 +218,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1363819917331173092">Non ofrecer opción de traducir páxinas escritas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Esta política está bloqueada, polo cal se ignorará o seu valor.</translation>
 <translation id="1368318639262510626">Xogo do dinosauro. Un dinosauro pixelado esquiva cactos e pterodáctilos mentres vai a fume de carozo por unha paisaxe desolada. Cando escoites un sinal de audio, preme Espazo para saltar os obstáculos.</translation>
-<translation id="1370751323199669551">Máis información sobre a función Comparar</translation>
 <translation id="1374468813861204354">suxestións</translation>
 <translation id="1375198122581997741">Acerca da versión</translation>
 <translation id="1375293861397106342">Prezo habitual de todas as opcións: <ph name="LOW_PRICE" />-<ph name="HIGH_PRICE" /></translation>
@@ -1292,6 +1291,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3402261774528610252">A conexión coa que se cargou este sitio utilizou TLS 1.0 ou TLS 1.1, as cales son versións obsoletas que se desactivarán no futuro. Cando se desactiven, evitarase que os usuarios carguen este sitio. O servidor debería activar TLS 1.2 ou unha versión superior.</translation>
 <translation id="3405664148539009465">Personalizar tipos de letra</translation>
 <translation id="3407789382767355356">inicio de sesión de terceiros</translation>
+<translation id="340924996148642843">A función de comparación non está dispoñible neste momento</translation>
 <translation id="3409896703495473338">Xestionar configuración de seguranza</translation>
 <translation id="3414275587143250384">Informática en nube e distribuída</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
@@ -1389,7 +1389,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3568886473829759308">Acceder ao sitio web para consultar a información, os recursos ou os servizos que fornece a empresa.</translation>
 <translation id="3570079787344939099">Desprazamento e zoom</translation>
 <translation id="357244642999988503">Quitar columna</translation>
-<translation id="3572827863357388784">Esta función é experimental, polo que non sempre acerta.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1450,6 +1449,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="365641980390710834">Roupa informal</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3659521826520353662">Que sitios web definidos pola persoa administradora se visitan e cando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Busca máis opcións de compra noutras tendas nas que se venda este produto.</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3665100783276035932">A maioría dos sitios deberían funcionar segundo o previsto</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Máis información<ph name="LINK_END1" /></translation>
@@ -1887,6 +1887,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4451135742916150903">Pode pedirche permiso para conectarse a dispositivos de interface humana</translation>
 <translation id="4451684391620232683">Texto mostrado ao usuario:</translation>
 <translation id="4452328064229197696">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais de Google recomenda que comprobes os contrasinais gardados.</translation>
+<translation id="4452957520362597816">Solicitar a instalación de aplicacións web</translation>
 <translation id="4456937135469235202">Viaxes de aventura</translation>
 <translation id="4464826014807964867">Sitios web con información da túa organización</translation>
 <translation id="4466576951214254884">Préstamos para estudantes e financiamento de estudos universitarios</translation>
@@ -2820,6 +2821,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6240964651812394252">Para poder usar o xestor de contrasinais de Google co teu sistema operativo, reinicia Chrome e permite o acceso ao xestor de contrasinais do ordenador. Despois do reinicio volverán abrirse as pestanas.</translation>
 <translation id="6241121617266208201">Ocultar suxestións</translation>
 <translation id="624499991300733384">Servizo de composición de impresión</translation>
+<translation id="6246316216123107851">Hai <ph name="NUM_DAYS" /> días</translation>
 <translation id="6246868321321344665">A túa organización pode ver os datos de navegación (contrasinais, historial…) tanto nos perfís persoais como nos de traballo</translation>
 <translation id="6250932670816326647">Produtos para o baño e o corpo</translation>
 <translation id="6251906504834538140">{0,plural, =1{Bloqueouse a migración do ficheiro}other{Bloqueouse a migración de <ph name="FILE_COUNT" /> ficheiros}}</translation>
@@ -2993,6 +2995,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6529602333819889595">&amp;Refacer eliminación</translation>
 <translation id="6535617236508021606">Esta tarxeta gardouse na túa Conta de Google para que poidas usala nos servizos de Google.</translation>
 <translation id="6536221421038631327">Se quitas unha subscrición a Passpoint do teu dispositivo (<ph name="DEVICE_TYPE" />), quitaranse tamén as redes asociadas. Ponte en contacto con <ph name="FRIENDLY_NAME" /> para facer cambios no teu plan de subscrición. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Para que se mostren as táboas de comparación, activa a sincronización</translation>
 <translation id="6539092367496845964">Produciuse un erro. Téntao de novo máis tarde.</translation>
 <translation id="6540488083026747005">Permitiches o uso de cookies de terceiros neste sitio</translation>
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
@@ -3407,6 +3410,7 @@ Detalles adicionais:
 <translation id="7346081071264046066">"responde afirmativamente e con entusiasmo a esta invitación de voda"</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7353601530677266744">Liña de comandos</translation>
+<translation id="7356678400607112844">Última visita:</translation>
 <translation id="7359588939039777303">Bloqueáronse os anuncios.</translation>
 <translation id="7360451453306104998">Cando Google atope descontos dispoñibles, mostraránseche ao tramitar a compra</translation>
 <translation id="7363096869660964304">Con todo, non es invisible. O modo de incógnito non impide que o teu xefe, o teu fornecedor de servizos de Internet ou os sitios web que visitas obteñan información sobre como navegas.</translation>

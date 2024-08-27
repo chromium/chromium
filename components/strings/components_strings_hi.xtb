@@ -218,7 +218,6 @@
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> में पेजों का अनुवाद करने की सुविधा न दें</translation>
 <translation id="1364822246244961190">यह नीति ब्लॉक की हुई है. इसका मान नज़रअंदाज कर दिया जाएगा.</translation>
 <translation id="1368318639262510626">डायनो गेम. पिक्सलेट किया हुआ डायनासोर, जो कटीले पौधों और उड़ने वाले जीवों से बचते हुए, ज़मीन पर भागता है. जब आप ऑडियो क्यू सुनते हैं, तो बाधाएं आने पर कूदने के लिए, स्पेस दबाएं.</translation>
-<translation id="1370751323199669551">टैब की तुलना करने की सुविधा के बारे में ज़्यादा जानें.</translation>
 <translation id="1374468813861204354">सुझाव</translation>
 <translation id="1375198122581997741">वर्शन के बारे में</translation>
 <translation id="1375293861397106342">सभी विकल्प आम तौर पर, <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -430,6 +429,7 @@
 <translation id="1739422091279046802">स्क्रोल और ज़ूम करने की सुविधा</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> होने पर, नीति तय हाेनी चाहिए. साथ ही, इसकी एक मान्य स्ट्रिंग भी होनी चाहिए.</translation>
 <translation id="1743393865165844832">बेडिंग और बेड लिनन</translation>
+<translation id="1743892871127720056">तुलना करने वाली टेबल का टाइटल, टेक्स्ट में बदलाव करें</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />हम इस डेटा का इस्तेमाल कैसे करते हैं:<ph name="END_BOLD" /> जब कोई व्यक्ति ब्राउज़िंग करता है, तो Chrome उसकी दिलचस्पियों के विषयों को सेव करता है. विषय के लेबल पहले से तय होते हैं. इनमें कला और मनोरंजन, शॉपिंग, और खेल-कूद जैसी चीज़ें शामिल होती हैं. इसके बाद, किसी साइट को विज़िट करने पर, वह साइट Chrome से इनमें से कुछ विषयों की जानकारी मांग सकती है. इससे उस साइट को आपकी पसंद के हिसाब से विज्ञापन दिखाने में मदद मिलती है. हालांकि, इन विषयों में आपके ब्राउज़िंग इतिहास की जानकारी शामिल नहीं होती है.</translation>
 <translation id="1746113442205726301">इमेज Y शिफ़्ट</translation>
 <translation id="1746531169546376413">0 डिग्री</translation>
@@ -1261,6 +1261,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 सेकंड फिर से चलाएं</translation>
 <translation id="3352881017886802007">स्पोर्ट्स गेम</translation>
+<translation id="3354508510846323339"><ph name="MAX_CITATIONS" /> में से <ph name="CURRENT_CITATION" /> उद्धरण, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग बदलें...</translation>
 <translation id="335809815767823">एक्सपोर्ट की गईं</translation>
 <translation id="3359387651158939842">Google Pay में इस्तेमाल करने के मकसद से कार्ड की जानकारी सेव करने पर, आने वाले समय में की जाने वाली खरीदारी के लिए कार्ड की जानकारी अपने-आप भरने की सुविधा चालू करें</translation>
@@ -1390,7 +1391,6 @@
 <translation id="3568886473829759308">कारोबार की तरफ़ से उपलब्ध कराई गई सेवाओं, संसाधनों या जानकारी देखने के लिए, वेबसाइट पर जाएं.</translation>
 <translation id="3570079787344939099">स्क्रोल और ज़ूम करने की सुविधा</translation>
 <translation id="357244642999988503">कॉलम हटाएं</translation>
-<translation id="3572827863357388784">यह सुविधा एक्सपेरिमेंट के तौर पर उपलब्ध है. इसलिए, ऐसा ज़रूरी नहीं है कि यह सुविधा हमेशा सही तरीके से काम करे.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">इस साइट के लिए सूचनाओं को अनुमति दें</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1408,6 +1408,7 @@
 <translation id="3586931643579894722">विवरण छुपाएं</translation>
 <translation id="3587725436724465984">आपके संगठन ने <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> की पहचान एक ऐसी साइट के रूप में की है जो शायद किसी नीति का उल्लंघन करती है. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">मिडल</translation>
+<translation id="3600106876108433070">तुलना करने वाली टेबल के बारे में जानें</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">'Google की निजता सेटिंग मैनेज करें' बटन, अपने Google खाते की निजता सेटिंग पर जाने के लिए इसे चालू करें</translation>
 <translation id="3603507503523709">आपके एडमिन ने ऐप्लिकेशन को ब्लॉक कर दिया है</translation>
@@ -2921,6 +2922,7 @@
 <translation id="640163077447496506">समयसीमा आज खत्म हो जाएगी</translation>
 <translation id="6402537308870515461">मूव करने से पहले, समीक्षा करना ज़रूरी है</translation>
 <translation id="6403167778944553">बेडरूम और बाथरूम</translation>
+<translation id="6403434564317313607">टेबल में जोड़े गए पेजों के टैब के टाइटल और यूआरएल, Google को भेजे जाते हैं. इसके बाद, उन्हें आपके <ph name="EMAIL" /> वाले खाते में सेव किया जाता है. इस सुविधा को बेहतर बनाने के लिए, समीक्षा करने वाले लोग इनकी समीक्षा कर सकते हैं.</translation>
 <translation id="6404511346730675251">बुकमार्क में बदलाव करें</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> पर जारी रखना है?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> का समाप्ति तारीख और CVC डालें</translation>
@@ -3360,6 +3362,7 @@
 <translation id="722454870747268814">नया गुप्त टैब</translation>
 <translation id="7227293336683593977">कीमत का इतिहास</translation>
 <translation id="7227747683324411744">मुमकिन है कि आपने जिस साइट पर विज़िट किया है वहां हमलावर आपसे धोखे से नुकसान पहुंचाने वाले सॉफ़्टवेयर इंस्टॉल करवा दें. इससे आपके ब्राउज़ करने के तरीके पर असर पड़ सकता है. जैसे, वे आपके होम पेज में बदलाव कर सकते हैं या आपको उस साइट पर ज़्यादा विज्ञापन दिखा सकते हैं.</translation>
+<translation id="7232352818707016189">तुलना करने वाली टेबल के लिए अन्य कार्रवाइयां</translation>
 <translation id="7233592378249864828">जिस शीट की पुष्टि की गई है उसे प्रिंट करें</translation>
 <translation id="7234112195906418665">यात्रा और परिवहन</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूरा हो गया है | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4103,6 +4106,7 @@
 <translation id="8558347880669160417">इस बार कैमरा और माइक्रोफ़ोन इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> से एक निजी कनेक्‍शन स्‍थापित नहीं किया जा सकता क्‍योंकि आपके डिवाइस का तारीख और समय (<ph name="DATE_AND_TIME" />) गलत है.</translation>
 <translation id="8564182942834072828">अलग-अलग दस्तावेज़/बिना क्रम के लगाई गई कॉपी</translation>
+<translation id="8564466070529550495">फ़िलहाल, वर्चुअल कार्ड उपलब्ध नहीं है. कृपया बाद में कोशिश करें.</translation>
 <translation id="8564985650692024650">अगर आपने अपने <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> पासवर्ड का दूसरी साइटों पर दोबारा इस्तेमाल किया है, तो क्रोमियम आपको उसे रीसेट करने का सुझाव देता है.</translation>
 <translation id="8570895683659698018">शौक और फ़ुर्सत में की जाने वाली गतिविधियां</translation>
 <translation id="8574841453995331336">रेफ़्रिजरेटर और फ़्रीज़र</translation>
