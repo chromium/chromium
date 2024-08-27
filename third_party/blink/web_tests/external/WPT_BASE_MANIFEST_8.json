@@ -901,6 +901,20 @@
        {}
       ]
      ],
+     "box-decoration-break-clone-032-crash.html": [
+      "cfd1ada02cab3d7efae2de38fb1910c781d44584",
+      [
+       null,
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-035-crash.html": [
+      "c4b23fc8cb55efafe9c770e785226b6213f4b48c",
+      [
+       null,
+       {}
+      ]
+     ],
      "break-after-in-parallel-flow-crash.html": [
       "b59563295028f487543d79524ea81543b8a78046",
       [
@@ -5301,6 +5315,13 @@
      ],
      "getComputedStyle-insets-multicol-absolute-crash.html": [
       "81b0b88be11a36013bf81a8398689e9048080e97",
+      [
+       null,
+       {}
+      ]
+     ],
+     "getComputedStyle-special-chars-crash.html": [
+      "a9c1dd9976af10efb197bf9bdb0bef47516db7c3",
       [
        null,
        {}
@@ -85127,6 +85148,110 @@
      ],
      "box-decoration-break-clone-025.html": [
       "d1a787f6fd7d0cded0b4b847e7ee5a2bcd78d1ca",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-026.html": [
+      "1f101759b97cf5a6b5b4c62b758a80ff23f2ef9d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-027.html": [
+      "ac53e098ea36780814b3a25e95b29d78fc457606",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-028.html": [
+      "1b0769e1e92f7c9b9631dd29ee76ebe98ee2cdf3",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-029.html": [
+      "69e97d3d2dc2dbb5aebc9daf9ce13440f4e2233c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-030.html": [
+      "83c966ab966cd578ab4053845496b4164c3066cd",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-031.html": [
+      "7c6d2b277dbe35e1f4a75ded8e09570f1e8a97e6",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-033.html": [
+      "c31e539bbd1da6c7f37f7cc872f4d24e99e1fb51",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-034.html": [
+      "947b9d58b2b9c1190bf23c1815a6927176672986",
       [
        null,
        [
@@ -391542,8 +391667,12 @@
        "1b5d7d54f88989064c3df112750e4e89d36c0e23",
        []
       ],
+      "mime-types-minimized.json": [
+       "cc2f60a8fead7f0f186976ad10ab4592616ba12b",
+       []
+      ],
       "mime-types.json": [
-       "1d0ec64a5445b9d6f7eec249b6a986cbb7d621d2",
+       "8692d77ebf4f5d28b1358cf65b1fe89e60f8a77e",
        []
       ]
      }
@@ -409721,7 +409850,7 @@
      []
     ],
     "RTCRtpScriptTransform-encoded-transform-worker.js": [
-     "ea3f44e01dfde828dd431caf4a70c19da3e90493",
+     "89e421ae9aa07b0e16eea497589463f2943aee2c",
      []
     ],
     "RTCRtpScriptTransform-sender-worker-single-frame.js": [
@@ -428685,7 +428814,7 @@
      ]
     },
     "getRandomValues.any.js": [
-     "0437857f2faabc39c037d51b9f0d3ff39b9b7ddf",
+     "574134eb76dcd8ea059c531c88841477736fbed6",
      [
       "WebCryptoAPI/getRandomValues.any.html",
       {}
@@ -469451,21 +469580,21 @@
         ]
        ],
        "masonry-track-computed.html": [
-        "a2d6e54dcce53415b17fa47ae8adbda80bef16de",
+        "a8239bf295b2920f40f56b70620b09a7e7fd209d",
         [
          null,
          {}
         ]
        ],
        "masonry-track-invalid.html": [
-        "589b837ce685723a4a42763a6ad08f66580463d0",
+        "65887008db175387b625e2dfd350eab7caa0fd05",
         [
          null,
          {}
         ]
        ],
        "masonry-track-valid.html": [
-        "edf94c285f374a2c4e293f25f65f33f1a7f51162",
+        "5f98422f02e0830530aafefba7e702a42e10f508",
         [
          null,
          {}
@@ -627837,24 +627966,27 @@
       }
      ]
     ],
-    "coalesced_events_attributes_under_load.https.html": [
-     "262742558ec1870f3f984198875ea33f881a26ca",
+    "coalesced_events_attributes_under_load.https.optional.html": [
+     "ac3da236e7d3db667e87a70442f68b7b9f7a8210",
      [
-      "pointerevents/coalesced_events_attributes_under_load.https.html?mouse",
+      "pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse",
       {
-       "testdriver": true
+       "testdriver": true,
+       "timeout": "long"
       }
      ],
      [
-      "pointerevents/coalesced_events_attributes_under_load.https.html?pen",
+      "pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen",
       {
-       "testdriver": true
+       "testdriver": true,
+       "timeout": "long"
       }
      ],
      [
-      "pointerevents/coalesced_events_attributes_under_load.https.html?touch",
+      "pointerevents/coalesced_events_attributes_under_load.https.optional.html?touch",
       {
-       "testdriver": true
+       "testdriver": true,
+       "timeout": "long"
       }
      ]
     ],
@@ -643210,15 +643342,17 @@
       {}
      ]
     ],
-    "content-type-parsing.html": [
-     "c0081eb4137d9f38366484bbcdf7aa48e9ca25ae",
+    "content-type-minimization.html": [
+     "d7dbc2cc9f3b6ae593ca39188f4a5848a4fcb56e",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "content-type.html": [
-     "5a09a9114f2c28ba316098194027ec77df05e3f4",
+     "654e083e14aa1fbf1295f345df4fe192327b023c",
      [
       null,
       {}
