@@ -21,6 +21,7 @@
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
 
@@ -179,16 +180,19 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
 }
 
 // Tests that the right histograms are recorded for trigger criteria experiment.
-// TODO(crbug.com/361783027): This test launches the iOS Settings which causes
-// other tests to fail.
 TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
-       DISABLED_TestTriggerCriteriaExperimentPrimaryAction) {
+       TestTriggerCriteriaExperimentPrimaryAction) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];
+
+  // Mock the mediator which otherwise will open the iOS settings on primary
+  // action. This can be a problem for next tests.
+  id mock_mediator = OCMClassMock([DefaultBrowserGenericPromoMediator class]);
+  coordinator_.mediator = mock_mediator;
 
   // Check that histograms for appear action are recorded, but for other actions
   // there are not.

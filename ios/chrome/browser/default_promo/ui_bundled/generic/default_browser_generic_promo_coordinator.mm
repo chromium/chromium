@@ -11,7 +11,6 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_commands.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_mediator.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
@@ -32,8 +31,6 @@ using base::UserMetricsAction;
 @end
 
 @implementation DefaultBrowserGenericPromoCoordinator {
-  // The mediator for the generic default browser promo.
-  DefaultBrowserGenericPromoMediator* _mediator;
   // Main view controller for this coordinator.
   DefaultBrowserGenericPromoViewController* _viewController;
   // Default browser promo command handler.
