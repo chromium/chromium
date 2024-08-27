@@ -22,7 +22,6 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -7605,7 +7604,7 @@ enum class SplitCacheTestCase {
   kEnabledTriplePlusNavInitiator
 };
 
-const struct TestCaseToFeatureMapping {
+const struct {
   const SplitCacheTestCase test_case;
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
@@ -7615,8 +7614,6 @@ const struct TestCaseToFeatureMapping {
      net::features::kSplitCacheByMainFrameNavigationInitiator},
     {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
      net::features::kSplitCacheByNavigationInitiator}};
-const base::span<const TestCaseToFeatureMapping> kTestCaseToFeatureMappingSpan(
-    kTestCaseToFeatureMapping);
 
 class NetworkContextSplitCacheTest
     : public NetworkContextTest,
@@ -7625,7 +7622,7 @@ class NetworkContextSplitCacheTest
   NetworkContextSplitCacheTest()
       : split_cache_test_case_(GetParam()),
         split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMappingSpan) {
+                                             kTestCaseToFeatureMapping) {
     split_cache_always_enabled_feature_list_.InitAndEnableFeature(
         net::features::kSplitCacheByNetworkIsolationKey);
 

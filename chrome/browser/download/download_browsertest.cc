@@ -19,7 +19,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -2332,7 +2331,7 @@ enum class SplitCacheTestCase {
   kEnabledTriplePlusNavInitiator
 };
 
-const struct TestCaseToFeatureMapping {
+const struct {
   const SplitCacheTestCase test_case;
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
@@ -2342,8 +2341,6 @@ const struct TestCaseToFeatureMapping {
      net::features::kSplitCacheByMainFrameNavigationInitiator},
     {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
      net::features::kSplitCacheByNavigationInitiator}};
-const base::span<const TestCaseToFeatureMapping> kTestCaseToFeatureMappingSpan(
-    kTestCaseToFeatureMapping);
 
 std::string GetSplitCacheTestName(SplitCacheTestCase test_case) {
   switch (test_case) {
@@ -2364,7 +2361,7 @@ class DownloadTestSplitCacheEnabled
  public:
   DownloadTestSplitCacheEnabled()
       : split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMappingSpan) {}
+                                             kTestCaseToFeatureMapping) {}
 
  private:
   net::test::ScopedMutuallyExclusiveFeatureList
@@ -2390,7 +2387,7 @@ class PdfDownloadTestSplitCacheEnabled
  public:
   PdfDownloadTestSplitCacheEnabled()
       : split_cache_experiment_feature_list_(GetSplitCacheTestCase(),
-                                             kTestCaseToFeatureMappingSpan) {
+                                             kTestCaseToFeatureMapping) {
     if (UseOopif()) {
       oopif_feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
     } else {

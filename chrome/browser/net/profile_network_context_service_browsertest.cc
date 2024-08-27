@@ -13,7 +13,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -449,7 +448,7 @@ enum class HttpCache2024ExperimentTestCase {
   kControlGroup
 };
 
-const struct TestCaseToFeatureMapping {
+const struct {
   const HttpCache2024ExperimentTestCase test_case;
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
@@ -462,8 +461,6 @@ const struct TestCaseToFeatureMapping {
      net::features::kSplitCacheByNavigationInitiator},
     {HttpCache2024ExperimentTestCase::kControlGroup,
      net::features::kHttpCacheKeyingExperimentControlGroup2024}};
-const base::span<const TestCaseToFeatureMapping> kTestCaseToFeatureMappingSpan(
-    kTestCaseToFeatureMapping);
 
 class ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest
     : public ProfileNetworkContextServiceBrowsertest,
@@ -471,7 +468,7 @@ class ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest
  public:
   ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest()
       : split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMappingSpan) {
+                                             kTestCaseToFeatureMapping) {
     // Override any configured experiments for the
     // SplitCacheByNetworkIsolationKey feature.
     split_cache_always_enabled_feature_list_.InitAndEnableFeatureWithParameters(

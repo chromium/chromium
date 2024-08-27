@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -1277,7 +1276,7 @@ enum class SplitCacheTestCase {
   kEnabledTriplePlusNavInitiator
 };
 
-const struct TestCaseToFeatureMapping {
+const struct {
   const SplitCacheTestCase test_case;
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
@@ -1287,8 +1286,6 @@ const struct TestCaseToFeatureMapping {
      net::features::kSplitCacheByMainFrameNavigationInitiator},
     {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
      net::features::kSplitCacheByNavigationInitiator}};
-const base::span<const TestCaseToFeatureMapping> kTestCaseToFeatureMappingSpan(
-    kTestCaseToFeatureMapping);
 
 class HttpCacheTestSplitCacheFeature
     : public HttpCacheTest,
@@ -1296,7 +1293,7 @@ class HttpCacheTestSplitCacheFeature
  public:
   HttpCacheTestSplitCacheFeature()
       : split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMappingSpan) {
+                                             kTestCaseToFeatureMapping) {
     if (IsSplitCacheEnabled()) {
       split_cache_enabled_feature_list_.InitAndEnableFeature(
           net::features::kSplitCacheByNetworkIsolationKey);

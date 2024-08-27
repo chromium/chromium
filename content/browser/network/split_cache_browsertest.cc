@@ -4,7 +4,6 @@
 
 #include <atomic>
 
-#include "base/containers/span.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
@@ -435,7 +434,7 @@ enum class SplitCacheTestCase {
   kEnabledTriplePlusNavInitiator
 };
 
-const struct TestCaseToFeatureMapping {
+const struct {
   const SplitCacheTestCase test_case;
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
@@ -445,8 +444,6 @@ const struct TestCaseToFeatureMapping {
      net::features::kSplitCacheByMainFrameNavigationInitiator},
     {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
      net::features::kSplitCacheByNavigationInitiator}};
-const base::span<const TestCaseToFeatureMapping> kTestCaseToFeatureMappingSpan(
-    kTestCaseToFeatureMapping);
 
 class SplitCacheContentBrowserTestEnabled
     : public SplitCacheContentBrowserTest,
@@ -454,7 +451,7 @@ class SplitCacheContentBrowserTestEnabled
  public:
   SplitCacheContentBrowserTestEnabled()
       : split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMappingSpan) {
+                                             kTestCaseToFeatureMapping) {
     split_cache_always_enabled_feature_list_.InitAndEnableFeature(
         net::features::kSplitCacheByNetworkIsolationKey);
   }

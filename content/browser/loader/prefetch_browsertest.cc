@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -55,7 +54,7 @@ enum class SplitCacheTestCase {
   // initiator features are, and we won't test these combinations.
 };
 
-const struct TestCaseToFeatureMapping {
+const struct {
   const SplitCacheTestCase test_case;
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
@@ -67,8 +66,6 @@ const struct TestCaseToFeatureMapping {
      net::features::kSplitCacheByMainFrameNavigationInitiator},
     {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
      net::features::kSplitCacheByNavigationInitiator}};
-const base::span<const TestCaseToFeatureMapping> kTestCaseToFeatureMappingSpan(
-    kTestCaseToFeatureMapping);
 
 }  // namespace
 
@@ -80,7 +77,7 @@ class PrefetchBrowserTest
       : cross_origin_server_(std::make_unique<net::EmbeddedTestServer>()),
         split_cache_test_case_(GetParam()),
         split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMappingSpan) {
+                                             kTestCaseToFeatureMapping) {
     if (IsSplitCacheEnabled()) {
       split_cache_enabled_feature_list_.InitAndEnableFeature(
           net::features::kSplitCacheByNetworkIsolationKey);
