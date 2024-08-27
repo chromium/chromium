@@ -439,6 +439,8 @@ void LensOverlayQueryController::SendLatencyGen204IfEnabled(
                               ->search_terms_data()
                               .GoogleBaseURLValue())
                          .Resolve(query);
+    fetch_url =
+        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = fetch_url;
     latency_gen204_loader_ = network::SimpleURLLoader::Create(
@@ -483,6 +485,8 @@ void LensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
                               ->search_terms_data()
                               .GoogleBaseURLValue())
                          .Resolve(query);
+    fetch_url =
+        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = fetch_url;
     task_completion_gen204_loader_ = network::SimpleURLLoader::Create(
