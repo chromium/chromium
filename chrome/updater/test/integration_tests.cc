@@ -3019,6 +3019,54 @@ TEST_F(IntegrationTest, CRURegistrationInstallAndRegister) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+// This is a copy of ReportsActive, but it uses CRURegistration to mark the
+// app active. If both this test and ReportsActive fail, suspect an issue with
+// actives reporting; if only this test fails, suspect CRURegistration.
+TEST_F(IntegrationTest, CRURegistrationReportsActive) {
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP();
+  }
+  // A longer than usual timeout is needed for this test because the macOS
+  // UpdateServiceInternal server takes at least 10 seconds to shut down after
+  // Install, and InstallApp cannot make progress until it shut downs and
+  // releases the global prefs lock.
+  ASSERT_GE(TestTimeouts::action_timeout(), base::Seconds(18));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
+                                           TestTimeouts::action_timeout());
+
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  // Register apps test1 and test2. Expect pings for each.
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test1"));
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test2"));
+
+  // Set test1 to be active via CRURegistration and do a background updatecheck.
+  ASSERT_NO_FATAL_FAILURE(ExpectCRURegistrationMarksActive("test1"));
+  ASSERT_NO_FATAL_FAILURE(ExpectActive("test1"));
+  ASSERT_NO_FATAL_FAILURE(ExpectNotActive("test2"));
+  test_server.ExpectOnce(
+      {request::GetUpdaterUserAgentMatcher(),
+       request::GetContentMatcher(
+           {R"(.*"appid":"test1","enabled":true,"installdate":-1,)",
+            R"("ping":{"ad":-1,.*)"})},
+      R"()]}')"
+      "\n"
+      R"({"response":{"protocol":"3.1","daystart":{"elapsed_)"
+      R"(days":5098}},"app":[{"appid":"test1","status":"ok",)"
+      R"("updatecheck":{"status":"noupdate"}},{"appid":"test2",)"
+      R"("status":"ok","updatecheck":{"status":"noupdate"}}]})");
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+
+  // The updater has cleared the active bits.
+  ASSERT_NO_FATAL_FAILURE(ExpectNotActive("test1"));
+  ASSERT_NO_FATAL_FAILURE(ExpectNotActive("test2"));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 #if !defined(ADDRESS_SANITIZER)
 
 TEST_F(IntegrationTestUserInSystem, CRURegistrationRegistersApp) {
