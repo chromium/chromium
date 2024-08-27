@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 
-namespace chrome {
 namespace android {
 
 // Mock implementation of the DownloadController.
@@ -38,6 +37,5 @@ class MockDownloadController : public DownloadControllerBase {
 };
 
 }  // namespace android
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_MOCK_DOWNLOAD_CONTROLLER_H_
