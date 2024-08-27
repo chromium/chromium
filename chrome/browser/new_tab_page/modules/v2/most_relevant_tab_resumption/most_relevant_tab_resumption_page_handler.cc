@@ -201,7 +201,7 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
       ntp_features::kNtpMostRelevantTabResumptionModule,
       ntp_features::kNtpMostRelevantTabResumptionModuleDataParam);
 
-  if (data_type_param == "Fake Data") {
+  if (data_type_param.find("Fake Data") != std::string::npos) {
     std::vector<history::mojom::TabPtr> tabs_mojom;
     const int kSampleVisitsCount = 3;
     for (int i = 0; i < kSampleVisitsCount; i++) {
@@ -210,6 +210,15 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
       tab_mojom->url = GURL("https://www.google.com");
       tab_mojom->url_key = "https://www.google.com";
       tab_mojom->training_request_id = 0;
+      if (data_type_param.find("Most Recent Decorator") != std::string::npos) {
+        tab_mojom->decorator = history::mojom::Decorator::kMostRecent;
+      } else if (data_type_param.find("Frequently Visited At Time Decorator") !=
+                 std::string::npos) {
+        tab_mojom->decorator =
+            history::mojom::Decorator::kFrequentlyVisitedAtTime;
+      } else {
+        tab_mojom->decorator = history::mojom::Decorator::kVisitedXAgo;
+      }
       tabs_mojom.push_back(std::move(tab_mojom));
     }
     std::move(callback).Run(std::move(tabs_mojom));

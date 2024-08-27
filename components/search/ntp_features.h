@@ -191,11 +191,11 @@ extern const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[];
 // that is used to compute metrics used cluster ranking.
 extern const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[];
 extern const char kNtpHistoryClustersModuleScoreThresholdParam[];
+extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
 // Parameter for determining the categories a tab must not fall into
 // to be shown.
 extern const char kNtpTabResumptionModuleCategoriesBlocklistParam[];
-extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
 // Parameter determining for how long a dismissed tab should be discarded
 // from the module's displayed visit resumption suggestions.
