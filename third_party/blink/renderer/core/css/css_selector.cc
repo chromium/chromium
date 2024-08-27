@@ -1668,15 +1668,17 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoVideoPersistentAncestor:
       return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
 
-    // TODO(https://crbug.com/40623497): Be careful with allowing these
-    // pseudo-classes since we need to consider what happens when
-    // structural pseudo-classes are inside them (and make sure they're
-    // treated *like* they're invalid, which means different things for
-    // :is() and :where() which use <forgiving-selector-list>).
-    case kPseudoAny:
+    // IsSimpleSelectorValidAfterPseudoElement allows these selectors after
+    // ::part() regardless of what we do here.  However, since they are in
+    // fact allowed, tell the truth here.
     case kPseudoIs:
     case kPseudoNot:
     case kPseudoWhere:
+      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+
+    // :-webkit-any() should in theory be allowed too like :is() and :where(),
+    // but it's a legacy feature so just leave it disallowed.
+    case kPseudoAny:
       return false;
 
     // TODO(https://crbug.com/40623497): Figure out what to do with this.

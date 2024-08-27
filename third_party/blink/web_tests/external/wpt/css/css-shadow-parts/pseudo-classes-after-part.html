@@ -78,4 +78,17 @@ test_invalid_selector("::part(mypart):host-context()");
 test_invalid_selector("::part(mypart):has(p)");
 test_invalid_selector("::part(mypart):scope)");
 
+// Test that :not() applies appropriate constraints for being after ::part(),
+// but that :is() and :where() (which accept <forgiving-selector-list>) do
+// not.
+// Note that the serialization behavior of the last two is as-resolved in
+// https://github.com/w3c/csswg-drafts/issues/8356 but it doesn't appear to be
+// specified yet.
+test_valid_selector("::part(mypart):not(:hover)")
+test_valid_selector("::part(mypart):is(:hover)")
+test_valid_selector("::part(mypart):where(:hover)")
+test_invalid_selector("::part(mypart):not(:first-child)")
+test_valid_selector("::part(mypart):is(:first-child)")
+test_valid_selector("::part(mypart):where(:first-child)")
+
 </script>
