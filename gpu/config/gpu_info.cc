@@ -11,11 +11,6 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_util.h"
 
-#if BUILDFLAG(IS_MAC)
-#include <GLES2/gl2.h>
-#include <GLES2/gl2extchromium.h>
-#endif  // BUILDFLAG(IS_MAC)
-
 namespace {
 
 void EnumerateGPUDevice(const gpu::GPUInfo::GPUDevice& device,
@@ -152,19 +147,6 @@ const char* OverlaySupportToString(gpu::OverlaySupport support) {
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-GPU_EXPORT bool ValidateMacOSSpecificTextureTarget(int target) {
-  switch (target) {
-    case GL_TEXTURE_2D:
-    case GL_TEXTURE_RECTANGLE_ARB:
-      return true;
-
-    default:
-      return false;
-  }
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 VideoDecodeAcceleratorCapabilities::VideoDecodeAcceleratorCapabilities()
     : flags(0) {}

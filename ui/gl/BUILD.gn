@@ -149,20 +149,16 @@ component("gl") {
     defines += [ "GPU_ENABLE_SERVICE_LOGGING" ]
   }
 
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
-
   deps = [
     ":buildflags",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
-
-    # ANGLE includes are used cross-platform.
-    "//third_party/angle:includes",
     "//ui/base:ozone_buildflags",
     "//ui/gfx/mojom",
   ]
   public_deps = [
     "//base",
+    "//third_party/angle:includes",
     "//third_party/mesa_headers",
     "//ui/events/platform",
     "//ui/gfx",

@@ -171,8 +171,6 @@ component("ozone_base") {
     "//ui/ozone/platform/*",
   ]
 
-  configs += [ "//third_party/khronos:khronos_headers" ]
-
   # Out of tree platforms can depend on this.
   visibility += ozone_external_platform_visibility
 }
