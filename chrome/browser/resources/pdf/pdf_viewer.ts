@@ -791,6 +791,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.setDocumentDimensions(
             data as unknown as DocumentDimensionsMessageData);
         return;
+      case 'documentFocusChanged':
+        const hasFocusData = data as unknown as {hasFocus: boolean};
+        this.documentHasFocus_ = hasFocusData.hasFocus;
+        return;
       case 'email':
         const emailData = data as unknown as EmailMessageData;
         const href = 'mailto:' + emailData.to + '?cc=' + emailData.cc +
@@ -798,12 +802,26 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             '&body=' + emailData.body;
         this.handleNavigate_(href, WindowOpenDisposition.CURRENT_TAB);
         return;
+      // <if expr="enable_pdf_ink2">
+      case 'finishInkStroke':
+        this.handleFinishInkStroke_();
+        return;
+      // </if>
+      case 'formFocusChange':
+        const focusedData = data as unknown as {focused: FormFieldFocusType};
+        this.formFieldFocus_ = focusedData.focused;
+        return;
       case 'getPassword':
         this.handlePasswordRequest_();
         return;
       case 'loadProgress':
         const progressData = data as unknown as {progress: number};
         this.updateProgress(progressData.progress);
+        return;
+      case 'metadata':
+        const metadataData =
+            data as unknown as {metadataData: DocumentMetadata};
+        this.setDocumentMetadata_(metadataData.metadataData);
         return;
       case 'navigate':
         const navigateData = data as unknown as NavigateMessageData;
@@ -815,15 +833,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             destinationData.page, destinationData.x, destinationData.y,
             destinationData.zoom);
         return;
-      // <if expr="enable_pdf_ink2">
-      case 'finishInkStroke':
-        this.handleFinishInkStroke_();
-        return;
-      // </if>
-      case 'metadata':
-        const metadataData =
-            data as unknown as {metadataData: DocumentMetadata};
-        this.setDocumentMetadata_(metadataData.metadataData);
+      case 'sendKeyEvent':
+        const keyEventData = data as unknown as KeyEventData;
+        const keyEvent =
+            deserializeKeyEvent(keyEventData.keyEvent) as ExtendedKeyEvent;
+        keyEvent.fromPlugin = true;
+        this.handleKeyEvent(keyEvent);
         return;
       case 'setIsEditing':
         // Editing mode can only be entered once, and cannot be exited.
@@ -833,25 +848,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.viewport.setSmoothScrolling(
             (data as unknown as {smoothScrolling: boolean}).smoothScrolling);
         return;
-      case 'formFocusChange':
-        const focusedData = data as unknown as {focused: FormFieldFocusType};
-        this.formFieldFocus_ = focusedData.focused;
-        return;
       case 'touchSelectionOccurred':
         this.sendScriptingMessage({
           type: 'touchSelectionOccurred',
         });
-        return;
-      case 'documentFocusChanged':
-        const hasFocusData = data as unknown as {hasFocus: boolean};
-        this.documentHasFocus_ = hasFocusData.hasFocus;
-        return;
-      case 'sendKeyEvent':
-        const keyEventData = data as unknown as KeyEventData;
-        const keyEvent =
-            deserializeKeyEvent(keyEventData.keyEvent) as ExtendedKeyEvent;
-        keyEvent.fromPlugin = true;
-        this.handleKeyEvent(keyEvent);
         return;
     }
     assertNotReached('Unknown message type received: ' + data.type);
