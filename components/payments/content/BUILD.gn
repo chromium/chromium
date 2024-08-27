@@ -239,7 +239,10 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
+      "mock_content_payment_request_delegate.cc",
+      "mock_content_payment_request_delegate.h",
       "payment_app_unittest.cc",
+      "payment_request_display_manager_unittest.cc",
       "payment_request_spec_unittest.cc",
       "payment_request_state_unittest.cc",
       "payment_request_web_contents_manager_unittest.cc",
