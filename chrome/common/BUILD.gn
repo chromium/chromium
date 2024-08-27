@@ -293,6 +293,11 @@ static_library("common_lib") {
       "//extensions/common:core_api_provider",
     ]
 
+    sources += [
+      "initialize_extensions_client.cc",
+      "initialize_extensions_client.h",
+    ]
+
     # TODO(https://crbug.com/356905053): Gradually include more of these sources
     # in the desktop-android build (taking them out of this enable_extensions
     # block), or put them behind more specific build flags.
@@ -300,8 +305,6 @@ static_library("common_lib") {
       sources += [
         "controlled_frame/controlled_frame.cc",
         "controlled_frame/controlled_frame.h",
-        "initialize_extensions_client.cc",
-        "initialize_extensions_client.h",
       ]
       deps += [
         "//chrome/common/apps/platform_apps",

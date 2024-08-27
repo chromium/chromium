@@ -7,7 +7,7 @@
 
 #include "extensions/buildflags/buildflags.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #error "Extensions must be enabled"
 #endif
 

@@ -9,19 +9,28 @@
 
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/common/apps/platform_apps/chrome_apps_api_provider.h"
-#include "chrome/common/controlled_frame/controlled_frame.h"
-#include "chrome/common/controlled_frame/controlled_frame_api_provider.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "chrome/common/extensions/webstore_override.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/common/controlled_frame/controlled_frame.h"
+#include "chrome/common/controlled_frame/controlled_frame_api_provider.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/common/apps/platform_apps/chrome_apps_api_provider.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
 #endif
 
 namespace {
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Helper method to merge all the FeatureDelegatedAvailabilityCheckMaps into a
 // single map.
@@ -45,6 +54,8 @@ CombineAllAvailabilityCheckMaps() {
   return result;
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace
 
 void EnsureExtensionsClientInitialized() {
@@ -56,12 +67,18 @@ void EnsureExtensionsClientInitialized() {
   if (!initialized) {
     initialized = true;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions_client->SetFeatureDelegatedAvailabilityCheckMap(
         CombineAllAvailabilityCheckMaps());
+#endif
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
     extensions_client->AddAPIProvider(
         std::make_unique<chrome_apps::ChromeAppsAPIProvider>());
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions_client->AddAPIProvider(
         std::make_unique<controlled_frame::ControlledFrameAPIProvider>());
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     extensions_client->AddAPIProvider(
         std::make_unique<chromeos::ChromeOSSystemExtensionsAPIProvider>());
