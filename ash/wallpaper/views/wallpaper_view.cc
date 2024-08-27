@@ -210,7 +210,7 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
     aura::Window* root_window,
     float blur_sigma,
     bool locked,
-    WallpaperView** out_wallpaper_view) {
+    raw_ptr<WallpaperView>* out_wallpaper_view) {
   int container_id = locked ? kShellWindowId_LockScreenWallpaperContainer
                             : kShellWindowId_WallpaperContainer;
   auto* controller = Shell::Get()->wallpaper_controller();

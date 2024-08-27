@@ -78,7 +78,7 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
     aura::Window* root_window,
     float blur_sigma,
     bool locked,
-    WallpaperView** out_wallpaper_view);
+    raw_ptr<WallpaperView>* out_wallpaper_view);
 
 }  // namespace ash
 
