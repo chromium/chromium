@@ -257,8 +257,6 @@ source_set("extensions") {
     "api/preference/cookie_controls_mode_transformer.h",
     "api/preference/network_prediction_transformer.cc",
     "api/preference/network_prediction_transformer.h",
-    "api/preference/preference_api.cc",
-    "api/preference/preference_api.h",
     "api/preference/privacy_sandbox_transformer.cc",
     "api/preference/privacy_sandbox_transformer.h",
     "api/preference/protected_content_enabled_transformer.cc",

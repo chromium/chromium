@@ -26,6 +26,7 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
+#include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
@@ -344,6 +345,13 @@ void PreferenceEventRouter::ObserveOffTheRecordPrefs(PrefService* prefs) {
 
 PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
+  // Preferences.
+  ExtensionFunctionRegistry& registry =
+      ExtensionFunctionRegistry::GetInstance();
+  registry.RegisterFunction<GetPreferenceFunction>();
+  registry.RegisterFunction<SetPreferenceFunction>();
+  registry.RegisterFunction<ClearPreferenceFunction>();
+
   PrefMapping* pref_mapping = PrefMapping::GetInstance();
 
   for (const auto& pref : PrefMapping::GetMappings()) {
