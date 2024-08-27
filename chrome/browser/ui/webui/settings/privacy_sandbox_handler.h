@@ -35,10 +35,6 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
                            GetTopicsState);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            TopicsToggleChanged);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
-                           AdTopicsCardShownForUserInConsentCountry);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
-                           AdTopicsCardNotShownForUserNotInConsentCountry);
 
   void HandleSetFledgeJoiningAllowed(const base::Value::List& args);
   void HandleGetFledgeState(const base::Value::List& args);
