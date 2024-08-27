@@ -8413,11 +8413,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "sync-segments-data",
-    "owners": [ "bwwilliams@google.com", "sky@chromium.org", "treib@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "sync-session-on-visibility-changed",
     "owners": [ "ewannpv@chromium.org", "treib@chromium.org","chrome-sync-dev@google.com","bling-flags@google.com" ],
     "expiry_milestone": 130

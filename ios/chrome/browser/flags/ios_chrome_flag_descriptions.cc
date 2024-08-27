@@ -1025,11 +1025,6 @@ const char kSyncSessionOnVisibilityChangedName[] =
 const char kSyncSessionOnVisibilityChangedDescription[] =
     "This flag enables session syncing when the visibility of a tab changes.";
 
-const char kSyncSegmentsDataName[] = "Use synced segments data";
-const char kSyncSegmentsDataDescription[] =
-    "Enables history's segments to include foreign visits from syncing "
-    "devices.";
-
 const char kTabGroupIndicatorName[] = "Tab Group Indicator";
 const char kTabGroupIndicatorDescription[] =
     "When enabled, displays a tab group indicator next to the omnibox.";

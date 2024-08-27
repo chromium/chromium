@@ -68,6 +68,10 @@
 #import "url/gurl.h"
 namespace {
 
+// The maximum number of New Tab Page displays to show with synced segments
+// data.
+constexpr int kMaxSyncedNewTabPageDisplays = 5;
+
 std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
@@ -103,29 +107,25 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   // TODO(crbug.com/40250371): Remove the workaround below once
   // PrivacySandboxSettingsFactory correctly declares its KeyedServices
   // dependencies.
-  if (history::IsSyncSegmentsDataEnabled()) {
-    history::HistoryService* history_service =
-        ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-            browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+  history::HistoryService* history_service =
+      ios::HistoryServiceFactory::GetForBrowserStateIfExists(
+          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
 
-    syncer::DeviceInfoSyncService* device_info_sync_service =
-        DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
+  syncer::DeviceInfoSyncService* device_info_sync_service =
+      DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
 
-    if (history_service && device_info_sync_service) {
-      PrefService* pref_service = browser_state->GetPrefs();
+  if (history_service && device_info_sync_service) {
+    PrefService* pref_service = browser_state->GetPrefs();
 
-      const int display_count = pref_service->GetInteger(
-          prefs::kIosSyncSegmentsNewTabPageDisplayCount);
+    const int display_count =
+        pref_service->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount);
 
-      const int display_limit = history::kMaxNumNewTabPageDisplays.Get();
+    history_service->SetCanAddForeignVisitsToSegmentsOnBackend(
+        display_count < kMaxSyncedNewTabPageDisplays);
 
-      history_service->SetCanAddForeignVisitsToSegmentsOnBackend(display_count <
-                                                                 display_limit);
-
-      history_service->SetDeviceInfoServices(
-          device_info_sync_service->GetDeviceInfoTracker(),
-          device_info_sync_service->GetLocalDeviceInfoProvider());
-    }
+    history_service->SetDeviceInfoServices(
+        device_info_sync_service->GetDeviceInfoTracker(),
+        device_info_sync_service->GetLocalDeviceInfoProvider());
   }
 
   password_manager::PasswordReceiverService* password_receiver_service =

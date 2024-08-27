@@ -22635,21 +22635,6 @@
             ]
         }
     ],
-    "SyncSegmentsData": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncSegmentsData"
-                    ]
-                }
-            ]
-        }
-    ],
     "SysUiHoldbackStudy": [
         {
             "platforms": [

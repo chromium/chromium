@@ -921,11 +921,6 @@ extern const char kSyncSandboxDescription[];
 extern const char kSyncSessionOnVisibilityChangedName[];
 extern const char kSyncSessionOnVisibilityChangedDescription[];
 
-// Title and description for the flag to control if history's segments should
-// include foreign visits from syncing devices.
-extern const char kSyncSegmentsDataName[];
-extern const char kSyncSegmentsDataDescription[];
-
 // Title and description for the flag to control if a tab group indicator is
 // displayed.
 extern const char kTabGroupIndicatorName[];

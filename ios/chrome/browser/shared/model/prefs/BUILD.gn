@@ -116,7 +116,6 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
-    "//ios/chrome/browser/ui/ntp:field_trial",
     "//ios/chrome/browser/ui/ntp/metrics:constants",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/chrome/browser/upgrade/model:public",

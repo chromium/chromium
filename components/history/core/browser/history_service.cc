@@ -465,7 +465,6 @@ void HistoryService::RemoveObserver(HistoryServiceObserver* observer) {
 void HistoryService::SetDeviceInfoServices(
     syncer::DeviceInfoTracker* device_info_tracker,
     syncer::LocalDeviceInfoProvider* local_device_info_provider) {
-  CHECK(history::IsSyncSegmentsDataEnabled());
   CHECK(device_info_tracker != nullptr);
   CHECK(local_device_info_provider != nullptr);
 
@@ -487,7 +486,6 @@ void HistoryService::SetDeviceInfoServices(
 
 void HistoryService::SetCanAddForeignVisitsToSegmentsOnBackend(
     bool add_foreign_visits) {
-  CHECK(history::IsSyncSegmentsDataEnabled());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   backend_task_runner_->PostTask(
@@ -498,7 +496,6 @@ void HistoryService::SetCanAddForeignVisitsToSegmentsOnBackend(
 
 void HistoryService::OnDeviceInfoChange() {
   TRACE_EVENT0("browser,startup", "HistoryService::OnDeviceInfoChange");
-  CHECK(history::IsSyncSegmentsDataEnabled());
   CHECK(device_info_tracker_ != nullptr);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -528,7 +525,6 @@ void HistoryService::OnDeviceInfoShutdown() {
 }
 
 void HistoryService::SendLocalDeviceOriginatorCacheGuidToBackend() {
-  CHECK(history::IsSyncSegmentsDataEnabled());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(local_device_info_provider_ != nullptr);
 
