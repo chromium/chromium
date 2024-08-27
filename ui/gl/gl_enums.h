@@ -16,21 +16,11 @@ namespace gl {
 
 class GL_EXPORT GLEnums {
  public:
-  struct EnumToString {
-    uint32_t value;
-    const char* name;
-  };
-
   static std::string GetStringEnum(uint32_t value);
   static std::string GetStringBool(uint32_t value);
   static std::string GetStringError(uint32_t value);
-
- private:
-  static const EnumToString* const enum_to_string_table_;
-  static const size_t enum_to_string_table_len_;
 };
 
 }  // namespace gl
 
 #endif  // UI_GL_GL_ENUMS_H_
-

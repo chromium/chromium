@@ -3488,20 +3488,23 @@ def GenerateEnumUtils(out_file, input_filenames):
 #ifndef UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 #define UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 
+namespace {
+
+struct EnumToString {
+  uint32_t value;
+  std::string_view name;
+};
+
+static constexpr EnumToString kEnumToStringTable[] = {
 """)
-  out_file.write("static const GLEnums::EnumToString "
-                 "enum_to_string_table[] = {\n")
   for value in sorted(dict):
     out_file.write('  { %s, "%s", },\n' % (value, dict[value]))
   out_file.write("""};
 
-const GLEnums::EnumToString* const GLEnums::enum_to_string_table_ =
-  enum_to_string_table;
-const size_t GLEnums::enum_to_string_table_len_ =
-  sizeof(enum_to_string_table) / sizeof(enum_to_string_table[0]);
+}  // namespace
 
+#endif  //  UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 """)
-  out_file.write('#endif  //  UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_')
 
 
 def ParseFunctionsFromHeader(header_file, extensions, versions):
