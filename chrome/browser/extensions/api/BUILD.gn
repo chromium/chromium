@@ -102,6 +102,20 @@ function_registration("api_registration") {
   }
 }
 
+# KeyedService factories initialization.
+source_set("keyed_service_factories") {
+  sources = [
+    "api_browser_context_keyed_service_factories.cc",
+    "api_browser_context_keyed_service_factories.h",
+  ]
+
+  deps = [ "//chrome/browser/extensions" ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/chromeos/extensions/wm" ]
+  }
+}
+
 if (is_win) {
   # The files below are required to exercise the code that properly launches
   # Native Hosts with paths containing characters that are problematic for

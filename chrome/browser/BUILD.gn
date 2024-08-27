@@ -7634,6 +7634,7 @@ static_library("browser") {
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/controlled_frame",
       "//chrome/browser/extensions",
+      "//chrome/browser/extensions:keyed_service_factories",
       "//chrome/browser/extensions/api",
     ]
 
