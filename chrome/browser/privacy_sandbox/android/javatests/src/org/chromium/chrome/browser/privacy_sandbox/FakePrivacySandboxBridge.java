@@ -189,13 +189,13 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         mPromptType = type;
     }
 
-    public int getRequiredPromptType() {
+    public int getRequiredPromptType(@SurfaceType int surfaceType) {
         return mPromptType;
     }
 
     @Override
-    public int getRequiredPromptType(Profile profile) {
-        return getRequiredPromptType();
+    public int getRequiredPromptType(Profile profile, @SurfaceType int surfaceType) {
+        return getRequiredPromptType(surfaceType);
     }
 
     @Override

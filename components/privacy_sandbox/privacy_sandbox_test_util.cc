@@ -816,7 +816,9 @@ void CheckOutput(
       auto force_chrome_build =
           GetItemValueForKey<bool>(InputKey::kForceChromeBuild, input);
       privacy_sandbox_service->ForceChromeBuildForTests(force_chrome_build);
-      EXPECT_EQ(prompt_type, privacy_sandbox_service->GetRequiredPromptType());
+      // TODO(crbug.com/359902106): Test various SurfaceTypes here.
+      EXPECT_EQ(prompt_type,
+                privacy_sandbox_service->GetRequiredPromptType(/*kDesktop*/ 0));
       return;
     }
     case (OutputKey::kM1PromptSuppressedReason): {

@@ -149,7 +149,7 @@ class PrivacySandboxService : public KeyedService {
   // state of the Privacy Sandbox settings, and the current location of the
   // user, to determine the appropriate type. This is expected to be called by
   // UI code locations determining whether a prompt should be shown on startup.
-  virtual PromptType GetRequiredPromptType() = 0;
+  virtual PromptType GetRequiredPromptType(SurfaceType surface_type) = 0;
 
   // Informs the service that |action| occurred with the prompt. This allows
   // the service to record this information in preferences such that future

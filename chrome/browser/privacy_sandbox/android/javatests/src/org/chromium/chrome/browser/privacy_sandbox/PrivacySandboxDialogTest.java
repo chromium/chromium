@@ -158,7 +158,8 @@ public final class PrivacySandboxDialogTest {
         while (true) {
             try {
                 onView(withId(R.id.more_button)).inRoot(isDialog()).perform(click());
-                var promptType = mFakePrivacySandboxBridge.getRequiredPromptType();
+                var promptType =
+                        mFakePrivacySandboxBridge.getRequiredPromptType(SurfaceType.BR_APP);
                 if (promptType == PromptType.M1_CONSENT) {
                     assertEquals(
                             "Last dialog action",

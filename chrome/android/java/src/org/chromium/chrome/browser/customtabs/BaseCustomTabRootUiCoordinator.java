@@ -621,7 +621,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             boolean didShowPrompt = false;
                             boolean shouldShowPrivacySandboxDialog =
                                     PrivacySandboxDialogController.shouldShowPrivacySandboxDialog(
-                                            currentModelProfile);
+                                            currentModelProfile, SurfaceType.AGACCT);
                             int activityType = mIntentDataProvider.get().getActivityType();
                             boolean isCustomTab =
                                     activityType == ActivityType.CUSTOM_TAB

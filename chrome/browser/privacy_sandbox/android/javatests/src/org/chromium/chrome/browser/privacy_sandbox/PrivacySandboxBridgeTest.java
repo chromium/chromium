@@ -62,7 +62,7 @@ public class PrivacySandboxBridgeTest {
                         assertEquals(
                                 "Returned dialog type",
                                 PromptType.NONE,
-                                mPrivacySandboxBridge.getRequiredPromptType()));
+                                mPrivacySandboxBridge.getRequiredPromptType(SurfaceType.BR_APP)));
     }
 
     @Test

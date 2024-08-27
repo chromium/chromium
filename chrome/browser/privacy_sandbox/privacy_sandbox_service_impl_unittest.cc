@@ -90,12 +90,13 @@
 #endif
 
 namespace {
-using browsing_topics::Topic;
-using privacy_sandbox::CanonicalTopic;
-using testing::ElementsAre;
-using PromptAction = PrivacySandboxService::PromptAction;
-using PromptSuppressedReason = PrivacySandboxService::PromptSuppressedReason;
-using PromptType = PrivacySandboxService::PromptType;
+using ::browsing_topics::Topic;
+using ::privacy_sandbox::CanonicalTopic;
+using ::testing::ElementsAre;
+using PromptAction = ::PrivacySandboxService::PromptAction;
+using PromptSuppressedReason = ::PrivacySandboxService::PromptSuppressedReason;
+using PromptType = ::PrivacySandboxService::PromptType;
+using SurfaceType = ::PrivacySandboxService::SurfaceType;
 
 #if BUILDFLAG(IS_ANDROID)
 using ActivityType = PrivacySandboxService::PrivacySandboxStorageActivityType;
@@ -156,13 +157,13 @@ class TestPrivacySandboxService
   void ForceChromeBuildForTests(bool force_chrome_build) const override {
     service_->ForceChromeBuildForTests(force_chrome_build);
   }
-  int GetRequiredPromptType() const override {
-    return static_cast<int>(service_->GetRequiredPromptType());
+  int GetRequiredPromptType(int surface_type) const override {
+    return static_cast<int>(service_->GetRequiredPromptType(
+        static_cast<SurfaceType>(surface_type)));
   }
   void PromptActionOccurred(int action, int surface_type) const override {
-    service_->PromptActionOccurred(
-        static_cast<PromptAction>(action),
-        static_cast<PrivacySandboxService::SurfaceType>(surface_type));
+    service_->PromptActionOccurred(static_cast<PromptAction>(action),
+                                   static_cast<SurfaceType>(surface_type));
   }
 
  private:
@@ -630,13 +631,11 @@ TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_OptIn) {
   // Show the notice so action can be taken
   // TODO(crbug.com/359900567): Parametrize instances of surface type in tests,
   // so we can test all surface types and not just kDesktop.
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentShown,
-      PrivacySandboxService::SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+                                                  SurfaceType::kDesktop);
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentAccepted,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kConsentAccepted, SurfaceType::kDesktop);
   auto actual = notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
   EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptIn,
             actual->notice_action_taken);
@@ -670,13 +669,11 @@ TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_OptOut) {
       /*disabled_features=*/{});
 
   // Show the notice so action can be taken
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentShown,
-      PrivacySandboxService::SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+                                                  SurfaceType::kDesktop);
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentDeclined,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kConsentDeclined, SurfaceType::kDesktop);
   auto actual = notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
   EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptOut,
             actual->notice_action_taken);
@@ -706,9 +703,8 @@ TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_Shown) {
   auto actual_not_added =
       notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
   ASSERT_TRUE(!actual_not_added.has_value());
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentShown,
-      PrivacySandboxService::SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+                                                  SurfaceType::kDesktop);
   auto actual_added =
       notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
   EXPECT_TRUE(actual_added.has_value());
@@ -721,62 +717,53 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
       {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}});
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeShown, PrivacySandboxService::SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kNoticeShown,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Shown"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeOpenSettings,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kNoticeOpenSettings, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.OpenedSettings"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeAcknowledge,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kNoticeAcknowledge, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Acknowledged"));
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeDismiss,
-      PrivacySandboxService::SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kNoticeDismiss,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Dismissed"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeClosedNoInteraction,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kNoticeClosedNoInteraction, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.ClosedNoInteraction"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeLearnMore,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kNoticeLearnMore, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.LearnMore"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeMoreInfoOpened,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kNoticeMoreInfoOpened, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.LearnMoreExpanded"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeMoreInfoClosed,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kNoticeMoreInfoClosed, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.LearnMoreClosed"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentMoreButtonClicked,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kConsentMoreButtonClicked, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.MoreButtonClicked"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeMoreButtonClicked,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kNoticeMoreButtonClicked, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.MoreButtonClicked"));
 
@@ -785,39 +772,33 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
       privacy_sandbox::kPrivacySandboxSettings4,
       {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}});
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentShown,
-      PrivacySandboxService::SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.Shown"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentAccepted,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kConsentAccepted, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.Accepted"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentDeclined,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kConsentDeclined, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.Declined"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentMoreInfoOpened,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kConsentMoreInfoOpened, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.LearnMoreExpanded"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentMoreInfoClosed,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kConsentMoreInfoClosed, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.LearnMoreClosed"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentClosedNoDecision,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kConsentClosedNoDecision, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
 
@@ -829,33 +810,29 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
         "true"}});
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeOpenSettings,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kRestrictedNoticeOpenSettings, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeAcknowledge,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kRestrictedNoticeAcknowledge, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeShown,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kRestrictedNoticeShown, SurfaceType::kDesktop);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.RestrictedNotice.Shown"));
 
   privacy_sandbox_service()->PromptActionOccurred(
       PromptAction::kRestrictedNoticeClosedNoInteraction,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      SurfaceType::kDesktop);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount(
              "Settings.PrivacySandbox.RestrictedNotice.ClosedNoInteraction"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeMoreButtonClicked,
-      PrivacySandboxService::SurfaceType::kDesktop);
+      PromptAction::kRestrictedNoticeMoreButtonClicked, SurfaceType::kDesktop);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked"));
@@ -2226,8 +2203,10 @@ TEST_F(PrivacySandboxServiceM1PromptTest, DeviceLocalAccountUser) {
   init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 #endif
-  EXPECT_EQ(PromptType::kNone,
-            privacy_sandbox_service()->GetRequiredPromptType());
+  // TODO(crbug.com/361794340): Ensure the promptType is correct across
+  // different surfaceTypes.
+  EXPECT_EQ(PromptType::kNone, privacy_sandbox_service()->GetRequiredPromptType(
+                                   SurfaceType::kDesktop));
 
   // A prompt should be shown for a regular user.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2239,13 +2218,14 @@ TEST_F(PrivacySandboxServiceM1PromptTest, DeviceLocalAccountUser) {
   init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 #endif
-  EXPECT_EQ(PromptType::kM1Consent,
-            privacy_sandbox_service()->GetRequiredPromptType());
+  EXPECT_EQ(
+      PromptType::kM1Consent,
+      privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop));
 
   // No prompt should be shown for a web kiosk account.
   chromeos::SetUpFakeKioskSession();
-  EXPECT_EQ(PromptType::kNone,
-            privacy_sandbox_service()->GetRequiredPromptType());
+  EXPECT_EQ(PromptType::kNone, privacy_sandbox_service()->GetRequiredPromptType(
+                                   SurfaceType::kDesktop));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -2358,8 +2338,8 @@ TEST_F(PrivacySandboxServiceM1PromptTest, PromptActionsSentimentService) {
                   InteractedWithPrivacySandbox4(testing::_))
           .Times(0);
     }
-    privacy_sandbox_service()->PromptActionOccurred(
-        prompt_action, PrivacySandboxService::SurfaceType::kDesktop);
+    privacy_sandbox_service()->PromptActionOccurred(prompt_action,
+                                                    SurfaceType::kDesktop);
     testing::Mock::VerifyAndClearExpectations(mock_sentiment_service());
   }
 }

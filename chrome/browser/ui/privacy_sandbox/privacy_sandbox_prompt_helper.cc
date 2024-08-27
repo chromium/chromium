@@ -42,7 +42,8 @@ PrivacySandboxService::PromptType GetRequiredPromptType(Profile* profile) {
     return PrivacySandboxService::PromptType::kNone;
   }
 
-  return privacy_sandbox_service->GetRequiredPromptType();
+  return privacy_sandbox_service->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

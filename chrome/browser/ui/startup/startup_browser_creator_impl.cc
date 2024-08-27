@@ -381,7 +381,8 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 
   bool privacy_sandbox_dialog_required = false;
   if (privacy_sandbox_service) {
-    switch (privacy_sandbox_service->GetRequiredPromptType()) {
+    switch (privacy_sandbox_service->GetRequiredPromptType(
+        PrivacySandboxService::SurfaceType::kDesktop)) {
       case PrivacySandboxService::PromptType::kM1Consent:
       case PrivacySandboxService::PromptType::kM1NoticeEEA:
       case PrivacySandboxService::PromptType::kM1NoticeROW:

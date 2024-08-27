@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -79,7 +80,8 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
                     context,
                     base::BindRepeating(&CreateMockPrivacySandboxService)));
 
-    ON_CALL(*mock_privacy_sandbox_service, GetRequiredPromptType())
+    ON_CALL(*mock_privacy_sandbox_service,
+            GetRequiredPromptType(PrivacySandboxService::SurfaceType::kDesktop))
         .WillByDefault(testing::Return(TestPromptType()));
     ON_CALL(*mock_privacy_sandbox_service, IsPromptOpenForBrowser(testing::_))
         .WillByDefault(testing::Return(false));

@@ -363,7 +363,8 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
 PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 
 PrivacySandboxService::PromptType
-PrivacySandboxServiceImpl::GetRequiredPromptType() {
+// TODO(crbug.com/352575567): Use the SurfaceType passed in.
+PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
   bool third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
       cookie_settings_.get(), pref_service_, tracking_protection_settings_);
   return GetRequiredPromptTypeInternal(
