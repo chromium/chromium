@@ -22,25 +22,24 @@
 
 class PrefService;
 
-// ChromeBrowserStateManager implementation.
-class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
-                                      public ChromeBrowserState::Delegate {
+// ProfileManagerIOS implementation.
+class ProfileManagerIOSImpl : public ProfileManagerIOS,
+                              public ChromeBrowserState::Delegate {
  public:
-  // Constructs the ChromeBrowserStateManagerImpl with a pointer to the local
+  // Constructs the ProfileManagerIOSImpl with a pointer to the local
   // state's PrefService and with the path to the directory containing the
   // ChromeBrowserStates' data.
-  ChromeBrowserStateManagerImpl(PrefService* local_state,
-                                const base::FilePath& data_dir);
+  ProfileManagerIOSImpl(PrefService* local_state,
+                        const base::FilePath& data_dir);
 
-  ChromeBrowserStateManagerImpl(const ChromeBrowserStateManagerImpl&) = delete;
-  ChromeBrowserStateManagerImpl& operator=(
-      const ChromeBrowserStateManagerImpl&) = delete;
+  ProfileManagerIOSImpl(const ProfileManagerIOSImpl&) = delete;
+  ProfileManagerIOSImpl& operator=(const ProfileManagerIOSImpl&) = delete;
 
-  ~ChromeBrowserStateManagerImpl() override;
+  ~ProfileManagerIOSImpl() override;
 
-  // ChromeBrowserStateManager:
-  void AddObserver(ChromeBrowserStateManagerObserver* observer) override;
-  void RemoveObserver(ChromeBrowserStateManagerObserver* observer) override;
+  // ProfileManagerIOS:
+  void AddObserver(ProfileManagerObserverIOS* observer) override;
+  void RemoveObserver(ProfileManagerObserverIOS* observer) override;
   void LoadBrowserStates() override;
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
@@ -112,7 +111,7 @@ class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
   ProfileAttributesStorageIOS profile_attributes_storage_;
 
   // The list of registered observers.
-  base::ObserverList<ChromeBrowserStateManagerObserver, true> observers_;
+  base::ObserverList<ProfileManagerObserverIOS, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_MANAGER_IOS_IMPL_H_

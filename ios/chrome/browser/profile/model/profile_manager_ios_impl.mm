@@ -104,7 +104,7 @@ void BrowserStateSizeTask(const base::FilePath& path) {
 }  // namespace
 
 // Stores information about a single BrowserState.
-class ChromeBrowserStateManagerImpl::BrowserStateInfo {
+class ProfileManagerIOSImpl::BrowserStateInfo {
  public:
   explicit BrowserStateInfo(std::unique_ptr<ChromeBrowserState> browser_state)
       : browser_state_(std::move(browser_state)) {
@@ -135,13 +135,13 @@ class ChromeBrowserStateManagerImpl::BrowserStateInfo {
   bool is_loaded_ = false;
 };
 
-void ChromeBrowserStateManagerImpl::BrowserStateInfo::SetIsLoaded() {
+void ProfileManagerIOSImpl::BrowserStateInfo::SetIsLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_loaded_);
   is_loaded_ = true;
 }
 
-void ChromeBrowserStateManagerImpl::BrowserStateInfo::AddCallback(
+void ProfileManagerIOSImpl::BrowserStateInfo::AddCallback(
     ChromeBrowserStateLoadedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_loaded_);
@@ -150,9 +150,8 @@ void ChromeBrowserStateManagerImpl::BrowserStateInfo::AddCallback(
   }
 }
 
-ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl(
-    PrefService* local_state,
-    const base::FilePath& data_dir)
+ProfileManagerIOSImpl::ProfileManagerIOSImpl(PrefService* local_state,
+                                             const base::FilePath& data_dir)
     : local_state_(local_state),
       data_dir_(data_dir),
       profile_attributes_storage_(local_state) {
@@ -160,15 +159,14 @@ ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl(
   CHECK(!data_dir_.empty());
 }
 
-ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {
+ProfileManagerIOSImpl::~ProfileManagerIOSImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
     observer.OnChromeBrowserStateManagerDestroyed(this);
   }
 }
 
-void ChromeBrowserStateManagerImpl::AddObserver(
-    ChromeBrowserStateManagerObserver* observer) {
+void ProfileManagerIOSImpl::AddObserver(ProfileManagerObserverIOS* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 
@@ -184,13 +182,13 @@ void ChromeBrowserStateManagerImpl::AddObserver(
   }
 }
 
-void ChromeBrowserStateManagerImpl::RemoveObserver(
-    ChromeBrowserStateManagerObserver* observer) {
+void ProfileManagerIOSImpl::RemoveObserver(
+    ProfileManagerObserverIOS* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
-void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
+void ProfileManagerIOSImpl::LoadBrowserStates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value::List& last_active_browser_states =
       local_state_->GetList(prefs::kLastActiveProfiles);
@@ -228,7 +226,7 @@ void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
 }
 
 ChromeBrowserState*
-ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
+ProfileManagerIOSImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ChromeBrowserState* browser_state =
       GetBrowserStateByName(GetLastUsedBrowserStateName());
@@ -236,7 +234,7 @@ ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
   return browser_state;
 }
 
-ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByName(
+ChromeBrowserState* ProfileManagerIOSImpl::GetBrowserStateByName(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the browser state is already loaded, just return it.
@@ -253,7 +251,7 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByName(
 }
 
 std::vector<ChromeBrowserState*>
-ChromeBrowserStateManagerImpl::GetLoadedBrowserStates() {
+ProfileManagerIOSImpl::GetLoadedBrowserStates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ChromeBrowserState*> loaded_browser_states;
   for (const auto& pair : browser_states_) {
@@ -266,7 +264,7 @@ ChromeBrowserStateManagerImpl::GetLoadedBrowserStates() {
   return loaded_browser_states;
 }
 
-bool ChromeBrowserStateManagerImpl::LoadBrowserStateAsync(
+bool ProfileManagerIOSImpl::LoadBrowserStateAsync(
     std::string_view name,
     ChromeBrowserStateLoadedCallback initialized_callback,
     ChromeBrowserStateLoadedCallback created_callback) {
@@ -284,7 +282,7 @@ bool ChromeBrowserStateManagerImpl::LoadBrowserStateAsync(
                                  std::move(created_callback));
 }
 
-bool ChromeBrowserStateManagerImpl::CreateBrowserStateAsync(
+bool ProfileManagerIOSImpl::CreateBrowserStateAsync(
     std::string_view name,
     ChromeBrowserStateLoadedCallback initialized_callback,
     ChromeBrowserStateLoadedCallback created_callback) {
@@ -294,7 +292,7 @@ bool ChromeBrowserStateManagerImpl::CreateBrowserStateAsync(
                                     std::move(created_callback));
 }
 
-ChromeBrowserState* ChromeBrowserStateManagerImpl::LoadBrowserState(
+ChromeBrowserState* ProfileManagerIOSImpl::LoadBrowserState(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!ProfileWithNameExists(name)) {
@@ -306,7 +304,7 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::LoadBrowserState(
   return CreateBrowserState(name);
 }
 
-ChromeBrowserState* ChromeBrowserStateManagerImpl::CreateBrowserState(
+ChromeBrowserState* ProfileManagerIOSImpl::CreateBrowserState(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CreateBrowserStateWithMode(name, CreationMode::kSynchronous,
@@ -323,12 +321,12 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::CreateBrowserState(
 }
 
 ProfileAttributesStorageIOS*
-ChromeBrowserStateManagerImpl::GetProfileAttributesStorage() {
+ProfileManagerIOSImpl::GetProfileAttributesStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return &profile_attributes_storage_;
 }
 
-void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationStarted(
+void ProfileManagerIOSImpl::OnChromeBrowserStateCreationStarted(
     ChromeBrowserState* browser_state,
     CreationMode creation_mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -339,7 +337,7 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationStarted(
   }
 }
 
-void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
+void ProfileManagerIOSImpl::OnChromeBrowserStateCreationFinished(
     ChromeBrowserState* browser_state,
     CreationMode creation_mode,
     bool is_new_browser_state,
@@ -391,7 +389,7 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
   }
 }
 
-std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
+std::string ProfileManagerIOSImpl::GetLastUsedBrowserStateName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string last_used_browser_state_name =
       local_state_->GetString(prefs::kLastUsedProfile);
@@ -402,13 +400,13 @@ std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
   return last_used_browser_state_name;
 }
 
-bool ChromeBrowserStateManagerImpl::ProfileWithNameExists(
-    std::string_view name) {
+bool ProfileManagerIOSImpl::ProfileWithNameExists(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return profile_attributes_storage_.HasProfileWithName(name);
 }
 
-bool ChromeBrowserStateManagerImpl::CanCreateBrowserStateWithName(
+// TODO(crbug.com/359516222): Rename this API
+bool ProfileManagerIOSImpl::CanCreateBrowserStateWithName(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/335630301): check whether there is a ChromeBrowserState
@@ -417,7 +415,8 @@ bool ChromeBrowserStateManagerImpl::CanCreateBrowserStateWithName(
   return true;
 }
 
-bool ChromeBrowserStateManagerImpl::CreateBrowserStateWithMode(
+// TODO(crbug.com/359516222): Rename this API
+bool ProfileManagerIOSImpl::CreateBrowserStateWithMode(
     std::string_view name,
     CreationMode creation_mode,
     ChromeBrowserStateLoadedCallback initialized_callback,
@@ -487,8 +486,7 @@ bool ChromeBrowserStateManagerImpl::CreateBrowserStateWithMode(
   return true;
 }
 
-void ChromeBrowserStateManagerImpl::DoFinalInit(
-    ChromeBrowserState* browser_state) {
+void ProfileManagerIOSImpl::DoFinalInit(ChromeBrowserState* browser_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DoFinalInitForServices(browser_state);
 
@@ -504,7 +502,7 @@ void ChromeBrowserStateManagerImpl::DoFinalInit(
   LogNumberOfProfiles(this);
 }
 
-void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
+void ProfileManagerIOSImpl::DoFinalInitForServices(
     ChromeBrowserState* browser_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ios::AccountConsistencyServiceFactory::GetForBrowserState(browser_state);
@@ -517,7 +515,7 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
 
   // Initialization needs to happen after the browser context is available
   // because because IOSChromeMetricsServiceAccessor requires browser_state
-  // to be registered in the ChromeBrowserStateManager.
+  // to be registered in the ProfileManagerIOS.
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideServiceFactory::GetForBrowserState(browser_state)
         ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
@@ -538,4 +536,3 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
 
   PlusAddressServiceFactory::GetForBrowserState(browser_state);
 }
-

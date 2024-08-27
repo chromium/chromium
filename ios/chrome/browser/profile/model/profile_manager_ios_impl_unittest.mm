@@ -31,18 +31,18 @@ namespace {
 const char kProfileName1[] = "Profile1";
 const char kProfileName2[] = "Profile2";
 
-// A scoped ChromeBrowserStateManagerObsever which records which events
-// have been received.
-class ScopedTestChromeBrowserStateManagerObserver final
-    : public ChromeBrowserStateManagerObserver {
+// A scoped ProfileManagerObserverIOS which records which events have been
+// received.
+class ScopedTestProfileManagerObserverIOS final
+    : public ProfileManagerObserverIOS {
  public:
-  explicit ScopedTestChromeBrowserStateManagerObserver(
-      ChromeBrowserStateManager& manager) {
+  explicit ScopedTestProfileManagerObserverIOS(ProfileManagerIOS& manager) {
     scoped_observation_.Observe(&manager);
   }
 
-  ~ScopedTestChromeBrowserStateManagerObserver() final = default;
+  ~ScopedTestProfileManagerObserverIOS() final = default;
 
+  // TODO(crbug.com/359516222): Rename those APIs
   // Accessor for the booleans used to store which method has been called.
   bool on_chrome_browser_state_created_called() const {
     return on_chrome_browser_state_created_called_;
@@ -52,28 +52,26 @@ class ScopedTestChromeBrowserStateManagerObserver final
     return on_chrome_browser_state_loaded_called_;
   }
 
-  // ChromeBrowserStateManagerObserver implementation:
-  void OnChromeBrowserStateManagerDestroyed(
-      ChromeBrowserStateManager* manager) final {
+  // ProfileManagerObserverIOS implementation:
+  void OnChromeBrowserStateManagerDestroyed(ProfileManagerIOS* manager) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
     scoped_observation_.Reset();
   }
 
-  void OnChromeBrowserStateCreated(ChromeBrowserStateManager* manager,
+  void OnChromeBrowserStateCreated(ProfileManagerIOS* manager,
                                    ChromeBrowserState* browser_state) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
     on_chrome_browser_state_created_called_ = true;
   }
 
-  void OnChromeBrowserStateLoaded(ChromeBrowserStateManager* manager,
+  void OnChromeBrowserStateLoaded(ProfileManagerIOS* manager,
                                   ChromeBrowserState* browser_state) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
     on_chrome_browser_state_loaded_called_ = true;
   }
 
  private:
-  base::ScopedObservation<ChromeBrowserStateManager,
-                          ChromeBrowserStateManagerObserver>
+  base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
       scoped_observation_{this};
 
   bool on_chrome_browser_state_created_called_ = false;
@@ -89,11 +87,11 @@ base::OnceCallback<void(T)> CaptureParam(T* output) {
 
 }  // namespace
 
-class ChromeBrowserStateManagerImplTest : public PlatformTest {
+class ProfileManagerIOSImplTest : public PlatformTest {
  public:
-  ChromeBrowserStateManagerImplTest()
-      : browser_state_manager_(GetApplicationContext()->GetLocalState(),
-                               base::CreateUniqueTempDirectoryScopedToTest()) {
+  ProfileManagerIOSImplTest()
+      : profile_manager_(GetApplicationContext()->GetLocalState(),
+                         base::CreateUniqueTempDirectoryScopedToTest()) {
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
 
@@ -105,7 +103,7 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
 
     // Register the objects with the TestingApplicationContext.
     application_context->SetIOSChromeIOThread(chrome_io_.get());
-    application_context->SetChromeBrowserStateManager(&browser_state_manager_);
+    application_context->SetChromeBrowserStateManager(&profile_manager_);
 
     // Initialize the prediction model store (required by some KeyedServices).
     optimization_guide::IOSChromePredictionModelStore::GetInstance()
@@ -130,7 +128,7 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
     std::ignore = chrome_io_->system_url_request_context_getter();
   }
 
-  ~ChromeBrowserStateManagerImplTest() override {
+  ~ProfileManagerIOSImplTest() override {
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
 
@@ -144,19 +142,17 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
     application_context->SetIOSChromeIOThread(nullptr);
   }
 
-  ChromeBrowserStateManagerImpl& browser_state_manager() {
-    return browser_state_manager_;
-  }
+  ProfileManagerIOSImpl& profile_manager() { return profile_manager_; }
 
   // Returns the name of the loaded ChromeBrowserStates.
   std::set<std::string> GetLoadedBrowserStateNames() {
     std::set<std::string> browser_state_names;
     for (ChromeBrowserState* browser_state :
-         browser_state_manager_.GetLoadedBrowserStates()) {
+         profile_manager_.GetLoadedBrowserStates()) {
       CHECK(browser_state);
 
       // The name of the ChromeBrowserState is the basename of its StatePath.
-      // This is an invariant of ChromeBrowserStateManagerImpl.
+      // This is an invariant of ProfileManagerIOSImpl.
       const std::string browser_state_name =
           browser_state->GetBrowserStateName();
 
@@ -171,7 +167,7 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
   std::unique_ptr<IOSChromeIOThread> chrome_io_;
   web::WebTaskEnvironment web_task_environment_{
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED};
-  ChromeBrowserStateManagerImpl browser_state_manager_;
+  ProfileManagerIOSImpl profile_manager_;
 
   // Some KeyedService requires a VariationsIdsProvider to be installed.
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -181,20 +177,20 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
 // Tests that GetLoadedBrowserStates() returns an empty list before the
 // BrowserStates are loaded, and then a list containing at least one
 // BrowserState, and the last used BrowserState is loaded.
-TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates) {
+TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates) {
   // There should be no BrowserState loaded yet.
   EXPECT_EQ(GetLoadedBrowserStateNames(), (std::set<std::string>{}));
 
   // Register an observer and check that it is correctly notified that
   // a ChromeBrowserState is created and then fully loaded.
-  ScopedTestChromeBrowserStateManagerObserver observer(browser_state_manager());
+  ScopedTestProfileManagerObserverIOS observer(profile_manager());
   ASSERT_FALSE(observer.on_chrome_browser_state_created_called());
   ASSERT_FALSE(observer.on_chrome_browser_state_loaded_called());
 
   // Load the BrowserStates, this will implicitly add "Default" as a
   // BrowserState if there is no saved BrowserStates. Thus it should
   // load exactly one BrowserState.
-  browser_state_manager().LoadBrowserStates();
+  profile_manager().LoadBrowserStates();
 
   // Check that the observer has been notified of the creation and load.
   ASSERT_TRUE(observer.on_chrome_browser_state_created_called());
@@ -203,7 +199,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates) {
   // Exactly one ChromeBrowserState must be loaded, it must be the last
   // used ChromeBrowserState with name `kIOSChromeInitialBrowserState`.
   ChromeBrowserState* browser_state =
-      browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
+      profile_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
   EXPECT_EQ(browser_state->GetBrowserStateName(),
@@ -222,7 +218,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates) {
 // but `kLastUsedProfile` is not `kIOSChromeInitialBrowserState` and
 // not in `kLastActiveProfiles`, then the last used ChromeBrowserState
 // is still loaded.
-TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_1) {
+TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates_IncoherentPrefs_1) {
   ASSERT_NE(kProfileName1, kIOSChromeInitialBrowserState);
   ASSERT_NE(kProfileName2, kIOSChromeInitialBrowserState);
 
@@ -234,13 +230,13 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_1) {
   local_state->SetList(prefs::kLastActiveProfiles,
                        base::Value::List().Append(kProfileName2));
 
-  browser_state_manager().LoadBrowserStates();
+  profile_manager().LoadBrowserStates();
 
   // Exactly two ChromeBrowserState must be loaded, named `kProfileName1`
   // and `kProfileName2`, and the last used ChromeBrowserState is the one
   // named `kProfile1`.
   ChromeBrowserState* browser_state =
-      browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
+      profile_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
   EXPECT_EQ(browser_state->GetBrowserStateName(), kProfileName1);
@@ -257,7 +253,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_1) {
 // Specifically, this test case check that if `kLastActiveProfiles` is
 // not set and `kLastUsedProfile` is not `kIOSChromeInitialBrowserState`,
 // then the last used ChromeBrowserState is still loaded.
-TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_2) {
+TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates_IncoherentPrefs_2) {
   ASSERT_NE(kProfileName1, kIOSChromeInitialBrowserState);
   ASSERT_NE(kProfileName2, kIOSChromeInitialBrowserState);
 
@@ -268,12 +264,12 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_2) {
   local_state->SetString(prefs::kLastUsedProfile, kProfileName1);
   local_state->SetList(prefs::kLastActiveProfiles, base::Value::List());
 
-  browser_state_manager().LoadBrowserStates();
+  profile_manager().LoadBrowserStates();
 
   // Exactly one ChromeBrowserState must be loaded, it must be the last
   // used ChromeBrowserState with name `kProfileName1`.
   ChromeBrowserState* browser_state =
-      browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
+      profile_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
   EXPECT_EQ(browser_state->GetBrowserStateName(), kProfileName1);
@@ -291,7 +287,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_2) {
 // set but does not contains the value `kIOSChromeInitialBrowserState` and
 // `kLastUsedProfile` is unset, then the last used ChromeBrowserState
 // is still loaded.
-TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_3) {
+TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates_IncoherentPrefs_3) {
   ASSERT_NE(kProfileName1, kIOSChromeInitialBrowserState);
   ASSERT_NE(kProfileName2, kIOSChromeInitialBrowserState);
 
@@ -303,13 +299,13 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_3) {
   local_state->SetList(prefs::kLastActiveProfiles,
                        base::Value::List().Append(kProfileName2));
 
-  browser_state_manager().LoadBrowserStates();
+  profile_manager().LoadBrowserStates();
 
   // Exactly two ChromeBrowserState must be loaded, named `kProfileName2`
   // and `kIOSChromeInitialBrowserState`, and the last used ChromeBrowserState
   // is the one named `kIOSChromeInitialBrowserState`.
   ChromeBrowserState* browser_state =
-      browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
+      profile_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
   EXPECT_EQ(browser_state->GetBrowserStateName(),
@@ -321,11 +317,10 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_3) {
 
 // Tests that LoadBrowserStateAsync(...) correctly loads a known BrowserState,
 // and that the load is not blocking the main thread.
-TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync) {
+TEST_F(ProfileManagerIOSImplTest, LoadBrowserStateAsync) {
   // Pretends that a BrowserState named `kProfileName1` exists. Required as
   // LoadBrowserStateAsync(...) won't create new BrowserStates.
-  browser_state_manager().GetProfileAttributesStorage()->AddProfile(
-      kProfileName1);
+  profile_manager().GetProfileAttributesStorage()->AddProfile(kProfileName1);
 
   base::RunLoop run_loop;
   ChromeBrowserState* created_browser_state = nullptr;
@@ -336,7 +331,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync) {
   // does not block the sequence).
   {
     base::ScopedDisallowBlocking disallow_blocking;
-    const bool success = browser_state_manager().LoadBrowserStateAsync(
+    const bool success = profile_manager().LoadBrowserStateAsync(
         kProfileName1,
         CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
         CaptureParam(&created_browser_state));
@@ -361,11 +356,10 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync) {
 
 // Tests that calls LoadBrowserStateAsync(...) on a loaded BrowserState return
 // the BrowserState immediately and still don't block the main thread.
-TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Reload) {
+TEST_F(ProfileManagerIOSImplTest, LoadBrowserStateAsync_Reload) {
   // Pretends that a BrowserState named `kProfileName1` exists. Required as
   // LoadBrowserStateAsync(...) won't create new BrowserStates.
-  browser_state_manager().GetProfileAttributesStorage()->AddProfile(
-      kProfileName1);
+  profile_manager().GetProfileAttributesStorage()->AddProfile(kProfileName1);
 
   // Load the BrowserState a first time.
   {
@@ -378,7 +372,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Reload) {
     // does not block the sequence).
     {
       base::ScopedDisallowBlocking disallow_blocking;
-      const bool success = browser_state_manager().LoadBrowserStateAsync(
+      const bool success = profile_manager().LoadBrowserStateAsync(
           kProfileName1,
           CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
           CaptureParam(&created_browser_state));
@@ -413,7 +407,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Reload) {
     // does not block the sequence).
     {
       base::ScopedDisallowBlocking disallow_blocking;
-      const bool success = browser_state_manager().LoadBrowserStateAsync(
+      const bool success = profile_manager().LoadBrowserStateAsync(
           kProfileName1,
           CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
           CaptureParam(&created_browser_state));
@@ -434,12 +428,12 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Reload) {
 }
 
 // Tests that LoadBrowserStateAsync(...) fails to load an unknown BrowserState.
-TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Missing) {
+TEST_F(ProfileManagerIOSImplTest, LoadBrowserStateAsync_Missing) {
   // Ensures that no BrowserState named `kProfileName1` exists. This will
   // cause LoadBrowserStateAsync(...) to fail since it does not create new
   // BrowserStates.
   ASSERT_FALSE(
-      browser_state_manager().GetProfileAttributesStorage()->HasProfileWithName(
+      profile_manager().GetProfileAttributesStorage()->HasProfileWithName(
           kProfileName1));
 
   base::RunLoop run_loop;
@@ -451,7 +445,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Missing) {
   // does not block the sequence).
   {
     base::ScopedDisallowBlocking disallow_blocking;
-    const bool success = browser_state_manager().LoadBrowserStateAsync(
+    const bool success = profile_manager().LoadBrowserStateAsync(
         kProfileName1,
         CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
         CaptureParam(&created_browser_state));
@@ -468,11 +462,11 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Missing) {
 
 // Tests that CreatesBrowserStateAsync(...) creates and load successfully a
 // new BrowserState.
-TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync) {
+TEST_F(ProfileManagerIOSImplTest, CreateBrowserStateAsync) {
   // Ensures that no BrowserState named `kProfileName1` exists. This will
   // cause CreateBrowserStateAsync(...) to create a new ChromeBrowserSatet.
   ASSERT_FALSE(
-      browser_state_manager().GetProfileAttributesStorage()->HasProfileWithName(
+      profile_manager().GetProfileAttributesStorage()->HasProfileWithName(
           kProfileName1));
 
   base::RunLoop run_loop;
@@ -484,7 +478,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync) {
   // does not block the sequence).
   {
     base::ScopedDisallowBlocking disallow_blocking;
-    const bool success = browser_state_manager().CreateBrowserStateAsync(
+    const bool success = profile_manager().CreateBrowserStateAsync(
         kProfileName1,
         CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
         CaptureParam(&created_browser_state));
@@ -509,11 +503,11 @@ TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync) {
 
 // Tests that calling CreatesBrowserStateAsync(...) a second time returns
 // the BrowserState that has already been laoded.
-TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync_Reload) {
+TEST_F(ProfileManagerIOSImplTest, CreateBrowserStateAsync_Reload) {
   // Ensures that no BrowserState named `kProfileName1` exists. This will
   // cause CreateBrowserStateAsync(...) to create a new ChromeBrowserSatet.
   ASSERT_FALSE(
-      browser_state_manager().GetProfileAttributesStorage()->HasProfileWithName(
+      profile_manager().GetProfileAttributesStorage()->HasProfileWithName(
           kProfileName1));
 
   // Load the BrowserState a first time.
@@ -527,7 +521,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync_Reload) {
     // does not block the sequence).
     {
       base::ScopedDisallowBlocking disallow_blocking;
-      const bool success = browser_state_manager().CreateBrowserStateAsync(
+      const bool success = profile_manager().CreateBrowserStateAsync(
           kProfileName1,
           CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
           CaptureParam(&created_browser_state));
@@ -562,7 +556,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync_Reload) {
     // does not block the sequence).
     {
       base::ScopedDisallowBlocking disallow_blocking;
-      const bool success = browser_state_manager().CreateBrowserStateAsync(
+      const bool success = profile_manager().CreateBrowserStateAsync(
           kProfileName1,
           CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
           CaptureParam(&created_browser_state));
@@ -584,37 +578,35 @@ TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync_Reload) {
 
 // Tests that LoadBrowserState(...) correctly loads a known BrowserState in
 // a synchronous fashion (i.e. blocks the main thread).
-TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserState) {
+TEST_F(ProfileManagerIOSImplTest, LoadBrowserState) {
   // Pretends that a BrowserState named `kProfileName1` exists. Required as
   // LoadBrowserState(...) won't create new BrowserStates.
-  browser_state_manager().GetProfileAttributesStorage()->AddProfile(
-      kProfileName1);
+  profile_manager().GetProfileAttributesStorage()->AddProfile(kProfileName1);
 
   // Load the BrowserState synchronously.
   ChromeBrowserState* browser_state =
-      browser_state_manager().LoadBrowserState(kProfileName1);
+      profile_manager().LoadBrowserState(kProfileName1);
 
   // The BrowserState should have been successfully loaded and initialized.
   EXPECT_TRUE(browser_state);
 
   // Calling LoadBrowserState(...) a second time should return the same
   // object.
-  EXPECT_EQ(browser_state,
-            browser_state_manager().LoadBrowserState(kProfileName1));
+  EXPECT_EQ(browser_state, profile_manager().LoadBrowserState(kProfileName1));
 }
 
 // Tests that LoadBrowserState(...) fails to load an unknown BrowserState.
-TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserState_Missing) {
+TEST_F(ProfileManagerIOSImplTest, LoadBrowserState_Missing) {
   // Ensures that no BrowserState named `kProfileName1` exists. This will
   // cause LoadBrowserState(...) to fail since it does not create new
   // BrowserStates.
   ASSERT_FALSE(
-      browser_state_manager().GetProfileAttributesStorage()->HasProfileWithName(
+      profile_manager().GetProfileAttributesStorage()->HasProfileWithName(
           kProfileName1));
 
   // Load the BrowserState synchronously.
   ChromeBrowserState* browser_state =
-      browser_state_manager().LoadBrowserState(kProfileName1);
+      profile_manager().LoadBrowserState(kProfileName1);
 
   // The BrowserState was not loaded nor created.
   EXPECT_FALSE(browser_state);
@@ -622,22 +614,21 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserState_Missing) {
 
 // Tests that CreatesBrowserState(...) creates and load successfully a new
 // BrowserState in a synchronous fashion (i.e. blocks the main thread).
-TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserState) {
+TEST_F(ProfileManagerIOSImplTest, CreateBrowserState) {
   // Ensures that no BrowserState named `kProfileName1` exists. This will
   // cause CreateBrowserStateAsync(...) to create a new ChromeBrowserSatet.
   ASSERT_FALSE(
-      browser_state_manager().GetProfileAttributesStorage()->HasProfileWithName(
+      profile_manager().GetProfileAttributesStorage()->HasProfileWithName(
           kProfileName1));
 
   // Create the BrowserState synchronously.
   ChromeBrowserState* browser_state =
-      browser_state_manager().CreateBrowserState(kProfileName1);
+      profile_manager().CreateBrowserState(kProfileName1);
 
   // The BrowserState should have been successfully loaded and initialized.
   EXPECT_TRUE(browser_state);
 
   // Calling CreateBrowserState(...) a second time should return the same
   // object.
-  EXPECT_EQ(browser_state,
-            browser_state_manager().CreateBrowserState(kProfileName1));
+  EXPECT_EQ(browser_state, profile_manager().CreateBrowserState(kProfileName1));
 }

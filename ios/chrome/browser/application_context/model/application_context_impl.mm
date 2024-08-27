@@ -321,9 +321,8 @@ ApplicationContextImpl::GetChromeBrowserStateManager() {
 ChromeBrowserStateManager* ApplicationContextImpl::GetProfileManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!chrome_browser_state_manager_) {
-    chrome_browser_state_manager_ =
-        std::make_unique<ChromeBrowserStateManagerImpl>(
-            GetLocalState(), base::PathService::CheckedGet(ios::DIR_USER_DATA));
+    chrome_browser_state_manager_ = std::make_unique<ProfileManagerIOSImpl>(
+        GetLocalState(), base::PathService::CheckedGet(ios::DIR_USER_DATA));
   }
   return chrome_browser_state_manager_.get();
 }
