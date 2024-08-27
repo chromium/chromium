@@ -314,10 +314,15 @@ chromium-metrics-reviews@google.com.
 
 <enum name="MobileDefaultBrowserState">
   <int value="0" label="No default"/>
-  <int value="1" label="Chrome: System default"/>
-  <int value="2" label="Chrome: Installed default"/>
-  <int value="3" label="Other: System default"/>
-  <int value="4" label="Other: Installed default"/>
+  <int value="1"
+      label="Chrome currently default; Chrome in original system image"/>
+  <int value="2"
+      label="Chrome currently default; Chrome not in original system image"/>
+  <int value="3"
+      label="Other app currently default; that app in original system image"/>
+  <int value="4"
+      label="Other app currently default; that app not in original system
+             image"/>
 </enum>
 
 <enum name="MobileFreProgress">

@@ -230,7 +230,30 @@ chromium-metrics-reviews@google.com.
   <owner>nyquist@chromium.org</owner>
   <summary>
     Android: Whether or not the device has a default browser and whether or not
-    it is a system installed browser. Logged when a new session is started.
+    it is a part of the original system image. Logged when a new session is
+    started.
+
+    This can be subtly misleading. Read the information below!
+
+    Some manufacturers have their initial setup program configured to install
+    apps rather than have the apps come pre-installed as part of the system
+    image. These apps that are installed during the initial setup will not be
+    counted as coming pre-installed in the system image. For example, on a
+    Samsung Galaxy Tab S7 used for testing, after a factory reset you get to
+    choose whether you want to install Samsung Internet Browser or not. If you
+    say yes and choose it, Samsung Internet Browser will be marked as not part
+    the system image.
+
+    Also, manufacturers may change how they set up devices over time. A
+    manufacturer can go from shipping a browser app as part of the system image
+    to downloading it during the initial setup. As a result, these metrics can
+    change over time even if the user preferences did not.
+
+    Consequently, browsers that are marked as &quot;not part of the system
+    image&quot; does not mean the user had to go out of their way to install
+    those apps. It also means that decisions made by manufacturers (when an app
+    gets installed)--not users--may affect the balance between &quot;in original
+    system image&quot; and &quot;not in original system image&quot;.
   </summary>
 </histogram>
 
