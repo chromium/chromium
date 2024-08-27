@@ -2324,10 +2324,6 @@
       status: {"Android": "stable"},
     },
     {
-      name: "InertDisplayTransition",
-      status: "stable",
-    },
-    {
       name: "InertElementNonEditable",
       status: "stable",
     },

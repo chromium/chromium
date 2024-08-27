@@ -867,8 +867,7 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
   }
 
   if (StyleBaseData* base_data = builder.BaseData()) {
-    if (RuntimeEnabledFeatures::InertDisplayTransitionEnabled() &&
-        base_data->GetBaseComputedStyle()->Display() == EDisplay::kNone) {
+    if (base_data->GetBaseComputedStyle()->Display() == EDisplay::kNone) {
       // Elements which are transitioning to display:none should become inert:
       // https://github.com/w3c/csswg-drafts/issues/8389
       builder.SetIsInert(true);
