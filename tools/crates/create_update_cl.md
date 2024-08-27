@@ -103,8 +103,8 @@ closest to `origin/main`):
       `vet_config.toml.hbs` and regenerate `config.toml` by running
       `tools/crates/run_gnrt.py vendor`.
 1. Follow the cargo vet instructions to inspect diffs and certify the results
-    - Note that special guidelines may apply to delta audits
-      (TODO: Land the [PR here](https://github.com/google/rust-crate-audits/pull/16)).
+    - Note that special guidelines may apply to
+      [delta audits](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#delta-audits-should-describe-the-final-version)
 1. `git add third_party/rust/chromium_crates_io/supply-chain`.
 1. `git commit -m 'cargo vet'`
 1. `git cl upload -m 'cargo vet'`

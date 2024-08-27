@@ -37,7 +37,7 @@ def RunCargo(rust_sysroot, home_dir, cargo_args):
     cargo_env['PATH'] = (f'{bin_dir}{os.pathsep}{cargo_env["PATH"]}'
                          if cargo_env["PATH"] else f'{bin_dir}')
 
-    return RunCommand(['cargo'] + cargo_args, env=cargo_env)
+    return RunCommand(['cargo'] + cargo_args, env=cargo_env, fail_hard=False)
 
 
 def main():
