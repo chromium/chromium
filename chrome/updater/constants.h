@@ -510,6 +510,9 @@ inline constexpr int kErrorMojoRequestRejected = kUpdaterErrorBase + 77;
 // Cannot find the console user, for example when the user is not logged on.
 inline constexpr int kErrorNoConsoleUser = kUpdaterErrorBase + 78;
 
+// Failed to fetch enterprise policies.
+inline constexpr int kErrorPolicyFetchFailed = kUpdaterErrorBase + 79;
+
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
 inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;

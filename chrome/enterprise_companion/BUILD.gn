@@ -248,6 +248,10 @@ static_library("client") {
     "//mojo/public/cpp/platform",
   ]
   public_deps = [ "mojom/" ]
+  visibility = [
+    "//chrome/enterprise_companion:*",
+    "//chrome/updater:*",
+  ]
 }
 
 static_library("installer_paths") {

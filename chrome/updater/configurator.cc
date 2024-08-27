@@ -50,12 +50,14 @@ namespace updater {
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                            scoped_refptr<ExternalConstants> external_constants)
     : prefs_(prefs),
-      policy_service_(base::MakeRefCounted<PolicyService>(external_constants)),
       external_constants_(external_constants),
       persisted_data_(base::MakeRefCounted<PersistedData>(
           GetUpdaterScope(),
           prefs->GetPrefService(),
           std::make_unique<ActivityDataService>(GetUpdaterScope()))),
+      policy_service_(base::MakeRefCounted<PolicyService>(
+          external_constants,
+          persisted_data_->GetUsageStatsEnabled())),
       unzip_factory_(
           base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
       patch_factory_(

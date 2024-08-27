@@ -218,7 +218,8 @@ bool KillProcesses(const base::FilePath::StringType& executable_name,
 scoped_refptr<PolicyService> CreateTestPolicyService() {
   std::vector<scoped_refptr<PolicyManagerInterface>> managers{
       GetDefaultValuesPolicyManager()};
-  return base::MakeRefCounted<PolicyService>(std::move(managers));
+  return base::MakeRefCounted<PolicyService>(std::move(managers),
+                                             /*usage_stats_enabled=*/true);
 }
 
 std::string GetTestName() {

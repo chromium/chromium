@@ -134,20 +134,24 @@ PolicyService::PolicyManagers::PolicyManagers(
 PolicyService::PolicyManagers::~PolicyManagers() = default;
 
 PolicyService::PolicyService(
-    std::vector<scoped_refptr<PolicyManagerInterface>> managers)
-    : policy_managers_(SortManagers(std::move(managers))) {}
+    std::vector<scoped_refptr<PolicyManagerInterface>> managers,
+    bool usage_stats_enabled)
+    : policy_managers_(SortManagers(std::move(managers))),
+      usage_stats_enabled_(usage_stats_enabled) {}
 
 // The policy managers are initialized without taking the Group Policy critical
 // section here, by passing `false` for `should_take_policy_critical_section`,
 // to avoid blocking the main sequence. Later in `FetchPoliciesDone`, the
 // policies are reloaded with the critical section lock.
 PolicyService::PolicyService(
-    scoped_refptr<ExternalConstants> external_constants)
+    scoped_refptr<ExternalConstants> external_constants,
+    bool usage_stats_enabled)
     : policy_managers_(SortManagers(CreateManagers(
           /*should_take_policy_critical_section=*/false,
           external_constants,
           CreateDMPolicyManager(external_constants->IsMachineManaged())))),
-      external_constants_(external_constants) {
+      external_constants_(external_constants),
+      usage_stats_enabled_(usage_stats_enabled) {
   VLOG(1) << "Current effective policies:" << std::endl
           << GetAllPoliciesAsString();
 }
@@ -170,11 +174,12 @@ void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
   }
 
   fetch_policies_callback_ = std::move(callback);
-
-  auto fetcher = base::MakeRefCounted<PolicyFetcher>(
-      external_constants_->DeviceManagementURL(),
-      PolicyServiceProxyConfiguration::Get(this),
-      external_constants_->IsMachineManaged());
+  auto fetcher = base::MakeRefCounted<FallbackPolicyFetcher>(
+      CreateOutOfProcessPolicyFetcher(usage_stats_enabled_,
+                                      external_constants_->IsMachineManaged()),
+      CreateInProcessPolicyFetcher(external_constants_->DeviceManagementURL(),
+                                   PolicyServiceProxyConfiguration::Get(this),
+                                   external_constants_->IsMachineManaged()));
   fetcher->FetchPolicies(
       base::BindOnce(&PolicyService::FetchPoliciesDone, this, fetcher));
 }
@@ -693,8 +698,12 @@ PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration() = default;
 PolicyServiceProxyConfiguration::~PolicyServiceProxyConfiguration() = default;
 PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration(
     const PolicyServiceProxyConfiguration&) = default;
+PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration(
+    PolicyServiceProxyConfiguration&&) = default;
 PolicyServiceProxyConfiguration& PolicyServiceProxyConfiguration::operator=(
     const PolicyServiceProxyConfiguration&) = default;
+PolicyServiceProxyConfiguration& PolicyServiceProxyConfiguration::operator=(
+    PolicyServiceProxyConfiguration&&) = default;
 
 std::optional<PolicyServiceProxyConfiguration>
 PolicyServiceProxyConfiguration::Get(

@@ -95,9 +95,10 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
         manager_names;
   };
 
-  explicit PolicyService(
-      std::vector<scoped_refptr<PolicyManagerInterface>> managers);
-  explicit PolicyService(scoped_refptr<ExternalConstants> external_constants);
+  PolicyService(std::vector<scoped_refptr<PolicyManagerInterface>> managers,
+                bool usage_stats_enabled);
+  PolicyService(scoped_refptr<ExternalConstants> external_constants,
+                bool usage_stats_enabled);
   PolicyService(const PolicyService&) = delete;
   PolicyService& operator=(const PolicyService&) = delete;
 
@@ -196,6 +197,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   std::set<std::string> GetAppsWithPolicy() const;
 
   base::OnceCallback<void(int)> fetch_policies_callback_;
+  const bool usage_stats_enabled_;
 };
 
 // Decouples the proxy configuration from `PolicyService`.
@@ -203,9 +205,10 @@ struct PolicyServiceProxyConfiguration {
   PolicyServiceProxyConfiguration();
   ~PolicyServiceProxyConfiguration();
   PolicyServiceProxyConfiguration(const PolicyServiceProxyConfiguration&);
+  PolicyServiceProxyConfiguration(PolicyServiceProxyConfiguration&&);
   PolicyServiceProxyConfiguration& operator=(
       const PolicyServiceProxyConfiguration&);
-
+  PolicyServiceProxyConfiguration& operator=(PolicyServiceProxyConfiguration&&);
   static std::optional<PolicyServiceProxyConfiguration> Get(
       scoped_refptr<PolicyService> policy_service);
 
