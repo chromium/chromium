@@ -24,12 +24,8 @@ void RunAndReschedule() {
 }  // namespace
 
 void SchedulePeriodicTasks() {
-  base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-       base::WithBaseSyncPrimitives(),
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
-      ->PostDelayedTask(FROM_HERE, base::BindOnce(&RunAndReschedule),
-                        base::Seconds(19));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&RunAndReschedule), base::Seconds(19));
 }
 
 }  // namespace updater

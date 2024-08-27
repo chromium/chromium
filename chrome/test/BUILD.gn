@@ -7001,6 +7001,14 @@ test("unit_tests") {
     deps += [ "//chrome/browser/enterprise/platform_auth:test_utils" ]
   }
 
+  if (is_win || is_mac) {
+    sources += [ "../browser/updater/browser_updater_client_unittest.cc" ]
+    deps += [
+      "//chrome/browser/updater:browser_updater_client",
+      "//chrome/updater:browser_sources",
+    ]
+  }
+
   if (is_win) {
     assert(toolkit_views)
     sources += [

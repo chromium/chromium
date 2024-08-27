@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/registration_data.h"
@@ -26,7 +27,12 @@ class Version;
 class BrowserUpdaterClient
     : public base::RefCountedThreadSafe<BrowserUpdaterClient> {
  public:
+  // Must be called on the program's main sequence.
   static scoped_refptr<BrowserUpdaterClient> Create(
+      updater::UpdaterScope scope);
+  static scoped_refptr<BrowserUpdaterClient> Create(
+      base::RepeatingCallback<scoped_refptr<updater::UpdateService>()>
+          proxy_provider,
       updater::UpdaterScope scope);
 
   explicit BrowserUpdaterClient(
@@ -88,7 +94,13 @@ class BrowserUpdaterClient
       base::OnceCallback<void(bool)> callback,
       const std::vector<updater::UpdateService::AppState>& apps);
 
+  template <updater::UpdaterScope scope>
+  static scoped_refptr<BrowserUpdaterClient> GetClient(
+      base::RepeatingCallback<scoped_refptr<updater::UpdateService>()>
+          proxy_provider);
+
   scoped_refptr<updater::UpdateService> update_service_;
+  base::WeakPtrFactory<BrowserUpdaterClient> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_H_
