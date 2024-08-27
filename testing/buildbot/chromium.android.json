@@ -13706,6 +13706,50 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
         "description": "Run with android_33_google_apis_x64",
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "android_blink_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_33_google_apis_x64",
+              "path": ".android_emulator/android_33_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_33_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
+        },
+        "test": "chrome_public_wpt",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
+      },
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
+        ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13738,6 +13782,50 @@
         },
         "test": "private_code_failure_test",
         "test_id_prefix": "ninja://build/private_code_test:private_code_failure_test/"
+      },
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
+        ],
+        "description": "Run with android_33_google_apis_x64",
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "webview_blink_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_33_google_apis_x64",
+              "path": ".android_emulator/android_33_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_33_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
+        },
+        "test": "trichrome_webview_wpt_64",
+        "test_id_prefix": "ninja://android_webview/test:trichrome_webview_wpt_64/"
       }
     ]
   },

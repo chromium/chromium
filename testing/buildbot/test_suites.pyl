@@ -138,6 +138,38 @@
       },
     },
 
+    'android_rel_isolated_scripts': {
+      'android_blink_wpt_tests': {
+        'test': 'chrome_public_wpt',
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 4,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+        'experiment_percentage': 100,
+      },
+      'private_code_failure_test': {},
+      'webview_blink_wpt_tests': {
+        'test': 'trichrome_webview_wpt_64',
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 4,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+        'experiment_percentage': 100,
+      },
+    },
+
     'android_smoke_tests': {
       'chrome_public_smoke_test': {},
     },

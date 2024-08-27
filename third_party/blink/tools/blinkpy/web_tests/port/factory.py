@@ -226,6 +226,7 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        action='store_false',
                        dest='use_xvfb',
                        help='Do not run tests with Xvfb')
+    group.add_argument('--coverage-dir', type=str, help=argparse.SUPPRESS)
     add_common_wpt_options(group)
     if not rwt:
         group.add_argument(

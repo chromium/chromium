@@ -556,7 +556,7 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_13_emulator_gtests',
-          'isolated_scripts': 'private_code_failure_test_isolated_scripts',
+          'isolated_scripts': 'android_rel_isolated_scripts',
         }
       },
       'android-14-arm64-rel': {

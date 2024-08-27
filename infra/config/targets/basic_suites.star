@@ -4548,6 +4548,29 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "android_rel_isolated_scripts",
+    tests = {
+        "private_code_failure_test": targets.legacy_test_config(),
+        "android_blink_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+            # TODO(crbug.com/40279492): Remove experimental status once this
+            # suite is stable on CQ and gardened CI.
+            experiment_percentage = 100,
+        ),
+        "webview_blink_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+            # TODO(crbug.com/40279492): Remove experimental status once this
+            # suite is stable on CQ and gardened CI.
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "pytype_tests",
     tests = {
         "blink_pytype": targets.legacy_test_config(),
