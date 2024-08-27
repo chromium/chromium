@@ -534,13 +534,17 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        }},
       {R"json({"max_event_level_channel_capacity_navigation":"0.2"})json",
        false,
-       [](AttributionConfig& c) {
-         c.event_level_limit.max_navigation_info_gain = 0.2;
-       }},
+       [](AttributionInteropConfig& c) { c.max_navigation_info_gain = 0.2; }},
       {R"json({"max_event_level_channel_capacity_event":"0.2"})json", false,
-       [](AttributionConfig& c) {
-         c.event_level_limit.max_event_info_gain = 0.2;
+       [](AttributionInteropConfig& c) { c.max_event_info_gain = 0.2; }},
+      {R"json({"max_event_level_channel_capacity_scopes_navigation":"0.2"})json",
+       false,
+       [](AttributionInteropConfig& c) {
+         c.max_scopes_navigation_info_gain = 0.2;
        }},
+      {R"json({"max_event_level_channel_capacity_scopes_event":"0.2"})json",
+       false,
+       [](AttributionInteropConfig& c) { c.max_scopes_event_info_gain = 0.2; }},
       {R"json({"max_trigger_state_cardinality":"4294967295"})json", false,
        [](AttributionInteropConfig& c) {
          c.max_trigger_state_cardinality = 4294967295;
@@ -583,6 +587,8 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "max_event_level_reports_per_destination":"10",
         "max_event_level_channel_capacity_navigation":"5.5",
         "max_event_level_channel_capacity_event":"0.5",
+        "max_event_level_channel_capacity_scopes_navigation":"5.55",
+        "max_event_level_channel_capacity_scopes_event":"0.55",
         "max_trigger_state_cardinality":"10",
         "max_aggregatable_reports_per_destination":"10",
         "aggregatable_report_min_delay":"10",
@@ -606,8 +612,10 @@ TEST(AttributionInteropParserTest, ValidConfig) {
 
          config.max_event_level_epsilon = 0.2;
          c.event_level_limit.max_reports_per_destination = 10;
-         c.event_level_limit.max_navigation_info_gain = 5.5;
-         c.event_level_limit.max_event_info_gain = 0.5;
+         config.max_navigation_info_gain = 5.5;
+         config.max_event_info_gain = 0.5;
+         config.max_scopes_navigation_info_gain = 5.55;
+         config.max_scopes_event_info_gain = 0.55;
          config.max_trigger_state_cardinality = 10;
 
          c.aggregate_limit.max_reports_per_destination = 10;

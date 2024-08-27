@@ -78,6 +78,9 @@ Status StoreSourceResult::status() const {
           [](ExceedsMaxChannelCapacity) {
             return Status::kExceedsMaxChannelCapacity;
           },
+          [](ExceedsMaxScopesChannelCapacity) {
+            return Status::kExceedsMaxScopesChannelCapacity;
+          },
           [](ExceedsMaxTriggerStateCardinality) {
             return Status::kExceedsMaxTriggerStateCardinality;
           },

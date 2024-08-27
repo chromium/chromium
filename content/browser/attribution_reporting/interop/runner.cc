@@ -44,6 +44,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/features.h"
@@ -280,12 +281,14 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
   GetRandomizedResponseResult GetRandomizedResponse(
       const attribution_reporting::mojom::SourceType source_type,
       const attribution_reporting::TriggerSpecs& trigger_specs,
-      const attribution_reporting::EventLevelEpsilon epsilon) override {
+      const attribution_reporting::EventLevelEpsilon epsilon,
+      const std::optional<attribution_reporting::AttributionScopesData>&
+          scopes_data) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     ASSIGN_OR_RETURN(auto response_data,
                      AttributionResolverDelegateImpl::GetRandomizedResponse(
-                         source_type, trigger_specs, epsilon));
+                         source_type, trigger_specs, epsilon, scopes_data));
 
     auto it = randomized_responses_.find(base::Time::Now());
     if (it == randomized_responses_.end()) {
@@ -462,6 +465,19 @@ RunAttributionInteropSimulation(
   attribution_reporting::ScopedMaxTriggerStateCardinalityForTesting
       scoped_max_trigger_state_cardinality(
           run.config.max_trigger_state_cardinality);
+
+  attribution_reporting::ScopedMaxNavigationChannelCapacityForTesting
+      scoped_max_navigation_info_gain(run.config.max_navigation_info_gain);
+
+  attribution_reporting::ScopedMaxEventChannelCapacityForTesting
+      scoped_max_event_info_gain(run.config.max_event_info_gain);
+
+  attribution_reporting::ScopedMaxScopesNavigationChannelCapacityForTesting
+      scoped_max_scopes_navigation_info_gain(
+          run.config.max_scopes_navigation_info_gain);
+
+  attribution_reporting::ScopedMaxScopesEventChannelCapacityForTesting
+      scoped_max_scopes_event_info_gain(run.config.max_scopes_event_info_gain);
 
   // Prerequisites for using an environment with mock time.
   BrowserTaskEnvironment task_environment(

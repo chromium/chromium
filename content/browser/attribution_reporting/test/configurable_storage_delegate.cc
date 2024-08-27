@@ -121,7 +121,8 @@ AttributionResolverDelegate::GetRandomizedResponseResult
 ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::TriggerSpecs&,
-    attribution_reporting::EventLevelEpsilon) {
+    attribution_reporting::EventLevelEpsilon,
+    const std::optional<attribution_reporting::AttributionScopesData>&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (exceeds_channel_capacity_limit_) {
     return base::unexpected(attribution_reporting::RandomizedResponseError::

@@ -4,7 +4,10 @@
 
 #include "components/attribution_reporting/privacy_math.h"
 
+#include <stdint.h>
+
 #include <limits>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -13,7 +16,10 @@
 
 #include "base/timer/lap_timer.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,15 +35,26 @@ struct TriggerConfig {
   int trigger_data_cardinality;
 };
 
-using CollapsibleTriggerConfig = std::tuple</*collapse=*/bool, TriggerConfig>;
+struct ScopesConfig {
+  uint32_t attribution_scope_limit;
+  uint32_t max_event_states;
+};
 
-std::string StoryName(const CollapsibleTriggerConfig& p) {
+using ScopedCollapsibleTriggerConfig =
+    std::tuple</*collapse=*/bool, TriggerConfig, std::optional<ScopesConfig>>;
+
+std::string StoryName(const ScopedCollapsibleTriggerConfig& p) {
   std::stringstream name;
 
   const TriggerConfig& tc = std::get<1>(p);
   name << tc.max_reports << "r_"  //
        << tc.num_windows << "w_"  //
        << tc.trigger_data_cardinality << "t";
+
+  if (const std::optional<ScopesConfig>& scopes = std::get<2>(p)) {
+    name << "_" << scopes->attribution_scope_limit << "s_"  //
+         << scopes->max_event_states << "m_scoped";
+  }
 
   if (std::get<0>(p)) {
     name << "_collapsed";
@@ -70,21 +87,50 @@ constexpr TriggerConfig kTriggerConfigs[] = {
     },
 };
 
+constexpr std::optional<ScopesConfig> kScopeConfigs[] = {
+    // null scopes
+    std::nullopt,
+    // simple scopes
+    ScopesConfig{
+        .attribution_scope_limit = 3,
+        .max_event_states = 3,
+    },
+    ScopesConfig{
+        .attribution_scope_limit = 5,
+        .max_event_states = std::numeric_limits<uint32_t>::max(),
+    },
+    ScopesConfig{
+        .attribution_scope_limit = 10,
+        .max_event_states = std::numeric_limits<uint32_t>::max(),
+    },
+    ScopesConfig{
+        .attribution_scope_limit = 20,
+        .max_event_states = std::numeric_limits<uint32_t>::max(),
+    },
+};
+
 class PrivacyMathPerfTest
     : public testing::Test,
-      public testing::WithParamInterface<CollapsibleTriggerConfig> {
+      public testing::WithParamInterface<ScopedCollapsibleTriggerConfig> {
  protected:
   template <typename Func>
   void Run(const std::string& metric_basename, Func&& func) const {
-    const auto& [collapse, tc] = GetParam();
+    const auto& [collapse, tc, sc] = GetParam();
     const TriggerSpecs specs = SpecsFromWindowList(
         std::vector<int>(/*count=*/tc.trigger_data_cardinality,
                          /*value=*/tc.num_windows),
         collapse, MaxEventLevelReports(tc.max_reports));
+    std::optional<AttributionScopesData> scopes;
+    if (sc.has_value()) {
+      scopes = AttributionScopesData::Create(AttributionScopesSet({"1"}),
+                                             sc->attribution_scope_limit,
+                                             sc->max_event_states);
+      ASSERT_TRUE(scopes);
+    }
 
     base::LapTimer timer;
     do {
-      auto result = func(specs);
+      auto result = func(specs, scopes);
       ::benchmark::DoNotOptimize(result);
       timer.NextLap();
     } while (!timer.HasTimeLimitExpired());
@@ -97,24 +143,42 @@ class PrivacyMathPerfTest
 };
 
 TEST_P(PrivacyMathPerfTest, NumStates) {
-  Run("AttributionReporting.NumStates", &GetNumStates);
+  if (std::get<2>(GetParam())) {
+    GTEST_SKIP();
+  }
+  Run("AttributionReporting.NumStates",
+      [](const TriggerSpecs& specs,
+         const std::optional<AttributionScopesData>& scopes) {
+        return GetNumStates(specs);
+      });
 }
 
 TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
-  Run("AttributionReporting.RandomizedResponse", [](const TriggerSpecs& specs) {
-    return DoRandomizedResponse(
-        specs,
-        /*epsilon=*/0,
-        /*max_channel_capacity=*/std::numeric_limits<double>::infinity());
-  });
+  attribution_reporting::ScopedMaxNavigationChannelCapacityForTesting
+      scoped_max_navigation_channel_capacity(
+          std::numeric_limits<double>::infinity());
+
+  attribution_reporting::ScopedMaxScopesNavigationChannelCapacityForTesting
+      scoped_max_scopes_navigation_channel_capacity(
+          std::numeric_limits<double>::infinity());
+
+  Run("AttributionReporting.RandomizedResponse",
+      [](const TriggerSpecs& specs,
+         const std::optional<AttributionScopesData>& scopes) {
+        return DoRandomizedResponse(
+            specs,
+            /*epsilon=*/0,
+            /*source_type=*/mojom::SourceType::kNavigation, scopes);
+      });
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     PrivacyMathPerfTest,
     testing::Combine(/*collapse=*/testing::Bool(),
-                     testing::ValuesIn(kTriggerConfigs)),
-    [](const testing::TestParamInfo<CollapsibleTriggerConfig>& info) {
+                     testing::ValuesIn(kTriggerConfigs),
+                     testing::ValuesIn(kScopeConfigs)),
+    [](const testing::TestParamInfo<ScopedCollapsibleTriggerConfig>& info) {
       return StoryName(info.param);
     });
 

@@ -69,6 +69,11 @@ class CONTENT_EXPORT StoreSourceResult {
     explicit ExceedsMaxChannelCapacity(double limit) : limit(limit) {}
   };
 
+  struct ExceedsMaxScopesChannelCapacity {
+    double limit;
+    explicit ExceedsMaxScopesChannelCapacity(double limit) : limit(limit) {}
+  };
+
   struct ExceedsMaxTriggerStateCardinality {
     uint32_t limit;
     explicit ExceedsMaxTriggerStateCardinality(uint32_t limit) : limit(limit) {}
@@ -85,6 +90,7 @@ class CONTENT_EXPORT StoreSourceResult {
                                DestinationBothLimitsReached,
                                ReportingOriginsPerSiteLimitReached,
                                ExceedsMaxChannelCapacity,
+                               ExceedsMaxScopesChannelCapacity,
                                ExceedsMaxTriggerStateCardinality,
                                DestinationPerDayReportingLimitReached>;
 

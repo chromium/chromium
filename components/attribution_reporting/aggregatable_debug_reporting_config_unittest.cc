@@ -42,7 +42,7 @@ using ::testing::Pair;
 using ::testing::Property;
 using ::testing::SizeIs;
 
-constexpr size_t kNumSourceDebugDataTypes = 13;
+constexpr size_t kNumSourceDebugDataTypes = 14;
 constexpr size_t kNumTriggerDebugDataTypes = 21;
 
 TEST(AggregatableDebugReportingConfig, Parse) {
@@ -834,6 +834,10 @@ TEST(AggregatableDebugReportingConfig, SourceDebugDataTypes) {
       {
           "source-reporting-origin-per-site-limit",
           DebugDataType::kSourceReportingOriginPerSiteLimit,
+      },
+      {
+          "source-scopes-channel-capacity-limit",
+          DebugDataType::kSourceScopesChannelCapacityLimit,
       },
       {
           "source-storage-limit",

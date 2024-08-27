@@ -20,6 +20,8 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -327,6 +329,77 @@ TEST(PrivacyMathTest, ComputeChannelCapacity) {
   }
 }
 
+TEST(PrivacyMathTest, ComputeChannelCapacityWithScopes) {
+  const struct {
+    uint32_t num_states;
+    uint32_t max_event_states;
+    uint32_t attribution_scopes_limit;
+    double expected;
+  } kTestCases[] = {
+      {
+          .num_states = 2925,
+          .max_event_states = 5,
+          .attribution_scopes_limit = 20,
+          .expected = 11.560332834212442,
+      },
+      {
+          .num_states = 2925,
+          .max_event_states = 3,
+          .attribution_scopes_limit = 1,
+          .expected = 11.51422090935813,
+      },
+      {
+          .num_states = 2925,
+          .max_event_states = 3,
+          .attribution_scopes_limit = 5,
+          .expected = 11.520127550324851,
+      },
+      {
+          .num_states = 2925,
+          .max_event_states = 165,
+          .attribution_scopes_limit = 5,
+          .expected = 11.807757403589267,
+      },
+      {
+          .num_states = 300000,
+          .max_event_states = 2,
+          .attribution_scopes_limit = 2,
+          .expected = 18.194612593092849,
+      },
+      {
+          .num_states = 300000,
+          .max_event_states = 3,
+          .attribution_scopes_limit = 3,
+          .expected = 18.194631828770252,
+      },
+      {
+          .num_states = 300000,
+          .max_event_states = 4,
+          .attribution_scopes_limit = 4,
+          .expected = 18.194660681805477,
+      },
+      {
+          .num_states = 300000,
+          .max_event_states = 5,
+          .attribution_scopes_limit = 5,
+          .expected = 18.194699151621514,
+      },
+      {
+          .num_states = 1,
+          .max_event_states = 5,
+          .attribution_scopes_limit = 5,
+          .expected = 4.3923174227787607,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.expected,
+              internal::ComputeChannelCapacityScopes(
+                  test_case.num_states, test_case.max_event_states,
+                  test_case.attribution_scopes_limit));
+  }
+}
+
 TEST(PrivacyMathTest, GetFakeReportsForSequenceIndex) {
   const struct {
     SourceType source_type;
@@ -412,12 +485,11 @@ void RunRandomFakeReportsTest(const TriggerSpecs& specs,
   for (int i = 0; i < num_samples; i++) {
     // Use epsilon = 0 to ensure that random data is always sampled from the RR
     // mechanism.
-    ASSERT_OK_AND_ASSIGN(
-        auto response,
-        internal::DoRandomizedResponseWithCache(
-            specs,
-            /*epsilon=*/0, map,
-            /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
+    ASSERT_OK_AND_ASSIGN(auto response,
+                         internal::DoRandomizedResponseWithCache(
+                             specs,
+                             /*epsilon=*/0, map, SourceType::kNavigation,
+                             /*scopes_data=*/std::nullopt));
     ASSERT_TRUE(response.response().has_value());
     auto [it, _] =
         output_counts.try_emplace(std::move(*response.response()), 0);
@@ -620,12 +692,11 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
   do {
     internal::StateMap map;
 
-    ASSERT_OK_AND_ASSIGN(
-        auto response_data,
-        internal::DoRandomizedResponseWithCache(
-            kSpecs,
-            /*epsilon=*/0, map,
-            /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
+    ASSERT_OK_AND_ASSIGN(auto response_data,
+                         internal::DoRandomizedResponseWithCache(
+                             kSpecs,
+                             /*epsilon=*/0, map, SourceType::kNavigation,
+                             /*scopes_data=*/std::nullopt));
     response = response_data.response();
   } while (!response.has_value() || response->empty());
 
@@ -633,15 +704,46 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
 }
 
 TEST(PrivacyMathTest, RandomizedResponse_ExceedsChannelCapacity) {
+  attribution_reporting::ScopedMaxNavigationChannelCapacityForTesting
+      scoped_max_navigation_channel_capacity(1u);
+
   auto channel_capacity_response = DoRandomizedResponse(
       TriggerSpecs(SourceType::kNavigation, EventReportWindows(),
                    /*max_reports=*/MaxEventLevelReports(1)),
-      /*epsilon=*/1,
-      /*max_channel_capacity=*/0);
+      /*epsilon=*/14, SourceType::kNavigation,
+      /*scopes_data=*/std::nullopt);
 
   EXPECT_THAT(channel_capacity_response,
               base::test::ErrorIs(
                   RandomizedResponseError::kExceedsChannelCapacityLimit));
+}
+
+TEST(PrivacyMathTest, RandomizedResponse_ExceedsScopesChannelCapacity) {
+  // Navigation
+  auto channel_capacity_response = DoRandomizedResponse(
+      TriggerSpecs(SourceType::kNavigation, EventReportWindows(),
+                   /*max_reports=*/MaxEventLevelReports(1)),
+      /*epsilon=*/14, SourceType::kNavigation,
+      AttributionScopesData::Create(AttributionScopesSet({"1"}),
+                                    /*attribution_scope_limit=*/100u,
+                                    /*max_event_states=*/100u));
+
+  EXPECT_THAT(channel_capacity_response,
+              base::test::ErrorIs(
+                  RandomizedResponseError::kExceedsScopesChannelCapacityLimit));
+
+  // Event
+  channel_capacity_response = DoRandomizedResponse(
+      TriggerSpecs(SourceType::kEvent, EventReportWindows(),
+                   /*max_reports=*/MaxEventLevelReports(1)),
+      /*epsilon=*/14, SourceType::kEvent,
+      AttributionScopesData::Create(AttributionScopesSet({"1"}),
+                                    /*attribution_scope_limit=*/100u,
+                                    /*max_event_states=*/3u));
+
+  EXPECT_THAT(channel_capacity_response,
+              base::test::ErrorIs(
+                  RandomizedResponseError::kExceedsScopesChannelCapacityLimit));
 }
 
 // Regression test for http://crbug.com/1504144 in which empty specs cause an
@@ -672,14 +774,12 @@ TEST(PrivacyMathTest, UnaryChannel) {
     ASSERT_TRUE(num_states.has_value());
     EXPECT_EQ(1u, *num_states);
 
-    EXPECT_EQ(
-        RandomizedResponseData(
-            /*rate=*/1,
-            /*response=*/std::vector<FakeEventLevelReport>()),
-        DoRandomizedResponse(
-            test_case.trigger_specs,
-            /*epsilon=*/0,
-            /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
+    EXPECT_EQ(RandomizedResponseData(
+                  /*rate=*/1,
+                  /*response=*/std::vector<FakeEventLevelReport>()),
+              DoRandomizedResponse(test_case.trigger_specs,
+                                   /*epsilon=*/0, SourceType::kNavigation,
+                                   /*scopes_data=*/std::nullopt));
   }
 }
 

@@ -31,6 +31,7 @@ using ::attribution_reporting::mojom::DebugDataType;
   X(kSourceReportingOriginLimit, "source-reporting-origin-limit")              \
   X(kSourceReportingOriginPerSiteLimit,                                        \
     "source-reporting-origin-per-site-limit")                                  \
+  X(kSourceScopesChannelCapacityLimit, "source-scopes-channel-capacity-limit") \
   X(kSourceStorageLimit, "source-storage-limit")                               \
   X(kSourceSuccess, "source-success")                                          \
   X(kSourceTriggerStateCardinalityLimit,                                       \

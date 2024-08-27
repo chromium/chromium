@@ -761,6 +761,8 @@ const sourceRegistrationStatusText:
           'Rejected: trigger state cardinality exceeds limit',
       [StoreSourceResult.kDestinationPerDayReportingLimitReached]:
           'Rejected: destination per day reporting limit reached',
+      [StoreSourceResult.kExceedsMaxScopesChannelCapacity]:
+          'Rejected: scopes channel capacity exceeds max allowed',
     };
 
 const commonResult = {

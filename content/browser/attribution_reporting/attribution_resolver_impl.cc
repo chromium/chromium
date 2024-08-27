@@ -183,16 +183,23 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
 
   ASSIGN_OR_RETURN(
       const auto randomized_response_data,
-      delegate_->GetRandomizedResponse(common_info.source_type(),
-                                       reg.trigger_specs,
-                                       reg.event_level_epsilon),
+      delegate_->GetRandomizedResponse(
+          common_info.source_type(), reg.trigger_specs, reg.event_level_epsilon,
+          reg.attribution_scopes_data),
       [&](auto error) -> StoreSourceResult {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
         switch (error) {
           case attribution_reporting::RandomizedResponseError::
               kExceedsChannelCapacityLimit:
             return make_result(StoreSourceResult::ExceedsMaxChannelCapacity(
-                delegate_->GetMaxChannelCapacity(common_info.source_type())));
+                attribution_reporting::GetMaxChannelCapacity(
+                    common_info.source_type())));
+          case attribution_reporting::RandomizedResponseError::
+              kExceedsScopesChannelCapacityLimit:
+            return make_result(
+                StoreSourceResult::ExceedsMaxScopesChannelCapacity(
+                    attribution_reporting::GetMaxChannelCapacityScopes(
+                        common_info.source_type())));
           case attribution_reporting::RandomizedResponseError::
               kExceedsTriggerStateCardinalityLimit:
             return make_result(

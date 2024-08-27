@@ -478,6 +478,7 @@ chromium-metrics-reviews@google.com.
              in 2023/10."/>
   <int value="13" label="Excessive trigger state cardinality"/>
   <int value="14" label="Excessive destinations (per reporting site per day)"/>
+  <int value="15" label="Excessive scopes channel capacity"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/store_source_result.mojom:StoreSourceResult) -->
@@ -583,6 +584,7 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="source-channel-capacity-limit"/>
   <int value="33" label="source-trigger-state-cardinality-limit"/>
   <int value="36" label="source-destination-per-day-rate-limit"/>
+  <int value="38" label="source-scopes-channel-capacity-limit"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/debug_types.mojom:DebugDataType) -->

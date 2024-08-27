@@ -20,6 +20,7 @@
 #include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
@@ -169,13 +170,14 @@ AttributionResolverDelegate::GetRandomizedResponseResult
 AttributionResolverDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
     const attribution_reporting::TriggerSpecs& trigger_specs,
-    attribution_reporting::EventLevelEpsilon epsilon) {
+    attribution_reporting::EventLevelEpsilon epsilon,
+    const std::optional<attribution_reporting::AttributionScopesData>&
+        scopes_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ASSIGN_OR_RETURN(auto response,
                    attribution_reporting::DoRandomizedResponse(
-                       trigger_specs, epsilon,
-                       GetMaxChannelCapacity(source_type)));
+                       trigger_specs, epsilon, source_type, scopes_data));
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:
