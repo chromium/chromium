@@ -82,6 +82,7 @@
           canPerformTabsClosureAnimation:_canPerformTabsClosureAnimation];
 
   _viewController = [[QuickDeleteViewController alloc] init];
+  _viewController.modalPresentationStyle = UIModalPresentationFormSheet;
   _mediator.consumer = _viewController;
   _mediator.presentationHandler = self;
 
