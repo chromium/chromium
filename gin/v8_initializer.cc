@@ -283,6 +283,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     SetV8FlagsFormatted("--memory-reducer-gc-count=%i",
                         features::kV8MemoryReducerGCCount.Get());
   }
+  SetV8FlagsIfOverridden(features::kV8IncrementalMarkingStartUserVisible,
+                         "--incremental-marking-start-user-visible",
+                         "--no-incremental-marking-start-user-visible");
   SetV8FlagsIfOverridden(features::kV8IdleGcOnContextDisposal,
                          "--idle-gc-on-context-disposal",
                          "--no-idle-gc-on-context-disposal");

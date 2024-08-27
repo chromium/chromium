@@ -243,6 +243,10 @@ BASE_FEATURE(kV8UseOriginalMessageForStackTrace,
              ("V8UseOriginalMessageForStackTrace"),
              kFeatureDefaultStateControlledByV8);
 
+BASE_FEATURE(kV8IncrementalMarkingStartUserVisible,
+             ("V8IncrementalMarkingStartUserVisible"),
+             kFeatureDefaultStateControlledByV8);
+
 BASE_FEATURE(kV8IdleGcOnContextDisposal,
              ("V8IdleGcOnContextDisposal"),
              kFeatureDefaultStateControlledByV8);
