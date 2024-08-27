@@ -2028,6 +2028,7 @@ static_library("ui") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/permission_bubble",
       "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/toasts:impl",
       "//chrome/browser/ui/toasts:toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
@@ -2150,6 +2151,7 @@ static_library("ui") {
       # //c/b/iu/tab_modal_confirm_dialog_delegate.h.
       "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/toasts:impl",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome:impl",

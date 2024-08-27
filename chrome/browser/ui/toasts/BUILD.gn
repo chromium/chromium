@@ -8,12 +8,10 @@ import("//build/config/ui.gni")
 
 source_set("toasts") {
   sources = [
-    "toast_controller.cc",
     "toast_controller.h",
-    "toast_features.cc",
     "toast_features.h",
-    "toast_service.cc",
     "toast_service.h",
+    "toast_view.h",
   ]
   public_deps = [
     "//base",
@@ -21,28 +19,51 @@ source_set("toasts") {
     "//chrome/browser/ui/toasts/api:toasts",
     "//content/public/browser",
     "//ui/base",
+    "//ui/views",
   ]
+}
+
+source_set("impl") {
+  sources = [
+    "toast_controller.cc",
+    "toast_features.cc",
+    "toast_service.cc",
+    "toast_view.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
+    ":toasts",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/vector_icons",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//components/vector_icons:vector_icons",
+    "//ui/base/metadata",
   ]
 }
 
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "toast_service_browsertest.cc" ]
+  sources = [
+    "toast_service_browsertest.cc",
+    "toast_view_browsertest.cc",
+  ]
   deps = [
     ":toasts",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ui:ui",
     "//chrome/test:test_support",
+    "//components/vector_icons",
     "//content/public/browser",
+    "//content/test:test_support",
     "//testing/gtest",
+    "//ui/base:base",
     "//ui/gfx",
+    "//ui/strings:ui_strings_grit",
+    "//ui/views",
   ]
 }
