@@ -10687,6 +10687,27 @@
             ]
         }
     ],
+    "GroupedHistoryAllLocales": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "JourneysLocaleOrLanguageAllowlist": "*"
+                    },
+                    "enable_features": [
+                        "Journeys"
+                    ]
+                }
+            ]
+        }
+    ],
     "GwpAsanAndroid2024": [
         {
             "platforms": [
