@@ -2675,31 +2675,23 @@ const CSSValue* Content::ParseSingleValue(CSSParserTokenStream& stream,
   outer_list->Append(*values);
   if (alt_text_present) {
     CSSValueList* alt_text_values = CSSValueList::CreateSpaceSeparated();
-    CSSValue* alt_text = nullptr;
-    if (RuntimeEnabledFeatures::CSSContentMultiArgAltTextEnabled()) {
-      do {
-        CSSParserSavePoint savepoint(stream);
-        if (stream.Peek().FunctionId() == CSSValueID::kAttr &&
-            !RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
-          alt_text = ConsumeAttr(stream, context);
-        } else {
-          alt_text = css_parsing_utils::ConsumeString(stream);
-        }
-        if (!alt_text) {
-          break;
-        }
-        alt_text_values->Append(*alt_text);
-        savepoint.Release();
-      } while (!stream.AtEnd());
-      if (!alt_text_values->length()) {
-        return nullptr;
+    do {
+      CSSParserSavePoint savepoint(stream);
+      CSSValue* alt_text = nullptr;
+      if (stream.Peek().FunctionId() == CSSValueID::kAttr &&
+          !RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
+        alt_text = ConsumeAttr(stream, context);
+      } else {
+        alt_text = css_parsing_utils::ConsumeString(stream);
       }
-    } else {
-      alt_text = css_parsing_utils::ConsumeString(stream);
       if (!alt_text) {
-        return nullptr;
+        break;
       }
       alt_text_values->Append(*alt_text);
+      savepoint.Release();
+    } while (!stream.AtEnd());
+    if (!alt_text_values->length()) {
+      return nullptr;
     }
 
     outer_list->Append(*alt_text_values);
