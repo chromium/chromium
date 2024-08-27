@@ -102,11 +102,7 @@ IssueHoverButton::IssueHoverButton(PressedCallback callback,
 
 gfx::Size IssueHoverButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return GetLayoutManager()->GetPreferredSize(this);
-}
-
-int IssueHoverButton::GetHeightForWidth(int w) const {
-  return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
+  return GetLayoutManager()->GetPreferredSize(this, available_size);
 }
 
 BEGIN_METADATA(IssueHoverButton)
