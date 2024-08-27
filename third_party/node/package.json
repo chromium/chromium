@@ -30,7 +30,7 @@
     "html-minifier": "4.0.0",
     "lit": "3.0.2",
     "svgo": "3.0.2",
-    "terser": "5.20.0",
+    "terser": "5.31.6",
     "typescript": "5.5.3"
   }
 }
