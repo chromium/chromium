@@ -1780,6 +1780,7 @@
   },
   {
     "prefix": "force-in-order-script",
+    "owners": ["sisidovski@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/in-order-script-scheduling/force-in-order"],
     "args": [
@@ -1789,6 +1790,7 @@
   },
   {
     "prefix": "selective-in-order-script",
+    "owners": ["sisidovski@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/in-order-script-scheduling/selective-in-order"],
     "args": [
