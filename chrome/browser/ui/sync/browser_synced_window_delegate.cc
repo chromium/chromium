@@ -15,9 +15,7 @@
 
 BrowserSyncedWindowDelegate::BrowserSyncedWindowDelegate(Browser* browser)
     : browser_(browser) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    browser->tab_strip_model()->AddObserver(this);
-  }
+  browser->tab_strip_model()->AddObserver(this);
 }
 
 BrowserSyncedWindowDelegate::~BrowserSyncedWindowDelegate() = default;

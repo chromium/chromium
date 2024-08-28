@@ -8391,11 +8391,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "sync-session-on-visibility-changed",
-    "owners": [ "ewannpv@chromium.org", "treib@chromium.org","chrome-sync-dev@google.com","bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "sync-webauthn-credentials",
     "owners": [ "chrome-webauthn@google.com" ],
     "expiry_milestone": 136

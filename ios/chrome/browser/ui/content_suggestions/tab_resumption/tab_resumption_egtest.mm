@@ -103,7 +103,6 @@ NSString* HostnameFromGURL(GURL URL) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(syncer::kSyncSessionOnVisibilityChanged);
   if ([self isUsingTabResumption15]) {
     config.features_enabled.push_back(kTabResumption1_5);
   } else {

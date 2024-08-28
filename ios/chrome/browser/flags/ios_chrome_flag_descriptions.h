@@ -911,11 +911,6 @@ extern const char kStartSurfaceDescription[];
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
-// Title and description for the flag that enables session syncing when the
-// visibility of a tab changes.
-extern const char kSyncSessionOnVisibilityChangedName[];
-extern const char kSyncSessionOnVisibilityChangedDescription[];
-
 // Title and description for the flag to control if a tab group indicator is
 // displayed.
 extern const char kTabGroupIndicatorName[];

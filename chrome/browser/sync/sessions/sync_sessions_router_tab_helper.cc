@@ -90,10 +90,6 @@ void SyncSessionsRouterTabHelper::DidOpenRequestedURL(
 
 void SyncSessionsRouterTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    return;
-  }
-
   // Only notify a notification when the tab becomes visible. This is necessary
   // to sync the last active time field.
   if (visibility == content::Visibility::VISIBLE) {

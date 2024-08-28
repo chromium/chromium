@@ -11058,11 +11058,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kCrosSwitcher)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"sync-session-on-visibility-changed",
-     flag_descriptions::kSyncSessionOnVisibilityChangedName,
-     flag_descriptions::kSyncSessionOnVisibilityChangedDescription, kOsAll,
-     FEATURE_VALUE_TYPE(syncer::kSyncSessionOnVisibilityChanged)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"password-generation-strong-label-experiment",
      flag_descriptions::kPasswordGenerationStrongLabelExperimentName,

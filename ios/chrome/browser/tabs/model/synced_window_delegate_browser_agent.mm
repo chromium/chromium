@@ -123,20 +123,16 @@ void SyncedWindowDelegateBrowserAgent::WebStateListDidChange(
       // deletion here?
       break;
   }
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    if (status.active_web_state_change()) {
-      if (status.old_active_web_state &&
-          IOSChromeSyncedTabDelegate::FromWebState(
-              status.old_active_web_state)) {
-        IOSChromeSyncedTabDelegate::FromWebState(status.old_active_web_state)
-            ->ResetCachedLastActiveTime();
-      }
-      if (status.new_active_web_state &&
-          IOSChromeSyncedTabDelegate::FromWebState(
-              status.new_active_web_state)) {
-        IOSChromeSyncedTabDelegate::FromWebState(status.new_active_web_state)
-            ->ResetCachedLastActiveTime();
-      }
+  if (status.active_web_state_change()) {
+    if (status.old_active_web_state &&
+        IOSChromeSyncedTabDelegate::FromWebState(status.old_active_web_state)) {
+      IOSChromeSyncedTabDelegate::FromWebState(status.old_active_web_state)
+          ->ResetCachedLastActiveTime();
+    }
+    if (status.new_active_web_state &&
+        IOSChromeSyncedTabDelegate::FromWebState(status.new_active_web_state)) {
+      IOSChromeSyncedTabDelegate::FromWebState(status.new_active_web_state)
+          ->ResetCachedLastActiveTime();
     }
   }
 }

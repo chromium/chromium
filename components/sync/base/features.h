@@ -162,17 +162,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "SyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold",
         base::Milliseconds(100)};
 
-// If enabled, triggers a synchronisation when WebContentsObserver's
-// -OnVisibilityChanged method is called.
-BASE_DECLARE_FEATURE(kSyncSessionOnVisibilityChanged);
-
-// The minimum time between two sync updates of last_active_time when the tab
-// hasn't changed.
-inline constexpr base::FeatureParam<base::TimeDelta>
-    kSyncSessionOnVisibilityChangedTimeThreshold{
-        &kSyncSessionOnVisibilityChanged,
-        "SyncSessionOnVisibilityChangedTimeThreshold", base::Minutes(10)};
-
 // If enabled, sync-the-transport will auto-start (avoid deferring startup) if
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
