@@ -141,7 +141,6 @@ source_set("browser_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/web_applications",
     "//chrome/common:chrome_features",

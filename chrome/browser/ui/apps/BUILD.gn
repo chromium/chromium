@@ -40,7 +40,6 @@ source_set("impl") {
     "//chrome/browser/favicon",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_navigator_params_headers",
     "//components/keep_alive_registry",
     "//components/version_info",
     "//components/zoom",

@@ -99,6 +99,7 @@ static_library("ui") {
     "browser_dialogs.cc",
     "browser_dialogs.h",
     "browser_navigator_params.cc",
+    "browser_navigator_params.h",
     "browser_ui_prefs.cc",
     "browser_ui_prefs.h",
     "chrome_select_file_policy.cc",
@@ -6180,28 +6181,6 @@ source_set("ui_features") {
     "//components/flags_ui",
     "//ui/base:features",
   ]
-}
-
-source_set("browser_navigator_params_headers") {
-  sources = [ "browser_navigator_params.h" ]
-
-  public_deps = [
-    "//base",
-    "//chrome/browser/ui/tabs:tab_enums",
-    "//components/captive_portal/core",
-    "//components/tab_groups",
-    "//content/public/browser",
-    "//content/public/common",
-    "//services/network/public/cpp",
-    "//third_party/blink/public/common",
-    "//third_party/blink/public/common:headers",
-    "//third_party/blink/public/common/tokens:tokens_headers",
-    "//ui/base",
-    "//ui/base:types",
-    "//ui/gfx/geometry",
-    "//url",
-  ]
-  deps = []
 }
 
 # In GYP this is part of test_support_common.

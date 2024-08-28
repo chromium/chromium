@@ -29,7 +29,6 @@ static_library("in_session_auth") {
     "//ash/in_session_auth",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/login/quick_unlock",
-    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/osauth/public",
     "//components/account_id",

@@ -39,7 +39,6 @@ static_library("new_window") {
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/chromeos/network",
     "//chrome/browser/extensions",
-    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/shelf/app_service",

@@ -150,7 +150,6 @@ static_library("devtools") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",
-      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/web_applications",
       "//chrome/common",

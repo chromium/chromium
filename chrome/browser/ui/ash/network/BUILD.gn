@@ -39,7 +39,6 @@ static_library("network") {
     "//chrome/browser/ash/profiles:signin_profile_handler",
     "//chrome/browser/chromeos/network",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/system",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/common",

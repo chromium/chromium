@@ -1616,7 +1616,6 @@ if (is_android) {
 
     deps = android_sync_integration_tests_deps + [
              "//chrome/browser/sync",
-             "//chrome/browser/ui:browser_navigator_params_headers",
              "//chrome/test/android:live_signin_test_util_public_impl_java",
            ]
     sources = sync_integration_tests_sources
@@ -1846,8 +1845,6 @@ if (!is_android) {
       "//chrome/browser/top_level_storage_access_api:permissions",
       "//chrome/browser/tpcd/http_error_observer:browser_tests",
       "//chrome/browser/ui:browser_element_identifiers",
-      "//chrome/browser/ui:browser_navigator_params_headers",
-      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/browser_window",
@@ -5501,7 +5498,6 @@ if (is_chromeos_lacros) {
       "//chrome/browser/sync",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_element_identifiers",
-      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui/chromeos",
       "//chrome/browser/ui/chromeos:test_support",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
@@ -10527,7 +10523,6 @@ if (!is_android) {
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
-      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui",
@@ -12006,7 +12001,6 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/sync",
       "//chrome/browser/themes",
-      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",

@@ -181,7 +181,6 @@ if (!is_android) {
 
     deps = [
       "//chrome/browser/autofill",
-      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/test:test_support",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/common:test_support",
