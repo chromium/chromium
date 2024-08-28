@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.metrics.VariationsSession;
@@ -86,14 +85,6 @@ public abstract class AppHooks {
      */
     public GoogleActivityController createGoogleActivityController() {
         return new GoogleActivityController();
-    }
-
-    /**
-     * @return An instance of {@link GSAHelper} that handles the start point of chrome's integration
-     *         with GSA.
-     */
-    public GSAHelper createGsaHelper() {
-        return new GSAHelper();
     }
 
     public InstantAppsHandler createInstantAppsHandler() {

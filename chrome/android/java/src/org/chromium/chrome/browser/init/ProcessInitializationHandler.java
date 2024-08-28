@@ -656,9 +656,6 @@ public class ProcessInitializationHandler {
 
         tasks.add(() -> HomepageManager.getInstance().recordHomepageLocationTypeIfEnabled());
 
-        // Starts syncing with GSA.
-        tasks.add(() -> AppHooks.get().createGsaHelper().startSync());
-
         // Record the saved restore state in a histogram
         tasks.add(ChromeBackupAgentImpl::recordRestoreHistogram);
 
