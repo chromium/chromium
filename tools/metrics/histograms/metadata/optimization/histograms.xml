@@ -155,6 +155,9 @@ chromium-metrics-reviews@google.com.
   <variant name="AutofillAblationSitesList6"
       summary="This optimization provides information for whether a page is
                eligible for autofill ablation."/>
+  <variant name="AutofillPredictionImprovementsAllowlist"
+      summary="This optimization provides information for whether a page is
+               eligible for Autofill prediction improvements."/>
   <variant name="AutofillSamplingRate"
       summary="This optimization provides information about a sampling rate
                of Autofill UKM metrics per origin based on origin popularity."/>

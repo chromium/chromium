@@ -135,6 +135,8 @@ std::string GetStringNameForOptimizationType(
       return "AutofillAblationSitesList6";
     case proto::OptimizationType::AMOUNT_EXTRACTION_ALLOWLIST:
       return "AmountExtractionAllowlist";
+    case proto::OptimizationType::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST:
+      return "AutofillPredictionImprovementsAllowlist";
   }
 
   // The returned string is used to record histograms for the optimization type.
