@@ -12293,6 +12293,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="-2147167996" label="ITF_E_EXTRACT_NO_FAMILY_NAME"/>
   <int value="-2147167231" label="DRM_E_XB_INVALID_OBJECT"/>
   <int value="-2147167228" label="DRM_E_XB_UNKNOWN_ELEMENT_TYPE"/>
+  <int value="-2147165581" label="DRM_E_H264_SH_PPS_NOT_FOUND"/>
   <int value="-2147164882" label="DRM_E_* - OEM Specific (8004DD2E)"/>
   <int value="-2147164862" label="DRM_E_* - OEM Specific (8004DD42)"/>
   <int value="-2147157503" label="media::kErrorInitializeMediaFoundation"/>
