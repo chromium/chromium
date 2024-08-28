@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/tabs_closure_animation.h"
 
+#import "base/check.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -215,16 +216,15 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
 }
 
 - (void)animateWithCompletion:(ProceduralBlock)completion {
+  CHECK(!_window.userInteractionEnabled);
+
   [CATransaction begin];
   [CATransaction
       setAnimationTimingFunction:MaterialTimingFunction(MaterialCurveEaseIn)];
   [CATransaction setAnimationDuration:kAnimationDuration];
 
   __weak TabsClosureAnimation* weakSelf = self;
-  UIView* window = _window;
-  window.userInteractionEnabled = NO;
   [CATransaction setCompletionBlock:^{
-    window.userInteractionEnabled = YES;
     [weakSelf onAnimationCompletedWithCompletionBlock:completion];
   }];
 

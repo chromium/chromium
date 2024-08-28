@@ -226,19 +226,25 @@
   id<TabsAnimationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabsAnimationCommands);
 
+  base::OnceClosure onRemoverCompletion = base::BindOnce(
+      [](UIWindow* window) {
+        window.userInteractionEnabled = YES;
+        // Add vibration at the end of the animation including after
+        // the tabs rearrange.
+        TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+      },
+      self.baseViewController.view.window);
+
+  base::OnceClosure onAnimationCompletion = base::BindOnce(
+      &BrowsingDataRemover::RemoveInRange, browsingDataRemover->AsWeakPtr(),
+      beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS,
+      std::move(onRemoverCompletion));
+
   [handler animateTabsClosureForTabs:activeTabsToClose
                               groups:tabGroupsWithTabsToClose
                      allInactiveTabs:animateAllInactiveTabs
-                   completionHandler:^{
-                     browsingDataRemover->RemoveInRange(
-                         beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS,
-                         base::BindOnce([]() {
-                           // Add vibration at the end of the animation
-                           // including after the tabs rearrange.
-                           TriggerHapticFeedbackForNotification(
-                               UINotificationFeedbackTypeSuccess);
-                         }));
-                   }];
+                   completionHandler:base::CallbackToBlock(
+                                         std::move(onAnimationCompletion))];
 }
 
 // Disconnects all instances.

@@ -338,12 +338,13 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)deletionInProgress {
-  self.view.userInteractionEnabled = NO;
+  self.view.window.userInteractionEnabled = NO;
   self.isLoading = YES;
   self.isConfirmed = NO;
 }
 
 - (void)deletionFinished {
+  self.view.window.userInteractionEnabled = YES;
   self.isLoading = NO;
   self.isConfirmed = YES;
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
