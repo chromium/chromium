@@ -1300,7 +1300,10 @@ void SharedContextState::ScheduleSkiaCleanup() {
   }
 }
 
-int32_t SharedContextState::GetMaxTextureSize() const {
+int32_t SharedContextState::GetMaxTextureSize() {
+  if (max_texture_size_.has_value()) {
+    return max_texture_size_.value();
+  }
   int32_t max_texture_size = 0;
   if (IsUsingGL()) {
     gl::GLApi* const api = gl::g_current_gl_context;
@@ -1331,7 +1334,8 @@ int32_t SharedContextState::GetMaxTextureSize() const {
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
   }
-  CHECK_GT(max_texture_size, 0);
+  DCHECK_GT(max_texture_size, 0);
+  max_texture_size_ = max_texture_size;
   return max_texture_size;
 }
 
