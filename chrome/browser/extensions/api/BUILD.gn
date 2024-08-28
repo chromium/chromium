@@ -45,8 +45,10 @@ group("api_implementations") {
   }
 
   if (is_chromeos) {
-    public_deps +=
-        [ "//chrome/browser/chromeos/extensions/smart_card_provider_private" ]
+    public_deps += [
+      "//chrome/browser/chromeos/extensions/smart_card_provider_private",
+      "//chrome/browser/extensions/api/document_scan",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -120,7 +122,10 @@ source_set("keyed_service_factories") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/chromeos/extensions/wm" ]
+    deps += [
+      "//chrome/browser/chromeos/extensions/wm",
+      "//chrome/browser/extensions/api/document_scan",
+    ]
   }
 }
 
