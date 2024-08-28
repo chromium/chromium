@@ -342,7 +342,6 @@ class CONTENT_EXPORT InterestGroupAuction
         base::TimeDelta bid_duration,
         std::optional<uint32_t> bidding_signals_data_version,
         const blink::InterestGroup::Ad* bid_ad,
-        bool selected_buyer_and_seller_reporting_id_required,
         std::optional<std::string> selected_buyer_and_seller_reporting_id,
         BidState* bid_state,
         InterestGroupAuction* auction);
@@ -385,7 +384,6 @@ class CONTENT_EXPORT InterestGroupAuction
     const base::TimeDelta bid_duration;
     const std::optional<uint32_t> bidding_signals_data_version;
 
-    const bool selected_buyer_and_seller_reporting_id_required;
     const std::optional<std::string> selected_buyer_and_seller_reporting_id;
 
     // InterestGroup that made the bid. Owned by the BidState of that

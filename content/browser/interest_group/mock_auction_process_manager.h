@@ -193,7 +193,6 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // Flush the receiver pipe and return whether or not its closed.
   bool PipeIsClosed();
 
-  void SetSelectedBuyerAndSellerReportingIdRequired(bool required);
   void SetSelectedBuyerAndSellerReportingId(
       std::optional<std::string> selected);
 
@@ -208,7 +207,6 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
 
   bool pipe_closed_ = false;
 
-  bool selected_buyer_and_seller_reporting_id_required_ = false;
   std::optional<std::string> selected_buyer_and_seller_reporting_id_;
 
   std::unique_ptr<base::RunLoop> generate_bid_run_loop_;
@@ -285,8 +283,6 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const std::optional<blink::AdCurrency>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
-      const std::optional<bool>
-          browser_signal_selected_buyer_and_seller_reporting_id_required,
       const std::optional<std::string>&
           browser_signal_selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>&

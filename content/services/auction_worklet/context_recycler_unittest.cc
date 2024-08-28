@@ -1345,9 +1345,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
   }
 
   {
-    // Check that all reporting id fields - buyer, buyer_and_seller,
-    // selected_buyer_and_seller, and selected_buyer_and_seller_required -
-    // are set on the bid and `BidWithWorkletOnlyMetadata`.
+    // Check that all reporting id fields - buyer, buyer_and_seller, and
+    // selected_buyer_and_seller - are set on the bid and
+    // `BidWithWorkletOnlyMetadata`.
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
@@ -1377,7 +1377,6 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     bid_dict.Set("bid", 10.0);
     bid_dict.Set("selectedBuyerAndSellerReportingId",
                  std::string("selectable1"));
-    bid_dict.Set("selectedBuyerAndSellerReportingIdRequired", true);
 
     std::vector<std::string> error_msgs;
     Run(scope, script, "test", error_msgs,
@@ -1399,52 +1398,6 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         bids[0].bid->selected_buyer_and_seller_reporting_id.has_value());
     EXPECT_EQ("selectable1",
               *bids[0].bid->selected_buyer_and_seller_reporting_id);
-    EXPECT_EQ(true,
-              bids[0].bid->selected_buyer_and_seller_reporting_id_required);
-  }
-
-  {
-    // Fail when `selectedBuyerAndSellerReportingIdRequired` is returned, but
-    // no `selectedBuyerAndSellerReportingId` is returned.
-    mojom::BidderWorkletNonSharedParamsPtr params =
-        mojom::BidderWorkletNonSharedParams::New();
-    ContextRecyclerScope scope(context_recycler);
-    params->ads.emplace();
-    params->ads.value().emplace_back(
-        GURL("https://example2.test/ad2"), /*metadata=*/std::nullopt,
-        /*size_group=*/std::nullopt, /*buyer_reporting_id=*/"buyer1",
-        /*buyer_and_seller_reporting_id=*/"common1",
-        /*selectable_buyer_and_seller_reporting_ids=*/
-        std::vector<std::string>({"selectable1", "selectable2"}),
-        /*ad_render_id=*/std::nullopt,
-        /*allowed_reporting_origins=*/std::nullopt);
-
-    context_recycler.set_bid_bindings()->ReInitialize(
-        base::TimeTicks::Now(),
-        /*has_top_level_seller_origin=*/false, params.get(),
-        /*per_buyer_currency=*/std::nullopt,
-        /*multi_bid_limit=*/5,
-        /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false,
-        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
-
-    task_environment_.FastForwardBy(base::Milliseconds(500));
-
-    gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example2.test/ad2"));
-    bid_dict.Set("bid", 10.0);
-    bid_dict.Set("selectedBuyerAndSellerReportingIdRequired", true);
-
-    std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), bid_dict));
-
-    EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.test/script.js:3 Uncaught "
-                            "TypeError: Selected buyer and seller reporting id "
-                            "is required, but not specified."));
-    auto bid_info = context_recycler.set_bid_bindings()->TakeBids();
-    EXPECT_EQ(0u, bid_info.size());
   }
 
   {
@@ -1479,7 +1432,6 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     bid_dict.Set("bid", 10.0);
     bid_dict.Set("selectedBuyerAndSellerReportingId",
                  std::string("selectable3"));
-    bid_dict.Set("selectedBuyerAndSellerReportingIdRequired", true);
 
     std::vector<std::string> error_msgs;
     Run(scope, script, "test", error_msgs,
@@ -1524,7 +1476,6 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     bid_dict.Set("bid", 10.0);
     bid_dict.Set("selectedBuyerAndSellerReportingId",
                  std::string("selectable2"));
-    bid_dict.Set("selectedBuyerAndSellerReportingIdRequired", true);
 
     std::vector<std::string> error_msgs;
     Run(scope, script, "test", error_msgs,
@@ -1546,8 +1497,6 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         bids[0].bid->selected_buyer_and_seller_reporting_id.has_value());
     EXPECT_EQ("selectable2",
               *bids[0].bid->selected_buyer_and_seller_reporting_id);
-    EXPECT_EQ(true,
-              bids[0].bid->selected_buyer_and_seller_reporting_id_required);
   }
 
   {
@@ -1581,7 +1530,6 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     bid_dict.Set("bid", 10.0);
     bid_dict.Set("selectedBuyerAndSellerReportingId",
                  std::string("selectable1"));
-    bid_dict.Set("selectedBuyerAndSellerReportingIdRequired", true);
 
     std::vector<std::string> error_msgs;
     Run(scope, script, "test", error_msgs,

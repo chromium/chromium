@@ -125,10 +125,6 @@ struct BidderWorkletBid {
   // Render URL of the bid, plus sizing information.
   blink.mojom.AdDescriptor ad_descriptor;
 
-  // Indicates whether this bid should be thrown away if the k-anonymity
-  // check on the selectedBuyerAndSellerReportingId fails.
-  bool selected_buyer_and_seller_reporting_id_required = false;
-
   // The selected reporting id from the interest group's ad's
   // `selectableBuyerAndSellerReportingIds` array.
   string? selected_buyer_and_seller_reporting_id;

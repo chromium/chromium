@@ -201,7 +201,6 @@ struct SetBidBindings::GenerateBidOutput {
   std::optional<std::vector<AdRender>> ad_components;
   std::optional<double> ad_cost;
   std::optional<UnrestrictedDouble> modeling_signals;
-  bool selected_buyer_and_seller_reporting_id_required = false;
   std::optional<std::string> selected_buyer_and_seller_reporting_id;
   bool allow_component_auction = false;
   uint32_t num_mandatory_ad_components = 0;
@@ -430,14 +429,6 @@ SetBidBindings::ConvertBidToIDL(
           blink::features::kFledgeAuctionDealSupport)) {
     convert_set_bid.GetOptional("selectedBuyerAndSellerReportingId",
                                 idl.selected_buyer_and_seller_reporting_id);
-    std::optional<bool> selected_buyer_and_seller_reporting_id_required;
-    convert_set_bid.GetOptional(
-        "selectedBuyerAndSellerReportingIdRequired",
-        selected_buyer_and_seller_reporting_id_required);
-    if (selected_buyer_and_seller_reporting_id_required.has_value() &&
-        selected_buyer_and_seller_reporting_id_required.value()) {
-      idl.selected_buyer_and_seller_reporting_id_required = true;
-    }
   }
 
   if (support_multi_bid_) {
@@ -554,13 +545,6 @@ SetBidBindings::SemanticCheckBid(
         IdlConvert::Status::MakeErrorMessage(std::move(error_msg)));
   }
 
-  if (idl.selected_buyer_and_seller_reporting_id_required &&
-      !idl.selected_buyer_and_seller_reporting_id.has_value()) {
-    return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
-        {error_prefix,
-         "Selected buyer and seller reporting id is required, but not "
-         "specified"})));
-  }
   if (idl.selected_buyer_and_seller_reporting_id.has_value()) {
     if (!IsSelectedReportingIdValid(
             *maybe_ad, *idl.selected_buyer_and_seller_reporting_id)) {
@@ -680,7 +664,6 @@ SetBidBindings::SemanticCheckBid(
       auction_worklet::mojom::BidRole::kUnenforcedKAnon, std::move(ad_json),
       *idl.bid, std::move(bid_currency), std::move(idl.ad_cost),
       blink::AdDescriptor(render_url, render_size),
-      std::move(idl.selected_buyer_and_seller_reporting_id_required),
       std::move(idl.selected_buyer_and_seller_reporting_id),
       std::move(ad_component_descriptors),
       static_cast<std::optional<uint16_t>>(modeling_signals),

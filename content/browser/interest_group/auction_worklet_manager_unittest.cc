@@ -397,8 +397,6 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const std::optional<blink::AdCurrency>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
-      const std::optional<bool>
-          browser_signal_selected_buyer_and_seller_reporting_id_required,
       const std::optional<std::string>&
           browser_signal_selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>&

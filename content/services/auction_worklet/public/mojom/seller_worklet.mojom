@@ -207,15 +207,6 @@ interface SellerWorklet {
   // `browser_signal_render_url` The `renderUrl` returned by the
   //  BidderWorklet making the bid.
   //
-  // `browser_signal_selected_buyer_and_seller_reporting_id_required`
-  //  Indicates whether the bid would have been classified as non-k-anonymous
-  //  if the bid, with the buyer-chosen selectedBuyerAndSellerReportingId,
-  //  is not k-anonymous for reporting. The seller can use this to enforce
-  //  that, for bids that specify a selectedBuyerAndSellerReportingId,
-  //  only those that are k-anonymous for reporting are allowed to win the
-  //  auction. Is only passed to scoreAd() if
-  //  `browser_signal_selected_buyer_and_seller_reporting_id` is present.
-  //
   // `browser_signal_selected_buyer_and_seller_reporting_id`
   //  The selected reporting id from the interest group's ad's
   // `selectableBuyerAndSellerReportingIds` array.
@@ -267,7 +258,6 @@ interface SellerWorklet {
           blink.mojom.AdCurrency? component_expect_bid_currency,
           url.mojom.Origin browser_signal_interest_group_owner,
           url.mojom.Url browser_signal_render_url,
-          bool? browser_signal_selected_buyer_and_seller_reporting_id_required,
           string? browser_signal_selected_buyer_and_seller_reporting_id,
           string? browser_signal_buyer_and_seller_reporting_id,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,

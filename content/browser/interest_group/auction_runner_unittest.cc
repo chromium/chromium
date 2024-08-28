@@ -20839,90 +20839,61 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Bool());
 
 TEST_F(AuctionRunnerTest, InvalidReportingIds) {
-  const struct TestCase {
-    const char* expected_error_message;
-    bool selected_buyer_and_seller_reporting_id_required;
-    std::optional<std::string> selected_buyer_and_seller_reporting_id;
-  } kTestCases[] = {
-      {
-          "Selected buyer and seller reporting id is required, but not "
-          "specified",
-          true,
-          std::nullopt,
-      },
-      {
-          "Invalid selected buyer and seller reporting id",
-          true,
-          "selectable_id3",
-      },
-  };
+  std::vector<StorageInterestGroup> bidders;
+  auto ig = MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{"k1", "k2"}, GURL("https://ad1.com"));
+  ASSERT_TRUE(ig.interest_group.ads.has_value());
+  ig.interest_group.ads.value()
+      .at(0)
+      .selectable_buyer_and_seller_reporting_ids =
+      std::vector<std::string>{"selectable_id1", "selectable_id2"};
+  bidders.emplace_back(std::move(ig));
+  UseMockWorkletService();
+  StartAuction(kSellerUrl, bidders);
+  mock_auction_process_manager_->WaitForWorklets(
+      /*num_bidders=*/1, /*num_sellers=*/1);
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  bidder1_worklet->SetSelectedBuyerAndSellerReportingId("selectable_id3");
 
-  for (const auto& test_case : kTestCases) {
-    std::vector<StorageInterestGroup> bidders;
-    auto ig = MakeInterestGroup(
-        kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
-        /*trusted_bidding_signals_keys=*/{"k1", "k2"}, GURL("https://ad1.com"));
-    ASSERT_TRUE(ig.interest_group.ads.has_value());
-    ig.interest_group.ads.value()
-        .at(0)
-        .selectable_buyer_and_seller_reporting_ids =
-        std::vector<std::string>{"selectable_id1", "selectable_id2"};
-    bidders.emplace_back(std::move(ig));
-    UseMockWorkletService();
-    StartAuction(kSellerUrl, bidders);
-    mock_auction_process_manager_->WaitForWorklets(
-        /*num_bidders=*/1, /*num_sellers=*/1);
-    auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
-    ASSERT_TRUE(seller_worklet);
-    auto bidder1_worklet =
-        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-    ASSERT_TRUE(bidder1_worklet);
-    bidder1_worklet->SetSelectedBuyerAndSellerReportingIdRequired(
-        test_case.selected_buyer_and_seller_reporting_id_required);
-    bidder1_worklet->SetSelectedBuyerAndSellerReportingId(
-        test_case.selected_buyer_and_seller_reporting_id);
+  bidder1_worklet->InvokeGenerateBidCallback(
+      /*bid=*/5, /*bid_currency=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://ad1.com/")),
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+      /*further_bids=*/{},
+      /*ad_component_descriptors=*/std::nullopt, base::TimeDelta(),
+      /*bidding_signals_data_version=*/std::nullopt, std::nullopt,
+      std::nullopt);
 
-    bidder1_worklet->InvokeGenerateBidCallback(
-        /*bid=*/5, /*bid_currency=*/std::nullopt,
-        blink::AdDescriptor(GURL("https://ad1.com/")),
-        auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-        /*further_bids=*/{},
-        /*ad_component_descriptors=*/std::nullopt, base::TimeDelta(),
-        /*bidding_signals_data_version=*/std::nullopt, std::nullopt,
-        std::nullopt);
+  // Since there's no acceptable bid, the seller worklet is never asked to
+  // score a bid.
+  auction_run_loop_->Run();
+  EXPECT_EQ("Invalid selected buyer and seller reporting id", TakeBadMessage());
 
-    // Since there's no acceptable bid, the seller worklet is never asked to
-    // score a bid.
-    auction_run_loop_->Run();
-    EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
-
-    // No bidder won.
-    EXPECT_FALSE(result_.winning_group_id);
-    EXPECT_FALSE(result_.ad_descriptor);
-    EXPECT_THAT(result_.interest_groups_that_bid,
-                testing::UnorderedElementsAre());
-  }
+  // No bidder won.
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_descriptor);
+  EXPECT_THAT(result_.interest_groups_that_bid,
+              testing::UnorderedElementsAre());
 }
 
-// ScoreAd conditionally receives reporting ids based on the presence if
-// selectedBuyerAndSellerReportingIdRequired and
+// ScoreAd conditionally receives reporting ids based on the presence of
 // selectedBuyerAndSellerReportingId.
 TEST_F(AuctionRunnerTest, VerifyReportingIdsInScoreAd) {
   const std::vector<std::string> kSelectables = {"selectable_id1",
                                                  "selectable_id2"};
-  const std::string kFieldNotPresent = "";
   const std::string kBuyerAndSellerReportingId = "bsid";
+  const std::string kFieldNotPresent = "";
   const std::string kValidSelected =
       "selectedBuyerAndSellerReportingId:\"selectable_id1\"";
-  const std::string kSelectedRequired =
-      "selectedBuyerAndSellerReportingIdRequired:true,";
-  const std::string kSelectedNotRequired =
-      "selectedBuyerAndSellerReportingIdRequired:false,";
 
   const char kBidderScriptTemplate[] = R"(
     function generateBid() {
       return {bid:1, render:"https://ad1.com/",
-      %s
       %s };
     }
     function reportWin() {}
@@ -20942,38 +20913,13 @@ TEST_F(AuctionRunnerTest, VerifyReportingIdsInScoreAd) {
   const struct {
     const std::string test_name;
     const std::string selected_id_js;
-    const std::string selected_required_js;
     const std::string score_ad_check;
     const std::optional<std::string> buyer_and_seller_reporting_id =
         std::nullopt;
   } kTestCases[] = {
-      {/*test_name=*/"Valid selected, required not present",
-       /*selected_id_js=*/kValidSelected,
-       /*selected_required_js=*/kFieldNotPresent,
-       /*score_ad_check=*/
-       "(browserSignals.selectedBuyerAndSellerReportingId === "
-       "\"selectable_id1\" && !(\"buyerAndSellerReportingId\" in "
-       "browserSignals))"},
-      {/*test_name=*/"Valid selected and required",
-       /*selected_id_js=*/kValidSelected,
-       /*selected_required_js=*/kSelectedRequired,
-       /*score_ad_check=*/
-       "(browserSignals.selectedBuyerAndSellerReportingId === "
-       "\"selectable_id1\" && "
-       "browserSignals.selectedBuyerAndSellerReportingIdRequired"
-       "=== true)"},
-      {/*test_name=*/"Valid selected but not required",
-       /*selected_id_js=*/kValidSelected,
-       /*selected_required_js=*/kSelectedNotRequired,
-       /*score_ad_check=*/
-       "browserSignals.selectedBuyerAndSellerReportingId === "
-       "\"selectable_id1\" && "
-       "browserSignals.selectedBuyerAndSellerReportingIdRequired "
-       "=== false"},
       {/*test_name=*/"buyerAndSellerReportingId not present when selected is "
                      "not present",
        /*selected_id_js=*/kFieldNotPresent,
-       /*selected_required_js=*/kFieldNotPresent,
        /*score_ad_check=*/
        "!(\"selectedBuyerAndSellerReportingId\" in browserSignals) && "
        "!(\"buyerAndSellerReportingId\" in browserSignals)",
@@ -20981,7 +20927,6 @@ TEST_F(AuctionRunnerTest, VerifyReportingIdsInScoreAd) {
       {/*test_name=*/"buyerAndSellerReportingId is present when selected is "
                      "present",
        /*selected_id_js=*/kValidSelected,
-       /*selected_required_js=*/kSelectedNotRequired,
        /*score_ad_check=*/
        "browserSignals.selectedBuyerAndSellerReportingId === "
        "\"selectable_id1\" && browserSignals.buyerAndSellerReportingId "
@@ -20994,8 +20939,7 @@ TEST_F(AuctionRunnerTest, VerifyReportingIdsInScoreAd) {
     SCOPED_TRACE(test_case.test_name);
 
     std::string bidder_script = base::StringPrintf(
-        kBidderScriptTemplate, test_case.selected_required_js.c_str(),
-        test_case.selected_id_js.c_str());
+        kBidderScriptTemplate, test_case.selected_id_js.c_str());
     std::string seller_script = base::StringPrintf(
         kSellerScriptTemplate, test_case.score_ad_check.c_str());
 
@@ -22801,7 +22745,6 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       auction_worklet::mojom::BidRole::kBothKAnonModes, "ad", 5.0,
       /*bid_currency=*/std::nullopt,
       /*ad_cost=*/std::nullopt, blink::AdDescriptor(kKAnonUrl),
-      /*selected_buyer_and_seller_reporting_id_required=*/false,
       /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
       /*ad_component_urls=*/std::nullopt,
       /*modeling_signals=*/std::nullopt, base::TimeDelta());
@@ -22810,7 +22753,6 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       auction_worklet::mojom::BidRole::kEnforcedKAnon, "ad", 5.0,
       /*bid_currency=*/std::nullopt,
       /*ad_cost=*/std::nullopt, blink::AdDescriptor(kKAnonUrl),
-      /*selected_buyer_and_seller_reporting_id_required=*/false,
       /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
       /*ad_component_urls=*/std::nullopt,
       /*modeling_signals=*/std::nullopt, base::TimeDelta());
@@ -22819,7 +22761,6 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       auction_worklet::mojom::BidRole::kUnenforcedKAnon, "ad", 5.0,
       /*bid_currency=*/std::nullopt,
       /*ad_cost=*/std::nullopt, blink::AdDescriptor(kNonKAnonUrl),
-      /*selected_buyer_and_seller_reporting_id_required=*/false,
       /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
       /*ad_component_urls=*/std::nullopt,
       /*modeling_signals=*/std::nullopt, base::TimeDelta());
@@ -23067,17 +23008,15 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
   }
 }
 
-// When `generateBid()` returns
-// `selectedBuyerAndSellerReportingIdRequired` = true as part of a bid, it
-// conveys to the auction that this bid should only be considered k-anonymous
-// if it's also k-anonymous for reporting, so that all reporting ids would be
-// available in the reporting functions. (This only applies to bids that also
-// include a valid `selectedBuyerAndSellerReportingId`.) This test checks to
-// verify that this behavior is correctly applied. We see this by observing
+// When `generateBid()` returns a value for `selectedBuyerAndSellerReportingId`,
+// as part of a bid, it conveys to the auction that this bid should only be
+// considered k-anonymous if it's also k-anonymous for reporting, so that all
+// reporting ids would be available in the reporting functions. This test checks
+// to verify that this behavior is correctly applied. We see this by observing
 // that, when k-anonymity is enforced, we see that the sole bid, compelled to be
 // non-k-anonymous because it's not k-anonymous for reporting, in fact does not
 // win the auction despite it satisfying all other conditions needed to do so.
-TEST_P(AuctionRunnerKAnonTest, SelectedReportingIdRequired) {
+TEST_P(AuctionRunnerKAnonTest, SelectedReportingIdMustBeKAnonForReporting) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       // bidding script tries to bid with ad that is not k-anonymous.
@@ -23094,7 +23033,6 @@ TEST_P(AuctionRunnerKAnonTest, SelectedReportingIdRequired) {
               render: interestGroup.ads[0].renderURL,
               selectedBuyerAndSellerReportingId:
                   interestGroup.ads[0].selectableBuyerAndSellerReportingIds[0],
-              selectedBuyerAndSellerReportingIdRequired: true,
           };
         })") +
           kReportWinNoUrl);

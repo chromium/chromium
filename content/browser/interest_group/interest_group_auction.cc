@@ -198,7 +198,7 @@ const blink::InterestGroup::Ad* FindMatchingAd(
     const blink::InterestGroup& interest_group,
     auction_worklet::mojom::BidRole bid_role,
     base::optional_ref<const std::string>
-        required_selected_buyer_and_seller_reporting_id,
+        selected_buyer_and_seller_reporting_id,
     bool is_component_ad,
     const blink::AdDescriptor& ad_descriptor) {
   // TODO(mmenke): Validate render URLs on load and make this a DCHECK just
@@ -260,10 +260,10 @@ const blink::InterestGroup::Ad* FindMatchingAd(
 
   if (maybe_matching_ad && !is_component_ad &&
       bid_role != auction_worklet::mojom::BidRole::kUnenforcedKAnon &&
-      required_selected_buyer_and_seller_reporting_id.has_value()) {
+      selected_buyer_and_seller_reporting_id.has_value()) {
     const std::string kanon_key = blink::HashedKAnonKeyForAdNameReporting(
         interest_group, *maybe_matching_ad,
-        *required_selected_buyer_and_seller_reporting_id);
+        *selected_buyer_and_seller_reporting_id);
     if (!IsKAnon(kanon_keys, kanon_key)) {
       return nullptr;
     }
@@ -990,7 +990,6 @@ InterestGroupAuction::Bid::Bid(
     base::TimeDelta bid_duration,
     std::optional<uint32_t> bidding_signals_data_version,
     const blink::InterestGroup::Ad* bid_ad,
-    bool selected_buyer_and_seller_reporting_id_required,
     std::optional<std::string> selected_buyer_and_seller_reporting_id,
     BidState* bid_state,
     InterestGroupAuction* auction)
@@ -1004,8 +1003,6 @@ InterestGroupAuction::Bid::Bid(
       modeling_signals(modeling_signals),
       bid_duration(bid_duration),
       bidding_signals_data_version(bidding_signals_data_version),
-      selected_buyer_and_seller_reporting_id_required(
-          std::move(selected_buyer_and_seller_reporting_id_required)),
       selected_buyer_and_seller_reporting_id(
           std::move(selected_buyer_and_seller_reporting_id)),
       interest_group(&bid_state->bidder->interest_group),
@@ -1501,7 +1498,7 @@ class InterestGroupAuction::BuyerHelper
     // 1. Ads must be in the interest group (at specified k-anon level)
     const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
         *interest_group.ads, bid_state->kanon_keys, interest_group, bid_role,
-        /*required_selected_buyer_and_seller_reporting_id=*/std::nullopt,
+        /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
         /*is_component_ad=*/false, ad_descriptor);
     if (!matching_ad) {
       // Bid render url must match the interest group.
@@ -1522,7 +1519,7 @@ class InterestGroupAuction::BuyerHelper
       const blink::InterestGroup::Ad* matching_ad_component = FindMatchingAd(
           *interest_group.ad_components, bid_state->kanon_keys, interest_group,
           bid_role,
-          /*required_selected_buyer_and_seller_reporting_id=*/std::nullopt,
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
           /*is_component_ad=*/true, ad_component_descriptor);
       if (!matching_ad_component) {
         // Bid ad components must match the interest group.
@@ -1548,7 +1545,6 @@ class InterestGroupAuction::BuyerHelper
         /*modeling_signals=*/std::nullopt,
         /*bid_duration=*/base::Seconds(0),
         /*bidding_signals_data_version=*/std::nullopt, matching_ad,
-        /*selected_buyer_and_seller_reporting_id_required=*/false,
         /*selected_buyer_and_seller_reporting_id=*/std::nullopt, bid_state,
         auction_);
   }
@@ -2267,13 +2263,10 @@ class InterestGroupAuction::BuyerHelper
 
     const blink::InterestGroup& interest_group =
         bid_state.bidder->interest_group;
-    const blink::InterestGroup::Ad* matching_ad =
-        FindMatchingAd(*interest_group.ads, bid_state.kanon_keys,
-                       interest_group, mojo_bid->bid_role,
-                       mojo_bid->selected_buyer_and_seller_reporting_id_required
-                           ? mojo_bid->selected_buyer_and_seller_reporting_id
-                           : std::nullopt,
-                       /*is_component_ad=*/false, mojo_bid->ad_descriptor);
+    const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
+        *interest_group.ads, bid_state.kanon_keys, interest_group,
+        mojo_bid->bid_role, mojo_bid->selected_buyer_and_seller_reporting_id,
+        /*is_component_ad=*/false, mojo_bid->ad_descriptor);
     if (!matching_ad) {
       generate_bid_client_receiver_set_.ReportBadMessage(
           "Bid render ad must have a valid URL and size (if specified)");
@@ -2310,7 +2303,7 @@ class InterestGroupAuction::BuyerHelper
         const blink::InterestGroup::Ad* matching_ad_component = FindMatchingAd(
             *interest_group.ad_components, bid_state.kanon_keys, interest_group,
             mojo_bid->bid_role,
-            /*required_selected_buyer_and_seller_reporting_id=*/std::nullopt,
+            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
             /*is_component_ad=*/true, ad_component_descriptor);
         if (!matching_ad_component) {
           generate_bid_client_receiver_set_.ReportBadMessage(
@@ -2340,16 +2333,6 @@ class InterestGroupAuction::BuyerHelper
       return nullptr;
     }
 
-    // Validate that if the `selected_buyer_and_seller_reporting_id` is
-    // required, but not present, the bid is rejected.
-    if (mojo_bid->selected_buyer_and_seller_reporting_id_required &&
-        !mojo_bid->selected_buyer_and_seller_reporting_id.has_value()) {
-      generate_bid_client_receiver_set_.ReportBadMessage(
-          "Selected buyer and seller reporting id is required, but not "
-          "specified");
-      return nullptr;
-    }
-
     if (mojo_bid->selected_buyer_and_seller_reporting_id.has_value() &&
         !IsSelectedReportingIdValid(
             matching_ad->selectable_buyer_and_seller_reporting_ids,
@@ -2365,7 +2348,6 @@ class InterestGroupAuction::BuyerHelper
         std::move(ad_descriptor), std::move(ad_component_descriptors),
         std::move(mojo_bid->modeling_signals), mojo_bid->bid_duration,
         bidding_signals_data_version, matching_ad,
-        std::move(mojo_bid->selected_buyer_and_seller_reporting_id_required),
         std::move(mojo_bid->selected_buyer_and_seller_reporting_id), &bid_state,
         auction_);
   }
@@ -4685,7 +4667,6 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
       component_bid->ad_component_descriptors, component_bid->modeling_signals,
       component_bid->bid_duration, component_bid->bidding_signals_data_version,
       component_bid->bid_ad,
-      component_bid->selected_buyer_and_seller_reporting_id_required,
       component_bid->selected_buyer_and_seller_reporting_id,
       component_bid->bid_state, component_bid->auction);
 }
@@ -4771,14 +4752,10 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
   ++bids_being_scored_;
   Bid* bid_raw = bid.get();
 
-  // We only pass the buyerAndSellerReportingId, and
-  // selectedBuyerAndSellerReportingIdRequired if there is a
+  // We only pass the buyerAndSellerReportingId if there is a
   // selectedBuyerAndSellerReportingId.
-  std::optional<bool> maybe_selected_buyer_and_seller_reporting_id_required;
   std::optional<std::string> maybe_buyer_and_seller_reporting_id;
   if (bid_raw->selected_buyer_and_seller_reporting_id.has_value()) {
-    maybe_selected_buyer_and_seller_reporting_id_required =
-        bid_raw->selected_buyer_and_seller_reporting_id_required;
     maybe_buyer_and_seller_reporting_id =
         bid_raw->bid_ad->buyer_and_seller_reporting_id;
   }
@@ -4802,7 +4779,6 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       parent_ ? PerBuyerCurrency(config_->seller, *parent_->config_)
               : std::nullopt,
       bid_raw->interest_group->owner, bid_raw->ad_descriptor.url,
-      maybe_selected_buyer_and_seller_reporting_id_required,
       bid_raw->selected_buyer_and_seller_reporting_id,
       maybe_buyer_and_seller_reporting_id, bid_raw->GetAdComponentUrls(),
       bid_raw->bid_duration.InMilliseconds(), bid_raw->ad_descriptor.size,

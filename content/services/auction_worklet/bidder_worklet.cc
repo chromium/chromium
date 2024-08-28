@@ -459,12 +459,7 @@ bool BidderWorklet::IsMainAdKAnon(
                                         bid->ad_descriptor.url.spec()))) {
     return false;
   }
-  if (bid->selected_buyer_and_seller_reporting_id_required) {
-    // At this point, we've already verified that all bids that returned a
-    // `selectedBuyerAndSellerReportingIdRequired` of true also returned
-    // a value of `selectedBuyerAndSellerReportingId`.
-    DCHECK(bid->selected_buyer_and_seller_reporting_id.has_value());
-
+  if (bid->selected_buyer_and_seller_reporting_id.has_value()) {
     if (!BidderWorklet::IsKAnon(
             bidder_worklet_non_shared_params,
             blink::HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
@@ -1208,18 +1203,15 @@ void BidderWorklet::V8State::GenerateBid(
     // only k-anon ads available to it.
     //
     // At this point, we don't need to worry about the impact of k-anonymity
-    // for reporting on k-anon where a bid returns
-    // `selectedBuyerAndSellerReportingIdRequired` = true. Assuming we find some
+    // for reporting on k-anon where a bid returns a value for
+    // `selectedBuyerAndSellerReportingId`. Assuming we find some
     // k-anon ads in the loop below that would encourage us to make the
     // k-anon-restricted call to `generateBid()`, we're only going to pass
     // `selectableBuyerAndSellerReportingIds` that would, in combination with
     // the renderUrl and other reporting ids, cause that bid to be k-anonymous
     // for reporting. If no `selectableBuyerAndSellerReportingIds` meet that
     // criteria, that's still fine: The bid could be returned with no
-    // `selectedBuyerAndSellerReportingId`, in which case it must not return
-    // `selectedBuyerAndSellerReportingIdRequired` = true, since that would
-    // cause the bid to be invalid. Without
-    // `selectedBuyerAndSellerReportingIdRequired` = true, the k-anonymous bid
+    // `selectedBuyerAndSellerReportingId`, such that the k-anonymous bid
     // would remain k-anonymous, even if it isn't k-anonymous for reporting.
     if (!bids.empty() && !found_kanon_bid) {
       bool has_kanon_ads = false;

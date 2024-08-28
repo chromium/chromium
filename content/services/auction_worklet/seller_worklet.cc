@@ -519,8 +519,6 @@ void SellerWorklet::ScoreAd(
     const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
-    const std::optional<bool>
-        browser_signal_selected_buyer_and_seller_reporting_id_required,
     const std::optional<std::string>&
         browser_signal_selected_buyer_and_seller_reporting_id,
     const std::optional<std::string>&
@@ -555,9 +553,6 @@ void SellerWorklet::ScoreAd(
   score_ad_task->browser_signal_interest_group_owner =
       browser_signal_interest_group_owner;
   score_ad_task->browser_signal_render_url = browser_signal_render_url;
-  score_ad_task
-      ->browser_signal_selected_buyer_and_seller_reporting_id_required =
-      browser_signal_selected_buyer_and_seller_reporting_id_required;
   score_ad_task->browser_signal_selected_buyer_and_seller_reporting_id =
       browser_signal_selected_buyer_and_seller_reporting_id;
   score_ad_task->browser_signal_buyer_and_seller_reporting_id =
@@ -831,8 +826,6 @@ void SellerWorklet::V8State::ScoreAd(
     const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
-    const std::optional<bool>&
-        browser_signal_selected_buyer_and_seller_reporting_id_required,
     const std::optional<std::string>&
         browser_signal_selected_buyer_and_seller_reporting_id,
     const std::optional<std::string>&
@@ -979,11 +972,6 @@ void SellerWorklet::V8State::ScoreAd(
           browser_signal_interest_group_owner.Serialize()) ||
       !browser_signals_dict.Set("renderURL",
                                 browser_signal_render_url.spec()) ||
-      (browser_signal_selected_buyer_and_seller_reporting_id_required
-           .has_value() &&
-       !browser_signals_dict.Set(
-           "selectedBuyerAndSellerReportingIdRequired",
-           *browser_signal_selected_buyer_and_seller_reporting_id_required)) ||
       (browser_signal_selected_buyer_and_seller_reporting_id.has_value() &&
        !browser_signals_dict.Set(
            "selectedBuyerAndSellerReportingId",
@@ -2144,8 +2132,6 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           std::move(task->component_expect_bid_currency),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url),
-          std::move(
-              task->browser_signal_selected_buyer_and_seller_reporting_id_required),
           std::move(
               task->browser_signal_selected_buyer_and_seller_reporting_id),
           std::move(task->browser_signal_buyer_and_seller_reporting_id),

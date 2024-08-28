@@ -32,7 +32,8 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   // Bid plus information needed to filter subset of component ads to given
   // target #, considering k-anonymity. This is done entirely by the worklet,
   // and isn't in the Mojo bid type. This also includes the reporting ids
-  // needed to enforce `selectedBuyerAndSellerReportingIdRequired`.
+  // needed to enforce k-anonymity for reporting on bids that include a
+  // `selectedBuyerAndSellerReportingId`.
   struct CONTENT_EXPORT BidAndWorkletOnlyMetadata {
     BidAndWorkletOnlyMetadata();
     BidAndWorkletOnlyMetadata(BidAndWorkletOnlyMetadata&&);
