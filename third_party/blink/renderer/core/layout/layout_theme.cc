@@ -183,7 +183,7 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
       return part;
     case kBaseSelectPart:
       CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-      return part;
+      return IsA<HTMLSelectElement>(element) ? part : auto_appearance;
 
     // Aliases of 'auto'.
     // https://drafts.csswg.org/css-ui-4/#typedef-appearance-compat-auto
