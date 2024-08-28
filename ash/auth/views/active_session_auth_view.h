@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_container_view.h"
 #include "ash/auth/views/auth_header_view.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/style/icon_button.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -109,6 +110,10 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
   void ResetInputfields();
 
   void OnTitleChanged(const std::u16string& error_str) override;
+
+  // FingerprintView actions:
+  void SetFingerprintState(FingerprintState state);
+  void NotifyFingerprintAuthFailure();
 
  private:
   // Internal methods for managing views.

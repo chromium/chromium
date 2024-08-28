@@ -281,6 +281,14 @@ void ActiveSessionAuthView::Close() {
   }
 }
 
+void ActiveSessionAuthView::SetFingerprintState(FingerprintState state) {
+  auth_container_->SetFingerprintState(state);
+}
+
+void ActiveSessionAuthView::NotifyFingerprintAuthFailure() {
+  auth_container_->NotifyFingerprintAuthFailure();
+}
+
 void ActiveSessionAuthView::OnContentsChanged() {
   // If something changes on the UI e.g:
   // - user change the text of the input text
