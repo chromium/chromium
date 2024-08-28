@@ -17,7 +17,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/enterprise/watermarking/watermark.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "content/public/utility/utility_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -54,12 +53,6 @@ namespace printing {
 
 namespace {
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-// Print UX requirement for watermarking. Values are in pixels.
-constexpr int kWatermarkBlockWidth = 350;
-constexpr float kTextSize = 24.0f;
-#endif
-
 sk_sp<SkDocument> MakeDocument(
     const std::string& creator,
     const std::string& title,
@@ -85,13 +78,6 @@ void DrawEnterpriseWatermark(SkCanvas* canvas, SkSize size) {
           enterprise_watermark::features::kEnablePrintWatermark)) {
     return;
   }
-
-  // TODO(b/356446812): For now, use this hard-coded string to facilitate
-  // implementing UI tests. We must update the PrintCompositor mojo interface in
-  // order to pass the watermark string here from the browser process.
-  std::string text = "Private! Confidential!\n2024-05-24\nexample@gmail.com";
-  enterprise_watermark::DrawWatermark(canvas, size, text, kWatermarkBlockWidth,
-                                      kTextSize);
 }
 #endif
 

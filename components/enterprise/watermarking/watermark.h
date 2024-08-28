@@ -4,12 +4,7 @@
 #ifndef COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_H_
 #define COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_H_
 
-#include <string>
-
 #include "third_party/skia/include/core/SkColor.h"
-
-class SkCanvas;
-struct SkSize;
 
 namespace gfx {
 class Canvas;
@@ -19,14 +14,6 @@ class FontList;
 }  // namespace gfx
 
 namespace enterprise_watermark {
-
-// Utility function to get height of a watermark block. The block height is
-// going to be the max required height for a single line times the number of
-// line.
-int GetWatermarkBlockHeight(const std::u16string& utf16_text,
-                            int line_count,
-                            int block_width,
-                            int text_size);
 
 // Creates a RenderText instance with a fill style.
 std::unique_ptr<gfx::RenderText> CreateFillRenderText(
@@ -45,18 +32,9 @@ void DrawWatermark(gfx::Canvas* canvas,
                    gfx::RenderText* text_fill,
                    gfx::RenderText* text_outline,
                    int block_height,
+                   SkColor background_color,
                    const gfx::Rect& contents_bounds,
                    int block_width);
-
-// Convenience function that creates the required RenderText instances and
-// computes the required block_height based on inputs. This overload is useful
-// for the case of print where those values are not cached as they are in
-// WatermarkView.
-void DrawWatermark(SkCanvas* canvas,
-                   SkSize size,
-                   const std::string& text,
-                   int block_width,
-                   int text_size);
 
 // Returns the default, hard-coded font list for Chrome watermarks.
 const gfx::FontList& WatermarkFontList();
