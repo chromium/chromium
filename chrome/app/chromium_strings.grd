@@ -2054,6 +2054,24 @@ Permissions you've already given to websites and apps may apply to this account.
           Extra code: <ph name="EXTRA_CODE">$1<ex>0x80071234</ex></ph>.
         </message>
 
+        <!--Startup errors.-->
+        <message name="IDS_UNABLE_TO_GET_SETUP_LOCK"
+                 desc="Error message displayed in the main dialog when the updater is unable to get the setup lock at startup.">
+          Startup error: unable to get the setup lock.
+        </message>
+        <message name="IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR"
+                 desc="Error message displayed in the main dialog when the updater is run without administrative privileges to install a per-system application.">
+          Startup error: please run the installer as administrator.
+        </message>
+        <message name="IDS_WRONG_USER_DEELEVATION_REQUIRED_ERROR"
+                 desc="Error message displayed in the main dialog when the updater is run with administrative privileges to install a per-user application.">
+          Startup error: please run the installer as a regular user, not as administrator.
+        </message>
+        <message name="IDS_GENERIC_STARTUP_ERROR"
+                 desc="Error message displayed in the main dialog when an error is encountered at startup of the updater.">
+          Startup error: <ph name="STARTUP_ERROR">$1<ex>error-internal</ex></ph>.
+        </message>
+
         <!--Network errors.-->
         <message name="IDS_NO_NETWORK_PRESENT_ERROR"
                  desc="Error message displayed in the main dialog when the Updater is unable to connect to the network.">

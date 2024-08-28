@@ -41,7 +41,7 @@ class AppInstallController
   virtual void InstallAppOffline(const std::string& app_id,
                                  const std::string& app_name,
                                  base::OnceCallback<void(int)> callback) = 0;
-  virtual void Exit() = 0;
+  virtual void Exit(int exit_code) = 0;
 
   virtual void set_update_service(
       scoped_refptr<UpdateService> update_service) = 0;

@@ -79,7 +79,7 @@ class AppInstallControllerImpl : public AppInstallController {
         FROM_HERE, base::BindOnce(std::move(callback), 0));
   }
 
-  void Exit() override {}
+  void Exit(int /*exit_code*/) override {}
 
   void set_update_service(
       scoped_refptr<UpdateService> update_service) override {
@@ -112,7 +112,7 @@ AppInstall::AppInstall(AppInstallController::Maker app_install_controller_maker)
 AppInstall::~AppInstall() = default;
 
 void AppInstall::Shutdown(int exit_code) {
-  app_install_controller_->Exit();
+  app_install_controller_->Exit(exit_code);
   App::Shutdown(exit_code);
 }
 

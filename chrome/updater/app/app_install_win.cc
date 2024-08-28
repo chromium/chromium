@@ -374,7 +374,7 @@ class AppInstallControllerImpl : public AppInstallController,
   void InstallAppOffline(const std::string& app_id,
                          const std::string& app_name,
                          base::OnceCallback<void(int)> callback) override;
-  void Exit() override;
+  void Exit(int exit_code) override;
 
   void set_update_service(
       scoped_refptr<UpdateService> update_service) override {
@@ -728,12 +728,20 @@ void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
   install_progress_observer_ipc_->OnComplete(observer_completion_info_.value());
 }
 
-void AppInstallControllerImpl::Exit() {
+void AppInstallControllerImpl::Exit(int exit_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
 
   update_service_ = nullptr;
-  install_progress_observer_ipc_->OnComplete({});
+
+  if (exit_code == kErrorOk) {
+    install_progress_observer_ipc_->OnComplete({});
+  }
+
+  UpdateService::UpdateState update_state;
+  update_state.state = UpdateService::UpdateState::State::kNotStarted;
+  update_state.error_code = exit_code;
+  install_progress_observer_ipc_->OnComplete(HandleInstallResult(update_state));
 }
 void AppInstallControllerImpl::StateChange(
     const UpdateService::UpdateState& update_state) {
@@ -934,6 +942,20 @@ void AppInstallControllerImpl::DoCancel() {
       base::BindOnce(&UpdateService::CancelInstalls, update_service_, app_id_));
 }
 
+std::wstring GetTextForStartupError(int error_code) {
+  switch (error_code) {
+    case kErrorWrongUser:
+      return GetLocalizedString(
+          ::IsUserAnAdmin() ? IDS_WRONG_USER_DEELEVATION_REQUIRED_ERROR_BASE
+                            : IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR_BASE);
+    case kErrorFailedToLockSetupMutex:
+      return GetLocalizedString(IDS_UNABLE_TO_GET_SETUP_LOCK_BASE);
+    default:
+      return GetLocalizedStringF(IDS_GENERIC_STARTUP_ERROR_BASE,
+                                 GetTextForSystemError(error_code));
+  }
+}
+
 }  // namespace
 
 [[nodiscard]] ObserverCompletionInfo HandleInstallResult(
@@ -957,6 +979,11 @@ void AppInstallControllerImpl::DoCancel() {
       completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
       completion_text = GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE);
       break;
+    case UpdateService::UpdateState::State::kNotStarted:
+      VLOG(1) << "Updater error: " << update_state.error_code << ".";
+      completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
+      completion_text = GetTextForStartupError(update_state.error_code);
+      break;
     default:
       NOTREACHED_IN_MIGRATION();
       break;
@@ -971,7 +998,10 @@ void AppInstallControllerImpl::DoCancel() {
       update_state.error_code));
 
   AppCompletionInfo app_info;
-  if (update_state.state != UpdateService::UpdateState::State::kNoUpdate) {
+  if (update_state.state == UpdateService::UpdateState::State::kNotStarted) {
+    app_info.app_id = kUpdaterAppId;
+  } else if (update_state.state !=
+             UpdateService::UpdateState::State::kNoUpdate) {
     app_info.app_id = update_state.app_id;
     app_info.error_code = update_state.error_code;
     app_info.completion_message =
