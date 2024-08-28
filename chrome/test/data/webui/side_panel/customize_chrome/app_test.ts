@@ -14,7 +14,6 @@ import type {CustomizeToolbarHandlerInterface} from 'chrome://customize-chrome-s
 import {CustomizeToolbarApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar/customize_toolbar_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -42,19 +41,14 @@ suite('AppTest', () => {
   });
 
   suite('Metrics', () => {
-    let metrics: MetricsTracker;
-
     suiteSetup(() => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      customizeChromeApp = document.createElement('customize-chrome-app');
-      document.body.appendChild(customizeChromeApp);
       loadTimeData.overrideValues({
         'extensionsCardEnabled': true,
       });
-      metrics = fakeMetricsPrivate();
     });
 
-    test('Rendering extensions card section sets metric', async () => {
+    test('rendering extensions card section sets metric', async () => {
+      const metrics = fakeMetricsPrivate();
       window.dispatchEvent(new Event('load'));
       const eventPromise = eventToPromise(
           'detect-extensions-card-section-impression', customizeChromeApp);
