@@ -61,6 +61,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       listItemSize: {type: String},
       bookmarksService: {type: Object},
       toggleExpand: {type: Boolean},
+      updatedElementIds: {type: Array},
     };
   }
 
@@ -79,6 +80,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   trailingIconTooltip: string = '';
   toggleExpand: boolean = false;
   imageUrls: {[key: string]: string} = {};
+  updatedElementIds: string[] = [];
 
   listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
   bookmarksService: PowerBookmarksService;
@@ -109,6 +111,17 @@ export class PowerBookmarkRowElement extends CrLitElement {
       }
     }
   }
+
+  override shouldUpdate(changedProperties: PropertyValues<this>) {
+    if (changedProperties.has('updatedElementIds')) {
+        const updatedElementIds = changedProperties.get('updatedElementIds');
+        if (updatedElementIds?.includes(this.bookmark?.id)) {
+            return true;
+        }
+        changedProperties.delete('updatedElementIds');
+    }
+    return super.shouldUpdate(changedProperties);
+}
 
   override async getUpdateComplete() {
     // Wait for all children to update before marking as complete.
