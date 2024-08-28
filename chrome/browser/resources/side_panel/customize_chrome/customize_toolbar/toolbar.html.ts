@@ -35,15 +35,17 @@ export function getHtml(this: ToolbarElement) {
     <div class="choose-icons-row category-title">${category.displayName}</div>
     ${
               this.actions_.map(
-                  (action) => action.category === category.id ? html`
+                  (action) => action.category === category.id ?
+                      html`
       <div class="toggle-container choose-icons-row">
         <img class="toggle-icon" src="${action.iconUrl.url}"></img>
         <div class="toggle-title">${action.displayName}</div>
         <cr-toggle @change="${this.getActionToggleHandler_(action.id)}"
-            ?checked="${action.pinned}"></cr-toggle>
+            ?checked="${action.pinned}" aria-label="${
+                          action.displayName}"></cr-toggle>
       </div>
     ` :
-                                                                '')}
+                      '')}
     ${
               categoryIndex !== this.categories_.length - 1 ?
                   html`<hr class="sp-hr">` :
