@@ -864,18 +864,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
         loadTimeData.getBoolean('enableOnDeviceDogfoodFooter');
   }
 
-  private showDefaultResultFooter_(): boolean {
-    return !(Boolean(this.response_?.onDeviceEvaluationUsed) &&
-             loadTimeData.getBoolean('enableOnDeviceDogfoodFooter')) &&
-        !this.enableUiRefinements;
-  }
-
-  private showRefinementsResultFooter_(): boolean {
-    return !(Boolean(this.response_?.onDeviceEvaluationUsed) &&
-             loadTimeData.getBoolean('enableOnDeviceDogfoodFooter')) &&
-        this.enableUiRefinements;
-  }
-
   private undoButtonIcon_(): string {
     return this.enableUiRefinements ? 'compose:undo' : 'compose:mvpUndo';
   }
