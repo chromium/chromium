@@ -1164,7 +1164,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       options.benchmarks = benchmark
       crossbench_test = CrossbenchTest(options, isolated_out_dir)
       return_code = crossbench_test.execute_benchmark(benchmark, display_name,
-                                                      options.passthrough_args)
+                                                      [])
       overall_return_code = return_code or overall_return_code
       test_results_files.append(
           OutputFilePaths(isolated_out_dir, display_name).test_results)
