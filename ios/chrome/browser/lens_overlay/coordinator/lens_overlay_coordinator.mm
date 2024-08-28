@@ -317,11 +317,6 @@
   ];
   sheet.prefersGrabberVisible = YES;
 
-  // TODO(crbug.com/359124093): Temporary workaround as
-  // `presentViewController:` loads the view asynchronously on the main thread.
-  // `_resultViewController` needs to first be loaded to avoid crashing by
-  // calling `setEditView:`.
-  [_resultViewController loadViewIfNeeded];
   [_containerViewController presentViewController:_resultViewController
                                          animated:YES
                                        completion:nil];

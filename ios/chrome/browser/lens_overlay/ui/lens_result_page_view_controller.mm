@@ -72,6 +72,12 @@ const CGFloat kWebContainerTopPadding = 8;
   if (self) {
     _webViewContainer = [[UIView alloc] init];
     _omniboxPopupContainer = [[UIButton alloc] init];
+
+    // Initialize `setEditView` dependencies as it can be called before
+    // `viewDidLoad`.
+    _omniboxContainer = [[UIView alloc] init];
+    _omniboxTapTarget = [[UIButton alloc] init];
+    [_omniboxContainer addSubview:_omniboxTapTarget];
   }
   return self;
 }
@@ -108,7 +114,6 @@ const CGFloat kWebContainerTopPadding = 8;
         forControlEvents:UIControlEventTouchUpInside];
 
   // Omnibox container.
-  _omniboxContainer = [[UIView alloc] init];
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _omniboxContainer.backgroundColor = [UIColor colorNamed:kGrey200Color];
   _omniboxContainer.layer.cornerRadius = 21;
@@ -117,13 +122,11 @@ const CGFloat kWebContainerTopPadding = 8;
                         forAxis:UILayoutConstraintAxisHorizontal];
 
   // Omnibox tap target.
-  _omniboxTapTarget = [[UIButton alloc] init];
   _omniboxTapTarget.translatesAutoresizingMaskIntoConstraints = NO;
   _omniboxTapTarget.backgroundColor = UIColor.clearColor;
   [_omniboxTapTarget addTarget:self
                         action:@selector(didTapOmniboxTapTarget:)
               forControlEvents:UIControlEventTouchUpInside];
-  [_omniboxContainer addSubview:_omniboxTapTarget];
   AddSameConstraints(_omniboxContainer, _omniboxTapTarget);
 
   // Cancel button.
