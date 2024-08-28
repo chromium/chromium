@@ -43,4 +43,8 @@ std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
   return std::nullopt;
 }
 
+NSString* StyledContextMenuStringForString(NSString* string) {
+  return string;
+}
+
 }  // namespace ios::provider
