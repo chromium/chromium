@@ -15503,32 +15503,37 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_NoSyncRequirement_IgnoreWhenDebouncing_V2",
-                    "params": {
-                        "DocumentProviderBackoffOn401": "true",
-                        "DocumentProviderIgnoreWhenDebouncing": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxDocumentProviderNoSyncRequirement"
-                    ]
-                },
-                {
-                    "name": "Enabled_IgnoreWhenDebouncing_V2",
-                    "params": {
-                        "DocumentProviderBackoffOn401": "true",
-                        "DocumentProviderIgnoreWhenDebouncing": "true"
-                    },
-                    "disable_features": [
-                        "OmniboxDocumentProviderNoSyncRequirement"
-                    ]
-                },
-                {
-                    "name": "Enabled_NoSyncRequirement_V2",
+                    "name": "Enabled_NoSyncRequirement_V3",
                     "params": {
                         "DocumentProviderBackoffOn401": "true",
                         "DocumentProviderIgnoreWhenDebouncing": "false"
                     },
                     "enable_features": [
+                        "OmniboxDocumentProvider",
+                        "OmniboxDocumentProviderNoSyncRequirement"
+                    ]
+                },
+                {
+                    "name": "Enabled_NoSyncRequirement_IgnoreWhenDebouncing_V3",
+                    "params": {
+                        "DocumentProviderBackoffOn401": "true",
+                        "DocumentProviderIgnoreWhenDebouncing": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxDocumentProvider",
+                        "OmniboxDocumentProviderNoSyncRequirement"
+                    ]
+                },
+                {
+                    "name": "Enabled_IgnoreWhenDebouncing_V3",
+                    "params": {
+                        "DocumentProviderBackoffOn401": "true",
+                        "DocumentProviderIgnoreWhenDebouncing": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxDocumentProvider"
+                    ],
+                    "disable_features": [
                         "OmniboxDocumentProviderNoSyncRequirement"
                     ]
                 }
