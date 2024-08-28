@@ -122,8 +122,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
 
   void OnDestroySharedImage(const Mailbox& mailbox);
   void OnRegisterSharedImageUploadBuffer(base::ReadOnlySharedMemoryRegion shm);
-#if BUILDFLAG(IS_WIN)
   void OnCopyToGpuMemoryBuffer(const Mailbox& mailbox, uint64_t release_count);
+#if BUILDFLAG(IS_WIN)
   void OnCreateSwapChain(mojom::CreateSwapChainParamsPtr params,
                          uint64_t release_count);
   void OnPresentSwapChain(const Mailbox& mailbox, uint64_t release_count);

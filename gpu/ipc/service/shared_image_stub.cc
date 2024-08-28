@@ -152,13 +152,13 @@ void SharedImageStub::ExecuteDeferredRequest(
       OnDestroySharedImage(request->get_destroy_shared_image());
       break;
 
-#if BUILDFLAG(IS_WIN)
     case mojom::DeferredSharedImageRequest::Tag::kCopyToGpuMemoryBuffer: {
       auto& params = *request->get_copy_to_gpu_memory_buffer();
       OnCopyToGpuMemoryBuffer(params.mailbox, release_count);
       break;
     }
 
+#if BUILDFLAG(IS_WIN)
     case mojom::DeferredSharedImageRequest::Tag::kCreateSwapChain:
       OnCreateSwapChain(std::move(request->get_create_swap_chain()),
                         release_count);
@@ -412,7 +412,6 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
 #endif
 }
 
-#if BUILDFLAG(IS_WIN)
 void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
                                               uint64_t release_count) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnCopyToGpuMemoryBuffer");
@@ -428,6 +427,7 @@ void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
   sync_point_client_state_->ReleaseFenceSync(release_count);
 }
 
+#if BUILDFLAG(IS_WIN)
 void SharedImageStub::CopyToGpuMemoryBufferAsync(
     const Mailbox& mailbox,
     uint64_t release_count,

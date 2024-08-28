@@ -122,8 +122,9 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   // |SharedImageManager::GetUsageForMailbox|.
   SharedImageUsageSet GetUsageForMailbox(const Mailbox& mailbox);
 
-#if BUILDFLAG(IS_WIN)
   bool CopyToGpuMemoryBuffer(const Mailbox& mailbox);
+
+#if BUILDFLAG(IS_WIN)
   bool CopyToGpuMemoryBufferAsync(const Mailbox& mailbox,
                                   base::OnceCallback<void(bool)> callback);
 #endif

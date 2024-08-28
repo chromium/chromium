@@ -34,11 +34,14 @@ namespace blink {
 
 namespace {
 
-#if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kUseCopyToGpuMemoryBufferAsync,
              "UseCopyToGpuMemoryBufferAsync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+);
 
 class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
@@ -206,13 +209,14 @@ void SignalGpuCompletion(
                                query_id, std::move(callback)));
 }
 
-#if BUILDFLAG(IS_WIN)
 void CopyToGpuMemoryBuffer(
     base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
     media::VideoFrame* dst_frame,
     base::OnceClosure callback) {
   CHECK(dst_frame->HasMappableGpuBuffer());
   CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
+  CHECK_EQ(dst_frame->shared_image_format_type(),
+           media::SharedImageFormatType::kSharedImageFormat);
 
   DCHECK(ctx_wrapper);
   auto* context_provider = ctx_wrapper->ContextProvider();
@@ -229,10 +233,7 @@ void CopyToGpuMemoryBuffer(
   DCHECK(sii);
 
   const bool use_async_copy =
-      base::FeatureList::IsEnabled(kUseCopyToGpuMemoryBufferAsync) &&
-      dst_frame->shared_image_format_type() ==
-          media::SharedImageFormatType::kSharedImageFormat;
-
+      base::FeatureList::IsEnabled(kUseCopyToGpuMemoryBufferAsync);
   if (use_async_copy) {
     auto copy_to_gmb_done_lambda = [](base::OnceClosure callback,
                                       bool success) {
@@ -283,7 +284,6 @@ void CopyToGpuMemoryBuffer(
                         std::move(callback));
   }
 }
-#endif
 }  // namespace
 
 bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
@@ -355,17 +355,18 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
           },
           std::move(dst_frame), std::move(callback), flow_id));
 
-#if BUILDFLAG(IS_WIN)
-  // For shared memory GMBs on Windows we needed to explicitly request a copy
-  // from the shared image GPU texture to the GMB.
-  CopyToGpuMemoryBuffer(weak_context_provider_, dst_frame_ptr,
+  if (!dst_frame_ptr->HasNativeGpuMemoryBuffer()) {
+    // For shared memory GMBs we needed to explicitly request a copy
+    // from the shared image GPU texture to the GMB.
+    CopyToGpuMemoryBuffer(weak_context_provider_, dst_frame_ptr,
+                          wrapped_callback->callback());
+  } else {
+    // QueryEXT functions are used to make sure that
+    // CopyRGBATextureToVideoFrame() texture copy is complete before we access
+    // GMB data.
+    SignalGpuCompletion(weak_context_provider_, GL_COMMANDS_COMPLETED_CHROMIUM,
                         wrapped_callback->callback());
-#else
-  // QueryEXT functions are used to make sure that CopyRGBATextureToVideoFrame()
-  // texture copy is complete before we access GMB data.
-  SignalGpuCompletion(weak_context_provider_, GL_COMMANDS_COMPLETED_CHROMIUM,
-                      wrapped_callback->callback());
-#endif
+  }
 
   // Cleanup stale callbacks before adding a new one. It's ok to loop until the
   // first non-cancelled callback since they should execute in order anyway.

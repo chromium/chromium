@@ -245,13 +245,13 @@ ClientSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info) {
   return shared_image_mapping;
 }
 
-#if BUILDFLAG(IS_WIN)
 void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {
   proxy_->CopyToGpuMemoryBuffer(sync_token, mailbox);
 }
 
+#if BUILDFLAG(IS_WIN)
 void ClientSharedImageInterface::CopyToGpuMemoryBufferAsync(
     const SyncToken& sync_token,
     const Mailbox& mailbox,
