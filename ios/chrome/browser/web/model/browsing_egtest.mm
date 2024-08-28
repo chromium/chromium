@@ -314,7 +314,8 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
 // Tests that evaluating user JavaScript that causes navigation correctly
 // modifies history.
-- (void)testBrowsingUserJavaScriptNavigation {
+// TODO(crbug.com/362621166): Test is flaky.
+- (void)DISABLED_testBrowsingUserJavaScriptNavigation {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom])
@@ -358,7 +359,8 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 }
 
 // Tests that evaluating non-navigation user JavaScript doesn't affect history.
-- (void)testBrowsingUserJavaScriptWithoutNavigation {
+// TODO(crbug.com/362621166): Test is flaky.
+- (void)DISABLED_testBrowsingUserJavaScriptWithoutNavigation {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom])

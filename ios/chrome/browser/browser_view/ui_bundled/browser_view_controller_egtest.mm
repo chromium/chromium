@@ -85,7 +85,8 @@
 }
 
 // Tests that evaluating JavaScript in the omnibox (e.g, a bookmarklet) works.
-- (void)testJavaScriptInOmnibox {
+// TODO(crbug.com/362621166): Test is flaky.
+- (void)DIABLED_testJavaScriptInOmnibox {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad running iOS 10.
   if ([ChromeEarlGrey isIPadIdiom])
