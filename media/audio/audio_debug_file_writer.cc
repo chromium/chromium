@@ -179,8 +179,7 @@ void AudioDebugFileWriter::DoWrite(std::unique_ptr<AudioBus> data) {
   // to write to the file.
   static_assert(ARCH_CPU_LITTLE_ENDIAN);
 
-  auto span = base::as_chars(interleaved_data_->as_span());
-  file_.WriteAtCurrentPos(span.data(), span.size_bytes());
+  file_.WriteAtCurrentPos(base::as_bytes(interleaved_data_->as_span()));
 
   // Cache the AudioBus for later use.
   audio_bus_pool_->InsertAudioBus(std::move(data));

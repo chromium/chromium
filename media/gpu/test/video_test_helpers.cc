@@ -128,8 +128,7 @@ bool IvfWriter::WriteFileHeader(VideoCodec codec,
   writer.WriteU32LittleEndian(0u);
   CHECK_EQ(writer.remaining(), 0u);
 
-  return output_file_.WriteAtCurrentPos(ivf_header, std::size(ivf_header)) ==
-         static_cast<int>(std::size(ivf_header));
+  return output_file_.WriteAtCurrentPosAndCheck(base::as_byte_span(ivf_header));
 }
 
 bool IvfWriter::WriteFrame(uint32_t data_size,
@@ -138,12 +137,12 @@ bool IvfWriter::WriteFrame(uint32_t data_size,
   char ivf_frame_header[kIvfFrameHeaderSize] = {};
   memcpy(&ivf_frame_header[0], &data_size, sizeof(data_size));
   memcpy(&ivf_frame_header[4], &timestamp, sizeof(timestamp));
-  bool success =
-      output_file_.WriteAtCurrentPos(ivf_frame_header, kIvfFrameHeaderSize) ==
-          static_cast<int>(kIvfFrameHeaderSize) &&
-      output_file_.WriteAtCurrentPos(reinterpret_cast<const char*>(data),
-                                     data_size) == static_cast<int>(data_size);
-  return success;
+  if (!output_file_.WriteAtCurrentPosAndCheck(
+          base::as_byte_span(ivf_frame_header))) {
+    return false;
+  }
+  auto data_span = UNSAFE_TODO(base::span(data, data_size));
+  return output_file_.WriteAtCurrentPosAndCheck(data_span);
 }
 
 // static

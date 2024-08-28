@@ -63,8 +63,7 @@ bool WriteTokenToFile(const base::FilePath& token_path,
                << token_path.AsUTF8Unsafe();
     return false;
   }
-  std::string token_string = token.ToString();
-  token_file.WriteAtCurrentPos(token_string.c_str(), token_string.length());
+  token_file.WriteAtCurrentPos(base::as_byte_span(token.ToString()));
   return true;
 }
 
