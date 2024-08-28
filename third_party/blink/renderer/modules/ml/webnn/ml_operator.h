@@ -16,8 +16,15 @@
 
 namespace blink {
 
+class MLArgMinMaxOptions;
 class MLGraphBuilder;
 class MLOperand;
+class MLOperatorOptions;
+class MLGruCellOptions;
+class MLLstmOptions;
+class MLLstmCellOptions;
+class MLPadOptions;
+class MLSplitOptions;
 
 class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
  public:
@@ -48,7 +55,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   // MLGraphBuilder operation build method.
   MLOperator(MLGraphBuilder* builder,
              webnn::mojom::blink::Operation::Tag kind,
-             const bindings::DictionaryBase* options,
+             const MLOperatorOptions* options,
              OperationSubKind sub_kind = absl::monostate{});
 
   MLOperator(const MLOperator&) = delete;
@@ -65,7 +72,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     return absl::get<MojomKind>(SubKind());
   }
 
-  const bindings::DictionaryBase* Options() const;
+  const MLOperatorOptions* Options() const;
   const HeapVector<Member<const MLOperand>>& Inputs() const;
   const HeapVector<Member<const MLOperand>>& Outputs() const;
   MLGraphBuilder const* Builder() const { return builder_.Get(); }
@@ -85,7 +92,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
 
   // The correct type of options_ depends on OperatorKind. For example, if the
   // OperatorKind is kClamp, options_ could static_cast to MLClampOptions.
-  Member<const bindings::DictionaryBase> options_;
+  Member<const MLOperatorOptions> options_;
   OperationSubKind sub_kind_;
 
   HeapVector<Member<const MLOperand>> inputs_;
@@ -100,7 +107,7 @@ class MODULES_EXPORT MLArgMinMaxOperator : public MLOperator {
   MLArgMinMaxOperator(MLGraphBuilder* builder,
                       OperationSubKind sub_kind,
                       const uint32_t axis,
-                      const bindings::DictionaryBase* options);
+                      const MLArgMinMaxOptions* options);
 
   MLArgMinMaxOperator(const MLArgMinMaxOperator&) = delete;
   MLArgMinMaxOperator& operator=(const MLArgMinMaxOperator&) = delete;
@@ -117,7 +124,7 @@ class MODULES_EXPORT MLConcatOperator : public MLOperator {
  public:
   MLConcatOperator(MLGraphBuilder* builder,
                    const uint32_t axis,
-                   const bindings::DictionaryBase* options);
+                   const MLOperatorOptions* options);
 
   MLConcatOperator(const MLConcatOperator&) = delete;
   MLConcatOperator& operator=(const MLConcatOperator&) = delete;
@@ -135,7 +142,7 @@ class MODULES_EXPORT MLLstmOperator : public MLOperator {
   MLLstmOperator(MLGraphBuilder* builder,
                  uint32_t steps,
                  uint32_t hidden_size,
-                 const bindings::DictionaryBase* options);
+                 const MLLstmOptions* options);
 
   MLLstmOperator(const MLLstmOperator&) = delete;
   MLLstmOperator& operator=(const MLLstmOperator&) = delete;
@@ -154,7 +161,7 @@ class MODULES_EXPORT MLLstmCellOperator : public MLOperator {
  public:
   MLLstmCellOperator(MLGraphBuilder* builder,
                      uint32_t hidden_size,
-                     const bindings::DictionaryBase* options);
+                     const MLLstmCellOptions* options);
 
   MLLstmCellOperator(const MLLstmCellOperator&) = delete;
   MLLstmCellOperator& operator=(const MLLstmCellOperator&) = delete;
@@ -172,7 +179,7 @@ class MODULES_EXPORT MLGruOperator : public MLOperator {
   MLGruOperator(MLGraphBuilder* builder,
                 uint32_t steps,
                 uint32_t hidden_size,
-                const bindings::DictionaryBase* options);
+                const MLOperatorOptions* options);
 
   MLGruOperator(const MLGruOperator&) = delete;
   MLGruOperator& operator=(const MLGruOperator&) = delete;
@@ -191,7 +198,7 @@ class MODULES_EXPORT MLGruCellOperator : public MLOperator {
  public:
   MLGruCellOperator(MLGraphBuilder* builder,
                     uint32_t hidden_size,
-                    const bindings::DictionaryBase* options);
+                    const MLGruCellOptions* options);
 
   MLGruCellOperator(const MLGruCellOperator&) = delete;
   MLGruCellOperator& operator=(const MLGruCellOperator&) = delete;
@@ -209,7 +216,7 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
   MLPadOperator(MLGraphBuilder* builder,
                 const Vector<uint32_t>& beginning_padding,
                 const Vector<uint32_t>& ending_padding,
-                const bindings::DictionaryBase* options);
+                const MLPadOptions* options);
 
   MLPadOperator(const MLPadOperator&) = delete;
   MLPadOperator& operator=(const MLPadOperator&) = delete;
@@ -229,7 +236,7 @@ class MODULES_EXPORT MLSliceOperator : public MLOperator {
   MLSliceOperator(MLGraphBuilder* builder,
                   const Vector<uint32_t>& beginning_padding,
                   const Vector<uint32_t>& ending_padding,
-                  const bindings::DictionaryBase* options);
+                  const MLOperatorOptions* options);
 
   MLSliceOperator(const MLSliceOperator&) = delete;
   MLSliceOperator& operator=(const MLSliceOperator&) = delete;
@@ -248,7 +255,7 @@ class MODULES_EXPORT MLSoftmaxOperator : public MLOperator {
  public:
   MLSoftmaxOperator(MLGraphBuilder* builder,
                     const uint32_t axis,
-                    const bindings::DictionaryBase* options);
+                    const MLOperatorOptions* options);
 
   MLSoftmaxOperator(const MLSoftmaxOperator&) = delete;
   MLSoftmaxOperator& operator=(const MLSoftmaxOperator&) = delete;
@@ -265,10 +272,10 @@ class MODULES_EXPORT MLSplitOperator : public MLOperator {
  public:
   MLSplitOperator(MLGraphBuilder* builder,
                   const uint32_t splits,
-                  const bindings::DictionaryBase* options);
+                  const MLSplitOptions* options);
   MLSplitOperator(MLGraphBuilder* builder,
                   const Vector<uint32_t>& splits,
-                  const bindings::DictionaryBase* options);
+                  const MLSplitOptions* options);
 
   MLSplitOperator(const MLSplitOperator&) = delete;
   MLSplitOperator& operator=(const MLSplitOperator&) = delete;
