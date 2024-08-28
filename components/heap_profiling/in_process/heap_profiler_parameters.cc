@@ -21,10 +21,6 @@
 
 namespace heap_profiling {
 
-BASE_FEATURE(kHeapProfilerCentralControl,
-             "HeapProfilerCentralControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 // Platform-specific parameter defaults.
@@ -125,6 +121,29 @@ BASE_FEATURE(kHeapProfilerReporting,
              "HeapProfilerReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHeapProfilerCentralControl,
+             "HeapProfilerCentralControl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kGpuSnapshotProbability{
+    &kHeapProfilerCentralControl, "gpu-prob-pct", 100};
+
+const base::FeatureParam<int> kNetworkSnapshotProbability{
+    &kHeapProfilerCentralControl, "network-prob-pct", 100};
+
+// Sample 10% of renderer processes by default, because last time this was
+// evaluated (2024-08) the 50th %ile of renderer process count
+// (Memory.RenderProcessHost.Count.All) ranged from 8 on Windows to 18 on Mac.
+// 10% is an easy default between 1/18 and 1/8.
+const base::FeatureParam<int> kRendererSnapshotProbability{
+    &kHeapProfilerCentralControl, "renderer-prob-pct", 10};
+
+// Sample 50% of utility processes by default, because last time this was
+// evaluated (2024-08) the profiler collected 1.8x as many snapshots on Mac and
+// 2.4x as many snapshots on Windows for each browser process snapshot.
+const base::FeatureParam<int> kUtilitySnapshotProbability{
+    &kHeapProfilerCentralControl, "utility-prob-pct", 50};
+
 // static
 void HeapProfilerParameters::RegisterJSONConverter(
     base::JSONValueConverter<HeapProfilerParameters>* converter) {
@@ -181,8 +200,6 @@ HeapProfilerParameters GetHeapProfilerParametersForProcess(
       }
       break;
     case Process::kGpu:
-      // Only enabled by default on Mac.
-#if BUILDFLAG(IS_MAC)
       if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
         params.is_supported = true;
         // Use half the threshold used in the browser process, because last time
@@ -190,11 +207,21 @@ HeapProfilerParameters GetHeapProfilerParametersForProcess(
         // memory at the median.
         params.sampling_rate_bytes = params.sampling_rate_bytes / 2;
       }
-#endif
       break;
     case Process::kRenderer:
+      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+        params.is_supported = true;
+      }
+      break;
     case Process::kUtility:
-      // Not enabled by default on any platform.
+      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+        params.is_supported = true;
+        // Use 1/10th the threshold used in the browser process, because last
+        // time it was validated with the default sampling rate (2024-08) the
+        // sampler collected 6% to 11% as many samples per snapshot in the
+        // utility process, depending on platform.
+        params.sampling_rate_bytes = params.sampling_rate_bytes / 10;
+      }
       break;
     case Process::kUnknown:
     default:

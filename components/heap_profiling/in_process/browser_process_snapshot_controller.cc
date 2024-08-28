@@ -28,18 +28,6 @@
 
 namespace heap_profiling {
 
-const base::FeatureParam<int> kGpuSnapshotProbability{
-    &kHeapProfilerCentralControl, "gpu-prob-pct", 100};
-
-const base::FeatureParam<int> kNetworkSnapshotProbability{
-    &kHeapProfilerCentralControl, "network-prob-pct", 100};
-
-const base::FeatureParam<int> kRendererSnapshotProbability{
-    &kHeapProfilerCentralControl, "renderer-prob-pct", 100};
-
-const base::FeatureParam<int> kUtilitySnapshotProbability{
-    &kHeapProfilerCentralControl, "utility-prob-pct", 100};
-
 // static
 BrowserProcessSnapshotController*
 BrowserProcessSnapshotController::GetInstance() {

@@ -11317,35 +11317,6 @@
             ]
         }
     ],
-    "HeapProfilingCentralControl": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240731",
-                    "params": {
-                        "gpu-process-params": "{\"is-supported\":true,\"sampling-rate-bytes\":5000000}",
-                        "renderer-prob-pct": "10",
-                        "renderer-process-params": "{\"is-supported\":true}",
-                        "utility-prob-pct": "50",
-                        "utility-process-params": "{\"is-supported\":true,\"sampling-rate-bytes\":1000000}"
-                    },
-                    "enable_features": [
-                        "HeapProfilerCentralControl",
-                        "HeapProfilerReporting"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeatmapPalmDetectionStudy": [
         {
             "platforms": [

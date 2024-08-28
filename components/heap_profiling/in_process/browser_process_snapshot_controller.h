@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/profiler/process_type.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,17 +26,6 @@ namespace heap_profiling {
 namespace mojom {
 class SnapshotController;
 }
-
-// The probability of including a child process in each snapshot that's taken
-// when kHeapProfilerCentralControl is enabled, as a percentage from 0 to 100.
-// Defaults to 100, but can be set lower to sub-sample process types that are
-// very common (mainly renderers) to keep data volume low. Samples from child
-// processes are weighted in inverse proportion to the snapshot probability to
-// normalize the aggregated results.
-extern const base::FeatureParam<int> kGpuSnapshotProbability;
-extern const base::FeatureParam<int> kNetworkSnapshotProbability;
-extern const base::FeatureParam<int> kRendererSnapshotProbability;
-extern const base::FeatureParam<int> kUtilitySnapshotProbability;
 
 // Sends notifications to ChildProcessSnapshotController endpoints in child
 // processes to trigger snapshots on demand from the HeapProfilerController in
