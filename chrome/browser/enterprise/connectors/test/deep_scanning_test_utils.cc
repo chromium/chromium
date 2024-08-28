@@ -928,31 +928,30 @@ void SetOnSecurityEventReporting(
         enabled_opt_in_events,
     bool machine_scope) {
   ScopedListPrefUpdate settings_list(prefs, kOnSecurityEventPref);
+  settings_list->clear();
+  prefs->ClearPref(kOnSecurityEventScopePref);
   if (!enabled) {
-    settings_list->clear();
-    prefs->ClearPref(kOnSecurityEventScopePref);
     return;
   }
 
-  if (settings_list->empty()) {
-    base::Value::Dict settings;
+  base::Value::Dict settings;
 
-    settings.Set(kKeyServiceProvider, base::Value("google"));
-    if (!enabled_event_names.empty()) {
-      base::Value::List enabled_event_name_list;
-      for (const auto& enabled_event_name : enabled_event_names) {
-        enabled_event_name_list.Append(enabled_event_name);
-      }
-      settings.Set(kKeyEnabledEventNames, std::move(enabled_event_name_list));
+  settings.Set(kKeyServiceProvider, base::Value("google"));
+  if (!enabled_event_names.empty()) {
+    base::Value::List enabled_event_name_list;
+    for (const auto& enabled_event_name : enabled_event_names) {
+      enabled_event_name_list.Append(enabled_event_name);
     }
-
-    if (!enabled_opt_in_events.empty()) {
-      settings.Set(kKeyEnabledOptInEvents,
-                   CreateOptInEventsList(enabled_opt_in_events));
-    }
-
-    settings_list->Append(std::move(settings));
+    settings.Set(kKeyEnabledEventNames, std::move(enabled_event_name_list));
   }
+
+  if (!enabled_opt_in_events.empty()) {
+    settings.Set(kKeyEnabledOptInEvents,
+                 CreateOptInEventsList(enabled_opt_in_events));
+  }
+
+  settings_list->Append(std::move(settings));
+
   prefs->SetInteger(
       kOnSecurityEventScopePref,
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
