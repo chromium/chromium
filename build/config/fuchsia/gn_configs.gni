@@ -4,6 +4,10 @@
 
 assert(is_fuchsia)
 
+# TODO(crbug.com/359657446): Remove the duplicate arguments in favor of
+# using the ones in third_party/fuchsia-gn-sdk/. Some of them are needed
+# by repos like webrtc which may not update to use the
+# third_party/fuchsia-gn-sdk/src/gn_configs.gni.
 declare_args() {
   # Path to the fuchsia SDK. This is intended for use in other templates &
   # rules to reference the contents of the fuchsia SDK.
