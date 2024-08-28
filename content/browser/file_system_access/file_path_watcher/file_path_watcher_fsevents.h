@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_histogram.h"
 
 namespace content {
 
@@ -68,7 +69,7 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
 
   // (Re-)Initialize the event stream to start reporting events from
   // |start_event|.
-  void UpdateEventStream(FSEventStreamEventId start_event);
+  WatchWithChangeInfoResult UpdateEventStream(FSEventStreamEventId start_event);
 
   // Returns true if resolving the target path got a different result than
   // last time it was done.
@@ -80,8 +81,9 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
   // Destroy the event stream.
   void DestroyEventStream();
 
-  // Start watching the FSEventStream.
-  void StartEventStream(FSEventStreamEventId start_event,
+  // Start watching the FSEventStream. Returns `true` if the FS Events event
+  // stream starts successfully.
+  bool StartEventStream(FSEventStreamEventId start_event,
                         const base::FilePath& path);
 
   bool recursive_watch_ = false;

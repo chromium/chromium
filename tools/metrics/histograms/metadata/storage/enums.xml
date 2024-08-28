@@ -167,6 +167,8 @@ chromium-metrics-reviews@google.com.
       label="Windows, reached the root directory and couldn't watch it"/>
   <int value="4" label="Windows, error when calling CreateIoCompletionPort"/>
   <int value="5" label="Windows, error when calling ReadDirectoryChangesW"/>
+  <int value="6" label="Mac, error when the resolved target path is empty"/>
+  <int value="7" label="Mac, error when starting the FSEvents event stream"/>
 </enum>
 
 <enum name="ImportantSitesReason">
