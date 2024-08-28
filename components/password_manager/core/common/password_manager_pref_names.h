@@ -346,6 +346,13 @@ inline constexpr char kClearingUndecryptablePasswords[] =
     "password_manager.clearing_undecryptable_passwords";
 #endif
 
+// Boolean pref indicating if passwords were migrated to OSCryptAsync. Two for
+// each store.
+inline constexpr char kProfileStoreMigratedToOSCryptAsync[] =
+    "password_manager.profile_store_migrated_to_os_crypt_async";
+inline constexpr char kAccountStoreMigratedToOSCryptAsync[] =
+    "password_manager.account_store_migrated_to_os_crypt_async";
+
 }  // namespace password_manager::prefs
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_PREF_NAMES_H_

@@ -431,6 +431,10 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kDeletingUndecryptablePasswordsEnabled,
                                 true);
 #endif
+  registry->RegisterBooleanPref(prefs::kProfileStoreMigratedToOSCryptAsync,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccountStoreMigratedToOSCryptAsync,
+                                false);
 }
 
 // static

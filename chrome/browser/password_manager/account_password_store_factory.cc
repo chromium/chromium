@@ -151,9 +151,10 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
         return profile->GetDefaultStoragePartition()->GetNetworkContext();
       },
       profile);
-  password_manager::RemoveUselessCredentials(
+  password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
-      profile->GetPrefs(), base::Seconds(60), network_context_getter);
+      password_manager::kAccountStore, profile->GetPrefs(), base::Seconds(60),
+      network_context_getter);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Android gets logins with affiliations directly from the backend.

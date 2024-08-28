@@ -117,8 +117,9 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
   store->Init(ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
               std::move(affiliated_match_helper));
 
-  password_manager::RemoveUselessCredentials(
+  password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForBrowserState(context), store,
+      password_manager::kProfileStore,
       ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
       base::Seconds(60), base::NullCallback());
   if (!context->IsOffTheRecord()) {

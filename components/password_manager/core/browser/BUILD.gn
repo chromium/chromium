@@ -221,6 +221,10 @@ static_library("browser") {
   }
 
   if (!is_android) {
+    sources += [
+      "os_crypt_async_migrator.cc",
+      "os_crypt_async_migrator.h",
+    ]
     deps += [ "//components/webauthn/core/browser:passkey_model" ]
   }
 
@@ -485,6 +489,8 @@ source_set("unit_tests") {
   ]
   if (is_android) {
     sources += [ "password_credential_filler_impl_unittest.cc" ]
+  } else {
+    sources += [ "os_crypt_async_migrator_unittest.cc" ]
   }
   if (use_blink) {
     sources += [ "http_credentials_cleaner_unittest.cc" ]

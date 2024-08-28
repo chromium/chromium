@@ -92,10 +92,10 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
   password_store->Init(browser_state->GetPrefs(),
                        std::move(affiliated_match_helper));
 
-  password_manager::RemoveUselessCredentials(
+  password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForBrowserState(browser_state),
-      password_store, browser_state->GetPrefs(), base::Minutes(1),
-      base::NullCallback());
+      password_store, password_manager::kAccountStore,
+      browser_state->GetPrefs(), base::Minutes(1), base::NullCallback());
 
   std::unique_ptr<password_manager::PasswordAffiliationSourceAdapter>
       password_affiliation_adapter = std::make_unique<

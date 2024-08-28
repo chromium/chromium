@@ -92,9 +92,10 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
         return profile->GetDefaultStoragePartition()->GetNetworkContext();
       },
       profile);
-  password_manager::RemoveUselessCredentials(
+  password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
-      profile->GetPrefs(), base::Seconds(60), network_context_getter);
+      password_manager::kProfileStore, profile->GetPrefs(), base::Seconds(60),
+      network_context_getter);
 
   password_affiliation_adapter->RegisterPasswordStore(ps.get());
   affiliation_service->RegisterSource(std::move(password_affiliation_adapter));

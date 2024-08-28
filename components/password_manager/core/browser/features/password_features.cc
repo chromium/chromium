@@ -159,4 +159,8 @@ BASE_FEATURE(kUseNewEncryptionMethod,
              "UseNewEncryptionMethod",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEncryptAllPasswordsWithOSCryptAsync,
+             "EncryptAllPasswordsWithOSCryptAsync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace password_manager::features
