@@ -30,7 +30,9 @@ class PaymentInstrument final {
     kUnknown = 0,
     // Payment Rail used in Brazil.
     kPix = 1,
-    kMaxValue = kPix,
+    // Payment Rail used for Ewallet.
+    kPaymentHyperlink = 2,
+    kMaxValue = kPaymentHyperlink,
   };
 
   PaymentInstrument(int64_t instrument_id,

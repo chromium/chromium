@@ -387,6 +387,8 @@ ConvertPaymentInstrumentPaymentRailToSyncPaymentRail(
   switch (payment_rail) {
     case PaymentInstrument::PaymentRail::kPix:
       return sync_pb::PaymentInstrument_SupportedRail_PIX;
+    case PaymentInstrument::PaymentRail::kPaymentHyperlink:
+      return sync_pb::PaymentInstrument_SupportedRail_PAYMENT_HYPERLINK;
     case PaymentInstrument::PaymentRail::kUnknown:
       return sync_pb::PaymentInstrument_SupportedRail_SUPPORTED_RAIL_UNKNOWN;
   }
