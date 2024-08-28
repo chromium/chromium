@@ -61,7 +61,7 @@ class ChromeAccountManagerService : public KeyedService,
   // Initializes the service.
   // Filter identities according to the profile.
   explicit ChromeAccountManagerService(PrefService* pref_service,
-                                       size_t profile_index);
+                                       std::string_view profile_name);
   ChromeAccountManagerService(const ChromeAccountManagerService&) = delete;
   ChromeAccountManagerService& operator=(const ChromeAccountManagerService&) =
       delete;
@@ -144,7 +144,7 @@ class ChromeAccountManagerService : public KeyedService,
   // ResizedAvatarCache for IdentityAvatarSize::Large.
   ResizedAvatarCache* large_avatar_cache_;
 
-  const size_t profile_index_ = 0;
+  const std::string profile_name_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_CHROME_ACCOUNT_MANAGER_SERVICE_H_

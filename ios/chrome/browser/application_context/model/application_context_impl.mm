@@ -511,18 +511,8 @@ SystemIdentityManager* ApplicationContextImpl::GetSystemIdentityManager() {
 AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!account_profile_mapper_) {
-    size_t profile_count = GetProfileManager()
-                               ->GetProfileAttributesStorage()
-                               ->GetNumberOfProfiles();
-
-    if (profile_count == 0) {
-      // This case can happens on the first startup.
-      // TODO(crbug.com/331783685): AccountProfileMapper needs to listen for
-      // profiles being added and removed.
-      profile_count = 1;
-    }
-    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-        GetSystemIdentityManager(), profile_count);
+    account_profile_mapper_ =
+        std::make_unique<AccountProfileMapper>(GetSystemIdentityManager());
   }
   return account_profile_mapper_.get();
 }

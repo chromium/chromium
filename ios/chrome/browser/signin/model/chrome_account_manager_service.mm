@@ -140,12 +140,14 @@ class Iterator {
 
 // Helper function to iterator over ChromeIdentityService identities.
 template <typename T, typename F>
-typename T::ResultType IterateOverIdentities(T t, F f, size_t profile_index) {
+typename T::ResultType IterateOverIdentities(T t,
+                                             F f,
+                                             std::string_view profile_name) {
   using Iter = Iterator<T, F>;
   Iter iterator(std::move(t), std::move(f));
   GetApplicationContext()->GetAccountProfileMapper()->IterateOverIdentities(
       base::BindRepeating(&Iter::Run, base::Unretained(&iterator)),
-      profile_index);
+      profile_name);
   return iterator.Result();
 }
 
@@ -161,8 +163,8 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
 
 ChromeAccountManagerService::ChromeAccountManagerService(
     PrefService* pref_service,
-    size_t profile_index)
-    : pref_service_(pref_service), profile_index_(profile_index) {
+    std::string_view profile_name)
+    : pref_service_(pref_service), profile_name_(profile_name) {
   // pref_service is null in test environment. In prod environment pref_service
   // comes from GetApplicationContext()->GetLocalState() and couldn't be null.
   if (pref_service_) {
@@ -176,24 +178,24 @@ ChromeAccountManagerService::ChromeAccountManagerService(
     UpdateRestriction();
   }
   GetApplicationContext()->GetAccountProfileMapper()->AddObserver(
-      this, profile_index_);
+      this, profile_name_);
 }
 
 ChromeAccountManagerService::~ChromeAccountManagerService() {
   GetApplicationContext()->GetAccountProfileMapper()->RemoveObserver(
-      this, profile_index_);
+      this, profile_name_);
 }
 
 bool ChromeAccountManagerService::HasIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
                                SkipRestricted{restriction_},
-                               profile_index_) != nil;
+                               profile_name_) != nil;
 }
 
 bool ChromeAccountManagerService::HasRestrictedIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
                                KeepRestricted{restriction_},
-                               profile_index_) != nil;
+                               profile_name_) != nil;
 }
 
 bool ChromeAccountManagerService::IsValidIdentity(
@@ -215,7 +217,7 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
   return IterateOverIdentities(
       FindFirstIdentity{},
       CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}},
-      profile_index_);
+      profile_name_);
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
@@ -232,12 +234,12 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 NSArray<id<SystemIdentity>>* ChromeAccountManagerService::GetAllIdentities()
     const {
   return IterateOverIdentities(CollectIdentities{},
-                               SkipRestricted{restriction_}, profile_index_);
+                               SkipRestricted{restriction_}, profile_name_);
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetDefaultIdentity() const {
   return IterateOverIdentities(FindFirstIdentity{},
-                               SkipRestricted{restriction_}, profile_index_);
+                               SkipRestricted{restriction_}, profile_name_);
 }
 
 UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(

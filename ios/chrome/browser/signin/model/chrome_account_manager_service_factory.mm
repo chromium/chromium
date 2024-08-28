@@ -38,22 +38,9 @@ ChromeAccountManagerServiceFactory::~ChromeAccountManagerServiceFactory() =
 std::unique_ptr<KeyedService>
 ChromeAccountManagerServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  size_t profile_index = 0;
   ChromeBrowserState* chrome_browser_state =
       static_cast<ChromeBrowserState*>(context);
-  if (experimental_flags::DisplaySwitchProfile().has_value()) {
-    // When the multiple profile featuer is enabled, the default profile should
-    // list only non managed identities. And other profiles should list only
-    // managed identities.
-    // TODO(crbug.com/331783685): Need a better implementation to avoid using
-    // the profile name and a better mapping account<->profile mapping.
-    const std::string& profile_name =
-        chrome_browser_state->GetBrowserStateName();
-    profile_index = GetApplicationContext()
-                        ->GetProfileManager()
-                        ->GetProfileAttributesStorage()
-                        ->GetIndexOfProfileWithName(profile_name);
-  }
   return std::make_unique<ChromeAccountManagerService>(
-      GetApplicationContext()->GetLocalState(), profile_index);
+      GetApplicationContext()->GetLocalState(),
+      chrome_browser_state->GetBrowserStateName());
 }
