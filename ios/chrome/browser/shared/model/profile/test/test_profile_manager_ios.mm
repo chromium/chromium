@@ -69,16 +69,16 @@ TestProfileManagerIOS::GetLoadedBrowserStates() {
 
 bool TestProfileManagerIOS::LoadBrowserStateAsync(
     std::string_view name,
-    ChromeBrowserStateLoadedCallback initialized_callback,
-    ChromeBrowserStateLoadedCallback created_callback) {
+    ProfileLoadedCallback initialized_callback,
+    ProfileLoadedCallback created_callback) {
   return CreateBrowserStateAsync(name, std::move(initialized_callback),
                                  std::move(created_callback));
 }
 
 bool TestProfileManagerIOS::CreateBrowserStateAsync(
     std::string_view name,
-    ChromeBrowserStateLoadedCallback initialized_callback,
-    ChromeBrowserStateLoadedCallback created_callback) {
+    ProfileLoadedCallback initialized_callback,
+    ProfileLoadedCallback created_callback) {
   auto iterator = browser_states_.find(name);
   if (iterator == browser_states_.end()) {
     // Creation is not supported by TestProfileManagerIOS.

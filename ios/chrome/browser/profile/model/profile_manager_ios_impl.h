@@ -44,14 +44,12 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;
-  bool LoadBrowserStateAsync(
-      std::string_view name,
-      ChromeBrowserStateLoadedCallback initialized_callback,
-      ChromeBrowserStateLoadedCallback created_callback) override;
-  bool CreateBrowserStateAsync(
-      std::string_view name,
-      ChromeBrowserStateLoadedCallback initialized_callback,
-      ChromeBrowserStateLoadedCallback created_callback) override;
+  bool LoadBrowserStateAsync(std::string_view name,
+                             ProfileLoadedCallback initialized_callback,
+                             ProfileLoadedCallback created_callback) override;
+  bool CreateBrowserStateAsync(std::string_view name,
+                               ProfileLoadedCallback initialized_callback,
+                               ProfileLoadedCallback created_callback) override;
   ChromeBrowserState* LoadBrowserState(std::string_view name) override;
   ChromeBrowserState* CreateBrowserState(std::string_view name) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
@@ -86,11 +84,10 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   // `creation_mode`. The callbacks have the same meaning as the method
   // CreateBrowserStateAsync(...). Returns whether a ChromeBrowserState
   // with that name already exists or it can be created.
-  bool CreateBrowserStateWithMode(
-      std::string_view name,
-      CreationMode creation_mode,
-      ChromeBrowserStateLoadedCallback initialized_callback,
-      ChromeBrowserStateLoadedCallback created_callback);
+  bool CreateBrowserStateWithMode(std::string_view name,
+                                  CreationMode creation_mode,
+                                  ProfileLoadedCallback initialized_callback,
+                                  ProfileLoadedCallback created_callback);
 
   // Final initialization of the browser state.
   void DoFinalInit(ChromeBrowserState* browser_state);

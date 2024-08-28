@@ -19,9 +19,8 @@ class ProfileManagerObserverIOS;
 // ChromeBrowserState instances. Owns all instances that it creates.
 class ProfileManagerIOS {
  public:
-  // Callback invoked when a ChromeBrowserState has been loaded asynchronously.
-  using ChromeBrowserStateLoadedCallback =
-      base::OnceCallback<void(ChromeBrowserState*)>;
+  // Callback invoked when a Profile has been loaded asynchronously.
+  using ProfileLoadedCallback = base::OnceCallback<void(ChromeBrowserState*)>;
 
   ProfileManagerIOS(const ProfileManagerIOS&) = delete;
   ProfileManagerIOS& operator=(const ProfileManagerIOS&) = delete;
@@ -61,8 +60,8 @@ class ProfileManagerIOS {
   // the creation is disallowed.
   virtual bool LoadBrowserStateAsync(
       std::string_view name,
-      ChromeBrowserStateLoadedCallback initialized_callback,
-      ChromeBrowserStateLoadedCallback created_callback = {}) = 0;
+      ProfileLoadedCallback initialized_callback,
+      ProfileLoadedCallback created_callback = {}) = 0;
 
   // Asynchronously creates or loads a ChromeBrowserState known by `name`. The
   // `create_callback` will be called with the ChromeBrowserState when it has
@@ -76,8 +75,8 @@ class ProfileManagerIOS {
   // the creation is disallowed.
   virtual bool CreateBrowserStateAsync(
       std::string_view name,
-      ChromeBrowserStateLoadedCallback initialized_callback,
-      ChromeBrowserStateLoadedCallback created_callback = {}) = 0;
+      ProfileLoadedCallback initialized_callback,
+      ProfileLoadedCallback created_callback = {}) = 0;
 
   // Loads the ChromeBrowserState known by `name` and returns it. As this
   // method is synchronous, it may block the application so it should only be

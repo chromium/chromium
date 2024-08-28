@@ -35,14 +35,12 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;
-  bool LoadBrowserStateAsync(
-      std::string_view name,
-      ChromeBrowserStateLoadedCallback initialized_callback,
-      ChromeBrowserStateLoadedCallback created_callback) override;
-  bool CreateBrowserStateAsync(
-      std::string_view name,
-      ChromeBrowserStateLoadedCallback initialized_callback,
-      ChromeBrowserStateLoadedCallback created_callback) override;
+  bool LoadBrowserStateAsync(std::string_view name,
+                             ProfileLoadedCallback initialized_callback,
+                             ProfileLoadedCallback created_callback) override;
+  bool CreateBrowserStateAsync(std::string_view name,
+                               ProfileLoadedCallback initialized_callback,
+                               ProfileLoadedCallback created_callback) override;
   ChromeBrowserState* LoadBrowserState(std::string_view name) override;
   ChromeBrowserState* CreateBrowserState(std::string_view name) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;

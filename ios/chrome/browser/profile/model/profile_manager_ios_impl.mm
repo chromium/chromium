@@ -122,16 +122,16 @@ class ProfileManagerIOSImpl::BrowserStateInfo {
 
   void SetIsLoaded();
 
-  void AddCallback(ChromeBrowserStateLoadedCallback callback);
+  void AddCallback(ProfileLoadedCallback callback);
 
-  std::vector<ChromeBrowserStateLoadedCallback> TakeCallbacks() {
+  std::vector<ProfileLoadedCallback> TakeCallbacks() {
     return std::exchange(callbacks_, {});
   }
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  std::vector<ChromeBrowserStateLoadedCallback> callbacks_;
+  std::vector<ProfileLoadedCallback> callbacks_;
   bool is_loaded_ = false;
 };
 
@@ -142,7 +142,7 @@ void ProfileManagerIOSImpl::BrowserStateInfo::SetIsLoaded() {
 }
 
 void ProfileManagerIOSImpl::BrowserStateInfo::AddCallback(
-    ChromeBrowserStateLoadedCallback callback) {
+    ProfileLoadedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_loaded_);
   if (!callback.is_null()) {
@@ -266,8 +266,8 @@ ProfileManagerIOSImpl::GetLoadedBrowserStates() {
 
 bool ProfileManagerIOSImpl::LoadBrowserStateAsync(
     std::string_view name,
-    ChromeBrowserStateLoadedCallback initialized_callback,
-    ChromeBrowserStateLoadedCallback created_callback) {
+    ProfileLoadedCallback initialized_callback,
+    ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!ProfileWithNameExists(name)) {
     // Must not create the ChromeBrowserState if it does not already
@@ -284,8 +284,8 @@ bool ProfileManagerIOSImpl::LoadBrowserStateAsync(
 
 bool ProfileManagerIOSImpl::CreateBrowserStateAsync(
     std::string_view name,
-    ChromeBrowserStateLoadedCallback initialized_callback,
-    ChromeBrowserStateLoadedCallback created_callback) {
+    ProfileLoadedCallback initialized_callback,
+    ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return CreateBrowserStateWithMode(name, CreationMode::kAsynchronous,
                                     std::move(initialized_callback),
@@ -419,8 +419,8 @@ bool ProfileManagerIOSImpl::CanCreateBrowserStateWithName(
 bool ProfileManagerIOSImpl::CreateBrowserStateWithMode(
     std::string_view name,
     CreationMode creation_mode,
-    ChromeBrowserStateLoadedCallback initialized_callback,
-    ChromeBrowserStateLoadedCallback created_callback) {
+    ProfileLoadedCallback initialized_callback,
+    ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool inserted = false;
   bool existing = ProfileWithNameExists(name);
