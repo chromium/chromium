@@ -145,8 +145,6 @@ class ColorPickerElementView : public views::Button {
     return size;
   }
 
-  int GetHeightForWidth(int width) const override { return width; }
-
   void PaintButtonContents(gfx::Canvas* canvas) override {
     // Paint a colored circle surrounded by a bit of empty space.
     gfx::RectF bounds(GetContentsBounds());
