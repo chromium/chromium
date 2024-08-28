@@ -117,7 +117,7 @@ class TestingProfile : public Profile {
 
     template <typename... Ts>
       requires(... && std::same_as<Ts, TestingFactory>)
-    TestingFactories(Ts&&... ts) {
+    TestingFactories(Ts&&... ts) {  // NOLINT(runtime/explicit)
       (..., factories_.push_back(std::move(ts)));
     }
 
