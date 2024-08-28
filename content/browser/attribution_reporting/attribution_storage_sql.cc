@@ -815,6 +815,38 @@ bool AttributionStorageSql::RemoveScopesDataForSource(
   return set_statement.Run();
 }
 
+namespace {
+
+// At least 1 destination must always be bound. When there are fewer than 3,
+// NULL is used as a placeholder . `A IN (B,C,D)` evaluates to true iff A=B or
+// A=C or A=D, since A is always non-NULL. Otherwise, it evaluates to NULL if
+// any of B, C, or D is NULL, but that is fine, as the JOIN on the destination
+// is only satisfied when the ON clause evaluates to true.
+//
+// https://www.sqlite.org/lang_expr.html#the_in_and_not_in_operators
+void PrepareGetMatchingSourcesStatement(
+    sql::Statement& stmt,
+    base::span<const net::SchemefulSite> destinations) {
+  CHECK_GE(destinations.size(), 1u);
+  CHECK_LE(destinations.size(), 3u);
+
+  stmt.BindString(0, destinations[0].Serialize());
+
+  if (destinations.size() >= 2) {
+    stmt.BindString(1, destinations[1].Serialize());
+  } else {
+    stmt.BindNull(1);
+  }
+
+  if (destinations.size() == 3) {
+    stmt.BindString(2, destinations[2].Serialize());
+  } else {
+    stmt.BindNull(2);
+  }
+}
+
+}  // namespace
+
 bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
     const StorableSource& pending_source,
     base::Time source_time) {
@@ -833,18 +865,8 @@ bool AttributionStorageSql::UpdateOrRemoveSourcesWithIncompatibleScopeFields(
       3, pending_source.common_info().reporting_origin().Serialize());
   statement.BindTime(4, source_time);
 
-  // Bind the destination sites to the query.
-  int destination_index = 0;
-  const auto& destinations = registration.destination_set.destinations();
-  for (const auto& destination : destinations) {
-    statement.BindString(destination_index, destination.Serialize());
-    destination_index++;
-  }
-  // Fill the rest of the query bindings with the first destination.
-  while (destination_index <= 2) {
-    statement.BindString(destination_index, destinations.begin()->Serialize());
-    destination_index++;
-  }
+  PrepareGetMatchingSourcesStatement(
+      statement, registration.destination_set.destinations());
 
   const std::optional<AttributionScopesData>& pending_scopes_data =
       registration.attribution_scopes_data;
@@ -931,12 +953,8 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
     std::vector<StoredSource::Id> source_ids_to_deactivate;
     std::vector<Record> records;
 
-    // We need to process one destination at a time, so we bind it to all 3
-    // destination slots.
-    const std::string serialized_dest = destination.Serialize();
-    statement.BindString(0, serialized_dest);
-    statement.BindString(1, serialized_dest);
-    statement.BindString(2, serialized_dest);
+    PrepareGetMatchingSourcesStatement(statement,
+                                       base::span_from_ref(destination));
 
     while (statement.Step()) {
       ASSIGN_OR_RETURN(std::optional<AttributionScopesData> scopes_data,
@@ -990,8 +1008,6 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
     std::vector<StoredSource::Id>& source_ids_to_delete,
     std::vector<StoredSource::Id>& source_ids_to_deactivate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const SuitableOrigin& destination_origin = trigger.destination_origin();
-  const SuitableOrigin& reporting_origin = trigger.reporting_origin();
 
   SCOPED_UMA_HISTOGRAM_TIMER("Conversions.Storage.FindMatchingSourceTime");
 
@@ -1003,12 +1019,11 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetMatchingSourcesSql));
 
-  const std::string serialized_dest =
-      net::SchemefulSite(destination_origin).Serialize();
-  statement.BindString(0, serialized_dest);
-  statement.BindString(1, serialized_dest);
-  statement.BindString(2, serialized_dest);
-  statement.BindString(3, reporting_origin.Serialize());
+  const net::SchemefulSite destination(trigger.destination_origin());
+  PrepareGetMatchingSourcesStatement(statement,
+                                     base::span_from_ref(destination));
+
+  statement.BindString(3, trigger.reporting_origin().Serialize());
   statement.BindTime(4, trigger_time);
 
   // The highest-priority source with at least one matching scope will be
