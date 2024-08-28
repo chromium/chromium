@@ -148,15 +148,18 @@
 
 # Tests running with SwiftShader are skipped on platforms where SwiftShader
 # isn't supported.
-[ mac ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
 [ android ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
-[ chromeos ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
-[ mac ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
 [ android ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
-[ chromeos ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
-[ mac ] Pixel_WebGLGreenTriangle_AA_Alpha_SwiftShader [ Skip ]
+[ android ] Pixel_RepeatedWebGLTo2D_SwiftShader [ Skip ]
 [ android ] Pixel_WebGLGreenTriangle_AA_Alpha_SwiftShader [ Skip ]
+[ chromeos ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
+[ chromeos ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
+[ chromeos ] Pixel_RepeatedWebGLTo2D_SwiftShader [ Skip ]
 [ chromeos ] Pixel_WebGLGreenTriangle_AA_Alpha_SwiftShader [ Skip ]
+[ fuchsia ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
+[ fuchsia ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
+[ fuchsia ] Pixel_RepeatedWebGLTo2D_SwiftShader [ Skip ]
+[ fuchsia ] Pixel_WebGLGreenTriangle_AA_Alpha_SwiftShader [ Skip ]
 
 # Tests running in no GPU process mode are skipped on platforms where GPU
 # process is required.

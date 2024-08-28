@@ -985,22 +985,24 @@ class PixelTestPages():
   def SwiftShaderPages(base_name: str) -> List[PixelTestPage]:
     browser_args = [cba.DISABLE_GPU]
     suffix = '_SwiftShader'
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 350, 350))
     return [
         PixelTestPage('pixel_canvas2d.html',
                       base_name + '_Canvas2DRedBox' + suffix,
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=browser_args),
         PixelTestPage('pixel_css3d.html',
                       base_name + '_CSS3DBlueBox' + suffix,
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=browser_args),
         PixelTestPage('pixel_webgl_aa_alpha.html',
                       base_name + '_WebGLGreenTriangle_AA_Alpha' + suffix,
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=browser_args),
         PixelTestPage('pixel_repeated_webgl_to_2d.html',
                       base_name + '_RepeatedWebGLTo2D' + suffix,
-                      test_rect=[0, 0, 256, 256],
+                      crop_action=standard_crop,
                       browser_args=browser_args),
     ]
 
@@ -1009,19 +1011,19 @@ class PixelTestPages():
   def NoGpuProcessPages(base_name: str) -> List[PixelTestPage]:
     browser_args = [cba.DISABLE_GPU, cba.DISABLE_SOFTWARE_RASTERIZER]
     suffix = '_NoGpuProcess'
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 350, 350))
     return [
-        PixelTestPage(
-            'pixel_canvas2d.html',
-            base_name + '_Canvas2DRedBox' + suffix,
-            test_rect=[0, 0, 300, 300],
-            browser_args=browser_args,
-            gpu_process_disabled=True),
-        PixelTestPage(
-            'pixel_css3d.html',
-            base_name + '_CSS3DBlueBox' + suffix,
-            test_rect=[0, 0, 300, 300],
-            browser_args=browser_args,
-            gpu_process_disabled=True),
+        PixelTestPage('pixel_canvas2d.html',
+                      base_name + '_Canvas2DRedBox' + suffix,
+                      crop_action=standard_crop,
+                      browser_args=browser_args,
+                      gpu_process_disabled=True),
+        PixelTestPage('pixel_css3d.html',
+                      base_name + '_CSS3DBlueBox' + suffix,
+                      crop_action=standard_crop,
+                      browser_args=browser_args,
+                      gpu_process_disabled=True),
     ]
 
   # Pages that should be run with various macOS specific command line
