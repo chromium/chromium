@@ -1475,6 +1475,12 @@
   },
   'chrome_wpt_tests': {
     'modifications': {
+      'WebKit Linux ASAN': {
+        'args': [
+          '--additional-expectations',
+          '../../third_party/blink/web_tests/ASANExpectations',
+        ],
+      },
       'WebKit Linux MSAN': {
         'args': [
           '--additional-expectations',

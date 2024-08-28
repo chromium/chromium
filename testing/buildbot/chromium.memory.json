@@ -10709,7 +10709,9 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+          "--additional-expectations",
+          "../../third_party/blink/web_tests/ASANExpectations"
         ],
         "merge": {
           "args": [
