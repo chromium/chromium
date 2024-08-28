@@ -8,6 +8,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -58,6 +59,20 @@ void DataSharingPageHandler::ShowUI() {
 void DataSharingPageHandler::ApiInitComplete() {
   api_initialized_ = true;
   webui_controller_->ApiInitComplete();
+}
+
+void DataSharingPageHandler::GetShareLink(const std::string& group_id,
+                                          const std::string& access_token,
+                                          GetShareLinkCallback callback) {
+  std::move(callback).Run(
+      data_sharing::GetShareLink(group_id, access_token, GetProfile()));
+}
+
+void DataSharingPageHandler::AssociateTabGroupWithGroupId(
+    const std::string& tab_group_id,
+    const std::string& group_id) {
+  data_sharing::AssociateTabGroupWithGroupId(tab_group_id, group_id,
+                                             GetProfile());
 }
 
 Profile* DataSharingPageHandler::GetProfile() {

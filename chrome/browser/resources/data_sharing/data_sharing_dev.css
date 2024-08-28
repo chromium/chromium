@@ -2,7 +2,14 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#debug-container {
+body {
+  /* TODO: Sharekit team should override/remove this when testing dialog
+  container settings. */
+  width: 520px;
+  height: 500px;
+}
+
+ #debug-container {
   display: none;
 }
 

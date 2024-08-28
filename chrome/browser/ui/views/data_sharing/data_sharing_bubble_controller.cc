@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
@@ -36,15 +37,22 @@ END_METADATA
 
 DataSharingBubbleController::~DataSharingBubbleController() = default;
 
-void DataSharingBubbleController::Show() {
+void DataSharingBubbleController::Show(
+    std::variant<tab_groups::LocalTabGroupID, data_sharing::GroupToken>
+        request_info) {
   if (bubble_view_) {
     return;
   }
 
+  auto url =
+      data_sharing::GenerateWebUIUrl(request_info, GetBrowser().profile());
+  if (!url) {
+    return;
+  }
   auto contents_wrapper =
       std::make_unique<WebUIContentsWrapperT<DataSharingUI>>(
-          GURL(chrome::kChromeUIUntrustedDataSharingURL),
-          GetBrowser().profile(), IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE,
+          url.value(), GetBrowser().profile(),
+          IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE,
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
 

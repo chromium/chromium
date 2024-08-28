@@ -2,71 +2,181 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/chromeos_buildflags.h"
+#include <optional>
+#include <string>
+
+#include "base/check.h"
+#include "build/build_config.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
+#include "components/data_sharing/public/group_data.h"
+#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/widget/any_widget_observer.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "url/url_constants.h"
 
-namespace {
-class DataSharingBubbleInteractiveUiTest : public InteractiveBrowserTest {
- public:
-  DataSharingBubbleInteractiveUiTest() = default;
-  ~DataSharingBubbleInteractiveUiTest() override = default;
-  DataSharingBubbleInteractiveUiTest(
-      const DataSharingBubbleInteractiveUiTest&) = delete;
-  void operator=(const DataSharingBubbleInteractiveUiTest&) = delete;
+class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
+ protected:
+  DataSharingChromeNativeUiTest() = default;
+  ~DataSharingChromeNativeUiTest() override = default;
 
-  auto ShowBubble() {
-    return Do(base::BindLambdaForTesting([&]() {
-      base::RunLoop run_loop;
-      views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
-      observer.set_initialized_callback(
-          base::BindLambdaForTesting([&](views::Widget* w) {
-            if (w->GetName() == "DataSharingBubbleDialogView") {
-              run_loop.Quit();
-            }
-          }));
-      auto* controller =
-          DataSharingBubbleController::GetOrCreateForBrowser(browser());
-      controller->Show();
-      run_loop.Run();
-    }));
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {data_sharing::features::kDataSharingFeature,
+         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2},
+        {});
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InProcessBrowserTest::SetUp();
   }
 
-  auto CloseBubble() {
-    return Do(base::BindLambdaForTesting([&]() {
-      base::RunLoop run_loop;
-      views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
-      observer.set_closing_callback(
-          base::BindLambdaForTesting([&](views::Widget* w) {
-            if (w->GetName() == "DataSharingBubbleDialogView") {
-              run_loop.Quit();
-            }
-          }));
-      auto* controller = DataSharingBubbleController::FromBrowser(browser());
-      controller->Close();
-      run_loop.Run();
-    }));
+  MultiStep FinishTabstripAnimations() {
+    return Steps(
+        WaitForShow(kTabStripElementId),
+        std::move(WithView(kTabStripElementId, [](TabStrip* tab_strip) {
+                    tab_strip->StopAnimating(true);
+                  }).SetDescription("FinishTabstripAnimation")));
+  }
+
+  MultiStep HoverTabGroupHeader(tab_groups::TabGroupId group_id) {
+    const char kTabGroupHeaderToHover[] = "Tab group header to hover";
+    return Steps(
+        FinishTabstripAnimations(),
+        NameDescendantView(
+            kBrowserViewElementId, kTabGroupHeaderToHover,
+            base::BindRepeating(
+                [](tab_groups::TabGroupId group_id, const views::View* view) {
+                  const TabGroupHeader* header =
+                      views::AsViewClass<TabGroupHeader>(view);
+                  if (!header) {
+                    return false;
+                  }
+                  return header->group().value() == group_id;
+                },
+                group_id)),
+        MoveMouseTo(kTabGroupHeaderToHover));
+  }
+
+  MultiStep SaveGroupLeaveEditorBubbleOpen(tab_groups::TabGroupId group_id) {
+    return Steps(EnsureNotPresent(kTabGroupEditorBubbleId),
+                 // Right click on the header to open the editor bubble.
+                 HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
+                 // Wait for the tab group editor bubble to appear.
+                 WaitForShow(kTabGroupEditorBubbleId));
+  }
+
+  tab_groups::TabGroupId InstrumentATabGroup() {
+    // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+    // open the browser and the added one).
+    EXPECT_TRUE(
+        AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+    EXPECT_EQ(2, browser()->tab_strip_model()->count());
+    return browser()->tab_strip_model()->AddToNewGroup({0, 1});
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      data_sharing::features::kDataSharingFeature};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_BubbleCanShowAndClose DISABLED_BubbleCanShowAndClose
-#else
-#define MAYBE_BubbleCanShowAndClose BubbleCanShowAndClose
-#endif
-IN_PROC_BROWSER_TEST_F(DataSharingBubbleInteractiveUiTest,
-                       MAYBE_BubbleCanShowAndClose) {
-  RunTestSequence(EnsureNotPresent(kDataSharingBubbleElementId), ShowBubble(),
-                  WaitForShow(kDataSharingBubbleElementId), CloseBubble(),
-                  WaitForHide(kDataSharingBubbleElementId));
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
+  tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
+  RunTestSequence(FinishTabstripAnimations(),
+                  SaveGroupLeaveEditorBubbleOpen(group_id),
+                  WaitForShow(kTabGroupEditorBubbleShareGroupButtonId),
+                  PressButton(kTabGroupEditorBubbleShareGroupButtonId),
+                  WaitForShow(kDataSharingBubbleElementId));
 }
-}  // namespace
+
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
+  // TODO(crbug.com/350514491): Use STGUtils::GetServiceForProfile instead.
+  auto* tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
+  auto* group = const_cast<tab_groups::SavedTabGroup*>(
+      tab_group_service->model()->Get(group_id));
+  std::string fake_collaboration_id = "fake_collab_id";
+  group->SetCollaborationId(fake_collaboration_id);
+
+  RunTestSequence(FinishTabstripAnimations(),
+                  SaveGroupLeaveEditorBubbleOpen(group_id),
+                  WaitForShow(kTabGroupEditorBubbleManageSharedGroupButtonId),
+                  PressButton(kTabGroupEditorBubbleManageSharedGroupButtonId),
+                  WaitForShow(kDataSharingBubbleElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
+  std::string fake_collaboration_id = "fake_collab_id";
+  std::string fake_access_token = "fake_access_token";
+
+  RunTestSequence(
+      Do([=]() {
+        auto share_link = data_sharing::GetShareLink(
+            fake_collaboration_id, fake_access_token, browser()->profile());
+        auto* data_sharing_service =
+            data_sharing::DataSharingServiceFactory::GetForProfile(
+                browser()->profile());
+        data_sharing_service->HandleShareURLNavigationIntercepted(share_link);
+      }),
+      WaitForShow(kDataSharingBubbleElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
+  tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
+  std::string fake_collab_id = "fake_collab_id";
+  std::string fake_access_token = "fake_access_token";
+  auto expected_share_flow_url =
+      GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+           std::string(data_sharing::kQueryParamFlow) + "=" +
+           std::string(data_sharing::kFlowShare) + "&" +
+           std::string(data_sharing::kQueryParamTabGroupId) + "=" +
+           group_id.ToString());
+  auto expected_manage_flow_url = GURL(
+      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+      std::string(data_sharing::kQueryParamFlow) + "=" +
+      std::string(data_sharing::kFlowManage) + "&" +
+      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id);
+  auto expected_join_flow_url = GURL(
+      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+      std::string(data_sharing::kQueryParamFlow) + "=" +
+      std::string(data_sharing::kFlowJoin) + "&" +
+      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
+      "&" + std::string(data_sharing::kQueryParamTokenSecret) + "=" +
+      fake_access_token);
+
+  auto url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
+  EXPECT_EQ(url.value().spec(), expected_share_flow_url);
+
+  // TODO(crbug.com/350514491): Use STGUtils::GetServiceForProfile instead.
+  auto* tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  tab_groups::SavedTabGroup* group = const_cast<tab_groups::SavedTabGroup*>(
+      tab_group_service->model()->Get(group_id));
+  group->SetCollaborationId(fake_collab_id);
+  url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
+  EXPECT_EQ(url.value().spec(), expected_manage_flow_url);
+
+  data_sharing::GroupToken token = data_sharing::GroupToken(
+      data_sharing::GroupId(fake_collab_id), fake_access_token);
+  url = data_sharing::GenerateWebUIUrl(token, browser()->profile());
+  EXPECT_EQ(url.value().spec(), expected_join_flow_url);
+}

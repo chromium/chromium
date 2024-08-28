@@ -37,6 +37,13 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
 
   void ApiInitComplete() override;
 
+  void GetShareLink(const std::string& group_id,
+                    const std::string& access_token,
+                    GetShareLinkCallback callback) override;
+
+  void AssociateTabGroupWithGroupId(const std::string& tab_group_id,
+                                    const std::string& group_id) override;
+
   void ReadGroups(std::vector<std::string> group_ids,
                   data_sharing::mojom::Page::ReadGroupsCallback callback);
 

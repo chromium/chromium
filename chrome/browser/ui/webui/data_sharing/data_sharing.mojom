@@ -4,6 +4,7 @@
 
 module data_sharing.mojom;
 
+import "url/mojom/url.mojom";
 import "components/data_sharing/public/protocol/group_data.mojom";
 
 // Factory ensures that the Page and PageHandler interfaces are always created
@@ -25,6 +26,15 @@ interface PageHandler {
   // All other APIs on the Page such as ReadGroups should only be invoked
   // after ApiInitComplete.
   ApiInitComplete();
+
+  // `group_id` connects the shared tab group with people group. `access_token`
+  // is used to check link validity. Chrome stitches them together with a host
+  // and generates an invite link. Owner can share the link to the public.
+  GetShareLink(string group_id, string access_token) => (url.mojom.Url url);
+
+  // `tab_group_id` is the local id of the group in tab strip that gets shared.
+  // `group_id` is the id that connects the people with the shared tab group.
+  AssociateTabGroupWithGroupId(string tab_group_id, string group_id);
 };
 
 // WebUI-side handler for requests from the browser.

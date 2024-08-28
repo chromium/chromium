@@ -8,13 +8,20 @@ import {$} from 'chrome-untrusted://resources/js/util.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 
-// Match 'flow' param from the loaded URL to invoke corresponding dialog.
-const FLOW = {
-  share: 'share',
-  join: 'join',
-  manage: 'manage',
-};
-Object.freeze(FLOW);
+// Param names in loaded URL. Should match those in
+// chrome/browser/ui/views/data_sharing/data_sharing_utils.cc.
+enum UrlQueryParams {
+  FLOW = 'flow',
+  GROUP_ID = 'group_id',
+  TOKEN_SECRET = 'token_secret',
+  TAB_GROUP_ID = 'tab_group_id',
+}
+
+enum FlowValues {
+  SHARE = 'share',
+  JOIN = 'join',
+  MANAGE = 'manage',
+}
 
 let initialized: boolean = false;
 
@@ -25,7 +32,7 @@ function onDOMContentLoaded() {
         window.data_sharing_sdk.setOauthAccessToken({accessToken});
         if (!initialized) {
           initialize();
-          processUrl();
+          processUrl(browserProxy);
           browserProxy.handler.showUI();
           initialized = true;
         }
@@ -34,25 +41,52 @@ function onDOMContentLoaded() {
 }
 
 // TODO(pengchaocai): Test in follow up CLs.
-async function processUrl() {
+function processUrl(browserProxy: BrowserProxy) {
   const currentUrl = window.location.href;
   const params = new URL(currentUrl).searchParams;
-  const flow = params.get('flow');
-  const groupId = params.get('group_id');
-  const tokenSecret = params.get('token_secret');
+  const flow = params.get(UrlQueryParams.FLOW);
+  const groupId = params.get(UrlQueryParams.GROUP_ID);
+  const tokenSecret = params.get(UrlQueryParams.TOKEN_SECRET);
+  const tabGroupId = params.get(UrlQueryParams.TAB_GROUP_ID);
+
+  // Called with when the owner presses copy link in share dialog.
+  function makeTabGroupShared(
+      options: {groupId: string, tokenSecret?: string}) {
+    browserProxy.handler.associateTabGroupWithGroupId(
+        tabGroupId!, options.groupId);
+  }
+
+  function getShareLink(params: {groupId: string, tokenSecret?: string}):
+      Promise<string> {
+    return browserProxy.handler
+        .getShareLink(params.groupId, params.tokenSecret!)
+        .then(res => res.url.url);
+  }
 
   switch (flow) {
-    case FLOW.share:
-      await window.data_sharing_sdk.runInviteFlow({});
+    case FlowValues.SHARE:
+      window.data_sharing_sdk.runInviteFlow({
+        getShareLink: (options: {groupId: string, tokenSecret?: string}):
+            Promise<string> => {
+              makeTabGroupShared(options);
+              return getShareLink(options);
+            },
+      });
       break;
-    case FLOW.join:
+    case FlowValues.JOIN:
       // group_id and token_secret cannot be null for join flow.
-      await window.data_sharing_sdk.runJoinFlow(
+      window.data_sharing_sdk.runJoinFlow(
           {groupId: groupId!, tokenSecret: tokenSecret!});
       break;
-    case FLOW.manage:
+    case FlowValues.MANAGE:
       // group_id cannot be null for manage flow.
-      await window.data_sharing_sdk.runManageFlow({groupId: groupId!});
+      window.data_sharing_sdk.runManageFlow({
+        groupId: groupId!,
+        getShareLink: (options: {groupId: string, tokenSecret?: string}):
+            Promise<string> => {
+              return getShareLink(options);
+            },
+      });
       break;
     default:
       const debugContainer: HTMLDivElement|null =

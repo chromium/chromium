@@ -63,7 +63,7 @@ declare interface DataSharingSdkGetLinkParams {
 }
 
 declare type DataSharingSdkGetLink = (params: DataSharingSdkGetLinkParams) =>
-    string;
+    Promise<string>;
 declare type DataSharingMemberRole =
     'unknown' | 'member' | 'owner' | 'invitee' | 'applicant';
 
@@ -115,12 +115,28 @@ declare global {
 }
 export { };
 
+// Add something to the dialog to tell which flow it is.
+function appendTextForTesting(text: string) {
+  const newDiv: HTMLDivElement = document.createElement('div');
+  newDiv.textContent = text;
+  document.body.appendChild(newDiv);
+}
+
 window.data_sharing_sdk = {
-  setOauthAccessToken: () => void {},
-  createGroup: () => Promise.resolve({ id: '', members: [] }),
+  setOauthAccessToken: () => void{},
+  createGroup: () => Promise.resolve({id: '', members: []}),
   readGroups: () => Promise.resolve([]),
-  runJoinFlow: () => Promise.resolve({}),
-  runInviteFlow: () => Promise.resolve({}),
-  runManageFlow: () => Promise.resolve({}),
-  updateClearcut: () => void {},
+  runJoinFlow: (): Promise<DataSharingSdkResponse> => {
+    appendTextForTesting('A fake join dialog');
+    return Promise.resolve({});
+  },
+  runInviteFlow: (): Promise<DataSharingSdkResponse> => {
+    appendTextForTesting('A fake invite dialog');
+    return Promise.resolve({});
+  },
+  runManageFlow: (): Promise<DataSharingSdkResponse> => {
+    appendTextForTesting('A fake manage dialog');
+    return Promise.resolve({});
+  },
+  updateClearcut: () => void{},
 };

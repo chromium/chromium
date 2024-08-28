@@ -501,22 +501,28 @@ TabGroupEditorBubbleView::BuildMoveGroupToNewWindowButton() {
 
 std::unique_ptr<views::LabelButton>
 TabGroupEditorBubbleView::BuildManageSharedGroupButton() {
-  return CreateMenuItem(
+  auto menu_item = CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_MANAGE_SHARING,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::ShareOrManagePressed,
                           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(kTabGroupSharingIcon));
+  menu_item->SetProperty(views::kElementIdentifierKey,
+                         kTabGroupEditorBubbleManageSharedGroupButtonId);
+  return menu_item;
 }
 
 std::unique_ptr<views::LabelButton>
 TabGroupEditorBubbleView::BuildShareGroupButton() {
-  return CreateMenuItem(
+  auto menu_item = CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_SHARE,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::ShareOrManagePressed,
                           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(kTabGroupSharingIcon));
+  menu_item->SetProperty(views::kElementIdentifierKey,
+                         kTabGroupEditorBubbleShareGroupButtonId);
+  return menu_item;
 }
 
 TabGroupEditorBubbleView::~TabGroupEditorBubbleView() = default;
@@ -719,11 +725,9 @@ void TabGroupEditorBubbleView::UngroupPressed() {
 }
 
 void TabGroupEditorBubbleView::ShareOrManagePressed() {
-  // TODO(b/353577560): Placeholder impl for ease of testing. Add real impl
-  // later.
   DataSharingBubbleController::GetOrCreateForBrowser(
       const_cast<Browser*>(browser_.get()))
-      ->Show();
+      ->Show(group_);
 }
 
 // static
