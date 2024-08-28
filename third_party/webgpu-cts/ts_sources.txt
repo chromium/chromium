@@ -804,6 +804,8 @@ src/webgpu/shader/validation/expression/call/builtin/pack4xI8Clamp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack4xU8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack4xU8Clamp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pow.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/quadBroadcast.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/quadSwap.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/quantizeToF16.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/radians.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/reflect.spec.ts
@@ -820,9 +822,15 @@ src/webgpu/shader/validation/expression/call/builtin/smoothstep.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/step.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/subgroupAdd.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/subgroupAnyAll.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/subgroupBallot.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/subgroupBitwise.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/subgroupBroadcast.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/subgroupBroadcastFirst.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/subgroupElect.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/subgroupMinMax.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/subgroupMul.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/subgroupShuffle.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tanh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureDimensions.spec.ts
