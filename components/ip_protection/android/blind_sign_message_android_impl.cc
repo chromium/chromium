@@ -11,9 +11,11 @@
 #include <tuple>
 
 #include "base/containers/queue.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client.h"
@@ -22,6 +24,29 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
+
+namespace {
+
+template <typename ResponseType>
+void EmitRequestTimingHistogram(base::TimeDelta time_delta);
+
+template <>
+void EmitRequestTimingHistogram<privacy::ppn::GetInitialDataResponse>(
+    base::TimeDelta time_delta) {
+  base::UmaHistogramMediumTimes(
+      "NetworkService.IpProtection.AndroidAuthClient.GetInitialDataTime",
+      time_delta);
+}
+
+template <>
+void EmitRequestTimingHistogram<privacy::ppn::AuthAndSignResponse>(
+    base::TimeDelta time_delta) {
+  base::UmaHistogramMediumTimes(
+      "NetworkService.IpProtection.AndroidAuthClient.AuthAndSignTime",
+      time_delta);
+}
+
+}  // namespace
 
 namespace ip_protection {
 
@@ -64,16 +89,20 @@ void BlindSignMessageAndroidImpl::CreateIpProtectionAuthClient() {
                "BlindSignMessageAndroidImpl::CreateIpProtectionAuthClient");
   client_factory_.Run(base::BindPostTaskToCurrentDefault(base::BindOnce(
       &BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete,
-      weak_ptr_factory_.GetWeakPtr())));
+      weak_ptr_factory_.GetWeakPtr(), /*start_time=*/base::TimeTicks::Now())));
 }
 
 void BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete(
+    base::TimeTicks start_time,
     base::expected<std::unique_ptr<IpProtectionAuthClientInterface>,
                    std::string> ip_protection_auth_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ip_protection_auth_client.has_value()) {
     CHECK(!ip_protection_auth_client_);
     ip_protection_auth_client_ = std::move(ip_protection_auth_client.value());
+    base::UmaHistogramMediumTimes(
+        "NetworkService.IpProtection.AndroidAuthClient.CreationTime",
+        base::TimeTicks::Now() - start_time);
   }
   while (!pending_requests_.empty()) {
     auto [request_type, body, callback] = std::move(pending_requests_.front());
@@ -103,7 +132,8 @@ void BlindSignMessageAndroidImpl::SendRequest(
               &BlindSignMessageAndroidImpl::OnSendRequestComplete<
                   privacy::ppn::GetInitialDataResponse>,
               weak_ptr_factory_.GetWeakPtr(),
-              ip_protection_auth_client_->GetWeakPtr(), std::move(callback))));
+              ip_protection_auth_client_->GetWeakPtr(), std::move(callback),
+              /*start_time=*/base::TimeTicks::Now())));
       break;
     }
     case quiche::BlindSignMessageRequestType::kAuthAndSign: {
@@ -115,7 +145,8 @@ void BlindSignMessageAndroidImpl::SendRequest(
               &BlindSignMessageAndroidImpl::OnSendRequestComplete<
                   privacy::ppn::AuthAndSignResponse>,
               weak_ptr_factory_.GetWeakPtr(),
-              ip_protection_auth_client_->GetWeakPtr(), std::move(callback))));
+              ip_protection_auth_client_->GetWeakPtr(), std::move(callback),
+              /*start_time=*/base::TimeTicks::Now())));
       break;
     }
     case quiche::BlindSignMessageRequestType::kUnknown:
@@ -128,10 +159,13 @@ void BlindSignMessageAndroidImpl::OnSendRequestComplete(
     base::WeakPtr<IpProtectionAuthClientInterface>
         requesting_ip_protection_auth_client,
     quiche::BlindSignMessageCallback callback,
+    base::TimeTicks start_time,
     base::expected<ResponseType, ip_protection::android::AuthRequestError>
         response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (response.has_value()) {
+    EmitRequestTimingHistogram<ResponseType>(base::TimeTicks::Now() -
+                                             start_time);
     quiche::BlindSignMessageResponse bsa_response(
         absl::StatusCode::kOk, response->SerializeAsString());
     std::move(callback)(std::move(bsa_response));
