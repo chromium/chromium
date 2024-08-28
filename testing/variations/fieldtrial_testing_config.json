@@ -5319,11 +5319,10 @@
             ]
         }
     ],
-    "ClassifyUrlOnProcessResponseEventAndroidAndChromeOS": [
+    "ClassifyUrlOnProcessResponseEventAndroid": [
         {
             "platforms": [
-                "android",
-                "chromeos"
+                "android"
             ],
             "experiments": [
                 {
