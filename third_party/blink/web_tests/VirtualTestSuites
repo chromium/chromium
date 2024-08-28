@@ -307,6 +307,7 @@
   },
   {
     "prefix": "gpu-rasterization",
+    "owners": ["vasilyt@chromium.org", "chrome-gpu@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["images",
               "external/wpt/css/css-images/gradient"],
