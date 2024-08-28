@@ -14,7 +14,6 @@
 -org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTP
 -org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTPS
 
-
 # crbug.com/326040498
 -org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionOther
 -org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPassword
@@ -35,3 +34,6 @@
 
 # crbug.com/356175432
 -org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testReaderModeInTab
+
+# crbug.com/362792693
+-org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog
