@@ -3,13 +3,13 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=style
+ * #type=style-lit
  * #scheme=relative
- * #import=//resources/cr_elements/cr_hidden_style.css.js
- * #import=//resources/cr_elements/cr_shared_style.css.js
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #import=./shared_vars.css.js
- * #include=cr-shared-style cr-hidden-style
+ * #include=cr-shared-style-lit cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 .truncate {

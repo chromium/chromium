@@ -261,6 +261,7 @@ suite('history-clusters', () => {
         await imageServiceHandler.whenCalled('getPageImageUrl');
     await microtasksFinished();
     assertEquals(PageImageServiceClientId.Journeys, clientId);
+    assertTrue(!!urlVisit.visit);
     assertEquals(urlVisit.visit.normalizedUrl, pageUrl);
 
     // Verify the icon element received the handler's response.

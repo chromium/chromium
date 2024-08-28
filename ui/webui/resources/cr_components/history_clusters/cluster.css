@@ -4,11 +4,11 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=./history_clusters_shared_style_lit.css.js
+ * #import=./history_clusters_shared_style.css.js
  * #import=./shared_vars.css.js
  * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #scheme=relative
- * #include=history-clusters-shared-style-lit cr-icons-lit
+ * #include=history-clusters-shared-style cr-icons-lit
  * #css_wrapper_metadata_end */
 
   :host {

@@ -116,6 +116,10 @@ IN_PROC_BROWSER_TEST_F(CrComponentsHistoryClustersTest, All) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsHistoryClustersTest, Cluster) {
+  RunTest("cr_components/history_clusters/cluster_test.js", "mocha.run()");
+}
+
 class CrComponentsMostVisitedTest : public WebUIMochaBrowserTest {
  protected:
   CrComponentsMostVisitedTest() {

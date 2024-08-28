@@ -133,7 +133,6 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   protected hasResult_: boolean = false;
   protected resultQuery_: string = '';
   private callbackRouter_: PageCallbackRouter;
-  private headerText_: string;
   private inSidePanel_: boolean = loadTimeData.getBoolean('inSidePanel');
   private scrollListener_: EventListener = () => this.onScroll_();
   private onClustersQueryResultListenerId_: number|null = null;
@@ -142,9 +141,8 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   private onHistoryDeletedListenerId_: number|null = null;
   private onQueryChangedByUserListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
-  private placeholderText_: string;
   protected showConfirmationDialog_: boolean = false;
-  protected showSpinner_: boolean;
+  protected showSpinner_: boolean = false;
   private scrollTimeout_: number|null = null;
   private visitsToBeRemoved_: URLVisit[] = [];
 
@@ -200,6 +198,9 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     assert(this.onQueryChangedByUserListenerId_);
     this.callbackRouter_.removeListener(this.onQueryChangedByUserListenerId_);
     this.onQueryChangedByUserListenerId_ = null;
+    assert(this.onClusterImageUpdatedListenerId_);
+    this.callbackRouter_.removeListener(this.onClusterImageUpdatedListenerId_);
+    this.onClusterImageUpdatedListenerId_ = null;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {

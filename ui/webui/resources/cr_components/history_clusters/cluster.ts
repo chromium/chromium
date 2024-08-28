@@ -108,10 +108,10 @@ export class ClusterElement extends ClusterElementBase {
   // Properties
   //============================================================================
 
-  cluster: Cluster;
+  cluster?: Cluster;
   index: number = -1;  // Initialized to an invalid value.
   inSidePanel: boolean = loadTimeData.getBoolean('inSidePanel');
-  query: string;
+  query: string = '';
   protected imageUrl_: string = '';
   protected relatedSearches_: SearchQuery[] = [];
 
@@ -155,6 +155,7 @@ export class ClusterElement extends ClusterElementBase {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('cluster')) {
+      assert(this.cluster);
       this.label_ = this.cluster.label ? this.cluster.label : 'no_label';
       this.imageUrl_ = this.cluster.imageUrl ? this.cluster.imageUrl.url : '';
       this.relatedSearches_ = this.cluster.relatedSearches.filter(
@@ -169,7 +170,8 @@ export class ClusterElement extends ClusterElementBase {
 
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('label_') && this.label_ !== 'no_label') {
+    if (changedPrivateProperties.has('label_') && this.label_ !== 'no_label' &&
+        this.cluster) {
       insertHighlightedTextWithMatchesIntoElement(
           this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
     }
@@ -224,6 +226,7 @@ export class ClusterElement extends ClusterElementBase {
   }
 
   protected onOpenAllVisits_() {
+    assert(this.cluster);
     BrowserProxyImpl.getInstance().handler.openVisitUrlsInTabGroup(
         this.cluster.visits, this.cluster.tabGroupName ?? null);
 
@@ -232,12 +235,12 @@ export class ClusterElement extends ClusterElementBase {
   }
 
   protected onHideAllVisits_() {
-    this.fire('hide-visits', this.cluster.visits);
+    this.fire('hide-visits', this.cluster ? this.cluster.visits : []);
   }
 
   protected onRemoveAllVisits_() {
     // Pass event up with new detail of all this cluster's visits.
-    this.fire('remove-visits', this.cluster.visits);
+    this.fire('remove-visits', this.cluster ? this.cluster.visits : []);
   }
 
   protected onHideVisit_(event: CustomEvent<URLVisit>) {
@@ -282,6 +285,7 @@ export class ClusterElement extends ClusterElementBase {
    * order to get a chance to remove their matching visits.
    */
   private onVisitsRemovedOrHidden_(removedVisits: URLVisit[]) {
+    assert(this.cluster);
     const visitHasBeenRemoved = (visit: URLVisit) => {
       return removedVisits.findIndex((removedVisit) => {
         if (visit.normalizedUrl.url !== removedVisit.normalizedUrl.url) {
@@ -326,7 +330,7 @@ export class ClusterElement extends ClusterElementBase {
    * if the visit is not found in the cluster at all.
    */
   private getVisitIndex_(visit: URLVisit): number {
-    return this.cluster.visits.indexOf(visit);
+    return this.cluster ? this.cluster.visits.indexOf(visit) : -1;
   }
 
   protected hideRelatedSearches_(): boolean {
@@ -339,7 +343,7 @@ export class ClusterElement extends ClusterElementBase {
 
   protected timestamp_(): string {
     return this.cluster && this.cluster.visits.length > 0 ?
-        this.cluster.visits[0].relativeDate :
+        this.cluster.visits[0]!.relativeDate :
         '';
   }
 

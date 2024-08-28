@@ -1,8 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {UrlVisitElement} from './url_visit.js';
+
+export function getHtml(this: UrlVisitElement) {
+  return html`
 <div id="header" @click="${this.onClick_}" @auxclick="${this.onClick_}"
     @keydown="${this.onKeydown_}" @contextmenu="${this.onContextMenu_}">
-  <a id="link-container" href="${this.visit.normalizedUrl.url}">
-    <page-favicon id="icon" .url="${this.visit.normalizedUrl}"
-        .isKnownToSync="${this.visit.isKnownToSync}">
+  <a id="link-container" href="${this.visit?.normalizedUrl.url || nothing}">
+    <page-favicon id="icon" .url="${this.visit?.normalizedUrl}"
+        .isKnownToSync="${this.visit?.isKnownToSync || false}">
     </page-favicon>
     <div id="page-info">
       <div id="title-and-annotations">
@@ -36,4 +46,5 @@ ${this.renderActionMenu_ ? html`
           @click="${this.onRemoveSelfButtonClick_}">
         ${this.i18n('removeFromHistory')}
       </button>
-    </cr-action-menu>` : ''}
+    </cr-action-menu>` : ''}`;
+}

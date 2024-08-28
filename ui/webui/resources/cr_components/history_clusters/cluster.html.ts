@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ClusterElement} from './cluster.js';
+
+export function getHtml(this: ClusterElement) {
+  return html`
 <div id="container" @visit-clicked="${this.onVisitClicked_}"
     @open-all-visits="${this.onOpenAllVisits_}"
     @hide-all-visits="${this.onHideAllVisits_}"
@@ -14,7 +24,8 @@
     </div>
   </div>
   ${this.visits_().map(item => html`<url-visit .visit="${item}"
-      .query="${this.query}" .fromPersistence="${this.cluster.fromPersistence}">
+      .query="${this.query}"
+      .fromPersistence="${this.cluster!.fromPersistence}">
     </url-visit>`)}
   <div id="related-searches-divider" ?hidden="${this.hideRelatedSearches_()}">
   </div>
@@ -28,4 +39,5 @@
         .searchQuery="${item}" .index="${index}" role="listitem">
       </search-query>`)}
   </horizontal-carousel>
-</div>
+</div>`;
+}

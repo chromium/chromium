@@ -81,8 +81,8 @@ export class PageFaviconElement extends CrLitElement {
   // Properties
   //============================================================================
 
-  isKnownToSync: boolean;
-  url: Url;
+  isKnownToSync: boolean = false;
+  url: Url|null = null;
   protected imageUrl_: Url|null = null;
   protected inSidePanel_: boolean = loadTimeData.getBoolean('inSidePanel');
   protected isImageCover_: boolean =

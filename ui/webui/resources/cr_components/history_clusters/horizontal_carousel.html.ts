@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {HorizontalCarouselElement} from './horizontal_carousel.js';
+
+export function getHtml(this: HorizontalCarouselElement) {
+  return html`
 <cr-icon-button id="backButton" class="carousel-button"
     @click="${this.onCarouselBackClick_}" iron-icon="cr:chevron-left"
     ?hidden="${!this.showBackButton_}" tabindex="-1">
@@ -12,4 +22,5 @@
 
 <div id="carouselContainer">
   <slot></slot>
-</div>
+</div>`;
+}
