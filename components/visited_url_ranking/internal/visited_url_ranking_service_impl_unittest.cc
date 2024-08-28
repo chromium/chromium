@@ -570,8 +570,20 @@ TEST_F(VisitedURLRankingServiceImplTest, DecorateURLVisitAggregates) {
   EXPECT_EQ(result.second.size(), 1u);
   EXPECT_EQ(**result.second[0].GetAssociatedURLs().begin(), kSampleUrl);
   EXPECT_EQ(result.second[0].decorations.size(), 4u);
-  EXPECT_EQ(GetMostRelevantDecoration(result.second[0]).type,
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[0]).GetType(),
             DecorationType::kMostRecent);
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[0]).GetDisplayString(),
+            u"Your most recent tab");
+  EXPECT_EQ(result.second[0].decorations[1].GetDisplayString(),
+            u"You visit often");
+  EXPECT_EQ(result.second[0].decorations[2].GetDisplayString(),
+            u"You visit often");
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_EQ(result.second[0].decorations[3].GetDisplayString(), u"You visited");
+#else
+  EXPECT_EQ(result.second[0].decorations[3].GetDisplayString(),
+            u"You visited 0 secs ago");
+#endif
 }
 
 }  // namespace visited_url_ranking

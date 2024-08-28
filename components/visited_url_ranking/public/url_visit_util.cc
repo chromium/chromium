@@ -358,9 +358,9 @@ const Decoration& GetMostRelevantDecoration(
   const Decoration* result;
   int max_priority = -1;
   for (const auto& decoration : url_visit_aggregate.decorations) {
-    if (GetPriority(decoration.type) > max_priority) {
+    if (GetPriority(decoration.GetType()) > max_priority) {
       result = &decoration;
-      max_priority = GetPriority(decoration.type);
+      max_priority = GetPriority(decoration.GetType());
     }
   }
   return *result;

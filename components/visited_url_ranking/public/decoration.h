@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_DECORATION_H_
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_DECORATION_H_
 
+#include <string>
+
 namespace visited_url_ranking {
 
 // The currently supported Decorators that may be added to a URL Visit
@@ -20,11 +22,17 @@ enum class DecorationType {
 // Holds the data for one of the decorations for a URL Visit Aggregate.
 class Decoration {
  public:
-  explicit Decoration(DecorationType decoration_type);
+  explicit Decoration(DecorationType decoration_type,
+                      std::u16string display_string);
   Decoration(const Decoration&);
   virtual ~Decoration() = default;
 
-  DecorationType type;
+  DecorationType GetType() const { return type_; }
+  std::u16string GetDisplayString() const { return display_string_; }
+
+ private:
+  DecorationType type_;
+  std::u16string display_string_;
 };
 
 }  // namespace visited_url_ranking

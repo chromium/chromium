@@ -34,6 +34,7 @@
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
@@ -48,6 +49,8 @@
 #include "components/visited_url_ranking/public/url_visit_schema.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 
 using segmentation_platform::AnnotatedNumericResult;
 using segmentation_platform::InputContext;
@@ -192,6 +195,33 @@ void SortScoredAggregatesAndCallback(
                               scored_visits.size());
   std::move(callback).Run(ResultStatus::kSuccess, std::move(scored_visits));
 }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+std::u16string FormatRelativeTime(const base::Time& time) {
+  // Return a time like "1 hour ago", "2 days ago", etc.
+  base::Time now = base::Time::Now();
+  // TimeFormat does not support negative TimeDelta values, so then we use 0.
+  return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
+                                ui::TimeFormat::LENGTH_SHORT,
+                                now < time ? base::TimeDelta() : now - time);
+}
+#endif
+
+std::u16string GetStringForDecoration(DecorationType type) {
+  switch (type) {
+    case DecorationType::kMostRecent:
+      return l10n_util::GetStringUTF16(IDS_TAB_RESUME_DECORATORS_MOST_RECENT);
+    case DecorationType::kFrequentlyVisitedAtTime:
+      return l10n_util::GetStringUTF16(
+          IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED);
+    case DecorationType::kFrequentlyVisited:
+      return l10n_util::GetStringUTF16(
+          IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED);
+    case DecorationType::kVisitedXAgo:
+      return l10n_util::GetStringUTF16(IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO);
+    case DecorationType::kUnknown:
+      return l10n_util::GetStringUTF16(IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO);
+  }
+}
 
 void AddMostRecentDecoration(URLVisitAggregate& url_visit_aggregate,
                              URLVisitAggregate* curr_most_recent_aggregate,
@@ -202,7 +232,8 @@ void AddMostRecentDecoration(URLVisitAggregate& url_visit_aggregate,
   }
   if (last_visit) {
     curr_most_recent_aggregate->decorations.emplace_back(
-        DecorationType::kMostRecent);
+        DecorationType::kMostRecent,
+        GetStringForDecoration(DecorationType::kMostRecent));
   }
 }
 
@@ -230,7 +261,8 @@ void AddFrequentlyVisitedDecoration(URLVisitAggregate& url_visit_aggregate) {
   if (total_visits >
       features::kVisitedURLRankingFrequentlyVisitedThreshold.Get()) {
     url_visit_aggregate.decorations.emplace_back(
-        DecorationType::kFrequentlyVisited);
+        DecorationType::kFrequentlyVisited,
+        GetStringForDecoration(DecorationType::kFrequentlyVisited));
   }
 }
 
@@ -245,10 +277,25 @@ void AddFrequentlyVisitedAtTimeDecoration(
       if (static_cast<int>(history_data->same_time_group_visit_count) >
           features::kVisitedURLRankingDecorationTimeOfDay.Get()) {
         url_visit_aggregate.decorations.emplace_back(
-            DecorationType::kFrequentlyVisitedAtTime);
+            DecorationType::kFrequentlyVisitedAtTime,
+            GetStringForDecoration(DecorationType::kFrequentlyVisitedAtTime));
       }
     }
   }
+}
+
+void AddVisitedXAgoDecoration(URLVisitAggregate& url_visit_aggregate) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // TODO(crbug/329243415): Implement iOS and Android timestamp
+  url_visit_aggregate.decorations.emplace_back(
+      DecorationType::kVisitedXAgo,
+      GetStringForDecoration(DecorationType::kVisitedXAgo));
+#else
+  url_visit_aggregate.decorations.emplace_back(
+      DecorationType::kVisitedXAgo,
+      GetStringForDecoration(DecorationType::kVisitedXAgo) + u" " +
+          FormatRelativeTime(url_visit_aggregate.GetLastVisitTime()));
+#endif
 }
 
 }  // namespace
@@ -362,8 +409,8 @@ void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
 
     AddFrequentlyVisitedAtTimeDecoration(url_visit_aggregate);
 
-    // Default decoration.
-    url_visit_aggregate.decorations.emplace_back(DecorationType::kVisitedXAgo);
+    // Default decoration
+    AddVisitedXAgoDecoration(url_visit_aggregate);
   }
 
   std::move(callback).Run(ResultStatus::kSuccess, std::move(visit_aggregates));
