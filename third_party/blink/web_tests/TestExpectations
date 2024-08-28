@@ -5529,7 +5529,21 @@ crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/f
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-fallback-datalist-animations.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/stylable-select/border-rendering.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/border-rendering.tentative.html [ Failure ]
-crbug.com/360357720 external/wpt/html/semantics/forms/the-select-element/stylable-select/select-icon-color.tentative.html [ Failure ]
+crbug.com/360357720 wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-icon-color.tentative.html [ Failure ]
+
+# These are accessibility tests which fail when StylableSelect is enabled,
+# which is set to experimental. They will pass after work has been completed on
+# the accessibility mappings for StylableSelect. For now, the stable behavior
+# of these tests is tested in virtual/stylable-select-disabled.
+crbug.com/343631044 accessibility/aria-hidden-select.html [ Failure ]
+crbug.com/343631044 accessibility/native-select-activedescendant.html [ Failure ]
+crbug.com/343631044 accessibility/role-attribute.html [ Failure ]
+crbug.com/343631044 virtual/stylable-select-disabled/accessibility/aria-hidden-select.html [ Pass ]
+crbug.com/343631044 virtual/stylable-select-disabled/accessibility/native-select-activedescendant.html [ Pass ]
+crbug.com/343631044 virtual/stylable-select-disabled/accessibility/role-attribute.html [ Pass ]
+crbug.com/343631044 virtual/select-parser-relaxation/accessibility/aria-hidden-select.html [ Pass ]
+crbug.com/343631044 virtual/select-parser-relaxation/accessibility/native-select-activedescendant.html [ Pass ]
+crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribute.html [ Pass ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]

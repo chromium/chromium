@@ -705,7 +705,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
          mouse_event->button() ==
              static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
       SetSelected(true);
-      select->DisplayedDatalist()->HidePopoverForSelectElement();
+      select->HidePopup();
       event.SetDefaultHandled();
       return;
     }
@@ -749,7 +749,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         }
       } else if ((key == " " || key == keywords::kCapitalEnter) && select) {
         SetSelected(true);
-        select->DisplayedDatalist()->HidePopoverForSelectElement();
+        select->HidePopup();
         event.SetDefaultHandled();
         return;
       }
@@ -764,7 +764,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
       } else if (select) {
         // TODO(http://crbug.com/1511354): Consider focusing something in this
         // case. https://github.com/openui/open-ui/issues/1016
-        select->DisplayedDatalist()->HidePopoverForSelectElement();
+        select->HidePopup();
         event.SetDefaultHandled();
         return;
       }

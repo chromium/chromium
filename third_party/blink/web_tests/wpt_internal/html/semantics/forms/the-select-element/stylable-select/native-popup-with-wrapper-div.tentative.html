@@ -2,19 +2,17 @@
 <html class=reftest-wait>
 <link rel=author href="mailto:jarhar@chromium.org">
 <link rel=help href="https://github.com/whatwg/html/issues/9799">
-<link rel=match href="native-popup-with-datalist-ref.html">
-<link rel=assert title="The native popup of a select should show options descending from datalists">
+<link rel=match href="native-popup-with-wrapper-div-ref.html">
+<link rel=assert title="The native popup of a select should show options descending from a wrapper div">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
 <select>
-  <datalist>
-    <div>
-      <option>one</option>
-      <hr>
-      <option>two</option>
-    </div>
-  </datalist>
+  <div>
+    <option>one</option>
+    <hr>
+    <option>two</option>
+  </div>
 </select>
 
 <script>

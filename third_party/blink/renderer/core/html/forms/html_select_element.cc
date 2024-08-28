@@ -1675,8 +1675,8 @@ HTMLButtonElement* HTMLSelectElement::DisplayedButton() const {
   return select_type_->DisplayedButton();
 }
 
-HTMLDataListElement* HTMLSelectElement::DisplayedDatalist() const {
-  return select_type_->DisplayedDatalist();
+HTMLElement* HTMLSelectElement::PopoverForAppearanceBase() const {
+  return select_type_->PopoverForAppearanceBase();
 }
 
 bool HTMLSelectElement::IsAppearanceBaseSelect() const {

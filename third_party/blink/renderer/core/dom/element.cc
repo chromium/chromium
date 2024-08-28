@@ -10409,12 +10409,6 @@ Element* Element::ImplicitAnchorElement() const {
     if (Element* internal_anchor = html_element->internalImplicitAnchor()) {
       return internal_anchor;
     }
-    if (const auto* datalist = DynamicTo<HTMLDataListElement>(html_element)) {
-      if (auto* select = datalist->ParentSelect()) {
-        CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-        return select;
-      }
-    }
   }
   if (const PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {

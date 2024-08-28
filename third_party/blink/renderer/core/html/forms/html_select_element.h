@@ -232,15 +232,17 @@ class CORE_EXPORT HTMLSelectElement final
   // value of the appearance property is not checked.
   HTMLButtonElement* SlottedButton() const;
 
-  // DisplayedDatalist returns whatever <datalist> is included in the flat tree
-  // based on the result of slot assignment. If a child <datalist> is present,
-  // then the return value will be the same as FirstChildDatalist. Otherwise,
-  // the fallback <datalist> in the UA shadowroot will be returned.
-  // This <datalist> is the one which will get rendered as a popover.
-  HTMLDataListElement* DisplayedDatalist() const;
+  // This method returns the UA popover element which is used for
+  // appearance:base-select. If this select is rendering in a mode which doesn't
+  // use the UA popover, such as appearance:auto/none or size=2/multiple, then
+  // this will return null.
+  HTMLElement* PopoverForAppearanceBase() const;
 
-  // DisplayedButton does the same logic as DisplayedDatalist except for the
-  // <button> instead of the <datalist>.
+  // DisplayedButton returns whatever <button> is included in the flat tree
+  // based on the result of slot assignment. If a child <button> is present,
+  // then the return value will be that <button>. Otherwise, the fallback
+  // <button> in the UA shadowroot will be returned. This <button> is the one
+  // which will get rendered as a popover.
   HTMLButtonElement* DisplayedButton() const;
 
   // This method returns true if the computed style is appearance:base-select and

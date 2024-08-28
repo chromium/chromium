@@ -17,12 +17,10 @@ select {
 
 /* Undo unwanted styles from select rules */
 select:not(:-internal-list-box) > button,
-select:not(:-internal-list-box) > datalist,
 select::select-fallback-datalist {
   white-space: normal;
 }
 
-select:not(:-internal-list-box) > datalist,
 select:not(:-internal-list-box)::select-fallback-datalist {
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
@@ -97,44 +95,6 @@ select:not(:-internal-list-box)::select-fallback-datalist {
   inset-block-end: anchor(self-start);
   inset-inline-end: anchor(self-end);
   block-size: -webkit-fill-available;
-}
-
-/* This is a copy of the [popover] styles. It may be combined after
- * removing the StylableSelect flag. */
-select:not(:-internal-list-box) > datalist,
-select:not(:-internal-list-box)::select-fallback-datalist {
-  position: fixed;
-  width: fit-content;
-  height: fit-content;
-  color: CanvasText;
-}
-select:not(:-internal-list-box) > datalist:popover-open,
-select:not(:-internal-list-box)::select-fallback-datalist:popover-open {
-  overlay: auto !important;
-  /* This display:block is not part of the [popover] styles and needs to stay
-   * here even if we deduplicate it from other [popover] styles. */
-  display: block;
-}
-/* TODO make sure that this selector works despite nested pseudo-elements */
-select:not(:-internal-list-box) > datalist:-internal-popover-in-top-layer::backdrop,
-select:not(:-internal-list-box)::select-fallback-datalist:-internal-popover-in-top-layer::backdrop {
-  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
-  position: fixed;
-  inset: 0;
-  /* Specific to [popover]: */
-  pointer-events: none !important;
-  background-color: transparent;
-}
-
-select:not(:-internal-list-box):open > datalist {
-  /* This rule is needed in order to make appearance:auto selects with
-   * <option>s inside an author provided <datalist> still render the <option>s
-   * by default because the <datalist> will have display:none on it by default.
-   */
-  display: block;
-}
-select:-internal-list-box > datalist {
-  display: block;
 }
 
 select::select-fallback-button {

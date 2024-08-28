@@ -106,13 +106,12 @@ instead of "initial value".
 |           pseudo="select-fallback-button-text"
 |           shadow:pseudoId="select-fallback-button-text"
 |           "initial value"
-|     <slot>
-|       id="select-datalist"
-|       <datalist>
-|         pseudo="select-fallback-datalist"
-|         shadow:pseudoId="select-fallback-datalist"
-|         <slot>
-|           id="select-datalist-options"
+|     <div>
+|       popover="auto"
+|       pseudo="select-fallback-datalist"
+|       shadow:pseudoId="select-fallback-datalist"
+|       <slot>
+|         id="select-datalist-options"
 |     <div>
 |       popover="manual"
 |       pseudo="-internal-select-autofill-preview"

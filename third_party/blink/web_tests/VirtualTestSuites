@@ -3320,6 +3320,9 @@
     "prefix": "select-parser-relaxation",
     "platforms": ["Linux"],
     "bases": [
+      "accessibility/aria-hidden-select.html",
+      "accessibility/native-select-activedescendant.html",
+      "accessibility/role-attribute.html",
       "fast/events/select-element.html",
       "external/wpt/css/css-writing-modes/forms/select-appearance-native-computed-style.html",
       "external/wpt/css/css-writing-modes/forms/select-appearance-native-horizontal.optional.html",
@@ -3346,6 +3349,9 @@
     "prefix": "stylable-select-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "accessibility/aria-hidden-select.html",
+      "accessibility/native-select-activedescendant.html",
+      "accessibility/role-attribute.html",
       "external/wpt/css/css-writing-modes/forms/select-appearance-native-computed-style.html",
       "external/wpt/css/css-writing-modes/forms/select-appearance-native-horizontal.optional.html",
       "external/wpt/css/css-writing-modes/forms/select-appearance-native-vertical.optional.html",

@@ -1208,13 +1208,6 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
       return;
     }
   }
-  if (auto* listbox = DynamicTo<HTMLDataListElement>(this)) {
-    if (listbox->ParentSelect()) {
-      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-      // Select datalist listboxes manage their own popover state.
-      return;
-    }
-  }
 
   PopoverValueType type = GetPopoverTypeFromAttributeValue(value);
   if (type == PopoverValueType::kManual &&
@@ -1325,9 +1318,7 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
 
   auto* listbox = DynamicTo<HTMLListboxElement>(this);
   bool is_selectlist_listbox = listbox && listbox->OwnerSelectList();
-  auto* datalist = DynamicTo<HTMLDataListElement>(this);
-  bool is_select_listbox = datalist && datalist->ParentSelect();
-  if (!HasPopoverAttribute() && !is_selectlist_listbox && !is_select_listbox) {
+  if (!HasPopoverAttribute() && !is_selectlist_listbox) {
     maybe_throw_exception(DOMExceptionCode::kNotSupportedError,
                           "Not supported on elements that do not have a valid "
                           "value for the 'popover' attribute.");

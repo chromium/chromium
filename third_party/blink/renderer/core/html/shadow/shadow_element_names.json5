@@ -90,10 +90,14 @@
       Symbol: "kSelectButton",
     },
     {
+      // TODO(crbug.com/1511354): This is not a <datalist> anymore and should
+      // be renamed after a standards discussion on naming.
       name: "select-datalist",
       Symbol: "kSelectDatalist",
     },
     {
+      // TODO(crbug.com/1511354): This is not a <datalist> anymore and should
+      // be renamed after a standards discussion on naming.
       name: "select-datalist-options",
       Symbol: "kSelectDatalistOptions",
     },
