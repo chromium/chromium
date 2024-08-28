@@ -23,6 +23,7 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -39,28 +40,6 @@ struct BlindSignToken;
 }  // namespace quiche
 
 namespace android_webview {
-
-// The result of a fetch of tokens from the IP Protection auth token server.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep this in sync with
-// AwIpProtectionTokenBatchRequestResult in enums.xml.
-enum class AwIpProtectionTryGetAuthTokensResult {
-  // The request was successful and resulted in new tokens.
-  kSuccess = 0,
-  // A transient error, implies that retrying the action (with backoff) is
-  // appropriate.
-  kFailedBSATransient = 1,
-  // A persistent error, implies that the action should not be retried.
-  kFailedBSAPersistent = 2,
-  // Any other issue calling BSA.
-  kFailedBSAOther = 3,
-  // The attempt to request tokens failed because IP Protection is disabled by
-  // WebView.
-  kFailedDisabled = 4,
-
-  kMaxValue = kFailedDisabled,
-};
 
 // Fetches IP protection tokens and proxy list on demand for the network
 // service.
@@ -144,12 +123,13 @@ class AwIpProtectionConfigProvider
       std::optional<std::vector<ip_protection::BlindSignedAuthToken>>
           bsa_tokens,
       TryGetAuthTokensCallback callback,
-      AwIpProtectionTryGetAuthTokensResult result);
+      ip_protection::TryGetAuthTokensAndroidResult result,
+      std::optional<base::TimeDelta> duration = std::nullopt);
 
   // Calculates the backoff time for the given result, based on
   // `last_try_get_auth_tokens_..` fields, and updates those fields.
   std::optional<base::TimeDelta> CalculateBackoff(
-      AwIpProtectionTryGetAuthTokensResult result);
+      ip_protection::TryGetAuthTokensAndroidResult result);
 
   // Injected browser context.
   raw_ptr<AwBrowserContext> aw_browser_context_;
@@ -176,8 +156,9 @@ class AwIpProtectionConfigProvider
   // backoff applied to `try_again_after`. `last_try_get_auth_tokens_backoff_`
   // will be set to `base::TimeDelta::Max()` if no further attempts to get
   // tokens should be made. These will be updated by calls from any receiver.
-  AwIpProtectionTryGetAuthTokensResult last_try_get_auth_tokens_result_ =
-      AwIpProtectionTryGetAuthTokensResult::kSuccess;
+  ip_protection::TryGetAuthTokensAndroidResult
+      last_try_get_auth_tokens_result_ =
+          ip_protection::TryGetAuthTokensAndroidResult::kSuccess;
   std::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
 
   // The `mojo::Receiver` objects allowing the network service to call methods

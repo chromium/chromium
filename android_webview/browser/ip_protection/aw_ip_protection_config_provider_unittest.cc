@@ -172,7 +172,7 @@ TEST_F(AwIpProtectionConfigProviderTest, Success) {
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
-      AwIpProtectionTryGetAuthTokensResult::kSuccess, 1);
+      ip_protection::TryGetAuthTokensAndroidResult::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 1);
 }
 
@@ -191,7 +191,7 @@ TEST_F(AwIpProtectionConfigProviderTest, NoTokens) {
       ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
-      AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
+      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
@@ -220,7 +220,7 @@ TEST_F(AwIpProtectionConfigProviderTest, MalformedTokens) {
       ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
-      AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
+      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
@@ -258,7 +258,7 @@ TEST_F(AwIpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
-      AwIpProtectionTryGetAuthTokensResult::kSuccess, 1);
+      ip_protection::TryGetAuthTokensAndroidResult::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 1);
 }
 
@@ -281,7 +281,7 @@ TEST_F(AwIpProtectionConfigProviderTest, TokenHasMissingGeoHint) {
       ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
-      AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
+      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
@@ -302,7 +302,7 @@ TEST_F(AwIpProtectionConfigProviderTest, BlindSignedAuthTransientError) {
       ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
-      AwIpProtectionTryGetAuthTokensResult::kFailedBSATransient, 1);
+      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSATransient, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
@@ -322,7 +322,7 @@ TEST_F(AwIpProtectionConfigProviderTest, BlindSignedAuthPersistentError) {
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
-      AwIpProtectionTryGetAuthTokensResult::kFailedBSAPersistent, 1);
+      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAPersistent, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
@@ -343,7 +343,7 @@ TEST_F(AwIpProtectionConfigProviderTest, BlindSignedTokenErrorOther) {
       ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
-      AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
+      ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
@@ -359,7 +359,6 @@ TEST_F(AwIpProtectionConfigProviderTest,
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
-
 
 TEST_F(AwIpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   std::vector<net::ProxyChain> proxy_override_list = {
@@ -451,6 +450,5 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
   EXPECT_EQ(proxy_list, std::nullopt);
   EXPECT_FALSE(geo_hint.has_value());
 }
-
 
 }  // namespace android_webview

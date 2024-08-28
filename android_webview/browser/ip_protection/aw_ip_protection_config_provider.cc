@@ -30,6 +30,7 @@
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -47,6 +48,8 @@
 #include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace android_webview {
+
+using ::ip_protection::TryGetAuthTokensAndroidResult;
 
 AwIpProtectionConfigProvider::AwIpProtectionConfigProvider(
     AwBrowserContext* aw_browser_context)
@@ -128,7 +131,7 @@ void AwIpProtectionConfigProvider::TryGetAuthTokens(
   if (!IsIpProtectionEnabled()) {
     TryGetAuthTokensComplete(
         /*bsa_tokens=*/std::nullopt, std::move(callback),
-        AwIpProtectionTryGetAuthTokensResult::kFailedDisabled);
+        TryGetAuthTokensAndroidResult::kFailedDisabled);
     return;
   }
 
@@ -165,16 +168,16 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     return;
   }
   if (!tokens.ok()) {
-    AwIpProtectionTryGetAuthTokensResult result;
+    TryGetAuthTokensAndroidResult result;
     switch (tokens.status().code()) {
       case absl::StatusCode::kUnavailable:
-        result = AwIpProtectionTryGetAuthTokensResult::kFailedBSATransient;
+        result = TryGetAuthTokensAndroidResult::kFailedBSATransient;
         break;
       case absl::StatusCode::kFailedPrecondition:
-        result = AwIpProtectionTryGetAuthTokensResult::kFailedBSAPersistent;
+        result = TryGetAuthTokensAndroidResult::kFailedBSAPersistent;
         break;
       default:
-        result = AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther;
+        result = TryGetAuthTokensAndroidResult::kFailedBSAOther;
         break;
     }
     VLOG(2) << "AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted "
@@ -190,7 +193,7 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
                "OnFetchBlindSignedTokenCompleted called with no tokens";
     TryGetAuthTokensComplete(
         /*bsa_tokens=*/std::nullopt, std::move(callback),
-        AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther);
+        TryGetAuthTokensAndroidResult::kFailedBSAOther);
     return;
   }
 
@@ -206,7 +209,7 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
                  "`network::mojom::BlindSignedAuthToken`";
       TryGetAuthTokensComplete(
           /*bsa_tokens=*/std::nullopt, std::move(callback),
-          AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther);
+          TryGetAuthTokensAndroidResult::kFailedBSAOther);
       return;
     } else {
       bsa_tokens.push_back(std::move(converted_token).value());
@@ -214,23 +217,21 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
-  base::UmaHistogramTimes("NetworkService.AwIpProtection.TokenBatchRequestTime",
-                          current_time - bsa_get_tokens_start_time);
-
   TryGetAuthTokensComplete(std::move(bsa_tokens), std::move(callback),
-                           AwIpProtectionTryGetAuthTokensResult::kSuccess);
+                           TryGetAuthTokensAndroidResult::kSuccess,
+                           current_time - bsa_get_tokens_start_time);
 }
 
 void AwIpProtectionConfigProvider::TryGetAuthTokensComplete(
     std::optional<std::vector<ip_protection::BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
-    AwIpProtectionTryGetAuthTokensResult result) {
-  if (result == AwIpProtectionTryGetAuthTokensResult::kSuccess) {
+    ip_protection::TryGetAuthTokensAndroidResult result,
+    std::optional<base::TimeDelta> duration) {
+  if (result == TryGetAuthTokensAndroidResult::kSuccess) {
     CHECK(bsa_tokens.has_value() && !bsa_tokens->empty());
   }
 
-  base::UmaHistogramEnumeration(
-      "NetworkService.AwIpProtection.TryGetAuthTokensResult", result);
+  ip_protection::Telemetry().AndroidTokenBatchFetchComplete(result, duration);
 
   std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
   std::optional<base::Time> try_again_after;
@@ -246,17 +247,17 @@ void AwIpProtectionConfigProvider::TryGetAuthTokensComplete(
 }
 
 std::optional<base::TimeDelta> AwIpProtectionConfigProvider::CalculateBackoff(
-    AwIpProtectionTryGetAuthTokensResult result) {
+    TryGetAuthTokensAndroidResult result) {
   std::optional<base::TimeDelta> backoff;
   switch (result) {
-    case AwIpProtectionTryGetAuthTokensResult::kSuccess:
+    case TryGetAuthTokensAndroidResult::kSuccess:
       break;
-    case AwIpProtectionTryGetAuthTokensResult::kFailedBSAPersistent:
-    case AwIpProtectionTryGetAuthTokensResult::kFailedDisabled:
+    case TryGetAuthTokensAndroidResult::kFailedBSAPersistent:
+    case TryGetAuthTokensAndroidResult::kFailedDisabled:
       backoff = base::TimeDelta::Max();
       break;
-    case AwIpProtectionTryGetAuthTokensResult::kFailedBSATransient:
-    case AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther:
+    case TryGetAuthTokensAndroidResult::kFailedBSATransient:
+    case TryGetAuthTokensAndroidResult::kFailedBSAOther:
       backoff =
           ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff;
       // Note that we calculate the backoff assuming that we've waited for

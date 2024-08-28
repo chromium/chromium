@@ -46,6 +46,29 @@ enum class TryGetAuthTokensResult {
   kMaxValue = kFailedDisabledByUser,
 };
 
+// The result of a fetch of tokens from the IP Protection auth token server on
+// Android.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep this in sync with
+// AwIpProtectionTokenBatchRequestResult in enums.xml.
+enum class TryGetAuthTokensAndroidResult {
+  // The request was successful and resulted in new tokens.
+  kSuccess = 0,
+  // A transient error, implies that retrying the action (with backoff) is
+  // appropriate.
+  kFailedBSATransient = 1,
+  // A persistent error, implies that the action should not be retried.
+  kFailedBSAPersistent = 2,
+  // Any other issue calling BSA.
+  kFailedBSAOther = 3,
+  // The attempt to request tokens failed because IP Protection is disabled by
+  // WebView.
+  kFailedDisabled = 4,
+
+  kMaxValue = kFailedDisabled,
+};
+
 // A GeoHint represents a course location of a user. Values are based on
 // RFC 8805 geolocation.
 struct GeoHint {

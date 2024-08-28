@@ -70,6 +70,12 @@ class IpProtectionTelemetry {
       TryGetAuthTokensResult result,
       std::optional<base::TimeDelta> duration) = 0;
 
+  // Completed an attempt to fetch tokens via the system-provided auth service
+  // on Android.
+  virtual void AndroidTokenBatchFetchComplete(
+      TryGetAuthTokensAndroidResult result,
+      std::optional<base::TimeDelta> duration) = 0;
+
   // Chrome has determined that a proxy chain with the given chain ID has failed
   // and fallen back to the next chain in the list.
   virtual void ProxyChainFallback(int proxy_chain_id) = 0;
