@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
-import android.text.TextUtils;
-
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,14 +19,18 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
 /**
- * Java counterpart of the native `SearchEngineChoiceService`. This singleton is responsible for
- * getting the device country string from {@link SearchEngineCountryDelegate} and propagating it to
- * C++ instances of `SearchEngineChoiceService`. The object is a singleton rather than being
- * profile-scoped as the device country obtained from `SearchEngineCountryDelegate` is global (it
- * also allows `SearchEngineChoiceService` instance to be created before the native is initialized).
+ * Singleton responsible for communicating with device APIs to expose device-level properties that
+ * are relevant for search engine choice screens and other similar UIs. It is the Java counterpart
+ * of the native `SearchEngineChoiceService`, propagating some of the properties (notably the device
+ * country string from {@link SearchEngineCountryDelegate}) to C++ instances of
+ * `SearchEngineChoiceService`.
+ *
+ * <p>The object is a singleton rather than being profile-scoped as device properties apply to all
+ * profiles, it also allows an instance to be created before the native is initialized.
  */
 public class SearchEngineChoiceService {
     private static final String TAG = "DeviceChoiceDialog";
@@ -62,12 +64,10 @@ public class SearchEngineChoiceService {
     public static SearchEngineChoiceService getInstance() {
         ThreadUtils.checkUiThread();
         if (sInstance == null) {
-            String useFakeBackendParamValue =
-                    SearchEnginesFeatures.getFieldTrialParamByFeature(
-                            SearchEnginesFeatures.CLAY_BLOCKING, "use_fake_backend");
             var context = ContextUtils.getApplicationContext();
             var delegate =
-                    TextUtils.equals(useFakeBackendParamValue, "true")
+                    SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
+                                    && SearchEnginesFeatureUtils.clayBlockingUseFakeBackend()
                             ? new FakeSearchEngineCountryDelegate(
                                     context, /* enableLogging= */ true)
                             : new SearchEngineCountryDelegateImpl(context);
@@ -177,12 +177,22 @@ public class SearchEngineChoiceService {
     @MainThread
     public ObservableSupplier<Boolean> getIsDeviceChoiceRequiredSupplier() {
         ThreadUtils.checkUiThread();
+        var alwaysFalseSupplier = new ObservableSupplierImpl<>(false);
+
         if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
-            return new ObservableSupplierImpl<>(false);
+            return alwaysFalseSupplier;
         }
 
         assert mDelegate != null;
-        return mDelegate.getIsDeviceChoiceRequiredSupplier();
+
+        var supplier = mDelegate.getIsDeviceChoiceRequiredSupplier();
+        if (SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch()) {
+            // We want to call into the backend to be able to verify it's working, but we intercept
+            // its returned values to prevent it from affecting the user experience.
+            return new TransitiveObservableSupplier<>(supplier, ignored -> alwaysFalseSupplier);
+        }
+
+        return supplier;
     }
 
     /**
@@ -196,6 +206,7 @@ public class SearchEngineChoiceService {
             return;
         }
 
+        assert !SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch();
         assert mDelegate != null;
         Log.i(TAG, "launchChoiceScreens()");
         mDelegate.launchDeviceChoiceScreens();

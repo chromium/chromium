@@ -7,6 +7,7 @@ package org.chromium.components.search_engines;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -61,10 +62,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
     @Before
     public void setUp() {
-        var testFeatures = new FeatureList.TestValues();
-        testFeatures.addFeatureFlagOverride(
-                SearchEnginesFeatures.CLAY_BLOCKING, mIsClayBlockingEnabled);
-        FeatureList.setTestValues(testFeatures);
+        configureClayBlockingFeature(mIsClayBlockingEnabled, /* isDarkLaunchEnabled= */ false);
 
         doReturn(Promise.rejected()).when(mDelegate).getDeviceCountry();
     }
@@ -198,6 +196,35 @@ public class SearchEngineChoiceServiceUnitTest {
     }
 
     @Test
+    public void testGetIsDeviceChoiceRequiredSupplier_darkLaunch() {
+        configureClayBlockingFeature(mIsClayBlockingEnabled, /* isDarkLaunchEnabled= */ true);
+
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        ObservableSupplierImpl<Boolean> fakeSupplier = new ObservableSupplierImpl<>();
+
+        doReturn(fakeSupplier).when(mDelegate).getIsDeviceChoiceRequiredSupplier();
+        var actualSupplier = service.getIsDeviceChoiceRequiredSupplier();
+
+        if (mIsClayBlockingEnabled) {
+            // For dark launch, we do call into the delegate, but we don't return its values
+            // directly.
+            assertNotSame(fakeSupplier, actualSupplier);
+            assertNull(actualSupplier.get());
+            verify(mDelegate).getIsDeviceChoiceRequiredSupplier();
+
+            // We match behaviour for the pending states, but when we get a value from the delegate,
+            // we ignore it and always return false.
+            fakeSupplier.set(true);
+            assertFalse(actualSupplier.get());
+        } else {
+            assertNotSame(fakeSupplier, actualSupplier);
+            assertFalse(actualSupplier.get());
+            verify(mDelegate, never()).getIsDeviceChoiceRequiredSupplier();
+        }
+    }
+
+    @Test
     public void testShouldShowDeviceChoiceDialog() {
         var service = new SearchEngineChoiceService(mDelegate);
 
@@ -237,5 +264,17 @@ public class SearchEngineChoiceServiceUnitTest {
         service.notifyDeviceChoiceBlockCleared();
         verify(mDelegate, times(mIsClayBlockingEnabled ? 1 : 0))
                 .log(DeviceChoiceEventType.BLOCK_CLEARED);
+    }
+
+    private static void configureClayBlockingFeature(
+            boolean isClayBlockingEnabled, boolean isDarkLaunchEnabled) {
+        var testFeatures = new FeatureList.TestValues();
+        testFeatures.addFeatureFlagOverride(
+                SearchEnginesFeatures.CLAY_BLOCKING, isClayBlockingEnabled);
+        testFeatures.addFieldTrialParamOverride(
+                SearchEnginesFeatures.CLAY_BLOCKING,
+                "is_dark_launch",
+                isDarkLaunchEnabled ? "true" : "");
+        FeatureList.setTestValues(testFeatures);
     }
 }

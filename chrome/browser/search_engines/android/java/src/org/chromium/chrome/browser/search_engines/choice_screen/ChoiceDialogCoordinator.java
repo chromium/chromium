@@ -18,7 +18,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
-import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -60,8 +59,6 @@ public class ChoiceDialogCoordinator {
     @VisibleForTesting
     static ChoiceDialogCoordinator maybeShowInternal(
             Supplier<ChoiceDialogCoordinator> coordinatorSupplier) {
-        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING);
-
         var searchEngineChoiceService = SearchEngineChoiceService.getInstance();
         if (searchEngineChoiceService == null
                 || !searchEngineChoiceService.isDeviceChoiceDialogEligible()) {

@@ -68,7 +68,10 @@ android_library("features_java") {
     ":features_srcjar",
   ]
 
-  sources = [ "java/src/org/chromium/components/search_engines/SearchEnginesFeatureMap.java" ]
+  sources = [
+    "java/src/org/chromium/components/search_engines/SearchEnginesFeatureMap.java",
+    "java/src/org/chromium/components/search_engines/SearchEnginesFeatureUtils.java",
+  ]
 }
 
 java_cpp_features("features_srcjar") {
