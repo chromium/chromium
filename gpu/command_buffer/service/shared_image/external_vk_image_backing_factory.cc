@@ -298,14 +298,6 @@ bool ExternalVkImageBackingFactory::IsSupported(
     return false;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // Scanout on Android requires explicit fence synchronization which is only
-  // supported by the interop factory.
-  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-    return false;
-  }
-#endif
-
   return true;
 }
 

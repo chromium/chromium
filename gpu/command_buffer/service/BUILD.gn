@@ -442,17 +442,22 @@ target(link_target_type, "gles2_sources") {
         "external_semaphore.h",
         "external_semaphore_pool.cc",
         "external_semaphore_pool.h",
-        "shared_image/external_vk_image_backing.cc",
-        "shared_image/external_vk_image_backing.h",
-        "shared_image/external_vk_image_backing_factory.cc",
-        "shared_image/external_vk_image_backing_factory.h",
-        "shared_image/external_vk_image_gl_representation.cc",
-        "shared_image/external_vk_image_gl_representation.h",
-        "shared_image/external_vk_image_overlay_representation.cc",
-        "shared_image/external_vk_image_overlay_representation.h",
-        "shared_image/external_vk_image_skia_representation.cc",
-        "shared_image/external_vk_image_skia_representation.h",
       ]
+
+      if (!is_android) {
+        sources += [
+          "shared_image/external_vk_image_backing.cc",
+          "shared_image/external_vk_image_backing.h",
+          "shared_image/external_vk_image_backing_factory.cc",
+          "shared_image/external_vk_image_backing_factory.h",
+          "shared_image/external_vk_image_gl_representation.cc",
+          "shared_image/external_vk_image_gl_representation.h",
+          "shared_image/external_vk_image_overlay_representation.cc",
+          "shared_image/external_vk_image_overlay_representation.h",
+          "shared_image/external_vk_image_skia_representation.cc",
+          "shared_image/external_vk_image_skia_representation.h",
+        ]
+      }
     }
 
     if (use_ozone) {
