@@ -32,6 +32,7 @@
 #include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language_detection/content/browser/content_language_detection_driver.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/core/browser/language_state.h"
@@ -117,9 +118,12 @@ ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
       translate_driver_(new translate::ContentTranslateDriver(
           *web_contents,
           UrlLanguageHistogramFactory::GetForBrowserContext(
-              web_contents->GetBrowserContext()),
-          TranslateModelServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext())))),
+              web_contents->GetBrowserContext()))),
+      language_detection_driver_(
+          new language_detection::ContentLanguageDetectionDriver(
+              TranslateModelServiceFactory::GetForProfile(
+                  Profile::FromBrowserContext(
+                      web_contents->GetBrowserContext())))),
       translate_manager_(new translate::TranslateManager(
           this,
           translate::TranslateRankerFactory::GetForBrowserContext(

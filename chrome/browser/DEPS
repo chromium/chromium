@@ -370,6 +370,8 @@ include_rules = [
   "+components/tracing/common",
   "+components/translate/content/android",
   "+components/translate/content/browser",
+  "+components/language_detection/content/browser",
+  "+components/language_detection/content/common",
   "+components/translate/content/common",
   "+components/translate/core/browser",
   "+components/translate/core/common",

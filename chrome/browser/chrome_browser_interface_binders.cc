@@ -73,6 +73,7 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/language_detection/content/common/language_detection.mojom.h"
 #include "components/lens/lens_features.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
@@ -968,6 +969,8 @@ void PopulateChromeFrameBinders(
 
   map->Add<translate::mojom::ContentTranslateDriver>(
       base::BindRepeating(&translate::BindContentTranslateDriver));
+  map->Add<language_detection::mojom::ContentLanguageDetectionDriver>(
+      base::BindRepeating(&translate::BindContentLanguageDetectionDriver));
 
   map->Add<blink::mojom::CredentialManager>(
       base::BindRepeating(&ChromePasswordManagerClient::BindCredentialManager));

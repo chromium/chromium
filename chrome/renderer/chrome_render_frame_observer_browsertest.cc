@@ -59,8 +59,6 @@ class FakeContentTranslateDriver
     register_page_count_ += 1;
     page_level_translation_criteria_met_ = page_level_translation_criteria_met;
   }
-  void GetLanguageDetectionModel(
-      GetLanguageDetectionModelCallback callback) override {}
 
   int register_page_count_ = 0;
   bool page_level_translation_criteria_met_ = false;

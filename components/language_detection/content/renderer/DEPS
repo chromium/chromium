@@ -1,0 +1,6 @@
+include_rules = [
+  "+content/public/renderer",
+  "+third_party/blink/public/platform",
+  "+components/translate/content/common/language_detection.mojom.h",
+  "+components/language_detection/core/language_detection_model.h",
+]
