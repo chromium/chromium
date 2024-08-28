@@ -5,6 +5,7 @@
 #ifndef SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 #define SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -211,6 +212,13 @@ enum InterceptionType {
   INTERCEPTION_UNLOAD_MODULE,  // Unload the module (don't patch)
   INTERCEPTION_LAST            // Placeholder for last item in the enumeration
 };
+
+// This callback is used for returning a process launch result from
+// StartSandboxedProcess() to the child process launcher helper. The parameters
+// include the new process handle, the Win32 last error code, and the sandbox
+// ResultCode.
+using StartSandboxedProcessCallback =
+    base::OnceCallback<void(base::Process, DWORD, int)>;
 
 }  // namespace sandbox
 

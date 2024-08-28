@@ -16,6 +16,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/launch.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
@@ -111,6 +112,7 @@ ChildProcessLauncher::ChildProcessLauncher(
 #endif
 {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("startup", "ChildProcessLauncher", this);
 
 #if BUILDFLAG(IS_WIN)
   should_launch_elevated_ = delegate->ShouldLaunchElevated();
@@ -167,6 +169,8 @@ void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
 #endif
                                   int error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("startup", "ChildProcessLauncher", this);
+
   starting_ = false;
   process_ = std::move(process);
 

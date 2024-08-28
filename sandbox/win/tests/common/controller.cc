@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/callback.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
@@ -133,6 +134,28 @@ std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path) {
              : MakePathToSys32(name, is_obj_man_path);
 }
 
+// This delegate is required for initializing BrokerServices and configures it
+// to use synchronous launching.
+class TestBrokerServicesDelegateImpl : public BrokerServicesDelegate {
+ public:
+  bool ParallelLaunchEnabled() override { return false; }
+
+  void ParallelLaunchPostTaskAndReplyWithResult(
+      const base::Location& from_here,
+      base::OnceCallback<CreateTargetResult()> task,
+      base::OnceCallback<void(CreateTargetResult)> reply) override {
+    // This function is only used for parallel launching and should not get
+    // called.
+    CHECK(false);
+  }
+
+  void BeforeTargetProcessCreateOnCreationThread(
+      const void* trace_id) override {}
+
+  void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
+                                                DWORD process_id) override {}
+};
+
 BrokerServices* GetBroker() {
   static BrokerServices* broker = SandboxFactory::GetBrokerServices();
   static bool is_initialized = false;
@@ -148,7 +171,9 @@ BrokerServices* GetBroker() {
     }
 
     auto tracker = std::make_unique<TargetTracker>(g_no_targets_event);
-    if (SBOX_ALL_OK != broker->InitForTesting(std::move(tracker))) {
+    if (SBOX_ALL_OK != broker->InitForTesting(  // IN-TEST
+                           std::make_unique<TestBrokerServicesDelegateImpl>(),
+                           std::move(tracker))) {
       return nullptr;
     }
 

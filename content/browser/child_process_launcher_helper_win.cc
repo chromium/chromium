@@ -156,11 +156,24 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
                                                : LAUNCH_RESULT_FAILURE;
     return process;
   }
-  ChildProcessLauncherHelper::Process process;
-  *launch_result =
-      StartSandboxedProcess(delegate_.get(), *command_line(),
-                            options->handles_to_inherit, &process.process);
-  return process;
+  *is_synchronous_launch = false;
+  *launch_result = StartSandboxedProcess(
+      delegate_.get(), *command_line(), options->handles_to_inherit,
+      base::BindOnce(&ChildProcessLauncherHelper::
+                         FinishStartSandboxedProcessOnLauncherThread,
+                     this));
+  return ChildProcessLauncherHelper::Process();
+}
+
+void ChildProcessLauncherHelper::FinishStartSandboxedProcessOnLauncherThread(
+    base::Process process,
+    DWORD last_error,
+    int launch_result) {
+  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  ChildProcessLauncherHelper::Process process_wrapper;
+  process_wrapper.process = std::move(process);
+  PostLaunchOnLauncherThread(std::move(process_wrapper), last_error,
+                             launch_result);
 }
 
 void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(

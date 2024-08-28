@@ -16,7 +16,6 @@
 #include "base/win/access_token.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "sandbox/win/src/app_container.h"
@@ -255,8 +254,11 @@ BrokerServicesBase::BrokerServicesBase() {}
 
 // The broker uses a dedicated worker thread that services the job completion
 // port to perform policy notifications and associated cleanup tasks.
-ResultCode BrokerServicesBase::Init(
+ResultCode BrokerServicesBase::InitInternal(
+    std::unique_ptr<BrokerServicesDelegate> delegate,
     std::unique_ptr<BrokerServicesTargetTracker> target_tracker) {
+  broker_services_delegate_ = std::move(delegate);
+
   if (job_port_.is_valid() || thread_pool_) {
     return SBOX_ERROR_UNEXPECTED_CALL;
   }
@@ -297,14 +299,17 @@ ResultCode BrokerServicesBase::Init(
   return SBOX_ALL_OK;
 }
 
-ResultCode BrokerServicesBase::Init() {
-  return BrokerServicesBase::Init(nullptr);
+ResultCode BrokerServicesBase::Init(
+    std::unique_ptr<BrokerServicesDelegate> delegate) {
+  return BrokerServicesBase::InitInternal(std::move(delegate), nullptr);
 }
 
 // Only called in test code.
 ResultCode BrokerServicesBase::InitForTesting(
+    std::unique_ptr<BrokerServicesDelegate> delegate,
     std::unique_ptr<BrokerServicesTargetTracker> target_tracker) {
-  return BrokerServicesBase::Init(std::move(target_tracker));
+  return BrokerServicesBase::InitInternal(std::move(delegate),
+                                          std::move(target_tracker));
 }
 
 // The destructor should only be called when the Broker process is terminating.
@@ -359,13 +364,55 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
   return policy;
 }
 
-// SpawnTarget does all the interesting sandbox setup and creates the target
-// process inside the sandbox.
 ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
                                            const wchar_t* command_line,
                                            std::unique_ptr<TargetPolicy> policy,
                                            DWORD* last_error,
                                            PROCESS_INFORMATION* target_info) {
+  *last_error = 0;
+  *target_info = {};
+  // With parallel launching disabled, it is safe to capture local references
+  // because SpawnTargetAsyncImpl is guaranteed to run the callback before
+  // returning.
+  ResultCode launch_result = SBOX_ERROR_GENERIC;
+  ResultCode result = SpawnTargetAsyncImpl(
+      exe_path, command_line, std::move(policy),
+      base::BindOnce(
+          [](DWORD* last_error, PROCESS_INFORMATION* target_info,
+             ResultCode* launch_result,
+             base::win::ScopedProcessInformation result_target_info,
+             DWORD result_last_error, ResultCode result_code) -> void {
+            *target_info = result_target_info.Take();
+            *last_error = result_last_error;
+            *launch_result = result_code;
+          },
+          last_error, target_info, &launch_result),
+      /*allow_parallel_launch=*/false);
+
+  if (result == SBOX_ALL_OK) {
+    result = launch_result;
+  }
+  return result;
+}
+
+ResultCode BrokerServicesBase::SpawnTargetAsync(
+    const wchar_t* exe_path,
+    const wchar_t* command_line,
+    std::unique_ptr<TargetPolicy> policy,
+    SpawnTargetCallback result_callback) {
+  return SpawnTargetAsyncImpl(exe_path, command_line, std::move(policy),
+                              std::move(result_callback),
+                              /*allow_parallel_launch=*/true);
+}
+
+// SpawnTarget does all the interesting sandbox setup and creates the target
+// process inside the sandbox.
+ResultCode BrokerServicesBase::SpawnTargetAsyncImpl(
+    const wchar_t* exe_path,
+    const wchar_t* command_line,
+    std::unique_ptr<TargetPolicy> policy,
+    SpawnTargetCallback result_callback,
+    bool allow_parallel_launch) {
   if (!exe_path)
     return SBOX_ERROR_BAD_PARAMS;
 
@@ -464,23 +511,88 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   // Create the TargetProcess object and spawn the target suspended. Note that
   // Brokerservices does not own the target object. It is owned by the Policy.
-  base::win::ScopedProcessInformation process_info;
   std::unique_ptr<TargetProcess> target = std::make_unique<TargetProcess>(
       std::move(*initial_token), std::move(*lockdown_token), thread_pool_);
 
-  result = target->Create(exe_path, command_line, std::move(startup_info),
-                          &process_info, last_error);
-
-  if (result != SBOX_ALL_OK) {
-    target->Terminate();
-    return result;
+  if (allow_parallel_launch &&
+      broker_services_delegate_->ParallelLaunchEnabled()) {
+    TargetProcess* target_ptr = target.get();
+    broker_services_delegate_->ParallelLaunchPostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&BrokerServicesBase::CreateTarget,
+                       base::Unretained(this), target_ptr,
+                       std::wstring(exe_path), std::wstring(command_line),
+                       std::move(startup_info)),
+        base::BindOnce(&BrokerServicesBase::FinishSpawnTarget,
+                       base::Unretained(this), std::move(policy_base),
+                       std::move(target), std::move(result_callback)));
+    return SBOX_ALL_OK;
   }
+
+  CreateTargetResult target_result = CreateTarget(
+      target.get(), exe_path, command_line, std::move(startup_info));
+
+  FinishSpawnTarget(std::move(policy_base), std::move(target),
+                    std::move(result_callback), std::move(target_result));
+  return SBOX_ALL_OK;
+}
+
+CreateTargetResult BrokerServicesBase::CreateTarget(
+    TargetProcess* target,
+    const std::wstring& exe_path,
+    const std::wstring& command_line,
+    std::unique_ptr<StartupInformationHelper> startup_info) {
+  // A trace ID for the current scope is generated from the address of a local
+  // variable to ensure uniqueness across threads.
+  const void* trace_id = &startup_info;
+  broker_services_delegate_->BeforeTargetProcessCreateOnCreationThread(
+      trace_id);
+
+  CreateTargetResult result;
+  result.result_code = target->Create(exe_path.c_str(), command_line.c_str(),
+                                      std::move(startup_info),
+                                      &result.process_info, &result.last_error);
+
+  broker_services_delegate_->AfterTargetProcessCreateOnCreationThread(
+      trace_id, result.process_info.process_id());
+
+  return result;
+}
+
+void BrokerServicesBase::FinishSpawnTarget(
+    std::unique_ptr<PolicyBase> policy_base,
+    std::unique_ptr<TargetProcess> target,
+    SpawnTargetCallback result_callback,
+    CreateTargetResult target_result) {
+  ResultCode result = FinishSpawnTargetImpl(
+      target_result.result_code, std::move(policy_base), std::move(target),
+      &target_result.process_info, &target_result.last_error);
+  if (result != SBOX_ALL_OK) {
+    target_result.process_info.Close();
+  }
+  std::move(result_callback)
+      .Run(std::move(target_result.process_info), target_result.last_error,
+           result);
+}
+
+ResultCode BrokerServicesBase::FinishSpawnTargetImpl(
+    ResultCode initial_result,
+    std::unique_ptr<PolicyBase> policy_base,
+    std::unique_ptr<TargetProcess> target,
+    base::win::ScopedProcessInformation* process_info,
+    DWORD* last_error) {
+  if (initial_result != SBOX_ALL_OK) {
+    target->Terminate();
+    return initial_result;
+  }
+
+  ConfigBase* config_base = static_cast<ConfigBase*>(policy_base->GetConfig());
 
   if (config_base->GetJobLevel() <= JobLevel::kLimitedUser) {
     // Restrict the job from containing any processes. Job restrictions
     // are only applied at process creation, so the target process is
     // unaffected.
-    result = policy_base->DropActiveProcessLimit();
+    ResultCode result = policy_base->DropActiveProcessLimit();
     if (result != SBOX_ALL_OK) {
       target->Terminate();
       return result;
@@ -489,7 +601,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   // Now the policy is the owner of the target. TargetProcess will terminate
   // the process if it has not completed when it is destroyed.
-  result = policy_base->ApplyToTarget(std::move(target));
+  ResultCode result = policy_base->ApplyToTarget(std::move(target));
 
   if (result != SBOX_ALL_OK) {
     *last_error = ::GetLastError();
@@ -498,7 +610,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   HANDLE job_handle = policy_base->GetJobHandle();
   JobTracker* tracker =
-      new JobTracker(std::move(policy_base), process_info.process_id());
+      new JobTracker(std::move(policy_base), process_info->process_id());
 
   // Post the tracker to the tracking thread, then associate the job with
   // the tracker. The worker thread takes ownership of these objects.
@@ -508,7 +620,6 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   // There is no obvious cleanup here.
   CHECK(AssociateCompletionPort(job_handle, job_port_.get(), tracker));
 
-  *target_info = process_info.Take();
   return result;
 }
 
@@ -600,6 +711,11 @@ ResultCode BrokerServicesBase::CreateAlternateDesktop(Desktop desktop) {
 void BrokerServicesBase::DestroyDesktops() {
   alt_winstation_.reset();
   alt_desktop_.reset();
+}
+
+void BrokerServicesBase::SetBrokerServicesDelegateForTesting(
+    std::unique_ptr<BrokerServicesDelegate> delegate) {
+  broker_services_delegate_ = std::move(delegate);
 }
 
 // static
