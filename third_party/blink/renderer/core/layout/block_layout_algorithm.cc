@@ -1385,10 +1385,9 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     const InlineBreakToken** inline_break_token_out) {
   DCHECK(previous_result_);
 
-  // No lines are reusable if this block uses `NGParagraphLineBreaker`.
-  // TODO(kojii): This should include other non-stable values; i.e.
-  // `if (!Style().ShouldWrapLineGreedy()) {`.
-  if (Style().GetTextWrapStyle() == TextWrapStyle::kBalance) {
+  // No lines are reusable if this block uses paragraph-level line breakers such
+  // as `ParagraphLineBreaker` or `ScoreLineBreaker`.
+  if (!Style().ShouldWrapLineGreedy()) {
     return false;
   }
 
