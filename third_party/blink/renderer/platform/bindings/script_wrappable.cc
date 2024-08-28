@@ -21,8 +21,8 @@ ASSERT_SIZE(ScriptWrappable, SameSizeAsScriptWrappable);
 
 v8::Local<v8::Value> ScriptWrappable::ToV8(ScriptState* script_state) {
   v8::Local<v8::Object> wrapper;
-  if (DOMDataStore::GetWrapper(script_state->GetIsolate(), this)
-          .ToLocal(&wrapper)) [[likely]] {
+  if (DOMDataStore::GetWrapper(script_state, this).ToLocal(&wrapper))
+      [[likely]] {
     return wrapper;
   }
   return Wrap(script_state);
