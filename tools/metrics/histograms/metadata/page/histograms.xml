@@ -842,7 +842,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.InteractiveTiming.FirstInputDelay4"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-10-08">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.LayoutInstability.CumulativeShiftScore.MainFrame"
-    units="scorex10" expires_after="2024-10-08">
+    units="scorex10" expires_after="2025-10-08">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
@@ -896,7 +896,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstImagePaint"
-    units="ms" expires_after="2024-10-08">
+    units="ms" expires_after="2025-10-08">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
