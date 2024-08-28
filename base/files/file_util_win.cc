@@ -25,7 +25,6 @@
 
 #include "base/check.h"
 #include "base/clang_profiling_buildflags.h"
-#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/files/file_enumerator.h"
@@ -472,15 +471,6 @@ bool ReplaceFile(const FilePath& from_path,
                  const FilePath& to_path,
                  File::Error* error) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-
-  // Alias paths for investigation of shutdown hangs. crbug.com/1054164
-  FilePath::CharType from_path_str[MAX_PATH];
-  base::wcslcpy(from_path_str, from_path.value().c_str(),
-                std::size(from_path_str));
-  base::debug::Alias(from_path_str);
-  FilePath::CharType to_path_str[MAX_PATH];
-  base::wcslcpy(to_path_str, to_path.value().c_str(), std::size(to_path_str));
-  base::debug::Alias(to_path_str);
 
   // Assume that |to_path| already exists and try the normal replace. This will
   // fail with ERROR_FILE_NOT_FOUND if |to_path| does not exist. When writing to
