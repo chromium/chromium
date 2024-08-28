@@ -452,6 +452,14 @@ bool CFRangeToNSRange(CFRange range, NSRange* range_out) {
   return false;
 }
 
+span<const uint8_t> CFDataToSpan(CFDataRef data) {
+  return NSDataToSpan(apple::CFToNSPtrCast(data));
+}
+
+span<uint8_t> CFMutableDataToSpan(CFMutableDataRef data) {
+  return NSMutableDataToSpan(apple::CFToNSPtrCast(data));
+}
+
 }  // namespace base::apple
 
 std::ostream& operator<<(std::ostream& o, const CFStringRef string) {

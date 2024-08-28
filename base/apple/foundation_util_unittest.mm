@@ -14,8 +14,11 @@
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+
+using testing::ElementsAreArray;
 
 namespace base::apple {
 
@@ -466,6 +469,71 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
               StringPrintf("%" PRIuNS, nsuinteger_case.value));
     EXPECT_EQ(nsuinteger_case.expected_hex,
               StringPrintf("%" PRIxNS, nsuinteger_case.value));
+  }
+}
+
+TEST(FoundationUtilTest, NSDataToSpan) {
+  {
+    NS_VALID_UNTIL_END_OF_SCOPE NSData* data = [NSData data];
+    span<const uint8_t> span = NSDataToSpan(data);
+    EXPECT_TRUE(span.empty());
+  }
+
+  {
+    NS_VALID_UNTIL_END_OF_SCOPE NSMutableData* data = [NSMutableData data];
+    span<uint8_t> span = NSMutableDataToSpan(data);
+    EXPECT_TRUE(span.empty());
+  }
+
+  const char buffer[4] = {0, CHAR_MAX, 0, CHAR_MAX};
+
+  {
+    NS_VALID_UNTIL_END_OF_SCOPE NSData* data =
+        [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    span<const uint8_t> span = NSDataToSpan(data);
+    EXPECT_THAT(span, ElementsAreArray(buffer));
+  }
+
+  {
+    NS_VALID_UNTIL_END_OF_SCOPE NSMutableData* data =
+        [NSMutableData dataWithBytes:buffer length:sizeof(buffer)];
+    span<uint8_t> span = NSMutableDataToSpan(data);
+    EXPECT_THAT(span, ElementsAreArray(buffer));
+    span[0] = 123;
+    EXPECT_EQ(static_cast<const char*>(data.bytes)[0], 123);
+  }
+}
+
+TEST(FoundationUtilTest, CFDataToSpan) {
+  {
+    ScopedCFTypeRef<CFDataRef> data(CFDataCreate(nullptr, nullptr, 0));
+    span<const uint8_t> span = CFDataToSpan(data.get());
+    EXPECT_TRUE(span.empty());
+  }
+
+  {
+    ScopedCFTypeRef<CFMutableDataRef> data(CFDataCreateMutable(nullptr, 0));
+    span<uint8_t> span = CFMutableDataToSpan(data.get());
+    EXPECT_TRUE(span.empty());
+  }
+
+  const uint8_t buffer[4] = {0, CHAR_MAX, 0, CHAR_MAX};
+
+  {
+    ScopedCFTypeRef<CFDataRef> data(
+        CFDataCreate(nullptr, buffer, sizeof(buffer)));
+    span<const uint8_t> span = CFDataToSpan(data.get());
+    EXPECT_EQ(make_span(buffer), span);
+    EXPECT_THAT(span, ElementsAreArray(buffer));
+  }
+
+  {
+    ScopedCFTypeRef<CFMutableDataRef> data(CFDataCreateMutable(nullptr, 0));
+    CFDataAppendBytes(data.get(), buffer, sizeof(buffer));
+    span<uint8_t> span = CFMutableDataToSpan(data.get());
+    EXPECT_EQ(make_span(buffer), span);
+    span[0] = 123;
+    EXPECT_EQ(CFDataGetBytePtr(data.get())[0], 123);
   }
 }
 
