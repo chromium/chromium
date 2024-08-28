@@ -676,6 +676,10 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     return select_to_speak_event_handler_.get();
   }
 
+  FlashScreenController* GetFlashScreenControllerForTesting() const {
+    return flash_screen_controller_.get();
+  }
+
   void SetVirtualKeyboardVisibleCallbackForTesting(
       base::RepeatingCallback<void()> callback);
 

@@ -12,6 +12,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/disable_trackpad_event_rewriter.h"
 #include "ash/accessibility/filter_keys_event_rewriter.h"
+#include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
@@ -44,6 +45,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/message_center/message_center.h"
 
 using message_center::MessageCenter;
@@ -133,6 +135,23 @@ class AccessibilityControllerTest : public AshTestBase {
                                         int count) {
     histogram_tester_.ExpectTotalCount(
         "Accessibility." + feature_name + ".SessionDuration", count);
+  }
+
+  void ExpectFlashNotificationShown() {
+    gfx::AnimationTestApi animation_api(
+        AccessibilityController::Get()
+            ->GetFlashScreenControllerForTesting()
+            ->GetAnimationForTesting());
+    base::TimeTicks now = base::TimeTicks::Now();
+    animation_api.SetStartTime(now);
+    animation_api.Step(now + base::Milliseconds(1));
+
+    // A custom color matrix has been shown.
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+      const cc::FilterOperation::Matrix* matrix =
+          root_window->layer()->GetLayerCustomColorMatrix();
+      EXPECT_TRUE(matrix);
+    }
   }
 
  private:
@@ -1730,12 +1749,8 @@ TEST_F(AccessibilityControllerTest, FlashNotificationsWhenEnabled) {
   // Use dictation notification as an easy way to show any notification.
   accessibility_controller->ShowNotificationForDictation(
       DictationNotificationType::kAllDlcsDownloaded, u"en-us");
-  // A custom color matrix has been shown.
-  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-    const cc::FilterOperation::Matrix* matrix =
-        root_window->layer()->GetLayerCustomColorMatrix();
-    EXPECT_TRUE(matrix);
-  }
+
+  ExpectFlashNotificationShown();
 
   accessibility_controller->flash_notifications().SetEnabled(false);
 }
@@ -1753,12 +1768,8 @@ TEST_F(AccessibilityControllerTest, FlashNotificationsPreview) {
 
   // Preview flash notifications.
   accessibility_controller->PreviewFlashNotification();
-  // A custom color matrix has been shown.
-  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-    const cc::FilterOperation::Matrix* matrix =
-        root_window->layer()->GetLayerCustomColorMatrix();
-    EXPECT_TRUE(matrix);
-  }
+
+  ExpectFlashNotificationShown();
 
   accessibility_controller->flash_notifications().SetEnabled(false);
 }
