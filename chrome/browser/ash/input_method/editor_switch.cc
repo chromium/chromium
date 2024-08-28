@@ -107,14 +107,6 @@ manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
   return manta::FeatureSupportStatus::kUnknown;
 }
 
-bool IsProfileManaged(Profile* profile) {
-  policy::ProfilePolicyConnector* profile_policy_connector =
-      profile->GetProfilePolicyConnector();
-
-  return (profile_policy_connector != nullptr &&
-          profile_policy_connector->IsManaged());
-}
-
 bool IsCountryAllowed(std::string_view country_code) {
   constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>({
       "au", "be", "ca", "ch", "cz", "de", "dk", "es", "fi",
@@ -265,22 +257,12 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
     return false;
   }
 
-  // Always allow the feature on unmanaged users.
-  if (!IsProfileManaged(profile)) {
-    return true;
-  }
-
-  // For managed users, if the feature flag `OrcaControlledByPolicy `is set, let
-  // the feature enablement be driven by the policy.
-  if (base::FeatureList::IsEnabled(features::kOrcaControlledByPolicy)) {
-    return profile->GetPrefs()->IsManagedPreference(prefs::kManagedOrcaEnabled)
-               ? profile->GetPrefs()->GetBoolean(prefs::kManagedOrcaEnabled)
-               : false;
-  }
-
-  // If the Orca policy is not ready to launch on managed users, disallow the
-  // feature.
-  return false;
+  // Allow the feature traits to be visible (at the minimum in settings) in
+  // either one scenario: (1) The feature is not driven by any policy. (2) The
+  // feature is driven by a policy, and we allow the policy to take effect by
+  // the feature flag value.
+  return !profile->GetPrefs()->IsManagedPreference(prefs::kOrcaEnabled) ||
+         base::FeatureList::IsEnabled(features::kOrcaForManagedUsers);
 }
 
 bool IsSystemInEnglishLanguage() {
@@ -300,6 +282,8 @@ EditorSwitch::EditorSwitch(Observer* observer,
 
 EditorSwitch::~EditorSwitch() = default;
 
+// TODO: b:362381487 - Rename this method as now this method no longer includes
+// the check for policy value.
 bool EditorSwitch::IsAllowedForUse() const {
   if (base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood)) {
     return true;
@@ -357,8 +341,9 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
           EditorBlockedReason::kBlockedByUnsupportedRegion);
     }
 
-    if (IsProfileManaged(profile_)) {
-      blocked_reasons.push_back(EditorBlockedReason::kBlockedByManagedStatus);
+    if (profile_->GetPrefs()->IsManagedPreference(prefs::kOrcaEnabled) &&
+        !profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled)) {
+      blocked_reasons.push_back(EditorBlockedReason::kBlockedByPolicy);
     }
 
     if (base::FeatureList::IsEnabled(

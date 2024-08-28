@@ -93,13 +93,15 @@ enum class EditorBlockedReason {
   // Blocked because user is not in a supported country.
   kBlockedByUnsupportedRegion,
   // Blocked because user is using a managed device.
-  kBlockedByManagedStatus,
+  // kBlockedByManagedStatus_DEPRECATRD,
   // Blocked because user does not have the capability (age, account type) to
   // use the feature.
   kBlockedByUnsupportedCapability,
   // Blocked because the capability value has been been fetched and determined
   // yet.
   kBlockedByUnknownCapability,
+  // Blocked because there is a policy that disables the feature.
+  kBlockedByPolicy,
 };
 
 ConsentStatus GetConsentStatusFromInteger(int status_value);
