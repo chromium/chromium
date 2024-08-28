@@ -643,7 +643,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((AccessibilitySettings) fragment).setPrefService(UserPrefs.get(mProfile));
         }
         if (fragment instanceof PasswordSettings) {
-            ((PasswordSettings) fragment).setBottomSheetController(mBottomSheetController);
+            ((PasswordSettings) fragment)
+                    .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
         }
         if (fragment instanceof AutofillOptionsFragment) {
             AutofillOptionsCoordinator.createFor(
