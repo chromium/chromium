@@ -1612,21 +1612,6 @@ class PixelTestPages():
                       browser_args=['--force-color-profile=hdr10']),
     ]
 
-  # TODO(crbug.com/337737554): Move this to trace_test_pages.py
-  # Check that the root swap chain claims to be opaque. A root swap chain with a
-  # premultiplied alpha mode has a large negative battery impact (even if all
-  # the pixels are opaque).
-  @staticmethod
-  def RootSwapChainPages(base_name: str) -> List[PixelTestPage]:
-    return [
-        PixelTestPage('wait_for_compositing.html',
-                      base_name + '_IsOpaque',
-                      crop_action=ca.NoOpCropAction(),
-                      other_args={
-                          'has_alpha': False,
-                      }),
-    ]
-
   # This should only be used with the cast_streaming suite.
   @staticmethod
   def CastStreamingReceiverPages(base_name) -> List[PixelTestPage]:
@@ -1636,19 +1621,4 @@ class PixelTestPages():
             base_name + '_VP8_1Frame',
             crop_action=ca.NoOpCropAction(),
         ),
-    ]
-
-  # TODO(crbug.com/337737554): Move this to trace_test_pages.py
-  # Check what MediaFoundationD3D11VideoCapture works
-  @staticmethod
-  def MediaFoundationD3D11VideoCapturePages(
-      base_name: str) -> List[PixelTestPage]:
-    return [
-        PixelTestPage('media_foundation_d3d11_video_capture.html',
-                      base_name + '_MediaFoundationD3D11VideoCapture',
-                      crop_action=ca.NoOpCropAction(),
-                      browser_args=[
-                          '--use-fake-ui-for-media-stream',
-                          '--enable-features=MediaFoundationD3D11VideoCapture'
-                      ]),
     ]

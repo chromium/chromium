@@ -367,7 +367,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                 success_eval_func='CheckSwapChainPath',
                 other_args=p.other_args)
         ])
-      for p in namespace.RootSwapChainPages('SwapChainTraceTest'):
+      for p in namespace.RootSwapChainTests('SwapChainTraceTest'):
         yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
             _TraceTestArguments(
                 browser_args=p.browser_args,
@@ -377,7 +377,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                 success_eval_func='CheckSwapChainHasAlpha',
                 other_args=p.other_args)
         ])
-      for p in namespace.MediaFoundationD3D11VideoCapturePages('TraceTest'):
+      for p in namespace.MediaFoundationD3D11VideoCaptureTests('TraceTest'):
         yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
             _TraceTestArguments(
                 browser_args=p.browser_args,

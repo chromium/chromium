@@ -6,9 +6,10 @@
 # pylint: disable=too-many-lines
 
 import functools
-from typing import List
+from typing import Any, Dict, List
 
 from gpu_tests import common_browser_args as cba
+from gpu_tests import common_typing as ct
 from gpu_tests import pixel_test_pages
 from gpu_tests.util import host_information
 
@@ -43,6 +44,18 @@ class WebGpuCacheTracingTest():
   # of _GetWebGpuCacheTestBrowserArgs().
   browser_args: List[str] = dataclasses.field(
       default_factory=_GetWebGpuCacheTestBrowserArgs)
+
+
+@dataclasses.dataclass
+class SimpleTracingTest:
+  # The name of the test, including the prefix.
+  name: str
+  # The URL to load.
+  url: str
+  # Additional args to start the browser with.
+  browser_args: List[str] = ct.EmptyList()
+  # Additional test harness arguments.
+  other_args: Dict[str, Any] = ct.EmptyDict()
 
 
 # Inherits from PixelTestPages since a number of trace tests are just
@@ -217,4 +230,31 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
                              'testId=compute-test&hostname=localhost'),
             cache_pages=TraceTestPages.COMPUTE_CACHE_PAGES,
         ),
+    ]
+
+  @staticmethod
+  def RootSwapChainTests(prefix: str) -> List[SimpleTracingTest]:
+    return [
+        # Check that the root swap chain claims to be opaque. A root swap chain
+        # with a premultiplied alpha mode has a large negative battery impact
+        # (even if all the pixels are opaque).
+        SimpleTracingTest(name=f'{prefix}_IsOpaque',
+                          url='wait_for_compositing.html',
+                          other_args={
+                              'has_alpha': False,
+                          }),
+    ]
+
+  @staticmethod
+  def MediaFoundationD3D11VideoCaptureTests(
+      prefix: str) -> List[SimpleTracingTest]:
+    return [
+        # Check what MediaFoundationD3D11VideoCapture works
+        SimpleTracingTest(
+            name=f'{prefix}_MediaFoundationD3D11VideoCapture',
+            url='media_foundation_d3d11_video_capture.html',
+            browser_args=[
+                '--use-fake-ui-for-media-stream',
+                '--enable-features=MediaFoundationD3D11VideoCapture',
+            ]),
     ]
