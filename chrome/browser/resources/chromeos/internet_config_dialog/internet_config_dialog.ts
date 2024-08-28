@@ -86,6 +86,11 @@ export class InternetConfigDialogElement extends
       enableConnect_: Boolean,
 
       /**
+       * Whether the connection has been attempted.
+       */
+      connectClicked_: Boolean,
+
+      /**
        * Set by network-config when a configuration error occurs.
        */
       error_: {
@@ -101,6 +106,7 @@ export class InternetConfigDialogElement extends
   private type_: string;
   private prefilledProperties_: ConfigProperties|null;
   private enableConnect_: boolean;
+  private connectClicked_: boolean;
   private error_: string;
 
   override connectedCallback() {
@@ -120,6 +126,7 @@ export class InternetConfigDialogElement extends
       this.guid_ = params.get('guid') || '';
       this.prefilledProperties_ = null;
     }
+    this.connectClicked_ = false;
 
     ColorChangeUpdater.forDocument().start();
 
@@ -137,6 +144,14 @@ export class InternetConfigDialogElement extends
     return this.i18n('internetJoinType', type);
   }
 
+  private shouldShowError_(): boolean {
+    // Do not show "out-of-range" error if the dialog is just opened.
+    if (!this.connectClicked_ && this.error_ === 'out-of-range') {
+      return false;
+    }
+    return !!this.error_;
+  }
+
   private getError_(): string {
     if (this.i18nExists(this.error_)) {
       return this.i18n(this.error_);
@@ -150,6 +165,11 @@ export class InternetConfigDialogElement extends
 
   private onConnectClick_(): void {
     this.$.networkConfig.connect();
+    this.connectClicked_ = true;
+  }
+
+  setErrorForTesting(error: string): void {
+    this.error_ = error;
   }
 }
 
