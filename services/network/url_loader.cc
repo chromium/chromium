@@ -599,9 +599,6 @@ URLLoader::URLLoader(
               shared_storage_writable_eligible,
               url_loader_network_observer_)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
-      allow_http1_for_streaming_upload_(
-          request.request_body &&
-          request.request_body->AllowHTTP1ForStreamingUpload()),
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
       provide_data_use_updates_(context.DataUseUpdatesEnabled()) {
   DCHECK(delete_callback_);

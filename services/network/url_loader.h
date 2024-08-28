@@ -798,10 +798,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // body.
   const bool has_fetch_streaming_upload_body_;
 
-  // Indicates whether fetch upload streaming is allowed/rejected over H/1.
-  // Even if this is false but there is a QUIC/H2 stream, the upload is allowed.
-  const bool allow_http1_for_streaming_upload_;
-
   bool emitted_devtools_raw_request_ = false;
   bool emitted_devtools_raw_response_ = false;
 
