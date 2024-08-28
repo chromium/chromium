@@ -441,7 +441,8 @@ bool StylusWritingGestureSelect::MaybeApplyGesture(LocalFrame* frame) {
   // Select the text between offsets.
   InputMethodController& input_method_controller =
       frame->GetInputMethodController();
-  input_method_controller.SetEditableSelectionOffsets(gesture_range.value());
+  input_method_controller.SetEditableSelectionOffsets(
+      gesture_range.value(), /*show_handle=*/true, /*show_context_menu=*/true);
   return true;
 }
 
