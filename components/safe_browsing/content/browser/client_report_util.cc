@@ -226,6 +226,11 @@ void FillReportBasicResourceDetails(
   if (IsReportableUrl(referrer_url)) {
     report->set_referrer_url(referrer_url.spec());
   }
+  report->mutable_client_properties()->set_url_api_type(
+      client_report_utils::GetUrlApiTypeForThreatSource(
+          resource.threat_source));
+  report->mutable_client_properties()->set_is_async_check(
+      resource.is_async_check);
 }
 
 void FillInterstitialInteractionsHelper(

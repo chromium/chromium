@@ -1990,7 +1990,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       TimestampInFallbackCSBRRSent) {
+                       FallbackCSBRRSentWithExpectedFieldsPopulated) {
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -2010,6 +2010,14 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   ASSERT_TRUE(report.ParseFromString(serialized));
   // The timstamp of the warning shown should be in CSBRRs.
   EXPECT_TRUE(report.has_warning_shown_timestamp_msec());
+
+  // The `client_properties` field should be populated in fallback CSBRRs.
+  EXPECT_TRUE(report.has_client_properties());
+  EXPECT_TRUE(report.client_properties().has_url_api_type());
+  EXPECT_TRUE(report.client_properties().has_is_async_check());
+  EXPECT_EQ(report.client_properties().url_api_type(),
+            ClientSafeBrowsingReportRequest::PVER4_NATIVE);
+  EXPECT_FALSE(report.client_properties().is_async_check());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
