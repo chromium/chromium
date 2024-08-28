@@ -6,27 +6,42 @@
 
 #include <memory>
 
+#include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_annotations {
+namespace {
+
+using ::base::test::EqualsProto;
+using ::testing::_;
+using ::testing::An;
 
 class UserAnnotationsServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    service_ = std::make_unique<UserAnnotationsService>();
+    service_ = std::make_unique<UserAnnotationsService>(&model_executor_);
   }
 
   UserAnnotationsService* service() { return service_.get(); }
 
+  optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
+    return &model_executor_;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
+  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
+      model_executor_;
   std::unique_ptr<UserAnnotationsService> service_;
 };
 
@@ -42,6 +57,54 @@ TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
 
 TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
   {
+    base::HistogramTester histogram_tester;
+
+    optimization_guide::proto::FormsAnnotationsRequest expected_request;
+    expected_request.mutable_page_context()
+        ->mutable_ax_tree_data()
+        ->mutable_tree_data()
+        ->set_title("title");
+    expected_request.mutable_page_context()->set_title("title");
+    optimization_guide::proto::FormData* form_proto =
+        expected_request.mutable_form_data();
+    optimization_guide::proto::FormFieldData* field_proto1 =
+        form_proto->add_fields();
+    field_proto1->set_field_label("label");
+    field_proto1->set_field_value("whatever");
+    field_proto1->set_is_visible(true);
+    field_proto1->set_is_focusable(true);
+    field_proto1->set_form_control_type(
+        optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
+    optimization_guide::proto::FormFieldData* field_proto2 =
+        form_proto->add_fields();
+    field_proto2->set_field_name("nolabel");
+    field_proto2->set_field_value("value");
+    field_proto2->set_is_visible(true);
+    field_proto2->set_is_focusable(true);
+    field_proto2->set_form_control_type(
+        optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
+
+    optimization_guide::proto::FormsAnnotationsResponse response;
+    optimization_guide::proto::UserAnnotationsEntry* entry1 =
+        response.add_entries();
+    entry1->set_key("label");
+    entry1->set_value("whatever");
+    optimization_guide::proto::UserAnnotationsEntry* entry2 =
+        response.add_entries();
+    entry2->set_key("nolabel");
+    entry2->set_value("value");
+    optimization_guide::proto::Any any;
+    any.set_type_url(response.GetTypeName());
+    response.SerializeToString(any.mutable_value());
+    EXPECT_CALL(
+        *model_executor(),
+        ExecuteModel(
+            optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations,
+            EqualsProto(expected_request),
+            An<optimization_guide::
+                   OptimizationGuideModelExecutionResultCallback>()))
+        .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+
     autofill::FormFieldData form_field_data;
     form_field_data.set_label(u"label");
     form_field_data.set_value(u"whatever");
@@ -51,6 +114,7 @@ TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
     autofill::FormData form_data;
     form_data.set_fields({form_field_data, form_field_data2});
     optimization_guide::proto::AXTreeUpdate ax_tree;
+    ax_tree.mutable_tree_data()->set_title("title");
     service()->AddFormSubmission(ax_tree, form_data);
 
     base::test::TestFuture<
@@ -65,9 +129,26 @@ TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
     EXPECT_EQ(entries[0].value(), "whatever");
     EXPECT_EQ(entries[1].key(), "nolabel");
     EXPECT_EQ(entries[1].value(), "value");
+
+    histogram_tester.ExpectUniqueSample("UserAnnotations.DidAddFormSubmission",
+                                        true, 1);
   }
 
   {
+    base::HistogramTester histogram_tester;
+
+    optimization_guide::proto::FormsAnnotationsResponse response;
+    optimization_guide::proto::Any any;
+    any.set_type_url(response.GetTypeName());
+    response.SerializeToString(any.mutable_value());
+    EXPECT_CALL(
+        *model_executor(),
+        ExecuteModel(
+            optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+            An<optimization_guide::
+                   OptimizationGuideModelExecutionResultCallback>()))
+        .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+
     autofill::FormData empty_form_data;
     optimization_guide::proto::AXTreeUpdate ax_tree;
     service()->AddFormSubmission(ax_tree, empty_form_data);
@@ -85,7 +166,67 @@ TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
     EXPECT_EQ(entries[0].value(), "whatever");
     EXPECT_EQ(entries[1].key(), "nolabel");
     EXPECT_EQ(entries[1].value(), "value");
+
+    histogram_tester.ExpectUniqueSample("UserAnnotations.DidAddFormSubmission",
+                                        true, 1);
   }
+}
+
+TEST_F(UserAnnotationsServiceTest, ExecuteFailed) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          An<optimization_guide::
+                 OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          base::unexpected(
+              optimization_guide::OptimizationGuideModelExecutionError::
+                  FromModelExecutionError(
+                      optimization_guide::OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kGenericFailure)),
+          /*log_entry=*/nullptr));
+
+  autofill::FormFieldData form_field_data;
+  form_field_data.set_label(u"label");
+  form_field_data.set_value(u"whatever");
+  autofill::FormFieldData form_field_data2;
+  form_field_data2.set_name(u"nolabel");
+  form_field_data2.set_value(u"value");
+  autofill::FormData form_data;
+  form_data.set_fields({form_field_data, form_field_data2});
+  optimization_guide::proto::AXTreeUpdate ax_tree;
+  service()->AddFormSubmission(ax_tree, form_data);
+
+  histogram_tester.ExpectTotalCount("UserAnnotations.DidAddFormSubmission", 0);
+}
+
+TEST_F(UserAnnotationsServiceTest, UnexpectedResponseType) {
+  base::HistogramTester histogram_tester;
+
+  optimization_guide::proto::Any any;
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          An<optimization_guide::
+                 OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+
+  autofill::FormFieldData form_field_data;
+  form_field_data.set_label(u"label");
+  form_field_data.set_value(u"whatever");
+  autofill::FormFieldData form_field_data2;
+  form_field_data2.set_name(u"nolabel");
+  form_field_data2.set_value(u"value");
+  autofill::FormData form_data;
+  form_data.set_fields({form_field_data, form_field_data2});
+  optimization_guide::proto::AXTreeUpdate ax_tree;
+  service()->AddFormSubmission(ax_tree, form_data);
+
+  histogram_tester.ExpectTotalCount("UserAnnotations.DidAddFormSubmission", 0);
 }
 
 class UserAnnotationsServiceReplaceAnnotationsTest
@@ -104,6 +245,26 @@ class UserAnnotationsServiceReplaceAnnotationsTest
 TEST_F(UserAnnotationsServiceReplaceAnnotationsTest,
        RetrieveAllEntriesWithInsertShouldReplace) {
   {
+    optimization_guide::proto::FormsAnnotationsResponse response;
+    optimization_guide::proto::UserAnnotationsEntry* entry1 =
+        response.add_entries();
+    entry1->set_key("label");
+    entry1->set_value("whatever");
+    optimization_guide::proto::UserAnnotationsEntry* entry2 =
+        response.add_entries();
+    entry2->set_key("nolabel");
+    entry2->set_value("value");
+    optimization_guide::proto::Any any;
+    any.set_type_url(response.GetTypeName());
+    response.SerializeToString(any.mutable_value());
+    EXPECT_CALL(
+        *model_executor(),
+        ExecuteModel(
+            optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+            An<optimization_guide::
+                   OptimizationGuideModelExecutionResultCallback>()))
+        .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+
     autofill::FormFieldData form_field_data;
     form_field_data.set_label(u"label");
     form_field_data.set_value(u"whatever");
@@ -130,6 +291,17 @@ TEST_F(UserAnnotationsServiceReplaceAnnotationsTest,
   }
 
   {
+    optimization_guide::proto::FormsAnnotationsResponse response;
+    optimization_guide::proto::Any any;
+    any.set_type_url(response.GetTypeName());
+    response.SerializeToString(any.mutable_value());
+    EXPECT_CALL(
+        *model_executor(),
+        ExecuteModel(
+            optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+            An<optimization_guide::
+                   OptimizationGuideModelExecutionResultCallback>()))
+        .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
     autofill::FormData empty_form_data;
     optimization_guide::proto::AXTreeUpdate ax_tree;
     service()->AddFormSubmission(ax_tree, empty_form_data);
@@ -145,4 +317,5 @@ TEST_F(UserAnnotationsServiceReplaceAnnotationsTest,
   }
 }
 
+}  // namespace
 }  // namespace user_annotations

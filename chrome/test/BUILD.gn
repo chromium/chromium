@@ -8277,6 +8277,7 @@ test("unit_tests") {
       "//components/supervised_user/core/browser",
       "//components/sync:test_support",
       "//components/user_annotations",
+      "//components/user_annotations:test_support",
       "//components/user_education/common",
       "//components/user_education/test",
       "//components/user_notes:features",

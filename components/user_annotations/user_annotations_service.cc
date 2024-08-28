@@ -7,31 +7,40 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/features/forms_annotations.pb.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
 
 namespace user_annotations {
 
-UserAnnotationsService::UserAnnotationsService() = default;
+UserAnnotationsService::UserAnnotationsService(
+    optimization_guide::OptimizationGuideModelExecutor* model_executor)
+    : model_executor_(model_executor) {}
 UserAnnotationsService::~UserAnnotationsService() = default;
 
 void UserAnnotationsService::AddFormSubmission(
-    const optimization_guide::proto::AXTreeUpdate& ax_tree_update,
+    optimization_guide::proto::AXTreeUpdate ax_tree_update,
     const autofill::FormData& form_data) {
-  if (ShouldReplaceAnnotationsAfterEachSubmission()) {
-    entries_.clear();
+  // Construct request.
+  optimization_guide::proto::FormsAnnotationsRequest request;
+  optimization_guide::proto::PageContext* page_context =
+      request.mutable_page_context();
+  page_context->set_url(form_data.url().spec());
+  page_context->set_title(ax_tree_update.tree_data().title());
+  *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
+  *request.mutable_form_data() = optimization_guide::ToFormDataProto(form_data);
+  for (const auto& entry : entries_) {
+    *request.add_entries() = entry.entry_proto;
   }
 
-  for (const auto& field : form_data.fields()) {
-    optimization_guide::proto::UserAnnotationsEntry entry_proto;
-    entry_proto.set_key(base::UTF16ToUTF8(
-        field.label().empty() ? field.name() : field.label()));
-    entry_proto.set_value(base::UTF16ToUTF8(field.value()));
-    entries_.push_back({.entry_id = ++entry_id_counter_,
-                        .entry_proto = std::move(entry_proto)});
-  }
-  LOCAL_HISTOGRAM_BOOLEAN("UserAnnotations.DidAddFormSubmission", true);
+  model_executor_->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, request,
+      base::BindOnce(&UserAnnotationsService::OnModelExecuted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void UserAnnotationsService::RetrieveAllEntries(
@@ -47,5 +56,33 @@ void UserAnnotationsService::RetrieveAllEntries(
 }
 
 void UserAnnotationsService::Shutdown() {}
+
+void UserAnnotationsService::OnModelExecuted(
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  if (!result.has_value()) {
+    return;
+  }
+
+  std::optional<optimization_guide::proto::FormsAnnotationsResponse>
+      maybe_response = optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::FormsAnnotationsResponse>(result.value());
+  if (!maybe_response) {
+    return;
+  }
+
+  if (ShouldReplaceAnnotationsAfterEachSubmission()) {
+    entries_.clear();
+  }
+
+  for (const auto& entry : maybe_response->entries()) {
+    optimization_guide::proto::UserAnnotationsEntry entry_proto;
+    entry_proto.set_key(entry.key());
+    entry_proto.set_value(entry.value());
+    entries_.push_back({.entry_id = ++entry_id_counter_,
+                        .entry_proto = std::move(entry_proto)});
+  }
+  LOCAL_HISTOGRAM_BOOLEAN("UserAnnotations.DidAddFormSubmission", true);
+}
 
 }  // namespace user_annotations

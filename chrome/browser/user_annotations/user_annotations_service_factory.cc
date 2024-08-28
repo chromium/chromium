@@ -6,6 +6,8 @@
 
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -54,7 +56,9 @@ UserAnnotationsServiceFactory::UserAnnotationsServiceFactory()
           "UserAnnotationsService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+}
 
 UserAnnotationsServiceFactory::~UserAnnotationsServiceFactory() = default;
 
@@ -73,5 +77,11 @@ UserAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<user_annotations::UserAnnotationsService>();
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!ogks) {
+    return nullptr;
+  }
+
+  return std::make_unique<user_annotations::UserAnnotationsService>(ogks);
 }

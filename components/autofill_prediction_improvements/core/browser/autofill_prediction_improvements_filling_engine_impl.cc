@@ -61,9 +61,9 @@ void AutofillPredictionImprovementsFillingEngineImpl::
   optimization_guide::proto::FormsPredictionsRequest request;
   optimization_guide::proto::PageContext* page_context =
       request.mutable_page_context();
-  *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
   page_context->set_url(form_data.url().spec());
   page_context->set_title(ax_tree_update.tree_data().title());
+  *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
   *request.mutable_form_data() = optimization_guide::ToFormDataProto(form_data);
   *request.mutable_entries() = {
       std::make_move_iterator(user_annotations.begin()),

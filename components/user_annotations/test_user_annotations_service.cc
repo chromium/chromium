@@ -8,7 +8,8 @@
 
 namespace user_annotations {
 
-TestUserAnnotationsService::TestUserAnnotationsService() = default;
+TestUserAnnotationsService::TestUserAnnotationsService()
+    : UserAnnotationsService(/*model_executor=*/nullptr) {}
 TestUserAnnotationsService::~TestUserAnnotationsService() = default;
 
 void TestUserAnnotationsService::ReplaceAllEntries(
