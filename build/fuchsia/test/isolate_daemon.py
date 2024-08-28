@@ -6,12 +6,14 @@
 import os
 import tempfile
 
-from contextlib import AbstractContextManager
-from typing import List
+from typing import Optional
 
-from common import has_ffx_isolate_dir, set_ffx_isolate_dir, start_ffx_daemon, \
-                   stop_ffx_daemon
+from contextlib import AbstractContextManager
+
+from common import has_ffx_isolate_dir, set_ffx_isolate_dir, \
+                   is_daemon_running, start_ffx_daemon, stop_ffx_daemon
 from ffx_integration import ScopedFfxConfig
+from modification_waiter import ModificationWaiter
 
 
 class IsolateDaemon(AbstractContextManager):
@@ -37,12 +39,14 @@ class IsolateDaemon(AbstractContextManager):
                 except OSError:
                     # Ignore the errors when cleaning up the temporary folder.
                     pass
-            return True
+            return False
 
-    def __init__(self, extra_inits: List[AbstractContextManager] = None):
-        # Keep the alphabetical order.
-        self._extra_inits = [
+    def __init__(self, logs_dir: Optional[str]):
+        assert not has_ffx_isolate_dir() or not is_daemon_running()
+        self._inits = [
             self.IsolateDir(),
+            ModificationWaiter(logs_dir),
+            # Keep the alphabetical order.
             ScopedFfxConfig('ffx.isolated', 'true'),
             ScopedFfxConfig('daemon.autostart', 'false'),
             # fxb/126212: The timeout rate determines the timeout for each file
@@ -54,7 +58,9 @@ class IsolateDaemon(AbstractContextManager):
             ScopedFfxConfig('fastboot.usb.disabled', 'true'),
             ScopedFfxConfig('log.level', 'debug'),
             ScopedFfxConfig('repository.server.listen', '"[::]:0"'),
-        ] + (extra_inits or [])
+        ]
+        if logs_dir:
+            self._inits.append(ScopedFfxConfig('log.dir', logs_dir))
 
     # Updating configurations to meet the requirement of isolate.
     def __enter__(self):
@@ -62,12 +68,12 @@ class IsolateDaemon(AbstractContextManager):
         # to avoid sending unnecessary analytics.
         os.environ['FUCHSIA_ANALYTICS_DISABLED'] = '1'
         stop_ffx_daemon()
-        for extra_init in self._extra_inits:
-            extra_init.__enter__()
+        for init in self._inits:
+            init.__enter__()
         start_ffx_daemon()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        for extra_init in self._extra_inits:
-            extra_init.__exit__(exc_type, exc_value, traceback)
+        for init in self._inits:
+            init.__exit__(exc_type, exc_value, traceback)
         stop_ffx_daemon()

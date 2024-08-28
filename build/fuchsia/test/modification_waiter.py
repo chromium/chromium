@@ -25,6 +25,9 @@ class ModificationWaiter(AbstractContextManager):
         return
 
     def __exit__(self, exc_type, exc_value, traceback) -> bool:
+        # The default log.dir is /tmp and it's not a good idea to monitor it.
+        if not self._path:
+            return False
         # Always consider the last modification happening now to avoid an
         # unexpected early return.
         last_mod_time = time.time()

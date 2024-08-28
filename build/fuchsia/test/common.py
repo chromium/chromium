@@ -146,7 +146,8 @@ def _get_daemon_status():
     return status.get('pid', {}).get('status', {'NotRunning': True})
 
 
-def _is_daemon_running():
+def is_daemon_running() -> bool:
+    """Returns if the daemon is running."""
     return 'Running' in _get_daemon_status()
 
 
@@ -167,7 +168,7 @@ def _wait_for_daemon(start=True, timeout_seconds=100):
     sleep_period_seconds = 5
     attempts = int(timeout_seconds / sleep_period_seconds)
     for i in range(attempts):
-        if _is_daemon_running() == start:
+        if is_daemon_running() == start:
             return
         if i != attempts:
             logging.info('Waiting for daemon to %s...', wanted_status)
@@ -189,7 +190,7 @@ def start_ffx_daemon():
     should be used with caution unless it's really needed to "restart" the
     daemon by explicitly calling stop daemon first.
     """
-    assert not _is_daemon_running(), "Call stop_ffx_daemon first."
+    assert not is_daemon_running(), "Call stop_ffx_daemon first."
     run_ffx_command(cmd=('doctor', '--restart-daemon'), check=False)
     _wait_for_daemon(start=True)
 

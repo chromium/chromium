@@ -14,9 +14,8 @@ from typing import Iterable, Optional, TextIO
 
 from common import catch_sigterm, read_package_paths, register_common_args, \
                    register_device_args, run_continuous_ffx_command, \
-                   stop_ffx_daemon, wait_for_sigterm
-from compatible_utils import running_unattended
-from ffx_integration import ScopedFfxConfig, run_symbolizer
+                   wait_for_sigterm
+from ffx_integration import run_symbolizer
 
 
 class LogManager(AbstractContextManager):
@@ -31,21 +30,7 @@ class LogManager(AbstractContextManager):
         self._log_procs = []
         self._scoped_ffx_log = None
 
-        if self._logs_dir:
-            self._scoped_ffx_log = ScopedFfxConfig('log.dir', self._logs_dir)
-
     def __enter__(self):
-        if self._scoped_ffx_log:
-            self._scoped_ffx_log.__enter__()
-            # log.dir change always requires the restarting of the daemon.
-            # In the test fleet with running_unattended being true, we
-            # explicitly disallow the daemon from automatically starting, and
-            # do all the configuration before starting the daemon.
-            # But in local development workflow, we help the developers to
-            # restart the daemon to ensure the change of log.dir taking effect.
-            if not running_unattended():
-                stop_ffx_daemon()
-
         return self
 
     def is_logging_enabled(self) -> bool:
@@ -62,27 +47,19 @@ class LogManager(AbstractContextManager):
     def open_log_file(self, log_file_name: str) -> TextIO:
         """Open a file stream with log_file_name in the logs directory."""
 
-        if not self._logs_dir:
-            raise Exception('Logging directory is not specified.')
+        assert self._logs_dir, 'Logging directory is not specified.'
         log_file_path = os.path.join(self._logs_dir, log_file_name)
         log_file = open(log_file_path, 'w', buffering=1)
         self._log_files[log_file_path] = log_file
         return log_file
 
-    def stop(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         """Stop all active logging instances."""
-
         for proc in self._log_procs:
             proc.kill()
         for log in self._log_files.values():
             log.close()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.stop()
-        if self._scoped_ffx_log:
-            self._scoped_ffx_log.__exit__(exc_type, exc_value, traceback)
-            if not running_unattended():
-                stop_ffx_daemon()
+        return False
 
 
 def start_system_log(log_manager: LogManager,
