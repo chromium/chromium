@@ -143,11 +143,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kPreconnectAccountCapabilitiesPostSignin);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kUpdateMetricsServicesStateInRestore);
-#endif
-
 #if BUILDFLAG(IS_IOS)
 // This flag enables IdentityManager to load all accounts when having no primary
 // accounts. And it makes IdentityManager reloads AccountInfo when an update

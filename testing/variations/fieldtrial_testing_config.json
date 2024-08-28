@@ -23881,8 +23881,7 @@
                         "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
                         "SyncEnableContactInfoDataTypeInTransportMode",
                         "SyncEnableWalletMetadataInTransportMode",
-                        "SyncEnableWalletOfferInTransportMode",
-                        "UpdateMetricsServicesStateInRestore"
+                        "SyncEnableWalletOfferInTransportMode"
                     ]
                 }
             ]
