@@ -31,11 +31,11 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_additional_text_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_view_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -50,20 +50,19 @@ using base::UserMetricsAction;
 
 #pragma mark - OminboxViewIOS
 
-OmniboxViewIOS::OmniboxViewIOS(
-    OmniboxTextFieldIOS* field,
-    std::unique_ptr<OmniboxClient> client,
-    ChromeBrowserState* browser_state,
-    id<OmniboxCommands> omnibox_focuser,
-    id<OmniboxFocusDelegate> focus_delegate,
-    id<ToolbarCommands> toolbar_commands_handler,
-    id<OmniboxAdditionalTextConsumer> additional_text_consumer)
+OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
+                               std::unique_ptr<OmniboxClient> client,
+                               ChromeBrowserState* browser_state,
+                               id<OmniboxCommands> omnibox_focuser,
+                               id<OmniboxFocusDelegate> focus_delegate,
+                               id<ToolbarCommands> toolbar_commands_handler,
+                               id<OmniboxViewConsumer> consumer)
     : OmniboxView(std::move(client)),
       field_(field),
       omnibox_focuser_(omnibox_focuser),
       focus_delegate_(focus_delegate),
       toolbar_commands_handler_(toolbar_commands_handler),
-      additional_text_consumer_(additional_text_consumer),
+      consumer_(consumer),
       ignore_popup_updates_(false),
       popup_provider_(nullptr) {
   DCHECK(field_);
@@ -92,6 +91,7 @@ void OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch(
       autocomplete_controller->clipboard_provider()->NewClipboardURLMatch(
           url)));
   model()->OpenSelection(selection, match_selection_timestamp, disposition);
+  AcceptThumbnailEdits();
 }
 
 void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
@@ -121,6 +121,7 @@ void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
       controller()->autocomplete_controller()->InjectAdHocMatch(
           new_match.value()));
   model()->OpenSelection(selection, match_selection_timestamp, disposition);
+  AcceptThumbnailEdits();
 }
 
 void OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch(
@@ -155,6 +156,7 @@ void OmniboxViewIOS::OnReceiveImageMatchForOpenMatch(
       controller()->autocomplete_controller()->InjectAdHocMatch(
           optional_match.value()));
   model()->OpenSelection(selection, match_selection_timestamp, disposition);
+  AcceptThumbnailEdits();
 }
 
 std::u16string OmniboxViewIOS::GetText() const {
@@ -194,6 +196,7 @@ void OmniboxViewIOS::SetCaretPos(size_t caret_pos) {
 void OmniboxViewIOS::RevertAll() {
   ignore_popup_updates_ = true;
   OmniboxView::RevertAll();
+  RevertThumbnailEdits();
   ignore_popup_updates_ = false;
 }
 
@@ -259,18 +262,18 @@ void OmniboxViewIOS::SetAdditionalText(const std::u16string& text) {
 
   if (IsRichAutocompletionEnabled(
           RichAutocompletionImplementation::kNoAdditionalText)) {
-    [additional_text_consumer_ setOmniboxHasRichInline:text.length()];
+    [consumer_ setOmniboxHasRichInline:text.length()];
     return;
   }
 
   if (!text.length()) {
-    [additional_text_consumer_ updateAdditionalText:nil];
+    [consumer_ updateAdditionalText:nil];
     return;
   }
 
   // TODO(b/325035406): Temporary string and colors. Update if needed.
   NSString* additional_text = base::SysUTF16ToNSString(u" - " + text);
-  [additional_text_consumer_ updateAdditionalText:additional_text];
+  [consumer_ updateAdditionalText:additional_text];
 }
 
 void OmniboxViewIOS::OnBeforePossibleChange() {
@@ -504,8 +507,10 @@ void OmniboxViewIOS::OnAccept() {
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
   base::RecordAction(UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
 
+  // TODO(crbug.com/359150039): handle accept with empty text.
   if (model()) {
     model()->OpenSelection();
+    AcceptThumbnailEdits();
   }
   RevertAll();
 }
@@ -718,6 +723,7 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
     OmniboxPopupSelection selection(
         autocomplete_controller->InjectAdHocMatch(match));
     model()->OpenSelection(selection, match_selection_timestamp, disposition);
+    AcceptThumbnailEdits();
     return;
   }
 
@@ -751,4 +757,34 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
   }
   model()->OpenSelection(OmniboxPopupSelection(index),
                          match_selection_timestamp, disposition);
+  AcceptThumbnailEdits();
+}
+
+#pragma mark - Thumbnail
+
+void OmniboxViewIOS::SetThumbnailImage(UIImage* image) {
+  thumbnail_image_before_edit_ = image;
+  thumbnail_deleted_ = NO;
+  [consumer_ setThumbnailImage:image];
+}
+
+void OmniboxViewIOS::AcceptThumbnailEdits() {
+  if (thumbnail_deleted_) {
+    thumbnail_image_before_edit_ = nil;
+    thumbnail_deleted_ = NO;
+    // TODO(crbug.com/359150039): Signal to the client that the thumbnail has
+    // been deleted.
+  }
+}
+
+void OmniboxViewIOS::RevertThumbnailEdits() {
+  if (thumbnail_deleted_) {
+    [consumer_ setThumbnailImage:thumbnail_image_before_edit_];
+    thumbnail_deleted_ = NO;
+  }
+}
+
+void OmniboxViewIOS::RemoveThumbnail() {
+  thumbnail_deleted_ = YES;
+  [consumer_ setThumbnailImage:nil];
 }

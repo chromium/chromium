@@ -157,8 +157,7 @@
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(
       self.textField, std::move(_client), self.browser->GetBrowserState(),
-      omniboxHandler, self.focusDelegate, _toolbarHandler,
-      self.viewController.additionalTextConsumer);
+      omniboxHandler, self.focusDelegate, _toolbarHandler, self.viewController);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
@@ -318,7 +317,9 @@
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
-  [self.viewController setThumbnailImage:image];
+  if (_editView) {
+    _editView->SetThumbnailImage(image);
+  }
 }
 
 #pragma mark Scribble

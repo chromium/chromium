@@ -225,10 +225,6 @@ using base::UserMetricsAction;
   return self.view;
 }
 
-- (id<OmniboxAdditionalTextConsumer>)additionalTextConsumer {
-  return self.view;
-}
-
 #pragma mark - public methods
 
 - (OmniboxTextFieldIOS*)textField {
@@ -244,10 +240,6 @@ using base::UserMetricsAction;
 
 - (void)cleanupOmniboxAfterScribble {
   self.textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
-}
-
-- (void)setThumbnailImage:(UIImage*)image {
-  [self.view setThumbnailImage:image];
 }
 
 #pragma mark - OmniboxTextFieldDelegate
@@ -508,9 +500,18 @@ using base::UserMetricsAction;
   [self.textField setText:text userTextLength:text.length];
 }
 
-- (void)updateAdditionalText:(NSAttributedString*)additionalText {
-  CHECK(IsRichAutocompletionEnabled());
-  self.textField.additionalText = additionalText;
+#pragma mark - OmniboxViewConsumer
+
+- (void)updateAdditionalText:(NSString*)additionalText {
+  [self.view updateAdditionalText:additionalText];
+}
+
+- (void)setOmniboxHasRichInline:(BOOL)omniboxHasRichInline {
+  [self.view setOmniboxHasRichInline:omniboxHasRichInline];
+}
+
+- (void)setThumbnailImage:(UIImage*)image {
+  [self.view setThumbnailImage:image];
 }
 
 #pragma mark - EditViewAnimatee

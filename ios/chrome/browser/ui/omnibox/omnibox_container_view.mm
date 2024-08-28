@@ -278,8 +278,6 @@ const CGFloat kClearButtonSize = 28.5f;
   _stackView.semanticContentAttribute = semanticContentAttribute;
 }
 
-#pragma mark - OmniboxAdditionalTextConsumer
-
 - (void)updateAdditionalText:(NSString*)additionalText {
   CHECK(IsRichAutocompletionEnabled(RichAutocompletionImplementation::kAny));
 
