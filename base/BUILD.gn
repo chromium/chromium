@@ -958,6 +958,7 @@ component("base") {
       "files/dir_reader_posix.h",
       "files/file_posix.cc",
       "files/memory_mapped_file_posix.cc",
+      "memory/protected_memory_posix.cc",
       "message_loop/watchable_io_message_pump_posix.cc",
       "message_loop/watchable_io_message_pump_posix.h",
       "posix/eintr_wrapper.h",
@@ -1416,6 +1417,7 @@ component("base") {
       "fuchsia/system_info.h",
       "memory/platform_shared_memory_mapper_fuchsia.cc",
       "memory/platform_shared_memory_region_fuchsia.cc",
+      "memory/protected_memory_posix.cc",
       "message_loop/message_pump_fuchsia.cc",
       "message_loop/message_pump_fuchsia.h",
       "message_loop/watchable_io_message_pump_posix.cc",
@@ -2570,8 +2572,8 @@ buildflag_header("protected_memory_buildflags") {
   header = "protected_memory_buildflags.h"
   header_dir = "base/memory"
 
-  # Currently Protected Memory is only supported on Windows.
-  protected_memory_enabled = !is_component_build && is_win
+  protected_memory_enabled =
+      !is_component_build && (is_win || is_linux || is_android || is_mac)
 
   flags = [ "PROTECTED_MEMORY_ENABLED=$protected_memory_enabled" ]
 }
