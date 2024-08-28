@@ -18,6 +18,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
@@ -35,7 +36,6 @@ class SharedURLLoaderFactory;
 namespace web_app {
 
 class UpdateManifest;
-class IsolatedWebAppDownloader;
 
 namespace internal {
 
@@ -120,7 +120,7 @@ class IwaInstaller {
  private:
   void CreateTempFile(base::OnceClosure next_step_callback);
   void OnTempFileCreated(base::OnceClosure next_step_callback,
-                         std::unique_ptr<base::ScopedTempFile> maybe_file);
+                         ScopedTempWebBundleFile bundle);
 
   // Downloading of the update manifest of the current app.
   void DownloadUpdateManifest(
@@ -153,7 +153,8 @@ class IwaInstaller {
   raw_ref<base::Value::List> log_;
   ResultCallback callback_;
 
-  std::unique_ptr<base::ScopedTempFile> file_;
+  ScopedTempWebBundleFile bundle_;
+
   std::unique_ptr<UpdateManifestFetcher> update_manifest_fetcher_;
   std::unique_ptr<IsolatedWebAppDownloader> bundle_downloader_;
 

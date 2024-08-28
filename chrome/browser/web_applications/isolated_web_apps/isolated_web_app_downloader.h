@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -20,6 +21,34 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace web_app {
+
+class ScopedTempWebBundleFile {
+ public:
+  // Creates a ScopedTempWebBundleFile on a non-blocking thread.
+  // The result might be null if something goes wrong during the operation.
+  static void Create(
+      base::OnceCallback<void(ScopedTempWebBundleFile)> callback);
+
+  explicit ScopedTempWebBundleFile(
+      std::unique_ptr<base::ScopedTempFile> file = nullptr);
+
+  // `file_` is deleted on a non-blocking thread.
+  ~ScopedTempWebBundleFile();
+
+  ScopedTempWebBundleFile& operator=(const ScopedTempWebBundleFile&) = delete;
+  ScopedTempWebBundleFile(const ScopedTempWebBundleFile&) = delete;
+
+  ScopedTempWebBundleFile& operator=(ScopedTempWebBundleFile&&);
+  ScopedTempWebBundleFile(ScopedTempWebBundleFile&&);
+
+  explicit operator bool() const { return !!file_; }
+
+  // Will CHECK() if `file_` is nullptr.
+  const base::FilePath& path() const;
+
+ private:
+  std::unique_ptr<base::ScopedTempFile> file_;
+};
 
 // Helper class to download the Signed Web Bundle of an Isolated Web App.
 class IsolatedWebAppDownloader {
