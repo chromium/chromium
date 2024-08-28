@@ -47,14 +47,14 @@ namespace autofill {
 namespace {
 
 using ::base::UTF8ToUTF16;
+using ::testing::_;
+using ::testing::AssertionResult;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 
 const char kDefaultAutocompleteInputId[] = "n300";
 const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
-
-}  // namespace
 
 class AutocompleteTest : public InProcessBrowserTest {
  protected:
@@ -117,12 +117,12 @@ class AutocompleteTest : public InProcessBrowserTest {
 
     // Simulate a mouse click to submit the form because form submissions not
     // triggered by user gestures are ignored.
-    TestAutofillManagerWaiter waiter(manager(),
-                                     {AutofillManagerEvent::kFormSubmitted});
+    base::OnceCallback<AssertionResult()> wait_for_submission =
+        WaitForEvent(manager(), &AutofillManager::Observer::OnFormSubmitted, _);
     content::SimulateMouseClick(
         active_browser_->tab_strip_model()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft);
-    ASSERT_TRUE(waiter.Wait(1));
+    ASSERT_TRUE(std::move(wait_for_submission).Run());
 
     if (!should_skip_save) {
       // Wait for data to have been saved in the DB.
@@ -296,5 +296,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
               SuggestionVectorMainTextsAre(Suggestion::Text(
                   UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 }
+
+}  // namespace
 
 }  // namespace autofill
