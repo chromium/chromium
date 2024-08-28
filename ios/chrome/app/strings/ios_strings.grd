@@ -3767,6 +3767,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_TITLE" desc="Title for Price Notifications UI Alert Prompt displayed from the settings menu that redirects the user to the iOS push notifications permission page.">
           Turn on Price Alerts?
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW" desc="Label indicating user can allow price tracking notifications">
+          Allow Price Tracking Notifications...
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_DESCRIPTION" desc="Description for Price Tracking Promotion in Magic Stack">
+          Keep up with price drops on all the products you track.
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_TITLE" desc="Title for Price Tracking Promotion in Magic Stack">
+          Get Price Tracking Notifications
+      </message>
       <message name="IDS_IOS_PRINT_PDF_ERROR_SUBTITLE" desc="Message of a popup window indicating that the printing operation did not succeed. [Length: 100em] [iOS only]">
         Make sure you have a network connection, and try again.
       </message>

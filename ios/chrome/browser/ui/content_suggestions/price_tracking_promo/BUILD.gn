@@ -14,7 +14,27 @@ source_set("price_tracking_promo") {
   ]
   deps = [
     "//base:base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util:util",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/util:util",
+    "//ui/base:base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "price_tracking_promo_view+testing.h",
+    "price_tracking_promo_view_unittest.mm",
+  ]
+  deps = [
+    ":price_tracking_promo",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
   ]
 }
