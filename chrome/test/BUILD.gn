@@ -9223,6 +9223,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/extensions:cws_item_service_proto",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/extensions/api/cookies:helpers",
       "//chrome/browser/ui/web_applications:unit_tests",
       "//chrome/browser/web_applications:unit_tests",
       "//chrome/browser/web_applications:web_applications_unit_tests",

@@ -28,6 +28,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/autofill_private",
     "//chrome/browser/extensions/api/command_line_private",
     "//chrome/browser/extensions/api/context_menus",
+    "//chrome/browser/extensions/api/cookies",
     "//chrome/browser/extensions/api/desktop_capture",
     "//chrome/browser/extensions/api/downloads_internal",
     "//chrome/browser/extensions/api/module",
@@ -114,6 +115,7 @@ source_set("keyed_service_factories") {
   deps = [
     "//chrome/browser/extensions",
     "//chrome/browser/extensions/api/autofill_private",
+    "//chrome/browser/extensions/api/cookies",
     "//chrome/browser/extensions/api/preference",
   ]
 
