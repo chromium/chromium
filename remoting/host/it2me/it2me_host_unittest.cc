@@ -812,16 +812,14 @@ TEST_F(It2MeHostTest, HostUdpPortRangePolicyValidRange) {
   SetPolicies(
       {{policy::key::kRemoteAccessHostUdpPortRange, base::Value(kPortRange)}});
   StartHost();
-  PortRange port_range =
-      GetHost()->transport_context_for_tests()->network_settings().port_range;
+  PortRange port_range = get_local_session_policies().host_udp_port_range;
   ASSERT_EQ(port_range_actual.min_port, port_range.min_port);
   ASSERT_EQ(port_range_actual.max_port, port_range.max_port);
 }
 
 TEST_F(It2MeHostTest, HostUdpPortRangePolicyNoRange) {
   StartHost();
-  PortRange port_range =
-      GetHost()->transport_context_for_tests()->network_settings().port_range;
+  PortRange port_range = get_local_session_policies().host_udp_port_range;
   ASSERT_TRUE(port_range.is_null());
 }
 

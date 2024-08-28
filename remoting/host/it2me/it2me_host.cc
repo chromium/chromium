@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -44,7 +45,6 @@
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
 #include "remoting/protocol/jingle_session_manager.h"
-#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/validating_authenticator.h"
 #include "remoting/signaling/log_to_server.h"
@@ -296,38 +296,11 @@ void It2MeHost::ConnectOnNetworkThread(
       base::BindOnce(&It2MeHost::OnReceivedSupportID,
                      weak_factory_.GetWeakPtr()));
 
-  HOST_LOG << "NAT traversal enabled: " << nat_traversal_enabled_;
-  HOST_LOG << "Relay connections allowed: " << relay_connections_allowed_;
-
-  uint32_t network_flags = protocol::NetworkSettings::NAT_TRAVERSAL_DISABLED;
-  if (nat_traversal_enabled_) {
-    network_flags = protocol::NetworkSettings::NAT_TRAVERSAL_STUN |
-                    protocol::NetworkSettings::NAT_TRAVERSAL_OUTGOING;
-    if (relay_connections_allowed_) {
-      network_flags |= protocol::NetworkSettings::NAT_TRAVERSAL_RELAY;
-    }
-  }
-
-  protocol::NetworkSettings network_settings(network_flags);
-
-  if (!udp_port_range_.is_null()) {
-    network_settings.port_range = udp_port_range_;
-  } else if (!nat_traversal_enabled_) {
-    // For legacy reasons we have to restrict the port range to a set of default
-    // values when nat traversal is disabled, even if the port range was not
-    // set in policy.
-    network_settings.port_range.min_port =
-        protocol::NetworkSettings::kDefaultMinPort;
-    network_settings.port_range.max_port =
-        protocol::NetworkSettings::kDefaultMaxPort;
-  }
-
-  scoped_refptr<protocol::TransportContext> transport_context =
-      new protocol::TransportContext(
-          std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-          webrtc::ThreadWrapper::current()->SocketServer(),
-          host_context_->url_loader_factory(), oauth_token_getter_.get(),
-          network_settings, protocol::TransportRole::SERVER);
+  auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
+      std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
+      webrtc::ThreadWrapper::current()->SocketServer(),
+      host_context_->url_loader_factory(), oauth_token_getter_.get(),
+      protocol::TransportRole::SERVER);
   if (!ice_config.is_null()) {
     transport_context->set_turn_ice_config(ice_config);
   }
@@ -503,18 +476,18 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
     UpdateClientDomainListPolicy(std::move(client_domain_list_vector));
   }
 
-  const std::string* port_range_string =
-      policies.FindString(policy::key::kRemoteAccessHostUdpPortRange);
-  if (port_range_string) {
-    UpdateHostUdpPortRangePolicy(*port_range_string);
-  }
-
   UpdateSessionPolicies(policies);
 }
 
 void It2MeHost::UpdateNatPolicies(bool nat_policy_value,
                                   bool relay_policy_value) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
+
+  // This method is needed simply because we need to notify the website of the
+  // setting change. This only works if the NAT policies are configured locally.
+  // This will not work if we add SessionAuthz policies to IT2ME in the future.
+  // TODO: yuweih - Fix this, or remove this altogether if we don't think it's
+  // useful.
 
   VLOG(2) << "UpdateNatPolicies: nat_policy_value: " << nat_policy_value;
   bool nat_traversal_value_changed = nat_traversal_enabled_ != nat_policy_value;
@@ -566,22 +539,6 @@ void It2MeHost::UpdateClientDomainListPolicy(
   }
 
   required_client_domain_list_ = std::move(client_domain_list);
-}
-
-void It2MeHost::UpdateHostUdpPortRangePolicy(
-    const std::string& port_range_string) {
-  DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
-
-  VLOG(2) << "UpdateHostUdpPortRangePolicy: " << port_range_string;
-
-  if (IsRunning()) {
-    DisconnectOnNetworkThread();
-  }
-
-  if (!PortRange::Parse(port_range_string, &udp_port_range_)) {
-    // PolicyWatcher verifies that the value is formatted correctly.
-    LOG(FATAL) << "Invalid port range: " << port_range_string;
-  }
 }
 
 void It2MeHost::UpdateSessionPolicies(

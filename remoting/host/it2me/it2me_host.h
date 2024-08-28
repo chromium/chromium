@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "remoting/base/local_session_policies_provider.h"
-#include "remoting/base/port_range.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
@@ -195,7 +194,6 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   void UpdateHostDomainListPolicy(std::vector<std::string> host_domain_list);
   void UpdateClientDomainListPolicy(
       std::vector<std::string> client_domain_list);
-  void UpdateHostUdpPortRangePolicy(const std::string& port_range_string);
   void UpdateSessionPolicies(const base::Value::Dict& platform_policies);
 
   void DisconnectOnNetworkThread(
@@ -268,9 +266,6 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // The client and host domain policy setting.
   std::vector<std::string> required_client_domain_list_;
   std::vector<std::string> required_host_domain_list_;
-
-  // The host port range policy setting.
-  PortRange udp_port_range_;
 
   // Stores the remote support connections allowed policy value.
   bool remote_support_connections_allowed_ = true;

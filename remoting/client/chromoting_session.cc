@@ -526,10 +526,7 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
           webrtc::ThreadWrapper::current()->SocketServer(),
           runtime_->url_loader_factory(),
-          /* oauth_token_getter= */ nullptr,
-          protocol::NetworkSettings(
-              protocol::NetworkSettings::NAT_TRAVERSAL_FULL),
-          protocol::TransportRole::CLIENT);
+          /* oauth_token_getter= */ nullptr, protocol::TransportRole::CLIENT);
 
   if (session_context_->info.pairing_id.length() &&
       session_context_->info.pairing_secret.length()) {

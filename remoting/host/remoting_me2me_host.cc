@@ -59,7 +59,6 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
-#include "remoting/base/port_range.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/base/session_policies.h"
@@ -108,7 +107,6 @@
 #include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
-#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/ftl_host_device_id_provider.h"
@@ -167,7 +165,6 @@
 #include "remoting/host/linux/wayland_utils.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
-using remoting::protocol::NetworkSettings;
 using remoting::protocol::PairingRegistry;
 
 #if BUILDFLAG(IS_APPLE)
@@ -349,9 +346,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnClientDomainListPolicyUpdate(const base::Value::Dict& policies);
   bool OnHostDomainListPolicyUpdate(const base::Value::Dict& policies);
   bool OnUsernamePolicyUpdate(const base::Value::Dict& policies);
-  bool OnNatPolicyUpdate(const base::Value::Dict& policies);
-  bool OnRelayPolicyUpdate(const base::Value::Dict& policies);
-  bool OnUdpPortPolicyUpdate(const base::Value::Dict& policies);
   bool OnCurtainPolicyUpdate(const base::Value::Dict& policies);
   bool OnPairingPolicyUpdate(const base::Value::Dict& policies);
   bool OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies);
@@ -427,9 +421,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::vector<std::string> client_domain_list_;
   std::vector<std::string> host_domain_list_;
   bool host_username_match_required_ = false;
-  bool allow_nat_traversal_ = true;
-  bool allow_relay_ = true;
-  PortRange udp_port_range_;
   bool allow_pairing_ = true;
   bool enable_user_interface_ = true;
   bool allow_remote_access_connections_ = true;
@@ -1272,9 +1263,6 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
   restart_required |= OnCurtainPolicyUpdate(policies);
   // Note: UsernamePolicyUpdate must run after OnCurtainPolicyUpdate.
   restart_required |= OnUsernamePolicyUpdate(policies);
-  restart_required |= OnNatPolicyUpdate(policies);
-  restart_required |= OnRelayPolicyUpdate(policies);
-  restart_required |= OnUdpPortPolicyUpdate(policies);
   restart_required |= OnPairingPolicyUpdate(policies);
   restart_required |= OnGnubbyAuthPolicyUpdate(policies);
   restart_required |= OnEnableUserInterfacePolicyUpdate(policies);
@@ -1453,62 +1441,6 @@ bool HostProcess::OnUsernamePolicyUpdate(const base::Value::Dict& policies) {
   ApplyUsernamePolicy();
 #endif
   return false;
-}
-
-bool HostProcess::OnNatPolicyUpdate(const base::Value::Dict& policies) {
-  // Returns true if the host has to be restarted after this policy update.
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<bool> allow_nat_traversal =
-      policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
-  if (!allow_nat_traversal.has_value()) {
-    return false;
-  }
-
-  allow_nat_traversal_ = allow_nat_traversal.value();
-  if (allow_nat_traversal_) {
-    HOST_LOG << "Policy enables NAT traversal.";
-  } else {
-    HOST_LOG << "Policy disables NAT traversal.";
-  }
-  return true;
-}
-
-bool HostProcess::OnRelayPolicyUpdate(const base::Value::Dict& policies) {
-  // Returns true if the host has to be restarted after this policy update.
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<bool> allow_relay =
-      policies.FindBool(policy::key::kRemoteAccessHostAllowRelayedConnection);
-  if (!allow_relay.has_value()) {
-    return false;
-  }
-
-  allow_relay_ = allow_relay.value();
-  if (allow_relay_) {
-    HOST_LOG << "Policy enables use of relay server.";
-  } else {
-    HOST_LOG << "Policy disables use of relay server.";
-  }
-  return true;
-}
-
-bool HostProcess::OnUdpPortPolicyUpdate(const base::Value::Dict& policies) {
-  // Returns true if the host has to be restarted after this policy update.
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  const std::string* string_value =
-      policies.FindString(policy::key::kRemoteAccessHostUdpPortRange);
-  if (!string_value) {
-    return false;
-  }
-
-  if (!PortRange::Parse(*string_value, &udp_port_range_)) {
-    // PolicyWatcher verifies that the value is formatted correctly.
-    LOG(FATAL) << "Invalid port range: " << *string_value;
-  }
-  HOST_LOG << "Policy restricts UDP port range to: " << udp_port_range_;
-  return true;
 }
 
 bool HostProcess::OnCurtainPolicyUpdate(const base::Value::Dict& policies) {
@@ -1743,33 +1675,12 @@ void HostProcess::StartHost() {
 
   InitializeSignaling();
 
-  uint32_t network_flags = 0;
-  if (allow_nat_traversal_) {
-    network_flags = NetworkSettings::NAT_TRAVERSAL_STUN |
-                    NetworkSettings::NAT_TRAVERSAL_OUTGOING;
-    if (allow_relay_) {
-      network_flags |= NetworkSettings::NAT_TRAVERSAL_RELAY;
-    }
-  }
-
-  NetworkSettings network_settings(network_flags);
-
-  if (!udp_port_range_.is_null()) {
-    network_settings.port_range = udp_port_range_;
-  } else if (!allow_nat_traversal_) {
-    // For legacy reasons we have to restrict the port range to a set of default
-    // values when nat traversal is disabled, even if the port range was not
-    // set in policy.
-    network_settings.port_range.min_port = NetworkSettings::kDefaultMinPort;
-    network_settings.port_range.max_port = NetworkSettings::kDefaultMaxPort;
-  }
-
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
           webrtc::ThreadWrapper::current()->SocketServer(),
           context_->url_loader_factory(), oauth_token_getter_.get(),
-          network_settings, protocol::TransportRole::SERVER);
+          protocol::TransportRole::SERVER);
   std::unique_ptr<protocol::SessionManager> session_manager(
       new protocol::JingleSessionManager(signal_strategy_.get()));
 

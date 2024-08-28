@@ -55,6 +55,7 @@
 #include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/clipboard_thread_proxy.h"
+#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/peer_connection_controls.h"
 #include "remoting/protocol/session.h"
@@ -536,6 +537,8 @@ void ClientSession::OnConnectionAuthenticated() {
       host_experiment_session_plugin_.configuration());
 
   connection_->ApplySessionOptions(session_options);
+  connection_->ApplyNetworkSettings(
+      protocol::NetworkSettings(effective_policies_));
 
   DesktopEnvironmentOptions options = desktop_environment_options_;
   options.ApplySessionOptions(session_options);

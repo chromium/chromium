@@ -310,10 +310,6 @@ void ChromotingHost::OnIncomingSession(
         video_encode_task_runner_, audio_task_runner_);
   }
 
-  // TODO: crbug.com/359977809 - Move this to ClientSession and apply it from
-  // SessionPolicies.
-  connection->ApplyNetworkSettings(transport_context_->network_settings());
-
   // Create a ClientSession object.
   std::vector<raw_ptr<HostExtension, VectorExperimental>> extension_ptrs;
   for (const auto& extension : extensions_) {

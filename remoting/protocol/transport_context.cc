@@ -61,8 +61,6 @@ scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
   return new protocol::TransportContext(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
-      protocol::NetworkSettings(
-          protocol::NetworkSettings::NAT_TRAVERSAL_OUTGOING),
       role);
 }
 
@@ -71,13 +69,11 @@ TransportContext::TransportContext(
     rtc::SocketFactory* socket_factory,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     OAuthTokenGetter* oauth_token_getter,
-    const NetworkSettings& network_settings,
     TransportRole role)
     : port_allocator_factory_(std::move(port_allocator_factory)),
       socket_factory_(socket_factory),
       url_loader_factory_(url_loader_factory),
       oauth_token_getter_(oauth_token_getter),
-      network_settings_(network_settings),
       role_(role) {
   DCHECK(socket_factory_);
 }
