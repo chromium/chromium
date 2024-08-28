@@ -277,6 +277,12 @@ WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
     case device::BluetoothDevice::ERROR_WAKELOCK:
       RecordConnectGATTOutcome(UMAConnectGATTOutcome::WAKELOCK);
       return blink::mojom::WebBluetoothResult::CONNECT_WAKELOCK;
+    case device::BluetoothDevice::ERROR_UNEXPECTED_STATE:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::UNEXPECTED_STATE);
+      return blink::mojom::WebBluetoothResult::CONNECT_UNEXPECTED_STATE;
+    case device::BluetoothDevice::ERROR_SOCKET:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::SOCKET_ERROR);
+      return blink::mojom::WebBluetoothResult::CONNECT_SOCKET_ERROR;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED_IN_MIGRATION();
       return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;

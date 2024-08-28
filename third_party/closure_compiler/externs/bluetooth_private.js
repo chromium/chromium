@@ -59,6 +59,8 @@ chrome.bluetoothPrivate.ConnectResultType = {
   JNI_ENVIRONMENT: 'jniEnvironment',
   JNI_THREAD_ATTACH: 'jniThreadAttach',
   WAKELOCK: 'wakelock',
+  UNEXPECTED_STATE: 'unexpectedState',
+  SOCKET_ERROR: 'socketError',
 };
 
 /**

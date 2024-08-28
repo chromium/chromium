@@ -238,6 +238,10 @@ DOMException* BluetoothError::CreateDOMException(
                 "Connection Error: An internal error has occurred.");
       MAP_ERROR(CONNECT_WAKELOCK, DOMExceptionCode::kUnknownError,
                 "Connection Error: An internal error has occurred.");
+      MAP_ERROR(CONNECT_UNEXPECTED_STATE, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
+      MAP_ERROR(CONNECT_SOCKET_ERROR, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
 
 #undef MAP_ERROR
   }

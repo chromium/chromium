@@ -82,6 +82,10 @@ mojom::PairingResult GetPairingResult(
     case device::ConnectionFailureReason::kJniThreadAttach:
       [[fallthrough]];
     case device::ConnectionFailureReason::kWakelock:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kUnexpectedState:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kSocketError:
       return mojom::PairingResult::kNonAuthFailure;
   }
 }

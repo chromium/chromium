@@ -212,6 +212,10 @@ bool IsUserError(std::optional<ConnectionFailureReason> failure_reason) {
     case ConnectionFailureReason::kJniThreadAttach:
       [[fallthrough]];
     case ConnectionFailureReason::kWakelock:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnexpectedState:
+      [[fallthrough]];
+    case ConnectionFailureReason::kSocketError:
       return false;
   }
   NOTREACHED_IN_MIGRATION();
@@ -263,6 +267,10 @@ void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
     case ConnectionFailureReason::kJniThreadAttach:
       [[fallthrough]];
     case ConnectionFailureReason::kWakelock:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnexpectedState:
+      [[fallthrough]];
+    case ConnectionFailureReason::kSocketError:
       const std::string result_histogram_name_prefix =
           "Bluetooth.ChromeOS.Pairing.Result";
       base::UmaHistogramEnumeration(
@@ -357,6 +365,10 @@ ConnectionFailureReason GetConnectionFailureReason(
       return device::ConnectionFailureReason::kJniThreadAttach;
     case device::BluetoothDevice::ConnectErrorCode::ERROR_WAKELOCK:
       return device::ConnectionFailureReason::kWakelock;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNEXPECTED_STATE:
+      return device::ConnectionFailureReason::kUnexpectedState;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET:
+      return device::ConnectionFailureReason::kSocketError;
     case device::BluetoothDevice::ConnectErrorCode::NUM_CONNECT_ERROR_CODES:
       NOTREACHED();
   }

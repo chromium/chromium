@@ -249,6 +249,11 @@ DeviceConnectErrorCodeToStatus(BluetoothDevice::ConnectErrorCode error_code) {
           kStatusErrorJniThreadAttach;
     case device::BluetoothDevice::ConnectErrorCode::ERROR_WAKELOCK:
       return extensions::BluetoothLowEnergyEventRouter::kStatusErrorWakelock;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNEXPECTED_STATE:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorUnexpectedState;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorSocket;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED_IN_MIGRATION();
       return extensions::BluetoothLowEnergyEventRouter::

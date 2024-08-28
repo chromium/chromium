@@ -109,6 +109,10 @@ std::optional<device::ConnectionFailureReason> GetConnectionFailureReason(
       return device::ConnectionFailureReason::kWakelock;
     case bt_private::ConnectResultType::kAlreadyConnected:
       return device::ConnectionFailureReason::kAlreadyConnected;
+    case bt_private::ConnectResultType::kUnexpectedState:
+      return device::ConnectionFailureReason::kUnexpectedState;
+    case bt_private::ConnectResultType::kSocketError:
+      return device::ConnectionFailureReason::kSocketError;
     case bt_private::ConnectResultType::kInProgress:
       [[fallthrough]];
     case bt_private::ConnectResultType::kAuthRejected:
@@ -167,6 +171,10 @@ bt_private::ConnectResultType DeviceConnectErrorToConnectResult(
       return bt_private::ConnectResultType::kJniThreadAttach;
     case device::BluetoothDevice::ERROR_WAKELOCK:
       return bt_private::ConnectResultType::kWakelock;
+    case device::BluetoothDevice::ERROR_UNEXPECTED_STATE:
+      return bt_private::ConnectResultType::kUnexpectedState;
+    case device::BluetoothDevice::ERROR_SOCKET:
+      return bt_private::ConnectResultType::kSocketError;
     case device::BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED_IN_MIGRATION();
       break;

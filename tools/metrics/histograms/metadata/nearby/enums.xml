@@ -62,6 +62,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="JNI Environment"/>
   <int value="19" label="JNI Thread Attach"/>
   <int value="20" label="Wakelock"/>
+  <int value="21" label="Unexpected State"/>
+  <int value="22" label="Socket Error"/>
 </enum>
 
 <enum name="NearbyConnectionsGattResult">

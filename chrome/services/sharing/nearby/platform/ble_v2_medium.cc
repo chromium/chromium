@@ -111,6 +111,10 @@ std::string_view ConnectResultToString(bluetooth::mojom::ConnectResult result) {
       return "JNI Thread Attach";
     case bluetooth::mojom::ConnectResult::WAKELOCK:
       return "Wakelock";
+    case bluetooth::mojom::ConnectResult::UNEXPECTED_STATE:
+      return "Unexpected State";
+    case bluetooth::mojom::ConnectResult::SOCKET:
+      return "Socket Error";
   }
 
   NOTREACHED();

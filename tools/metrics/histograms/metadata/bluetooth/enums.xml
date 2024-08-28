@@ -71,6 +71,8 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="JNI environment error"/>
   <int value="20" label="JNI thread attach error"/>
   <int value="21" label="Wakelock error"/>
+  <int value="22" label="Unexpected state"/>
+  <int value="23" label="Socket error"/>
 </enum>
 
 <enum name="BluetoothConnectToServiceError">
@@ -100,6 +102,8 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="JNI environment error"/>
   <int value="17" label="JNI thread attach error"/>
   <int value="18" label="Wakelock error"/>
+  <int value="19" label="Unexpected state"/>
+  <int value="20" label="Socket error"/>
 </enum>
 
 <enum name="BluetoothDeviceConnectToServiceFailureReason">
@@ -1456,6 +1460,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="JNI environment error"/>
   <int value="19" label="JNI thread attach error"/>
   <int value="20" label="Wakelock error"/>
+  <int value="21" label="Unexpected state"/>
+  <int value="22" label="Socket error"/>
 </enum>
 
 <enum name="WebBluetoothGATTOperationOutcome">
