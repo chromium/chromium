@@ -24,11 +24,10 @@ constexpr base::TimeDelta kBubbleViewDisplayTime = base::Seconds(3);
 
 gfx::NativeView GetParentView() {
   aura::Window* active_window = window_util::GetActiveWindow();
-  // TODO: b/358248370 - Determine the correct container to put this in.
   return Shell::GetContainer(active_window
                                  ? active_window->GetRootWindow()
                                  : Shell::GetRootWindowForNewWindows(),
-                             kShellWindowId_MenuContainer);
+                             kShellWindowId_SettingBubbleContainer);
 }
 
 ui::TextInputClient* GetFocusedTextInputClient() {
