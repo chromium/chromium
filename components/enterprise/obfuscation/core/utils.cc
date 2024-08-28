@@ -34,7 +34,10 @@ static constexpr size_t kHeaderSize = 1u + kSaltSize + kNoncePrefixSize;
 //
 // This size is chosen to be the default buffer size in bytes used for downloads
 // (kDefaultDownloadFileBufferSize = 524288) plus the auth tag length.
-static constexpr size_t kChunkSize = 512 * 1024 + kAuthTagSize;
+static constexpr size_t kMaxChunkSize = 512 * 1024 + kAuthTagSize;
+
+// Size of the chunk size prefix for variable size.
+static constexpr size_t kChunkSizePrefixSize = 4u;
 
 // Generates a random 256 bit AES key.
 const std::vector<uint8_t>& GetSymmetricKey() {
@@ -131,7 +134,30 @@ base::expected<std::vector<uint8_t>, Error> ObfuscateDataChunk(
   std::vector<uint8_t> nonce =
       ComputeNonce(nonce_prefix, counter, is_last_chunk);
 
-  return base::ok(aead.Seal(data, nonce, base::span<uint8_t>()));
+  // Encrypt the data and prepend the encrypted size.
+  std::vector<uint8_t> encrypted_data =
+      aead.Seal(data, nonce, base::span<uint8_t>());
+
+  std::array<uint8_t, kChunkSizePrefixSize> size =
+      base::U32ToBigEndian(static_cast<uint32_t>(encrypted_data.size()));
+  encrypted_data.insert(encrypted_data.begin(), size.begin(), size.end());
+
+  return base::ok(std::move(encrypted_data));
+}
+
+base::expected<size_t, Error> GetObfuscatedChunkSize(
+    base::span<const uint8_t> data) {
+  if (data.size() < kChunkSizePrefixSize) {
+    return base::unexpected(Error::kDeobfuscationFailed);
+  }
+
+  std::array<uint8_t, kChunkSizePrefixSize> size;
+  std::copy_n(data.begin(), kChunkSizePrefixSize, size.begin());
+  size_t chunk_size = base::U32FromBigEndian(size);
+  if (chunk_size > kMaxChunkSize) {
+    return base::unexpected(Error::kDeobfuscationFailed);
+  }
+  return base::ok(chunk_size);
 }
 
 base::expected<std::pair</*derived key*/ std::vector<uint8_t>,
@@ -215,8 +241,6 @@ base::expected<void, Error> DeobfuscateFileInPlace(
   base::File deobfuscated_file(temp_file.path(),
                                base::File::FLAG_OPEN | base::File::FLAG_APPEND);
 
-  std::vector<uint8_t> ciphertext(kChunkSize);
-
   // Get header data
   if (static_cast<size_t>(file.GetLength()) < kHeaderSize) {
     return base::unexpected(Error::kDeobfuscationFailed);
@@ -248,19 +272,29 @@ base::expected<void, Error> DeobfuscateFileInPlace(
 
   // Deobfuscate to temporary file.
   while (total_bytes_read < file_size) {
+    // Get the size of the next obfuscated chunk.
+    std::array<uint8_t, kChunkSizePrefixSize> size;
+    std::optional<size_t> size_read = file.ReadAtCurrentPos(size);
+    if (!size_read || size_read.value() != kChunkSizePrefixSize) {
+      return base::unexpected(Error::kFileOperationError);
+    }
+
+    auto chunk_size = GetObfuscatedChunkSize(size);
+    if (!chunk_size.has_value()) {
+      return base::unexpected(chunk_size.error());
+    }
+    total_bytes_read += kChunkSizePrefixSize;
+
+    // Read in obfuscated chunk.
+    std::vector<uint8_t> ciphertext(chunk_size.value());
     std::optional<size_t> bytes_read = file.ReadAtCurrentPos(ciphertext);
     if (!bytes_read) {
       return base::unexpected(Error::kFileOperationError);
     }
-
-    // The size of the data being smaller than the auth tag means that
-    // it wasn't obfuscated.
-    if (bytes_read.value() < kAuthTagSize) {
+    if (bytes_read.value() != chunk_size) {
       return base::unexpected(Error::kDeobfuscationFailed);
     }
 
-    // Resize ciphertext to the actual number of bytes read.
-    ciphertext.resize(bytes_read.value());
     total_bytes_read += bytes_read.value();
 
     std::vector<uint8_t> nonce = ComputeNonce(
