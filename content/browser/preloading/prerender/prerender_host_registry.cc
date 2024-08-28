@@ -1126,16 +1126,11 @@ int PrerenderHostRegistry::FindPotentialHostToActivate(
   // (e.g., iframes, fenced frames). This is because nested browsing contexts
   // such as iframes are supposed to be created in the parent's browsing context
   // group and can script with the parent, but prerendered pages are created in
-  // new browsing context groups. And also, we disallow activation when the
-  // navigation is for a fenced frame to prevent the communication path from the
-  // embedding page to the fenced frame.
+  // new browsing context groups.
+  //
+  // Also, disallow activation when the navigation happens in the prerendering
+  // frame tree.
   if (!navigation_request.IsInPrimaryMainFrame()) {
-    return RenderFrameHost::kNoFrameTreeNodeId;
-  }
-
-  // Disallow activation when the navigation happens in the prerendering frame
-  // tree.
-  if (navigation_request.IsInPrerenderedMainFrame()) {
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
@@ -1199,7 +1194,6 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   // These should be ensured in `FindPotentialHostToActivate()`. See the
   // corresponding checks in the function for details.
   CHECK(navigation_request.IsInPrimaryMainFrame());
-  CHECK(!navigation_request.IsInPrerenderedMainFrame());
   CHECK(!SiteInstanceImpl::HasEffectiveURL(web_contents()->GetBrowserContext(),
                                            navigation_request.GetURL()));
 
