@@ -60,14 +60,6 @@ class AddressAutofillTableProfileTest
   AutofillProfile CreateAutofillProfile() const {
     return AutofillProfile(record_type(), AddressCountryCode("ES"));
   }
-
-  // Depending on the `record_type()`, the AutofillProfiles are stored in a
-  // different master table.
-  std::string_view GetProfileTable() const {
-    return record_type() == AutofillProfile::RecordType::kLocalOrSyncable
-               ? "local_addresses"
-               : "contact_info";
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
