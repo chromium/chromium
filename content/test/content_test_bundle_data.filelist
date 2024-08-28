@@ -4380,6 +4380,8 @@ data/accessibility/html/meter.html
 data/accessibility/html/micro-clearfix-hack-expected-blink.txt
 data/accessibility/html/micro-clearfix-hack.html
 data/accessibility/html/min-role-expected-blink.txt
+data/accessibility/html/min-role-in-grid-expected-blink.txt
+data/accessibility/html/min-role-in-grid.html
 data/accessibility/html/min-role-tabbable-group-expected-blink.txt
 data/accessibility/html/min-role-tabbable-group.html
 data/accessibility/html/min-role.html

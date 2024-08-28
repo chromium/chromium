@@ -7732,8 +7732,10 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         if (ancestor->RoleValue() !=
                 ax::mojom::blink::Role::kGenericContainer &&
             ancestor->RoleValue() != ax::mojom::blink::Role::kNone &&
+            ancestor->RoleValue() != ax::mojom::blink::Role::kGroup &&
             ancestor->RoleValue() != ax::mojom::blink::Role::kRowGroup) {
-          // Not inside a grid or a treegrid, or reached the top of one.
+          // Any other role other than those that are neutral in a [tree]grid,
+          // indicate that we are not in a [tree]grid.
           return false;
         }
         ancestor = ancestor->ParentObjectUnignored();
