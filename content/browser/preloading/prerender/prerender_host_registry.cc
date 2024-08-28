@@ -1121,7 +1121,70 @@ int PrerenderHostRegistry::FindPotentialHostToActivate(
       "navigation", "PrerenderHostRegistry::FindPotentialHostToActivate",
       "navigation_url", navigation_request.GetURL().spec(), "render_frame_host",
       navigation_request.frame_tree_node()->current_frame_host());
-  return FindHostToActivateInternal(navigation_request);
+
+  // Disallow activation when the navigation is for a nested browsing context
+  // (e.g., iframes, fenced frames). This is because nested browsing contexts
+  // such as iframes are supposed to be created in the parent's browsing context
+  // group and can script with the parent, but prerendered pages are created in
+  // new browsing context groups. And also, we disallow activation when the
+  // navigation is for a fenced frame to prevent the communication path from the
+  // embedding page to the fenced frame.
+  if (!navigation_request.IsInPrimaryMainFrame()) {
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  // Disallow activation when the navigation happens in the prerendering frame
+  // tree.
+  if (navigation_request.IsInPrerenderedMainFrame()) {
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  // Find an available host for the navigation request.
+  PrerenderHost* host = nullptr;
+  // First, find a host that can exactly match or match with the No-Vary-Search
+  // header.
+  for (const auto& [host_id, it_prerender_host] :
+       prerender_host_by_frame_tree_node_id_) {
+    if (it_prerender_host->IsUrlMatch(navigation_request.GetURL())) {
+      host = it_prerender_host.get();
+      break;
+    }
+  }
+  // If the host is not found, then find a host that can match with the
+  // No-Vary-Search hint.
+  if (!host) {
+    for (const auto& [host_id, it_prerender_host] :
+         prerender_host_by_frame_tree_node_id_) {
+      if (it_prerender_host->IsNoVarySearchHintUrlMatch(
+              navigation_request.GetURL())) {
+        host = it_prerender_host.get();
+        break;
+      }
+    }
+  }
+  if (!host) {
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  // Disallow activation when the navigation URL has an effective URL like
+  // hosted apps and NTP.
+  if (SiteInstanceImpl::HasEffectiveURL(web_contents()->GetBrowserContext(),
+                                        navigation_request.GetURL())) {
+    CancelHost(host->frame_tree_node_id(),
+               PrerenderFinalStatus::kActivationUrlHasEffectiveUrl);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  // Cannot activate if prerendering navigation has not started yet.
+  if (!host->GetInitialNavigationId().has_value()) {
+    CancelHost(host->frame_tree_node_id(),
+               PrerenderFinalStatus::kActivatedBeforeStarted);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  return CanNavigationActivateHost(navigation_request, *host)
+             ? host->frame_tree_node_id()
+             : RenderFrameHost::kNoFrameTreeNodeId;
 }
 
 int PrerenderHostRegistry::ReserveHostToActivate(
@@ -1133,29 +1196,46 @@ int PrerenderHostRegistry::ReserveHostToActivate(
                "navigation_url", navigation_request.GetURL().spec(),
                "render_frame_host", render_frame_host);
 
-  // Find an available host for the navigation request.
-  int host_id = FindHostToActivateInternal(navigation_request);
-  if (host_id == RenderFrameHost::kNoFrameTreeNodeId)
-    return RenderFrameHost::kNoFrameTreeNodeId;
+  // These should be ensured in `FindPotentialHostToActivate()`. See the
+  // corresponding checks in the function for details.
+  CHECK(navigation_request.IsInPrimaryMainFrame());
+  CHECK(!navigation_request.IsInPrerenderedMainFrame());
+  CHECK(!SiteInstanceImpl::HasEffectiveURL(web_contents()->GetBrowserContext(),
+                                           navigation_request.GetURL()));
 
-  // Check if the host is what the NavigationRequest expects. The host can be
-  // different when a trigger page removes the existing prerender and then
-  // re-adds a new prerender for the same URL.
+  // Choose the host that NavigationRequest expects.
   //
-  // NavigationRequest makes sure that the prerender is ready for activation by
-  // waiting for PrerenderCommitDeferringCondition before this point. Without
-  // this check, if the prerender is changed during the period,
-  // NavigationRequest may attempt to activate the new prerender that is not
-  // ready.
-  if (host_id != expected_host_id)
+  // Note that other prerendered pages may match this NavigationRequest but
+  // we shouldn't activate them. NavigationRequest makes sure that the
+  // expected prerendered page is ready for activation by waiting for
+  // PrerenderCommitDeferringCondition before this point, while the new
+  // matched pages may not be ready for activation yet.
+  auto it = prerender_host_by_frame_tree_node_id_.find(expected_host_id);
+  if (it == prerender_host_by_frame_tree_node_id_.end()) {
     return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  PrerenderHost& host_ref = *it->second;
+
+  // The expected host does not match. This can happen when the host matches
+  // based on the No-Vary-Search hint but actually it does not match based on
+  // the No-Vary-Search header.
+  std::optional<UrlMatchType> match_type =
+      host_ref.IsUrlMatch(navigation_request.GetURL());
+  if (!match_type.has_value()) {
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  if (!CanNavigationActivateHost(navigation_request, host_ref)) {
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  int host_id = host_ref.frame_tree_node_id();
 
   // Disallow activation when ongoing navigations exist. It can happen when the
   // main frame navigation starts after PrerenderCommitDeferringCondition posts
   // a task to resume activation and before the activation is completed.
-  auto& prerender_frame_tree = prerender_host_by_frame_tree_node_id_[host_id]
-                                   .get()
-                                   ->GetPrerenderFrameTree();
+  auto& prerender_frame_tree = host_ref.GetPrerenderFrameTree();
   if (prerender_frame_tree.root()->HasNavigation()) {
     CancelHost(host_id,
                PrerenderFinalStatus::kActivatedDuringMainFrameNavigation);
@@ -1169,8 +1249,7 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   CHECK_EQ(host_id, host->frame_tree_node_id());
   CHECK(host->IsUrlMatch(navigation_request.GetURL()));
 
-  if (host->IsUrlMatch(navigation_request.GetURL()).value() ==
-      UrlMatchType::kNoVarySearch) {
+  if (match_type.value() == UrlMatchType::kNoVarySearch) {
     // Count use of No-Vary-Search header in prerender.
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         web_contents()->GetPrimaryMainFrame(),
@@ -1586,61 +1665,14 @@ void PrerenderHostRegistry::PrimaryMainFrameRenderProcessGone(
           : PrerenderFinalStatus::kPrimaryMainFrameRendererProcessKilled);
 }
 
-int PrerenderHostRegistry::FindHostToActivateInternal(
-    NavigationRequest& navigation_request) {
+bool PrerenderHostRegistry::CanNavigationActivateHost(
+    NavigationRequest& navigation_request,
+    PrerenderHost& host) {
   RenderFrameHostImpl* render_frame_host =
       navigation_request.frame_tree_node()->current_frame_host();
-  TRACE_EVENT2("navigation",
-               "PrerenderHostRegistry::FindHostToActivateInternal",
+  TRACE_EVENT2("navigation", "PrerenderHostRegistry::CanNavigationActivateHost",
                "navigation_url", navigation_request.GetURL().spec(),
                "render_frame_host", render_frame_host);
-
-  // Disallow activation when the navigation is for a nested browsing context
-  // (e.g., iframes, fenced frames). This is because nested browsing contexts
-  // such as iframes are supposed to be created in the parent's browsing context
-  // group and can script with the parent, but prerendered pages are created in
-  // new browsing context groups. And also, we disallow activation when the
-  // navigation is for a fenced frame to prevent the communication path from the
-  // embedding page to the fenced frame.
-  if (!navigation_request.IsInPrimaryMainFrame())
-    return RenderFrameHost::kNoFrameTreeNodeId;
-
-  // Disallow activation when the navigation happens in the prerendering frame
-  // tree.
-  if (navigation_request.IsInPrerenderedMainFrame())
-    return RenderFrameHost::kNoFrameTreeNodeId;
-
-  // Find an available host for the navigation URL.
-  PrerenderHost* host = nullptr;
-  for (const auto& [host_id, it_prerender_host] :
-       prerender_host_by_frame_tree_node_id_) {
-    if (it_prerender_host->IsUrlMatch(navigation_request.GetURL())) {
-      host = it_prerender_host.get();
-      break;
-    }
-  }
-  if (!host) {
-    for (const auto& [host_id, it_prerender_host] :
-         prerender_host_by_frame_tree_node_id_) {
-      if (it_prerender_host->IsNoVarySearchHintUrlMatch(
-              navigation_request.GetURL())) {
-        host = it_prerender_host.get();
-        break;
-      }
-    }
-  }
-  if (!host) {
-    return RenderFrameHost::kNoFrameTreeNodeId;
-  }
-
-  // Disallow activation when the navigation URL has an effective URL like
-  // hosted apps and NTP.
-  if (SiteInstanceImpl::HasEffectiveURL(web_contents()->GetBrowserContext(),
-                                        navigation_request.GetURL())) {
-    CancelHost(host->frame_tree_node_id(),
-               PrerenderFinalStatus::kActivationUrlHasEffectiveUrl);
-    return RenderFrameHost::kNoFrameTreeNodeId;
-  }
 
   // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
   // windows) exist in the same browsing context group. This is because these
@@ -1648,9 +1680,9 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   // pages are created in new browsing context groups.
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
   if (site_instance->GetRelatedActiveContentsCount() != 1u) {
-    CancelHost(host->frame_tree_node_id(),
+    CancelHost(host.frame_tree_node_id(),
                PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts);
-    return RenderFrameHost::kNoFrameTreeNodeId;
+    return false;
   }
 
   // TODO(crbug.com/40249964): Remove the restriction after further
@@ -1658,15 +1690,9 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   // happens in the hidden tab.
   if (web_contents()->GetVisibility() == Visibility::HIDDEN &&
       !IsAllowedToActivateInBackgroundForTesting()) {
-    CancelHost(host->frame_tree_node_id(),
+    CancelHost(host.frame_tree_node_id(),
                PrerenderFinalStatus::kActivatedInBackground);
-    return RenderFrameHost::kNoFrameTreeNodeId;
-  }
-
-  if (!host->GetInitialNavigationId().has_value()) {
-    CancelHost(host->frame_tree_node_id(),
-               PrerenderFinalStatus::kActivatedBeforeStarted);
-    return RenderFrameHost::kNoFrameTreeNodeId;
+    return false;
   }
 
   {
@@ -1675,26 +1701,26 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
     // Compare navigation params from activation with the navigation params
     // from the initial prerender navigation. If they don't match, the
     // navigation should not activate the prerendered page.
-    if (!host->AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
+    if (!host.AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
             navigation_request, reason)) {
       // TODO(lingqi): We'd better cancel all hosts.
 
-      CancelHost(host->frame_tree_node_id(), reason);
-      return RenderFrameHost::kNoFrameTreeNodeId;
+      CancelHost(host.frame_tree_node_id(), reason);
+      return false;
     }
   }
 
-  if (!host->IsFramePolicyCompatibleWithPrimaryFrameTree()) {
-    CancelHost(host->frame_tree_node_id(),
+  if (!host.IsFramePolicyCompatibleWithPrimaryFrameTree()) {
+    CancelHost(host.frame_tree_node_id(),
                PrerenderFinalStatus::kActivationFramePolicyNotCompatible);
-    return RenderFrameHost::kNoFrameTreeNodeId;
+    return false;
   }
 
   // Cancel all the other prerender hosts because we no longer need the other
   // hosts after we determine the host to be activated.
   std::vector<int> cancelled_prerenders;
   for (const auto& [host_id, _] : prerender_host_by_frame_tree_node_id_) {
-    if (host_id != host->frame_tree_node_id()) {
+    if (host_id != host.frame_tree_node_id()) {
       cancelled_prerenders.push_back(host_id);
     }
   }
@@ -1711,7 +1737,7 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
                   PrerenderFinalStatus::kOtherPrerenderedPageActivated));
   pending_prerenders_.clear();
 
-  return host->frame_tree_node_id();
+  return true;
 }
 
 void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(

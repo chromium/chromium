@@ -271,7 +271,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   bool CancelNewTabHostInternal(int frame_tree_node_id,
                                 const PrerenderCancellationReason& reason);
 
-  int FindHostToActivateInternal(NavigationRequest& navigation_request);
+  // Returns true if `navigation_request` can activate `host`.
+  bool CanNavigationActivateHost(NavigationRequest& navigation_request,
+                                 PrerenderHost& host);
 
   void ScheduleToDeleteAbandonedHost(
       std::unique_ptr<PrerenderHost> prerender_host,
