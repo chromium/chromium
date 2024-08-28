@@ -1012,6 +1012,11 @@ const char kOobeSkipNewUserCheckForTesting[] =
 // Skips all other OOBE pages after user login.
 const char kOobeSkipPostLogin[] = "oobe-skip-postlogin";
 
+// Returns true if we should skip split modifier check on the split modifier
+// info screen.
+const char kOobeSkipSplitModifierCheckForTesting[] =
+    "oobe-skip-split-modifier-check-for-testing";
+
 // Skip to login screen.
 const char kOobeSkipToLogin[] = "oobe-skip-to-login";
 
@@ -1258,6 +1263,11 @@ bool ShouldTetherHostScansIgnoreWiredConnections() {
 bool ShouldSkipNewUserCheckForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kOobeSkipNewUserCheckForTesting);
+}
+
+bool ShouldSkipSplitModifierCheckForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOobeSkipSplitModifierCheckForTesting);
 }
 
 bool ShouldSkipOobePostLogin() {
