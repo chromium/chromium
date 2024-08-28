@@ -106,7 +106,6 @@ static_library("test_support") {
     "//ash/constants",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash/login/ui:test_support",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/net",
     "//chrome/browser/profiles:profile",

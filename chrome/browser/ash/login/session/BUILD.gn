@@ -62,7 +62,6 @@ static_library("session") {
     "//chrome/browser/ash/login/saml",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/u2f",

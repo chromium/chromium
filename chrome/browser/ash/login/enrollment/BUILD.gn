@@ -43,7 +43,6 @@ static_library("enrollment") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/handlers",
-    "//chrome/browser/ash/profiles",
     "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/attestation",

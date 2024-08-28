@@ -41,7 +41,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/login/users:test_support",
-    "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/image_decoder",
     "//chrome/browser/ui/ash/wallpaper",

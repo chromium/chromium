@@ -81,7 +81,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/boot_phase_monitor",
-    "//chrome/browser/ash/arc/idle_manager",
     "//chrome/browser/ash/arc/idle_manager:test_support",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",

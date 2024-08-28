@@ -1180,7 +1180,6 @@ source_set("app_service_browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      #"//chrome/browser/ash/fileapi",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ui/ash/shelf",
     ]

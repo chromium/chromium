@@ -67,7 +67,6 @@ static_library("test_support") {
   deps = [
     ":time_limits",
     "//base",
-    "//chrome/browser/ash/child_accounts/parent_access_code:test_support",
     "//testing/gtest",
   ]
 }

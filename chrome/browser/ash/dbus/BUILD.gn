@@ -54,7 +54,6 @@ static_library("dbus") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/dbus/vm",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",

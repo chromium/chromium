@@ -344,8 +344,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/input_method:test_support",
-    "//chrome/browser/ash/input_method/japanese",
-    "//chrome/browser/ash/input_method/japanese:unit_tests",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/ash",
@@ -425,6 +423,9 @@ source_set("unit_tests") {
     "//ui/views:test_support",
     "//ui/wm",
     "//url",
+
+    # Tests from subdirs:
+    "//chrome/browser/ash/input_method/japanese:unit_tests",
   ]
 }
 

@@ -134,7 +134,6 @@ source_set("browser_tests") {
     "//apps",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/note_taking",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

@@ -61,8 +61,6 @@ static_library("extensions") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/extensions/language_packs",
-    "//chrome/browser/ash/extensions/speech",
-    "//chrome/browser/ash/extensions/users_private",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/input_method",
@@ -95,7 +93,6 @@ static_library("extensions") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ash/extensions/users_private",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ui/ash/media_client",
@@ -134,7 +131,6 @@ source_set("unit_tests") {
 
   deps = [
     ":extensions",
-    ":test_support",
     "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/ash/app_list/arc:test_support",

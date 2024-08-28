@@ -4788,6 +4788,7 @@ if (!is_android) {
         "//chrome/browser/apps/link_capturing",
         "//chrome/browser/ash:browser_tests",
         "//chrome/browser/ash/app_list/search/test:browser_test_support",
+        "//chrome/browser/ash/app_mode/web_app",
         "//chrome/browser/ash/app_restore",
         "//chrome/browser/ash/app_restore:browser_tests",
         "//chrome/browser/ash/app_restore:test_support",

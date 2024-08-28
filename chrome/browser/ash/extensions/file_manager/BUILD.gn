@@ -158,7 +158,6 @@ static_library("file_manager") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/arc",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/exo",
     "//chrome/browser/ash/policy/dlp",

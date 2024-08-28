@@ -96,7 +96,6 @@ static_library("signin") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/ui/webui/ash/login",
   ]
 }

@@ -61,7 +61,6 @@ source_set("browser_tests") {
   sources = [ "managed_screensaver_browsertest.cc" ]
 
   deps = [
-    ":ambient",
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
