@@ -36,7 +36,8 @@ void FakeBlobDataHandle::Read(mojo::ScopedDataPipeProducerHandle producer,
   // This should all succeed.
   DCHECK_EQ(MOJO_RESULT_OK, result);
 
-  std::move(callback).Run(base::checked_cast<int>(bytes.size()));
+  // The callback expects a `net::Error` only and not the number of bytes read.
+  std::move(callback).Run(net::OK);
 }
 
 uint64_t FakeBlobDataHandle::GetSideDataSize() const {

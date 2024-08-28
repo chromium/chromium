@@ -170,15 +170,14 @@ void MojoBlobReader::StartReading() {
                int result) {
               if (!reader)
                 return;
-              // NotifyCompletedAndDeleteIfNeeded takes a net error that
-              // doesn't include bytes read, so pass along the net error
-              // and not the |result| from the callback.
+              // `net_error()` is not set on `BlobReader` in the optimized path
+              // to read a single data item; pass on `result` directly.
+              DCHECK_LE(result, 0);
               if (result == net::OK) {
                 reader->total_written_bytes_ += num_bytes;
                 reader->delegate_->DidRead(num_bytes);
               }
-              auto error = reader->blob_reader_->net_error();
-              reader->NotifyCompletedAndDeleteIfNeeded(error);
+              reader->NotifyCompletedAndDeleteIfNeeded(result);
             },
             weak_factory_.GetWeakPtr(), num_bytes));
     return;
