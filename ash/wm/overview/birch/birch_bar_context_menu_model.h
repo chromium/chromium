@@ -27,6 +27,7 @@ class ASH_EXPORT BirchBarContextMenuModel : public ui::SimpleMenuModel {
     kDriveSuggestions,      // Show/hide the Drive related suggestions.
     kChromeTabSuggestions,  // Show/hide Chrome tab suggestions.
     kMediaSuggestions,      // Show/hide media playing tab suggestions.
+    kCoralSuggestions,      // Show/hide coral suggestions.
     kReset,                 // Reset preferences of all types of suggestions.
     kBarMenuEnd,
   };

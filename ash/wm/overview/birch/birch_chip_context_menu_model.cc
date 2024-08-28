@@ -76,6 +76,13 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_MEDIA_SUGGESTIONS),
           CreateIconForMenuItem(kForbidIcon));
       break;
+    case BirchSuggestionType::kCoral:
+      add_hide_suggestion_item();
+      // TODO(yulunwu) Replace with product name.
+      AddItemWithIcon(base::to_underlying(CommandId::kHideCoralSuggestions),
+                      u"Hide all coral suggestions",
+                      CreateIconForMenuItem(kForbidIcon));
+      break;
     default:
       break;
   }

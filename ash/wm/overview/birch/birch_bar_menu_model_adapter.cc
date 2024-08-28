@@ -68,6 +68,8 @@ BirchSuggestionType CommandIdToSuggestionType(int command_id) {
       return BirchSuggestionType::kChromeTab;
     case base::to_underlying(CommandId::kMediaSuggestions):
       return BirchSuggestionType::kMedia;
+    case base::to_underlying(CommandId::kCoralSuggestions):
+      return BirchSuggestionType::kCoral;
     default:
       break;
   }
@@ -148,7 +150,8 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
     case base::to_underlying(CommandId::kCalendarSuggestions):
     case base::to_underlying(CommandId::kDriveSuggestions):
     case base::to_underlying(CommandId::kChromeTabSuggestions):
-    case base::to_underlying(CommandId::kMediaSuggestions): {
+    case base::to_underlying(CommandId::kMediaSuggestions):
+    case base::to_underlying(CommandId::kCoralSuggestions): {
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
       // Note that we cannot directly added a checkbox, since `MenuItemView`
       // will align the newly added children to the right side of its label. We

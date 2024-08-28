@@ -396,6 +396,10 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kMedia,
                                                   /*show=*/false);
       break;
+    case base::to_underlying(CommandId::kHideCoralSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kCoral,
+                                                  /*show=*/false);
+      break;
   }
 }
 

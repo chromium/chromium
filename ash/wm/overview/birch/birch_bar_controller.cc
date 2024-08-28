@@ -94,7 +94,8 @@ BirchBarController::BirchBarController(bool is_informed_restore)
   for (const auto& suggestion_pref :
        {prefs::kBirchUseCalendar, prefs::kBirchUseWeather,
         prefs::kBirchUseFileSuggest, prefs::kBirchUseChromeTabs,
-        prefs::kBirchUseLostMedia, prefs::kBirchUseReleaseNotes}) {
+        prefs::kBirchUseLostMedia, prefs::kBirchUseReleaseNotes,
+        prefs::kBirchUseCoral}) {
     customize_suggestions_pref_registrar_.Add(
         suggestion_pref,
         base::BindRepeating(
@@ -236,7 +237,7 @@ void BirchBarController::ExecuteCommand(int command_id, int event_flags) {
       for (const auto& pref_name :
            {prefs::kBirchUseWeather, prefs::kBirchUseCalendar,
             prefs::kBirchUseFileSuggest, prefs::kBirchUseChromeTabs,
-            prefs::kBirchUseLostMedia}) {
+            prefs::kBirchUseLostMedia, prefs::kBirchUseCoral}) {
         auto* pref_service = GetPrefService();
         suggestion_pref_changed |= !pref_service->GetBoolean(pref_name);
         pref_service->SetBoolean(pref_name, true);

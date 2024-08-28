@@ -594,6 +594,16 @@ void BirchModel::OverrideWeatherProviderForTest(
   weather_provider_ = std::move(weather_provider);
 }
 
+BirchDataProvider* BirchModel::GetCoralProviderForTest() {
+  return coral_provider_.get();
+}
+
+void BirchModel::OverrideCoralProviderForTest(
+    std::unique_ptr<BirchDataProvider> coral_provider) {
+  CHECK(coral_provider_);
+  coral_provider_ = std::move(coral_provider);
+}
+
 void BirchModel::OverrideClockForTest(base::Clock* clock) {
   clock_override_ = clock;
 }
