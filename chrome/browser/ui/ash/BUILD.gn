@@ -10,8 +10,6 @@ assert(is_chromeos_ash)
 
 static_library("ash") {
   sources = [
-    "app_icon_color_cache.cc",
-    "app_icon_color_cache.h",
     "arc_custom_tab_modal_dialog_host.cc",
     "arc_custom_tab_modal_dialog_host.h",
     "arc_open_url_delegate_impl.cc",
@@ -303,7 +301,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "app_icon_color_cache_unittest.cc",
     "arc_vm_data_migration_confirmation_dialog_unittest.cc",
     "window_pin_util_ash_unittest.cc",
   ]
@@ -347,6 +344,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/accessibility:unit_tests",
     "//chrome/browser/ui/ash/annotator:unit_tests",
     "//chrome/browser/ui/ash/app_access:unit_tests",
+    "//chrome/browser/ui/ash/app_icon_color_cache:unit_tests",
     "//chrome/browser/ui/ash/assistant:unit_tests",
     "//chrome/browser/ui/ash/birch:unit_tests",
     "//chrome/browser/ui/ash/boca:unit_tests",
