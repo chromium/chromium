@@ -5680,32 +5680,32 @@
   {
     "name": "launcher-local-image-search",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "launcher-local-image-search-confidence",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "launcher-local-image-search-ica",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "launcher-local-image-search-ocr",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "launcher-local-image-search-on-core",
     "owners": ["chenjih@google.com", "chromeos-launcher-search@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "launcher-local-image-search-relevance",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "launcher-manatee-for-keyboard-shortcuts",
@@ -5720,7 +5720,7 @@
   {
     "name": "launcher-search-control",
     "owners": ["chenjih@google.com", "chromeos-launcher-search@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "launcher-system-info-answer-cards",
@@ -7296,7 +7296,7 @@
   {
     "name": "productivity-launcher-image-search",
     "owners": [ "wcwang@chromium.org", "yulunwu@chromium.org","cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "profiles-reordering",
