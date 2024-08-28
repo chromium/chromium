@@ -590,11 +590,11 @@ PickerModeType PickerController::GetMode() {
 void PickerController::OnViewIsDeleting(views::View* view) {
   view_observation_.Reset();
 
-  model_.reset();
   feature_usage_metrics_.StopUsage();
   session_metrics_.reset();
   emoji_suggester_.reset();
   emoji_history_model_.reset();
+  model_.reset();
 }
 
 void PickerController::FetchFileThumbnail(const base::FilePath& path,
