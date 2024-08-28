@@ -1211,6 +1211,12 @@ class CONTENT_EXPORT InterestGroupAuction
       std::string ad_slot,
       scoped_refptr<HeaderDirectFromSellerSignals::Result> signals);
 
+  // For metrics only -- update `interest_groups_bytes_for_metrics_` and
+  // `ads_and_ad_components_bytes_for_metrics_` based on the currently loaded
+  // `interest_groups`.
+  void UpdateIgSizeMetrics(
+      const std::vector<SingleStorageInterestGroup>& interest_groups);
+
   // For associating various events with a particular auction. Note that
   // component auctions have their own.
   const std::string devtools_auction_id_;
@@ -1471,6 +1477,13 @@ class CONTENT_EXPORT InterestGroupAuction
       score_ad_receivers_;
 
   GetDataDecoderCallback get_data_decoder_callback_;
+
+  // For metrics only -- stores the size of interest groups and their internal
+  // ads and ad components, respectively, as computed by EstimateSize(). Only
+  // stores for the current auction; if this is the parent auction of component
+  // auctions, their sizes are not included.
+  size_t interest_groups_bytes_for_metrics_ = 0u;
+  size_t ads_and_ad_components_bytes_for_metrics_ = 0u;
 
   base::WeakPtrFactory<InterestGroupAuction> weak_ptr_factory_{this};
 };

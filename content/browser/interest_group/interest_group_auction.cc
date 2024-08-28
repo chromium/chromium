@@ -4133,6 +4133,11 @@ void InterestGroupAuction::OnInterestGroupRead(
     }
   }
 
+  // Track interest group memory consumption for metrics. This is done before
+  // dropping interest groups to get a ceiling estimate of max memory
+  // consumption for ads and adComponents at auction.
+  UpdateIgSizeMetrics(interest_groups);
+
   // Ignore interest groups with no bidding script or no ads.
   std::erase_if(interest_groups, [](const SingleStorageInterestGroup& bidder) {
     return !bidder->interest_group.bidding_url || !bidder->interest_group.ads ||
@@ -4208,11 +4213,22 @@ void InterestGroupAuction::OnOneLoadCompleted() {
     if (num_owners_loaded_ > 0) {
       size_t num_interest_groups = NumPotentialBidders();
       size_t num_sellers_with_bidders = 0;
+      size_t total_interest_group_bytes_for_metrics = 0u;
+      size_t total_ads_and_ad_components_bytes_for_metrics = 0u;
       for (const auto& [unused, component] : component_auctions_) {
         if (!component->buyer_helpers_.empty()) {
           ++num_sellers_with_bidders;
         }
+        total_interest_group_bytes_for_metrics +=
+            component->interest_groups_bytes_for_metrics_;
+        total_ads_and_ad_components_bytes_for_metrics +=
+            component->ads_and_ad_components_bytes_for_metrics_;
       }
+      base::UmaHistogramMemoryKB("Ads.InterestGroup.AtAuctionTotalSize.Groups",
+                                 total_interest_group_bytes_for_metrics / 1024);
+      base::UmaHistogramMemoryKB(
+          "Ads.InterestGroup.AtAuctionTotalSize.AdsAndAdComponents",
+          total_ads_and_ad_components_bytes_for_metrics / 1024);
 
       // If the top-level seller either has interest groups itself, or any of
       // the component auctions do, then the top-level seller also has
@@ -5634,6 +5650,27 @@ void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
     }
     OnScoringDependencyDone();
     ScoreQueuedBidsIfReady();
+  }
+}
+
+void InterestGroupAuction::UpdateIgSizeMetrics(
+    const std::vector<SingleStorageInterestGroup>& interest_groups) {
+  for (const SingleStorageInterestGroup& group : interest_groups) {
+    interest_groups_bytes_for_metrics_ += group->interest_group.EstimateSize();
+
+    if (group->interest_group.ads) {
+      for (const blink::InterestGroup::Ad& ad : *group->interest_group.ads) {
+        ads_and_ad_components_bytes_for_metrics_ += ad.EstimateSize();
+      }
+    }
+
+    if (group->interest_group.ad_components) {
+      for (const blink::InterestGroup::Ad& ad_components :
+           *group->interest_group.ad_components) {
+        ads_and_ad_components_bytes_for_metrics_ +=
+            ad_components.EstimateSize();
+      }
+    }
   }
 }
 

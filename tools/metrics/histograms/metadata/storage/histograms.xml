@@ -739,6 +739,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.InterestGroup.AdProtoCompressionTime" units="ms"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the time taken to compress the ad proto. Recorded each time the
+    AdProto is compressed, including both during interest group insertion, and
+    database migration from older uncompressed versions. Includes both ads and
+    ad components.
+  </summary>
+</histogram>
+
 <histogram name="Storage.InterestGroup.AdProtoDecompressionOutcome"
     enum="AdProtoDecompressionOutcome" expires_after="2025-01-05">
   <owner>caraitto@chromium.org</owner>
@@ -746,6 +758,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the outcome of interest group AdProto decompression, recorded on
     each decompression attempt. Includes both ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoDecompressionTime" units="ms"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the outcome of interest group AdProto decompression, recorded on
+    each successful decompression attempt. Includes both ads and ad components.
   </summary>
 </histogram>
 

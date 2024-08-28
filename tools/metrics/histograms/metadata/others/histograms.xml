@@ -514,6 +514,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.AtAuctionTotalSize.{Type}" units="bytes"
+    expires_after="2024-11-17">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The total size of all {Type} loaded for a given auction (including all
+    component auctions, if any), as reported by EstimateSize(). Reported after
+    loading completes for a non-component auction or parent auction of component
+    auction(s). This is a high ceiling estimate as it includes interest groups
+    that are filtered from the auction (no bidding URL / ads, missing seller
+    capabilities, prioritization, etc.) to attempt to gague potential peak
+    memory consumption by interest groups.
+  </summary>
+  <token key="Type">
+    <variant name="AdsAndAdComponents"
+        summary="ads and ad components of interest groups"/>
+    <variant name="Groups" summary="interest groups"/>
+  </token>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.AdditionalBids.DecodeLatency"
     units="ms" expires_after="2024-10-28">
   <owner>orrb@google.com</owner>

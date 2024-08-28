@@ -462,7 +462,10 @@ std::string Serialize(
   std::string serialized_ads = SerializeUncompressed(ads);
 
   std::string compressed;
+  base::TimeTicks start = base::TimeTicks::Now();
   snappy::Compress(serialized_ads.data(), serialized_ads.size(), &compressed);
+  base::UmaHistogramTimes("Storage.InterestGroup.AdProtoCompressionTime",
+                          base::TimeTicks::Now() - start);
   if (serialized_ads.size() > 0u) {
     base::UmaHistogramPercentage(
         "Storage.InterestGroup.AdProtoCompressionRatio",
@@ -569,6 +572,7 @@ DecompressAndDeserializeInterestGroupAdVectorProto(
     const PassKey& passkey,
     const std::string& compressed) {
   std::string serialized_ads;
+  base::TimeTicks start = base::TimeTicks::Now();
   if (!snappy::Uncompress(compressed.data(), compressed.size(),
                           &serialized_ads)) {
     base::UmaHistogramEnumeration(
@@ -576,10 +580,10 @@ DecompressAndDeserializeInterestGroupAdVectorProto(
         AdProtoDecompressionOutcome::kFailure);
     return std::nullopt;
   }
-
-  base::UmaHistogramEnumeration(
-      "Storage.InterestGroup.AdProtoDecompressionOutcome",
-      AdProtoDecompressionOutcome::kSuccess);
+  UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoDecompressionTime",
+                      base::TimeTicks::Now() - start);
+  UMA_HISTOGRAM_ENUMERATION("Storage.InterestGroup.AdProtoDecompressionOutcome",
+                            AdProtoDecompressionOutcome::kSuccess);
   return DeserializeInterestGroupAdVectorProto(passkey, serialized_ads);
 }
 
@@ -1210,34 +1214,40 @@ bool UpgradeV29SchemaToV30(sql::Database& db, sql::MetaTable& meta_table) {
     // compressed with Snappy.
     std::string compressed_ads_pb;
     base::span<const uint8_t> ads_pb = select_prev_groups.ColumnBlob(2);
+    base::TimeTicks start_ads = base::TimeTicks::Now();
     snappy::Compress(reinterpret_cast<const char*>(ads_pb.data()),
                      ads_pb.size(), &compressed_ads_pb);
+    UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoCompressionTime",
+                        base::TimeTicks::Now() - start_ads);
     update_group.BindBlob(0, base::as_byte_span(compressed_ads_pb));
     if (ads_pb.size() > 0u) {
       base::UmaHistogramPercentage(
           "Storage.InterestGroup.AdProtoCompressionRatio",
           compressed_ads_pb.size() * 100 / ads_pb.size());
     }
-    base::UmaHistogramCounts1M("Storage.InterestGroup.AdProtoSizeUncompressed",
-                               ads_pb.size());
-    base::UmaHistogramCounts1M("Storage.InterestGroup.AdProtoSizeCompressed",
-                               compressed_ads_pb.size());
+    UMA_HISTOGRAM_COUNTS_1M("Storage.InterestGroup.AdProtoSizeUncompressed",
+                            ads_pb.size());
+    UMA_HISTOGRAM_COUNTS_1M("Storage.InterestGroup.AdProtoSizeCompressed",
+                            compressed_ads_pb.size());
 
     std::string compressed_ad_components_pb;
     base::span<const uint8_t> ad_components_pb =
         select_prev_groups.ColumnBlob(3);
+    base::TimeTicks start_ad_components = base::TimeTicks::Now();
     snappy::Compress(reinterpret_cast<const char*>(ad_components_pb.data()),
                      ad_components_pb.size(), &compressed_ad_components_pb);
+    UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoCompressionTime",
+                        base::TimeTicks::Now() - start_ad_components);
     update_group.BindBlob(1, base::as_byte_span(compressed_ad_components_pb));
     if (ad_components_pb.size() > 0u) {
       base::UmaHistogramPercentage(
           "Storage.InterestGroup.AdProtoCompressionRatio",
           compressed_ad_components_pb.size() * 100 / ad_components_pb.size());
     }
-    base::UmaHistogramCounts1M("Storage.InterestGroup.AdProtoSizeUncompressed",
-                               ad_components_pb.size());
-    base::UmaHistogramCounts1M("Storage.InterestGroup.AdProtoSizeCompressed",
-                               compressed_ad_components_pb.size());
+    UMA_HISTOGRAM_COUNTS_1M("Storage.InterestGroup.AdProtoSizeUncompressed",
+                            ad_components_pb.size());
+    UMA_HISTOGRAM_COUNTS_1M("Storage.InterestGroup.AdProtoSizeCompressed",
+                            compressed_ad_components_pb.size());
 
     update_group.BindString(2, select_prev_groups.ColumnString(0));
     update_group.BindString(3, select_prev_groups.ColumnString(1));
