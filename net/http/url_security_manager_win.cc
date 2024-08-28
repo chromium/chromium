@@ -7,6 +7,8 @@
 #include <urlmon.h>
 #include <wrl/client.h>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -100,7 +102,9 @@ bool URLSecurityManagerWin::CanUseDefaultCredentials(
       // TODO(wtc): we should fail the authentication.
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
+      LOG(ERROR) << "Unexpected policy: " << policy;
+      SCOPED_CRASH_KEY_NUMBER("CanUseDefaultCredentials", "policy", policy);
+      base::debug::DumpWithoutCrashing();
       return false;
   }
 }
