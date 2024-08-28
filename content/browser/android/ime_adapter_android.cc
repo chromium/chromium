@@ -11,8 +11,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -430,9 +432,8 @@ void ImeAdapterAndroid::HandleStylusWritingGestureAction(
     return;
   blink::mojom::StylusWritingGestureDataPtr gesture_data;
   if (!blink::mojom::StylusWritingGestureData::Deserialize(
-          static_cast<jbyte*>(
-              env->GetDirectBufferAddress(jgesture_data_byte_buffer.obj())),
-          env->GetDirectBufferCapacity(jgesture_data_byte_buffer.obj()),
+          base::android::JavaByteBufferToSpan(env,
+                                              jgesture_data_byte_buffer.obj()),
           &gesture_data)) {
     NOTREACHED_IN_MIGRATION();
     return;

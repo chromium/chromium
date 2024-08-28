@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/webauth/client_data_json.h"
+
 #include <jni.h>
+
 #include <cstddef>
 #include <cstring>
 #include <utility>
@@ -10,10 +13,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "content/browser/webauth/client_data_json.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -31,15 +34,13 @@ void DeserializePaymentOptionsFromJavaByteBuffer(
     *out = nullptr;
     return;
   }
-  jbyte* buf_in =
-      static_cast<jbyte*>(env->GetDirectBufferAddress(jbuffer.obj()));
-  jlong buf_size = env->GetDirectBufferCapacity(jbuffer.obj());
-  if (buf_size == 0) {
+  base::span<const uint8_t> span =
+      base::android::JavaByteBufferToSpan(env, jbuffer.obj());
+  if (span.empty()) {
     *out = nullptr;
     return;
   }
-  bool success =
-      blink::mojom::PaymentOptions::Deserialize(buf_in, buf_size, out);
+  bool success = blink::mojom::PaymentOptions::Deserialize(span, out);
   DCHECK(success);
 }
 
