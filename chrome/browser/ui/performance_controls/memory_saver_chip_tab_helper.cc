@@ -78,7 +78,7 @@ bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
   bool const tab_discard_time_over_threshold =
       pre_discard_resource_usage &&
       (base::LiveTicks::Now() -
-       pre_discard_resource_usage->discard_liveticks()) >
+       pre_discard_resource_usage->discard_live_ticks()) >
           kExpandedMemorySaverChipDiscardedDuration;
 
   if (savings_over_threshold && expanded_chip_not_shown_recently &&
