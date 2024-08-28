@@ -30,15 +30,16 @@ class CanonicalTopic;
 // 1. Update kMaxValue to match it.
 // 2. Update `PrivacySandboxAttestationsGatedAPIProto` in
 //    `privacy_sandbox_attestations.proto`.
-// 3. Update `AllowAPI` in `privacy_sandbox_attestations_parser.cc`.
+// 3. Update `InsertAPI` in `privacy_sandbox_attestations_parser.cc`.
 enum class PrivacySandboxAttestationsGatedAPI {
   kTopics,
   kProtectedAudience,
   kPrivateAggregation,
   kAttributionReporting,
   kSharedStorage,
+  kLocalUnpartitionedDataAccess,
 
-  kMaxValue = kSharedStorage,
+  kMaxValue = kLocalUnpartitionedDataAccess,
 };
 
 // A service which acts as a intermediary between Privacy Sandbox APIs and the
