@@ -973,6 +973,9 @@ TEST_F(FilePathWatcherTest, DirectoryChain) {
   delegate.RunUntilEventsMatch(event_expecter);
 }
 
+// Windows doesn't allow the target directory to be deleted while there is a
+// FilePathWatcher watching it.
+#if !BUILDFLAG(IS_WIN)
 TEST_F(FilePathWatcherTest, DisappearingDirectory) {
   FilePathWatcher watcher;
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
@@ -995,6 +998,7 @@ TEST_F(FilePathWatcherTest, DisappearingDirectory) {
         // BUILDFLAG(IS_ANDROID)
   delegate.RunUntilEventsMatch(event_expecter);
 }
+#endif
 
 // Tests that a file that is deleted and reappears is tracked correctly.
 TEST_F(FilePathWatcherTest, DeleteAndRecreate) {
@@ -2307,6 +2311,12 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedDirectory) {
   ASSERT_TRUE(SetupWatchWithChangeInfo(test_file(), &watcher, &delegate,
                                        GetWatchOptions()));
 
+#if BUILDFLAG(IS_WIN)
+  // Windows doesn't allow the target directory to be deleted while there is a
+  // FilePathWatcher watching it.
+  ASSERT_FALSE(DeletePathRecursively(test_file()));
+  delegate.SpinAndExpectNoEvents();
+#else
   ASSERT_TRUE(DeletePathRecursively(test_file()));
 
   const auto matcher = testing::ElementsAre(testing::AllOf(
@@ -2314,6 +2324,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedDirectory) {
       IsType(FilePathWatcher::ChangeType::kDeleted),
       HasModifiedPath(test_file()), HasNoMovedFromPath()));
   delegate.RunUntilEventsMatch(matcher);
+#endif
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, MultipleWatchersSingleFile) {
@@ -2417,6 +2428,9 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryChain) {
   delegate.RunUntilEventsMatch(matcher);
 }
 
+// Windows doesn't allow the target directory to be deleted while there is a
+// FilePathWatcher watching it.
+#if !BUILDFLAG(IS_WIN)
 TEST_P(FilePathWatcherWithChangeInfoTest, DisappearingDirectory) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   base::FilePath file(dir.AppendASCII("file"));
@@ -2451,6 +2465,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DisappearingDirectory) {
   ASSERT_TRUE(DeletePathRecursively(dir));
   delegate.RunUntilEventsMatch(matcher);
 }
+#endif
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DeleteAndRecreate) {
 #if BUILDFLAG(IS_MAC)
@@ -3228,33 +3243,22 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NestedDirectoryInDirectory) {
   delegate.RunUntilEventsMatch(matcher);
 }
 
+// Windows doesn't allow the target directory to be deleted while there is a
+// FilePathWatcher watching it.
+#if !BUILDFLAG(IS_WIN)
 TEST_P(FilePathWatcherWithChangeInfoTest, DeleteDirectoryRecursively) {
   base::FilePath grandparent(temp_dir_.GetPath());
   base::FilePath parent(grandparent.AppendASCII("parent"));
   base::FilePath child(parent.AppendASCII("child"));
   base::FilePath grandchild(child.AppendASCII("grandchild"));
 
-#if BUILDFLAG(IS_WIN)
-  // There are modified events on directories that don't get filtered because
-  // the directories get deleted too fast before we can see they're directories.
-  const auto each_event_matcher = testing::Each(testing::AllOf(
-      testing::Not(HasErrored()),
-      testing::AnyOf(IsType(FilePathWatcher::ChangeType::kDeleted),
-                     IsType(FilePathWatcher::ChangeType::kModified)),
-      HasNoMovedFromPath()));
-#else
   const auto each_event_matcher = testing::Each(testing::AllOf(
       testing::Not(HasErrored()), IsType(FilePathWatcher::ChangeType::kDeleted),
       HasNoMovedFromPath()));
-#endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // Windows can lose some events that happen before the watched directory is
-  // deleted. The only thing we can guarantee is that the watched directory will
-  // be reported as deleted.
-  //
-  // Similarly on Mac, we can only guarantee that the watched directory will be
-  // reported as deleted.
+#if BUILDFLAG(IS_MAC)
+  // Mac can only guarantee that the watched directory will be reported as
+  // deleted.
   EventListMatcher sequence_matcher = testing::IsSupersetOf(
       {testing::AllOf(HasPath(parent), IsDeletedDirectory())});
 #else
@@ -3283,7 +3287,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteDirectoryRecursively) {
          testing::AllOf(HasPath(report_modified_path() ? child : parent),
                         IsDirectory(), HasModifiedPath(child))});
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   ASSERT_TRUE(CreateDirectory(parent));
@@ -3298,6 +3302,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteDirectoryRecursively) {
   ASSERT_TRUE(DeletePathRecursively(grandparent));
   delegate.RunUntilEventsMatch(matcher);
 }
+#endif
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
