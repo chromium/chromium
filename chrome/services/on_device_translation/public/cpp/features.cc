@@ -7,7 +7,11 @@
 namespace on_device_translation {
 
 BASE_FEATURE(kUseTranslateKitForTranslationAPI,
-             "UseTranslatekitForTranslationAPI",
+             "UseTranslateKitForTranslationAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableTranslateKitComponent,
+             "kEnableTranslateKitComponent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace on_device_translation

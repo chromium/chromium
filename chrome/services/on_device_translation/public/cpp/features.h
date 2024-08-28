@@ -11,6 +11,9 @@ namespace on_device_translation {
 
 BASE_DECLARE_FEATURE(kUseTranslateKitForTranslationAPI);
 
+// Enables the TranslateKit Component.
+BASE_DECLARE_FEATURE(kEnableTranslateKitComponent);
+
 const char kTranslateKitDir[] = "translate-kit-dir";
 
 }  // namespace on_device_translation

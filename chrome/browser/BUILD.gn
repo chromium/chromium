@@ -3545,6 +3545,8 @@ static_library("browser") {
       "component_updater/soda_component_installer.h",
       "component_updater/soda_language_pack_component_installer.cc",
       "component_updater/soda_language_pack_component_installer.h",
+      "component_updater/translate_kit_component_installer.cc",
+      "component_updater/translate_kit_component_installer.h",
       "component_updater/zxcvbn_data_component_installer.cc",
       "component_updater/zxcvbn_data_component_installer.h",
       "content_settings/generated_cookie_prefs.cc",
