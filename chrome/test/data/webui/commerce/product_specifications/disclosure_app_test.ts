@@ -11,6 +11,8 @@ import type {ProductSpecificationsSet} from 'chrome://compare/shopping_service.m
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -23,10 +25,12 @@ declare const chrome: {
 
 suite('DisclosureAppTest', () => {
   let app: DisclosureAppElement;
+  let metrics: MetricsTracker;
   const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
   const fakeUserEmail = 'test@gmail.com';
 
   setup(async () => {
+    metrics = fakeMetricsPrivate();
     shoppingServiceApi.reset();
     BrowserProxyImpl.setInstance(shoppingServiceApi);
 
@@ -36,6 +40,10 @@ suite('DisclosureAppTest', () => {
 
     loadTimeData.overrideValues({userEmail: fakeUserEmail});
     await flushTasks();
+  });
+
+  test('records metrics for disclosure show', async () => {
+    assertEquals(1, metrics.count('Commerce.Compare.FirstRunExperience.Shown'));
   });
 
   test('disclosure has 4 items', async () => {
@@ -91,6 +99,8 @@ suite('DisclosureAppTest', () => {
       chromeSend(message, args);
     };
     chrome.send = mockChromeSend;
+    assertEquals(
+        0, metrics.count('Commerce.Compare.FirstRunExperience.LearnMore'));
 
     const learnMoreLinkElement = $$<HTMLElement>(app, '#learnMoreLink');
     assertTrue(!!learnMoreLinkElement);
@@ -98,6 +108,8 @@ suite('DisclosureAppTest', () => {
     assertTrue(!!link);
     link!.click();
 
+    assertEquals(
+        1, metrics.count('Commerce.Compare.FirstRunExperience.LearnMore'));
     // Received signal to close dialog.
     assertEquals(receivedMessage, 'dialogClose');
 
@@ -145,11 +157,15 @@ suite('DisclosureAppTest', () => {
       chromeSend(message, args);
     };
     chrome.send = mockChromeSend;
+    assertEquals(
+        0, metrics.count('Commerce.Compare.FirstRunExperience.Accept'));
 
     const acceptButton = $$<HTMLElement>(app, 'cr-button.action-button');
     assertTrue(!!acceptButton);
     acceptButton.click();
 
+    assertEquals(
+        1, metrics.count('Commerce.Compare.FirstRunExperience.Accept'));
     // Ensure browser is called to update prefs.
     assertEquals(
         1,
@@ -243,11 +259,15 @@ suite('DisclosureAppTest', () => {
       chromeSend(message, args);
     };
     chrome.send = mockChromeSend;
+    assertEquals(
+        0, metrics.count('Commerce.Compare.FirstRunExperience.Reject'));
 
     const declineButton = $$<HTMLElement>(app, 'cr-button.tonal-button');
     assertTrue(!!declineButton);
     declineButton.click();
 
+    assertEquals(
+        1, metrics.count('Commerce.Compare.FirstRunExperience.Reject'));
     // Ensure browser is called about declining the disclosure.
     assertEquals(
         1,

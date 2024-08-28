@@ -66,10 +66,14 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
   }
 
   override render() {
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.Compare.FirstRunExperience.Shown');
     return getHtml.bind(this)();
   }
 
   protected async acceptDisclosure_() {
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.Compare.FirstRunExperience.Accept');
     this.shoppingApi_.setProductSpecificationDisclosureAcceptVersion(
         ProductSpecificationsDisclosureVersion.kV1);
 
@@ -91,11 +95,15 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
   }
 
   protected declineDisclosure_() {
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.Compare.FirstRunExperience.Reject');
     this.shoppingApi_.declineProductSpecificationDisclosure();
     chrome.send('dialogClose');
   }
 
   protected onLearnMoreClicked_() {
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.Compare.FirstRunExperience.LearnMore');
     chrome.send('dialogClose');
   }
 }
