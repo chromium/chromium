@@ -163,21 +163,6 @@ void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {
 #endif
 }
 
-bool IsAuthenticatedSupervisedProfile(Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-  // Ignores unsupervised profiles.
-  if (IsPrimaryAccountSubjectToParentalControls(identity_manager) !=
-      signin::Tribool::kTrue) {
-    return false;
-  }
-  supervised_user::ChildAccountService* child_account_service =
-      ChildAccountServiceFactory::GetForProfile(profile);
-  return child_account_service->GetGoogleAuthState() ==
-         supervised_user::ChildAccountService::AuthState::AUTHENTICATED;
-}
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 std::string CreateReauthenticationInterstitial(
     content::NavigationHandle& navigation_handle,

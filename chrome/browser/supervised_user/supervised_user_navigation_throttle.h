@@ -17,6 +17,8 @@
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/navigation_throttle.h"
 
+class Profile;
+
 class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
  public:
   enum CallbackActions { kCancelNavigation = 0, kCancelWithInterstitial };
@@ -60,6 +62,10 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
                    supervised_user::FilteringBehavior behavior,
                    supervised_user::FilteringBehaviorReason reason,
                    bool uncertain);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  bool ShouldShowReauthInterstitial(const Profile* profile);
+#endif
 
   void OnInterstitialResult(CallbackActions continue_request,
                             bool already_requested_permission,

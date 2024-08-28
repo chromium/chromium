@@ -55,10 +55,6 @@ std::string GetAccountGivenName(Profile& profile);
 // of the user.
 void AssertChildStatusOfTheUser(Profile* profile, bool is_child);
 
-// Returns true if the profile has a supervised account authenticated in the
-// content area.
-bool IsAuthenticatedSupervisedProfile(Profile* profile);
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Returns the html content of the reauthentication interstitial for blocked
 // sites. This interstitial is associated with the given NavigationHandle.
