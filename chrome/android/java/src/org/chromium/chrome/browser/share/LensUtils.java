@@ -26,7 +26,6 @@ public class LensUtils {
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
     private static final String ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME =
             "orderShareImageBeforeLens";
-    private static final String AGSA_PACKAGE_NAME = "com.google.android.googlequicksearchbox";
 
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
 
@@ -171,7 +170,7 @@ public class LensUtils {
      * @return The version name of the Agsa package or null if it can't be found.
      */
     public static @Nullable String getAgsaVersionName() {
-        PackageInfo packageInfo = PackageUtils.getPackageInfo(AGSA_PACKAGE_NAME, 0);
+        PackageInfo packageInfo = PackageUtils.getPackageInfo(IntentHandler.PACKAGE_GSA, 0);
         return packageInfo == null ? null : packageInfo.versionName;
     }
 }
