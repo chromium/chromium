@@ -1,10 +1,5 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.
-[FAIL] Test penpointer capture in same-origin frame: Pointer down at inner frame and set pointer capture to outer frame should not capture.
-  assert_array_equals: Received events: innerFrame received pointermove,innerFrameDocument received pointerup lengths differ, expected array ["innerFrame received pointerdown", "innerFrame received pointermove", "innerFrameDocument received pointerup"] length 3, got ["innerFrame received pointermove", "innerFrameDocument received pointerup"] length 2
 [FAIL] Test penpointer capture in same-origin frame: Pointer down at outer frame body and set pointer capture.
   assert_equals: Expected pointerup event, but got lostpointercapture event instead expected "pointerup" but got "lostpointercapture"
-[FAIL] Test penpointer capture in same-origin frame: Pointer down at outer frame body and set pointer capture in inner frame should not capture.
-  assert_true: Timed out waiting for pointerup expected true got false
 Harness: the test ran to completion.
 
