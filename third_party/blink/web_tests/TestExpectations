@@ -2628,7 +2628,7 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
+crbug.com/362622397 [ Win ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
 crbug.com/362556327 [ Mac15-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
 crbug.com/362556327 [ Mac12-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
 crbug.com/362556327 [ Mac11 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
