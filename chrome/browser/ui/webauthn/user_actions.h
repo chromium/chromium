@@ -21,7 +21,7 @@ void RecordMultipleOptionsShown(
 // Emits what authenticator is displayed as the priority mechanism in the
 // priority WebAuthn credential selector dialog.
 void RecordPriorityOptionShown(
-    const std::vector<AuthenticatorRequestDialogModel::Mechanism>& mechanisms);
+    const AuthenticatorRequestDialogModel::Mechanism& mechanism);
 
 void RecordCancelClick();
 
