@@ -1260,9 +1260,9 @@ suite('dynamic color', () => {
     }
   }
 
-  setup(async () => {
+  setup(() => {
     // Reset to default state before each test to reduce dependencies.
-    await window.personalizationTestApi.reset();
+    window.personalizationTestApi.goToRootPath();
 
     // Disables transition animation for tests.
     setTransitionsEnabled(false);
@@ -1311,6 +1311,7 @@ suite('dynamic color', () => {
   });
 
   test('selects color scheme options', async () => {
+    await window.personalizationTestApi.setDefaultColorScheme();
     const toggleDescription =
         getDynamicColorElement().shadowRoot?.getElementById(
             'dynamicColorToggleDescription');
@@ -1364,6 +1365,7 @@ suite('dynamic color', () => {
   });
 
   test('selects static color options', async () => {
+    await window.personalizationTestApi.setDefaultColorScheme();
     const theme = getRouter()
                       .shadowRoot?.querySelector('personalization-main')
                       ?.shadowRoot?.querySelector<PersonalizationThemeElement>(
