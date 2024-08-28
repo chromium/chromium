@@ -22643,6 +22643,21 @@
             ]
         }
     ],
+    "StructuredMetricsStorageManager": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableStorageManager",
+                    "enable_features": [
+                        "EventStorageManager"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuppressToolbarCaptures": [
         {
             "platforms": [
