@@ -33,8 +33,7 @@ _PYL_HEADER_FMT = """\
 # Instead:
 # 1. Modify {star_file}
 # 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-pyl-files.py
-
+{extra_comments}
 {{
 {entries}
 }}
@@ -64,6 +63,7 @@ def _generate_gn_isolate_map_pyl(ctx):
         entries.append("  },")
     ctx.output["testing/gn_isolate_map.pyl"] = _PYL_HEADER_FMT.format(
         star_file = "//infra/config/targets/binaries.star and/or //infra/config/targets/tests.star (for tests defined using targets.tests.junit_test)",
+        extra_comments = "",
         entries = "\n".join(entries),
     )
 
@@ -303,6 +303,13 @@ def _generate_mixins_pyl(ctx):
 
     ctx.output["testing/mixins.pyl"] = _PYL_HEADER_FMT.format(
         star_file = "//infra/config/targets/mixins.star",
+        extra_comments = "\n".join([
+            "",
+            "# The copy of this file in //testing/buildbot is not read by generate_buildbot_json.py,",
+            "# but must be present for downstream uses. It can be kept in sync by running",
+            "# //infra/config/scripts/sync-pyl-files.py.",
+            "",
+        ]),
         entries = formatter.output(),
     )
 
@@ -330,6 +337,7 @@ def _generate_variants_pyl(ctx):
 
     ctx.output["testing/variants.pyl"] = _PYL_HEADER_FMT.format(
         star_file = "//infra/config/targets/variants.star",
+        extra_comments = "",
         entries = formatter.output(),
     )
 
@@ -493,6 +501,7 @@ def _generate_test_suites_pyl(ctx):
 
     ctx.output["testing/test_suites.pyl"] = _PYL_HEADER_FMT.format(
         star_file = "//infra/config/targets/basic_suites.star, //infra/config/targets/compound_suites.star and/or //infra/config/targets/matrix_compound_suites.star",
+        extra_comments = "",
         entries = formatter.output(),
     )
 

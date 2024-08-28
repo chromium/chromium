@@ -2,7 +2,6 @@
 # Instead:
 # 1. Modify //infra/config/targets/variants.star
 # 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-pyl-files.py
 
 {
   'AMD_RADEON_RX_5500_XT': {
