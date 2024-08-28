@@ -17293,6 +17293,24 @@
             ]
         }
     ],
+    "PinTimeoutSetup": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowPinTimeoutSetup",
+                        "CrOSLateBootEnableModernPin",
+                        "SeparatePasswordAndPinOnLogin",
+                        "WebAuthNAuthDialogMerge"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlusAddressCreateSuggestion": [
         {
             "platforms": [
