@@ -289,6 +289,14 @@ std::unique_ptr<ScopedSessionRefresher> AuthSessionStorageImpl::KeepAlive(
       new ScopedSessionRefresherImpl(weak_factory_.GetWeakPtr(), token));
 }
 
+bool AuthSessionStorageImpl::CheckHasKeepAliveForTesting(
+    const AuthProofToken& token) const {
+  auto data_it = tokens_.find(token);
+  return data_it == std::end(tokens_)
+             ? false
+             : data_it->second->keep_alive_counter >= 1;
+}
+
 void AuthSessionStorageImpl::OnSessionInvalidated(
     const AuthProofToken& token,
     std::unique_ptr<UserContext> context,
