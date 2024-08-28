@@ -77,7 +77,7 @@ class PushNotificationAccountContextManagerTest : public PlatformTest {
         TestChromeBrowserState::Builder());
 
     manager_ = [[PushNotificationAccountContextManager alloc]
-        initWithChromeBrowserStateManager:&browser_state_manager_];
+        initWithProfileManager:&browser_state_manager_];
   }
 
   ProfileAttributesStorageIOS* profile_attributes_storage() const {

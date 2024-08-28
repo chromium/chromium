@@ -16,9 +16,9 @@ one for the off-the-record session, and one per user created in the UI (at
 the time this document is written, there is only one user on iOS so at most
 there are two ChromeBrowserStates).
 
-The ChromeBrowserState objects are owned by the ChromeBrowserStateManager
-that can be accessed via the ApplicationContext. It is possible to access
-the off-the-record ChromeBrowserState from a non-incognito instance.
+The ChromeBrowserState objects are owned by the ProfileManagerIOS that can be
+accessed via the ApplicationContext. It is possible to access the off-the-record
+ChromeBrowserState from a non-incognito instance.
 
 Each ChromeBrowserState, including the off-the-record ChromeBrowserState,
 have a directory used to store some state (current session, settings, ...).

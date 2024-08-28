@@ -18,7 +18,7 @@
 class TestProfileManagerIOS;
 using TestChromeBrowserStateManager = TestProfileManagerIOS;
 
-// ChromeBrowserStateManager implementation for tests.
+// ProfileManagerIOS implementation for tests.
 //
 // Register itself with the TestApplicationContext on creation. Requires
 // the ApplicationContext's local State to be created before this object.

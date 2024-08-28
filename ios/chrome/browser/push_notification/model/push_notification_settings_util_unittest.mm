@@ -45,7 +45,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
     pref_service_ = test_chrome_browser_state->GetPrefs();
 
     manager_ = [[PushNotificationAccountContextManager alloc]
-        initWithChromeBrowserStateManager:&browser_state_manager_];
+        initWithProfileManager:&browser_state_manager_];
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
     // TODO(b/318863934): Remove flag when enabled by default.
     feature_list_.InitWithFeatures(

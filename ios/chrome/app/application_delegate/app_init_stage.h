@@ -31,10 +31,10 @@ enum InitStage {
 
   // The app is initializing the browser objects for the background handlers.
   // In particular this creates ChromeMain instances which initialises many
-  // low-level objects (such as PostTask, ChromeBrowserStateManager, named
-  // threads, ApplicationContext, ...). Using the corresponding features when
-  // the InitStage is below this stage is unsupported. Most likely, you want
-  // all new stages to be >= InitStageBrowserObjectsForBackgroundHandlers.
+  // low-level objects (such as PostTask, ProfileManagerIOS, named threads,
+  // ApplicationContext, ...). Using the corresponding features when the
+  // InitStage is below this stage is unsupported. Most likely, you want all new
+  // stages to be >= InitStageBrowserObjectsForBackgroundHandlers.
   InitStageBrowserObjectsForBackgroundHandlers,
 
   // TODO(crbug.com/353683675): All follow-up stage will eventually become

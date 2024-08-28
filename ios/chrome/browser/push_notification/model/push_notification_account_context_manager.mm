@@ -33,20 +33,19 @@ struct PermissionsPref {
 }  // namespace
 
 @implementation PushNotificationAccountContextManager {
-  // Used to retrieve BrowserStates located at a given path.
-  raw_ptr<ChromeBrowserStateManager> _chromeBrowserStateManager;
+  // Used to retrieve Profiles located at a given path.
+  raw_ptr<ProfileManagerIOS> _profileManager;
 
   // A dictionary that maps a user's GAIA ID to an unsigned integer representing
   // the number of times the account is signed in across BrowserStates.
   std::map<std::string, size_t> _contextMap;
 }
 
-- (instancetype)initWithChromeBrowserStateManager:
-    (ChromeBrowserStateManager*)manager {
+- (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager {
   self = [super init];
 
   if (self) {
-    _chromeBrowserStateManager = manager;
+    _profileManager = manager;
     ProfileAttributesStorageIOS* storage =
         manager->GetProfileAttributesStorage();
     const size_t numberOfProfiles = storage->GetNumberOfProfiles();
@@ -170,14 +169,13 @@ struct PermissionsPref {
 // applied.
 - (ChromeBrowserState*)chromeBrowserStateFrom:(const std::string&)gaiaID {
   ProfileAttributesStorageIOS* storage =
-      _chromeBrowserStateManager->GetProfileAttributesStorage();
+      _profileManager->GetProfileAttributesStorage();
 
   const size_t numberOfProfiles = storage->GetNumberOfProfiles();
   for (size_t i = 0; i < numberOfProfiles; i++) {
     ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
     if (gaiaID == attr.GetGaiaId()) {
-      return _chromeBrowserStateManager->GetBrowserStateByName(
-          attr.GetProfileName());
+      return _profileManager->GetBrowserStateByName(attr.GetProfileName());
     }
   }
 

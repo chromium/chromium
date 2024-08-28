@@ -54,9 +54,8 @@ TEST_F(DemographicsClientTest, GetSyncService) {
 
 TEST_F(DemographicsClientTest, GetNumberOfProfilesOnDisk) {
   DemographicsClient demographic_client;
-  // On ChromeBrowserState was created and registered with the
-  // ChromeBrowserStateManager, check the client returns the correct
-  // value.
+  // On ChromeBrowserState was created and registered with the ProfileManager,
+  // check the client returns the correct value.
   EXPECT_EQ(1, demographic_client.GetNumberOfProfilesOnDisk());
 }
 

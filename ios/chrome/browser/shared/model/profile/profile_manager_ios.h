@@ -15,11 +15,6 @@
 class ProfileAttributesStorageIOS;
 class ProfileManagerObserverIOS;
 
-// TODO(crbug.com/358356195): Remove this forward declaration and typedef when
-// no usage of ChromeBrowserStateManager remains.
-class ProfileManagerIOS;
-using ChromeBrowserStateManager = ProfileManagerIOS;
-
 // Provides methods that allow for various ways of creating non-incognito
 // ChromeBrowserState instances. Owns all instances that it creates.
 class ProfileManagerIOS {

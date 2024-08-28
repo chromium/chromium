@@ -36,7 +36,7 @@ BrowserReportGeneratorIOS::GetReportedProfiles() {
   std::vector<BrowserReportGenerator::ReportedProfileData> reportedProfileData;
   for (const auto* browser_state :
        GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates()) {
-    // ChromeBrowserStateManager should not return off-the-record BrowserStates.
+    // ProfileManager should not return off-the-record BrowserStates.
     CHECK(!browser_state->IsOffTheRecord());
     reportedProfileData.push_back({
         browser_state->GetStatePath().AsUTF8Unsafe(),

@@ -10,7 +10,7 @@
 
 class ProfileManagerIOS;
 
-// An observer that can be registered with a ChromeBrowserStateManager.
+// An observer that can be registered with a ProfileManagerIOS.
 class ProfileManagerObserverIOS : public base::CheckedObserver {
  public:
   // Called when the ProfileManagerIOS is destroyed. The observer must

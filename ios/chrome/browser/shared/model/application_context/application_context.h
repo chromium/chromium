@@ -72,9 +72,6 @@ class IOSChromeIOThread;
 class PrefService;
 
 class ProfileManagerIOS;
-// TODO(crbug.com/358356195): Remove this typedef when this header is updated
-// to use ProfileManagerIOS.
-using ChromeBrowserStateManager = ProfileManagerIOS;
 
 class PushNotificationService;
 class SafeBrowsingService;
