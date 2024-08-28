@@ -378,10 +378,10 @@ class HostContentSettingsMap : public content_settings::Observer,
   FRIEND_TEST_ALL_PREFIXES(
       OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
       TestExpiryEnforcement);
-  FRIEND_TEST_ALL_PREFIXES(IndexedHostContentSettingsMapTest,
+  FRIEND_TEST_ALL_PREFIXES(HostContentSettingsMapTest,
                            MigrateRequestingAndTopLevelOriginSettings);
   FRIEND_TEST_ALL_PREFIXES(
-      IndexedHostContentSettingsMapTest,
+      HostContentSettingsMapTest,
       MigrateRequestingAndTopLevelOriginSettingsResetsEmbeddedSetting);
 
   ~HostContentSettingsMap() override;

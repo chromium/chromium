@@ -138,11 +138,6 @@ BASE_DECLARE_FEATURE(kContentSettingsPartitioning);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const char kUseTestMetadataName[];
 
-// Enable indexing HostContentSettings to allow for faster lookups of content
-// setting rules.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kIndexedHostContentSettingsMap);
-
 }  // namespace features
 }  // namespace content_settings
 

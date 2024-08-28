@@ -5,7 +5,6 @@
 #include "services/network/tpcd/metadata/manager.h"
 
 #include <memory>
-#include <tuple>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -21,16 +20,12 @@ namespace network::tpcd::metadata {
 
 class ManagerTest : public ::testing::Test,
                     public ::testing::WithParamInterface<
-                        std::tuple</*kTpcdMetadataGrants*/ bool,
-                                   /*kIndexedHostContentSettingsMap*/ bool>> {
+                        /*kTpcdMetadataGrants*/ bool> {
  public:
   ManagerTest() = default;
   ~ManagerTest() override = default;
 
-  bool IsTpcdMetadataGrantsEnabled() { return std::get<0>(GetParam()); }
-  bool IsIndexedHostContentSettingsMapEnabled() {
-    return std::get<1>(GetParam());
-  }
+  bool IsTpcdMetadataGrantsEnabled() const { return GetParam(); }
 
   ContentSettingPatternSource CreateContentSetting(
       const std::string& primary_pattern_spec,
@@ -74,14 +69,6 @@ class ManagerTest : public ::testing::Test,
       disabled_features.push_back(net::features::kTpcdMetadataGrants);
     }
 
-    if (IsIndexedHostContentSettingsMapEnabled()) {
-      enabled_features.push_back(
-          content_settings::features::kIndexedHostContentSettingsMap);
-    } else {
-      disabled_features.push_back(
-          content_settings::features::kIndexedHostContentSettingsMap);
-    }
-
     scoped_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -93,7 +80,7 @@ class ManagerTest : public ::testing::Test,
 INSTANTIATE_TEST_SUITE_P(
     /* no label */,
     ManagerTest,
-    ::testing::Combine(::testing::Bool(), ::testing::Bool()));
+    ::testing::Bool());
 
 TEST_P(ManagerTest, SetGrants) {
   const std::string primary_pattern_spec = "https://www.der.com";
