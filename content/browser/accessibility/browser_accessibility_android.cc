@@ -217,11 +217,27 @@ bool BrowserAccessibilityAndroid::IsCollapsed() const {
 }
 
 bool BrowserAccessibilityAndroid::IsCollection() const {
-  return ui::IsTableLike(GetRole());
+  switch (GetRole()) {
+    case ax::mojom::Role::kDescriptionList:
+    case ax::mojom::Role::kList:
+    case ax::mojom::Role::kListBox:
+    case ax::mojom::Role::kTree:
+      return true;
+    default:
+      return ui::IsTableLike(GetRole());
+  }
 }
 
 bool BrowserAccessibilityAndroid::IsCollectionItem() const {
-  return ui::IsTableItem(GetRole());
+  switch (GetRole()) {
+    case ax::mojom::Role::kListBoxOption:
+    case ax::mojom::Role::kListItem:
+    case ax::mojom::Role::kTerm:
+    case ax::mojom::Role::kTreeItem:
+      return true;
+    default:
+      return ui::IsCellOrTableHeader(GetRole());
+  }
 }
 
 bool BrowserAccessibilityAndroid::IsContentInvalid() const {

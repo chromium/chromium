@@ -445,7 +445,7 @@ bool AccessibilitySectionPredicate(BrowserAccessibility* start,
 
 bool AccessibilityTablePredicate(BrowserAccessibility* start,
                                  BrowserAccessibility* node) {
-  return IsTableWithColumns(node->GetRole());
+  return IsTableLike(node->GetRole());
 }
 
 bool AccessibilityTextfieldPredicate(BrowserAccessibility* start,

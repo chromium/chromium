@@ -824,35 +824,6 @@ bool IsTableHeader(ax::mojom::Role role) {
   }
 }
 
-bool IsTableItem(ax::mojom::Role role) {
-  switch (role) {
-    case ax::mojom::Role::kListBoxOption:
-    case ax::mojom::Role::kListItem:
-    case ax::mojom::Role::kTerm:
-    case ax::mojom::Role::kTreeItem:
-      return true;
-    default:
-      return IsCellOrTableHeader(role);
-  }
-}
-
-#if BUILDFLAG(IS_ANDROID)
-bool IsTableLike(const ax::mojom::Role role) {
-  switch (role) {
-    case ax::mojom::Role::kGrid:
-    case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kList:
-    case ax::mojom::Role::kListBox:
-    case ax::mojom::Role::kListGrid:
-    case ax::mojom::Role::kTable:
-    case ax::mojom::Role::kTree:
-    case ax::mojom::Role::kTreeGrid:
-      return true;
-    default:
-      return false;
-  }
-}
-#else
 bool IsTableLike(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kGrid:
@@ -866,27 +837,12 @@ bool IsTableLike(const ax::mojom::Role role) {
       return false;
   }
 }
-#endif
 
 bool IsTableRow(ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kRow:
       return true;
     case ax::mojom::Role::kLayoutTableRow:
-      return kExposeLayoutTableAsDataTable;
-    default:
-      return false;
-  }
-}
-
-bool IsTableWithColumns(const ax::mojom::Role role) {
-  switch (role) {
-    case ax::mojom::Role::kGrid:
-    case ax::mojom::Role::kListGrid:
-    case ax::mojom::Role::kTable:
-    case ax::mojom::Role::kTreeGrid:
-      return true;
-    case ax::mojom::Role::kLayoutTable:
       return kExposeLayoutTableAsDataTable;
     default:
       return false;
