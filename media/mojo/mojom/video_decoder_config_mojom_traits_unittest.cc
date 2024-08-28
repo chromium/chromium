@@ -72,6 +72,26 @@ TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfig_Encrypted) {
 }
 
 TEST(VideoDecoderConfigStructTraitsTest,
+     ConvertVideoDecoderConfig_AspectRatio) {
+  VideoDecoderConfig input(
+      VideoCodec::kVP8, VP8PROFILE_ANY,
+      VideoDecoderConfig::AlphaMode::kIsOpaque,
+      VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                      VideoColorSpace::TransferID::SMPTEST2084,
+                      VideoColorSpace::MatrixID::BT2020_CL,
+                      gfx::ColorSpace::RangeID::LIMITED),
+      kNoTransformation, kCodedSize, kVisibleRect, kNaturalSize,
+      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  input.set_aspect_ratio(VideoAspectRatio::DAR(3, 1));
+  std::vector<uint8_t> data =
+      media::mojom::VideoDecoderConfig::Serialize(&input);
+  VideoDecoderConfig output;
+  EXPECT_TRUE(
+      media::mojom::VideoDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_TRUE(output.Matches(input));
+}
+
+TEST(VideoDecoderConfigStructTraitsTest,
      ConvertVideoDecoderConfig_ColorSpaceInfo) {
   VideoDecoderConfig input(
       VideoCodec::kVP8, VP8PROFILE_ANY,

@@ -378,23 +378,32 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.VideoAspectRatio"
+          cpp = "::media::VideoAspectRatio"
+        },
+      ]
+      traits_headers = [ "video_aspect_ratio_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.VideoColorSpace.PrimaryID"
           cpp = "::media::VideoColorSpace::PrimaryID"
         },
         {
-          mojom = "media.mojom.VideoColorSpace.TransferID:"
+          mojom = "media.mojom.VideoColorSpace.TransferID"
           cpp = "::media::VideoColorSpace::TransferID"
         },
         {
-          mojom = "media.mojom.VideoColorSpace.MatrixID:"
+          mojom = "media.mojom.VideoColorSpace.MatrixID"
           cpp = "::media::VideoColorSpace::MatrixID"
         },
         {
-          mojom = "media.mojom.VideoColorSpace.RangeID:"
+          mojom = "media.mojom.VideoColorSpace.RangeID"
           cpp = "::gfx::ColorSpace::RangeID"
         },
         {
-          mojom = "media.mojom.VideoColorSpace:"
+          mojom = "media.mojom.VideoColorSpace"
           cpp = "::media::VideoColorSpace"
         },
       ]
