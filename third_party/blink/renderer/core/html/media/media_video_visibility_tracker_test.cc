@@ -170,6 +170,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   LoadMainResource(R"HTML(
     <style>
       video {
+        object-fit: fill;
         width: 50px;
         height: 50px;
       }
@@ -193,6 +194,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, NoOcclusionMeetsVisibilityThreshold) {
   LoadMainResource(R"HTML(
     <style>
       video {
+        object-fit: fill;
         width: 150px;
         height: 150px;
       }
@@ -217,6 +219,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, VideoControlsAreIgnored) {
   LoadMainResource(R"HTML(
     <style>
       video {
+        object-fit: fill;
         width: 150px;
         height: 150px;
       }
@@ -241,6 +244,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, NoViewPortIntersection) {
   LoadMainResource(R"HTML(
     <style>
       video {
+        object-fit: fill;
         width: 150px;
         height: 150px;
       }
@@ -283,6 +287,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -323,6 +328,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, SingleElementOccludingAboveThreshold) {
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -365,6 +371,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -418,6 +425,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -467,6 +475,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementWithZeroOpacityIsIgnored) {
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -524,6 +533,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementsBehindVideoAreIgnored) {
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -569,6 +579,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -620,6 +631,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 500px;
       height: 500px;
@@ -686,6 +698,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -745,6 +758,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         height: 2000px;
       }
       video {
+        object-fit: fill;
         width: 100px;
         height: 100px;
       }
@@ -782,6 +796,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         height: 2000px;
       }
       video {
+        object-fit: fill;
         width: 100px;
         height: 100px;
         position: absolute;
@@ -823,6 +838,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 200px;
         height: 200px;
@@ -864,6 +880,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 100%;
       height: 100%;
@@ -910,6 +927,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -969,6 +987,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetContents) {
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 500px;
       height: 500px;
@@ -1036,6 +1055,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetEndIndexEqualToStartIndex) {
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 500px;
       height: 500px;
@@ -1077,6 +1097,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 500px;
       height: 500px;
@@ -1138,6 +1159,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1202,6 +1224,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1267,6 +1290,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1310,6 +1334,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1372,6 +1397,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1425,6 +1451,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;

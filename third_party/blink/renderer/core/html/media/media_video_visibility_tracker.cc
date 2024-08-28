@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -665,22 +666,36 @@ void MediaVideoVisibilityTracker::ComputeAreaOccludedByViewport(
   DCHECK(VideoElement().GetLayoutObject());
 
   LayoutBox* box = To<LayoutBox>(VideoElement().GetLayoutObject());
-  gfx::RectF bounds(box->AbsoluteBoundingBoxRectF());
+  gfx::Rect bounds(box->AbsoluteBoundingBoxRect());
+
+  gfx::Rect content_bounds;
+  if (auto* layout_video =
+          DynamicTo<LayoutVideo>(VideoElement().GetLayoutObject())) {
+    PhysicalRect content_rect = layout_video->ReplacedContentRect();
+    content_bounds = VideoElement().GetDocument().View()->FrameToViewport(
+        ToEnclosingRect(layout_video->LocalToAbsoluteRect(content_rect)));
+    content_bounds.Intersect(bounds);
+  }
+
+  // Fallback to using the video element bounds, if the computed
+  // `content_bounds` is empty.
+  if (content_bounds.IsEmpty()) {
+    content_bounds = bounds;
+  }
 
   gfx::Rect viewport_in_root_frame = ToEnclosingRect(
       local_frame_view.GetFrame().GetPage()->GetVisualViewport().VisibleRect());
-  gfx::RectF absolute_viewport(
+  gfx::Rect absolute_viewport(
       local_frame_view.ConvertFromRootFrame(viewport_in_root_frame));
-  occlusion_state_.intersection_rect = PhysicalRect::FastAndLossyFromRectF(
-      IntersectRects(absolute_viewport, bounds));
+  occlusion_state_.intersection_rect =
+      PhysicalRect(IntersectRects(absolute_viewport, content_bounds));
 
-  occlusion_state_.video_element_rect =
-      PhysicalRect::FastAndLossyFromRectF(bounds);
+  occlusion_state_.video_element_rect = PhysicalRect(content_bounds);
 
   // Compute the VideoElement area that is occluded by the viewport, if any.
   SkRegion region;
-  region.setRect(gfx::RectToSkIRect(gfx::ToRoundedRect(bounds)));
-  if (region.op(gfx::RectToSkIRect(gfx::ToRoundedRect(absolute_viewport)),
+  region.setRect(gfx::RectToSkIRect(content_bounds));
+  if (region.op(gfx::RectToSkIRect(absolute_viewport),
                 SkRegion::kDifference_Op)) {
     for (SkRegion::Iterator it(region); !it.done(); it.next()) {
       auto occluding_rect = it.rect();
