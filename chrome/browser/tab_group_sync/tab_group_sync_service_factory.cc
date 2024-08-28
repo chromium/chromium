@@ -72,7 +72,6 @@ TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
 TabGroupSyncService* TabGroupSyncServiceFactory::GetForProfile(
     Profile* profile) {
   CHECK(profile);
-  CHECK(!profile->IsOffTheRecord());
   return static_cast<TabGroupSyncService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }

@@ -35,7 +35,7 @@ TEST_F(TabGroupSyncServiceFactoryTest, ServiceCreatedInRegularProfile) {
 TEST_F(TabGroupSyncServiceFactoryTest, ServiceNotCreatedInIncognito) {
   Profile* otr_profile = profile_.get()->GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
-  EXPECT_DEATH(TabGroupSyncServiceFactory::GetForProfile(otr_profile), "");
+  EXPECT_FALSE(TabGroupSyncServiceFactory::GetForProfile(otr_profile));
 }
 
 }  // namespace
