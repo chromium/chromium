@@ -143,15 +143,16 @@ class SavedTabGroupKeyedService : public KeyedService,
       const SavedTabGroup* const saved_group,
       const gfx::Range& tab_range);
 
-  // Connects all SavedTabGroupTabs from a SavedTabGroup to their respective
-  // WebContents in the local TabGroup.
-  std::map<content::WebContents*, base::Uuid>
-  GetWebContentsToTabGuidMappingForSavedGroup(
+  // Given a `tab_range` which is indexes of tabs in the `tab_strip_model` that
+  // should be part of `saved_group` outputs a mapping of tab to guid. This
+  // method performs no checks to make sure that the tabs are the correct ones
+  // that should be connected.
+  std::map<tabs::TabModel*, base::Uuid> GetTabToGuidMappingForSavedGroup(
       const TabStripModel* const tab_strip_model,
       const SavedTabGroup* const saved_group,
       const gfx::Range& tab_range);
 
-  // Opens a saved tab group into the tabstrip of the |browser| and returns a
+  // Opens a saved tab group into the tabstrip of the `browser` and returns a
   // mapping of the tabs to the SavedTabGroupTab. This method does not check
   // that the browser is accepting of groups so this must be done by callers.
   // This method does not check that the saved group is already open so that
