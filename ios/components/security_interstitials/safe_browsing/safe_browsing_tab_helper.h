@@ -71,6 +71,10 @@ class SafeBrowsingTabHelper
     // navigations occurred before the URL check has finished.
     bool IsQueryStale(const SafeBrowsingQueryManager::Query& query);
 
+    // Returns whether a query contained in `query_data` is still relevant. May
+    // return false if navigations occurred before the URL check has finished.
+    bool IsQueryStale(const SafeBrowsingQueryManager::QueryData& query_data);
+
     // Returns a policy decision based on query `result`.
     web::WebStatePolicyDecider::PolicyDecision CreatePolicyDecision(
         const SafeBrowsingQueryManager::Query& query,

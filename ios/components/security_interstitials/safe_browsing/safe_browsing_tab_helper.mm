@@ -157,6 +157,16 @@ bool SafeBrowsingTabHelper::PolicyDecider::IsQueryStale(
   return !GetOldestPendingMainFrameQuery(url);
 }
 
+bool SafeBrowsingTabHelper::PolicyDecider::IsQueryStale(
+    const SafeBrowsingQueryManager::QueryData& query_data) {
+  if (query_data.type == QueryType::kSync) {
+    return !GetOldestPendingMainFrameQuery(query_data);
+  }
+
+  return !GetOldestPendingToBeCommittedQuery(query_data) &&
+         !GetOldestPendingCommittedQuery(query_data);
+}
+
 web::WebStatePolicyDecider::PolicyDecision
 SafeBrowsingTabHelper::PolicyDecider::CreatePolicyDecision(
     const SafeBrowsingQueryManager::Query& query,
@@ -203,7 +213,7 @@ void SafeBrowsingTabHelper::PolicyDecider::HandlePolicyDecision(
 void SafeBrowsingTabHelper::PolicyDecider::HandlePolicyDecision(
     const SafeBrowsingQueryManager::QueryData& query_data,
     const web::WebStatePolicyDecider::PolicyDecision& policy_decision) {
-  DCHECK(!IsQueryStale(query_data.query));
+  DCHECK(!IsQueryStale(query_data));
 
   if (query_data.type == QueryType::kAsync) {
     OnMainFrameUrlAsyncQueryDecided(query_data, policy_decision);
@@ -339,7 +349,9 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
   if (decision) {
     RecordCheckCompletedOnResponseMetric(/*check_completed=*/true);
     std::move(callback).Run(*decision);
-    UpdateToBeCommittedRedirectChain();
+    if (decision->ShouldAllowNavigation()) {
+      UpdateToBeCommittedRedirectChain();
+    }
     pending_main_frame_redirect_chain_.clear();
   } else {
     RecordCheckCompletedOnResponseMetric(/*check_completed=*/false);
@@ -486,6 +498,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
       if (sync_decision->ShouldAllowNavigation()) {
         RecordTotalDelayMetricForDelayedAllowedNavigation(
             pending_main_frame_query_->delay_start_time, performed_check);
+        UpdateToBeCommittedRedirectChain();
       } else {
         base::TimeDelta delay = base::TimeTicks::Now() -
                                 pending_main_frame_query_->delay_start_time;
@@ -496,7 +509,6 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
       // TODO(crbug.com/337243708): Move updating and clearing redirect chains
       // to be behind a guard that checks if both sync and async checks are
       // complete.
-      UpdateToBeCommittedRedirectChain();
       pending_main_frame_redirect_chain_.clear();
     }
   } else {
@@ -654,7 +666,7 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryFinished(
 
 void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingSyncQueryFinished(
     const SafeBrowsingQueryManager::QueryData& query_data) {
-  if (policy_decider_->IsQueryStale(query_data.query)) {
+  if (policy_decider_->IsQueryStale(query_data)) {
     return;
   }
 
@@ -666,7 +678,14 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingSyncQueryFinished(
 
 void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingAsyncQueryFinished(
     const SafeBrowsingQueryManager::QueryData& query_data) {
-  // TODO(crbug.com/337243708): Add async logic.
+  if (policy_decider_->IsQueryStale(query_data)) {
+    return;
+  }
+
+  web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      policy_decider_->CreatePolicyDecision(query_data.query, query_data.result,
+                                            web_state_);
+  policy_decider_->HandlePolicyDecision(query_data, policy_decision);
 }
 
 void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryManagerDestroyed(
