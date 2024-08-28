@@ -2142,9 +2142,6 @@ TEST_P(IntersectingQuadPixelTest, RenderPassQuads) {
 }
 
 TEST_P(IntersectingMultiplanarVideoQuadPixelTest, YUVVideoQuads) {
-  if (!media::IsWritePixelsYUVEnabled()) {
-    GTEST_SKIP() << "Skip this test if UseWritePixelsYUV is disabled";
-  }
   this->SetupQuadStateTransformsAndRenderPass();
   gfx::Rect inner_rect(
       ((this->quad_rect_.x() + (this->quad_rect_.width() / 4)) & ~0xF),
@@ -2187,9 +2184,6 @@ TEST_P(IntersectingMultiplanarVideoQuadPixelTest, YUVVideoQuads) {
 }
 
 TEST_P(IntersectingMultiplanarVideoQuadPixelTest, Y16VideoQuads) {
-  if (!media::IsWritePixelsYUVEnabled()) {
-    GTEST_SKIP() << "Skip this test if UseWritePixelsYUV is disabled";
-  }
   this->SetupQuadStateTransformsAndRenderPass();
   gfx::Rect inner_rect(
       ((this->quad_rect_.x() + (this->quad_rect_.width() / 4)) & ~0xF),
@@ -2369,9 +2363,6 @@ class VideoRendererPixelHiLoTest : public VideoRendererPixelTestBase,
 INSTANTIATE_TEST_SUITE_P(, VideoRendererPixelHiLoTest, testing::Bool());
 
 TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
-  if (!media::IsWritePixelsYUVEnabled()) {
-    GTEST_SKIP() << "Skip this test if UseWritePixelsYUV is disabled";
-  }
   gfx::Rect rect(this->device_viewport_size_);
 
   CompositorRenderPassId id{1};
@@ -2456,9 +2447,6 @@ INSTANTIATE_TEST_SUITE_P(,
                                           testing::ValuesIn(yuv_color_spaces)));
 
 TEST_P(VideoRendererPixelHiLoColorSpaceTest, SimpleYUVRect) {
-  if (!media::IsWritePixelsYUVEnabled()) {
-    GTEST_SKIP() << "Skip this test if UseWritePixelsYUV is disabled";
-  }
   gfx::Rect rect(this->device_viewport_size_);
 
   CompositorRenderPassId id{1};
@@ -2501,9 +2489,6 @@ TEST_P(VideoRendererPixelHiLoColorSpaceTest, SimpleYUVRect) {
 #define MAYBE_ClippedYUVRect ClippedYUVRect
 #endif  // BUILDFLAG(IS_IOS)
 TEST_P(VideoRendererPixelHiLoTest, MAYBE_ClippedYUVRect) {
-  if (!media::IsWritePixelsYUVEnabled()) {
-    GTEST_SKIP() << "Skip this test if UseWritePixelsYUV is disabled";
-  }
   gfx::Rect viewport(this->device_viewport_size_);
   gfx::Rect draw_rect(this->device_viewport_size_.width() * 1.5,
                       this->device_viewport_size_.height() * 1.5);
@@ -2551,9 +2536,6 @@ INSTANTIATE_TEST_SUITE_P(,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(VideoRendererPixelTest);
 
 TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
-  if (!media::IsWritePixelsYUVEnabled()) {
-    GTEST_SKIP() << "Skip this test if UseWritePixelsYUV is disabled";
-  }
   gfx::Rect rect(this->device_viewport_size_);
 
   CompositorRenderPassId id{1};
