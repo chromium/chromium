@@ -9521,8 +9521,14 @@ class VisualPropertiesSynchronization : public NavigationBrowserTest {
 // Verify that when a cross-origin subframe initiates a top-level navigation to
 // a same-origin (with respect to itself) URL, that the visual properties
 // are invalidated correctly.
+// TODO(https://crbug.com/361299696): Flaky on Fuchsia and ChromeOS Ash.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_RemoteToLocalTransition DISABLED_RemoteToLocalTransition
+#else
+#define MAYBE_RemoteToLocalTransition RemoteToLocalTransition
+#endif
 IN_PROC_BROWSER_TEST_F(VisualPropertiesSynchronization,
-                       RemoteToLocalTransition) {
+                       MAYBE_RemoteToLocalTransition) {
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b_top_level(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_b_iframe(embedded_test_server()->GetURL("b.com", "/title2.html"));
