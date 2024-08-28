@@ -188,30 +188,13 @@ ProactiveNudgeTracker::~ProactiveNudgeTracker() {
   engagement_trackers_.clear();
 }
 
-bool ProactiveNudgeTracker::OnlySelectionNudgeRequestedForFormField(
-    Signals signals) {
-  return NudgeRequestedForFormField(std::move(signals),
-                                    /*only_enable_selection_nudge=*/true);
-}
-
 bool ProactiveNudgeTracker::ProactiveNudgeRequestedForFormField(
     Signals signals) {
-  return NudgeRequestedForFormField(std::move(signals),
-                                    /*only_enable_selection_nudge=*/false);
-}
-
-// private
-bool ProactiveNudgeTracker::NudgeRequestedForFormField(
-    Signals signals,
-    bool only_enable_selection_nudge) {
   if (!MatchesCurrentField(signals.field.renderer_form_id(),
                            signals.field.global_id())) {
     ResetState();
     state_ = std::make_unique<State>();
     state_->signals = std::move(signals);
-    if (only_enable_selection_nudge) {
-      state_->show_state = ShowState::kWaitingForSelectionNudge;
-    }
   }
 
   if (state_->show_state == ShowState::kShown) {
@@ -253,6 +236,18 @@ void ProactiveNudgeTracker::OnAfterFocusOnFormField(
   ResetState();
 }
 
+void ProactiveNudgeTracker::OnAfterTextFieldDidChange(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form,
+    autofill::FieldGlobalId field,
+    const std::u16string& text_value) {
+  if (!MatchesCurrentField(form, field)) {
+    return;
+  }
+  ++state_->text_change_count;
+  UpdateStateForCurrentFormField();
+}
+
 void ProactiveNudgeTracker::OnAfterCaretMovedInFormField(
     autofill::AutofillManager& manager,
     const autofill::FormGlobalId& form,
@@ -272,8 +267,9 @@ void ProactiveNudgeTracker::OnAfterCaretMovedInFormField(
     // Cancel the timer if the selection is no longer valid.
     state_->timer_canceled = true;
   } else if (state_->timer.IsRunning()) {
-    // Extend the timer if it is currently running.
-    state_->timer.Reset();
+    // Extend the timer if it is currently running. This will restart with
+    // the correct delay if the state has changed.
+    StartOrRestartTimer();
   } else if (selection_valid) {
     state_->selection_nudge_requested = true;
   }
@@ -299,18 +295,19 @@ void ProactiveNudgeTracker::UpdateStateForCurrentFormField() {
 
 std::optional<ProactiveNudgeTracker::ShowState>
 ProactiveNudgeTracker::CheckForStateTransition() {
-  autofill::FieldGlobalId field_global_id = state_->signals.field.global_id();
   switch (state_->show_state) {
     case ShowState::kInitial:
-      if (compose::GetComposeConfig().proactive_nudge_field_per_navigation) {
-        if (auto iter = seen_fields_.find(field_global_id);
-            iter != seen_fields_.end()) {
-          return iter->second ? ShowState::kWaitingForSelectionNudge
-                              : ShowState::kBlockedBySegmentation;
-        }
+      // Block if the cached result should not show the nudge.
+      if (!CachedSegmentationResult().value_or(true)) {
+        return ShowState::kBlockedBySegmentation;
       }
-      return ShowState::kWaitingForTimer;
-    case ShowState::kWaitingForTimer:
+      if (CanStartFocusTimer() || CanStartTextSettledTimer() ||
+          CanStartSelectionTimer()) {
+        return ShowState::kWaitingForTimerToStop;
+      }
+      // Remain in initial state until any delay timer can be started.
+      return std::nullopt;
+    case ShowState::kWaitingForTimerToStop:
       if (state_->timer_canceled) {
         return ShowState::kTimerCanceled;
       }
@@ -322,17 +319,17 @@ ProactiveNudgeTracker::CheckForStateTransition() {
       return std::nullopt;
     case ShowState::kWaitingForSegmentation:
       // Use cached segmentation result if possible.
-      if (auto iter = seen_fields_.find(field_global_id);
-          iter != seen_fields_.end()) {
-        return iter->second ? ShowState::kWaitingForProactiveNudgeRequest
-                            : ShowState::kBlockedBySegmentation;
+      if (auto result = CachedSegmentationResult(); result.has_value()) {
+        return result.value() ? ShowState::kWaitingForProactiveNudgeRequest
+                              : ShowState::kBlockedBySegmentation;
       }
       if (state_->segmentation_result.has_value()) {
         bool segmentation_succeeded =
             !state_->segmentation_result->ordered_labels.empty() &&
             state_->segmentation_result->ordered_labels[0] ==
                 segmentation_platform::kComposePrmotionLabelShow;
-        seen_fields_.emplace(field_global_id, segmentation_succeeded);
+        seen_fields_.emplace(state_->signals.field.global_id(),
+                             segmentation_succeeded);
         return segmentation_succeeded
                    ? ShowState::kWaitingForProactiveNudgeRequest
                    : ShowState::kBlockedBySegmentation;
@@ -348,10 +345,10 @@ ProactiveNudgeTracker::CheckForStateTransition() {
         return std::nullopt;
       }
       return ShowState::kShown;
-    case ShowState::kWaitingForSelectionNudge:
     case ShowState::kShown:
-      if (state_->selection_nudge_requested) {
-        return ShowState::kWaitingForTimer;
+      if (CanStartSelectionTimer()) {
+        // Start waiting for the selection delay timer.
+        return ShowState::kWaitingForTimerToStop;
       }
       return std::nullopt;
     case ShowState::kBlockedBySegmentation:
@@ -363,8 +360,8 @@ void ProactiveNudgeTracker::TransitionToState(ShowState new_show_state) {
   switch (new_show_state) {
     case ShowState::kInitial:
       NOTREACHED();
-    case ShowState::kWaitingForTimer:
-      BeginWaitingForTimer();
+    case ShowState::kWaitingForTimerToStop:
+      BeginWaitingForTimerToStop();
       break;
     case ShowState::kWaitingForSegmentation:
       BeginSegmentation();
@@ -381,15 +378,67 @@ void ProactiveNudgeTracker::TransitionToState(ShowState new_show_state) {
     case ShowState::kTimerCanceled:
       BeginTimerCanceled();
       break;
-    case ShowState::kWaitingForSelectionNudge:
-      break;
   }
   state_->show_state = new_show_state;
 }
-void ProactiveNudgeTracker::BeginWaitingForTimer() {
-  base::TimeDelta delay = state_->selection_nudge_requested
-                              ? GetComposeConfig().selection_nudge_delay
-                              : GetComposeConfig().proactive_nudge_delay;
+
+void ProactiveNudgeTracker::BeginWaitingForTimerToStop() {
+  StartOrRestartTimer();
+}
+
+bool ProactiveNudgeTracker::CanStartFocusTimer() {
+  if (!GetComposeConfig().proactive_nudge_enabled) {
+    return false;
+  }
+  if (GetComposeConfig().proactive_nudge_field_per_navigation &&
+      CachedSegmentationResult().has_value()) {
+    return false;
+  }
+  return GetComposeConfig().proactive_nudge_focus_delay > base::Seconds(0);
+}
+
+bool ProactiveNudgeTracker::CanStartTextSettledTimer() {
+  if (!GetComposeConfig().proactive_nudge_enabled) {
+    return false;
+  }
+  if (GetComposeConfig().proactive_nudge_field_per_navigation &&
+      CachedSegmentationResult().has_value()) {
+    return false;
+  }
+  if (state_->text_change_count <
+      GetComposeConfig().proactive_nudge_text_change_count) {
+    return false;
+  }
+  return GetComposeConfig().proactive_nudge_text_settled_delay >
+         base::Seconds(0);
+}
+
+bool ProactiveNudgeTracker::CanStartSelectionTimer() {
+  if (!state_ || !CachedSegmentationResult().value_or(true)) {
+    return false;
+  }
+  if (GetComposeConfig().selection_nudge_once_per_focus &&
+      state_->selection_nudge_shown) {
+    return false;
+  }
+  return state_->selection_nudge_requested;
+}
+
+void ProactiveNudgeTracker::StartOrRestartTimer() {
+  if (!state_) {
+    return;
+  }
+  if (state_->timer.IsRunning()) {
+    state_->timer.Stop();
+  }
+
+  base::TimeDelta delay = GetComposeConfig().proactive_nudge_focus_delay;
+  if (CanStartSelectionTimer()) {
+    delay = GetComposeConfig().selection_nudge_delay;
+  } else if (CanStartTextSettledTimer()) {
+    delay = GetComposeConfig().proactive_nudge_text_settled_delay;
+  }
+
   if (delay.is_zero()) {
     return;
   }
@@ -398,6 +447,9 @@ void ProactiveNudgeTracker::BeginWaitingForTimer() {
 }
 
 void ProactiveNudgeTracker::BeginTimerCanceled() {
+  if (!state_) {
+    return;
+  }
   state_->timer.Stop();
   state_->selection_nudge_requested = false;
   state_->timer_canceled = false;
@@ -454,13 +506,15 @@ void ProactiveNudgeTracker::BeginBlockedBySegmentation() {
 }
 
 void ProactiveNudgeTracker::BeginShown() {
-  if (state_->show_state != ShowState::kWaitingForProactiveNudgeRequest) {
+  if (!state_ ||
+      state_->show_state != ShowState::kWaitingForProactiveNudgeRequest) {
     return;
   }
 
   if (state_->selection_nudge_requested) {
     // TODO(http://b/331822409): Log selection nudge metrics.
     state_->selection_nudge_requested = false;
+    state_->selection_nudge_shown = true;
     return;
   }
 
@@ -476,7 +530,7 @@ void ProactiveNudgeTracker::ShowTimerElapsed() {
   DVLOG(2) << "ProactiveNudgeTracker: ShowTimerElapsed";
   // If we are not waiting for the timer, the elapsed timer is stale and should
   // be ignored.
-  if (!state_ || state_->show_state != ShowState::kWaitingForTimer) {
+  if (!state_ || state_->show_state != ShowState::kWaitingForTimerToStop) {
     return;
   }
   UpdateStateForCurrentFormField();
@@ -551,6 +605,17 @@ void ProactiveNudgeTracker::OnUserDisabledNudge(bool single_site_only) {
     iter.second->UserDisabledNudge(single_site_only);
   }
   engagement_trackers_.clear();
+}
+
+std::optional<bool> ProactiveNudgeTracker::CachedSegmentationResult() {
+  if (!state_) {
+    return std::nullopt;
+  }
+  if (auto iter = seen_fields_.find(state_->signals.field.global_id());
+      iter != seen_fields_.end()) {
+    return iter->second;
+  }
+  return std::nullopt;
 }
 
 }  // namespace compose

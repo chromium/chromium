@@ -689,7 +689,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       // If the proactive nudge is disabled but the selection nudge is is
       // enabled we need to initialize the nudge tracker for this form field to
       // accept the selection nudge.
-      return nudge_tracker_.OnlySelectionNudgeRequestedForFormField(
+      return nudge_tracker_.ProactiveNudgeRequestedForFormField(
           std::move(nudge_signals));
     }
     return false;

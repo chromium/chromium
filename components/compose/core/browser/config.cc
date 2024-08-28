@@ -90,11 +90,25 @@ Config::Config() {
           "proactive_nudge_always_collect_training_data",
           proactive_nudge_always_collect_training_data);
 
-  proactive_nudge_delay =
+  // Note: Pre M129 the feature param was |proactive_nudge_delay_milliseconds|
+  // and was used for both the focus delay and after input delay. The default
+  // value of the old parameter was set to 1 second https://crrev.com/c/5672112
+  // which landed in M128. Before that it was 3 seconds.
+  proactive_nudge_focus_delay =
       base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
           features::kEnableComposeProactiveNudge,
-          "proactive_nudge_delay_milliseconds",
-          proactive_nudge_delay.InMilliseconds()));
+          "proactive_nudge_focus_delay_milliseconds",
+          proactive_nudge_focus_delay.InMilliseconds()));
+
+  proactive_nudge_text_settled_delay =
+      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+          features::kEnableComposeProactiveNudge,
+          "proactive_nudge_text_settled_delay_milliseconds",
+          proactive_nudge_text_settled_delay.InMilliseconds()));
+
+  proactive_nudge_text_change_count = base::GetFieldTrialParamByFeatureAsInt(
+      features::kEnableComposeProactiveNudge,
+      "proactive_nudge_text_change_count", proactive_nudge_text_change_count);
 
   selection_nudge_enabled =
       base::FeatureList::IsEnabled(features::kEnableComposeSelectionNudge);
@@ -109,6 +123,10 @@ Config::Config() {
           features::kEnableComposeSelectionNudge,
           "selection_nudge_delay_milliseconds",
           selection_nudge_delay.InMilliseconds()));
+
+  selection_nudge_once_per_focus = base::GetFieldTrialParamByFeatureAsBool(
+      features::kEnableComposeSelectionNudge, "selection_nudge_once_per_focus",
+      selection_nudge_once_per_focus);
 
   nudge_field_change_event_max = base::GetFieldTrialParamByFeatureAsInt(
       features::kEnableComposeProactiveNudge, "nudge_field_change_event_max",
