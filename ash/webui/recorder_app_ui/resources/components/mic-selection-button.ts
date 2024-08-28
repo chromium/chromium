@@ -80,7 +80,7 @@ export class MicSelectionButton extends ReactiveLitElement {
           itemStart="icon"
           itemEnd="switch"
           .switchSelected=${includeSystemAudio}
-          @cros-icon-dropdown-option-triggered=${this.toggleSystemAudio}
+          @cros-menu-item-triggered=${this.toggleSystemAudio}
         >
           <cra-icon slot="start" name="laptop_chromebook"></cra-icon>
         </cros-icon-dropdown-option>
