@@ -17,7 +17,6 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
-import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -66,7 +65,6 @@ export interface TableColumn {
 
 export interface ProductSpecificationsElement {
   $: {
-    feedbackButtons: CrFeedbackButtonsElement,
     empty: HTMLElement,
     header: HeaderElement,
     loading: HTMLElement,
@@ -186,10 +184,12 @@ export class ProductSpecificationsElement extends PolymerElement {
         reflectToAttribute: true,
       },
       tableColumns_: Object,
+      canShowFeedbackButtons_: Boolean,
     };
   }
 
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
+  private canShowFeedbackButtons_: boolean = false;
   private setName_: string|null = null;
   private showEmptyState_: boolean;
   private tableColumns_: TableColumn[] = [];
@@ -258,6 +258,10 @@ export class ProductSpecificationsElement extends PolymerElement {
     } catch (_) {
       return;
     }
+
+    const {state} =
+        await this.shoppingApi_.getProductSpecificationsFeatureState();
+    this.canShowFeedbackButtons_ = state?.isQualityLoggingAllowed || false;
 
     // TODO(b/346601645): Detect if a set already exists
     await this.createNewSet_(urls);

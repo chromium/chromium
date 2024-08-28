@@ -183,6 +183,17 @@ suite('AppTest', () => {
       productSummaryRowTitle: 'summary',
     });
     shoppingServiceApi.reset();
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsFeatureState', Promise.resolve({
+          state: {
+            isSyncingTabCompare: true,
+            canLoadFullPageUi: true,
+            canManageSets: true,
+            canFetchData: true,
+            isAllowedForEnterprise: true,
+            isQualityLoggingAllowed: true,
+          },
+        }));
     shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
     shoppingServiceApi.setResultFor(
         'maybeShowProductSpecificationDisclosure',
@@ -194,12 +205,13 @@ suite('AppTest', () => {
     windowProxy.setResultFor('onLine', true);
   });
 
-  test('calls shopping service when there are url params', () => {
+  test('calls shopping service when there are url params', async () => {
     const urlsParam = ['https://example.com/', 'https://example2.com/'];
     router.setResultFor(
         'getCurrentQuery',
         new URLSearchParams('urls=' + JSON.stringify(urlsParam)));
     createAppElement();
+    await shoppingServiceApi.whenCalled('addProductSpecificationsSet');
 
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
@@ -1383,23 +1395,60 @@ suite('AppTest', () => {
       urlsParam: ['https://example.com/'],
     });
     createAppElementWithPromiseValues(promiseValues);
-    const feedbackButtonPlacholder =
-        appElement.shadowRoot!.querySelector('#feedbackLoading');
-    const feedbackButtons = appElement.$.feedbackButtons;
     appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
     await flushTasks();
+    const feedbackLoading =
+        appElement.shadowRoot!.querySelector('#feedbackLoading');
+    assertTrue(!!feedbackLoading);
+    const feedbackButtons =
+        appElement.shadowRoot!.querySelector('#feedbackButtons');
+    assertTrue(!!feedbackButtons);
 
-    assertTrue(isVisible(feedbackButtonPlacholder));
+    assertTrue(isVisible(feedbackLoading));
     assertFalse(isVisible(feedbackButtons));
 
     // Wait for the loading animation to finish.
     await new Promise(res => setTimeout(res, minLoadingAnimationMs));
 
-    assertFalse(isVisible(feedbackButtonPlacholder));
+    assertFalse(isVisible(feedbackLoading));
     assertTrue(isVisible(feedbackButtons));
   });
 
-  test('shows disclaimer and learn more link', async () => {
+  test('feedback hidden if not allowed', async () => {
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsFeatureState', Promise.resolve({
+          state: {
+            isSyncingTabCompare: true,
+            canLoadFullPageUi: true,
+            canManageSets: true,
+            canFetchData: true,
+            isAllowedForEnterprise: true,
+            isQualityLoggingAllowed: false,
+          },
+        }));
+    const minLoadingAnimationMs = 10;
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    await flushTasks();
+    const feedbackLoading =
+        appElement.shadowRoot!.querySelector('#feedbackLoading');
+    const feedbackButtons =
+        appElement.shadowRoot!.querySelector('#feedbackButtons');
+    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
+
+    assertFalse(isVisible(feedbackLoading));
+    assertFalse(isVisible(feedbackButtons));
+
+    // Wait for the loading animation to finish.
+    await new Promise(res => setTimeout(res, minLoadingAnimationMs));
+
+    assertFalse(isVisible(feedbackLoading));
+    assertFalse(isVisible(feedbackButtons));
+  });
+
+  test('shows learn more link', async () => {
     const testEmail = 'test@gmail.com';
     loadTimeData.overrideValues({userEmail: testEmail});
     const promiseValues = createAppPromiseValues({
@@ -1829,7 +1878,10 @@ suite('AppTest', () => {
     await createAppElementWithPromiseValues(promiseValues);
 
     function updateCrFeedbackButtons(option: CrFeedbackOption) {
-      appElement.$.feedbackButtons.dispatchEvent(
+      const feedbackButtons =
+          appElement.shadowRoot!.querySelector('#feedbackButtons');
+      assertTrue(!!feedbackButtons);
+      feedbackButtons!.dispatchEvent(
           new CustomEvent('selected-option-changed', {
             bubbles: true,
             composed: true,

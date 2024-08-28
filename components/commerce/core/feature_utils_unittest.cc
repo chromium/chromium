@@ -167,10 +167,34 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoEnterprise) {
   // We should be able to fetch data before turning off enterprise.
   ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
 
+  // 1 is enabled but without logging.
+  SetTabCompareEnterprisePolicyPref(prefs_.get(), 1);
+
+  ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
+
   // 2 is the disabled enterprise state for the feature.
   SetTabCompareEnterprisePolicyPref(prefs_.get(), 2);
 
   ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
+}
+
+TEST_F(FeatureUtilsTest,
+       CanFetchProductSpecificationsData_EnterpriseQualityLogging) {
+  test_features_.InitAndEnableFeature(kProductSpecifications);
+  SetupProductSpecificationsEnabled();
+
+  // We should be able to fetch data before turning off enterprise.
+  ASSERT_TRUE(IsProductSpecificationsQualityLoggingAllowed(prefs_.get()));
+
+  // 1 is enabled but without logging.
+  SetTabCompareEnterprisePolicyPref(prefs_.get(), 1);
+
+  ASSERT_FALSE(IsProductSpecificationsQualityLoggingAllowed(prefs_.get()));
+
+  // 2 is the disabled enterprise state for the feature.
+  SetTabCompareEnterprisePolicyPref(prefs_.get(), 2);
+
+  ASSERT_FALSE(IsProductSpecificationsQualityLoggingAllowed(prefs_.get()));
 }
 
 TEST_F(FeatureUtilsTest,

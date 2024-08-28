@@ -176,13 +176,7 @@ MATCHER_P(MojoBookmarkInfoWithClusterId, expected_id, "") {
 
 class ShoppingServiceHandlerTest : public testing::Test {
  public:
-  ShoppingServiceHandlerTest() : logs_uploader_(&local_state_) {
-    features_.InitWithFeaturesAndParameters(
-        {{kShoppingList, {}},
-         {kProductSpecifications,
-          {{kProductSpecificationsEnableQualityLoggingParam, "true"}}}},
-        {});
-  }
+  ShoppingServiceHandlerTest() : logs_uploader_(&local_state_) {}
 
  protected:
   void SetUp() override {
@@ -750,6 +744,10 @@ TEST_F(ShoppingServiceHandlerTest, TestShowFeedbackForPriceInsights) {
 
 TEST_F(ShoppingServiceHandlerTest,
        SetProductSpecificationsUserFeedback_NonNegative) {
+  features_.InitWithFeaturesAndParameters(
+      {{kProductSpecifications,
+        {{kProductSpecificationsEnableQualityLoggingParam, "true"}}}},
+      {});
   EXPECT_CALL(*delegate_, ShowFeedbackForProductSpecifications).Times(0);
 
   handler_->GetProductSpecificationsForUrls({GURL("http://example.com")},
@@ -782,6 +780,10 @@ TEST_F(ShoppingServiceHandlerTest,
 
 TEST_F(ShoppingServiceHandlerTest,
        SetProductSpecificationsUserFeedback_Negative) {
+  features_.InitWithFeaturesAndParameters(
+      {{kProductSpecifications,
+        {{kProductSpecificationsEnableQualityLoggingParam, "true"}}}},
+      {});
   EXPECT_CALL(*delegate_, ShowFeedbackForProductSpecifications).Times(1);
 
   handler_->GetProductSpecificationsForUrls({GURL("http://example.com")},
@@ -982,6 +984,10 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
 
 TEST_F(ShoppingServiceHandlerTest,
        TestGetProductSpecifications_RecordLogEntry) {
+  features_.InitWithFeaturesAndParameters(
+      {{kProductSpecifications,
+        {{kProductSpecificationsEnableQualityLoggingParam, "true"}}}},
+      {});
   ProductSpecifications specs;
   specs.product_dimension_map[1] = "color";
   ProductSpecifications::Product product;
@@ -1065,6 +1071,10 @@ TEST_F(ShoppingServiceHandlerTest,
 
 TEST_F(ShoppingServiceHandlerTest,
        TestLogEntryReplacesForGetProductSpecifications) {
+  features_.InitWithFeaturesAndParameters(
+      {{kProductSpecifications,
+        {{kProductSpecificationsEnableQualityLoggingParam, "true"}}}},
+      {});
   ASSERT_EQ(nullptr, handler_->current_log_quality_entry_for_testing());
 
   handler_->GetProductSpecificationsForUrls({GURL("http://example.com")},
@@ -1328,10 +1338,15 @@ TEST_F(ShoppingServiceHandlerTest, TestDeclineProductSpecificationDisclosure) {
 
 TEST_F(ShoppingServiceHandlerTest,
        TestGetProductSpecificationsFeatureState_Allowed) {
+  features_.InitWithFeaturesAndParameters(
+      {{kProductSpecifications,
+        {{kProductSpecificationsEnableQualityLoggingParam, "true"}}}},
+      {});
   ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(true));
   account_checker_->SetSignedIn(true);
   account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+  SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
 
   // Set up management mode by having nonzero sets.
   const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -1340,16 +1355,18 @@ TEST_F(ShoppingServiceHandlerTest,
       uuid, 0, 0, {GURL("https://example.com/")}, "set1"));
   ON_CALL(*product_spec_service_, GetAllProductSpecifications())
       .WillByDefault(testing::Return(std::move(sets)));
+
   base::RunLoop run_loop;
   handler_->GetProductSpecificationsFeatureState(
       base::BindOnce(
           [](shopping_service::mojom::ProductSpecificationsFeatureStatePtr
                  state) {
-            ASSERT_EQ(true, state->is_syncing_tab_compare);
-            ASSERT_EQ(true, state->can_load_full_page_ui);
-            ASSERT_EQ(true, state->can_manage_sets);
-            ASSERT_EQ(true, state->can_fetch_data);
-            ASSERT_EQ(true, state->is_allowed_for_enterprise);
+            ASSERT_TRUE(state->can_load_full_page_ui);
+            ASSERT_TRUE(state->is_syncing_tab_compare);
+            ASSERT_TRUE(state->can_manage_sets);
+            ASSERT_TRUE(state->can_fetch_data);
+            ASSERT_TRUE(state->is_allowed_for_enterprise);
+            ASSERT_TRUE(state->is_quality_logging_allowed);
           })
           .Then(run_loop.QuitClosure()));
   run_loop.Run();
@@ -1357,10 +1374,12 @@ TEST_F(ShoppingServiceHandlerTest,
 
 TEST_F(ShoppingServiceHandlerTest,
        TestGetProductSpecificationsFeatureState_NotAllowed) {
+  features_.InitWithFeaturesAndParameters({}, {{kProductSpecifications}});
   ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(false));
   account_checker_->SetSignedIn(true);
   account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+  SetTabCompareEnterprisePolicyPref(pref_service_.get(), 2);
 
   // Zero sets. Management mode is false.
   std::vector<ProductSpecificationsSet> sets;
@@ -1372,86 +1391,15 @@ TEST_F(ShoppingServiceHandlerTest,
       base::BindOnce(
           [](shopping_service::mojom::ProductSpecificationsFeatureStatePtr
                  state) {
-            ASSERT_EQ(false, state->is_syncing_tab_compare);
-            ASSERT_EQ(true, state->can_load_full_page_ui);
-            ASSERT_EQ(false, state->can_manage_sets);
-            ASSERT_EQ(false, state->can_fetch_data);
-            ASSERT_EQ(true, state->is_allowed_for_enterprise);
+            ASSERT_FALSE(state->can_load_full_page_ui);
+            ASSERT_FALSE(state->is_syncing_tab_compare);
+            ASSERT_FALSE(state->can_manage_sets);
+            ASSERT_FALSE(state->can_fetch_data);
+            ASSERT_FALSE(state->is_allowed_for_enterprise);
+            ASSERT_FALSE(state->is_quality_logging_allowed);
           })
           .Then(run_loop.QuitClosure()));
 
-  run_loop.Run();
-}
-
-class ShoppingServiceHandlerProductSpecsDisabledTest : public testing::Test {
- public:
-  ShoppingServiceHandlerProductSpecsDisabledTest() {
-    features_.InitAndDisableFeature(kProductSpecifications);
-  }
-
- protected:
-  void SetUp() override {
-    auto client = std::make_unique<bookmarks::TestBookmarkClient>();
-    product_spec_service_ =
-        std::make_unique<MockProductSpecificationsService>();
-    bookmark_model_ =
-        bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
-    account_checker_ = std::make_unique<MockAccountChecker>();
-    account_checker_->SetLocale("en-us");
-    shopping_service_ = std::make_unique<MockShoppingService>();
-    shopping_service_->SetAccountChecker(account_checker_.get());
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    account_checker_->SetPrefs(pref_service_.get());
-    RegisterCommercePrefs(pref_service_->registry());
-    SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
-    SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
-
-    ON_CALL(*shopping_service_, GetProductSpecificationsService)
-        .WillByDefault(testing::Return(product_spec_service_.get()));
-
-    handler_ = std::make_unique<commerce::ShoppingServiceHandler>(
-        page_.BindAndGetRemote(),
-        mojo::PendingReceiver<
-            shopping_service::mojom::ShoppingServiceHandler>(),
-        bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
-        &tracker_, nullptr, nullptr);
-  }
-  MockPage page_;
-  std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
-  std::unique_ptr<MockAccountChecker> account_checker_;
-  std::unique_ptr<MockShoppingService> shopping_service_;
-  std::unique_ptr<commerce::ShoppingServiceHandler> handler_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  feature_engagement::test::MockTracker tracker_;
-  base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(ShoppingServiceHandlerProductSpecsDisabledTest,
-       TestGetProductSpecificationsFeatureState_FeatureOff) {
-  ON_CALL(*account_checker_, IsSyncTypeEnabled)
-      .WillByDefault(testing::Return(true));
-  account_checker_->SetSignedIn(true);
-  account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
-
-  // Zero sets. Management mode is false.
-  std::vector<ProductSpecificationsSet> sets;
-  ON_CALL(*product_spec_service_, GetAllProductSpecifications())
-      .WillByDefault(testing::Return(std::move(sets)));
-
-  base::RunLoop run_loop;
-  handler_->GetProductSpecificationsFeatureState(
-      base::BindOnce(
-          [](shopping_service::mojom::ProductSpecificationsFeatureStatePtr
-                 state) {
-            ASSERT_EQ(true, state->is_syncing_tab_compare);
-            ASSERT_EQ(false, state->can_load_full_page_ui);
-            ASSERT_EQ(false, state->can_manage_sets);
-            ASSERT_EQ(false, state->can_fetch_data);
-            ASSERT_EQ(true, state->is_allowed_for_enterprise);
-          })
-          .Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 

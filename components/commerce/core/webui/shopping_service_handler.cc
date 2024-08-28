@@ -842,7 +842,9 @@ void ShoppingServiceHandler::GetProductSpecificationsForUrls(
   // happen when (1) the page is closed and ShoppingServiceHandler destructs or
   // (2) there is another `GetProductSpecificationsForUrls` call which creates a
   // new current entry and the old one will destruct.
-  if (kProductSpecificationsEnableQualityLogging.Get()) {
+  if (kProductSpecificationsEnableQualityLogging.Get() &&
+      IsProductSpecificationsQualityLoggingAllowed(
+          shopping_service_->GetAccountChecker()->GetPrefs())) {
     current_log_quality_entry_ =
         PrepareQualityLogEntry(model_quality_logs_uploader_service_);
   }
@@ -1142,6 +1144,8 @@ void ShoppingServiceHandler::GetProductSpecificationsFeatureState(
       shopping_service_->GetAccountChecker());
   state_ptr->is_allowed_for_enterprise =
       commerce::IsProductSpecificationsAllowedForEnterprise(pref_service_);
+  state_ptr->is_quality_logging_allowed =
+      commerce::IsProductSpecificationsQualityLoggingAllowed(pref_service_);
 
   std::move(callback).Run(std::move(state_ptr));
   return;
