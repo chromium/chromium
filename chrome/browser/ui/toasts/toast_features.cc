@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace toast_features {
 
@@ -17,6 +18,9 @@ BASE_FEATURE(kToastFramework,
 
 const base::FeatureParam<bool> kToastDemoMode{&kToastFramework,
                                               "toast_demo_mode", false};
+
+const base::FeatureParam<base::TimeDelta> kToastTimeout{
+    &kToastFramework, "toast_timeout", base::Seconds(10)};
 
 // Enables the link copied confirmation toast.
 BASE_FEATURE(kLinkCopiedToast,

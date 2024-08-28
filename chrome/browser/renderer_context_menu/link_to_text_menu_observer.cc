@@ -275,7 +275,8 @@ void LinkToTextMenuObserver::ExecuteCopyLinkToText() {
 
   if (toast_features::IsEnabled(toast_features::kLinkToHighlightCopiedToast) &&
       toast_controller_) {
-    toast_controller_->ShowToast(ToastParams(ToastId::kLinkToHighlightCopied));
+    toast_controller_->MaybeShowToast(
+        ToastParams(ToastId::kLinkToHighlightCopied));
   }
 
   // Log usage for Shared Highlighting promo.

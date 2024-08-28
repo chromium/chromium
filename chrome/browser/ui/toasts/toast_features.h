@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace toast_features {
 
@@ -16,6 +17,10 @@ BASE_DECLARE_FEATURE(kToastFramework);
 // Enables all toast features queried through `toast_features::IsEnabled` which
 // is used for demo mode.
 extern const base::FeatureParam<bool> kToastDemoMode;
+
+// The amount of time an ephemeral toast should show before automatically
+// closing.
+extern const base::FeatureParam<base::TimeDelta> kToastTimeout;
 
 // Individual toasts
 BASE_DECLARE_FEATURE(kLinkCopiedToast);

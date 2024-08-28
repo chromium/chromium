@@ -67,3 +67,16 @@ source_set("browser_tests") {
     "//ui/views",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "toast_controller_unittest.cc" ]
+  deps = [
+    ":toasts",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
+}
