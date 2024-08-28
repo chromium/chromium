@@ -25965,6 +25965,8 @@ from previous Chrome versions.
   <int value="2" label="Valid URL"/>
 </enum>
 
+<!-- LINT.IfChange(MappedCSSProperties) -->
+
 <enum name="MappedCSSProperties">
 <!-- Generated from third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.
 Called by update_use_counter_css.py.-->
@@ -26777,6 +26779,8 @@ Called by update_use_counter_css.py.-->
   <int value="806" label="text-wrap-style"/>
   <int value="807" label="masonry-track"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
 
 <enum name="MediaEncryptionType">
   <int value="0" label="None"/>
@@ -34098,6 +34102,8 @@ This is true even if the type has been removed from the mojom file.
   <int value="9" label="kFailedToCommitInitTransaction"/>
 </enum>
 
+<!-- LINT.IfChange(WebDXFeatureObserver) -->
+
 <enum name="WebDXFeatureObserver">
 <!-- Generated from third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.
 Called by update_use_counter_feature_enum.py.-->
@@ -34211,6 +34217,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="106" label="WebNfc"/>
   <int value="107" label="DRAFT_Serial"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
 
 <enum name="WebFontCacheHit">
   <int value="0" label="Miss"/>
