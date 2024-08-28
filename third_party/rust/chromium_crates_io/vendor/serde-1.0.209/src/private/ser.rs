@@ -51,8 +51,6 @@ enum Unsupported {
     String,
     ByteArray,
     Optional,
-    #[cfg(any(feature = "std", feature = "alloc"))]
-    UnitStruct,
     Sequence,
     Tuple,
     TupleStruct,
@@ -69,8 +67,6 @@ impl Display for Unsupported {
             Unsupported::String => formatter.write_str("a string"),
             Unsupported::ByteArray => formatter.write_str("a byte array"),
             Unsupported::Optional => formatter.write_str("an optional"),
-            #[cfg(any(feature = "std", feature = "alloc"))]
-            Unsupported::UnitStruct => formatter.write_str("unit struct"),
             Unsupported::Sequence => formatter.write_str("a sequence"),
             Unsupported::Tuple => formatter.write_str("a tuple"),
             Unsupported::TupleStruct => formatter.write_str("a tuple struct"),
@@ -1092,7 +1088,7 @@ where
     }
 
     fn serialize_unit_struct(self, _: &'static str) -> Result<Self::Ok, Self::Error> {
-        Err(Self::bad_type(Unsupported::UnitStruct))
+        Ok(())
     }
 
     fn serialize_unit_variant(
