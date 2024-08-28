@@ -2381,12 +2381,12 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://wicg.github.io/nav-speculation/prerendering.html#document-post-prerendering-activation-steps-list
   Vector<base::OnceClosure> post_prerendering_activation_callbacks_;
 
-  bool evaluate_media_queries_on_style_recalc_;
+  bool evaluate_media_queries_on_style_recalc_ = false;
 
   // If we do ignore the pending stylesheet count, then we need to add a boolean
   // to track that this happened so that we can do a full repaint when the
   // stylesheets do eventually load.
-  PendingSheetLayout pending_sheet_layout_;
+  PendingSheetLayout pending_sheet_layout_ = kNoLayoutWithPendingSheets;
 
   Member<LocalDOMWindow> dom_window_;
 
@@ -2406,7 +2406,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<DocumentParser> parser_;
   Member<HttpRefreshScheduler> http_refresh_scheduler_;
 
-  bool well_formed_;
+  bool well_formed_ = false;
 
   bool is_tracking_soft_navigation_heuristics_ = false;
 
@@ -2443,12 +2443,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<CSSStyleSheet> elem_sheet_;
 
-  PrintingState printing_;
-  PaintPreviewState paint_preview_;
+  PrintingState printing_ = kNotPrinting;
+  PaintPreviewState paint_preview_ = kNotPaintingPreview;
 
-  CompatibilityMode compatibility_mode_;
+  CompatibilityMode compatibility_mode_ = kNoQuirksMode;
   // This is cheaper than making setCompatibilityMode virtual.
-  bool compatibility_mode_locked_;
+  bool compatibility_mode_locked_ = false;
 
   TaskHandle execute_scripts_waiting_for_resources_task_handle_;
   TaskHandle javascript_url_task_handle_;
@@ -2469,7 +2469,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://html.spec.whatwg.org/C/#autofocus-processed-flag
   bool autofocus_processed_flag_ = false;
   mojom::blink::FocusType last_focus_type_;
-  bool had_keyboard_event_;
+  bool had_keyboard_event_ = false;
   HeapTaskRunnerTimer<Document> clear_focused_element_timer_;
   // https://html.spec.whatwg.org/C/#autofocus-candidates
   // We implement this as a Vector because its maximum size is typically 1.
@@ -2492,19 +2492,19 @@ class CORE_EXPORT Document : public ContainerNode,
   uint64_t dom_tree_version_;
   static uint64_t global_tree_version_;
 
-  uint64_t style_version_;
+  uint64_t style_version_ = 0;
 
   HeapHashSet<WeakMember<NodeIterator>> node_iterators_;
   using AttachedRangeSet = HeapHashSet<WeakMember<Range>>;
   AttachedRangeSet ranges_;
 
-  uint16_t listener_types_;
+  uint16_t listener_types_ = 0;
 
   // Used to record the counts of event listeners added from the nodes in the
   // document.
   uint32_t event_listener_counts_;
 
-  MutationObserverOptions mutation_observer_types_;
+  MutationObserverOptions mutation_observer_types_ = 0;
 
   Member<ElementIntersectionObserverData>
       document_explicit_root_intersection_observer_data_;
@@ -2516,14 +2516,14 @@ class CORE_EXPORT Document : public ContainerNode,
   TextLinkColors text_link_colors_;
   const Member<VisitedLinkState> visited_link_state_;
 
-  bool visually_ordered_;
+  bool visually_ordered_ = false;
 
   using ElementComputedStyleMap =
       HeapHashMap<WeakMember<Element>, Member<StylePropertyMapReadOnly>>;
   ElementComputedStyleMap element_computed_style_map_;
 
   DocumentReadyState ready_state_;
-  ParsingState parsing_state_;
+  ParsingState parsing_state_ = kFinishedParsing;
 
   bool is_dns_prefetch_enabled_;
   bool have_explicitly_disabled_dns_prefetch_;
@@ -2538,11 +2538,11 @@ class CORE_EXPORT Document : public ContainerNode,
   bool may_contain_shadow_roots_ = false;
 
   // https://html.spec.whatwg.org/C/dynamic-markup-insertion.html#ignore-destructive-writes-counter
-  unsigned ignore_destructive_write_count_;
+  unsigned ignore_destructive_write_count_ = 0;
   // https://html.spec.whatwg.org/C/dynamic-markup-insertion.html#throw-on-dynamic-markup-insertion-counter
-  unsigned throw_on_dynamic_markup_insertion_count_;
+  unsigned throw_on_dynamic_markup_insertion_count_ = 0;
   // https://html.spec.whatwg.org/C/dynamic-markup-insertion.html#ignore-opens-during-unload-counter
-  unsigned ignore_opens_during_unload_count_;
+  unsigned ignore_opens_during_unload_count_ = 0;
 
   bool ignore_opens_and_writes_for_abort_ = false;
 
@@ -2559,11 +2559,11 @@ class CORE_EXPORT Document : public ContainerNode,
   WeakMember<Element> css_target_;
   bool css_target_is_selector_fragment_ = false;
 
-  bool was_discarded_;
+  bool was_discarded_ = false;
 
-  LoadEventProgress load_event_progress_;
+  LoadEventProgress load_event_progress_ = kLoadEventCompleted;
 
-  bool is_freezing_in_progress_;
+  bool is_freezing_in_progress_ = false;
 
   base::ElapsedTimer start_time_;
 
@@ -2575,18 +2575,18 @@ class CORE_EXPORT Document : public ContainerNode,
   std::unique_ptr<TransformSource> transform_source_;
 
   String xml_encoding_;
-  String xml_version_;
-  unsigned xml_standalone_ : 2;
-  unsigned has_xml_declaration_ : 1;
+  String xml_version_{"1.0"};
+  unsigned xml_standalone_ : 2 = kStandaloneUnspecified;
+  unsigned has_xml_declaration_ : 1 = 0;
   // See enum ViewportUnitFlags.
-  unsigned viewport_unit_flags_ : kViewportUnitFlagBits;
+  unsigned viewport_unit_flags_ : kViewportUnitFlagBits = 0;
 
   AtomicString content_language_;
 
   DocumentEncodingData encoding_data_;
 
-  bool design_mode_;
-  bool is_running_exec_command_;
+  bool design_mode_ = false;
+  bool is_running_exec_command_ = false;
 
   HeapHashSet<WeakMember<const LiveNodeListBase>>
       lists_invalidated_at_document_;
@@ -2619,11 +2619,11 @@ class CORE_EXPORT Document : public ContainerNode,
 
   DocumentClassFlags document_classes_;
 
-  bool is_view_source_;
-  bool is_xr_overlay_;
-  bool saw_elements_in_known_namespaces_;
+  bool is_view_source_ = false;
+  bool is_xr_overlay_ = false;
+  bool saw_elements_in_known_namespaces_ = false;
   bool is_srcdoc_document_;
-  bool is_mobile_document_;
+  bool is_mobile_document_ = false;
 
   Member<LayoutView> layout_view_;
 
@@ -2671,7 +2671,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<DocumentPartRoot> document_part_root_;
 
-  int load_event_delay_count_;
+  int load_event_delay_count_ = 0;
 
   // Objects and embeds depend on "being rendered" for delaying the load event.
   // This is a document-wide flag saying that we have incremented the
@@ -2687,8 +2687,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   DocumentTiming document_timing_;
   Member<MediaQueryMatcher> media_query_matcher_;
-  bool write_recursion_is_too_deep_;
-  unsigned write_recursion_depth_;
+  bool write_recursion_is_too_deep_ = false;
+  unsigned write_recursion_depth_ = 0;
 
   Member<ScriptedAnimationController> scripted_animation_controller_;
   Member<TextAutosizer> text_autosizer_;
@@ -2718,7 +2718,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // empty before and after those operations.
   HeapHashSet<Member<LocalSVGResource>> svg_resources_needing_invalidation_;
 
-  ParserSynchronizationPolicy parser_sync_policy_;
+  ParserSynchronizationPolicy parser_sync_policy_ = kAllowDeferredParsing;
 
   Member<CanvasFontCache> canvas_font_cache_;
 

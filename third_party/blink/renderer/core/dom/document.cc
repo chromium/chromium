@@ -791,32 +791,20 @@ Document::Document(const DocumentInit& initializer,
       token_(initializer.GetToken()),
       is_initial_empty_document_(initializer.IsInitialEmptyDocument()),
       is_prerendering_(initializer.IsPrerendering()),
-      evaluate_media_queries_on_style_recalc_(false),
-      pending_sheet_layout_(kNoLayoutWithPendingSheets),
       dom_window_(initializer.GetWindow()),
       execution_context_(initializer.GetExecutionContext()),
       agent_(initializer.GetAgent()),
       http_refresh_scheduler_(MakeGarbageCollected<HttpRefreshScheduler>(this)),
-      well_formed_(false),
       fallback_base_url_(initializer.FallbackBaseURL()),
       cookie_url_(dom_window_ ? initializer.GetCookieUrl()
                               : KURL(g_empty_string)),
-      printing_(kNotPrinting),
-      paint_preview_(kNotPaintingPreview),
-      compatibility_mode_(kNoQuirksMode),
-      compatibility_mode_locked_(false),
       last_focus_type_(mojom::blink::FocusType::kNone),
-      had_keyboard_event_(false),
       clear_focused_element_timer_(
           GetTaskRunner(TaskType::kInternalUserInteraction),
           this,
           &Document::ClearFocusedElementTimerFired),
       dom_tree_version_(++global_tree_version_),
-      style_version_(0),
-      listener_types_(0),
-      mutation_observer_types_(0),
       visited_link_state_(MakeGarbageCollected<VisitedLinkState>(*this)),
-      visually_ordered_(false),
       // https://html.spec.whatwg.org/multipage/dom.html#current-document-readiness
       // says the ready state starts as 'loading' if there's an associated
       // parser and 'complete' otherwise. We don't know whether there's an
@@ -828,34 +816,13 @@ Document::Document(const DocumentInit& initializer,
       // to ensure that the quirk of when we set the ready state is not
       // web-observable.
       ready_state_(dom_window_ ? kLoading : kComplete),
-      parsing_state_(kFinishedParsing),
-      ignore_destructive_write_count_(0),
-      throw_on_dynamic_markup_insertion_count_(0),
-      ignore_opens_during_unload_count_(0),
       markers_(MakeGarbageCollected<DocumentMarkerController>(*this)),
-      css_target_(nullptr),
-      was_discarded_(false),
-      load_event_progress_(kLoadEventCompleted),
-      is_freezing_in_progress_(false),
       script_runner_(MakeGarbageCollected<ScriptRunner>(this)),
       script_runner_delayer_(MakeGarbageCollected<ScriptRunnerDelayer>(
           script_runner_,
           ScriptRunner::DelayReason::kMilestone)),
-      xml_version_("1.0"),
-      xml_standalone_(kStandaloneUnspecified),
-      has_xml_declaration_(0),
-      viewport_unit_flags_(0),
-      design_mode_(false),
-      is_running_exec_command_(false),
-      has_draggable_regions_(false),
-      draggable_regions_dirty_(false),
       document_classes_(document_classes),
-      is_view_source_(false),
-      saw_elements_in_known_namespaces_(false),
       is_srcdoc_document_(initializer.IsSrcdocDocument()),
-      is_mobile_document_(false),
-      layout_view_(nullptr),
-      load_event_delay_count_(0),
       // We already intentionally fire load event asynchronously and here we use
       // kDOMManipulation to ensure that we run onload() in order with other
       // callbacks (e.g. onloadstart()) per the spec.
@@ -867,8 +834,6 @@ Document::Document(const DocumentInit& initializer,
                             this,
                             &Document::PluginLoadingTimerFired),
       document_timing_(*this),
-      write_recursion_is_too_deep_(false),
-      write_recursion_depth_(0),
       scripted_animation_controller_(
           MakeGarbageCollected<ScriptedAnimationController>(domWindow())),
       element_data_cache_clear_timer_(
@@ -880,8 +845,6 @@ Document::Document(const DocumentInit& initializer,
       pending_animations_(MakeGarbageCollected<PendingAnimations>(*this)),
       worklet_animation_controller_(
           MakeGarbageCollected<WorkletAnimationController>(this)),
-      template_document_host_(nullptr),
-      parser_sync_policy_(kAllowDeferredParsing),
       // Use the source id from the document initializer if it is available.
       // Otherwise, generate a new source id to cover any cases that don't
       // receive a valid source id, this for example includes but is not limited
@@ -910,14 +873,19 @@ Document::Document(const DocumentInit& initializer,
     script_runner_delayer_->Activate();
   }
 
-  if (GetFrame()) {
-    DCHECK(GetFrame()->GetPage());
+  if (LocalFrame* frame = GetFrame()) {
+    DCHECK(frame->GetPage());
     fetcher_ = FrameFetchContext::CreateFetcherForCommittedDocument(
-        *GetFrame()->Loader().GetDocumentLoader(), *this);
+        *frame->Loader().GetDocumentLoader(), *this);
     cookie_jar_ = MakeGarbageCollected<CookieJar>(this);
     if (IsInMainFrame() && GetPage()->IsPartitionedPopin()) {
       CountUse(WebFeature::kPartitionedPopin_Opened);
     }
+    is_vertical_scroll_enforced_ =
+        RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
+        !frame->IsOutermostMainFrame() &&
+        !dom_window_->IsFeatureEnabled(
+            mojom::blink::PermissionsPolicyFeature::kVerticalScroll);
   } else {
     // We disable fetches for frame-less Documents.
     // See https://crbug.com/961614 for details.
@@ -956,12 +924,6 @@ Document::Document(const DocumentInit& initializer,
   should_record_sandboxed_srcdoc_baseurl_metrics_ =
       urlForBinding().IsAboutSrcdocURL() && !fallback_base_url_.IsNull() &&
       dom_window_->IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin);
-
-  is_vertical_scroll_enforced_ =
-      GetFrame() && !GetFrame()->IsOutermostMainFrame() &&
-      RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
-      !dom_window_->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kVerticalScroll);
 
   InitDNSPrefetch();
 
