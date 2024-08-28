@@ -793,18 +793,43 @@ void AutofillAgent::AccessibilityModeChanged(const ui::AXMode& mode) {
 void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
                                          bool known_success,
                                          mojom::SubmissionSource source) {
-  if (base::FeatureList::IsEnabled(
+  DenseSet<mojom::SubmissionSource>& sources =
+      submitted_forms_[form_data.renderer_id()];
+  if (!sources.insert(source).second) {
+    // A single submission source should not lead to multiple submission signals
+    // for a single form.
+    return;
+  }
+  // Autofill ignores DOM_MUTATION_AFTER_AUTOFILL on non-WebView platforms and
+  // so this source shouldn't shadow other submissions. On WebView, no duplicate
+  // filtering is required since the provider is reset on successful submission.
+  const bool autofill_duplicate_submission =
+      sources.size() -
+          sources.contains(
+              mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL) >
+      1;
+  // Password manager doesn't consider FORM_SUBMISSION as a sufficient condition
+  // for "successful" submission, therefore this should also not shadow other
+  // submissions.
+  const bool password_duplicate_submission =
+      sources.size() -
+          sources.contains(mojom::SubmissionSource::FORM_SUBMISSION) >
+      1;
+  if (!password_duplicate_submission &&
+      base::FeatureList::IsEnabled(
           features::kAutofillUnifyAndFixFormTracking)) {
     password_autofill_agent_->FireHostSubmitEvent(form_data.renderer_id(),
                                                   source);
   }
-  // We don't want to fire duplicate submission event.
-  if (!submitted_forms_.insert(form_data.renderer_id()).second) {
-    return;
+  if (!autofill_duplicate_submission) {
+    base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
+    if (auto* autofill_driver = unsafe_autofill_driver()) {
+      autofill_driver->FormSubmitted(form_data, known_success, source);
+    }
   }
-  base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
-  if (auto* autofill_driver = unsafe_autofill_driver()) {
-    autofill_driver->FormSubmitted(form_data, known_success, source);
+  // Bound the size of `submitted_forms_` to avoid possible memory leaks.
+  if (submitted_forms_.size() > 200) {
+    submitted_forms_.erase(--submitted_forms_.end());
   }
 }
 
