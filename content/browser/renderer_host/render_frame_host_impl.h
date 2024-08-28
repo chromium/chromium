@@ -2878,11 +2878,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
                               base::Value)>;
 
   // Runs JavaScript in this frame, without restrictions. ONLY FOR TESTS.
-  // This method can optionally trigger a fake user activation notification,
-  // and can wait for returned promises to be resolved.
+  // This method can optionally:
+  // - Trigger a fake user activation notification.
+  // - Wait for returned promises to be resolved.
+  // - Choose to honor JS content settings.
   void ExecuteJavaScriptForTests(const std::u16string& javascript,
                                  bool has_user_gesture,
                                  bool resolve_promises,
+                                 bool honor_js_content_settings,
                                  int32_t world_id,
                                  JavaScriptResultAndTypeCallback callback);
 

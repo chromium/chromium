@@ -162,6 +162,7 @@ class LocalFrameMojoHandler
       const String& javascript,
       bool has_user_gesture,
       bool resolve_promises,
+      bool honor_js_content_settings,
       int32_t world_id,
       JavaScriptExecuteRequestForTestsCallback callback) final;
   void JavaScriptExecuteRequestInIsolatedWorld(

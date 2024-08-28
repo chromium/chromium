@@ -1867,7 +1867,9 @@ class ContentSettingsPdfTest : public PDFExtensionTestBase {
   bool UseOopif() const override { return true; }
 
   testing::AssertionResult IsJavaScriptEnabled(content::RenderFrameHost* host) {
-    return content::ExecJs(host, "");
+    return content::ExecJs(
+        host, "",
+        content::EvalJsOptions::EXECUTE_SCRIPT_HONOR_JS_CONTENT_SETTINGS);
   }
 };
 

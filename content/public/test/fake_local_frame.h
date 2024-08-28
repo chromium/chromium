@@ -104,8 +104,9 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       JavaScriptExecuteRequestCallback callback) override;
   void JavaScriptExecuteRequestForTests(
       const std::u16string& javascript,
-      bool wants_result,
       bool has_user_gesture,
+      bool resolve_promises,
+      bool honor_js_content_settings,
       int32_t world_id,
       JavaScriptExecuteRequestForTestsCallback callback) override;
   void JavaScriptExecuteRequestInIsolatedWorld(

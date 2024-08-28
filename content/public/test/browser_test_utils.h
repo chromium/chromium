@@ -865,14 +865,19 @@ std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar);
 enum EvalJsOptions {
   EXECUTE_SCRIPT_DEFAULT_OPTIONS = 0,
 
-  // By default, EvalJs runs with a user gesture. This bit flag disables
-  // that.
+  // By default, EvalJs() runs with a user gesture. This bit flag disables that.
   EXECUTE_SCRIPT_NO_USER_GESTURE = (1 << 0),
 
   // By default, when the script passed to EvalJs evaluates to a Promise, the
   // execution continues until the Promise resolves, and the resolved value is
   // returned. Setting this bit disables such Promise resolution.
   EXECUTE_SCRIPT_NO_RESOLVE_PROMISES = (1 << 1),
+
+  // Content settings are a mechanism that allows users to disable various
+  // functions of the browser. One content setting disables javascript. By
+  // default, EvalJs() ignores this setting. This bit flag causes it to instead
+  // honor JS content settings.
+  EXECUTE_SCRIPT_HONOR_JS_CONTENT_SETTINGS = (1 << 2),
 };
 
 // EvalJs() -- run |script| in |execution_target| and return its value or error.

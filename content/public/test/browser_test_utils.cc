@@ -1794,16 +1794,18 @@ EvalJsResult EvalJsRunner(
         base::Value(), "Error: EvalJs won't work on an already-crashed frame.");
   }
 
-  bool resolve_promises = !(options & EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
   bool user_gesture = rfh->GetLifecycleState() !=
                           RenderFrameHost::LifecycleState::kPrerendering &&
                       !(options & EXECUTE_SCRIPT_NO_USER_GESTURE) &&
                       world_id == ISOLATED_WORLD_ID_GLOBAL;
+  bool resolve_promises = !(options & EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
+  bool honor_js_content_settings =
+      options & EXECUTE_SCRIPT_HONOR_JS_CONTENT_SETTINGS;
 
   ExecuteJavaScriptForTestsWaiter waiter(rfh);
   rfh->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script), user_gesture,
-                                 resolve_promises, world_id,
-                                 waiter.GetCallback());
+                                 resolve_promises, honor_js_content_settings,
+                                 world_id, waiter.GetCallback());
 
   std::move(after_script_invoke).Run();
 

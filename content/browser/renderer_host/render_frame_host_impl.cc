@@ -3023,7 +3023,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
     int32_t world_id) {
   ExecuteJavaScriptForTests(  // IN-TEST
       javascript, /*has_user_gesture=*/false,
-      /*resolve_promises=*/false, world_id,
+      /*resolve_promises=*/false, /*honor_js_content_settings=*/false, world_id,
       CreateJavaScriptExecuteRequestForTestsCallback(std::move(callback)));
 }
 
@@ -3033,7 +3033,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
     int32_t world_id) {
   ExecuteJavaScriptForTests(  // IN-TEST
       javascript, /*has_user_gesture=*/true,
-      /*resolve_promises=*/false, world_id,
+      /*resolve_promises=*/false, /*honor_js_content_settings=*/false, world_id,
       CreateJavaScriptExecuteRequestForTestsCallback(std::move(callback)));
 }
 
@@ -3041,6 +3041,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
     const std::u16string& javascript,
     bool has_user_gesture,
     bool resolve_promises,
+    bool honor_js_content_settings,
     int32_t world_id,
     JavaScriptResultAndTypeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -3056,8 +3057,8 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
   }
 
   GetAssociatedLocalFrame()->JavaScriptExecuteRequestForTests(  // IN-TEST
-      javascript, has_user_gesture, resolve_promises, world_id,
-      std::move(callback));
+      javascript, has_user_gesture, resolve_promises, honor_js_content_settings,
+      world_id, std::move(callback));
 }
 
 void RenderFrameHostImpl::ExecutePluginActionAtLocalLocation(

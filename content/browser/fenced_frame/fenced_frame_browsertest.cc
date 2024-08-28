@@ -1873,8 +1873,10 @@ IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
   // The following attempt to create a fenced frame is expected to fail since
   // it would otherwise be contained in a sandbox that doesn't have the
   // allow-same-origin attribute. See kFencedFrameMandatoryUnsandboxedFlags.
-  EXPECT_FALSE(ExecJs(primary_main_frame_host(), kAddFencedFrameScript,
-                      EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(
+      ExecJs(primary_main_frame_host(), kAddFencedFrameScript,
+             EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE |
+                 EvalJsOptions::EXECUTE_SCRIPT_HONOR_JS_CONTENT_SETTINGS));
   EXPECT_EQ(previous_fenced_frame_count,
             primary_main_frame_host()->GetFencedFrames().size());
 }

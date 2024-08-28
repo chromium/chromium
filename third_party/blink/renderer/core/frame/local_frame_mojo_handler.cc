@@ -877,6 +877,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
     const String& javascript,
     bool has_user_gesture,
     bool resolve_promises,
+    bool honor_js_content_settings,
     int32_t world_id,
     JavaScriptExecuteRequestForTestsCallback callback) {
   TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequestForTests",
@@ -901,8 +902,12 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
       javascript, ScriptSourceLocationType::kUnknown,
       SanitizeScriptErrors::kDoNotSanitize);
 
+  const auto policy =
+      honor_js_content_settings
+          ? ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled
+          : ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled;
   ScriptEvaluationResult result =
-      script->RunScriptOnScriptStateAndReturnValue(script_state);
+      script->RunScriptOnScriptStateAndReturnValue(script_state, policy);
 
   auto* handler = MakeGarbageCollected<JavaScriptExecuteRequestForTestsHandler>(
       std::move(callback));

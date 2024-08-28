@@ -1037,13 +1037,19 @@ interface LocalFrame {
       mojo_base.mojom.BigString16 javascript,
       bool wants_result) => (mojo_base.mojom.Value result);
 
-  // ONLY FOR TESTS: Same as above but this can optionally trigger a fake user
-  // activation notification to test functionalities that are gated by user
-  // activation, and can block until a resulting promise is resolved.
+  // ONLY FOR TESTS: Same as above but this can optionally:
+  // - Trigger a fake user activation notification to test functionalities that
+  //   are gated by user activation.
+  // - Can block until a resulting promise is resolved.
+  // - Can choose to not honor JS content settings.
+  // Content settings are a mechanism that allows users to disable various
+  // functions of the browser. One content setting disables javascript. This bit
+  // controls whether this content setting is ignored or honored.
   JavaScriptExecuteRequestForTests(
       mojo_base.mojom.BigString16 javascript,
       bool has_user_gesture,
       bool resolve_promises,
+      bool honor_js_content_settings,
       int32 world_id)
       => (JavaScriptExecutionResultType result_type,
           mojo_base.mojom.Value result);

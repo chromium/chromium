@@ -89,7 +89,27 @@ public class TestCallbackHelperContainer {
         private String mJsonResult;
 
         /**
+         * Starts evaluation of a given JavaScript code on a given webContents using production
+         * logic.
+         *
+         * @param webContents A WebContents instance to be used.
+         * @param code A JavaScript code to be evaluated.
+         */
+        public void evaluateJavaScript(WebContents webContents, String code) {
+            JavaScriptCallback callback =
+                    new JavaScriptCallback() {
+                        @Override
+                        public void handleJavaScriptResult(String jsonResult) {
+                            notifyCalled(jsonResult);
+                        }
+                    };
+            mJsonResult = null;
+            ThreadUtils.runOnUiThreadBlocking(() -> webContents.evaluateJavaScript(code, callback));
+        }
+
+        /**
          * Starts evaluation of a given JavaScript code on a given webContents.
+         *
          * @param webContents A WebContents instance to be used.
          * @param code A JavaScript code to be evaluated.
          */
