@@ -22,10 +22,6 @@ export function isSeaPenUseExptTemplateEnabled() {
   return loadTimeData.getBoolean('isSeaPenUseExptTemplateEnabled');
 }
 
-export function isSeaPenEnterpriseEnabled() {
-  return loadTimeData.getBoolean('isSeaPenEnterpriseEnabled');
-}
-
 export function isLacrosEnabled() {
   return loadTimeData.getBoolean('isLacrosEnabled');
 }
