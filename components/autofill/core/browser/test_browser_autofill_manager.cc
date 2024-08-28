@@ -36,37 +36,34 @@ TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 
 void TestBrowserAutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
-  TestAutofillManagerWaiter waiter(*this,
-                                   {AutofillManagerEvent::kLanguageDetermined});
+  waiter_.Reset();
   AutofillManager::OnLanguageDetermined(details);
-  ASSERT_TRUE(waiter.Wait());
+  ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnFormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {
-  TestAutofillManagerWaiter waiter(*this, {AutofillManagerEvent::kFormsSeen});
+  waiter_.Reset();
   AutofillManager::OnFormsSeen(updated_forms, removed_forms);
-  ASSERT_TRUE(waiter.Wait());
+  ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnTextFieldDidChange(
     const FormData& form,
     const FieldGlobalId& field_id,
     const base::TimeTicks timestamp) {
-  TestAutofillManagerWaiter waiter(*this,
-                                   {AutofillManagerEvent::kTextFieldDidChange});
+  waiter_.Reset();
   AutofillManager::OnTextFieldDidChange(form, field_id, timestamp);
-  ASSERT_TRUE(waiter.Wait());
+  ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnDidFillAutofillFormData(
     const FormData& form,
     const base::TimeTicks timestamp) {
-  TestAutofillManagerWaiter waiter(
-      *this, {AutofillManagerEvent::kDidFillAutofillFormData});
+  waiter_.Reset();
   AutofillManager::OnDidFillAutofillFormData(form, timestamp);
-  ASSERT_TRUE(waiter.Wait());
+  ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnAskForValuesToFill(
@@ -74,11 +71,10 @@ void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
-  TestAutofillManagerWaiter waiter(*this,
-                                   {AutofillManagerEvent::kAskForValuesToFill});
+  waiter_.Reset();
   AutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                         trigger_source);
-  ASSERT_TRUE(waiter.Wait());
+  ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
@@ -86,20 +82,19 @@ void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
     const FieldGlobalId& field_id,
     const std::u16string& old_value,
     bool formatting_only) {
-  TestAutofillManagerWaiter waiter(
-      *this, {AutofillManagerEvent::kJavaScriptChangedAutofilledValue});
+  waiter_.Reset();
   AutofillManager::OnJavaScriptChangedAutofilledValue(form, field_id, old_value,
                                                       formatting_only);
-  ASSERT_TRUE(waiter.Wait());
+  ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnFormSubmitted(
     const FormData& form,
     const bool known_success,
     const mojom::SubmissionSource source) {
-  TestAutofillManagerWaiter waiter(*this, {AutofillManagerEvent::kFormsSeen});
+  waiter_.Reset();
   AutofillManager::OnFormSubmitted(form, known_success, source);
-  ASSERT_TRUE(waiter.Wait());
+  ASSERT_TRUE(waiter_.Wait(0));
 }
 
 bool TestBrowserAutofillManager::IsAutofillProfileEnabled() const {
@@ -227,14 +222,13 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     const FormData& form,
     const FieldGlobalId& field_id,
     AutofillSuggestionTriggerSource trigger_source) {
-  TestAutofillManagerWaiter waiter(*this,
-                                   {AutofillManagerEvent::kAskForValuesToFill});
   gfx::PointF p =
       CHECK_DEREF(form.FindFieldByGlobalId(field_id)).bounds().origin();
   gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
+  waiter_.Reset();
   BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                                trigger_source);
-  ASSERT_TRUE(waiter.Wait());
+  ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::SetAutofillProfileEnabled(

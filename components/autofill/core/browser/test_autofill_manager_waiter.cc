@@ -64,7 +64,7 @@ std::string TestAutofillManagerWaiter::DescribeState() const {
 
 size_t TestAutofillManagerWaiter::num_pending_events() const {
   size_t events = 0;
-  for (const auto& [_, event_count] : state_->events) {
+  for (const auto& [event, event_count] : state_->events) {
     CHECK_GE(event_count.num_before_events, event_count.num_after_events)
         << DescribeState();
     events += event_count.num_before_events - event_count.num_after_events;
@@ -414,5 +414,9 @@ const FormStructure* WaitForMatchingForm(
   };
   return Waiter(manager, std::move(pred)).Wait(timeout, location);
 }
+
+WaiterForEvent::WaiterForEvent(WaiterForEvent&&) = default;
+WaiterForEvent& WaiterForEvent::operator=(WaiterForEvent&&) = default;
+WaiterForEvent::~WaiterForEvent() = default;
 
 }  // namespace autofill

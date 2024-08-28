@@ -38,10 +38,13 @@
 #include "url/gurl.h"
 
 namespace policy {
-
 namespace {
+
+using ::testing::AllOf;
+using ::testing::Args;
+using ::testing::AssertionResult;
+
 const char kAutofillTestPageURL[] = "/autofill/autofill_address_enabled.html";
-}  // namespace
 
 class AutofillPolicyTest : public PolicyTest {
  public:
@@ -126,11 +129,13 @@ class AutofillPolicyTest : public PolicyTest {
         const autofill::FieldGlobalId& field_id,
         const gfx::Rect& caret_bounds,
         autofill::AutofillSuggestionTriggerSource trigger_source) override {
-      autofill::TestAutofillManagerWaiter waiter(
-          *this, {autofill::AutofillManagerEvent::kAskForValuesToFill});
+      base::OnceCallback<AssertionResult()> wait_for_ask_for_values_to_fill =
+          WaitForEvent(*this,
+                       &AutofillManager::Observer::OnAfterAskForValuesToFill,
+                       AllOf(Args<1>(form.global_id()), Args<2>(field_id)));
       autofill::AutofillManager::OnAskForValuesToFill(
           form, field_id, caret_bounds, trigger_source);
-      ASSERT_TRUE(waiter.Wait());
+      ASSERT_TRUE(std::move(wait_for_ask_for_values_to_fill).Run());
       if (run_loop_) {
         run_loop_->Quit();
         run_loop_ = nullptr;
@@ -221,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillDisabledByPolicy) {
   UpdateProviderPolicy(policies);
   ASSERT_TRUE(NavigateToTestPage());
   EXPECT_TRUE(autofill_manager()->WaitForFormWithNFields(6u));
-  for (const auto& [element, _] : GetExpectedSuggestions()) {
+  for (const auto& [element, expectation] : GetExpectedSuggestions()) {
     content::SimulateMouseClickOrTapElementWithId(GetWebContents(), element);
     autofill_manager()->WaitForAskForValuesToFill();
     // Showing the Autofill Popup is an asynchronous task.
@@ -231,4 +236,5 @@ IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillDisabledByPolicy) {
   }
 }
 
+}  // namespace
 }  // namespace policy

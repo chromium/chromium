@@ -32,6 +32,10 @@
 
 namespace autofill {
 
+using ::testing::AllOf;
+using ::testing::Args;
+using ::testing::AssertionResult;
+
 static PersonalDataManager* GetPersonalDataManager(Profile* profile) {
   return PersonalDataManagerFactory::GetForBrowserContext(profile);
 }
@@ -75,7 +79,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
     WaitForPersonalDataChange(base_profile);
 }
 
-[[nodiscard]] testing::AssertionResult GenerateTestAutofillPopup(
+[[nodiscard]] AssertionResult GenerateTestAutofillPopup(
     ContentAutofillDriver& driver,
     Profile* profile,
     bool expect_popup_to_be_shown,
@@ -111,18 +115,18 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
   autofill_profile.SetRawInfo(NAME_FULL, u"John Doe");
   AddTestProfile(profile, autofill_profile);
 
-  TestAutofillManagerWaiter waiter(driver.GetAutofillManager(),
-                                   {AutofillManagerEvent::kAskForValuesToFill});
+  base::OnceCallback<AssertionResult()> wait_for_ask_for_values_to_fill =
+      WaitForEvent(driver.GetAutofillManager(),
+                   &AutofillManager::Observer::OnAfterAskForValuesToFill,
+                   testing::_);
   gfx::PointF p = element_bounds.origin();
   driver.renderer_events().AskForValuesToFill(
       form, form.fields().front().renderer_id(),
       /*caret_bounds=*/gfx::Rect(gfx::Point(p.x(), p.y()), gfx::Size(0, 10)),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  testing::AssertionResult waiter_assertion_result = waiter.Wait();
-  if (!waiter_assertion_result) {
-    return waiter_assertion_result
-           << " " << __func__
-           << "(): TestAutofillManagerWaiter assertion failed";
+  if (AssertionResult a = std::move(wait_for_ask_for_values_to_fill).Run();
+      !a) {
+    return a << " " << __func__ << "(): WaitForEvent() assertion failed";
   }
   if (driver.GetAutofillManager().form_structures().size() != 1u) {
     return testing::AssertionFailure()
