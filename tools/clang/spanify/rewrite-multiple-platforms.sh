@@ -6,9 +6,7 @@
 # For more fine-grained instructions, see:
 # https://docs.google.com/document/d/1chTvr3fSofQNV_PDPEHRyUgcJCQBgTDOOBriW9gIm9M/edit?ts=5e9549a2#heading=h.fjdnrdg1gcty
 
-set -e  # makes the script quit on any command failure
 set -u  # unset variables are quit-worthy errors
-
 
 # Possible flag values and their default settings.
 PLATFORMS="linux"
@@ -119,14 +117,15 @@ then
     time tools/clang/scripts/build.py \
         --with-android \
         --without-fuchsia \
-        --extra-tools spanify
+        --extra-tools spanify || exit 1
+
   fi
 else
   echo "*** Skipping building clang ***"
 fi
 
 echo "*** Testing the rewriter ***"
-tools/clang/spanify/tests/run_all_tests.py
+tools/clang/spanify/tests/run_all_tests.py || exit 1
 
 args_for_platform() {
     case "$1" in
@@ -226,6 +225,9 @@ EOF
     esac
 }
 
+# The latest rewrite directory.
+OUT_DIR=""
+
 pre_process() {
     PLATFORM="$1"
     OUT_DIR="out/rewrite-$PLATFORM"
@@ -239,7 +241,9 @@ pre_process() {
     time ninja -C $OUT_DIR -t targets all \
         | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' \
         | cut -d : -f 1 \
-        | xargs -s $(expr $(getconf ARG_MAX) - 256) ninja -C $OUT_DIR
+        | xargs -s $(expr $(getconf ARG_MAX) - 256) ninja -C $OUT_DIR \
+        || exit 1
+
 
     TARGET_OS_OPTION=""
     if [ $PLATFORM = "win" ]; then
@@ -264,6 +268,7 @@ main_rewrite() {
         --generate-compdb \
         -p $OUT_DIR \
         $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out
+    touch ~/scratch/rewriter.main.out
     cat ~/scratch/rewriter-$PLATFORM.main.out >> ~/scratch/rewriter.main.out
 }
 
@@ -291,7 +296,7 @@ then
   echo "*** Applying edits ***"
   cat ~/scratch/rewriter.main.out | \
       tools/clang/spanify/extract_edits.py | \
-      tools/clang/scripts/apply_edits.py -p out/rewrite-win $EDIT_DIRS
+      tools/clang/scripts/apply_edits.py -p $OUT_DIR $EDIT_DIRS
 else
   echo "*** Skipping edits ***"
 fi
