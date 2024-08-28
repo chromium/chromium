@@ -684,48 +684,5 @@ TEST(NativeValueTraitsImplTest, TypedPassAsSpanUint8) {
   }
 }
 
-template <typename T>
-using PassAsSpanSequence =
-    PassAsSpan<PassAsSpanMarkerBase::Flags::kAllowSequence, T>;
-
-TEST(NativeValueTraitsImplTest, PassAsSpanAllowSequence) {
-  test::TaskEnvironment task_environment;
-  NonThrowableExceptionState exception_state;
-  V8TestingScope scope;
-  {
-    v8::Local<v8::Object> v8_object =
-        EvaluateScriptForObject(scope, "[1, 2, 3, 4]");
-
-    EXPECT_THAT(NativeValueTraits<PassAsSpanSequence<uint8_t>>::ArgumentValue(
-                    scope.GetIsolate(), 0, v8_object, exception_state)
-                    .as_span(),
-                testing::ElementsAre(1, 2, 3, 4));
-    EXPECT_THAT(NativeValueTraits<PassAsSpanSequence<double>>::ArgumentValue(
-                    scope.GetIsolate(), 0, v8_object, exception_state)
-                    .as_span(),
-                testing::ElementsAre(1.0, 2.0, 3.0, 4.0));
-
-    DummyExceptionStateForTesting thrown_exception;
-    EXPECT_THAT(
-        NativeValueTraits<TypedPassAsSpanShared<uint16_t>>::ArgumentValue(
-            scope.GetIsolate(), 0, v8_object, thrown_exception)
-            .as_span(),
-        testing::IsEmpty());
-    EXPECT_TRUE(thrown_exception.HadException());
-  }
-  {
-    v8::Local<v8::Object> v8_iterable = EvaluateScriptForObject(scope, R"(
-        (function*() {
-            yield 1;
-            yield 2;
-            yield 3;
-        })())");
-    EXPECT_THAT(NativeValueTraits<PassAsSpanSequence<uint8_t>>::ArgumentValue(
-                    scope.GetIsolate(), 0, v8_iterable, exception_state)
-                    .as_span(),
-                testing::ElementsAre(1, 2, 3));
-  }
-}
-
 }  // namespace
 }  // namespace blink

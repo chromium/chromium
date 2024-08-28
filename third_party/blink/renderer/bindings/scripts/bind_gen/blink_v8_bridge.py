@@ -217,13 +217,23 @@ def blink_type_info(idl_type):
 
     real_type = idl_type.unwrap(typedef=True)
 
-    if real_type.is_boolean:
-        return TypeInfo("bool",
-                        const_ref_fmt="{}",
-                        clear_member_var_fmt="{} = false")
-
-    if real_type.is_numeric:
-        return TypeInfo(numeric_type(real_type),
+    if real_type.is_boolean or real_type.is_numeric:
+        cxx_type = {
+            "boolean": "bool",
+            "byte": "int8_t",
+            "octet": "uint8_t",
+            "short": "int16_t",
+            "unsigned short": "uint16_t",
+            "long": "int32_t",
+            "unsigned long": "uint32_t",
+            "long long": "int64_t",
+            "unsigned long long": "uint64_t",
+            "float": "float",
+            "unrestricted float": "float",
+            "double": "double",
+            "unrestricted double": "double",
+        }
+        return TypeInfo(cxx_type[real_type.keyword_typename],
                         const_ref_fmt="{}",
                         clear_member_var_fmt="{} = 0")
 
@@ -370,13 +380,6 @@ def blink_type_info(idl_type):
                         is_traceable=True)
 
     if real_type.is_union:
-        if real_type.is_phantom:
-            return TypeInfo("v8::Local<v8::Value>",
-                            ref_fmt="{}*",
-                            value_fmt="{}",
-                            has_null_value=True,
-                            is_gc_type=True)
-
         typename = blink_class_name(real_type.union_definition_object)
         return TypeInfo(typename,
                         member_fmt="Member<{}>",
@@ -429,38 +432,16 @@ def _pass_as_span_conversion_arguments(idl_type):
     types = real_type.flattened_member_types if real_type.is_union else [
         real_type
     ]
-    sequence_types = set(
-        map(lambda t: t.element_type.unwrap(typedef=True),
-            filter(lambda t: t.is_sequence, types)))
-    assert len(
-        sequence_types
-    ) < 2, "Unions of sequence types of different types are not supported with [PassAsSpan]"
-    typed_arrays = set(filter(lambda t: t.is_typed_array_type, types))
-    assert len(
-        typed_arrays
-    ) < 2, "Unions of typed arrays of different types are not supported with [PassAsSpan]"
-    native_type = None
-    if typed_arrays:
-        native_type = typed_array_element_type(list(typed_arrays)[0])
-        if sequence_types:
-            types_are_compatible = numeric_type(
-                list(sequence_types)[0]) == native_type
-            assert types_are_compatible, "Sequence and typed array types are incompatible"
-    else:
-        assert (not sequence_types
-                ), "Plain sequence<> types are not supported with [PassAsSpan]"
-        native_type = "void"
-        is_buffer_source_type = all(t.is_buffer_source_type for t in types)
-        assert is_buffer_source_type, "All types must be buffer"
-
+    is_buffer_source_type = all(t.is_buffer_source_type for t in types)
+    assert is_buffer_source_type, (
+        "PassAsSpan is only supported for buffer source types")
+    native_type = typed_array_element_type(
+        real_type) if real_type.is_typed_array_type else "void"
     flags = []
-    if sequence_types:
-        flags.append("PassAsSpanMarkerBase::Flags::kAllowSequence")
     allow_shared = "AllowShared" in idl_type.effective_annotations or any(
         "AllowShared" in t.effective_annotations for t in types)
     if allow_shared:
         flags.append("PassAsSpanMarkerBase::Flags::kAllowShared")
-
     return [
         " | ".join(flags) or "PassAsSpanMarkerBase::Flags::kNone", native_type
     ]
@@ -933,7 +914,7 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
 
 
 def typed_array_element_type(idl_type):
-    assert isinstance(idl_type, web_idl.IdlType), type(idl_type)
+    assert isinstance(idl_type, web_idl.IdlType)
     assert idl_type.is_typed_array_type
     element_type_map = {
         'Int8Array': 'int8_t',
@@ -949,23 +930,3 @@ def typed_array_element_type(idl_type):
         'Float64Array': 'double',
     }
     return element_type_map.get(idl_type.keyword_typename)
-
-
-def numeric_type(idl_type):
-    assert isinstance(idl_type, web_idl.IdlType)
-    assert idl_type.is_numeric
-    type_map = {
-        "byte": "int8_t",
-        "octet": "uint8_t",
-        "short": "int16_t",
-        "unsigned short": "uint16_t",
-        "long": "int32_t",
-        "unsigned long": "uint32_t",
-        "long long": "int64_t",
-        "unsigned long long": "uint64_t",
-        "float": "float",
-        "unrestricted float": "float",
-        "double": "double",
-        "unrestricted double": "double",
-    }
-    return type_map.get(idl_type.keyword_typename)

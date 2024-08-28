@@ -1015,7 +1015,7 @@ class IdlCompiler(object):
         all_union_types = []  # all instances of UnionType
 
         def collect_unions(idl_type):
-            if idl_type.is_union and not idl_type.is_phantom:
+            if idl_type.is_union:
                 all_union_types.append(idl_type)
 
         self._idl_type_factory.for_each(collect_unions)
@@ -1031,7 +1031,7 @@ class IdlCompiler(object):
 
         all_typedefs = self._db.find_by_kind(DatabaseBody.Kind.TYPEDEF)
         for typedef in all_typedefs.values():
-            if not typedef.idl_type.is_union or typedef.idl_type.is_phantom:
+            if not typedef.idl_type.is_union:
                 continue
             token = Union.unique_token(typedef.idl_type)
             irs[token].typedefs.append(typedef)
