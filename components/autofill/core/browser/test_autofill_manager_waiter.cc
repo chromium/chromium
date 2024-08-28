@@ -35,22 +35,38 @@ TestAutofillManagerWaiter::State::GetOrCreate(Event event,
   return e;
 }
 
-std::string TestAutofillManagerWaiter::State::Describe() const {
-  std::vector<std::string> strings;
-  for (const auto& [_, event_count] : events) {
-    strings.push_back(base::StringPrintf(
-        "[event=%s, num_before=%zu, num_after=%zu]",
+TestAutofillManagerWaiter::TestAutofillManagerWaiter(
+    AutofillManager& manager,
+    DenseSet<Event> relevant_events,
+    base::Location location)
+    : relevant_events_(relevant_events), waiter_location_(std::move(location)) {
+  observation_.Observe(&manager);
+}
+
+TestAutofillManagerWaiter::~TestAutofillManagerWaiter() = default;
+
+std::string TestAutofillManagerWaiter::DescribeState() const {
+  std::vector<std::string> events_vector;
+  events_vector.reserve(state_->events.size());
+  for (const auto& [_, event_count] : state_->events) {
+    events_vector.push_back(base::StringPrintf(
+        "%s{num_before=%zu, num_after=%zu}",
         event_count.location.function_name(), event_count.num_before_events,
         event_count.num_after_events));
   }
-  return base::JoinString(strings, ", ");
+  return base::StringPrintf(
+      "TestAutofillManagerWaiter created at %s for %zu relevant events has "
+      "seen events [%s] is %stimed out",
+      waiter_location_.ToString().c_str(), state_->num_expected_relevant_events,
+      base::JoinString(events_vector, ", ").c_str(),
+      state_->timed_out ? "" : "not ");
 }
 
 size_t TestAutofillManagerWaiter::num_pending_events() const {
   size_t events = 0;
   for (const auto& [_, event_count] : state_->events) {
     CHECK_GE(event_count.num_before_events, event_count.num_after_events)
-        << state_->Describe();
+        << DescribeState();
     events += event_count.num_before_events - event_count.num_after_events;
   }
   return events;
@@ -61,21 +77,12 @@ size_t TestAutofillManagerWaiter::num_completed_relevant_events() const {
   for (const auto& [event, event_count] : state_->events) {
     if (IsRelevant(event)) {
       CHECK_GE(event_count.num_before_events, event_count.num_after_events)
-          << state_->Describe();
+          << DescribeState();
       events += event_count.num_after_events;
     }
   }
   return events;
 }
-
-TestAutofillManagerWaiter::TestAutofillManagerWaiter(
-    AutofillManager& manager,
-    DenseSet<Event> relevant_events)
-    : relevant_events_(relevant_events) {
-  observation_.Observe(&manager);
-}
-
-TestAutofillManagerWaiter::~TestAutofillManagerWaiter() = default;
 
 void TestAutofillManagerWaiter::OnAutofillManagerStateChanged(
     AutofillManager& manager,
@@ -256,7 +263,7 @@ void TestAutofillManagerWaiter::Reset() {
   auto state = std::make_unique<State>();
   base::AutoLock lock(state_->lock);
   VLOG(1) << __func__;
-  ASSERT_EQ(num_pending_events(), 0u) << state_->Describe();
+  ASSERT_EQ(num_pending_events(), 0u) << DescribeState();
   using std::swap;
   swap(state_, state);
 }
@@ -290,9 +297,9 @@ void TestAutofillManagerWaiter::OnAfter(Event event,
   VLOG(1) << __func__ << "(" << location.function_name() << ")";
   EventCount* e = state_->Get(event);
   ASSERT_TRUE(e) << __func__ << "(" << location.function_name()
-                 << "): " << state_->Describe();
+                 << "): " << DescribeState();
   ++e->num_after_events;
-  ASSERT_GE(e->num_before_events, e->num_after_events) << state_->Describe();
+  ASSERT_GE(e->num_before_events, e->num_after_events) << DescribeState();
   if (num_pending_events() == 0 &&
       num_completed_relevant_events() >= state_->num_expected_relevant_events) {
     state_->run_loop.Quit();
@@ -312,11 +319,11 @@ testing::AssertionResult TestAutofillManagerWaiter::Wait(
     base::test::ScopedRunLoopTimeout run_loop_timeout(
         location, timeout_,
         base::BindRepeating(
-            [](State* state) {
-              state->timed_out = true;
-              return state->Describe();
+            [](TestAutofillManagerWaiter& waiter) {
+              waiter.state_->timed_out = true;
+              return waiter.DescribeState();
             },
-            base::Unretained(state_.get())));
+            std::ref(*this)));
     state_->num_expected_relevant_events = num_expected_relevant_events;
     lock.Release();
     state_->run_loop.Run();

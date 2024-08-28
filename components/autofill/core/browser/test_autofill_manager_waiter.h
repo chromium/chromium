@@ -60,7 +60,7 @@ enum class AutofillManagerEvent {
 // kPendingReset. This makes it suitable for use with
 // TestAutofillManagerInjector.
 //
-// Typical usage is as follows:
+// Typical usage in unit tests is as follows:
 //
 //   TestAutofillManagerWaiter waiter(manager,
 //                                    {AutofillManagerEvent::kFoo,
@@ -69,12 +69,20 @@ enum class AutofillManagerEvent {
 //   ... trigger events ...
 //   ASSERT_TRUE(waiter.Wait());  // Blocks.
 //
-// In browser tests, it may be necessary to tell Wait() to wait for at least,
-// say, 1 event because triggering events is asynchronous due to Mojo:
+// In browser tests, it is important to create the waiter soon enough and not
+// create it between two On{Before,After}Foo() events:
 //
-//   TestAutofillManagerWaiter waiter(manager,
-//                                    {AutofillManagerEvent::kFoo,
-//                                     ...});
+//   class TestAutofillManager : public BrowserAutofillManager {
+//    public:
+//     ...
+//     TestAutofillManagerWaiter waiter(manager,
+//                                      {AutofillManagerEvent::kFoo,
+//                                       AutofillManagerEvent::kBar,
+//                                       ...});
+//   };
+//   TestAutofillManagerInjector<TestAutofillManager> injector;
+//   ... trigger events ...
+//   ASSERT_TRUE(injector[main_rfh()].waiter.Wait());  // Blocks.
 //   ... trigger asynchronous OnFoo event ...
 //   ASSERT_TRUE(waiter.Wait(1));  // Blocks until at least one OnFoo() event
 //                                 // has happened since the creation of
@@ -87,7 +95,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   using Event = AutofillManagerEvent;
 
   explicit TestAutofillManagerWaiter(AutofillManager& manager,
-                                     DenseSet<Event> relevant_events = {});
+                                     DenseSet<Event> relevant_events = {},
+                                     base::Location location = FROM_HERE);
   TestAutofillManagerWaiter(const TestAutofillManagerWaiter&) = delete;
   TestAutofillManagerWaiter& operator=(const TestAutofillManagerWaiter&) =
       delete;
@@ -128,8 +137,6 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
     EventCount& GetOrCreate(Event event, const base::Location& location);
     EventCount* Get(Event event);
 
-    std::string Describe() const;
-
     // The std::map guarantees that references aren't invalidated by
     // GetOrCreate().
     std::map<Event, EventCount> events;
@@ -144,6 +151,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
     // Functions that access the state should be mutually exclusive.
     base::Lock lock;
   };
+
+  std::string DescribeState() const;
 
   size_t num_pending_events() const;
   size_t num_completed_relevant_events() const;
@@ -237,6 +246,7 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   base::TimeDelta timeout_ = base::Seconds(30);
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>
       observation_{this};
+  base::Location waiter_location_;
 };
 
 // Returns a FormStructure that satisfies `pred` if such a form exists at call
