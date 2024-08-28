@@ -21,6 +21,7 @@ static_library("u2f") {
     "//chrome/app:generated_resources",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/settings",
     "//components/policy/proto",

@@ -43,6 +43,7 @@ static_library("media_app") {
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common",

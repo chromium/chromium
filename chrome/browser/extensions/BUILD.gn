@@ -797,6 +797,7 @@ source_set("extensions") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/apps",
     "//chrome/browser/ui/browser_window",

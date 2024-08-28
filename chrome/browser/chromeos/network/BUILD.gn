@@ -17,6 +17,7 @@ static_library("network") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common:constants",
     "//chromeos/crosapi/mojom",
     "//components/device_event_log",
@@ -50,6 +51,7 @@ if (is_chromeos_ash) {
       "//chrome/browser/ash/net",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/test:test_support_ui",
       "//chromeos/ash/components/network/portal_detector",
       "//components/captive_portal/content",

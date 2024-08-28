@@ -1086,6 +1086,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",

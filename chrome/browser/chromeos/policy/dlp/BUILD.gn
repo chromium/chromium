@@ -80,6 +80,7 @@ static_library("dlp") {
     "//chrome/browser/favicon",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/constants",

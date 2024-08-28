@@ -396,6 +396,7 @@ static_library("crosapi") {
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai:screen_ai_install_state",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/webui/ash/kerberos",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
