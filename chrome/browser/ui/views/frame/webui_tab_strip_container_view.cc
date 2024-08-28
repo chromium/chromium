@@ -818,18 +818,25 @@ SkColor WebUITabStripContainerView::GetColorProviderColor(
   return GetColorProvider()->GetColor(id);
 }
 
-int WebUITabStripContainerView::GetHeightForWidth(int w) const {
+gfx::Size WebUITabStripContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   DCHECK(!(animation_.is_animating() && current_drag_height_));
+  gfx::Size preferred_size =
+      GetLayoutManager()->GetPreferredSize(this, available_size);
 
   // Note that preferred size is automatically calculated by the layout.
   if (animation_.is_animating()) {
-    return gfx::Tween::LinearIntValueBetween(animation_.GetCurrentValue(), 0,
-                                             GetPreferredSize().height());
+    preferred_size.set_height(gfx::Tween::LinearIntValueBetween(
+        animation_.GetCurrentValue(), 0, preferred_size.height()));
+    return preferred_size;
   }
-  if (current_drag_height_)
-    return std::round(*current_drag_height_);
 
-  return GetVisible() ? GetPreferredSize().height() : 0;
+  if (current_drag_height_) {
+    preferred_size.set_height(std::round(*current_drag_height_));
+    return preferred_size;
+  }
+
+  return GetVisible() ? preferred_size : gfx::Size();
 }
 
 gfx::Size WebUITabStripContainerView::FlexRule(
