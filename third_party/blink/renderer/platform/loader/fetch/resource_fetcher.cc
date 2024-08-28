@@ -994,7 +994,6 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
       }
     }
   }
-  resource->SetIsLoadedFromMemoryCache();
 }
 
 Resource* ResourceFetcher::CreateResourceForStaticData(

@@ -445,10 +445,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   bool IsPreloadedByEarlyHints() const { return is_preloaded_by_early_hints_; }
 
-  void SetIsLoadedFromMemoryCache() { is_loaded_from_memory_cache_ = true; }
-
-  bool IsLoadedFromMemoryCache() { return is_loaded_from_memory_cache_; }
-
   virtual std::unique_ptr<BackgroundResponseProcessorFactory>
   MaybeCreateBackgroundResponseProcessorFactory();
 
@@ -564,7 +560,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   bool is_unused_preload_ = false;
   bool stale_revalidation_started_ = false;
   bool is_preloaded_by_early_hints_ = false;
-  bool is_loaded_from_memory_cache_ = false;
 
   enum class RevalidationStatus {
     kNoRevalidatingOrFailed,  // not in revalidate procedure or

@@ -230,22 +230,6 @@ class CORE_EXPORT ImageResourceContent final
   // BitmapImage. |use_counter| may be a null pointer.
   void RecordDecodedImageType(UseCounter* use_counter);
 
-  void SetIsLoadedFromMemoryCache(bool is_loaded_from_memory_cache) {
-    is_loaded_from_memory_cache_ = is_loaded_from_memory_cache;
-  }
-
-  void SetIsPreloadedWithEarlyHints(bool is_preloaded_with_early_hints) {
-    is_preloaded_with_early_hints_ = is_preloaded_with_early_hints;
-  }
-
-  bool IsLoadedFromMemoryCache() const override {
-    return is_loaded_from_memory_cache_;
-  }
-
-  bool IsPreloadedWithEarlyHints() const override {
-    return is_preloaded_with_early_hints_;
-  }
-
   void SetAllocatedExternalMemory() { allocated_external_memory_ = true; }
 
  private:
@@ -301,10 +285,6 @@ class CORE_EXPORT ImageResourceContent final
   bool allocated_external_memory_ = false;
 
   bool is_broken_ = false;
-
-  bool is_loaded_from_memory_cache_ = false;
-
-  bool is_preloaded_with_early_hints_ = false;
 
 #if DCHECK_IS_ON()
   bool is_update_image_being_called_ = false;

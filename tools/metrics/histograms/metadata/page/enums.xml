@@ -122,16 +122,6 @@ chromium-metrics-reviews@google.com.
              tracking a relevant committed load"/>
 </enum>
 
-<enum name="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Image is loaded from memory cache"/>
-  <int value="2"
-      label="Image is preloaded after receiving a 103 (Early Hints) response"/>
-  <int value="3"
-      label="Image is loaded from memory and preloaded after receiving a 103
-             (Early Hints) response"/>
-</enum>
-
 <enum name="LcppPredictResult">
   <int value="0" label="Success">Prediction is success.</int>
   <int value="1" label="Failure: No hit">
