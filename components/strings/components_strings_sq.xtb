@@ -462,7 +462,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="180757923930449935">(me imitimin për 64 bitë)</translation>
 <translation id="180991881384371158">Numri CVC është në pjesën e pasme të kartës sate. Ai përfshin 3 shifrat e fundit në krye djathtas të kutisë së nënshkrimit.</translation>
 <translation id="1810391395243432441">Mbroji fjalëkalimet me kyçjen e ekranit</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position} nga {count} adresë më shumë}other{{position} nga {count} adresa më shumë}}</translation>
 <translation id="1812527064848182527">peizazh</translation>
 <translation id="1812975699435941848">Arsim dhe trajnime në fushën e mjekësisë</translation>
 <translation id="1816436748874040213">Mund të kërkojë që të lëvizë dhe zmadhojë skedat e ndara</translation>
@@ -1291,6 +1290,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3402261774528610252">Lidhja e përdorur për të ngarkuar këtë sajt ka përdorur versionin TLS 1.0 ose TLS 1.1, të cilët janë të vjetëruar dhe do të çaktivizohen në të ardhmen. Pasi të çaktivizohen, përdoruesit nuk do të lejohen ta ngarkojnë këtë sajt. Serveri duhet të aktivizojë versionin TLS 1.2 ose një version të mëvonshëm.</translation>
 <translation id="3405664148539009465">Personalizo shkrimin</translation>
 <translation id="3407789382767355356">identifikimi i palëve të treta</translation>
+<translation id="340924996148642843">Krahasimi nuk ofrohet për momentin</translation>
 <translation id="3409896703495473338">Menaxho cilësimet e sigurisë</translation>
 <translation id="3414275587143250384">Shërbimet kompjuterike të shpërndara dhe në renë kompjuterike</translation>
 <translation id="3414952576877147120">Madhësia:</translation>
@@ -1448,6 +1448,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="365641980390710834">Veshje të përditshme</translation>
 <translation id="3658742229777143148">Rishikim</translation>
 <translation id="3659521826520353662">Cilat uebsajte të përcaktuara nga administratori vizitohen dhe kur: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Kërko për më shumë opsione blerjeje nga dyqane të tjera që e shesin këtë produkt.</translation>
 <translation id="3664782872746246217">Fjalët kyçe:</translation>
 <translation id="3665100783276035932">Shumica e sajteve do të punojnë siç pritet</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Mëso më shumë<ph name="LINK_END1" /></translation>
@@ -1880,11 +1881,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4438821706955556403">Çmimi tipik</translation>
 <translation id="4441832193888514600">Shpërfillur për shkak se politika mund të shtohet vetëm si politikë e përdoruesit të resë kompjuterike.</translation>
 <translation id="4445133368066241428">Temat më të njohura</translation>
-<translation id="4445964943162061557">Kjo është një veçori eksperimentale dhe nuk do t'ia dalë gjithmonë.</translation>
+<translation id="4445964943162061557">Kjo është një veçori eksperimentale dhe nuk do të jetë gjithmonë e saktë.</translation>
 <translation id="4449116177348980384">Butoni "Menaxho cilësimet e sajtit". Aktivizoje për të menaxhuar lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
 <translation id="4451135742916150903">Mund të kërkojë të lidhet me pajisjet HID</translation>
 <translation id="4451684391620232683">Teksti i prezantuar për përdoruesin:</translation>
 <translation id="4452328064229197696">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve i Google" rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
+<translation id="4452957520362597816">Të kërkojë të instalojë aplikacione të uebit</translation>
 <translation id="4456937135469235202">Udhëtime për aventurë</translation>
 <translation id="4464826014807964867">Uebsajtet me informacione nga organizata jote</translation>
 <translation id="4466576951214254884">Kredi studentore dhe financim për universitetin</translation>
@@ -2817,6 +2819,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6240964651812394252">Për të përdorur "Menaxherin e fjalëkalimeve të Google" me sistemin tënd operativ, nis sërish Chrome dhe lejo qasje te menaxheri i fjalëkalimeve i kompjuterit tënd. Skedat e tua do të rihapen pasi ta nisësh sërish.</translation>
 <translation id="6241121617266208201">Fshih sugjerimet</translation>
 <translation id="624499991300733384">Shërbimi i krijuesit të printimit</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> ditë më parë</translation>
 <translation id="6246868321321344665">Organizata jote mund të shohë të dhënat e shfletimit, si p.sh. fjalëkalimet dhe historikun, në profilin e punës dhe atë personal</translation>
 <translation id="6250932670816326647">Produktet për larjen dhe trupin</translation>
 <translation id="6251906504834538140">{0,plural, =1{Zhvendosja e skedarit është bllokuar}other{Zhvendosja e <ph name="FILE_COUNT" /> skedarëve është bllokuar}}</translation>
@@ -2990,6 +2993,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6529602333819889595">&amp;Bëje përsëri fshirjen</translation>
 <translation id="6535617236508021606">Kjo kartë është ruajtur në "Llogarinë tënde të Google" që të mund ta përdorësh atë nëpër shërbimet e Google.</translation>
 <translation id="6536221421038631327">Heqja e një abonimi të Passpoint nga pajisja jote <ph name="DEVICE_TYPE" /> do t'i heqë rrjetet e lidhura. Kontakto me "<ph name="FRIENDLY_NAME" />" për të bërë ndryshime në planin tënd të abonimit. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Për të parë tabelat e krahasimit, aktivizo sinkronizimin</translation>
 <translation id="6539092367496845964">Ndodhi një gabim. Provo përsëri më vonë.</translation>
 <translation id="6540488083026747005">Ke lejuar kukit e palëve të treta në këtë sajt</translation>
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
@@ -3404,6 +3408,7 @@ Detaje shtesë:
 <translation id="7346081071264046066">"përgjigju me 'po' me emocion për këtë ftesë dasme"</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7353601530677266744">Linja e komandave</translation>
+<translation id="7356678400607112844">Vizita e fundit</translation>
 <translation id="7359588939039777303">Reklamat janë të bllokuara.</translation>
 <translation id="7360451453306104998">Kur Google gjen zbritjet që ofrohen, ato do të shfaqen gjatë përfundimit të blerjes</translation>
 <translation id="7363096869660964304">Sidoqoftë, ti nuk je i padukshëm. Kalimi në modalitetin "e fshehtë" nuk e fsheh shfletimin tënd nga punëdhënësi yt, ofruesi i shërbimit të internetit apo uebsajtet që viziton.</translation>

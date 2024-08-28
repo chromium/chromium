@@ -224,7 +224,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1155545602507378023">Ez; gailu honetan soilik</translation>
 <translation id="1155816283571436363">Telefonora konektatzen</translation>
 <translation id="1157952955648710254">Itxi Google Bilaketa zerbitzuaren alboko panela</translation>
-<translation id="1157985233335035034">Erabilitako azken hizkuntzak</translation>
+<translation id="1157985233335035034">Azkenaldian erabilitako hizkuntzak</translation>
 <translation id="1158080958325422608">Ezarri maiuskulaz</translation>
 <translation id="1159879754517035595">Kudeatu luzapenen ezarpenak</translation>
 <translation id="1160800016654917722">Leihoa beherantz eta ezkerrerantz eraman da</translation>
@@ -3420,7 +3420,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3439970425423980614">PDF dokumentua aurrebistan irekitzen</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> laster-markarekin erlazionatutako ekintza gehiago</translation>
 <translation id="3441653493275994384">Pantaila</translation>
-<translation id="3441663102605358937">Hasi saioa <ph name="ACCOUNT" /> kontuan berriro kontua egiaztatzeko</translation>
 <translation id="3441824746233675597">Zaildu zure Interneteko trafikorako sarbidea duten pertsonei bisitatzen dituzun webguneak ikustea. <ph name="PRODUCT_NAME" /> sistema eragileak konexio seguru bat erabiltzen du DNSan (domeinu-izenen sistema) webgune baten IP helbidea bilatzean.</translation>
 <translation id="3442674350323953953">Utzi Google-ri hardware-datuak erabiltzen <ph name="DEVICE_OS" /> hobetzeko. Aukera hau baztertu arren, datuak Google-ra bidaliko dira eguneratze egokiak zehazteko. Alabaina, ez dira ez gordeko, ez beste ezertarako erabiliko.</translation>
 <translation id="3443545121847471732">Idatzi 6 digituko PIN bat</translation>
@@ -4226,6 +4225,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3987993985790029246">Kopiatu esteka</translation>
 <translation id="3988124842897276887">Fitxa USB bidezko gailu batera konektatuta dago</translation>
 <translation id="3988996860813292272">Hautatu ordu-zona</translation>
+<translation id="3989635538409502728">Amaitu saioa</translation>
 <translation id="3991055816270226534">Kudeatu hirugarrenen cookieak eta jarraipenaren aurkako babesak</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Kokapen-zehaztasuna aktibatuta dagoenean, hari gabeko seinaleak (adibidez, wifi bidezko sarbide-puntuak eta sare mugikorren dorreak) gailuaren sentsoreen datuekin batera (esaterako, abiadura-neurgailua eta giroskopioa) erabiltzen dira, gailuaren kokapen zehatzagoa estimatzeko. Android-erako aplikazio eta zerbitzuek kokapenean oinarritutako eginbideak eskaintzeko erabiltzen dute datu hori. Horretarako, Google-k gailu honen inguruko gailuen sentsoreei eta hari gabeko seinaleei buruzko informazioa biltzen du aldizka, auzolanean hari gabeko seinaleen kokapenak lortzen laguntzeko.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google-k helburu hauekin erabiltzen du gailu honetatik bildutako informazio hori: kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzea eta, orokorrean, Google-ren zerbitzuak hobetu, eman eta mantentzea. Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta prozesatzen dugu informazio hori. Informazio hori ez da erabiltzen inor identifikatzeko.<ph name="END_PARAGRAPH2" />
@@ -6547,7 +6547,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5713158217420111469"><ph name="DEVICE" /> gailura konektatuta</translation>
 <translation id="5713960379473463904">Zuriuneen estiloa</translation>
 <translation id="5714100381896040477">Mugatu pantailako mugimendua</translation>
-<translation id="5715711091495208045">Pluginaren bitartekaria: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5715711091495208045">Plugin-artekaria: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719854774000914513">Webguneek HID gailuetara konektatzea eska dezakete</translation>
 <translation id="572155275267014074">Android-en ezarpenak</translation>
 <translation id="5722086096420375088">Berdea eta zuria</translation>
@@ -7746,6 +7746,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="661266467055912436">Segurtasuna hobetzen du, bai zuretzat, bai sareko gainerako erabiltzaileentzat.</translation>
 <translation id="6613267708691765962">Malwarea dagoen egiaztatzen…</translation>
 <translation id="6613668613087513143">Gailuan ez dago behar adina toki eguneratzea instalatzeko. Egin tokia (<ph name="NECESSARY_SPACE" />) gailuan eta saiatu berriro Chrome arakatzailea erabilita.</translation>
+<translation id="6614172284067813496">Gehitu da orria irakurketa-zerrendan</translation>
 <translation id="6615455863669487791">Erakutsi</translation>
 <translation id="6618744767048954150">Abian</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8536,7 +8537,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7196272782924897510">Beste gailu batean gordetako sarbide-gakoa erabili nahi duzu?</translation>
 <translation id="7197190419934240522">Izan Google Bilaketa eta Google eginbide aurreratuak zure alde sarea arakatzen duzun bakoitzean</translation>
 <translation id="719791532916917144">Lasterbidea</translation>
-<translation id="7197958763276896180">Zergatik doa Chrome hirugarrenen cookietatik haratago?</translation>
+<translation id="7197958763276896180">Zergatik doa Chrome hirugarrenen cookietatik harago?</translation>
 <translation id="7198503619164954386">Enpresa batek erregistratutako gailu bat erabili behar duzu</translation>
 <translation id="7199158086730159431">Lortu l&amp;aguntza</translation>
 <translation id="7199452998289813782">Pausatu <ph name="DEVICE_NAME" /> gailura igortzeko prozesua</translation>
@@ -8696,7 +8697,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7321545336522791733">Ezin da konektatu zerbitzarira</translation>
 <translation id="7322515217754205362">Webgunearen baimenak</translation>
 <translation id="7323315405936922211">Kurtsorearen inguruko eremuaren tamaina</translation>
-<translation id="7324020307732396723">Ireki hizkuntzaren ezarpenak</translation>
+<translation id="7324020307732396723">Ireki hizkuntza-ezarpenak</translation>
 <translation id="7324297612904500502">Beta foroa</translation>
 <translation id="7325209047678309347">Papera trabatuta dago</translation>
 <translation id="7325953439504232954">Profila aldatu nahi duzu?</translation>
@@ -9811,7 +9812,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8097959162767603171">Administratzaileak Zerbitzu-baldintzak onartu behar ditu administrazio-kontsolaren Chrome-ko gailuen zerrendan.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" /> instalatu nahi duzu, eta disko gogorreko eduki guztia ezabatu?</translation>
 <translation id="8098616321286360457">Sarera konektatuta egon behar duzu</translation>
-<translation id="8100057926383586173">Ireki hizkuntzaren ezarpenak</translation>
+<translation id="8100057926383586173">Ireki hizkuntza-ezarpenak</translation>
 <translation id="8100230553590752325">Erabili gordetako pasahitzak edozein gailutan</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> hautatu duzu. Desautatzeko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="8101409298456377967">Sortu, gorde eta kudeatu pasahitzak, webgune eta aplikazioetan erraz hasteko saioa. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -10747,6 +10748,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="876956356450740926">Abiarazi garatzaileentzako tresnak, IDEak eta editoreak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Luzapenaren erroko direktorioa</translation>
 <translation id="8771300903067484968">Atzeko plano lehenetsia berrezarri da orri nagusian.</translation>
+<translation id="8773535891252326047">Kopiatu da esteka nabarmentzeko</translation>
 <translation id="8774379074441005279">Berretsi leheneratu nahi duzula</translation>
 <translation id="8774934320277480003">Goiko marjina</translation>
 <translation id="8775144690796719618">URLak ez du balio</translation>

@@ -1430,6 +1430,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="199610894463449797">{0,plural, =1{Lukk denne profilen}other{Lukk denne profilen (# vinduer)}}</translation>
 <translation id="1997433994358798851">Chrome trenger tillatelse til å bruke Bluetooth for å koble til enheten din</translation>
 <translation id="1997616988432401742">Dine sertifikater</translation>
+<translation id="1998715278591719161">Nettsteder som har lov til å spore hendene dine</translation>
 <translation id="1999115740519098545">Ved oppstart</translation>
 <translation id="2002109485265116295">Sanntid</translation>
 <translation id="2002160221914907025">AI på forsøksstadiet</translation>
@@ -3096,6 +3097,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3184591616546256659">Bruk denne PIN-koden for å endre innstillingene for foreldrekontroll.
     Hvis du glemmer PIN-koden, kan du utføre en powerwash på denne enheten og konfigurere den på nytt.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Denne appen er blokkert}other{Noen apper er blokkert}}</translation>
+<translation id="3185454065699440434">Tillat utvidelser på <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Annonsemålinger</translation>
 <translation id="3187556136478864255">Ser du Cast-enheten din i
     <ph name="BEGIN_LINK" />
@@ -3428,7 +3430,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3439970425423980614">Åpner PDF i forhåndsvisning</translation>
 <translation id="3440663250074896476">Flere handlinger for <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Skjerm</translation>
-<translation id="3441663102605358937">Logg på <ph name="ACCOUNT" /> på nytt for å verifisere denne kontoen</translation>
 <translation id="3441824746233675597">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. <ph name="PRODUCT_NAME" /> bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">La Google bruke maskinvaredataene dine for å gjøre <ph name="DEVICE_OS" /> bedre. Hvis du avviser, blir dataene fremdeles sendt til Google for å fastslå riktige oppdateringer, men de blir ikke lagret eller brukt ellers.</translation>
 <translation id="3443545121847471732">Angi en 6-sifret PIN-kode</translation>
@@ -3544,6 +3545,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3521606918211282604">Endre diskstørrelsen</translation>
 <translation id="3522088408596898827">Det er kritisk lite diskplass. Frigjør diskplass, og prøv igjen.</translation>
 <translation id="3522979239100719575">Ser etter tilgjengelige profiler. Dette kan ta noen minutter.</translation>
+<translation id="3523447078673133727">Ikke la nettsteder spore hendene dine</translation>
 <translation id="3524518036046613664">Oppdag enheter på lokalnettverket, for eksempel skrivere</translation>
 <translation id="3524965460886318643">Eksportér aktivitet</translation>
 <translation id="3525426269008462093">Gjennomgå enhetssynkroniseringen etter konfigureringen</translation>
@@ -3893,6 +3895,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3760460896538743390">Inspeksjons- og bakgrunnsside</translation>
 <translation id="37613671848467444">Åpne i &amp;inkognitovindu</translation>
 <translation id="3761556954875533505">Vil du la nettstedet redigere filer?</translation>
+<translation id="3761560059647741692">Liggende</translation>
 <translation id="3761733456040768239">Flere handlinger for <ph name="CARD_DESCRIPTION" /> – verifiseringskoden er lagret</translation>
 <translation id="3763433740586298940">Du kan blokkere nettsteder du ikke vil ha. Dessuten sletter Chrome automatisk nettsteder som er eldre enn 30 dager, fra listen.</translation>
 <translation id="3763549179847864476">Tilbakeknapp for personvernveiledningen</translation>
@@ -4231,6 +4234,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3987993985790029246">Kopiér link</translation>
 <translation id="3988124842897276887">Denne fanen er koblet til en USB-enhet</translation>
 <translation id="3988996860813292272">Velg tidssone</translation>
+<translation id="3989635538409502728">Logg av</translation>
 <translation id="3991055816270226534">Administrer sporingsbeskyttelse og informasjonskapsler fra tredjeparter</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Når Posisjonsnøyaktighet er på, brukes informasjon om trådløse signaler, for eksempel fra wifi-tilgangspunkter og mobilmaster, sammen med sensordata fra enheten, for eksempel fra akselerometeret og gyroskopet, for å anslå en mer nøyaktig enhetsposisjon. Android-apper og -tjenester bruker denne for å levere posisjonsbaserte funksjoner. For å gjøre dette samler Google jevnlig inn informasjon om enhetssensorer og trådløse signaler i nærheten av denne enheten for å bidra til crowdsourcing av posisjonene til trådløse signaler.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google bruker denne informasjonen som er samlet inn fra denne enheten, til å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester og generelt forbedre, levere og vedlikeholde Googles tjenester. Vi behandler denne informasjonen basert på Googles og tredjeparters berettigede interesser i å oppfylle brukernes behov. Denne informasjonen brukes ikke til å identifisere enkeltpersoner.<ph name="END_PARAGRAPH2" />
@@ -5919,6 +5923,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="52550593576409946">Kiosk-appen kunne ikke startes.</translation>
 <translation id="5255726914791076208">Når du endrer tilgangsnøkkelen, endres ikke <ph name="RP_ID" />-kontoen din</translation>
 <translation id="5255859108402770436">Logg på igjen</translation>
+<translation id="5256174546894739043">Spør når nettsteder vil spore hendene dine</translation>
 <translation id="52566111838498928">Laster inn skrifttyper …</translation>
 <translation id="5256861893479663409">På alle nettsteder</translation>
 <translation id="5258992782919386492">Installer på denne enheten</translation>
@@ -6664,6 +6669,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5801051031414037185">Konfigurer telefonen</translation>
 <translation id="5801568494490449797">Innstillinger</translation>
 <translation id="5803689677801500549">Lagrede passord vises her. For å importere passord til <ph name="BRAND" /> for <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />velg en CSV-fil<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">Nettsteder sporer vanligvis hendene og fingrene dine for å gi deg mer oppslukende opplevelser</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5804259315582798390">Kunne ikke slå på lokal datagjenoppretting</translation>
 <translation id="5805268472388605531">Trykk og hold på tastaturtastene for å se aksenttegn og spesialtegn</translation>
@@ -7414,6 +7420,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6351178441572658285">Appspråk</translation>
 <translation id="6354918092619878358">SECG elliptisk kurve secp256r1 (også kjent som ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Hold enheten påslått</translation>
+<translation id="6356537493253478650">Rolig</translation>
 <translation id="63566973648609420">Bare de som har passordfrasen din, kan lese de krypterte dataene dine. Passordfrasen blir verken sendt til Google eller lagret av oss. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, må du <ph name="BEGIN_LINK" />tilbakestille synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Sveip opp for å flytte siden ned</translation>
 <translation id="6356893102071098867">Sjekk at du har valgt riktig konto</translation>
@@ -7751,6 +7758,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
 <translation id="6613267708691765962">Skanner etter skadelig programvare …</translation>
 <translation id="6613668613087513143">Det er ikke nok plass på enheten til å fullføre oppdateringen. Frigjør <ph name="NECESSARY_SPACE" /> på enheten, og prøv igjen via Chrome-nettleseren.</translation>
+<translation id="6614172284067813496">Siden er lagt til på leselisten</translation>
 <translation id="6615455863669487791">Vis meg</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7764,6 +7772,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6622980291894852883">Fortsett blokkering av bilder</translation>
 <translation id="6624036901798307345">I nettbrettmodus kan du trykke på fanetellerknappen på verktøyraden for å åpne den nye faneraden som viser miniatyrbilder av alle fanene.</translation>
 <translation id="6624687053722465643">Kakemons</translation>
+<translation id="6627743754845412571">Nettsteder som ikke har lov til å spore hendene dine</translation>
 <translation id="6628316682330029452">Klientsertifikater er sertifikater som identifiserer deg overfor andre tjenere.</translation>
 <translation id="6628328486509726751">Lastet opp <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Sterkere sikkerhet</translation>
@@ -8131,6 +8140,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6876155724392614295">Sykkel</translation>
 <translation id="6876469544038980967">Ikke nyttig</translation>
 <translation id="6878422606530379992">Sensorer er tillatt</translation>
+<translation id="6878862640969460273">Liggende</translation>
 <translation id="6880587130513028875">Bilder er blokkert på siden.</translation>
 <translation id="6881845890692344060">Administratoren din har logget av. Nå har du kontrollen.</translation>
 <translation id="6882210908253838664">Hvis et nettsted ikke fungerer, kan du prøve å gi det midlertidig tillatelse til å bruke informasjonskapsler fra tredjeparter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -8168,6 +8178,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6909422577741440844">Vil du motta fra denne enheten?</translation>
 <translation id="6910190732484284349">Slett passnøkkel for brukernavnet <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Slettet</translation>
+<translation id="6910274140210351823">Mørk</translation>
 <translation id="6911734910326569517">Minnebruk</translation>
 <translation id="6912007319859991306">PIN-kode for mobil-SIM</translation>
 <translation id="6912380255120084882">Prøv en annen enhet</translation>
@@ -8319,6 +8330,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7014174261166285193">Installeringen mislyktes.</translation>
 <translation id="7014480873681694324">Fjern markering</translation>
 <translation id="7014741021609395734">Zoomnivå</translation>
+<translation id="7015135594296285641">Tillat utvidelser</translation>
 <translation id="7016995776279438971">Rød/grønn, rødsvakhet (protanomali)</translation>
 <translation id="7017004637493394352">Si «Ok Google» igjen</translation>
 <translation id="7017219178341817193">Legg til en ny side</translation>
@@ -9669,6 +9681,7 @@ Nøkkelfil: <ph name="KEY_FILE" />
 
 Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal opprette nye versjoner av utvidelsen.</translation>
 <translation id="8000020256436988724">Verktøylinje</translation>
+<translation id="800117767980299235">Høydepunkt fra tale</translation>
 <translation id="8002274832045662704">Avansert skriveroppsett</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> er ikke tilgjengelig lenger</translation>
 <translation id="8004092996156083991">Vi gir deg beskjed hvis passordene dine blir utsatt for sikkerhetsbrudd.</translation>
@@ -10752,6 +10765,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="876956356450740926">Kjør utviklerverktøy, IDE-er og redigeringsverktøy. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Rotkatalog for utvidelser</translation>
 <translation id="8771300903067484968">Bakgrunnen på startsiden er tilbakestilt til standardbakgrunnen.</translation>
+<translation id="8773535891252326047">Linken til den markerte teksten er kopiert</translation>
 <translation id="8774379074441005279">Bekreft gjenoppretting</translation>
 <translation id="8774934320277480003">Toppmargen</translation>
 <translation id="8775144690796719618">Ugyldig nettadresse</translation>

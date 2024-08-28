@@ -462,7 +462,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">Nasa likod ng iyong card ang CVC mo. Ito ang huling 3 digit sa kanang bahagi sa itaas ng kahon para sa lagda.</translation>
 <translation id="1810391395243432441">Protektahan ang mga password gamit ang iyong lock ng screen</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position} sa {count} plus address}one{{position} sa {count} plus address}other{{position} sa {count} na plus address}}</translation>
 <translation id="1812527064848182527">landscape</translation>
 <translation id="1812975699435941848">Edukasyong Pangkalusugan at Medikal na Pagsasanay</translation>
 <translation id="1816436748874040213">Puwedeng hilinging mag-scroll at mag-zoom sa mga naka-share na tab</translation>
@@ -2821,6 +2820,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6240964651812394252">Para gamitin ang Google Password Manager sa iyong operating system, ilunsad ulit ang Chrome at payagan ang pag-access sa password manager ng iyong computer. Bubukas ulit ang iyong mga tab pagkatapos malunsad ulit.</translation>
 <translation id="6241121617266208201">Itago ang mga suhestyon</translation>
 <translation id="624499991300733384">Serbisyo ng Print Compositor</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> (na) araw ang nakalipas</translation>
 <translation id="6246868321321344665">Nakikita ng iyong organisasyon ang data mula sa pag-browse, tulad ng mga password at history sa parehong profile sa trabaho at personal na profile</translation>
 <translation id="6250932670816326647">Mga Produktong Panligo at Pangkatawan</translation>
 <translation id="6251906504834538140">{0,plural, =1{Na-block ang file para hindi mailipat}one{<ph name="FILE_COUNT" /> file ang na-block para hindi mailipat}other{<ph name="FILE_COUNT" /> na file ang na-block para hindi mailipat}}</translation>
@@ -3410,6 +3410,7 @@ Mga karagdagang detalye:
 <translation id="7346081071264046066">"masayang sumagot ng oo sa imbitasyon sa kasal na ito"</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7353601530677266744">Command Line</translation>
+<translation id="7356678400607112844">Huling Binisita</translation>
 <translation id="7359588939039777303">Na-block ang mga ad.</translation>
 <translation id="7360451453306104998">Kapag nakahanap ang Google ng mga available na diskwento, lalabas ang mga ito sa checkout</translation>
 <translation id="7363096869660964304">Gayunpaman, hindi ka invisible. Kahit mag-Incognito ka, hindi matatago ang iyong pagba-browse mula sa iyong employer, sa iyong internet service provider o sa mga website na binibisita mo.</translation>

@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Ștergi grupul de file?</translation>
 <translation id="2195124168004379331">Browserul pare în regulă</translation>
 <translation id="2199562093267256223">Astfel, grupul se va șterge de pe toate dispozitivele conectate la <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Cumpără, tradu și identifică ceea ce vezi cu camera foto.</translation>
 <translation id="2218443599109088993">Micșorează</translation>
 <translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="2230173723195178503">Pagina web s-a încărcat</translation>
@@ -470,6 +471,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3268451620468152448">File deschise</translation>
 <translation id="3269051798482119531">Continuă cu această filă</translation>
 <translation id="3272527697863656322">Anulează</translation>
+<translation id="3273510436356991673">Personalizează ecranul de pornire</translation>
 <translation id="3277021493514034324">Adresa site-ului a fost copiată</translation>
 <translation id="3285962946108803577">Trimite pagina…</translation>
 <translation id="3289505634533552500">Căutare vocală</translation>
@@ -1317,6 +1319,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7272437679830969316">Nu ți se poate confirma identitatea. Parola nu a fost copiată.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Un nou pachet urmărit}few{Pachete noi urmărite}other{Pachete noi urmărite}}</translation>
 <translation id="7291368939935408496">Se pregătesc parolele...</translation>
+<translation id="7300448350764260141">Adaugă un nivel suplimentar de protecție împotriva amenințărilor online.</translation>
 <translation id="7302503784943202842">Folosește parole pe toate dispozitivele</translation>
 <translation id="7313347584264171202">Aici vei vedea filele incognito</translation>
 <translation id="7335132237885014335">Primește notificări</translation>

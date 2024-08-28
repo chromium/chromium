@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Ištrinti skirtukų grupę?</translation>
 <translation id="2195124168004379331">Naršyklė atrodo gerai</translation>
 <translation id="2199562093267256223">Grupė bus ištrinta iš visų įrenginių, kuriuose prisijungta prie <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Pirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą.</translation>
 <translation id="2218443599109088993">Tolinti</translation>
 <translation id="2220529011494928058">Pranešti apie problemą</translation>
 <translation id="2230173723195178503">TInklalapis įkeltas</translation>
@@ -470,6 +471,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3268451620468152448">Atidaryti skirtukai</translation>
 <translation id="3269051798482119531">Tęsti naudojant šį skirtuką</translation>
 <translation id="3272527697863656322">Atšaukti</translation>
+<translation id="3273510436356991673">Pagrindinio ekrano tinkinimas</translation>
 <translation id="3277021493514034324">Svetainės adresas nukopijuotas</translation>
 <translation id="3285962946108803577">Bendrinti puslapį...</translation>
 <translation id="3289505634533552500">Paieška balsu</translation>
@@ -1317,6 +1319,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7272437679830969316">Nepavyko patvirtinti tapatybės. Slaptažodis nenukopijuotas.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Stebimas naujas paketas}one{Stebimi nauji paketai}few{Stebimi nauji paketai}many{Stebimi nauji paketai}other{Stebimi nauji paketai}}</translation>
 <translation id="7291368939935408496">Ruošiami slaptažodžiai…</translation>
+<translation id="7300448350764260141">Papildomai apsaugokite nuo grėsmių internete.</translation>
 <translation id="7302503784943202842">Slaptažodžių naudojimas visuose įrenginiuose</translation>
 <translation id="7313347584264171202">Čia rasite inkognito skirtukus</translation>
 <translation id="7335132237885014335">Gaukite pranešimus</translation>

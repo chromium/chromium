@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">¿Quieres borrar el grupo de pestañas?</translation>
 <translation id="2195124168004379331">Tu navegador parece estar bien</translation>
 <translation id="2199562093267256223">Esta acción borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Compra, identifica y traduce lo que ves con la cámara.</translation>
 <translation id="2218443599109088993">Alejar</translation>
 <translation id="2220529011494928058">Informar un problema</translation>
 <translation id="2230173723195178503">Se cargó la página web</translation>
@@ -470,6 +471,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3269051798482119531">Continuar con esta pestaña</translation>
 <translation id="3272527697863656322">Cancelar</translation>
+<translation id="3273510436356991673">Personaliza tu pantalla principal</translation>
 <translation id="3277021493514034324">Se copió la dirección del sitio</translation>
 <translation id="3285962946108803577">Compartir página…</translation>
 <translation id="3289505634533552500">Búsqueda por voz</translation>
@@ -1317,6 +1319,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Seguimiento de nuevo paquete}other{Seguimiento de nuevos paquetes}}</translation>
 <translation id="7291368939935408496">Preparando las contraseñas…</translation>
+<translation id="7300448350764260141">Agrega una capa adicional de protección contra las amenazas en línea.</translation>
 <translation id="7302503784943202842">Usa contraseñas en todos tus dispositivos</translation>
 <translation id="7313347584264171202">Aquí encontrarás tus pestañas de incógnito</translation>
 <translation id="7335132237885014335">Recibe notificaciones</translation>

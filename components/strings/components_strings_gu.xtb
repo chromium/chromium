@@ -462,7 +462,6 @@
 <translation id="180757923930449935">(64-બિટ એમ્યુલેટેડ)</translation>
 <translation id="180991881384371158">તમારો CVC તમારા કાર્ડની પાછળના ભાગ પર હોય છે. તે તમારા હસ્તાક્ષર બૉક્સની ઉપર જમણી બાજુએ 3 અંકનો કોડ છે.</translation>
 <translation id="1810391395243432441">તમારા સ્ક્રીન લૉક વડે પાસવર્ડને સુરક્ષિત કરો</translation>
-<translation id="1810597570737826742">{count,plural, =1{વધારાના {count} સરનામામાંથી {position}}one{વધારાના {count} સરનામામાંથી {position}}other{વધારાના {count} સરનામામાંથી {position}}}</translation>
 <translation id="1812527064848182527">લૅન્ડસ્કેપ</translation>
 <translation id="1812975699435941848">આરોગ્ય શિક્ષણ અને તબીબી પ્રશિક્ષણ</translation>
 <translation id="1816436748874040213">શેર કરેલા ટૅબને સ્ક્રોલ અને નાનું-મોટું કરવા માટે કહી શકાય છે</translation>
@@ -718,6 +717,7 @@
 <translation id="2276057643614339130">પ્રિન્ટ બેઝ</translation>
 <translation id="2277103315734023688">આગળ લઈ જાઓ</translation>
 <translation id="2277753418458118549">કનેક્શનની વિગતો બતાવો</translation>
+<translation id="2277949605527755300"><ph name="URL" /> તમારા હાથને ટ્રૅક કરવા માગે છે</translation>
 <translation id="22792995594807632">ડાઉનલોડ કરતા પહેલાં રિવ્યૂ કરવો આવશ્યક છે</translation>
 <translation id="2283340219607151381">સરનામાં સાચવો અને ભરો</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' ડિલીટ કર્યું</translation>
@@ -1529,6 +1529,7 @@
 <translation id="3793574014653384240">તાજેતરના અકસ્માતોની સંખ્યા અને કારણો</translation>
 <translation id="3799805948399000906">ફોન્ટની વિનંતી કરી</translation>
 <translation id="3801265110651850478">તમારા બ્રાઉઝિંગ ટ્રાફિક સાથે એક "ટ્રૅક કરશો નહીં" વિનંતી મોકલો</translation>
+<translation id="3801297763951514916">તમે વારંવાર મુલાકાત લો છો</translation>
 <translation id="380329542618494757">નામ</translation>
 <translation id="3803801106042434208">આ શોધ એન્જિન તમારા પ્રદેશમાં લોકપ્રિય છે</translation>
 <translation id="3807366285948165054">છબીને X અક્ષ પર ખસેડો</translation>
@@ -1622,6 +1623,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 MB કરતાં ઓછું</translation>
 <translation id="3990250421422698716">બહાર નીકળેલા ભાગને અંદર દબાવો</translation>
+<translation id="3990532701115075684">તમારા હાથને ટ્રૅક કરો</translation>
 <translation id="3992684624889376114">આ પેજ વિશે</translation>
 <translation id="3995639283717357522">પૉલિસીઓ લાગુ કરો</translation>
 <translation id="399754345297554962">પ્રમાણિત અને પ્રવેશ પરીક્ષાઓ</translation>
@@ -2367,6 +2369,7 @@
 <translation id="5385857628869214740">વિનોદ</translation>
 <translation id="5385966243497224160">HTTPS વિનાના URLનો પ્રીવ્યૂ કરી શકાતો નથી</translation>
 <translation id="5386426401304769735">આ સાઇટ માટેની પ્રમાણપત્ર શ્રૃંખલા SHA-1 નો ઉપયોગ કરીને સહી કરેલ પ્રમાણપત્ર ધરાવે છે.</translation>
+<translation id="5391010642126249196">તમે મુલાકાત લીધેલી સાઇટ</translation>
 <translation id="539203134595252721">ટેબલ ટેનિસ</translation>
 <translation id="5392506727170022660">ધાતુ (સેમી-ગ્લોસ)</translation>
 <translation id="5394069166371280357">કૌટુંબિક ટીવી શો</translation>
@@ -2566,6 +2569,7 @@
 <translation id="5742806904559466333">બાર, ક્લબ અને નાઇટલાઇફ</translation>
 <translation id="5743684619253032786">નખની સંભાળ માટેની પ્રોડક્ટ</translation>
 <translation id="5745733273847572235">તમારા સ્થાન માટે પૂછી શકે છે</translation>
+<translation id="5750869797196646528">હાથ ટ્રૅક કરવાની સુવિધા</translation>
 <translation id="5759751709240058861">તમારા કૅમેરાનો ઉપયોગ કરો અને તેને ખસેડો</translation>
 <translation id="5763042198335101085">એક માન્ય ઇમેઇલ ઍડ્રેસ ઉમેરો</translation>
 <translation id="5764725887548570807">મૂળ ફૉર્મેટ અમાન્ય છે.</translation>
@@ -2985,6 +2989,7 @@
 <translation id="6513005815064132016">તમારા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાનું પૂછી શકે છે</translation>
 <translation id="6517596291481585650">ચેતવણી: આ પૉલિસીને પૉલિસી દ્વારા ઉલ્લેખ થયા મુજબ સૂચિ તરીકે મર્જ કરવામાં આવી ન હતી, કારણ કે તે સૂચિ નથી.</translation>
 <translation id="6518133107902771759">પ્રમાણિત કરો</translation>
+<translation id="6519885440226079262">તમારા હાથને ટ્રૅક કરવા માટે કહી શકો છો</translation>
 <translation id="6520026037299163656">વેબ ઍપ અને ઑનલાઇન ટૂલ</translation>
 <translation id="65203098586853226"><ph name="SOURCE" />નો <ph name="TARGET" />માં અનુવાદ કરી રહ્યાં છીએ</translation>
 <translation id="6521745193039995384">સક્રિય નથી</translation>
@@ -3025,6 +3030,7 @@
 <translation id="6599642189720630047">ટ્રૅક કરેલી પ્રોડક્ટ</translation>
 <translation id="6606309334576464871">Chrome વિવિધ સાઇટને તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી બ્લૉક કરે છે.
             <ph name="NEW_LINE" />જો સાઇટની સુવિધાઓ કામ ન કરે, તો <ph name="START_LINK" />ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપી જુઓ<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">હાથ ટ્રૅક કરવાની સુવિધા</translation>
 <translation id="6613866251791999074">Chromeમાં તમારા શોધ એન્જિન વિશે વધુ જાણો</translation>
 <translation id="6615297766614333076">સ્ટૅકર 2</translation>
 <translation id="6619496928666593220">IBAN ભરવામાં આવ્યો નથી</translation>
@@ -3477,6 +3483,7 @@
 <translation id="7440140511386898319">ઑફલાઇન હો તે સમયે જાણકારી મેળવો</translation>
 <translation id="7441627299479586546">ખોટો પૉલિસી વિષય</translation>
 <translation id="7441864845853794192">ગુઅર્મે અને ખાસ ભોજન</translation>
+<translation id="7442389976360981500">શું હાથ ટ્રૅક કરવાની સુવિધાને મંજૂરી આપીએ?</translation>
 <translation id="7442725080345379071">આછો નારંગી</translation>
 <translation id="7444046173054089907">આ સાઇટ અવરોધિત છે</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{કુકીને આજે ફરીથી બ્લૉક કરવામાં આવશે}=1{કુકીને આવતીકાલે ફરીથી બ્લૉક કરવામાં આવશે}one{# દિવસમાં કુકીને ફરીથી બ્લૉક કરવામાં આવશે}other{# દિવસમાં કુકીને ફરીથી બ્લૉક કરવામાં આવશે}}</translation>
@@ -4135,6 +4142,7 @@
 <translation id="865032292777205197">મોશન સેન્સર</translation>
 <translation id="865255447216708819">પાછળ પ્રિન્ટવાળી ફિલ્મ</translation>
 <translation id="8654126188050905496">55 x 91 મિમી</translation>
+<translation id="8660780831677950176">તમે આ સમયે વારંવાર મુલાકાત લો છો</translation>
 <translation id="8662463432865928030">વ્યાવાસાયિક પ્રોપર્ટી</translation>
 <translation id="8663226718884576429">ઑર્ડરનો સારાંશ, <ph name="TOTAL_LABEL" />, વધુ વિગતો</translation>
 <translation id="8663909737634214500">ઓપ્ટિકલ ડિસ્ક</translation>

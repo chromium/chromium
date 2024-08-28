@@ -428,6 +428,7 @@
 <translation id="1739422091279046802">滚动和缩放</translation>
 <translation id="1741613555002899862">当 DnsOverHttpsMode 是“<ph name="SECURE_DNS_MODE_SECURE" />”时，必须将此政策指定为有效字符串。</translation>
 <translation id="1743393865165844832">床上用品</translation>
+<translation id="1743892871127720056">比较表格标题，修改文本</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我们如何使用这些数据<ph name="END_BOLD" />：Chrome 会在您浏览时记录您感兴趣的主题。主题标签是预定义的，包括“艺术与娱乐”“购物”和“体育”等等。之后，您访问的网站便可请求 Chrome 提供您的若干主题（而非您的浏览记录），以便向您展示个性化广告。</translation>
 <translation id="1746113442205726301">图片沿 Y 轴位移</translation>
 <translation id="1746531169546376413">0 度</translation>
@@ -462,7 +463,6 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">您的银行卡验证码 (CVC) 位于银行卡的背面，即签名框右上角的最后 3 位数字。</translation>
 <translation id="1810391395243432441">使用屏幕锁定功能保护密码</translation>
-<translation id="1810597570737826742">{count,plural, =1{第 {position} 个附加地址（共 {count} 个）}other{第 {position} 个附加地址（共 {count} 个）}}</translation>
 <translation id="1812527064848182527">横向</translation>
 <translation id="1812975699435941848">健康教育与医疗培训</translation>
 <translation id="1816436748874040213">可以请求滚动和缩放分享的标签页</translation>
@@ -1258,6 +1258,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">重放 10 秒</translation>
 <translation id="3352881017886802007">体育游戏</translation>
+<translation id="3354508510846323339">第 <ph name="CURRENT_CITATION" /> 项引用，共 <ph name="MAX_CITATIONS" /> 项，<ph name="PRODUCT_NAME" />，<ph name="URL" /></translation>
 <translation id="3355823806454867987">更改代理服务器设置...</translation>
 <translation id="335809815767823">已导出</translation>
 <translation id="3359387651158939842">如果您保存信用卡信息以供 Google Pay 使用，那么在您日后购物时，系统会自动填充此信息</translation>
@@ -1403,6 +1404,7 @@
 <translation id="3586931643579894722">隐藏详细信息</translation>
 <translation id="3587725436724465984">贵组织已将 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 列为可能违反相关政策的网站。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">中间</translation>
+<translation id="3600106876108433070">了解比较表格</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3600492954573979888">“管理 Google 隐私设置”按钮，激活它即可访问您的 Google 账号隐私设置</translation>
 <translation id="3603507503523709">已被您的管理员禁用的应用</translation>
@@ -2915,6 +2917,7 @@
 <translation id="640163077447496506">今天过期</translation>
 <translation id="6402537308870515461">移动前需要检查</translation>
 <translation id="6403167778944553">卧室与卫浴</translation>
+<translation id="6403434564317313607">系统会将您添加到表格中的网页标签页标题和网址发送给 Google，并将其保存到您的账号 <ph name="EMAIL" /> 中；人工审核员可能会查看这些内容，以改进此功能。</translation>
 <translation id="6404511346730675251">修改书签</translation>
 <translation id="6405181733356710802">继续访问<ph name="APP_NAME" />？</translation>
 <translation id="6410264514553301377">请输入“<ph name="CREDIT_CARD" />”的到期日期和银行卡验证码 (CVC)</translation>
@@ -3354,6 +3357,7 @@
 <translation id="722454870747268814">新的无痕式标签页</translation>
 <translation id="7227293336683593977">既往价格</translation>
 <translation id="7227747683324411744">您正在尝试访问的网站上的攻击者可能会诱使您安装有害软件，以操纵您的浏览体验，例如，更改您的主页或在您访问的网站上展示广告。</translation>
+<translation id="7232352818707016189">可对比较表格执行的更多操作</translation>
 <translation id="7233592378249864828">打印确认工作表</translation>
 <translation id="7234112195906418665">旅行与交通</translation>
 <translation id="7236417832106250253">已完成 <ph name="PROGRESS_PERCENT" />% | 预计剩余时间：<ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4098,6 +4102,7 @@
 <translation id="8558347880669160417">这次可以使用摄像头和麦克风</translation>
 <translation id="8559762987265718583">您设备的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="8564182942834072828">单独的文档/非逐份打印的副本</translation>
+<translation id="8564466070529550495">暂时无法使用虚拟卡，请稍后再试。</translation>
 <translation id="8564985650692024650">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chromium 建议您重置该密码。</translation>
 <translation id="8570895683659698018">爱好与休闲</translation>
 <translation id="8574841453995331336">冰箱和冷柜</translation>

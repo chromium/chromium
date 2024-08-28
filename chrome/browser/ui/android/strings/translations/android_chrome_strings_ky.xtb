@@ -1018,6 +1018,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="587735546353481577">Сайтка жазылуу үчүн ага өтүп, Google Chrome менюсун ачып, "Жазылууну" таптаңыз.</translation>
 <translation id="5879072387416556377">Жакшыраак сунуштарды алыңыз</translation>
 <translation id="5885378508678660271">Билдирмелер <ph name="SEPARATOR" /> Бул сайт кооптуу болгондуктан, Chrome бул уруксаттарды өчүрдү</translation>
+<translation id="5895834791314695851">Жакында сырсөздөр бул түзмөктө иштебей калышы мүмкүн. Сырсөздөрдү колдоно берүү үчүн Google Play кызматтарын жаңыртыңыз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Бир да киргизүүчү ачкычтардын бети жабылган жок</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5919204609460789179">Шайкештирүүнү баштоо үчүн <ph name="PRODUCT_NAME" /> жаңыртыңыз</translation>
@@ -1557,6 +1558,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="820568752112382238">Эң көп кирген сайттар</translation>
 <translation id="8209050860603202033">Сүрөттү ачуу</translation>
 <translation id="8210770465353466621">Өтмөктөрүңүздү ушул жерден табасыз</translation>
+<translation id="8211101263765532799">Жакында айрым сырсөздөр иштебей калат</translation>
 <translation id="8215740705341534369">Капталдагы экран</translation>
 <translation id="8218622182176210845">Аккаунтуңузду башкарыңыз</translation>
 <translation id="8221401890884589479">Каалаган сайтты бөгөттөй аласыз. Chrome тизмеге 30 күн мурун кошулган сайттарды автоматтык түрдө жок кылып турат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -1657,6 +1659,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="864544049772947936">Терезелерди башкаруу (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Chrome'ду каалагандай пайдаланыңыз</translation>
 <translation id="8664979001105139458">Мындай аталыштагы файл бар</translation>
+<translation id="8672883760227492369">Бул түзмөктө айрым сырсөздөр жакында иштебей калат. Аларды Сырсөздөрдү башкаргычка өткөрө аласыз.</translation>
 <translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" /> сайтында <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунту менен катталыңыз</translation>
 <translation id="8676789164135894283">Кирүүнү ырастоо</translation>
 <translation id="8683039184091909753">сүрөт</translation>

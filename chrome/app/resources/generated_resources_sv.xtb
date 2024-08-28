@@ -1436,6 +1436,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="199610894463449797">{0,plural, =1{Stäng den här profilen}other{Stäng den här profilen (# fönster)}}</translation>
 <translation id="1997433994358798851">Chrome behöver behörighet för att ansluta till enheten via Bluetooth</translation>
 <translation id="1997616988432401742">Dina certifikat</translation>
+<translation id="1998715278591719161">Får spåra dina händer</translation>
 <translation id="1999115740519098545">Vid start</translation>
 <translation id="2002109485265116295">Realtid</translation>
 <translation id="2002160221914907025">Experimentell AI</translation>
@@ -3434,7 +3435,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3439970425423980614">Öppnar PDF i förhandsgranskning</translation>
 <translation id="3440663250074896476">Fler åtgärder för <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Skärm</translation>
-<translation id="3441663102605358937">Logga in på <ph name="ACCOUNT" /> igen för att verifiera kontot</translation>
 <translation id="3441824746233675597">Gör det svårare för personer som har åtkomst till din internettrafik att se vilka webbplatser du besöker. <ph name="PRODUCT_NAME" /> använder en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS).</translation>
 <translation id="3442674350323953953">Låt Google använda din hårdvarudata för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt.</translation>
 <translation id="3443545121847471732">Ange en sexsiffrig pinkod</translation>
@@ -3550,6 +3550,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3521606918211282604">Ändra diskstorlek</translation>
 <translation id="3522088408596898827">Mycket ont om diskutrymme. Frigör diskutrymme och försök igen.</translation>
 <translation id="3522979239100719575">Söker efter tillgängliga profiler. Det kan ta några minuter.</translation>
+<translation id="3523447078673133727">Tillåt inte att webbplatser spårar dina händer</translation>
 <translation id="3524518036046613664">Upptäck enheter i det lokala nätverket, t.ex. skrivare</translation>
 <translation id="3524965460886318643">Exportera aktivitet</translation>
 <translation id="3525426269008462093">Granska enhetssynkronisering efter konfigureringen</translation>
@@ -4239,6 +4240,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3987993985790029246">Kopiera länk</translation>
 <translation id="3988124842897276887">Den här fliken är ansluten till en USB-enhet</translation>
 <translation id="3988996860813292272">Välj tidszon</translation>
+<translation id="3989635538409502728">Logga ut</translation>
 <translation id="3991055816270226534">Hantera tredjepartscookies och spårningsskydd</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />När Platsangivelsens exakthet är aktiverad används information om trådlösa signaler, som wifi-åtkomstpunkter och mobilnätverksmaster, tillsammans med enheters sensordata, som accelerometer och gyroskop, för att uppskatta mer exakta enhetsplatser som appar och tjänster använder för att tillhandahålla platsbaserade funktioner. För att göra detta samlar Google med jämna mellanrum in information om enhetssensorer och trådlösa signaler i närheten av enheten för att bidra till identifiering av platser för trådlösa signaler som fastställs med hjälp av massinsamling.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google använder informationen som samlas in från enheten för att förbättra platsangivelsens exakthet och platsbaserade tjänster samt i allmänhet förbättra, tillhandahålla och underhålla Googles tjänster. Vi behandlar informationen utifrån Googles och tredje parts berättigade intresse för att tillgodose användarnas behov. Informationen används inte för att identifiera någon person.<ph name="END_PARAGRAPH2" />
@@ -4414,6 +4416,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
         Du kan hantera inställningarna i kortmenyn. Det finns även fler alternativ i Anpassa Chrome.</translation>
 <translation id="4115002065223188701">Nätverket är utanför räckvidden</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">Upptäcktes en gång</translation>
 <translation id="4116704186509653070">Öppna igen</translation>
 <translation id="4117714603282104018">Haptisk återkoppling för styrplatta</translation>
 <translation id="4118579674665737931">Starta om enheten och försök igen.</translation>
@@ -4817,6 +4820,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4426508677408162512">Alla bokmärken</translation>
 <translation id="4426513927906544654">Få innehållsrekommendationer</translation>
 <translation id="4426857487270413362">Det gick inte att ladda ned installationsfiler. Kontrollera internetanslutningen och att du har tillräckligt med ledigt diskutrymme och försök igen. Felkoden är <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Upptäcktes <ph name="COUNT" /> gånger</translation>
 <translation id="4427365070557649936">Bekräftelsekoden verifieras …</translation>
 <translation id="4429163740524851942">Layout på fysiskt tangentbord</translation>
 <translation id="4430019312045809116">Volym</translation>
@@ -5928,6 +5932,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="52550593576409946">Det gick inte att starta kioskappen.</translation>
 <translation id="5255726914791076208">Ditt <ph name="RP_ID" />-konto ändras inte när du redigerar nyckeln</translation>
 <translation id="5255859108402770436">Logga in igen</translation>
+<translation id="5256174546894739043">Fråga när en webbplats försöker spåra dina händer</translation>
 <translation id="52566111838498928">Läser in teckensnitt …</translation>
 <translation id="5256861893479663409">På alla webbplatser</translation>
 <translation id="5258992782919386492">Installera på den här enheten</translation>
@@ -6675,6 +6680,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5801051031414037185">Konfigurera telefon</translation>
 <translation id="5801568494490449797">Inställningar</translation>
 <translation id="5803689677801500549">Sparade lösenord visas här. <ph name="BEGIN_LINK" />Välj en CSV-fil<ph name="END_LINK" /> för att importera lösenord till <ph name="BRAND" /> för <ph name="USER_EMAIL" />.</translation>
+<translation id="5804198298544152115">Webbplatser brukar spåra händerna och fingrarna för att förbättra fängslande upplevelser</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5804259315582798390">Det gick inte att aktivera lokal dataåterställning</translation>
 <translation id="5805268472388605531">Tryck länge på tangenterna för att se accenttecken och specialtecken</translation>
@@ -7762,6 +7768,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="661266467055912436">Förbättrar säkerheten för dig och alla andra på webben.</translation>
 <translation id="6613267708691765962">Söker efter skadlig kod …</translation>
 <translation id="6613668613087513143">Det gick inte att slutföra uppdateringen eftersom utrymmet inte räcker till. Frigör <ph name="NECESSARY_SPACE" /> på enheten och försök igen i webbläsaren Chrome.</translation>
+<translation id="6614172284067813496">Sidan har lagts till i läslistan</translation>
 <translation id="6615455863669487791">Visa mig</translation>
 <translation id="6618744767048954150">Körs</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7775,6 +7782,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6622980291894852883">Fortsätt att blockera bilder</translation>
 <translation id="6624036901798307345">Öppna det nya flikhuvudet med miniatyrer av alla flikar genom att trycka på flikräknaren i verktygsfältet i surfplatteläge.</translation>
 <translation id="6624687053722465643">Sockersöt</translation>
+<translation id="6627743754845412571">Får inte spåra dina händer</translation>
 <translation id="6628316682330029452">Klientcertifikat är certifikat som identifierar dig för andra servrar.</translation>
 <translation id="6628328486509726751">Uppladdat <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Bättre säkerhet</translation>
@@ -7878,6 +7886,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6701535245008341853">Profilen kunde inte hämtas.</translation>
 <translation id="6702639462873609204">&amp;Redigera ...</translation>
 <translation id="6702859741546259407">Aktivera Bluetooth och wifi om du vill använda <ph name="FEATURE_NAME" /></translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Du kan försöka igen senare i Chrome.</translation>
 <translation id="6703254819490889819">Återställ säkerhetskopia</translation>
 <translation id="6703613667804166784">Den här filen kan skada dina personliga konton och sociala nätverkskonton, bland annat <ph name="USER_EMAIL" /></translation>
@@ -8142,6 +8151,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6876155724392614295">Cykel</translation>
 <translation id="6876469544038980967">Inte användbart</translation>
 <translation id="6878422606530379992">Användning av sensorer har tillåtits</translation>
+<translation id="6878862640969460273">Liggande</translation>
 <translation id="6880587130513028875">Bilder är blockerade på den här sidan.</translation>
 <translation id="6881845890692344060">Administratören har loggat ut. Du har återfått kontrollen.</translation>
 <translation id="6882210908253838664">Om en webbplats inte fungerar kan du testa att ge den tillfällig behörighet att använda tredjepartscookies. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -8237,6 +8247,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6960648667961844909">Det gick inte att ladda ned filer för taligenkänning på <ph name="LANGUAGE" />. Ett nytt nedladdningsförsök görs senare. Tal skickas till Google för bearbetning tills nedladdningen har slutförts.</translation>
 <translation id="696103774840402661">Alla filer och lokal data för alla användare på denna <ph name="DEVICE_TYPE" /> har raderats permanent.</translation>
 <translation id="6961327401577924850">Webbplatser söker vanligtvis efter Bluetooth-enheter för funktioner som att konfigurera eller synkronisera en beacon-sändare med låg energiförbrukning, ett aktivitetsarmband eller en smart glödlampa</translation>
+<translation id="6963772203726867701">Upptäcktes inte</translation>
 <translation id="6963872466817251924">Framhäv textmarkören</translation>
 <translation id="6964390816189577014">Hjälte</translation>
 <translation id="6964760285928603117">Ta bort från gruppen</translation>
@@ -8635,6 +8646,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7258192266780953209">Transformationer</translation>
 <translation id="7258225044283673131">Appen svarar inte. Stäng appen med Tvångsavsluta.</translation>
 <translation id="7260186537988033909">Kiosk- och skyltningsenheten har registrerats</translation>
+<translation id="7260206782629605806">Om du sänker gränsen kan du använda en subtil rörelse. Om du höjer gränsen kan du behöva göra en större rörelse.</translation>
 <translation id="7261217796641151584">Dela grupp</translation>
 <translation id="7261612856573623172">Systemets röst för text till tal</translation>
 <translation id="7262004276116528033">Inloggningstjänsten tillhandahålls av <ph name="SAML_DOMAIN" />.</translation>
@@ -9680,6 +9692,7 @@ Nyckelfil: <ph name="KEY_FILE" />
 
 Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versioner av ditt tillägg.</translation>
 <translation id="8000020256436988724">Verktygsfält</translation>
+<translation id="800117767980299235">Ljudinspelning av mötespunkter</translation>
 <translation id="8002274832045662704">Avancerad skrivarkonfiguration</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> är inte längre tillgänglig</translation>
 <translation id="8004092996156083991">Vi meddelar dig om dina lösenord är utsatta.</translation>
@@ -10763,6 +10776,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="876956356450740926">Kör utvecklarverktyg, IDE:er och redigerare. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Tilläggets rotkatalog</translation>
 <translation id="8771300903067484968">Startsidans bakgrund har återställts till standardbakgrunden.</translation>
+<translation id="8773535891252326047">Länken har kopierats till höjdpunkt</translation>
 <translation id="8774379074441005279">Bekräfta återställning</translation>
 <translation id="8774934320277480003">Övre marginal</translation>
 <translation id="8775144690796719618">Ogiltig webbadress</translation>

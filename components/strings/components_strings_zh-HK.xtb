@@ -428,6 +428,7 @@
 <translation id="1739422091279046802">捲動和縮放</translation>
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設定為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1743393865165844832">床墊和寢具</translation>
+<translation id="1743892871127720056">比較表格標題，修改文字</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我們會如何使用這些資料：<ph name="END_BOLD" />Chrome 會在您瀏覽內容時記錄感興趣的主題。系統會預先定義主題標籤，包括「藝術與娛樂」、「購物」和「運動」等。您日後瀏覽的網站可要求 Chrome 提供一些主題 (而非您的瀏覽記錄)，以便向您顯示個人化廣告。</translation>
 <translation id="1746113442205726301">圖片 Y 軸移動</translation>
 <translation id="1746531169546376413">0 度</translation>
@@ -462,7 +463,6 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC 喺信用卡嘅背面，即係簽名欄右上方嘅最後 3 位數字。</translation>
 <translation id="1810391395243432441">使用螢幕鎖定功能保護密碼</translation>
-<translation id="1810597570737826742">{count,plural, =1{第 {position} 個附加地址，總共有 {count} 個}other{第 {position} 個附加地址，總共有 {count} 個}}</translation>
 <translation id="1812527064848182527">橫向</translation>
 <translation id="1812975699435941848">健康教育和醫療培訓</translation>
 <translation id="1816436748874040213">可要求捲動和縮放已分享的分頁</translation>
@@ -718,6 +718,7 @@
 <translation id="2276057643614339130">列印底座</translation>
 <translation id="2277103315734023688">向前快轉</translation>
 <translation id="2277753418458118549">顯示連線詳情</translation>
+<translation id="2277949605527755300"><ph name="URL" /> 想追蹤你的手部</translation>
 <translation id="22792995594807632">下載檔案前請務必確認</translation>
 <translation id="2283340219607151381">儲存和填入地址</translation>
 <translation id="2283447177162560884">刪除咗「<ph name="PAGE_TITLE" />」</translation>
@@ -1260,6 +1261,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">重播 10 秒</translation>
 <translation id="3352881017886802007">體育遊戲</translation>
+<translation id="3354508510846323339">第 <ph name="CURRENT_CITATION" /> 段引文，總共有 <ph name="MAX_CITATIONS" /> 段，<ph name="PRODUCT_NAME" />，<ph name="URL" /></translation>
 <translation id="3355823806454867987">變更 Proxy 設定…</translation>
 <translation id="335809815767823">匯出咗</translation>
 <translation id="3359387651158939842">儲存信用卡資料以用於 Google Pay 後，日後購物時可自動填寫卡資料</translation>
@@ -1405,6 +1407,7 @@
 <translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587725436724465984">你的機構已將 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 識別為可能違反政策的網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">中間</translation>
+<translation id="3600106876108433070">了解比較表格嘅詳情</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3600492954573979888">管理 Google 私隱設定按鈕，啟動之後就可以去 Google 帳戶私隱設定</translation>
 <translation id="3603507503523709">您的管理員已封鎖應用程式</translation>
@@ -1528,6 +1531,7 @@
 <translation id="3793574014653384240">最近發生的當機次數和原因</translation>
 <translation id="3799805948399000906">要求的字型</translation>
 <translation id="3801265110651850478">將「不追蹤」要求與瀏覽流量一併傳送</translation>
+<translation id="3801297763951514916">你經常瀏覽</translation>
 <translation id="380329542618494757">名稱</translation>
 <translation id="3803801106042434208">這些搜尋引擎是你所在地區的熱門之選</translation>
 <translation id="3807366285948165054">圖片 X 軸移動</translation>
@@ -1621,6 +1625,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">小於 1 MB</translation>
 <translation id="3990250421422698716">撞頁偏移</translation>
+<translation id="3990532701115075684">追蹤你的手部</translation>
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="3995639283717357522">套用政策</translation>
 <translation id="399754345297554962">資格試和入學試</translation>
@@ -2366,6 +2371,7 @@
 <translation id="5385857628869214740">幽默</translation>
 <translation id="5385966243497224160">無法預覽非 HTTPS 網址</translation>
 <translation id="5386426401304769735">此網站的憑證鏈內包含使用 SHA-1 簽署的憑證。</translation>
+<translation id="5391010642126249196">上次瀏覽：</translation>
 <translation id="539203134595252721">乒乓球</translation>
 <translation id="5392506727170022660">金屬 (半光面)</translation>
 <translation id="5394069166371280357">合家歡電視節目</translation>
@@ -2565,6 +2571,7 @@
 <translation id="5742806904559466333">酒吧、俱樂部和夜生活</translation>
 <translation id="5743684619253032786">指甲護理產品</translation>
 <translation id="5745733273847572235">可要求您提供位置</translation>
+<translation id="5750869797196646528">手部追蹤</translation>
 <translation id="5759751709240058861">使用和移動相機</translation>
 <translation id="5763042198335101085">請輸入有效的電郵地址</translation>
 <translation id="5764725887548570807">來源格式無效。</translation>
@@ -2919,6 +2926,7 @@
 <translation id="640163077447496506">今天到期</translation>
 <translation id="6402537308870515461">移動檔案前請務必確認</translation>
 <translation id="6403167778944553">床上及浴室用品</translation>
+<translation id="6403434564317313607">系統會將新增至表格的網頁分頁標題和網址傳送給 Google，並儲存至帳戶 (<ph name="EMAIL" />)。這些內容可能會送交人手審查，以改善此功能。</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6405181733356710802">要繼續前往 <ph name="APP_NAME" /> 嗎？</translation>
 <translation id="6410264514553301377">請輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼 (CVC)</translation>
@@ -2984,6 +2992,7 @@
 <translation id="6513005815064132016">可要求追蹤攝錄機的位置</translation>
 <translation id="6517596291481585650">警告：此政策並非清單，因此未有按政策中指定的方式合併。</translation>
 <translation id="6518133107902771759">驗證</translation>
+<translation id="6519885440226079262">可以要求追蹤你的手部</translation>
 <translation id="6520026037299163656">網絡應用程式和網上工具</translation>
 <translation id="65203098586853226">正在將<ph name="SOURCE" />翻譯成<ph name="TARGET" /></translation>
 <translation id="6521745193039995384">未啟用</translation>
@@ -3024,6 +3033,7 @@
 <translation id="6599642189720630047">已追蹤的產品</translation>
 <translation id="6606309334576464871">Chrome 會禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。
             <ph name="NEW_LINE" />如果網站功能無法正常運作，請<ph name="START_LINK" />嘗試暫時允許使用第三方 Cookie<ph name="END_LINK" />。</translation>
+<translation id="6613742613135780554">手部追蹤</translation>
 <translation id="6613866251791999074">進一步了解你喺 Chrome 入面嘅搜尋引擎</translation>
 <translation id="6615297766614333076">堆疊器 2</translation>
 <translation id="6619496928666593220">未填入 IBAN</translation>
@@ -3358,6 +3368,7 @@
 <translation id="722454870747268814">新增無痕式分頁</translation>
 <translation id="7227293336683593977">過往價格</translation>
 <translation id="7227747683324411744">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。</translation>
+<translation id="7232352818707016189">其他比較表格嘅操作</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>
 <translation id="7234112195906418665">旅遊和交通</translation>
 <translation id="7236417832106250253">已完成 <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3476,6 +3487,7 @@
 <translation id="7440140511386898319">探索可供離線檢視的內容</translation>
 <translation id="7441627299479586546">政策主體有誤</translation>
 <translation id="7441864845853794192">美食和特色食品</translation>
+<translation id="7442389976360981500">允許進行手部追蹤嗎？</translation>
 <translation id="7442725080345379071">淺橙色</translation>
 <translation id="7444046173054089907">系統已封鎖此網站</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{系統將於今天再次封鎖 Cookie}=1{系統將於明天再次封鎖 Cookie}other{系統將於 # 天後再次封鎖 Cookie}}</translation>
@@ -4102,6 +4114,7 @@
 <translation id="8558347880669160417">呢次批准用相機同咪</translation>
 <translation id="8559762987265718583">您裝置的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法建立私人連線至 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />。</translation>
 <translation id="8564182942834072828">個別文件/未自動分頁的副本</translation>
+<translation id="8564466070529550495">目前無法使用虛擬卡，請稍後再試。</translation>
 <translation id="8564985650692024650">如果您已在其他網站上重用 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chromium 建議您重設密碼。</translation>
 <translation id="8570895683659698018">興趣及休閒</translation>
 <translation id="8574841453995331336">雪櫃和冰箱</translation>
@@ -4134,6 +4147,7 @@
 <translation id="865032292777205197">動作感應器</translation>
 <translation id="865255447216708819">背面印刷薄膜</translation>
 <translation id="8654126188050905496">55 x 91 毫米</translation>
+<translation id="8660780831677950176">你通常在此時間瀏覽</translation>
 <translation id="8662463432865928030">商用物業</translation>
 <translation id="8663226718884576429">訂單摘要、<ph name="TOTAL_LABEL" /> 及更多詳情</translation>
 <translation id="8663909737634214500">光碟</translation>

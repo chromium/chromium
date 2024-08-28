@@ -428,6 +428,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1739422091279046802">przewijanie i powiększanie</translation>
 <translation id="1741613555002899862">Należy wskazać tę zasadę oraz prawidłowy ciąg, kiedy zasada DnsOverHttpsMode jest ustawiona jako <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Pościel i bielizna pościelowa</translation>
+<translation id="1743892871127720056">Tytuł tabeli porównawczej, edytuj tekst</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> Chrome określa interesujące Cię tematy, gdy przeglądasz różne strony internetowe. Etykiety tematów są wstępnie zdefiniowane i obejmują kategorie takie jak Sztuka i rozrywka, Zakupy czy Sport. Później strona, którą akurat będziesz odwiedzać, będzie mogła zapytać Chrome o kilka takich tematów (ale nie o Twoją historię przeglądania), aby spersonalizować wyświetlane reklamy.</translation>
 <translation id="1746113442205726301">Przesunięcie obrazu wzdłuż osi Y</translation>
 <translation id="1746531169546376413">0 stopni</translation>
@@ -462,7 +463,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="180757923930449935">(emulacja wersji 64-bitowej)</translation>
 <translation id="180991881384371158">Kod CVC znajduje się na odwrocie karty. To ostatnie 3 cyfry w prawym górnym rogu pola podpisu.</translation>
 <translation id="1810391395243432441">Chroń hasła za pomocą blokady ekranu</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position} z {count} adresu z plusem}few{{position} z {count} adresów z plusem}many{{position} z {count} adresów z plusem}other{{position} z {count} adresu z plusem}}</translation>
 <translation id="1812527064848182527">orientacja pozioma</translation>
 <translation id="1812975699435941848">Edukacja zdrowotna i szkolenia medyczne</translation>
 <translation id="1816436748874040213">Może prosić o przewijanie i powiększanie udostępnionych kart</translation>
@@ -1261,6 +1261,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Przewiń do tyłu o 10 sekund</translation>
 <translation id="3352881017886802007">Gry sportowe</translation>
+<translation id="3354508510846323339">Cytat <ph name="CURRENT_CITATION" /> z <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Zmień ustawienia serwera proxy...</translation>
 <translation id="335809815767823">Wyeksportowano</translation>
 <translation id="3359387651158939842">Gdy zapiszesz kartę do użycia w Google Pay, jej dane będą uzupełniane automatycznie przy przyszłych zakupach</translation>
@@ -1407,6 +1408,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3586931643579894722">Ukryj szczegóły</translation>
 <translation id="3587725436724465984">Twoja organizacja określiła witrynę <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jako mogącą naruszać zasady. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Średni</translation>
+<translation id="3600106876108433070">Więcej informacji o tabelach porównawczych</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Przycisk Zarządzaj ustawieniami prywatności konta Google; aktywuj, aby przejść do ustawień prywatności konta Google</translation>
 <translation id="3603507503523709">Aplikacja zablokowana przez administratora</translation>
@@ -2925,6 +2927,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="640163077447496506">Wygasa dzisiaj</translation>
 <translation id="6402537308870515461">Musisz sprawdzić pliki przed ich przeniesieniem</translation>
 <translation id="6403167778944553">Sypialnia i łazienka</translation>
+<translation id="6403434564317313607">Tytuły kart i adresy URL stron dodanych do tabeli są wysyłane do Google, zapisywane na Twoim koncie <ph name="EMAIL" /> i mogą być widoczne dla osób weryfikujących, które pracują nad ulepszaniem tej funkcji.</translation>
 <translation id="6404511346730675251">Edytuj zakładkę</translation>
 <translation id="6405181733356710802">Otworzyć aplikację <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Wpisz datę ważności i kod CVC karty <ph name="CREDIT_CARD" /></translation>
@@ -3366,6 +3369,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="722454870747268814">Nowa karta incognito</translation>
 <translation id="7227293336683593977">Historia cen</translation>
 <translation id="7227747683324411744">Osoby przeprowadzające atak na stronę, którą chcesz odwiedzić, mogą podstępem nakłonić Cię do zainstalowania szkodliwego oprogramowania wpływającego na sposób korzystania z internetu. Na przykład może ono zmienić stronę główną lub wyświetlać na odwiedzanych stronach dodatkowe reklamy.</translation>
+<translation id="7232352818707016189">Więcej działań dotyczących tabeli porównawczej</translation>
 <translation id="7233592378249864828">Drukuj arkusz potwierdzenia</translation>
 <translation id="7234112195906418665">Podróże i transport</translation>
 <translation id="7236417832106250253">Ukończono <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4111,6 +4115,7 @@ Dodatkowe informacje:
 <translation id="8558347880669160417">Przyznano jednorazowy dostęp do aparatu i mikrofonu</translation>
 <translation id="8559762987265718583">Nie można nawiązać prywatnego połączenia z <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ponieważ data i godzina (<ph name="DATE_AND_TIME" />) ustawione na urządzeniu są nieprawidłowe.</translation>
 <translation id="8564182942834072828">Oddzielne dokumenty / Kopie niesortowane</translation>
+<translation id="8564466070529550495">Karta wirtualna jest teraz niedostępna. Spróbuj ponownie później.</translation>
 <translation id="8564985650692024650">Chromium zaleca zresetowanie hasła, którego używasz w: <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, jeśli zostało użyte na innej stronie.</translation>
 <translation id="8570895683659698018">Hobby i wypoczynek</translation>
 <translation id="8574841453995331336">Lodówki i zamrażarki</translation>

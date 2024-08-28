@@ -428,6 +428,7 @@
 <translation id="1739422091279046802">स्क्रोल तथा जुम गर्ने सेटिङ</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> हुँदा नीति अनिवार्य रूपमा तोकिएको हुनका साथै उक्त नीति एउटा मान्य स्ट्रिङ हुनु पर्छ।</translation>
 <translation id="1743393865165844832">ओछयान तथा बेड लिनन</translation>
+<translation id="1743892871127720056">तालिकाको शीर्षकको तुलना गर्नुहोस्, टेक्स्ट सम्पादन गर्नुहोस्</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />हामी यो जानकारी कसरी प्रयोग गर्छौँ:<ph name="END_BOLD" /> Chrome ले तपाईंले विभिन्न साइटहरू ब्राउज गर्ने क्रममा तपाईंका रुचिका विषयहरू थाहा पाउँछ। विषयका लेबलहरू पहिले नै तोकिएका हुन्छन् र यसअन्तर्गत कला तथा मनोरञ्जन, किनमेल तथा खेलकुदलगायतका कुराहरू समावेश हुन्छन्। तपाईंले यसपछि खोल्ने साइटले Chrome सँग तपाईंलाई देखाइने विज्ञापनहरू पर्सनलाइज गर्ने प्रयोजनका लागि तपाईंका केही विषयसम्बन्धी जानकारी (तर तपाईंको ब्राउजिङ हिस्ट्री भने होइन) माग्न सक्छ।</translation>
 <translation id="1746113442205726301">छविको Y सिफ्ट</translation>
 <translation id="1746531169546376413">० डिग्री</translation>
@@ -462,7 +463,6 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">तपाईंको CVC तपाईंको कार्डको पछाडिको भागमा छ। यो सिग्नेचर बक्सको सिरानको दायाँतिर रहेको पछिल्ला ३ अङ्कको कोड हो।</translation>
 <translation id="1810391395243432441">स्क्रिन लकका सहायताले पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
-<translation id="1810597570737826742">{count,plural, =1{{count} मध्ये {position} औँ प्लस एड्रेस}other{{count} वटामध्ये {position} औँ प्लस एड्रेस}}</translation>
 <translation id="1812527064848182527">ल्यान्डस्केप</translation>
 <translation id="1812975699435941848">स्वास्थ्य शिक्षा तथा चिकित्सा प्रशिक्षण</translation>
 <translation id="1816436748874040213">साझा ट्याबहरू स्क्रोल तथा जुम गर्ने अनुमति माग्छ</translation>
@@ -1257,6 +1257,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">१० सेकेन्ड रिप्ले गर्नुहोस्</translation>
 <translation id="3352881017886802007">खेलकुदसम्बन्धी गेमहरू</translation>
+<translation id="3354508510846323339"><ph name="MAX_CITATIONS" /> मध्ये <ph name="CURRENT_CITATION" /> औँ उद्धरण, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">प्रोक्सी सेटिङहरू परिवर्तन गर्नुहोस्...</translation>
 <translation id="335809815767823">एक्स्पोर्ट गरिएको छ</translation>
 <translation id="3359387651158939842">तपाईंले Google Pay मा प्रयोग गर्ने प्रयोजनका लागि आफ्नो कार्डसम्बन्धी जानकारी सेभ गरेपछि भविष्यमा गरिने खरिदहरूका लागि उक्त जानकारी स्वतः भरिने छ</translation>
@@ -1403,6 +1404,7 @@
 <translation id="3586931643579894722">विवरणहरू लुकाउनुहोस्</translation>
 <translation id="3587725436724465984">तपाईंको सङ्गठनले  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> लाई नीति उल्लङ्घन गर्न सक्ने साइटका रूपमा पहिचान गरेको छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">मध्य भाग</translation>
+<translation id="3600106876108433070">तुलनात्मक जानकारी भएका तालिकाका बारेमा जान्नुहोस्</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Google का गोपनीयतासम्बन्धी सेटिङ मिलाउने बटन, आफ्नो Google खाताका गोपनीयतासम्बन्धी सेटिङ हेर्न यो बटन थिच्नुहोस्</translation>
 <translation id="3603507503523709">तपाईंका प्रशासकले रोक लगाउनुभएको एप</translation>
@@ -2918,6 +2920,7 @@
 <translation id="640163077447496506">आज म्याद सकिन्छ</translation>
 <translation id="6402537308870515461">सारेर अन्यत्र लैजानुअघि समीक्षा गर्नु पर्ने हुन्छ</translation>
 <translation id="6403167778944553">ओच्छ्यान र स्नान</translation>
+<translation id="6403434564317313607">यो सुविधाको गुणस्तर सुधार गर्ने प्रयोजनका लागि ट्याबका शीर्षक र तपाईंले तालिकामा हाल्ने पेजहरूका URL Google मा पठाइन्छ, तपाईंको खाता (<ph name="EMAIL" />) मा सेभ गरिन्छ र समीक्षकहरूले ती जानकारी हेर्न सक्छन्।</translation>
 <translation id="6404511346730675251">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> मा जारी राख्ने हो?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> को म्याद सकिने मिति र CVC प्रविष्टि गर्नुहोस्</translation>
@@ -3356,6 +3359,7 @@
 <translation id="722454870747268814">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="7227293336683593977">विगतको मूल्य</translation>
 <translation id="7227747683324411744">तपाईंले खोल्न प्रयास गरिरहनुभएको वेबसाइटमा ह्याकरहरू तपाईंलाई झुक्याएर तपाईंले ब्राउज गर्ने तरिकामा प्रभाव पार्ने (जस्तै, तपाईंको होमपेज परिवर्तन गरेर वा तपाईंले हेर्ने साइटहरूमा अतिरिक्त विज्ञापनहरू देखाएर) हानिकारक सफ्टवेयर इन्स्टल गर्ने प्रयास गर्न सक्छन्।</translation>
+<translation id="7232352818707016189">तालिका तुलना गर्ने थप कारबाहीहरू</translation>
 <translation id="7233592378249864828">पुष्टि गर्ने पाना प्रिन्ट गर्नुहोस्</translation>
 <translation id="7234112195906418665">यात्रा तथा यातायात</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूरा भयो | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4100,6 +4104,7 @@
 <translation id="8558347880669160417">अहिले क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एउटा निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको यन्त्रको मिति र समय <ph name="DATE_AND_TIME" /> गलत छन्।</translation>
 <translation id="8564182942834072828">छुट्टा छुट्टै कागजातहरू/क्रमबद्ध नगरिएका प्रतिहरू</translation>
+<translation id="8564466070529550495">भर्चुअल कार्ड हाल उपलब्ध छैन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8564985650692024650">तपाईंले आफ्नो <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> को पासवर्ड अन्य साइटहरूमा पुनः प्रयोग गर्नुभएका खण्डमा Chromium ले तपाईंलाई उक्त पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
 <translation id="8570895683659698018">सोख तथा फुर्सद</translation>
 <translation id="8574841453995331336">रेफ्रिजेरेटर तथा फ्रिजर</translation>

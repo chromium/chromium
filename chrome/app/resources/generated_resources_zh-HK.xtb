@@ -3102,6 +3102,7 @@
 <translation id="3184591616546256659">使用此 PIN 來變更家長監控設定。
     如果忘記 PIN，請將此裝置回復原廠設定，然後重新設定。</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{已封鎖這個應用程式}other{已封鎖部分應用程式}}</translation>
+<translation id="3185454065699440434">允許在 <ph name="SITE_NAME" /> 使用擴充程式</translation>
 <translation id="3187472288455401631">廣告成效評估</translation>
 <translation id="3187556136478864255">你可以在 <ph name="BEGIN_LINK" />Google Home 應用程式<ph name="END_LINK" />看到自己的投放裝置嗎？</translation>
 <translation id="3188257591659621405">我的檔案</translation>
@@ -3432,7 +3433,6 @@
 <translation id="3439970425423980614">正在預覽中開啟 PDF</translation>
 <translation id="3440663250074896476">顯示可以對 <ph name="BOOKMARK_NAME" /> 執行嘅更多操作</translation>
 <translation id="3441653493275994384">螢幕</translation>
-<translation id="3441663102605358937">請再次登入 <ph name="ACCOUNT" /> 以驗證此帳戶</translation>
 <translation id="3441824746233675597">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。<ph name="PRODUCT_NAME" /> 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
 <translation id="3442674350323953953">允許 Google 使用硬件資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，此資料仍會傳送至 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。</translation>
 <translation id="3443545121847471732">請輸入 6 位數的 PIN</translation>
@@ -3898,6 +3898,7 @@
 <translation id="3760460896538743390">檢查背景頁面(&amp;B)</translation>
 <translation id="37613671848467444">在無痕式視窗中開啟(&amp;I)</translation>
 <translation id="3761556954875533505">要允許網站編輯檔案嗎？</translation>
+<translation id="3761560059647741692">橫向</translation>
 <translation id="3761733456040768239">「<ph name="CARD_DESCRIPTION" />」嘅其他操作，儲存咗 CVC</translation>
 <translation id="3763433740586298940">您可封鎖不想要的網站。Chrome 亦會從清單自動刪除超過 30 日的網站。</translation>
 <translation id="3763549179847864476">私隱權指南返回掣</translation>
@@ -4236,6 +4237,7 @@
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3988124842897276887">此分頁已連接至 USB 裝置</translation>
 <translation id="3988996860813292272">選取時區</translation>
+<translation id="3989635538409502728">登出</translation>
 <translation id="3991055816270226534">管理第三方 Cookie 和追蹤保護功能</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集此裝置附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />Google 會將從此裝置收集的資料用於改善定位精確度和適地性服務，並改善、提供和維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。這些資料不會用於識別任何人士。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />你可隨時在此裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷此裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" />
@@ -4406,6 +4408,7 @@
         您可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4115002065223188701">網絡超出範圍</translation>
 <translation id="4115378294792113321">洋紅色</translation>
+<translation id="4116480382905329353">偵測到 1 次</translation>
 <translation id="4116704186509653070">重新開啟</translation>
 <translation id="4117714603282104018">觸控板觸感反應</translation>
 <translation id="4118579674665737931">請重新啟動裝置，然後再試一次。</translation>
@@ -4809,6 +4812,7 @@
 <translation id="4426508677408162512">所有書籤</translation>
 <translation id="4426513927906544654">取得內容建議</translation>
 <translation id="4426857487270413362">無法下載安裝程式檔案。請檢查互聯網連線，並確保磁碟空間足夠，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
+<translation id="4427111270137140798">偵測到 <ph name="COUNT" /> 次</translation>
 <translation id="4427365070557649936">正在驗證確認碼…</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
 <translation id="4430019312045809116">音量</translation>
@@ -7414,6 +7418,7 @@
 <translation id="6351178441572658285">應用程式語言</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
 <translation id="635609604405270300">保持裝置開啟</translation>
+<translation id="6356537493253478650">穩重</translation>
 <translation id="63566973648609420">只有知道密碼短語的使用者才能讀取您的加密資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>
 <translation id="6356718524173428713">向上捲動即可將頁面向下移動</translation>
 <translation id="6356893102071098867">請確認所選的帳戶是否正確</translation>
@@ -7869,6 +7874,7 @@
 <translation id="6701535245008341853">無法取得設定檔。</translation>
 <translation id="6702639462873609204">編輯(&amp;E)…</translation>
 <translation id="6702859741546259407">如要使用「<ph name="FEATURE_NAME" />」，請開啟藍牙和 Wi-Fi</translation>
+<translation id="6703109186846420472">、</translation>
 <translation id="6703212423117969852">您稍後可在 Chrome 再試一次。</translation>
 <translation id="6703254819490889819">還原備份</translation>
 <translation id="6703613667804166784">此檔案可能會損害你的個人和社交網絡帳戶，包括 <ph name="USER_EMAIL" /></translation>
@@ -8171,6 +8177,7 @@
 <translation id="6909422577741440844">要接收此裝置傳送的內容嗎？</translation>
 <translation id="6910190732484284349">刪除以下使用者名稱嘅密鑰：<ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">已刪除</translation>
+<translation id="6910274140210351823">深色</translation>
 <translation id="6911734910326569517">記憶體使用量</translation>
 <translation id="6912007319859991306">流動網絡 SIM 卡 PIN</translation>
 <translation id="6912380255120084882">嘗試使用其他裝置</translation>
@@ -8229,6 +8236,7 @@
 <translation id="6960648667961844909">無法下載<ph name="LANGUAGE" />語音檔案。系統稍後將再次嘗試下載，語音會暫時傳送給 Google 處理，直至下載完成。</translation>
 <translation id="696103774840402661">已永久刪除此 <ph name="DEVICE_TYPE" /> 上所有使用者的所有檔案和本機資料。</translation>
 <translation id="6961327401577924850">網站通常會尋找藍牙裝置，以提供設定或同步低功耗信標、健康與健身追蹤器或智能燈泡等功能</translation>
+<translation id="6963772203726867701">無法偵測</translation>
 <translation id="6963872466817251924">文字游標突顯工具</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
@@ -8322,6 +8330,7 @@
 <translation id="7014174261166285193">安裝失敗。</translation>
 <translation id="7014480873681694324">移除焦點內容</translation>
 <translation id="7014741021609395734">縮放比例</translation>
+<translation id="7015135594296285641">允許使用擴充程式</translation>
 <translation id="7016995776279438971">紅 - 綠、紅色弱 (紅色弱視)</translation>
 <translation id="7017004637493394352">再說一次「Ok Google」</translation>
 <translation id="7017219178341817193">新增網頁</translation>
@@ -8627,6 +8636,7 @@
 <translation id="7258192266780953209">變形</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7260186537988033909">Kiosk 和標牌裝置註冊完成</translation>
+<translation id="7260206782629605806">如果降低門檻，就能使用細微的動作；如果提高門檻，動作就可能要誇張一點。</translation>
 <translation id="7261217796641151584">分享群組</translation>
 <translation id="7261612856573623172">「文字轉語音」系統聲音</translation>
 <translation id="7262004276116528033">此登入服務是由 <ph name="SAML_DOMAIN" /> 代管</translation>

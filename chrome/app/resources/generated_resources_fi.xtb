@@ -3102,6 +3102,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3184591616546256659">Tällä PIN-koodilla voit muuttaa lapsilukon asetuksia.
     Jos unohdat PIN-koodin, tee powerwash ja ota laite käyttöön uudelleen.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Tämä sovellus on estetty}other{Osa sovelluksista on estetty}}</translation>
+<translation id="3185454065699440434">Salli laajennukset: <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Mainosten mittaus</translation>
 <translation id="3187556136478864255">Näetkö striimauslaitteen
     <ph name="BEGIN_LINK" />
@@ -3434,7 +3435,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3439970425423980614">PDF:n avaaminen esikatselussa</translation>
 <translation id="3440663250074896476">Lisää toimintoja: <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Näyttö</translation>
-<translation id="3441663102605358937">Kirjaudu uudelleen sisään sivustolle <ph name="ACCOUNT" /> vahvistaaksesi tilin</translation>
 <translation id="3441824746233675597">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. <ph name="PRODUCT_NAME" /> käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System)</translation>
 <translation id="3442674350323953953">Salli Googlen käyttää laitedataasi palvelun (<ph name="DEVICE_OS" />) kehittämiseksi. Jos kieltäydyt, dataa lähetetään Googlelle tarvittavien päivitysten selvittämiseksi, mutta sitä ei tallenneta tai käytetä muihin tarkoituksiin.</translation>
 <translation id="3443545121847471732">Lisää 6-numeroinen PIN-koodi</translation>
@@ -3900,6 +3900,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3760460896538743390">Tarkista &amp;taustasivu</translation>
 <translation id="37613671848467444">Avaa incognito-ikkunassa</translation>
 <translation id="3761556954875533505">Saako sivusto muokata tiedostoja?</translation>
+<translation id="3761560059647741692">Maisema</translation>
 <translation id="3761733456040768239">Lisää toimintoja: <ph name="CARD_DESCRIPTION" />, CVC tallennettu</translation>
 <translation id="3763433740586298940">Voit estää sivustot, joita et halua. Chrome myös poistaa listalta automaattisesti yli 30 päivää vanhat sivustot.</translation>
 <translation id="3763549179847864476">Yksityisyysoppaan takaisin-painike</translation>
@@ -4237,6 +4238,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3987993985790029246">Kopioi linkki</translation>
 <translation id="3988124842897276887">Tämä välilehti on yhdistetty USB-laitteeseen</translation>
 <translation id="3988996860813292272">Valitse aikavyöhyke</translation>
+<translation id="3989635538409502728">Kirjaudu ulos</translation>
 <translation id="3991055816270226534">Kolmannen osapuolen evästeiden ja seurannan eston hallinnointi</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Kun sijaintitietojen tarkkuus on päällä, laitteen tarkemman sijainnin arvioimiseen käytetään langattomista signaaleista peräisin olevia tietoja (esim. Wi-Fi-tukiasemista ja mobiiliverkkotorneista) sekä laitteen anturien (esim. akselerometri ja gyroskooppi) keräämää dataa. Android-sovellukset ja ‑palvelut käyttävät näitä tietoja sijaintiin perustuvien ominaisuuksien tarjoamiseen. Google kerää ajoittain laitteen lähellä olevien anturien ja langattomien signaalien tietoja sijaintitietojen keräämistä varten.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google käyttää laitteelta kerättyjä tietoja sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen sekä Googlen palvelujen parantamiseen, tarjoamiseen ja ylläpitämiseen. Käsittelemme tietoja perustuen Googlen ja kolmansien osapuolten oikeutettuun etuun palvella käyttäjien tarpeita. Näitä tietoja ei käytetä henkilöiden tunnistamiseen.<ph name="END_PARAGRAPH2" />
@@ -7426,6 +7428,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6351178441572658285">Sovellusten kielet</translation>
 <translation id="6354918092619878358">SECG elliptinen käyrä secp256r1 (eli ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Pidä laite päällä</translation>
+<translation id="6356537493253478650">Rauhallinen</translation>
 <translation id="63566973648609420">Salattuja tietojasi voi lukea vain tunnuslauseesi avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, <ph name="BEGIN_LINK" />synkronointi on nollattava<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Siirry alaspäin sivulla vierittämällä ylöspäin</translation>
 <translation id="6356893102071098867">Tarkista, että olet valinnut oikean tilin</translation>
@@ -8183,6 +8186,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6909422577741440844">Vastaanotetaanko tältä laitteelta?</translation>
 <translation id="6910190732484284349">Poista avainkoodi käyttäjätunnukselta: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Poistettu</translation>
+<translation id="6910274140210351823">Tumma</translation>
 <translation id="6911734910326569517">Käytetty muisti</translation>
 <translation id="6912007319859991306">Mobiiliverkon SIM-lukituksen PIN-koodi</translation>
 <translation id="6912380255120084882">Kokeile toista laitetta</translation>
@@ -8334,6 +8338,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7014174261166285193">Asennus epäonnistui.</translation>
 <translation id="7014480873681694324">Poista korostus</translation>
 <translation id="7014741021609395734">Zoomauksen taso</translation>
+<translation id="7015135594296285641">Salli laajennukset</translation>
 <translation id="7016995776279438971">Puna-vihersokeus, punainen heikko (protanomalia)</translation>
 <translation id="7017004637493394352">Sano ”Hey Google” uudelleen</translation>
 <translation id="7017219178341817193">Lisää uusi sivu</translation>

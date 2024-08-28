@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Lorsque cette option est activée, les sites peuvent demander à utiliser votre appareil photo. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre appareil photo.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome bloquera à nouveau les témoins demain}one{# jour jusqu'à ce que Chrome bloque à nouveau les témoins}other{# jours jusqu'à ce que Chrome bloque à nouveau les témoins}}</translation>
 <translation id="3521663503435878242">Sites associés à <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Ne pas permettre aux sites de suivre vos mains</translation>
 <translation id="3536227077203206203">Autorisé cette fois</translation>
 <translation id="3538390592868664640">Empêcher les sites de créer une carte 3D de votre environnement et de faire le suivi de la position de l'appareil photo</translation>
 <translation id="3544058026430919413">Une entreprise peut définir un groupe de sites qui peuvent utiliser des témoins pour partager votre activité dans le groupe. Ce paramètre est désactivé en mode de navigation privée.</translation>
@@ -221,6 +222,7 @@
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
+<translation id="4676059169848868271">Pour permettre à <ph name="APP_NAME" /> d'utiliser le suivi des mains, activez également le suivi des mains dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de luminosité</translation>
 <translation id="4755971844837804407">Lorsque cette option est activée, les sites peuvent vous montrer n'importe quelle annonce. Lorsqu'elle est désactivée, les sites ne peuvent pas vous montrer d'annonces intrusives ni trompeuses.</translation>
 <translation id="4779083564647765204">Zoom</translation>
@@ -249,6 +251,7 @@
 <translation id="5091663350197390230">Lorsque cette option est activée, les sites peuvent utiliser JavaScript. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser JavaScript.</translation>
 <translation id="5099358668261120049">Cette action supprimera l'ensemble des données et des témoins stockés par <ph name="ORIGIN" /> ou par son application sur votre écran d'accueil.</translation>
 <translation id="5100237604440890931">Réduit : cliquer pour développer</translation>
+<translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applis</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baisse de prix sur vos onglets ouverts}one{Baisse de prix sur vos onglets ouverts}other{Baisses de prix sur vos onglets ouverts}}</translation>
 <translation id="5186036860380548585">Option accessible près du haut de l'écran</translation>
@@ -291,6 +294,7 @@
 <translation id="5706552988683188916">Cette opération supprime les témoins et les autres données relatives aux sites pour <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Les témoins tiers sont bloqués en mode de navigation privée</translation>
 <translation id="5740126560802162366">Les sites peuvent enregistrer des données sur votre appareil</translation>
+<translation id="5750869797196646528">Suivi des mains</translation>
 <translation id="5771720122942595109">Autorisation <ph name="PERMISSION_1" /> bloquée</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5844448279347999754">Lorsque cette option est activée, les sites peuvent demander à voir le texte et les images enregistrées dans votre presse-papiers. Lorsqu'elle est désactivée, les sites ne peuvent pas voir le texte ni les images enregistrées dans votre presse-papiers.</translation>
@@ -360,6 +364,7 @@
 <translation id="6683865262523156564">Ce site fait partie d'un groupe qui peut voir votre activité. Le groupe est défini par <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Photos de profils</translation>
 <translation id="6697925417670533197">Téléchargements actifs</translation>
+<translation id="6709432001666529933">Demander une autorisation avant de permettre aux sites de suivre vos mains (recommandé)</translation>
 <translation id="6722828510648505498">Bloquez les invites de connexion provenant de services de vérification d'identité.</translation>
 <translation id="6746124502594467657">Déplacer vers le bas</translation>
 <translation id="6749077623962119521">Réinitialiser les autorisations?</translation>
@@ -367,6 +372,7 @@
 <translation id="6787751205395685251">Sélectionner une option pour <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
+<translation id="6838525730752203626">Utiliser Chrome par défaut</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, maintenez le doigt sur un onglet, puis faites-le glisser vers un autre.</translation>
 <translation id="6864395892908308021">Cet appareil ne prend pas en charge la technologie CCP</translation>
 <translation id="6870169401250095575">Masquer la carte Vérification de sécurité</translation>
@@ -418,6 +424,7 @@
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7667547420449112975">Le Magicien d'Oz</translation>
 <translation id="7684642910516280563">Ne pas autoriser un site à utiliser des témoins tiers</translation>
+<translation id="7688240020069572972">Masquer la carte des astuces de Chrome</translation>
 <translation id="7719367874908701697">Zoom de la page</translation>
 <translation id="7759147511335618829">Contrôler et reprog. app. MIDI</translation>
 <translation id="7781829728241885113">Hier</translation>
@@ -483,6 +490,7 @@
 <translation id="8609465669617005112">Déplacer vers le haut</translation>
 <translation id="8617611086246832542">Lorsque cette option est activée, les sites Web s'afficheront au moyen de l'affichage sur ordinateur de bureau. Lorsqu'elle est désactivée, les sites Web s'afficheront au moyen de l'affichage sur appareil mobile.</translation>
 <translation id="8649036394979866943">Chrome empêche la plupart des sites d'utiliser des témoins tiers pour vous suivre pendant votre navigation. Accédez aux paramètres pour <ph name="BEGIN_LINK" />gérer vos Protections contre le suivi<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Lorsque cette option est activée, les sites peuvent demander l'autorisation de suivre vos mains. Lorsque cette option est désactivée, les sites ne peuvent pas suivre vos mains.</translation>
 <translation id="8676374126336081632">Effacer l'entrée</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour présenter des annonces intrusives ou trompeuses</translation>
 <translation id="868929229000858085">Effectuez une recherche dans vos contacts</translation>

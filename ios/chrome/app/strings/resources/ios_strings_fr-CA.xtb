@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Supprimer le groupe d'onglets?</translation>
 <translation id="2195124168004379331">Votre navigateur semble correct</translation>
 <translation id="2199562093267256223">Cette action supprimera le groupe de tous les appareils connectés à <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Magasinez, traduisez et identifiez ce que vous voyez avec votre appareil photo.</translation>
 <translation id="2218443599109088993">Zoom arrière</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
@@ -470,6 +471,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3268451620468152448">Onglets ouverts</translation>
 <translation id="3269051798482119531">Continuer avec cet onglet</translation>
 <translation id="3272527697863656322">Annuler</translation>
+<translation id="3273510436356991673">Personnalisez l'écran d'accueil</translation>
 <translation id="3277021493514034324">Adresse du site copiée</translation>
 <translation id="3285962946108803577">Partager la page…</translation>
 <translation id="3289505634533552500">Recherche vocale</translation>
@@ -1317,6 +1319,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7272437679830969316">Impossible de vérifier votre identité. Le mot de passe n'a pas été copié.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nouveau colis suivi}one{Nouveau colis suivi}other{Nouveaux colis suivis}}</translation>
 <translation id="7291368939935408496">Préparation des mots de passe en cours…</translation>
+<translation id="7300448350764260141">Ajoutez une couche de protection supplémentaire contre les menaces en ligne.</translation>
 <translation id="7302503784943202842">Utiliser des mots de passe sur tous vos appareils</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
 <translation id="7335132237885014335">Recevoir des notifications</translation>

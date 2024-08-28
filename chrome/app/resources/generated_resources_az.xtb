@@ -1422,6 +1422,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="199610894463449797">{0,plural, =1{Bu profili bağlayın}other{Bu profili bağlayın (# pəncərə)}}</translation>
 <translation id="1997433994358798851">Chrome cihazınıza qoşulmaq üçün Bluetooth'dan istifadə etmək icazəsi tələb edir</translation>
 <translation id="1997616988432401742">Sertifikatlarınız</translation>
+<translation id="1998715278591719161">Əllərinizi izləmək icazəsi verilib</translation>
 <translation id="1999115740519098545">Başlanğıcda</translation>
 <translation id="2002109485265116295">Real zaman</translation>
 <translation id="2002160221914907025">Təcrübi AI</translation>
@@ -3420,7 +3421,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3439970425423980614">PDF Önizləmədə açılır</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> üçün daha çox əməliyyat</translation>
 <translation id="3441653493275994384">Ekran</translation>
-<translation id="3441663102605358937"><ph name="ACCOUNT" /> hesabına yenidən daxil olaraq bu hesabı doğrulayın</translation>
 <translation id="3441824746233675597">İnternet trafikinizə girişi olanların daxil olduğunuz saytları görməsini çətinləşdirin. <ph name="PRODUCT_NAME" /> saytın IP ünvanını DNS-də (Domen adı sistemi) axtarmaq üçün güvənli bağlantıdan istifadə edir.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> sistemini yaxşılaşdırmaq üçün Google'un avadanlıq datasını toplamasına icazə verin. İmtina etsəniz, bu data lazımi güncəlləmələri müəyyən etmək üçün yenə də Google'a göndəriləcək, lakin saxlanılmayacaq və ya başqa cür istifadə edilməyəcək.</translation>
 <translation id="3443545121847471732">6 rəqəmli PIN daxil edin</translation>
@@ -3536,6 +3536,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3521606918211282604">Disk ölçüsünü dəyişin</translation>
 <translation id="3522088408596898827">Diskdə boş yer çox azdır. Diskdə yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="3522979239100719575">Əlçatan profillər axtarılır. Bir neçə dəqiqə çəkə bilər.</translation>
+<translation id="3523447078673133727">Saytlara əllərinizi izləmək icazəsi verməyin</translation>
 <translation id="3524518036046613664">Lokal şəbəkənizdəki printer kimi cihazları aşkarlayın</translation>
 <translation id="3524965460886318643">Eksport Fəaliyyətləri</translation>
 <translation id="3525426269008462093">Ayarlamadan sonra cihazın sinxronizasiyasını nəzərdən keçirin</translation>
@@ -4225,6 +4226,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3987993985790029246">Linki kopyalayın</translation>
 <translation id="3988124842897276887">Bu tab USB cihazına qoşuludur</translation>
 <translation id="3988996860813292272">Vaxt zonası seçin</translation>
+<translation id="3989635538409502728">Çıxış</translation>
 <translation id="3991055816270226534">Üçüncü tərəf kukiləri və izləmənin qorunmasını idarə edin</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Məkan Dəqiqliyi yanılı olduqda cihaz məkanını daha dəqiq təxmin etmək üçün Wi‑Fi giriş nöqtələri, mobil şəbəkə qüllələri və GPS kimi simsiz siqnallar haqqında məlumatlar, eləcə də tətbiq və xidmətlərin məkan əsaslı funksiyalar təmin etmək üçün istifadə etdiyi cihazın akselerometr və giroskop datası kimi sensor datası istifadə edilir. Bunun üçün Google kraudsors simsiz siqnal məkanlarına töhfə vermək məqsədilə mütəmadi olaraq bu cihazın yaxınlığında əlçatan olan cihaz sensorları və simsiz siqnallar haqqında məlumatları emal edir.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google bu cihazdan toplanmış bu məlumatları aşağıdakı məqsədlər üçün istifadə edir: məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək; və ümumilikdə Google xidmətlərini təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq. İstifadəçilərin ehtiyaclarına xidmət etmək üçün bu məlumatları Google və üçüncü tərəflərin qanuni maraqlarına əsasən emal edirik. Bu məlumatlar hər hansı şəxsin kimliyini müəyyənləşdirmək üçün istifadə edilmir.<ph name="END_PARAGRAPH2" />
@@ -5912,6 +5914,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="52550593576409946">Kiosk tətbiqi işə salına bilmədi.</translation>
 <translation id="5255726914791076208">Giriş açarınızı redaktə etdikdə <ph name="RP_ID" /> hesabı dəyişməyəcək</translation>
 <translation id="5255859108402770436">Yenidən daxil olun</translation>
+<translation id="5256174546894739043">Sayt əllərinizi izləmək istədikdə soruşulsun</translation>
 <translation id="52566111838498928">Şriftlər yüklənir...</translation>
 <translation id="5256861893479663409">Bütün Saytlarda</translation>
 <translation id="5258992782919386492">Bu cihazda quraşdırın</translation>
@@ -6659,6 +6662,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5801051031414037185">Telefonu ayarlayın</translation>
 <translation id="5801568494490449797">Seçimlər</translation>
 <translation id="5803689677801500549">Saxlanmış parollar burada görünəcək. <ph name="USER_EMAIL" /> üçün parolları <ph name="BRAND" /> bölməsinə import etmək məqsədilə <ph name="BEGIN_LINK" /> CSV faylı seçin.<ph name="END_LINK" /></translation>
+<translation id="5804198298544152115">Saytlar immersiv təcrübələri artırmaq üçün adətən əl və barmaqlarınızı izləyir</translation>
 <translation id="5804241973901381774">İcazələr</translation>
 <translation id="5804259315582798390">Lokal datanın bərpasını aktivləşdirmək alınmadı</translation>
 <translation id="5805268472388605531">Vurğu işarələrini və xüsusi simvolları görmək üçün klaviatura düymələrini basıb saxlayın</translation>
@@ -7744,6 +7748,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="661266467055912436">Siz və vebdəki hər kəs üçün təhlükəsizliyi artırır.</translation>
 <translation id="6613267708691765962">Zərərli proqram skanlanır...</translation>
 <translation id="6613668613087513143">Bu güncəlləməni tamamlamaq üçün bu cihazda kifayət qədər yer yoxdur. Cihazınızda <ph name="NECESSARY_SPACE" /> yer boşaldın və Chrome brauzerinizdə yenidən cəhd edin.</translation>
+<translation id="6614172284067813496">Səhifə oxu siyahısına əlavə edildi</translation>
 <translation id="6615455863669487791">Mənə göstərin</translation>
 <translation id="6618744767048954150">İcra olunur</translation>
 <translation id="6619058681307408113">Xətti Printer Daemon (LPD)</translation>
@@ -7757,6 +7762,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6622980291894852883">Təsvirləri blok etməyə davam edin</translation>
 <translation id="6624036901798307345">Planşet rejimində hər tabın miniatürlərini göstərən yeni tab zolağını açmaq üçün tab sayğacı alətlər paneli düyməsinə toxunun.</translation>
 <translation id="6624687053722465643">Şirinlik</translation>
+<translation id="6627743754845412571">Əllərinizi izləmək icazəsi verilməyib</translation>
 <translation id="6628316682330029452">Müştəri sertifikatları sizi digər serverlərə tanıdan sertifikatlardır.</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> yüklənib</translation>
 <translation id="6630117778953264026">Güclü güvənlik</translation>
@@ -8124,6 +8130,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6876155724392614295">Velosiped</translation>
 <translation id="6876469544038980967">Faydalı deyil</translation>
 <translation id="6878422606530379992">Sensorlara icazə verilib</translation>
+<translation id="6878862640969460273">Landşaft</translation>
 <translation id="6880587130513028875">Bu səhifədə şəkillər bloklanıb.</translation>
 <translation id="6881845890692344060">Administrator çıxıb. Nəzarət sizdədir.</translation>
 <translation id="6882210908253838664">Sayt işləməsə, üçüncü tərəf kukilərindən müvəqqəti istifadə icazəsi verə bilərsiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -9661,6 +9668,7 @@ Açar Fayl: <ph name="KEY_FILE" />
 
 Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8000020256436988724">Alətlər paneli</translation>
+<translation id="800117767980299235">Səs vurğulaması</translation>
 <translation id="8002274832045662704">Qabaqcıl printer konfiqurasiyası</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> artıq əlçatan deyil</translation>
 <translation id="8004092996156083991">Parollarınız oğurlansa, sizə xəbər verəcəyik.</translation>
@@ -10741,6 +10749,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="876956356450740926">Tərtibatçı aləti, IDE və redaktorlar işlədin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Artırma kökü kataqolu</translation>
 <translation id="8771300903067484968">Başlanğıc səhifəsinin arxa fonu defolt arxa fona sıfırlanıb.</translation>
+<translation id="8773535891252326047">Vurğulamaq üçün link kopiyalandı</translation>
 <translation id="8774379074441005279">Bərpanı təsdiq edin</translation>
 <translation id="8774934320277480003">Yuxarı sahə</translation>
 <translation id="8775144690796719618">Yanlış URL</translation>

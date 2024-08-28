@@ -462,7 +462,6 @@
 <translation id="180757923930449935">(۶۴ بیتی شبیه‌سازی‌شده)</translation>
 <translation id="180991881384371158">‏کد تأیید کارت (CVC) پشت کارتتان درج شده است. این کد همان ۳ رقم آخر درج‌شده در بالا سمت راست چارگوش امضا است.</translation>
 <translation id="1810391395243432441">با قفل صفحه از گذرواژه‌ها محافظت کنید</translation>
-<translation id="1810597570737826742">{count,plural, =1{نشانی {position} از {count} نشانی اضافی}one{نشانی {position} از {count} نشانی اضافی}other{نشانی {position} از {count} نشانی اضافی}}</translation>
 <translation id="1812527064848182527">منظره</translation>
 <translation id="1812975699435941848">آموزش بهداشت و آموزش پزشکی</translation>
 <translation id="1816436748874040213">می‌تواند برای پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده درخواست دهد</translation>
@@ -1060,7 +1059,7 @@
 <translation id="2967082089043584472">به <ph name="SET" /> اضافه شد</translation>
 <translation id="2967098518029543669">‏آن را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="297173220375858963">نشر رومیزی</translation>
-<translation id="2972581237482394796">انجام مجدد</translation>
+<translation id="2972581237482394796">ازنو انجام دادن</translation>
 <translation id="2974468223369775963">‏این IBAN در «حساب Google» شما ذخیره نشد. درعوض، در Chrome این دستگاه ذخیره شد. دفعه بعدی که از این IBAN استفاده کنید، Chrome دوباره این شماره را از شما درخواست خواهد کرد.</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، درحال‌حاضر انتخاب شده است. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">صفحه‌کلید را قفل و از آن استفاده کند</translation>
@@ -3010,7 +3009,7 @@
 <translation id="6550245281449521513">قفل موشواره مجاز نیست</translation>
 <translation id="6551873053534932690">نشانی در حساب ذخیره شود؟</translation>
 <translation id="6554732001434021288">آخرین بازدید: <ph name="NUM_DAYS" /> روز پیش</translation>
-<translation id="6556866813142980365">انجام مجدد</translation>
+<translation id="6556866813142980365">ازنو انجام دادن</translation>
 <translation id="6557715786897013164">۱۷ × ۱۴ اینچ</translation>
 <translation id="6560786330438719938">برنامه‌های نصب‌شده یا حذف نصب‌شده و تعداد دفعات استفاده از آن‌ها</translation>
 <translation id="6568793038316600992">‏دکمه «مدیریت روش‌های پرداخت»؛ برای مدیریت اطلاعات کارت اعتباری و پرداخت‌ها در تنظیمات Chrome، آن را فعال کنید</translation>
@@ -3741,7 +3740,7 @@
 <translation id="7905064834449738336">‏وقتی از گذرواژه‌ای استفاده کنید، Chromium به شما هشدار می‌دهد آیا این گذرواژه در فضای آنلاین منتشر شده است یا نه. هنگام انجام این کار، نام‌های کاربری و گذرواژه‌های شما رمزگذاری می‌شود تا اشخاص دیگر، ازجمله Google نتوانند آن‌ها را بخوانند.</translation>
 <translation id="7908648876066812348">درحال روشن کردن کارت مجازی</translation>
 <translation id="7909498058929404306">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای رفتن به صفحه بررسی ایمنی Chrome در تنظیمات، کلید «جهش» و سپس «ورود» را فشار دهید.</translation>
-<translation id="791107458486222637">درحال انجام مجدد نتیجه</translation>
+<translation id="791107458486222637">درحال ازنو انجام دادن نتیجه</translation>
 <translation id="791551905239004656">نقاشی و رنگ‌آمیزی</translation>
 <translation id="7916162853251942238">پایه فلکسو</translation>
 <translation id="7926503317156566022">صنعت هوانوردی</translation>

@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">ลบกลุ่มแท็บใช่ไหม</translation>
 <translation id="2195124168004379331">เบราว์เซอร์ของคุณปลอดภัยแล้ว</translation>
 <translation id="2199562093267256223">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
+<translation id="2214453882118345682">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้อง</translation>
 <translation id="2218443599109088993">ซูมออก</translation>
 <translation id="2220529011494928058">รายงานปัญหา</translation>
 <translation id="2230173723195178503">หน้าเว็บโหลดแล้ว</translation>
@@ -470,6 +471,7 @@
 <translation id="3268451620468152448">แท็บที่เปิดอยู่</translation>
 <translation id="3269051798482119531">ดำเนินการต่อโดยใช้แท็บนี้</translation>
 <translation id="3272527697863656322">ยกเลิก</translation>
+<translation id="3273510436356991673">ปรับแต่งหน้าจอหลัก</translation>
 <translation id="3277021493514034324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>
 <translation id="3285962946108803577">แชร์หน้าเว็บ...</translation>
 <translation id="3289505634533552500">ค้นหาด้วยเสียง</translation>
@@ -1317,6 +1319,7 @@
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{ติดตามพัสดุใหม่แล้ว}other{ติดตามพัสดุใหม่แล้ว}}</translation>
 <translation id="7291368939935408496">กำลังเตรียมรหัสผ่าน...</translation>
+<translation id="7300448350764260141">เพิ่มการป้องกันภัยคุกคามทางออนไลน์อีกชั้นหนึ่ง</translation>
 <translation id="7302503784943202842">ใช้รหัสผ่านในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="7313347584264171202">คุณจะเห็นแท็บที่ไม่ระบุตัวตนที่นี่</translation>
 <translation id="7335132237885014335">รับการแจ้งเตือน</translation>

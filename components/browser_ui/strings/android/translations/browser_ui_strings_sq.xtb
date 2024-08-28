@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin kamerën. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin kamerën.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome do t'i bllokojë kukit përsëri nesër}other{# ditë derisa Chrome t'i bllokojë përsëri kukit}}</translation>
 <translation id="3521663503435878242">Sajtet nën <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Mos lejo që sajtet të gjurmojnë duart e tua</translation>
 <translation id="3536227077203206203">Lejohet këtë herë</translation>
 <translation id="3538390592868664640">Blloko krijimin nga sajtet të një harte 3D të ambientit tënd rrethues ose gjurmimin prej tyre të pozicionit të kamerës</translation>
 <translation id="3544058026430919413">Një kompani mund të përcaktojë një grup sajtesh që mund të përdorin kukit për ta ndarë aktivitetin tënd te grupi. Kjo është joaktive në modalitetin "e fshehtë".</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">Kur cilësimi është aktiv, sajtet mund të përdorin JavaScript. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin JavaScript.</translation>
 <translation id="5099358668261120049">Kjo do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="ORIGIN" /> ose nga aplikacioni përkatës në ekranin bazë.</translation>
 <translation id="5100237604440890931">I palosur - kliko për ta zgjeruar</translation>
+<translation id="5116239826668864748">Mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="5123685120097942451">Skeda "e fshehtë"</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ulje çmimi në skedat e hapura}other{Ulje çmimi në skedat e hapura}}</translation>
 <translation id="5186036860380548585">Opsionet ofrohen pranë kreut të ekranit</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Ky sajt është në një grup që mund ta shikojë aktivitetin tënd. Grupi përcaktohet nga <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Fotografitë e profilit</translation>
 <translation id="6697925417670533197">Shkarkimet aktive</translation>
+<translation id="6709432001666529933">Pyet përpara se të lejosh sajtet të gjurmojnë duart e tua (rekomandohet)</translation>
 <translation id="6722828510648505498">Blloko kërkesat për identifikim nga shërbimet e identitetit.</translation>
 <translation id="6746124502594467657">Lëviz poshtë</translation>
 <translation id="6749077623962119521">Të rivendosen lejet?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">Zgjidh një opsion për <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6818926723028410516">Zgjidh artikujt</translation>
+<translation id="6838525730752203626">Përdor Chrome si parazgjedhje</translation>
 <translation id="6840760312327750441">Për t'i grupuar skedat, prek dhe mbaje të shtypur një skedë. Më pas zvarrite atë te një skedë tjetër.</translation>
 <translation id="6864395892908308021">Kjo pajisje nuk mund të lexojë NFC-në</translation>
 <translation id="6870169401250095575">Fshih kartën "Kontrolli i sigurisë"</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7667547420449112975">Magjistari i mrekullueshëm i Ozit</translation>
 <translation id="7684642910516280563">Mos lejo që një sajt të përdorë kukit e palëve të treta</translation>
+<translation id="7688240020069572972">Fshih kartën e këshillave për Chrome</translation>
 <translation id="7719367874908701697">Zmadhimi i faqes</translation>
 <translation id="7759147511335618829">Kontrolli dhe riprogramimi i pajisjes MIDI</translation>
 <translation id="7781829728241885113">Dje</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Lëviz lart</translation>
 <translation id="8617611086246832542">Kur cilësimi është aktiv, shfaqet pamja e uebsajteve për desktop. Kur cilësimi është joaktiv, shfaqet pamja e uebsajteve për celular.</translation>
 <translation id="8649036394979866943">Chrome i kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet për të <ph name="BEGIN_LINK" />menaxhuar mbrojtjet nga gjurmimi<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të gjurmojnë duart e tua. Kur cilësimi është joaktiv, sajtet nuk mund të gjurmojnë duart e tua.</translation>
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8681886425883659911">Reklama që janë bllokuar në sajte që dihet se shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="868929229000858085">Kërko te kontaktet e tua</translation>

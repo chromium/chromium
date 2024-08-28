@@ -1018,6 +1018,7 @@
 <translation id="587735546353481577">साइटला फॉलो करण्यासाठी, साइटवर जा, Chrome मेनू उघडा आणि फॉलो करा वर टॅप करा.</translation>
 <translation id="5879072387416556377">आणखी चांगल्या सूचना मिळवा</translation>
 <translation id="5885378508678660271">नोटिफिकेशन <ph name="SEPARATOR" /> ही साइट धोकादायक असल्यामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
+<translation id="5895834791314695851">या डिव्हाइसवर लवकरच पासवर्ड काम करणे थांबवू शकतात. तुमचे पासवर्ड वापरणे सुरू ठेवण्यासाठी, Google Play सेवा अपडेट करा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">कोणतीही पासकी शीट बंद केली नाही</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5919204609460789179">सिंक सुरू करण्यासाठी <ph name="PRODUCT_NAME" /> अपडेट करा</translation>
@@ -1557,6 +1558,7 @@
 <translation id="820568752112382238">सर्वाधिक भेट दिलेल्या साइट</translation>
 <translation id="8209050860603202033">इमेज उघडा</translation>
 <translation id="8210770465353466621">तुमचे टॅब तुम्हाला येथे सापडतील</translation>
+<translation id="8211101263765532799">काही पासवर्ड लवकरच काम करणे थांबवतील</translation>
 <translation id="8215740705341534369">साइड शीट</translation>
 <translation id="8218622182176210845">तुमचे खाते व्यवस्थापित करा</translation>
 <translation id="8221401890884589479">तुम्हाला नको असलेल्या साइट तुम्ही ब्लॉक करू शकता. Chrome हे ३० दिवसांपेक्षा जुन्या असलेल्या साइटदेखील सूचीमधून ऑटो-डिलीट करते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -1657,6 +1659,7 @@
 <translation id="864544049772947936">विंडो व्यवस्थापित करा (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">तुमच्या पद्धतीने Chrome वापरा</translation>
 <translation id="8664979001105139458">फाइलचे नाव आधीपासून अस्तित्वात आहे</translation>
+<translation id="8672883760227492369">या डिव्हाइसवरील काही पासवर्ड लवकरच काम करणे थांबवतील. हे पासवर्ड तुम्ही Google Password Manager वर हलवू शकता.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वर साइन अप करा</translation>
 <translation id="8676789164135894283">साइन-इनसंबंधित पडताळणी</translation>
 <translation id="8683039184091909753">इमेज</translation>

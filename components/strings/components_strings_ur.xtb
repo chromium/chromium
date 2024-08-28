@@ -462,7 +462,6 @@
 <translation id="180757923930449935">(64 بٹ ایمولیٹڈ)</translation>
 <translation id="180991881384371158">‏آپ کا CVC آپ کے کارڈ کی پشت پر موجود ہے۔ یہ دستخظ کے باکس کے اوپر دائیں جانب آخری 3 ہندسے ہیں۔</translation>
 <translation id="1810391395243432441">اپنے اسکرین لاک سے پاس ورڈز کی حفاظت کریں</translation>
-<translation id="1810597570737826742">{count,plural, =1{{count} میں سے {position} پلس پتہ}other{{count} میں سے {position} پلس پتے}}</translation>
 <translation id="1812527064848182527">لینڈ اسکیپ</translation>
 <translation id="1812975699435941848">تعلیمِ صحت اور طبی تربیت</translation>
 <translation id="1816436748874040213">مشترکہ ٹیبز کو اسکرول اور زوم کرنے کے لیے کہہ سکتے ہیں</translation>
@@ -718,6 +717,7 @@
 <translation id="2276057643614339130">پرنٹ بیس</translation>
 <translation id="2277103315734023688">آگے کریں</translation>
 <translation id="2277753418458118549">کنکشن کی تفصیلات دکھائیں</translation>
+<translation id="2277949605527755300"><ph name="URL" /> آپ کے ہاتھوں کو ٹریک کرنا چاہتا ہے</translation>
 <translation id="22792995594807632">ڈاؤن لوڈ کرنے سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="2283340219607151381">پتوں کو محفوظ کریں اور بھریں</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' حذف کیا گيا</translation>
@@ -1292,6 +1292,7 @@
 <translation id="3402261774528610252">‏اس سائٹ کو لوڈ کرنے کے لئے استعمال ہونے والے کنکشن میں TLS 1.0 یا TLS 1.1 استعمال کیا گیا تھا، جو فرسودہ ہیں اور مستقبل میں بھی غیر فعال کر دیے جائیں گے۔ ایک بار غیر فعال ہوجانے پر، صارفین کو اس سائٹ کو لوڈ کرنے سے روکا جائے گا۔ سرور کو TLS 1.2 یا اس سے اعلی ورژن کو فعال کرنا چاہیے۔</translation>
 <translation id="3405664148539009465">فونٹس کو حسب ضرورت بنائیں</translation>
 <translation id="3407789382767355356">فریق ثالث سائن ان</translation>
+<translation id="340924996148642843">موازنہ ابھی دستیاب نہیں ہے</translation>
 <translation id="3409896703495473338">سیکیورٹی کی ترتیبات کا نظم کریں</translation>
 <translation id="3414275587143250384">تقسیم کردہ اور کلاؤڈ کمپیوٹنگ</translation>
 <translation id="3414952576877147120">سائز:</translation>
@@ -1449,6 +1450,7 @@
 <translation id="365641980390710834">غیر رسمی پوشاک</translation>
 <translation id="3658742229777143148">نظرثانی</translation>
 <translation id="3659521826520353662">ایڈمنسٹریٹر کی وضاحت کردہ کون سی ویب سائٹ دیکھی گئی ہے اور کب: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">اس پروڈکٹ کو بیچنے والے دوسرے اسٹورز سے خریداری کے مزید اختیارات تلاش کریں۔</translation>
 <translation id="3664782872746246217">کلیدی الفاظ:</translation>
 <translation id="3665100783276035932">زیادہ تر سائٹس کو توقع کے مطابق کام کرنا چاہیے</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />مزید جانیں<ph name="LINK_END1" /></translation>
@@ -1528,6 +1530,7 @@
 <translation id="3793574014653384240">حال ہی میں ہونے والے کریشز کی تعداد اور اسباب</translation>
 <translation id="3799805948399000906">فونٹ کی درخواست کی گئی</translation>
 <translation id="3801265110651850478">‏اپنے براؤزنگ ٹریفک کے ساتھ ایک "Do Not Track" درخواست بھیجیں</translation>
+<translation id="3801297763951514916">آپ اکثر ملاحظہ کرتے ہیں</translation>
 <translation id="380329542618494757">نام</translation>
 <translation id="3803801106042434208">یہ سرچ انجنز آپ کے علاقے میں مقبول ہیں</translation>
 <translation id="3807366285948165054">‏تصویر X شفٹ</translation>
@@ -1621,6 +1624,7 @@
 <translation id="3987460020348247775">‎<ph name="EXPRESSION" /> = <ph name="ANSWER" />‎</translation>
 <translation id="3987940399970879459">‏‎1 MB‎ سے کم</translation>
 <translation id="3990250421422698716">جاگ آفسیٹ</translation>
+<translation id="3990532701115075684">اپنے ہاتھوں کو ٹریک کریں</translation>
 <translation id="3992684624889376114">اس صفحہ کے بارے میں</translation>
 <translation id="3995639283717357522">پالیسیاں لاگو کریں</translation>
 <translation id="399754345297554962">معیاری اور داخلے کے امتحانات</translation>
@@ -1886,6 +1890,7 @@
 <translation id="4451135742916150903">‏سائٹ HID آلات سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
 <translation id="4451684391620232683">صارف کو پیش کردہ ٹیکسٹ:</translation>
 <translation id="4452328064229197696">‏آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، Google پاس ورڈ مینیجر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="4452957520362597816">ویب ایپس انسٹال کرنے کے لیے پوچھیں</translation>
 <translation id="4456937135469235202">ایڈونچر سفر</translation>
 <translation id="4464826014807964867">آپ کی تنظیم کے ذریعے دی گئی معلومات والی ویب سائٹس</translation>
 <translation id="4466576951214254884">طالب علم کے قرضے اور کالج فائنانسنگ</translation>
@@ -2365,6 +2370,7 @@
 <translation id="5385857628869214740">مزاح</translation>
 <translation id="5385966243497224160">‏غیر HTTPS URL کا پیش منظر نہیں دیکھ سکتے</translation>
 <translation id="5386426401304769735">‏اس سائٹ کیلئے سرٹیفکیٹ چین میں SHA-1 کا استعمال کر کے دستخط کردہ سرٹیفکیٹ شامل ہے۔</translation>
+<translation id="5391010642126249196">آپ کے ملاحظہ کردہ ٹیبز</translation>
 <translation id="539203134595252721">ٹیبل ٹینس</translation>
 <translation id="5392506727170022660">میٹل (سیمی گلوس)</translation>
 <translation id="5394069166371280357">‏خاندان پر مرتکز TV شوز</translation>
@@ -2564,6 +2570,7 @@
 <translation id="5742806904559466333">بارز، کلبز اور نائٹ لائف</translation>
 <translation id="5743684619253032786">ناخن کی نگہداشت کے پروڈکٹس</translation>
 <translation id="5745733273847572235">سائٹ آپ کا مقام پوچھ سکتی ہے</translation>
+<translation id="5750869797196646528">ہاتھ کی ٹریکنگ</translation>
 <translation id="5759751709240058861">اپنا کیمرا استعمال کریں اور منتقل کریں</translation>
 <translation id="5763042198335101085">ایک درست ای میل پتہ درج کریں</translation>
 <translation id="5764725887548570807">اصل فارمیٹ غلط ہے۔</translation>
@@ -2984,6 +2991,7 @@
 <translation id="6513005815064132016">سائٹ آپ کے کیمرا کی پوزیشن ٹریک کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="6517596291481585650">وارننگ: اس پالیسی کو پالیسی کی وضاحت کے مطابق فہرست کے طور پر ضم نہیں کیا گیا ہے کیوں کہ یہ کوئی فہرست نہیں ہے۔</translation>
 <translation id="6518133107902771759">توثیق کریں</translation>
+<translation id="6519885440226079262">آپ کے ہاتھوں کو ٹریک کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="6520026037299163656">ویب ایپس اور آن لائن ٹولز</translation>
 <translation id="65203098586853226"><ph name="SOURCE" /> کا <ph name="TARGET" /> میں ترجمہ کیا جا رہا ہے</translation>
 <translation id="6521745193039995384">فعال نہیں ہے</translation>
@@ -2994,6 +3002,7 @@
 <translation id="6529602333819889595">&amp;دوبارہ حذف کریں</translation>
 <translation id="6535617236508021606">‏یہ کارڈ آپ کے Google اکاؤنٹ میں محفوظ ہوتا ہے تاکہ آپ اسے تمام Google سروسز پر استعمال کر سکیں۔</translation>
 <translation id="6536221421038631327">آپ کے <ph name="DEVICE_TYPE" /> سے پاس پوائنٹ سبسکرپشن ہٹانے سے متعلقہ نیٹ ورکس ہٹ جائیں گے۔ اپنے سبسکرپشن پلان میں تبدیلیاں کرنے کے لیے "<ph name="FRIENDLY_NAME" />" سے رابطہ کریں۔ <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">موازنہ کے ٹیبلز دیکھنے کے لیے، مطابقت پذیری کو آن کریں</translation>
 <translation id="6539092367496845964">کچھ غلط ہو گیا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6540488083026747005">آپ نے اس سائٹ پر فریق ثالث کوکیز کی اجازت دی ہے</translation>
 <translation id="6545864417968258051">بلوٹوتھ اسکیننگ</translation>
@@ -3023,6 +3032,7 @@
 <translation id="6599642189720630047">ٹریک کردہ پروڈکٹس</translation>
 <translation id="6606309334576464871">‏Chrome سائٹس کو فریق ثالث کوکیز کا استعمال کرنے سے مسدود کرتا ہے تاکہ آپ کے براؤز کرتے وقت وہ آپ کو ٹریک نہ کر سکیں۔
             <ph name="NEW_LINE" />اگر سائٹ کی خصوصیات کام نہیں کر رہی ہیں تو <ph name="START_LINK" />فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر دیکھیں<ph name="END_LINK" />۔</translation>
+<translation id="6613742613135780554">ہاتھ کی ٹریکنگ</translation>
 <translation id="6613866251791999074">‏Chrome میں اپنے سرچ انجن کے بارے میں مزید جانیں</translation>
 <translation id="6615297766614333076">اسٹیکر 2</translation>
 <translation id="6619496928666593220">‏IBAN پُر نہیں ہو سکا</translation>
@@ -3474,6 +3484,7 @@
 <translation id="7440140511386898319">آف لائن رہتے ہوئے دریافت کریں</translation>
 <translation id="7441627299479586546">غلط پالیسی کا مضمون</translation>
 <translation id="7441864845853794192">اعلی اور خاص غذائیں</translation>
+<translation id="7442389976360981500">ہاتھ کی ٹریکنگ کی اجازت دیں؟</translation>
 <translation id="7442725080345379071">ہلکا نارنجی</translation>
 <translation id="7444046173054089907">یہ سائٹ مسدود ہے</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{کوکیز کو آج دوبارہ بلاک کر دیا جائے گا}=1{کوکیز کو کل دوبارہ بلاک کر دیا جائے گا}other{# دنوں میں کوکیز کو دوبارہ مسدود کر دیا جائے گا}}</translation>
@@ -4132,6 +4143,7 @@
 <translation id="865032292777205197">موشن سینسرز</translation>
 <translation id="865255447216708819">بیک پرنٹ فلم</translation>
 <translation id="8654126188050905496">‏‎55 x 91 ملی میٹر</translation>
+<translation id="8660780831677950176">آپ اس وقت اکثر ملاحظہ کرتے ہیں</translation>
 <translation id="8662463432865928030">تجارتی پراپرٹیز</translation>
 <translation id="8663226718884576429">آرڈر کا خلاصہ، <ph name="TOTAL_LABEL" />، مزید تفصیلات</translation>
 <translation id="8663909737634214500">آپٹیکل ڈسک</translation>

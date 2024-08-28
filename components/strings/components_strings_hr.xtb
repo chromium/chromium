@@ -243,6 +243,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1414134146594747368">Predškolci</translation>
 <translation id="1419305130220238697">Gumb Upravljaj preuzimanjima u Chromeu, aktivirajte ga da biste upravljali datotekama koje ste preuzeli u Chromeu</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> da biste omogućili uparivanje</translation>
+<translation id="14222610277930434">Često posjećujete</translation>
 <translation id="1422930527989633628">Može tražiti dopuštenje za otkrivanje Bluetooth uređaja u blizini</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1427192966110103169">Kućni bazeni, saune i spa-centri</translation>
@@ -463,7 +464,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC možete pronaći na poleđini kartice. To su posljednje tri znamenke u gornjem desnom kutu okvira za potpis.</translation>
 <translation id="1810391395243432441">Zaštita zaporki zaključavanjem zaslona</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position} od {count} i adresa}one{{position} od {count} plus adrese}few{{position} od {count} plus adrese}other{{position} od {count} plus adrese}}</translation>
 <translation id="1812527064848182527">pejzaž</translation>
 <translation id="1812975699435941848">Zdravstveno obrazovanje i medicinska obuka</translation>
 <translation id="1816436748874040213">Može tražiti dopuštenje za pomicanje i zumiranje dijeljenih kartica</translation>
@@ -598,6 +598,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2071692954027939183">Obavijesti su automatski blokirane jer ih obično ne dopuštate</translation>
 <translation id="2071852865256799872">Preglednikom upravlja vaša organizacija, a profilom upravlja <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Deblokiraj temu <ph name="TOPIC" /></translation>
+<translation id="2074771604462073334">Posjetili ste</translation>
 <translation id="2078956195623975415">Glazbene i plesne igre</translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2080021694978766903">Broj unosa u ovom pravilu ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -898,6 +899,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2616412942031748191">Optimizacija za tražilice i marketing</translation>
 <translation id="2618206371527040026">Akademske konferencije i publikacije</translation>
 <translation id="2619052155095999743">Umetni</translation>
+<translation id="2622754869869445457">Vaša najnovija kartica</translation>
 <translation id="2625385379895617796">Sat ide unaprijed</translation>
 <translation id="262745152991669301">Može tražiti dopuštenje za povezivanje s USB uređajima</translation>
 <translation id="2628224721443278970">Prijavite se na Microsoft OneDrive</translation>
@@ -2416,6 +2418,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5465724643247062031">Staklo (neprozirno)</translation>
 <translation id="5466018172325111652">Niste primili kôd? <ph name="BEGIN_LINK" />Zatražite novi kôd<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Ponovi uređivanje</translation>
+<translation id="5472588168895083535">Praćenje pokreta ruku je blokirano</translation>
 <translation id="547963486735802022">Pokušajte ponovno prenijeti datoteke</translation>
 <translation id="5481076368049295676">Ovaj sadržaj može pokušati na vaš uređaj instalirati opasan softver koji krade ili briše podatke. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Ponuda pomoći pri pisanju</translation>
@@ -3157,6 +3160,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6832753933931306326">Obrazac je ispunjen</translation>
 <translation id="6841864657731852591">Valjak za graviranje</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844998850832008753">Praćenje pokreta ruku dopušteno je ovaj put</translation>
 <translation id="6849023911358004088">Gumb Upravljaj sigurnosnim postavkama, aktivirajte ga za upravljanje sigurnim pregledavanjem i drugim značajkama u postavkama Chromea</translation>
 <translation id="6852204201400771460">Ponovo učitati aplikaciju?</translation>
 <translation id="6857776781123259569">Upravljanje zaporkama...</translation>
@@ -4126,6 +4130,7 @@ Dodatne pojedinosti:
 <translation id="8586082901536468629">Oprema za skvoš i racquetball</translation>
 <translation id="858637041960032120">Dodaj tel. broj
 </translation>
+<translation id="8587100480629037893">Praćenje pokreta ruku nije dopušteno</translation>
 <translation id="8589998999637048520">Najbolja kvaliteta</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> i drugi</translation>
 <translation id="8597726363542221027">Rabljena vozila</translation>
@@ -4356,6 +4361,7 @@ Dodatne pojedinosti:
 <translation id="9051072642122229460">Aparati za kavu i espresso</translation>
 <translation id="9053840549256861041">Predstavljamo novu značajku zaštite privatnosti u online oglašavanju pod nazivom mjerenje oglasa. Chrome dijeli samo vrlo ograničene informacije među web-lokacijama, kao što je vrijeme prikazivanja oglasa, kako bi pomogao web-lokacijama u mjerenju izvedbe oglasa.</translation>
 <translation id="9053955920216300738">Koje URL-ove posjećujete</translation>
+<translation id="9054288282721240609">Dopušteno je praćenje pokreta ruku</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Možda je premještena, uređena ili izbrisana.</translation>
 <translation id="9063398205799684336">Omotnica Kaku 2</translation>

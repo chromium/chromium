@@ -462,7 +462,6 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC-код находится на обратной стороне вашей карты. Это 3 цифры в правом верхнем углу поля для подписи.</translation>
 <translation id="1810391395243432441">Защитите пароли при помощи блокировки экрана</translation>
-<translation id="1810597570737826742">{count,plural, =1{Место {position} в списке из {count} дополнительного адреса}one{Место {position} в списке из {count} дополнительного адреса}few{Место {position} в списке из {count} дополнительных адресов}many{Место {position} в списке из {count} дополнительных адресов}other{Место {position} в списке из {count} дополнительного адреса}}</translation>
 <translation id="1812527064848182527">горизонтальная ориентация</translation>
 <translation id="1812975699435941848">Санитарное просвещение и медицинское образование</translation>
 <translation id="1816436748874040213">Может запрашивать разрешение на изменение масштаба и прокрутку содержимого демонстрируемых вкладок</translation>
@@ -718,6 +717,7 @@
 <translation id="2276057643614339130">Печатная основа</translation>
 <translation id="2277103315734023688">Перемотать вперед</translation>
 <translation id="2277753418458118549">Показать сведения о подключении</translation>
+<translation id="2277949605527755300">Сайт <ph name="URL" /> запрашивает разрешение на отслеживание рук</translation>
 <translation id="22792995594807632">Проверьте файлы, перед тем как скачивать их</translation>
 <translation id="2283340219607151381">Сохранять и автоматически подставлять адреса</translation>
 <translation id="2283447177162560884">Удалена страница "<ph name="PAGE_TITLE" />"</translation>
@@ -1528,6 +1528,7 @@
 <translation id="3793574014653384240">Количество недавних сбоев и их причины</translation>
 <translation id="3799805948399000906">Шрифт запрошен</translation>
 <translation id="3801265110651850478">Отправлять Do Not Track в запросах веб-страниц</translation>
+<translation id="3801297763951514916">Часто посещаете</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803801106042434208">Эти поисковые системы популярны в вашем регионе.</translation>
 <translation id="3807366285948165054">Смещение изображения по оси X</translation>
@@ -1621,6 +1622,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Менее 1 МБ</translation>
 <translation id="3990250421422698716">Смещение</translation>
+<translation id="3990532701115075684">Отслеживание рук</translation>
 <translation id="3992684624889376114">Об этой странице</translation>
 <translation id="3995639283717357522">Применить правила</translation>
 <translation id="399754345297554962">Стандартизированные тесты и вступительные экзамены</translation>
@@ -2366,6 +2368,7 @@
 <translation id="5385857628869214740">Юмор</translation>
 <translation id="5385966243497224160">Предпросмотр URL с протоколом, отличным от HTTPS, запрещен</translation>
 <translation id="5386426401304769735">В цепочке сертификатов этого сайта есть сертификат, подписанный с помощью алгоритма SHA-1.</translation>
+<translation id="5391010642126249196">Вы посещали</translation>
 <translation id="539203134595252721">Настольный теннис</translation>
 <translation id="5392506727170022660">Металл (полуглянцевый)</translation>
 <translation id="5394069166371280357">Семейные телешоу</translation>
@@ -2565,6 +2568,7 @@
 <translation id="5742806904559466333">Бары, клубы и ночная жизнь</translation>
 <translation id="5743684619253032786">Товары для ухода за ногтями</translation>
 <translation id="5745733273847572235">Разрешено отправлять запрос на доступ к информации о местоположении</translation>
+<translation id="5750869797196646528">Отслеживание рук</translation>
 <translation id="5759751709240058861">Использование и перемещение вашей камеры.</translation>
 <translation id="5763042198335101085">Укажите действительный адрес электронной почты.</translation>
 <translation id="5764725887548570807">Недействительный формат источника.</translation>
@@ -2820,6 +2824,7 @@
 <translation id="6240964651812394252">Чтобы использовать Google Менеджер паролей с вашей операционной системой, перезапустите Chrome и предоставьте доступ к менеджеру паролей на компьютере. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="6241121617266208201">Скрыть варианты заполнения</translation>
 <translation id="624499991300733384">Сервис для компоновки печатных материалов</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> дн. назад</translation>
 <translation id="6246868321321344665">Ваша организация может просматривать пароли, историю и другие данные о работе в браузере в рабочем и личном профилях.</translation>
 <translation id="6250932670816326647">Средства для принятия ванн и ухода за телом</translation>
 <translation id="6251906504834538140">{0,plural, =1{Файл нельзя переместить}one{<ph name="FILE_COUNT" /> файл нельзя переместить}few{<ph name="FILE_COUNT" /> файла нельзя переместить}many{<ph name="FILE_COUNT" /> файлов нельзя переместить}other{<ph name="FILE_COUNT" /> файла нельзя переместить}}</translation>
@@ -2983,6 +2988,7 @@
 <translation id="6513005815064132016">Разрешено отправлять запрос на отслеживание положения камеры</translation>
 <translation id="6517596291481585650">Внимание! Это правило не объединено, так как оно не является списком.</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
+<translation id="6519885440226079262">Может запрашивать разрешение на отслеживание рук</translation>
 <translation id="6520026037299163656">Веб-приложения и онлайн-инструменты</translation>
 <translation id="65203098586853226">Перевод: <ph name="SOURCE" /> – <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">Не выбрано</translation>
@@ -3023,6 +3029,7 @@
 <translation id="6599642189720630047">Отслеживаемые товары</translation>
 <translation id="6606309334576464871">Chrome запрещает сайтам отслеживать ваши действия в интернете с помощью сторонних файлов cookie.
             <ph name="NEW_LINE" />Если функции сайта не работают, <ph name="START_LINK" />попробуйте временно предоставить это разрешение<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">отслеживание рук</translation>
 <translation id="6613866251791999074">Узнать больше о выборе поисковой системы в Chrome</translation>
 <translation id="6615297766614333076">Укладчик 2</translation>
 <translation id="6619496928666593220">Код IBAN не получен</translation>
@@ -3409,6 +3416,7 @@
 <translation id="7346081071264046066">"с энтузиазмом принять приглашение на свадьбу"</translation>
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7353601530677266744">Командная строка</translation>
+<translation id="7356678400607112844">Последнее посещение</translation>
 <translation id="7359588939039777303">Реклама заблокирована.</translation>
 <translation id="7360451453306104998">Если компания Google найдет доступные скидки, вы увидите их во время оформления покупки.</translation>
 <translation id="7363096869660964304">Тем не менее ваши действия будут видны работодателю и интернет-провайдеру, а также доступны веб-сайтам, которые вы посещаете.</translation>
@@ -3474,6 +3482,7 @@
 <translation id="7440140511386898319">Почитать офлайн</translation>
 <translation id="7441627299479586546">Неверный субъект политики</translation>
 <translation id="7441864845853794192">Экзотические продукты и деликатесы</translation>
+<translation id="7442389976360981500">Разрешить отслеживание рук?</translation>
 <translation id="7442725080345379071">Светло-оранжевый</translation>
 <translation id="7444046173054089907">Сайт заблокирован</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Сегодня файлы cookie снова будут заблокированы}=1{Завтра файлы cookie снова будут заблокированы}one{Файлы cookie будут снова заблокированы через # день}few{Файлы cookie будут снова заблокированы через # дня}many{Файлы cookie будут снова заблокированы через # дней}other{Файлы cookie будут снова заблокированы через # дня}}</translation>
@@ -4132,6 +4141,7 @@
 <translation id="865032292777205197">датчики движения</translation>
 <translation id="865255447216708819">Пленка для обратной печати</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
+<translation id="8660780831677950176">Часто посещаете в это время дня</translation>
 <translation id="8662463432865928030">Коммерческая недвижимость</translation>
 <translation id="8663226718884576429">Информация о заказе, <ph name="TOTAL_LABEL" />, дополнительные сведения</translation>
 <translation id="8663909737634214500">Оптический диск</translation>

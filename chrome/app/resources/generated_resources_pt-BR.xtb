@@ -1437,6 +1437,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="199610894463449797">{0,plural, =1{Fechar este perfil}one{Fechar este perfil (# janela)}other{Fechar este perfil (# janelas)}}</translation>
 <translation id="1997433994358798851">O Chrome precisa de permissão para usar o Bluetooth para se conectar ao dispositivo</translation>
 <translation id="1997616988432401742">Seus certificados</translation>
+<translation id="1998715278591719161">Com permissão para acompanhamento das mãos</translation>
 <translation id="1999115740519098545">Inicialização</translation>
 <translation id="2002109485265116295">Em tempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
@@ -3435,7 +3436,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3439970425423980614">Abrindo visualização do PDF</translation>
 <translation id="3440663250074896476">Mais ações para <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Tela</translation>
-<translation id="3441663102605358937">Faça login em <ph name="ACCOUNT" /> novamente para verificar essa conta</translation>
 <translation id="3441824746233675597">Dificulte o acesso ao seu tráfego da Internet, que mostra os sites que você visita. O <ph name="PRODUCT_NAME" /> usa uma conexão segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>
 <translation id="3442674350323953953">Autorize o Google a usar seus dados de hardware para melhorar o <ph name="DEVICE_OS" />. Se você recusar a permissão, os dados ainda serão enviados ao Google para determinar atualizações específicas, mas não vão ficar armazenados nem serão usados de outras maneiras.</translation>
 <translation id="3443545121847471732">Insira um PIN de 6 dígitos</translation>
@@ -3551,6 +3551,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3521606918211282604">Mudar tamanho do disco</translation>
 <translation id="3522088408596898827">Espaço em disco criticamente baixo. Libere espaço e tente novamente.</translation>
 <translation id="3522979239100719575">Procurando perfis disponíveis. Pode levar alguns minutos..</translation>
+<translation id="3523447078673133727">Não permitir que sites acompanhem suas mãos</translation>
 <translation id="3524518036046613664">Descobrir dispositivos na sua rede local, como impressoras</translation>
 <translation id="3524965460886318643">Exportar atividades</translation>
 <translation id="3525426269008462093">Revisar a sincronização do dispositivo após a configuração</translation>
@@ -4240,6 +4241,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3987993985790029246">Copiar link</translation>
 <translation id="3988124842897276887">Esta guia está conectada a um dispositivo USB</translation>
 <translation id="3988996860813292272">Selecionar fuso horário</translation>
+<translation id="3989635538409502728">Sair</translation>
 <translation id="3991055816270226534">Gerenciar cookies de terceiros e a Proteção antirrastreamento</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Quando a Precisão de local está ativada, dados sobre sinais sem fio, como pontos de acesso Wi-Fi, torres de rede celular e GPS, e dados do sensor do dispositivo, como acelerômetro e giroscópio, são usados para estimar a localização mais precisa do dispositivo, que apps e serviços usam para fornecer recursos com base na localização. Para que isso ocorra, o Google processa periodicamente informações sobre os sensores do dispositivo e os sinais sem fio nas proximidades. Tudo isso contribui com as localizações de sinal sem fio coletadas por crowdsourcing.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />O Google usa essas informações coletadas no dispositivo para melhorar a precisão e os serviços com base na localização, além de aprimorar, oferecer e manter os serviços. Processamos essas informações com base nos interesses legítimos do Google e de terceiros para atender às necessidades dos usuários. Essas informações não são usadas para identificar nenhum indivíduo.<ph name="END_PARAGRAPH2" />
@@ -5929,6 +5931,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="52550593576409946">Não foi possível iniciar o aplicativo Kiosk.</translation>
 <translation id="5255726914791076208">Quando você edita a chave de acesso, sua conta de <ph name="RP_ID" /> não muda.</translation>
 <translation id="5255859108402770436">Fazer login novamente</translation>
+<translation id="5256174546894739043">Perguntar quando um site quiser acompanhar suas mãos</translation>
 <translation id="52566111838498928">Carregando fontes…</translation>
 <translation id="5256861893479663409">Em Todos os Sites</translation>
 <translation id="5258992782919386492">Instalar neste dispositivo</translation>
@@ -6677,6 +6680,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5801051031414037185">Configurar o smartphone</translation>
 <translation id="5801568494490449797">Preferências</translation>
 <translation id="5803689677801500549">As senhas salvas vão aparecer aqui. Para importar senhas para o <ph name="BRAND" /> da conta <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />selecione um arquivo CSV<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">Os sites geralmente acompanham as mãos e os dedos para melhorar experiências imersivas</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5804259315582798390">Falha ao ativar a recuperação de dados locais</translation>
 <translation id="5805268472388605531">Toque mantenha a tecla pressionada para ver acentos e caracteres especiais</translation>
@@ -7766,6 +7770,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="661266467055912436">Melhora a segurança para você e para todos na Web.</translation>
 <translation id="6613267708691765962">Procurando malware...</translation>
 <translation id="6613668613087513143">Não há espaço suficiente neste dispositivo para concluir a atualização. Libere <ph name="NECESSARY_SPACE" /> no dispositivo e tente novamente pelo navegador Chrome.</translation>
+<translation id="6614172284067813496">Página adicionada à Lista de leitura</translation>
 <translation id="6615455863669487791">Exibir</translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6619058681307408113">Daemon de impressora de linha (LPD)</translation>
@@ -7779,6 +7784,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6622980291894852883">Continuar bloqueando imagens</translation>
 <translation id="6624036901798307345">No modo tablet, toque no botão da barra de ferramentas do contador de guias para abrir a nova barra de guias com miniaturas de cada uma.</translation>
 <translation id="6624687053722465643">Docinho</translation>
+<translation id="6627743754845412571">Sem permissão para acompanhamento das mãos</translation>
 <translation id="6628316682330029452">Os certificados do cliente são aqueles que identificam você para outros servidores.</translation>
 <translation id="6628328486509726751">Horário do envio: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Mais segurança</translation>
@@ -8146,6 +8152,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6876469544038980967">Não é útil</translation>
 <translation id="6878422606530379992">Sensores permitidos</translation>
+<translation id="6878862640969460273">Paisagem</translation>
 <translation id="6880587130513028875">As imagens foram bloqueadas nesta página.</translation>
 <translation id="6881845890692344060">Seu administrador saiu. Agora você está no controle.</translation>
 <translation id="6882210908253838664">Se um site não estiver funcionando, tente conceder uma permissão temporária para usar cookies de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -9684,6 +9691,7 @@ Chave de arquivo: <ph name="KEY_FILE" />
 
 Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para criar novas versões da sua extensão.</translation>
 <translation id="8000020256436988724">Barra de Ferramentas Google</translation>
+<translation id="800117767980299235">Destaque de voz</translation>
 <translation id="8002274832045662704">Configuração avançada de impressora</translation>
 <translation id="8002670234429879764">A <ph name="PRINTER_NAME" /> não está mais disponível</translation>
 <translation id="8004092996156083991">Vamos avisar você se as senhas forem comprometidas</translation>
@@ -10767,6 +10775,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="876956356450740926">Execute ferramentas para desenvolvedores, ambientes de desenvolvimento integrado e editores. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Diretório raiz da extensão</translation>
 <translation id="8771300903067484968">O plano de fundo da página inicial foi redefinido para o plano de fundo padrão.</translation>
+<translation id="8773535891252326047">Link copiado para o destaque</translation>
 <translation id="8774379074441005279">Confirmar restauração</translation>
 <translation id="8774934320277480003">Margem superior</translation>
 <translation id="8775144690796719618">URL inválido</translation>

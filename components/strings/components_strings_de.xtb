@@ -428,6 +428,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1739422091279046802">Scrollen und Zoomen</translation>
 <translation id="1741613555002899862">Muss angegeben werden und ein gültiger String sein, wenn "DnsOverHttpsMode" auf <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt ist.</translation>
 <translation id="1743393865165844832">Bettwaren und -wäsche</translation>
+<translation id="1743892871127720056">Titel der Vergleichstabelle, Text bearbeiten</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Chrome schließt aufgrund der von dir besuchten Websites auf Themen, die dich interessieren könnten. Die Themenbereiche sind vordefiniert, wie beispielsweise „Kunst und Unterhaltung“, „Shopping“ und „Sport“. Wenn du dann eine Website besuchst, kann diese von Chrome einige deiner Themen anfordern, um die dir angezeigte Werbung zu personalisieren. Daten über deinen Browserverlauf werden allerdings nicht weitergegeben.</translation>
 <translation id="1746113442205726301">Y-Verschiebung des Bilds</translation>
 <translation id="1746531169546376413">0°</translation>
@@ -462,7 +463,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="180757923930449935">(64-Bit-Emulation)</translation>
 <translation id="180991881384371158">Der CVC befindet sich auf der Rückseite deiner Karte. Er besteht aus den letzten drei Ziffern rechts oben über dem Unterschriftenfeld.</translation>
 <translation id="1810391395243432441">Passwörter mit der Displaysperre schützen</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position} von {count} Plus-Adresse}other{{position} von {count} Plus-Adressen}}</translation>
 <translation id="1812527064848182527">Querformat</translation>
 <translation id="1812975699435941848">Gesundheitsbildung und medizinische Schulung</translation>
 <translation id="1816436748874040213">Darf nachfragen, ob auf geteilten Tabs gescrollt und gezoomt werden darf</translation>
@@ -1261,6 +1261,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 Sekunden zurückspulen</translation>
 <translation id="3352881017886802007">Sportspiele</translation>
+<translation id="3354508510846323339">Zitat <ph name="CURRENT_CITATION" /> von <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Proxy-Einstellungen ändern...</translation>
 <translation id="335809815767823">Exportiert</translation>
 <translation id="3359387651158939842">Wenn du deine Karte für die Verwendung mit Google Pay speicherst, wird sie bei zukünftigen Käufen automatisch ausgefüllt</translation>
@@ -1406,6 +1407,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3586931643579894722">Details ausblenden</translation>
 <translation id="3587725436724465984">Deine Organisation hat <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> als eine Website identifiziert, die möglicherweise gegen eine Richtlinie verstößt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Mitte</translation>
+<translation id="3600106876108433070">Informationen zu Vergleichstabellen</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Schaltfläche „Datenschutzeinstellungen des Google-Kontos verwalten“ – aktivieren, um die Datenschutzeinstellungen deines Google-Kontos aufzurufen</translation>
 <translation id="3603507503523709">App durch Administrator blockiert</translation>
@@ -2923,6 +2925,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="640163077447496506">Läuft heute ab</translation>
 <translation id="6402537308870515461">Vor dem Verschieben ist eine Überprüfung erforderlich</translation>
 <translation id="6403167778944553">Schlaf- und Badezimmer</translation>
+<translation id="6403434564317313607">Die Tabtitel und URLs der Seiten, die du der Tabelle hinzufügst, werden an Google gesendet, in deinem Konto (<ph name="EMAIL" />) gespeichert und möglicherweise von Prüfern zur Verbesserung dieser Funktion angesehen.</translation>
 <translation id="6404511346730675251">Lesezeichen bearbeiten</translation>
 <translation id="6405181733356710802">Weiter zu <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Ablaufdatum und CVC für <ph name="CREDIT_CARD" /> eingeben</translation>
@@ -3364,6 +3367,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="722454870747268814">Neuer Inkognitotab</translation>
 <translation id="7227293336683593977">Preisentwicklung</translation>
 <translation id="7227747683324411744">Angreifer auf der Website, die du besuchen möchtest, werden möglicherweise versuchen, dich zur Installation schädlicher Software zu verleiten, die sich auf deine Internetnutzung auswirkt – z. B. indem sie deine Startseite ändern oder zusätzliche Werbung auf von dir besuchten Websites einblenden.</translation>
+<translation id="7232352818707016189">Weitere Aktionen für die Vergleichstabelle</translation>
 <translation id="7233592378249864828">Bestätigungsblatt drucken</translation>
 <translation id="7234112195906418665">Reisen und Transport</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % abgeschlossen | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4110,6 +4114,7 @@ Weitere Details:
 <translation id="8558347880669160417">Kamera- und Mikrofonberechtigung einmal gewährt</translation>
 <translation id="8559762987265718583">Es kann keine private Verbindung zu <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> hergestellt werden, weil Datum und Uhrzeit deines Geräts falsch sind (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Getrennte Dokumente/nicht sortierte Kopien</translation>
+<translation id="8564466070529550495">Die virtuelle Karte ist zurzeit nicht verfügbar. Bitte versuche es später noch einmal.</translation>
 <translation id="8564985650692024650">Chromium empfiehlt, dein Passwort für <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="8570895683659698018">Hobbys und Freizeitaktivitäten</translation>
 <translation id="8574841453995331336">Kühlschränke und Gefriertruhen</translation>

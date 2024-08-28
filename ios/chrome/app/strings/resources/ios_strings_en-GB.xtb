@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Delete tab group?</translation>
 <translation id="2195124168004379331">Your Browser Looks Good</translation>
 <translation id="2199562093267256223">This will delete the group from all devices signed in to <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Shop, translate and identify what you see with your camera.</translation>
 <translation id="2218443599109088993">Zoom out</translation>
 <translation id="2220529011494928058">Report an issue</translation>
 <translation id="2230173723195178503">Web page loaded</translation>
@@ -470,6 +471,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3269051798482119531">Continue with this tab</translation>
 <translation id="3272527697863656322">Cancel</translation>
+<translation id="3273510436356991673">Customise your home screen</translation>
 <translation id="3277021493514034324">Site address copied</translation>
 <translation id="3285962946108803577">Share page…</translation>
 <translation id="3289505634533552500">Voice search</translation>
@@ -1317,6 +1319,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{New package tracked}other{New packages tracked}}</translation>
 <translation id="7291368939935408496">Preparing Passwords…</translation>
+<translation id="7300448350764260141">Add an extra layer of protection against online threats.</translation>
 <translation id="7302503784943202842">Use passwords on all your devices</translation>
 <translation id="7313347584264171202">You'll find your Incognito tabs here</translation>
 <translation id="7335132237885014335">Get notifications</translation>

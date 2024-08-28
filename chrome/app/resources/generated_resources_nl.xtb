@@ -3090,6 +3090,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3184591616546256659">Gebruik deze pincode om de instellingen voor ouderlijk toezicht te wijzigen.
     Als je de pincode vergeet, voer je een Powerwash voor dit apparaat uit en stel je het opnieuw in.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Deze app is geblokkeerd}other{Sommige apps zijn geblokkeerd}}</translation>
+<translation id="3185454065699440434">Extensies toestaan op <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Advertentiemeting</translation>
 <translation id="3187556136478864255">Zie je je cast-apparaat in de <ph name="BEGIN_LINK" />Google Home-app<ph name="END_LINK" />?</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
@@ -3420,7 +3421,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3439970425423980614">Pdf openen in voorbeeldweergave</translation>
 <translation id="3440663250074896476">Meer acties voor <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Beeldscherm</translation>
-<translation id="3441663102605358937">Log opnieuw in op <ph name="ACCOUNT" /> om dit account te verifiëren</translation>
 <translation id="3441824746233675597">Maak het moeilijker voor mensen met toegang tot je internetverkeer om te zien welke sites je bezoekt. <ph name="PRODUCT_NAME" /> gebruikt een beveiligde verbinding om het IP-adres van een site op te zoeken in het DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">Toestaan dat Google je hardwaregegevens gebruikt om <ph name="DEVICE_OS" /> te verbeteren. Als je geen toestemming geeft, worden deze gegevens nog steeds naar Google gestuurd om te bepalen welke updates nodig zijn. De gegevens worden niet anderszins opgeslagen of gebruikt.</translation>
 <translation id="3443545121847471732">Voer een 6-cijferige pincode in</translation>
@@ -3886,6 +3886,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3760460896538743390">&amp;Achtergrondpagina controleren</translation>
 <translation id="37613671848467444">Openen in &amp;incognitovenster</translation>
 <translation id="3761556954875533505">Toestaan dat site bestanden bewerkt?</translation>
+<translation id="3761560059647741692">Landschap</translation>
 <translation id="3761733456040768239">Meer acties voor <ph name="CARD_DESCRIPTION" />, CVC opgeslagen</translation>
 <translation id="3763433740586298940">Je kunt ongewenste sites blokkeren. Chrome verwijdert sites die ouder zijn dan 30 dagen ook automatisch uit de lijst.</translation>
 <translation id="3763549179847864476">Terugknop voor Privacygids</translation>
@@ -4226,6 +4227,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3987993985790029246">Link kopiëren</translation>
 <translation id="3988124842897276887">Dit tabblad is gekoppeld aan een USB-apparaat</translation>
 <translation id="3988996860813292272">Tijdzone selecteren</translation>
+<translation id="3989635538409502728">Afmelden</translation>
 <translation id="3991055816270226534">Cookies van derden en trackingbeveiliging beheren</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Als Locatienauwkeurigheid aanstaat, worden gegevens over draadloze signalen, zoals wifi-toegangspunten en mobiele-netwerktorens, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, gebruikt om een nauwkeurigere apparaatlocatie te schatten, die Android-apps en -services gebruiken om locatiegebaseerde functies te bieden. Hiervoor verzamelt Google periodiek gegevens over apparaatsensoren en draadloze signalen in de buurt van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google gebruikt deze gegevens die zijn verzameld op dit apparaat om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren en om de services van Google in het algemeen te verbeteren, aan te bieden en te onderhouden. We verwerken deze gegevens op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. Deze gegevens worden niet gebruikt om een bepaalde persoon te identificeren.<ph name="END_PARAGRAPH2" />
@@ -4400,6 +4402,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
 <translation id="4115002065223188701">Netwerk buiten bereik</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">1 keer gedetecteerd</translation>
 <translation id="4116704186509653070">Opnieuw openen</translation>
 <translation id="4117714603282104018">Haptische feedback voor touchpad</translation>
 <translation id="4118579674665737931">Start het apparaat opnieuw op en probeer het opnieuw.</translation>
@@ -4803,6 +4806,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4426508677408162512">Alle bookmarks</translation>
 <translation id="4426513927906544654">Contentaanbevelingen krijgen</translation>
 <translation id="4426857487270413362">Kan installatiebestanden niet downloaden. Check je internetverbinding en of je voldoende vrije schijfruimte hebt en probeer het nogmaals. De foutcode is <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798"><ph name="COUNT" /> keer gedetecteerd</translation>
 <translation id="4427365070557649936">Bevestigingscode verifiëren...</translation>
 <translation id="4429163740524851942">Indeling van fysiek toetsenbord</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -7408,6 +7412,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6351178441572658285">App-talen</translation>
 <translation id="6354918092619878358">Elliptische SECG-kromme secp256r1 (ook wel ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Apparaat aan laten</translation>
+<translation id="6356537493253478650">Sereen</translation>
 <translation id="63566973648609420">Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet verzonden naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, moet je de <ph name="BEGIN_LINK" />synchronisatie resetten<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Scroll omhoog om de pagina omlaag te verplaatsen</translation>
 <translation id="6356893102071098867">Check of je het juiste account hebt gekozen</translation>
@@ -7863,6 +7868,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6701535245008341853">Kan profiel niet laden.</translation>
 <translation id="6702639462873609204">&amp;Bewerken...</translation>
 <translation id="6702859741546259407">Zet bluetooth en wifi aan om <ph name="FEATURE_NAME" /> te gebruiken.</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Je kunt het later opnieuw proberen in Chrome.</translation>
 <translation id="6703254819490889819">Back-up terugzetten</translation>
 <translation id="6703613667804166784">Dit bestand kan schadelijk zijn voor je persoonlijke en socialenetwerk-accounts, waaronder <ph name="USER_EMAIL" /></translation>
@@ -8165,6 +8171,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6909422577741440844">Wil je van dit apparaat ontvangen?</translation>
 <translation id="6910190732484284349">Toegangssleutel verwijderen voor gebruikersnaam: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Verwijderd</translation>
+<translation id="6910274140210351823">Donker</translation>
 <translation id="6911734910326569517">Geheugenvoetafdruk</translation>
 <translation id="6912007319859991306">Pincode voor mobiele simkaart</translation>
 <translation id="6912380255120084882">Probeer een ander apparaat.</translation>
@@ -8223,6 +8230,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6960648667961844909">Kan spraakbestanden in het <ph name="LANGUAGE" /> niet downloaden. Download wordt later geprobeerd. Spraak wordt naar Google gestuurd voor verwerking totdat de download klaar is.</translation>
 <translation id="696103774840402661">Alle bestanden en lokale gegevens voor alle gebruikers op deze <ph name="DEVICE_TYPE" /> zijn definitief verwijderd.</translation>
 <translation id="6961327401577924850">Sites zoeken meestal naar bluetooth-apparaten voor functies zoals het instellen of synchroniseren van een Bluetooth Low Energy-beacon, een gezondheids- of fitnesstracker, of een smartlamp</translation>
+<translation id="6963772203726867701">Niet gedetecteerd</translation>
 <translation id="6963872466817251924">Tekstcursor markeren</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Uit groep verwijderen</translation>
@@ -8316,6 +8324,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7014174261166285193">Installatie mislukt.</translation>
 <translation id="7014480873681694324">Markering verwijderen</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
+<translation id="7015135594296285641">Extensies toestaan</translation>
 <translation id="7016995776279438971">Rood-groen, rood zwak (protanomalie)</translation>
 <translation id="7017004637493394352">Zeg nog een keer "Hey Google"</translation>
 <translation id="7017219178341817193">Een nieuwe pagina toevoegen</translation>
@@ -8621,6 +8630,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7258192266780953209">Transformaties</translation>
 <translation id="7258225044283673131">De app reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
 <translation id="7260186537988033909">Apparaatinschrijving voor kiosken en digitale borden afgerond</translation>
+<translation id="7260206782629605806">Als je de drempelwaarde verlaagt, kun je een subtiele beweging gebruiken. Als je de drempelwaarde verhoogt, moet je misschien een meer overdreven beweging maken.</translation>
 <translation id="7261217796641151584">Groep delen</translation>
 <translation id="7261612856573623172">Systeemstem voor tekst-naar-spraak</translation>
 <translation id="7262004276116528033">Deze inlogservice wordt gehost door <ph name="SAML_DOMAIN" />.</translation>

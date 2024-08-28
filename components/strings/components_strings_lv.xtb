@@ -462,7 +462,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="180757923930449935">(64 biti, emulēts)</translation>
 <translation id="180991881384371158">CVC kods ir norādīts kartes aizmugurē. Tie ir pēdējie trīs cipari paraksta lodziņa augšējā labajā stūrī.</translation>
 <translation id="1810391395243432441">Aizsargājiet paroles, izmantojot ekrāna bloķēšanu</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position}. no {count} papildu adreses}zero{{position}. no {count} papildu adresēm}one{{position}. no {count} papildu adreses}other{{position}. no {count} papildu adresēm}}</translation>
 <translation id="1812527064848182527">ainava</translation>
 <translation id="1812975699435941848">Veselības izglītība un medicīniskā apmācība</translation>
 <translation id="1816436748874040213">Var pieprasīt atļaut ritināšanu un tālummaiņu kopīgotās cilnēs</translation>
@@ -1291,6 +1290,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3402261774528610252">Šīs vietnes ielādes savienojumam tika izmantots protokols TLS 1.0 vai TLS 1.1. Šīs versijas ir novecojušas un vēlāk tiks atspējotas. Kad tās būs atspējotas, lietotāji nevarēs ielādēt šo vietni. Serverim ir jāiespējo protokols TLS 1.2 vai jaunāka versija.</translation>
 <translation id="3405664148539009465">Pielāgot fontus</translation>
 <translation id="3407789382767355356">trešās puses pierakstīšanās</translation>
+<translation id="340924996148642843">Salīdzināšana pašlaik nav pieejama</translation>
 <translation id="3409896703495473338">Pārvaldīt drošības iestatījumus</translation>
 <translation id="3414275587143250384">Izkliedētā skaitļošana un mākoņdatošana</translation>
 <translation id="3414952576877147120">Lielums:</translation>
@@ -1447,6 +1447,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="365641980390710834">Ikdienas apģērbs</translation>
 <translation id="3658742229777143148">Pārskatīšana</translation>
 <translation id="3659521826520353662">Administratora definētās vietnes, kuras tiek apmeklētas un to apmeklēšanas laiks: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Meklējiet citas iegādes iespējas citos veikalos, kuros tiek pārdots šis produkts.</translation>
 <translation id="3664782872746246217">Atslēgvārdi:</translation>
 <translation id="3665100783276035932">Vairumam vietņu ir jādarbojas paredzētajā veidā</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Uzziniet vairāk<ph name="LINK_END1" />.</translation>
@@ -1883,6 +1884,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4451135742916150903">Var pieprasīt atļauju veidot savienojumu ar HID ierīcēm</translation>
 <translation id="4451684391620232683">Lietotājam rādītais teksts:</translation>
 <translation id="4452328064229197696">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Lai aizsargātu kontus, Google paroļu pārvaldnieks iesaka pārbaudīt saglabātās paroles.</translation>
+<translation id="4452957520362597816">Pieprasīt instalēt tīmekļa lietotnes</translation>
 <translation id="4456937135469235202">Piedzīvojumu tūrisms</translation>
 <translation id="4464826014807964867">Vietnes ar informāciju no jūsu organizācijas</translation>
 <translation id="4466576951214254884">Studentu kredīti un finansējums mācībām augstskolā</translation>
@@ -2816,6 +2818,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6240964651812394252">Lai izmantotu Google paroļu pārvaldnieku ar savu operētājsistēmu, atkārtoti palaidiet pārlūku Chrome un atļaujiet piekļuvi datora paroļu pārvaldniekam. Jūsu cilnes tiks atkal atvērtas pēc atkārtotas palaišanas.</translation>
 <translation id="6241121617266208201">Paslēpt ieteikumus</translation>
 <translation id="624499991300733384">Drukājamā satura salikšanas pakalpojums</translation>
+<translation id="6246316216123107851">Pirms <ph name="NUM_DAYS" /> dienām</translation>
 <translation id="6246868321321344665">Jūsu organizācija var skatīt pārlūkošanas datus, piemēram, paroles un vēsturi, gan darba, gan personīgajā profilā.</translation>
 <translation id="6250932670816326647">Ķermeņa kopšanas un vannas produkti</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faila pārvietošana ir bloķēta}zero{<ph name="FILE_COUNT" /> failu pārvietošana ir bloķēta}one{<ph name="FILE_COUNT" /> faila pārvietošana ir bloķēta}other{<ph name="FILE_COUNT" /> failu pārvietošana ir bloķēta}}</translation>
@@ -2989,6 +2992,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6529602333819889595">&amp;Dzēšanas atsaukuma atcelšana</translation>
 <translation id="6535617236508021606">Šī karte ir saglabāta jūsu Google kontā, tādējādi varat to izmantot Google pakalpojumos.</translation>
 <translation id="6536221421038631327">Noņemot no ierīces (<ph name="DEVICE_TYPE" />) Passpoint abonementu, tiks noņemti saistītie tīkli. Sazinieties ar “<ph name="FRIENDLY_NAME" />”, lai veiktu izmaiņas abonēšanas plānā. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Lai skatītu salīdzinājuma tabulas, ieslēdziet sinhronizāciju.</translation>
 <translation id="6539092367496845964">Radās kļūda. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6540488083026747005">Jūs atļāvāt trešo pušu sīkfailus šajā vietnē</translation>
 <translation id="6545864417968258051">Bluetooth meklēšana</translation>
@@ -3404,6 +3408,7 @@ Papildu informācija:
 <translation id="7346081071264046066">“ar prieku sniegt apstiprinošu atbildi šim ielūgumam uz kāzām”</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
 <translation id="7353601530677266744">Komandrinda</translation>
+<translation id="7356678400607112844">Pēdējoreiz apmeklēta</translation>
 <translation id="7359588939039777303">Reklāmu rādīšana ir bloķēta.</translation>
 <translation id="7360451453306104998">Ja Google atradīs pieejamas atlaides, tās tiks rādītas norēķinoties.</translation>
 <translation id="7363096869660964304">Tomēr jūs neesat neredzams. Izmantojot inkognito režīmu, jūsu pārlūkošanas darbības netiek slēptas no jūsu darba devēja, interneta pakalpojumu sniedzēja vai apmeklētajām vietnēm.</translation>

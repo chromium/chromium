@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">タブグループを削除しますか？</translation>
 <translation id="2195124168004379331">お使いのブラウザは安全です</translation>
 <translation id="2199562093267256223"><ph name="USER_EMAIL" /> にログインしているすべてのデバイスからグループを削除します。</translation>
+<translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
 <translation id="2218443599109088993">縮小</translation>
 <translation id="2220529011494928058">問題を報告</translation>
 <translation id="2230173723195178503">ウェブページを読み込みました</translation>
@@ -470,6 +471,7 @@
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3269051798482119531">このタブを続行</translation>
 <translation id="3272527697863656322">キャンセル</translation>
+<translation id="3273510436356991673">ホーム画面をカスタマイズ</translation>
 <translation id="3277021493514034324">サイトのアドレスがコピーされました</translation>
 <translation id="3285962946108803577">ページを共有...</translation>
 <translation id="3289505634533552500">音声検索</translation>
@@ -1317,6 +1319,7 @@
 <translation id="7272437679830969316">ユーザー認証に失敗しました。パスワードはコピーされませんでした。</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{新しい荷物が追跡対象になりました}other{新しい荷物が追跡対象になりました}}</translation>
 <translation id="7291368939935408496">パスワードの準備中...</translation>
+<translation id="7300448350764260141">オンラインの脅威に対する保護を強化しましょう。</translation>
 <translation id="7302503784943202842">すべてのデバイスでパスワードを使用する</translation>
 <translation id="7313347584264171202">シークレット タブはここに表示されます</translation>
 <translation id="7335132237885014335">通知を受け取る</translation>

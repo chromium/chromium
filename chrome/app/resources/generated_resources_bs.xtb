@@ -2377,7 +2377,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2660779039299703961">Događaj</translation>
 <translation id="266079277508604648">Nije moguće povezati se na štampač. Provjerite je li štampač uključen i je li povezan na vaš Chromebook putem WiFi-ja ili USB-a.</translation>
 <translation id="2661315027005813059">Keširana verzija cijele stranice: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
-<translation id="2661714428027871023">Pretražujte brže i koristite manje podataka uz Jednostavni način rada. Kliknite da saznate više.</translation>
+<translation id="2661714428027871023">Pretražujte brže i koristite manje podataka uz jednostavni način rada. Kliknite da saznate više.</translation>
 <translation id="2662876636500006917">Chrome Web trgovina</translation>
 <translation id="2663253180579749458">Dodavanje eSIM profila. To može potrajati nekoliko minuta.</translation>
 <translation id="2663302507110284145">Jezik</translation>
@@ -3102,7 +3102,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3184591616546256659">Koristite ovaj PIN da promijenite postavke roditeljskog nadzora.
     Ako zaboravite PIN, izvršite Powerwash uređaja i postavite ga ponovo.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ova aplikacija je blokirana}one{Neke aplikacije su blokirane}few{Neke aplikacije su blokirane}other{Neke aplikacije su blokirane}}</translation>
-<translation id="3185454065699440434">Dopusti proširenja na web-lokaciji <ph name="SITE_NAME" /></translation>
+<translation id="3185454065699440434">Dozvoli ekstenzije na <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Mjerenje oglasa</translation>
 <translation id="3187556136478864255">Vidite li uređaj za emitiranje u
     <ph name="BEGIN_LINK" />
@@ -3435,7 +3435,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3439970425423980614">Otvaranje PDF-a u Pregledu</translation>
 <translation id="3440663250074896476">Više radnji za oznaku <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Ekran</translation>
-<translation id="3441663102605358937">Ponovo se prijavite na <ph name="ACCOUNT" /> da potvrdite ovaj račun</translation>
 <translation id="3441824746233675597">Otežajte osobama s pristupom vašem internetskom saobraćaju da vide koje web lokacije posjećujete. <ph name="PRODUCT_NAME" /> koristi sigurnu vezu da potraži IP adresu web lokacije u DNS-u (Sistem naziva domena).</translation>
 <translation id="3442674350323953953">Dopustite Googleu da koristi hardverske podatke da poboljša <ph name="DEVICE_OS" />. Ako odbijete, ovi podaci se i dalje šalju Googleu da se utvrde ispravna ažuriranja, ali se ne pohranjuju niti koriste na drugi način.</translation>
 <translation id="3443545121847471732">Unesite 6-cifreni PIN</translation>
@@ -4242,6 +4241,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="3988124842897276887">Ova kartica je povezana s USB uređajem</translation>
 <translation id="3988996860813292272">Izbor vremenske zone</translation>
+<translation id="3989635538409502728">Odjava</translation>
 <translation id="3991055816270226534">Upravljajte kolačićima trećih strana i zaštitama od praćenja</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Kada je preciznost lokacije uključena, informacije o bežičnim signalima, kao što su WiFi pristupne tačke i tornjevi mobilnih mreža, uz podatke senzora uređaja, kao što su mjerač ubrzanja i žiroskop, koriste se za precizniju procjenu lokacije uređaja, koju Android aplikacije i usluge koriste za pružanje funkcija zasnovanih na lokaciji. Google u tu svrhu periodično prikuplja informacije o senzorima uređaja i bežičnim signalima u blizini uređaja radi doprinosa lokacijama bežičnih signala pruženih kao podrška internet javnosti.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google koristi informacije prikupljene s ovog uređaja radi poboljšanja preciznosti lokacije i usluga zasnovanih na lokaciji, kao i općenito radi poboljšanja, pružanja i održavanja Googleovih usluga. Ove informacije obrađujemo na osnovu legitimnih interesa Googlea i trećih strana da ispunjavaju potrebe korisnika. Ove informacije se ne koriste za identifikaciju osoba.<ph name="END_PARAGRAPH2" />
@@ -7432,7 +7432,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6351178441572658285">Jezici aplikacija</translation>
 <translation id="6354918092619878358">SECG eliptična krivulja secp256r1 (poznata i kao ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Ne isključujte uređaj</translation>
-<translation id="6356537493253478650">Spokojan</translation>
+<translation id="6356537493253478650">Spokojno</translation>
 <translation id="63566973648609420">Vaše šifrirane podatke može čitati isključivo osoba koja ima vašu šifru za pristup. Šifra za pristup se ne šalje Googleu niti je Google pohranjuje. Ukoliko zaboravite šifru za pristup ili želite promijeniti ovu postavku, morat ćete <ph name="BEGIN_LINK" />poništiti sinhronizaciju<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Kliznite nagore da pomjerite stranicu nadolje</translation>
 <translation id="6356893102071098867">Provjerite jeste li odabrali pravi račun</translation>
@@ -8348,7 +8348,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7014174261166285193">Instalacija nije uspjela:</translation>
 <translation id="7014480873681694324">Ukloni istaknuti tekst</translation>
 <translation id="7014741021609395734">Nivo zumiranja</translation>
-<translation id="7015135594296285641">Dopustite proširenja</translation>
+<translation id="7015135594296285641">Dozvoljavanje ekstenzija</translation>
 <translation id="7016995776279438971">Crveno-zeleno, slabo prepoznavanje crvene (protanomalija)</translation>
 <translation id="7017004637493394352">Ponovo recite "Ok Google"</translation>
 <translation id="7017219178341817193">Dodajte novu stranicu</translation>

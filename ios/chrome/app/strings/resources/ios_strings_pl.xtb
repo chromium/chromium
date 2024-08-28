@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Usunąć grupę kart?</translation>
 <translation id="2195124168004379331">Zabezpieczenia w przeglądarce wydają się wystarczające</translation>
 <translation id="2199562093267256223">Spowoduje to usunięcie grupy ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
+<translation id="2214453882118345682">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu.</translation>
 <translation id="2218443599109088993">Pomniejsz</translation>
 <translation id="2220529011494928058">Zgłoś problem</translation>
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
@@ -1318,6 +1319,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7272437679830969316">Nie można zweryfikować Twojej tożsamości. Hasło nie zostało skopiowane.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nowa przesyłka jest śledzona}few{Nowe przesyłki są śledzone}many{Nowe przesyłki są śledzone}other{Nowe przesyłki są śledzone}}</translation>
 <translation id="7291368939935408496">Przygotowuję hasła…</translation>
+<translation id="7300448350764260141">Wprowadź dodatkową warstwę ochrony przed zagrożeniami online.</translation>
 <translation id="7302503784943202842">Używaj haseł na wszystkich swoich urządzeniach</translation>
 <translation id="7313347584264171202">Tu znajdziesz swoje karty incognito</translation>
 <translation id="7335132237885014335">Otrzymuj powiadomienia</translation>

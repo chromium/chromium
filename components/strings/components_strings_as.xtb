@@ -462,7 +462,6 @@
 <translation id="180757923930449935">(৬৪-বিট এমুলে’ট কৰা)</translation>
 <translation id="180991881384371158">আপোনাৰ CVC আপোনাৰ কাৰ্ডৰ পিছফালে আছে। এইটো স্বাক্ষৰ বাকচৰ একেবাৰে ওপৰৰ সোঁফালে থকা অন্তিম ৩ টা অংক।</translation>
 <translation id="1810391395243432441">আপোনাৰ স্ক্ৰীন লকৰ জৰিয়তে পাছৱৰ্ড সুৰক্ষিত কৰক</translation>
-<translation id="1810597570737826742">{count,plural, =1{{count} টাতকৈও অধিক ঠিকনাৰ {position}}one{{count} টাতকৈও অধিক ঠিকনাৰ {position}}other{{count} টাতকৈও অধিক ঠিকনাৰ {position}}}</translation>
 <translation id="1812527064848182527">লেণ্ডস্কে’প</translation>
 <translation id="1812975699435941848">স্বাস্থ্য সম্পৰ্কীয় শিক্ষা আৰু চিকিৎসাৰ প্ৰশিক্ষণ</translation>
 <translation id="1816436748874040213">শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰল আৰু জুম কৰিবলৈ ক’ব পাৰে</translation>
@@ -718,6 +717,7 @@
 <translation id="2276057643614339130">প্ৰিণ্ট বে’ছ</translation>
 <translation id="2277103315734023688">আগলৈ যাওক</translation>
 <translation id="2277753418458118549">সংযোগৰ সবিশেষ দেখুৱাওক</translation>
+<translation id="2277949605527755300"><ph name="URL" />এ আপোনাৰ হাত ট্ৰেক কৰিব বিচাৰিছে</translation>
 <translation id="22792995594807632">ডাউনল'ড কৰাৰ আগতে পৰ্যালোচনাৰ প্ৰয়োজন</translation>
 <translation id="2283340219607151381">ছেভ কৰক আৰু ঠিকনা পূৰ কৰক</translation>
 <translation id="2283447177162560884">’<ph name="PAGE_TITLE" />’ মচা হ’ল</translation>
@@ -1526,6 +1526,7 @@
 <translation id="3793574014653384240">শেহতীয়াকৈ হোৱা ক্রেশ্বসমূহৰ সংখ্যা আৰু কাৰণসমূহ</translation>
 <translation id="3799805948399000906">ফ’ণ্টৰ বাবে অনুৰোধ কৰা হৈছে</translation>
 <translation id="3801265110651850478">আপোনাৰ ব্ৰাউজিঙৰ ট্ৰেফিকৰ জৰিয়তে "ট্ৰেক কৰা নিষেধ" বুলি এটা অনুৰোধ পঠিয়াওক</translation>
+<translation id="3801297763951514916">আপুনি প্ৰায়ে চায়</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803801106042434208">এই সন্ধান ইঞ্জিনসমূহ আপোনাৰ অঞ্চলত জনপ্ৰিয়</translation>
 <translation id="3807366285948165054">প্ৰতিচ্ছবি X শ্বিফ্ট</translation>
@@ -1619,6 +1620,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">১ এম. বি.তকৈ কম</translation>
 <translation id="3990250421422698716">লাহেকৈ অফছেটক হেঁচক</translation>
+<translation id="3990532701115075684">আপোনাৰ হাত ট্ৰেক কৰক</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠাখনৰ বিষয়ে</translation>
 <translation id="3995639283717357522">নীতি প্ৰয়োগ কৰক</translation>
 <translation id="399754345297554962">প্ৰমাণীকৃত আৰু প্ৰৱেশিকা পৰীক্ষা</translation>
@@ -2363,6 +2365,7 @@
 <translation id="5385857628869214740">ব্যংগ কৌতুক</translation>
 <translation id="5385966243497224160">অনা-HTTPS URL পূৰ্বদৰ্শন কৰিব নোৱাৰি</translation>
 <translation id="5386426401304769735">এই ছাইটটোৰ প্ৰমাণপত্ৰৰ চ্চেইনত SHA-1 ব্যৱহাৰ কৰি ছাইন কৰা এখন প্ৰমাণপত্ৰ আছে।</translation>
+<translation id="5391010642126249196">আপুনি চাইছে</translation>
 <translation id="539203134595252721">টেবল টেনিচ</translation>
 <translation id="5392506727170022660">মেটেল (ছেমি-গ্লছ)</translation>
 <translation id="5394069166371280357">পৰিয়ালৰ বাবে নিৰ্মাণ কৰা টিভি শ্ব’</translation>
@@ -2562,6 +2565,7 @@
 <translation id="5742806904559466333">বাৰ, ক্লাব আৰু নাইটলাইফ</translation>
 <translation id="5743684619253032786">নখৰ যত্ন লোৱা প্ৰ’ডাক্ট</translation>
 <translation id="5745733273847572235">আপোনাৰ অৱস্থান বিচাৰিব পাৰে</translation>
+<translation id="5750869797196646528">হাতৰ ট্ৰেকিং</translation>
 <translation id="5759751709240058861">আপোনাৰ কেমেৰা ব্যৱহাৰ আৰু লৰচৰ কৰা</translation>
 <translation id="5763042198335101085">এটা মান্য ইমেইল ঠিকনা দিয়ক</translation>
 <translation id="5764725887548570807">উৎসৰ ফৰ্মেট মান্য নহয়।</translation>
@@ -2980,6 +2984,7 @@
 <translation id="6513005815064132016">আপোনাৰ কেমেৰাৰ স্থান ট্ৰেক কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="6517596291481585650">সাৱধানবাণী: নীতিত নিৰ্দিষ্ট কৰা ধৰণে এই নীতিটো সূচী হিচাপে একত্ৰিত কৰা হোৱা নাই কাৰণ এয়া সূচী নহয়।</translation>
 <translation id="6518133107902771759">সত্যাপন কৰক</translation>
+<translation id="6519885440226079262">আপোনাৰ হাত ট্ৰেক কৰিবলৈ অনুমতি বিচাৰিব পাৰে</translation>
 <translation id="6520026037299163656">ৱেব এপ্‌ আৰু অনলাইন সঁজুলি</translation>
 <translation id="65203098586853226"><ph name="SOURCE" />ৰ পৰা <ph name="TARGET" />লৈ অনুবাদ কৰি থকা হৈছে</translation>
 <translation id="6521745193039995384">সক্ৰিয় নহয়</translation>
@@ -3020,6 +3025,7 @@
 <translation id="6599642189720630047">ট্ৰেক কৰা প্ৰ’ডাক্ট</translation>
 <translation id="6606309334576464871">আপুনি ব্ৰাউজ কৰি থাকোঁতে Chromeএ ছাইটসমূহে আপোনাক ট্ৰেক কৰিবলৈ কৰা তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ অৱৰোধ কৰে।
             <ph name="NEW_LINE" />যদি ছাইটৰ সুবিধাসমূহে কাম নকৰে, তেন্তে <ph name="START_LINK" />সাময়িকভাৱে তৃতীয় পক্ষৰ কুকিক অনুমতি দি চাওক<ph name="END_LINK" />।</translation>
+<translation id="6613742613135780554">হাতৰ ট্ৰেকিং</translation>
 <translation id="6613866251791999074">Chromeত থকা আপোনাৰ সন্ধানৰ ইঞ্জিনৰ বিষয়ে অধিক জানক</translation>
 <translation id="6615297766614333076">ষ্টেকাৰ ২</translation>
 <translation id="6619496928666593220">IBAN পূৰ কৰা হোৱা নাই</translation>
@@ -3471,6 +3477,7 @@
 <translation id="7440140511386898319">অফলাইন অৱস্থাত অন্বেষণ কৰক</translation>
 <translation id="7441627299479586546">নীতিৰ বিষয় ভুল আছে</translation>
 <translation id="7441864845853794192">ভোজনবিলাসী আৰু বিশেষ খাদ্য</translation>
+<translation id="7442389976360981500">হাত ট্ৰেক কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="7442725080345379071">পাতল কমলা ৰং</translation>
 <translation id="7444046173054089907">এই ছাইটটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{আজি পুনৰ কুকিসমূহ অৱৰোধ কৰা হব}=1{কাইলৈ পুনৰ কুকিসমূহ অৱৰোধ কৰা হব}one{# দিনত কুকিসমূহ পুনৰ অৱৰোধ কৰা হ’ব}other{# দিনত কুকিসমূহ পুনৰ অৱৰোধ কৰা হ’ব}}</translation>
@@ -4129,6 +4136,7 @@
 <translation id="865032292777205197">ম'শ্বন ছেন্সৰ</translation>
 <translation id="865255447216708819">বেক প্ৰিণ্ট ফিল্ম</translation>
 <translation id="8654126188050905496">৫৫ x ৯১ মি.মি.</translation>
+<translation id="8660780831677950176">আপুনি এই সময়ত প্ৰায়ে চায়</translation>
 <translation id="8662463432865928030">বাণিজ্যিক সম্পত্তি</translation>
 <translation id="8663226718884576429">অৰ্ডাৰৰ সাৰাংশ, <ph name="TOTAL_LABEL" />, অধিক বিৱৰণ</translation>
 <translation id="8663909737634214500">অপ্টিকেল ডিস্ক</translation>

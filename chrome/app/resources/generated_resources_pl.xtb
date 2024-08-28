@@ -3403,7 +3403,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3439970425423980614">Otwieranie podglądu PDF</translation>
 <translation id="3440663250074896476">Więcej czynności dotyczących zakładki <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Ekran</translation>
-<translation id="3441663102605358937">Ponownie zaloguj się na konto <ph name="ACCOUNT" />, by je zweryfikować</translation>
 <translation id="3441824746233675597">Utrudnij osobom mającym dostęp do Twojego ruchu internetowego sprawdzanie, jakie strony odwiedzasz. Do wyszukiwania adresu IP witryny w systemie nazw domenowych (DNS) <ph name="PRODUCT_NAME" /> używa bezpiecznego połączenia.</translation>
 <translation id="3442674350323953953">Pozwól Google na używanie danych dotyczących Twojego sprzętu w celu ulepszania systemu <ph name="DEVICE_OS" />. Jeśli nie wyrazisz zgody, dane te nadal będą przesyłane do Google i używane do określania odpowiednich aktualizacji, ale nie będą przechowywane ani wykorzystywane do innych celów.</translation>
 <translation id="3443545121847471732">Wpisz 6-cyfrowy kod PIN</translation>
@@ -4210,6 +4209,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3987993985790029246">Skopiuj link</translation>
 <translation id="3988124842897276887">Ta karta jest połączona z urządzeniem USB</translation>
 <translation id="3988996860813292272">Wybierz strefę czasową</translation>
+<translation id="3989635538409502728">Wyloguj się</translation>
 <translation id="3991055816270226534">Zarządzaj plikami cookie innych firm i ochroną przed śledzeniem</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Gdy ustawienie Dokładność lokalizacji jest włączone, wykorzystywane są dane o sygnałach bezprzewodowych pochodzących np. z punktów dostępu do Wi-Fi czy masztów sieci komórkowych, a także dane z czujników urządzenia takich jak akcelerometr i żyroskop. Pozwala to dokładniej określać lokalizację urządzenia, dzięki czemu aplikacje i usługi na Androida mogą udostępniać funkcje oparte na lokalizacji. W tym celu Google okresowo zbiera dane z czujników urządzenia i informacje o sygnałach bezprzewodowych w pobliżu tego urządzenia, aby pomóc ustalać lokalizacje sygnałów bezprzewodowych na zasadzie crowdsourcingu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google wykorzystuje te informacje zebrane z tego urządzenia do zwiększania dokładności lokalizacji i usprawniania działania usług wykorzystujących lokalizację oraz ogólnie do ulepszania, świadczenia i utrzymywania usług Google. Przetwarzamy te dane na podstawie uzasadnionego interesu Google i innych firm w spełnianiu potrzeb użytkowników. Te informacje nie są używane do identyfikacji osób.<ph name="END_PARAGRAPH2" />
@@ -4385,6 +4385,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
         Możesz zarządzać ustawieniami w menu karty lub zobaczyć więcej opcji w sekcji dostosowania Chrome.</translation>
 <translation id="4115002065223188701">Sieć poza zasięgiem</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">Wykryto 1 raz</translation>
 <translation id="4116704186509653070">Otwórz ponownie</translation>
 <translation id="4117714603282104018">Reakcja haptyczna touchpada</translation>
 <translation id="4118579674665737931">Uruchom ponownie urządzenie i spróbuj jeszcze raz.</translation>
@@ -4788,6 +4789,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4426508677408162512">Wszystkie zakładki</translation>
 <translation id="4426513927906544654">Otrzymuj rekomendacje dotyczące treści</translation>
 <translation id="4426857487270413362">Nie udało się pobrać plików instalatora. Sprawdź połączenie z internetem, upewnij się, że masz wystarczającą ilość wolnego miejsca na dysku, i spróbuj ponownie. Kod błędu: <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Wykryto <ph name="COUNT" /> razy</translation>
 <translation id="4427365070557649936">Sprawdzam kod potwierdzenia...</translation>
 <translation id="4429163740524851942">Układ klawiatury fizycznej</translation>
 <translation id="4430019312045809116">Głośność</translation>
@@ -7855,6 +7857,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6701535245008341853">Nie można uzyskać profilu.</translation>
 <translation id="6702639462873609204">&amp;Edytuj</translation>
 <translation id="6702859741546259407">Aby użyć funkcji <ph name="FEATURE_NAME" />, włącz Bluetooth i Wi-Fi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Możesz spróbować później w Chrome.</translation>
 <translation id="6703254819490889819">Przywróć dane z kopii zapasowej</translation>
 <translation id="6703613667804166784">Ten plik może uszkodzić Twoje konta osobiste i konta w sieciach społecznościowych, w tym <ph name="USER_EMAIL" /></translation>
@@ -8214,6 +8217,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6960648667961844909">Nie udało się pobrać plików z mową w języku: <ph name="LANGUAGE" />. Spróbuję je pobrać później. Do momentu ukończenia pobierania mowa jest wysyłana do Google i tam przetwarzana.</translation>
 <translation id="696103774840402661">Wszystkie pliki i dane lokalne wszystkich użytkowników na tym urządzeniu <ph name="DEVICE_TYPE" /> zostały trwale usunięte.</translation>
 <translation id="6961327401577924850">Witryny szukają urządzeń Bluetooth na przykład po to, żeby skonfigurować lub zsynchronizować niskoenergetyczne moduły beacon, inteligentne żarówki albo monitory stanu zdrowia lub aktywności fizycznej</translation>
+<translation id="6963772203726867701">Nie wykryto</translation>
 <translation id="6963872466817251924">Podświetlenie kursora tekstowego</translation>
 <translation id="6964390816189577014">Bohater</translation>
 <translation id="6964760285928603117">Usuń z grupy</translation>
@@ -8613,6 +8617,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7258192266780953209">Transformacje</translation>
 <translation id="7258225044283673131">Aplikacja nie odpowiada. Aby ją zamknąć, wybierz „Wymuś zamknięcie”.</translation>
 <translation id="7260186537988033909">Rejestrowanie urządzenia w trybie kiosku i tablicy informacyjnej zostało zakończone</translation>
+<translation id="7260206782629605806">Po zmniejszeniu progu będzie można używać bardziej subtelnych ruchów. Po jego zwiększeniu konieczne może być wykonywanie bardziej wyrazistych ruchów.</translation>
 <translation id="7261217796641151584">Udostępnij grupę</translation>
 <translation id="7261612856573623172">Systemowy głos zamiany tekstu na mowę</translation>
 <translation id="7262004276116528033">Ta usługa logowania pochodzi z domeny <ph name="SAML_DOMAIN" /></translation>

@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Vill du radera flikgruppen?</translation>
 <translation id="2195124168004379331">Din webbläsare ser bra ut</translation>
 <translation id="2199562093267256223">Detta raderar gruppen från alla enheter som är inloggade på <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Köp, översätt och identifiera det du ser med kameran.</translation>
 <translation id="2218443599109088993">Zooma ut</translation>
 <translation id="2220529011494928058">Rapportera ett problem</translation>
 <translation id="2230173723195178503">Webbsidan har lästs in</translation>
@@ -1317,6 +1318,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7272437679830969316">Det gick inte att verifiera din identitet. Lösenordet har inte kopierats.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nytt paket spåras}other{Nya paket spåras}}</translation>
 <translation id="7291368939935408496">Lösenorden förbereds …</translation>
+<translation id="7300448350764260141">Lägg till ett extra skydd mot hot online.</translation>
 <translation id="7302503784943202842">Använd lösenorden på alla dina enheter</translation>
 <translation id="7313347584264171202">Du hittar dina inkognitoflikar här</translation>
 <translation id="7335132237885014335">Få aviseringar</translation>

@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">ລຶບກຸ່ມແຖບບໍ?</translation>
 <translation id="2195124168004379331">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານປອດໄພ</translation>
 <translation id="2199562093267256223">ການດຳເນີນການນີ້ຈະລຶບກຸ່ມອອກຈາກທຸກອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">ເລືອກຊື້, ແປພາສາ ແລະ ລະບຸສິ່ງທີ່ທ່ານເຫັນໂດຍໃຊ້ກ້ອງຂອງທ່ານ.</translation>
 <translation id="2218443599109088993">ຊູມອອກ</translation>
 <translation id="2220529011494928058">ລາຍ​ງານ​ບັນ​ຫາ</translation>
 <translation id="2230173723195178503">ໂຫຼດໜ້າເວັບແລ້ວ</translation>
@@ -470,6 +471,7 @@
 <translation id="3268451620468152448">ເປີດ​ແຖບ</translation>
 <translation id="3269051798482119531">ສືບຕໍ່ໃຊ້ແຖບນີ້</translation>
 <translation id="3272527697863656322">ຍົກເລີກ</translation>
+<translation id="3273510436356991673">ປັບແຕ່ງໂຮມສະກຣີນຂອງທ່ານ</translation>
 <translation id="3277021493514034324">ສຳເນົາທີ່ຢູ່ເວັບໄຊແລ້ວ</translation>
 <translation id="3285962946108803577">ແບ່ງປັນໜ້າ...</translation>
 <translation id="3289505634533552500">ຊອກຫາດ້ວຍສຽງ</translation>
@@ -1317,6 +1319,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7272437679830969316">ບໍ່ສາມາດພິສູດຢືນຢັນຕົວຕົນຂອງທ່ານໄດ້. ບໍ່ໄດ້ສຳເນົາລະຫັດຜ່ານ.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{ຕິດຕາມພັດສະດຸໃໝ່ແລ້ວ}other{ຕິດຕາມພັດສະດຸໃໝ່ແລ້ວ}}</translation>
 <translation id="7291368939935408496">ກຳລັງກະກຽມລະຫັດຜ່ານ...</translation>
+<translation id="7300448350764260141">ເພີ່ມການປົກປ້ອງຕໍ່ກັບໄພຂົ່ມຂູ່ທາງອອນລາຍອີກຊັ້ນໜຶ່ງ.</translation>
 <translation id="7302503784943202842">ໃຊ້ລະຫັດຜ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="7313347584264171202">ທ່ານຈະເຫັນແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="7335132237885014335">ຮັບການແຈ້ງເຕືອນ</translation>

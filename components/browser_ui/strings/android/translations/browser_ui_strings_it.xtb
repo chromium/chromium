@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Quando l'opzione è attiva, i siti potrebbero chiederti di usare la videocamera. Quando l'opzione è disattivata, i siti non possono utilizzare la videocamera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome bloccherà nuovamente i cookie domani}other{# giorni al nuovo blocco dei cookie in Chrome}}</translation>
 <translation id="3521663503435878242">Siti in <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Non consentire ai siti di monitorare le tue mani</translation>
 <translation id="3536227077203206203">Consentito questa volta</translation>
 <translation id="3538390592868664640">Impedisci ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera</translation>
 <translation id="3544058026430919413">Una società può definire un gruppo di siti che possono utilizzare i cookie per condividere la tua attività nel gruppo. Questa opzione è disattivata nella modalità di navigazione in incognito.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">Quando l'opzione è attiva, i siti possono utilizzare JavaScript. Quando l'opzione è disattivata, i siti non possono utilizzare JavaScript.</translation>
 <translation id="5099358668261120049">Verranno eliminati tutti i dati e i cookie memorizzati dal sito <ph name="ORIGIN" /> o dalla relativa app nella schermata Home.</translation>
 <translation id="5100237604440890931">Compresso. Fai clic per espandere.</translation>
+<translation id="5116239826668864748">Puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app</translation>
 <translation id="5123685120097942451">Scheda di navigazione in incognito</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Calo di prezzo nelle schede aperte}other{Cali di prezzo nelle schede aperte}}</translation>
 <translation id="5186036860380548585">Opzione disponibile nella parte superiore dello schermo</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Questo sito fa parte di un gruppo che può vedere le tue attività. Il gruppo è definito da <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Foto del profilo</translation>
 <translation id="6697925417670533197">Download attivi</translation>
+<translation id="6709432001666529933">Chiedi conferma prima di consentire ai siti di monitorare le tue mani (opzione consigliata)</translation>
 <translation id="6722828510648505498">Blocca le richieste di accesso da servizi di identità.</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
 <translation id="6749077623962119521">Reimpostare le autorizzazioni?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">Seleziona un'opzione per <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6818926723028410516">Seleziona elementi</translation>
+<translation id="6838525730752203626">Usa Chrome per impostazione predefinita</translation>
 <translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
 <translation id="6864395892908308021">Questo dispositivo non può leggere la tecnologia NFC</translation>
 <translation id="6870169401250095575">Nascondi scheda Controllo di sicurezza</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7667547420449112975">Il meraviglioso mago di Oz</translation>
 <translation id="7684642910516280563">Non consentire a un sito di utilizzare i cookie di terze parti</translation>
+<translation id="7688240020069572972">Nascondi scheda dei suggerimenti di Chrome</translation>
 <translation id="7719367874908701697">Zoom delle pagine</translation>
 <translation id="7759147511335618829">Controllo e riprogr. disp. MIDI</translation>
 <translation id="7781829728241885113">Ieri</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Sposta su</translation>
 <translation id="8617611086246832542">Quando l'opzione è attiva, viene mostrata la visualizzazione dei siti web da computer. Quando l'opzione è disattivata, viene mostrata la visualizzazione mobile dei siti web.</translation>
 <translation id="8649036394979866943">Chrome impedisce alla maggior parte dei siti di usare i cookie di terze parti per monitorare la tua navigazione. Vai alle impostazioni per <ph name="BEGIN_LINK" />gestire le protezioni antitracciamento<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Quando l'opzione è attiva, i siti possono chiedere di monitorare le tue mani. Quando l'opzione è disattivata, i siti non possono monitorare le tue mani.</translation>
 <translation id="8676374126336081632">Cancella testo inserito</translation>
 <translation id="8681886425883659911">Gli annunci vengono bloccati sui siti noti che mostrano annunci invasivi o fuorvianti</translation>
 <translation id="868929229000858085">Cerca nei contatti</translation>

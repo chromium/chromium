@@ -3103,6 +3103,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3184591616546256659">Gebruik hierdie PIN om ouerkontrolesinstellings te verander.
     As jy die PIN vergeet, moet jy die toestel kragwas en weer opstel.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Hierdie program is geblokkeer}other{Sommige programme is geblokkeer}}</translation>
+<translation id="3185454065699440434">Laat uitbreidings toe op <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Advertensiemeting</translation>
 <translation id="3187556136478864255">Kan jy jou uitsaaitoestel in die
     <ph name="BEGIN_LINK" />
@@ -3435,7 +3436,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3439970425423980614">Maak 'n PDF as voorskou oop</translation>
 <translation id="3440663250074896476">Meer handelinge vir <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Skerm</translation>
-<translation id="3441663102605358937">Meld weer by <ph name="ACCOUNT" /> aan om hierdie rekening te verifieer</translation>
 <translation id="3441824746233675597">Maak dit moeiliker vir mense met toegang tot jou internetverkeer om te sien watter werwe jy besoek. <ph name="PRODUCT_NAME" /> gebruik ’n veilige verbinding om ’n werf se IP-adres in die DNS (domeinnaamstelsel) op te soek.</translation>
 <translation id="3442674350323953953">Laat Google jou hardewaredata gebruik om te help om <ph name="DEVICE_OS" /> beter te maak. As jy dit afwys, sal hierdie data nogtans na Google toe gestuur word om gepaste opdaterings te bepaal, maar dit sal nie geberg of andersins gebruik word nie.</translation>
 <translation id="3443545121847471732">Voer ’n 6-syfer-PIN in</translation>
@@ -3901,6 +3901,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3760460896538743390">Ondersoek agtergrondbladsy</translation>
 <translation id="37613671848467444">Maak in incognitovenster oop</translation>
 <translation id="3761556954875533505">Laat werf lêers wysig?</translation>
+<translation id="3761560059647741692">Landskap</translation>
 <translation id="3761733456040768239">Meer handelinge vir <ph name="CARD_DESCRIPTION" />, CVC gestoor</translation>
 <translation id="3763433740586298940">Jy kan werwe blokkeer wat jy nie wil hê nie. Chrome vee werwe wat ouer as 30 dae is, ook outomaties van die lys af uit.</translation>
 <translation id="3763549179847864476">Privaatheidgids se terugknoppie</translation>
@@ -4241,6 +4242,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3987993985790029246">Kopieer skakel</translation>
 <translation id="3988124842897276887">Hierdie oortjie is aan ’n USB-toestel gekoppel</translation>
 <translation id="3988996860813292272">Kies tydsone</translation>
+<translation id="3989635538409502728">Meld af</translation>
 <translation id="3991055816270226534">Bestuur derdepartywebkoekies en nasporingbeskerming</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Wanneer Liggingakkuraatheid aan is, word inligting oor draadlose seine, soos wi-fi-toegangspunte en selnetwerktorings, saam met toestelsensordata, soos versnellingsmeter en giroskoop, gebruik om akkurater toestelligging te skat wat deur Android-apps en -dienste gebruik word om ligginggebaseerde kenmerke te verskaf. Om dit te doen, samel Google van tyd tot tyd inligting in oor toestelsensors en draadlose seine naby hierdie toestel om by te dra tot draadloseseinliggings wat deur skareverkryging gekry word.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google gebruik hierdie inligting wat van hierdie toestel af ingesamel word om: liggingakkuraatheid en ligginggegronde dienste te verbeter; en oor die algemeen Google se dienste te verbeter, te verskaf en te handhaaf. Ons verwerk hierdie inligting op grond van die wettige belange van Google en derde partye om in gebruikers se behoeftes te voorsien. Hierdie inligting word nie gebruik om enige individu te identifiseer nie.<ph name="END_PARAGRAPH2" />
@@ -7430,6 +7432,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6351178441572658285">Apptale</translation>
 <translation id="6354918092619878358">SECG-elliptiesekurwe-secp256r1 (ook bekend as ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Hou toestel aangeskakel</translation>
+<translation id="6356537493253478650">Rustig</translation>
 <translation id="63566973648609420">Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google gestuur of deur Google geberg nie. As jy jou wagfrase vergeet of hierdie instelling wil verander, sal jy <ph name="BEGIN_LINK" />sinkronisering moet terugstel<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Rollees op om die bladsy af te beweeg</translation>
 <translation id="6356893102071098867">Maak seker dat jy die regte rekening gekies het</translation>
@@ -7767,6 +7770,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="661266467055912436">Verbeter sekuriteit vir jou en almal op die web.</translation>
 <translation id="6613267708691765962">Skandeer tans vir wanware …</translation>
 <translation id="6613668613087513143">Daar is te min spasie op dié toestel om hierdie opdatering te voltooi. Maak <ph name="NECESSARY_SPACE" /> beskikbaar op jou toestel en probeer weer van jou Chrome-blaaier af.</translation>
+<translation id="6614172284067813496">Bladsy is by leeslys gevoeg</translation>
 <translation id="6615455863669487791">Wys my</translation>
 <translation id="6618744767048954150">Werk tans</translation>
 <translation id="6619058681307408113">Lyndrukkerdaemoon (LPD)</translation>
@@ -8148,6 +8152,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6876155724392614295">Fiets</translation>
 <translation id="6876469544038980967">Nie nuttig nie</translation>
 <translation id="6878422606530379992">Sensors toegelaat</translation>
+<translation id="6878862640969460273">Landskap</translation>
 <translation id="6880587130513028875">Prente is op hierdie bladsy geblokkeer.</translation>
 <translation id="6881845890692344060">Jou administrateur het afgemeld. Jy is nou in beheer.</translation>
 <translation id="6882210908253838664">As ’n werf nie werk nie, kan jy probeer om dit tydelik toe te laat om derdepartywebkoekies te gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
@@ -8185,6 +8190,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6909422577741440844">Ontvang van hierdie toestel af?</translation>
 <translation id="6910190732484284349">Vee toegangsleutel vir gebruikersnaam uit: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Uitgevee</translation>
+<translation id="6910274140210351823">Donker</translation>
 <translation id="6911734910326569517">Berginggebruik</translation>
 <translation id="6912007319859991306">Sellulêre SIM-PIN</translation>
 <translation id="6912380255120084882">Probeer ’n ander toestel</translation>
@@ -8336,6 +8342,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7014174261166285193">Kon nie installeer nie.</translation>
 <translation id="7014480873681694324">Verwyder kleurmerk</translation>
 <translation id="7014741021609395734">Zoemvlak</translation>
+<translation id="7015135594296285641">Laat uitbreidings toe</translation>
 <translation id="7016995776279438971">Rooi-groen, rooi swak (protanomalie)</translation>
 <translation id="7017004637493394352">Sê weer "Ok Google"</translation>
 <translation id="7017219178341817193">Voeg 'n nuwe bladsy by</translation>
@@ -9685,6 +9692,7 @@ Sleutellêer: <ph name="KEY_FILE" />
 
 Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes van jou uitbreiding te skep.</translation>
 <translation id="8000020256436988724">Nutsbalk</translation>
+<translation id="800117767980299235">Stemhoogtepunte</translation>
 <translation id="8002274832045662704">Gevorderde drukkeropstelling</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> is nie meer beskikbaar nie</translation>
 <translation id="8004092996156083991">Ons sal jou laat weet as jou wagwoorde gekompromitteer is.</translation>
@@ -10767,6 +10775,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="876956356450740926">Laat loop ontwikkelaarnutsdinge, IDE’s en redigeerders. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Uitbreidingwortelgids</translation>
 <translation id="8771300903067484968">Beginbladsy se agtergrond is na die verstekagtergrond toe teruggestel.</translation>
+<translation id="8773535891252326047">Skakel gekopieer om te merk</translation>
 <translation id="8774379074441005279">Bevestig terugstelling</translation>
 <translation id="8774934320277480003">Boonste kantlyn</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>

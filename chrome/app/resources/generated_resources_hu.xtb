@@ -1435,6 +1435,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="199610894463449797">{0,plural, =1{A profil bezárása}other{A profil bezárása (# ablak)}}</translation>
 <translation id="1997433994358798851">A Chrome-nak engedélyre van szüksége ahhoz, hogy Bluetoothon keresztül csatlakozhasson az eszközéhez.</translation>
 <translation id="1997616988432401742">Az Ön tanúsítványai</translation>
+<translation id="1998715278591719161">Nyomon követhetik az Ön kézmozgását</translation>
 <translation id="1999115740519098545">Induláskor</translation>
 <translation id="2002109485265116295">Valós idejű</translation>
 <translation id="2002160221914907025">Kísérleti AI</translation>
@@ -3433,7 +3434,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3439970425423980614">PDF megnyitása előnézetben</translation>
 <translation id="3440663250074896476">További műveletek a(z) <ph name="BOOKMARK_NAME" /> könyvjelzőhöz</translation>
 <translation id="3441653493275994384">Képernyő</translation>
-<translation id="3441663102605358937">Az igazoláshoz jelentkezzen be újra a következő fiókba: <ph name="ACCOUNT" /></translation>
 <translation id="3441824746233675597">Megnehezítheti az internetes forgalmához hozzáférő személyek számára, hogy lássák, milyen webhelyeket keres fel. A(z) <ph name="PRODUCT_NAME" /> biztonságos kapcsolatot használ a webhelyek IP-címének DNS-ben (domainnévrendszerben) való megkereséséhez.</translation>
 <translation id="3442674350323953953">Hardveradatok használatának engedélyezése a Google számára a <ph name="DEVICE_OS" /> fejlesztéséhez. Ha nem engedélyezi, a rendszeri akkor is elküldi az adatokat a Google-nak, hogy meghatározhatók legyenek a megfelelő frissítések, viszont az adatok tárolására vagy egyéb jellegű felhasználására nem kerül sor.</translation>
 <translation id="3443545121847471732">Adjon meg egy 6 számjegyű PIN-kódot</translation>
@@ -3549,6 +3549,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3521606918211282604">Lemezméret módosítása</translation>
 <translation id="3522088408596898827">A lemez nagyon kevés szabad tárhellyel rendelkezik. Szabadítson fel lemezterületet, és próbálja újra.</translation>
 <translation id="3522979239100719575">Folyamatban van a rendelkezésre álló profilok keresése. Ez eltarthat néhány percig.</translation>
+<translation id="3523447078673133727">A webhelyek nem követhetik a kézmozgását</translation>
 <translation id="3524518036046613664">Eszközök (például nyomtatók) felfedezése helyi hálózatán.</translation>
 <translation id="3524965460886318643">Tevékenységek exportálása</translation>
 <translation id="3525426269008462093">Eszközszinkronizálás ellenőrzése a beállítás után</translation>
@@ -4237,6 +4238,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3987993985790029246">Link másolása</translation>
 <translation id="3988124842897276887">Ez a lap USB-eszközhöz csatlakozik</translation>
 <translation id="3988996860813292272">Időzóna kiválasztása</translation>
+<translation id="3989635538409502728">Kijelentkezés</translation>
 <translation id="3991055816270226534">A harmadik féltől származó cookie-k és a követés elleni védelmek kezelése</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Ha a Helymeghatározás pontossága beállítás be van kapcsolva, a Google a vezeték nélküli jelekkel kapcsolatos információkat (például a Wi-Fi hozzáférési pontokat és a mobilhálózat adótornyait), valamint az eszköz szenzoradatait (például a gyorsulásmérő és a giroszkóp adatait) használja arra, hogy pontosabban határozza meg az eszköz helyét, amelyet az androidos alkalmazások és szolgáltatások arra használnak, hogy helyalapú funkciókat biztosítsanak. Ebből a célból a Google rendszeresen gyűjti az eszköz érzékelőitől és a közeli vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A Google az eszközről gyűjtött adatokat arra használja, hogy javítsa a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint általánosan javítsa, biztosítsa és fenntartsa a Google-szolgáltatásokat. Ezeket az információkat a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján dolgozzuk fel. Ezeket az információkat nem használjuk fel személyek azonosítására.<ph name="END_PARAGRAPH2" />
@@ -5926,6 +5928,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="52550593576409946">A kioszkalkalmazást nem sikerült elindítani.</translation>
 <translation id="5255726914791076208">Az azonosítókulcs szerkesztésekor <ph name="RP_ID" />-fiókja nem módosul</translation>
 <translation id="5255859108402770436">Újbóli bejelentkezés</translation>
+<translation id="5256174546894739043">Kérdezzen rá, ha valamelyik webhely követni szeretné a kézmozgását</translation>
 <translation id="52566111838498928">Betűtípusok betöltése...</translation>
 <translation id="5256861893479663409">Az összes webhelyen</translation>
 <translation id="5258992782919386492">Telepítés ezen az eszközön</translation>
@@ -6674,6 +6677,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5801051031414037185">Telefon beállítása</translation>
 <translation id="5801568494490449797">Beállítások</translation>
 <translation id="5803689677801500549">Itt jelennek majd meg a mentett jelszavak. Ha jelszavakat szeretne importálni a <ph name="BRAND" /> szolgáltatásba a(z) <ph name="USER_EMAIL" /> fiók számára, <ph name="BEGIN_LINK" />válassza ki a kívánt CSV-fájlt<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">A webhelyek általában nyomon követik a keze és az ujjai mozgását, hogy még teljesebb élményt biztosíthassanak.</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5804259315582798390">Nem sikerült a helyi adatok helyreállítása</translation>
 <translation id="5805268472388605531">Az ékezetek és a speciális karakterek megjelenítéséhez tartsa lenyomva a billentyűket</translation>
@@ -7761,6 +7765,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="661266467055912436">Javítja az Ön és mindenki más biztonságát az interneten.</translation>
 <translation id="6613267708691765962">Rosszindulatú programok keresése…</translation>
 <translation id="6613668613087513143">Nincs elég tárhely ezen az eszközön a frissítés végrehajtásához. Szabadítson fel legalább <ph name="NECESSARY_SPACE" /> tárhelyet eszközén, majd próbálkozzon újra a Chrome böngészőben.</translation>
+<translation id="6614172284067813496">Oldal felvéve olvasólistára</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
 <translation id="6618744767048954150">Ellenőrzés folyamatban</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7774,6 +7779,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6622980291894852883">Képek letiltásának fenntartása</translation>
 <translation id="6624036901798307345">Táblagép módban kattintson az eszköztár lapszámláló gombjára: ekkor az egyes lapok indexképeit megjelenítő új lapsor nyílik meg.</translation>
 <translation id="6624687053722465643">Édesség</translation>
+<translation id="6627743754845412571">Nem követhetik nyomon az Ön kézmozgását</translation>
 <translation id="6628316682330029452">A klienstanúsítványok olyan tanúsítványok, amelyek más szerverek számára azonosítják Önt.</translation>
 <translation id="6628328486509726751">Feltöltve ekkor: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Nagyobb biztonság</translation>
@@ -8141,6 +8147,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6876155724392614295">Kerékpár</translation>
 <translation id="6876469544038980967">Nem hasznos</translation>
 <translation id="6878422606530379992">Érzékelők engedélyezve</translation>
+<translation id="6878862640969460273">Fekvő</translation>
 <translation id="6880587130513028875">A képek le vannak tiltva ezen az oldalon.</translation>
 <translation id="6881845890692344060">Az adminisztrátor kijelentkezett. Most már az Ön kezében van az irányítás.</translation>
 <translation id="6882210908253838664">Ha egy webhely nem működik, ideiglenesen engedélyt adhat neki a harmadik féltől származó cookie-k használatára. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
@@ -9678,6 +9685,7 @@ Kulcsfájl: <ph name="KEY_FILE" />
 
 A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új verziókat készítsen bővítményéből.</translation>
 <translation id="8000020256436988724">Eszköztár</translation>
+<translation id="800117767980299235">Hangjegyzet</translation>
 <translation id="8002274832045662704">Speciális nyomtatókonfiguráció</translation>
 <translation id="8002670234429879764">A nyomtató (<ph name="PRINTER_NAME" />) már nem áll rendelkezésre</translation>
 <translation id="8004092996156083991">Ha jelszavaihoz illetéktelenül hozzáférnek, értesítjük Önt</translation>
@@ -10761,6 +10769,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="876956356450740926">Fejlesztői eszközök, IDE-k és szerkesztők futtatása. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">A bővítmény gyökérkönyvtára</translation>
 <translation id="8771300903067484968">A kezdőoldal háttere vissza lett állítva az alapértelmezett háttérre.</translation>
+<translation id="8773535891252326047">Link a kiemelésbe másolva</translation>
 <translation id="8774379074441005279">Visszaállítás megerősítése</translation>
 <translation id="8774934320277480003">Felső margó</translation>
 <translation id="8775144690796719618">Érvénytelen URL</translation>

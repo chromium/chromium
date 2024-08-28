@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Aktiv ediləndə saytlar kameradan istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar kameradan istifadə edə bilməz.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome sabah kukiləri yenidən bloklayacaq}other{Chrome # gün sonra kukiləri yenidən bloklayacaq}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> domenindəki saytlar</translation>
+<translation id="3523447078673133727">Saytlara əllərinizi izləmək icazəsi verməyin</translation>
 <translation id="3536227077203206203">Bu dəfə üçün icazə verilib</translation>
 <translation id="3538390592868664640">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə qarşı blok qoyun</translation>
 <translation id="3544058026430919413">Şirkət qrupda fəaliyyətinizi paylaşmaq üçün kukilərdən istifadə edə biləcək saytlar qrupu təyin edə bilər. Bu, Anonim rejimdə deaktivdir.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">Aktiv ediləndə saytlar JavaScript istifadə edə bilər. Deaktiv ediləndə saytlar JavaScript istifadə edə bilməz.</translation>
 <translation id="5099358668261120049">Əsas ekranda <ph name="ORIGIN" /> və ya onun tətbiqi tərəfindən saxlanan data və kukilər silinəcək.</translation>
 <translation id="5100237604440890931">Yığcamlaşdırıldı - genişləndirmək üçün klikləyin.</translation>
+<translation id="5116239826668864748">İstənilən vaxt mesaj, sənəd və digər tətbiqlərdə keçidlərə toxunduqda Chrome istifadə edə bilərsiniz</translation>
 <translation id="5123685120097942451">Anonim tab</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Açıq tablarda qiymət düşməsi}other{Açıq tablarda qiymət düşməsi}}</translation>
 <translation id="5186036860380548585">Seçim ekranın yuxarısına yaxın yerdə əlçatandır</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Bu sayt fəaliyyətinizi görə bilən qrupdadır. Qrup <ph name="RWS_OWNER" /> tərəfindən təyin edilib</translation>
 <translation id="6689172468748959065">Profil fotoları</translation>
 <translation id="6697925417670533197">Aktiv endirmələr</translation>
+<translation id="6709432001666529933">Saytlara əllərinizi izləməyə icazə verməzdən əvvəl soruşulsun (tövsiyə olunur)</translation>
 <translation id="6722828510648505498">Kimlik xidmətlərindən daxil olma sorğularını bloklayın.</translation>
 <translation id="6746124502594467657">Aşağı köçürün</translation>
 <translation id="6749077623962119521">İcazələr sıfırlansın?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> üçün seçim edin</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6818926723028410516">Element seçin</translation>
+<translation id="6838525730752203626">Defolt olaraq Chrome istifadə edin</translation>
 <translation id="6840760312327750441">Panelləri qruplaşdırmaq üçün panelə toxunub saxlayın. Daha sonra digər panelin üzərinə çəkin.</translation>
 <translation id="6864395892908308021">Bu cihazda NFC dəstəklənmir</translation>
 <translation id="6870169401250095575">Təhlükəsizlik yoxlanışı kartını gizlədin</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7667547420449112975">Ozlu Heyrətamiz Sehrbaz</translation>
 <translation id="7684642910516280563">Sayta üçüncü tərəf kukilərindən istifadə etməyə icazə verməyin</translation>
+<translation id="7688240020069572972">Chrome məsləhətlər kartını gizlədin</translation>
 <translation id="7719367874908701697">Səhifə yaxınlaşdırması</translation>
 <translation id="7759147511335618829">MIDI cihaz idarəetməsi/təkrar proqramlaşdırma</translation>
 <translation id="7781829728241885113">Dünən</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Yuxarı köçürün</translation>
 <translation id="8617611086246832542">Aktiv ediləndə veb-saytların masaüstü görünüşü göstərilir. Deaktiv ediləndə veb saytların mobil görünüşü göstərilir.</translation>
 <translation id="8649036394979866943">Chrome əksər saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini məhdudlaşdırır. Ayarlara daxil olaraq <ph name="BEGIN_LINK" />izləmədən qorumanı idarə edin<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Yanılı olduqda saytlar əllərinizi izləmək istəyə bilər. Sönülü olduqda saytlar əllərinizi izləyə bilməz.</translation>
 <translation id="8676374126336081632">Daxiletməni silin</translation>
 <translation id="8681886425883659911">İntruziv və ya aldadıcı reklamlar göstərdiyi məlum olan saytlarda reklamlar bloklanır</translation>
 <translation id="868929229000858085">Kontaktlarda axtarın</translation>

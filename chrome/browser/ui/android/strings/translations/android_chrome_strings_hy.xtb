@@ -1018,6 +1018,7 @@
 <translation id="587735546353481577">Կայքին հետևելու համար անցեք այդ կայք, բացեք Chrome-ի ընտրացանկն ու հպեք «Հետևել»։</translation>
 <translation id="5879072387416556377">Ստացեք ավելի լավ առաջարկներ</translation>
 <translation id="5885378508678660271">Ծանուցումներ <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ այս կայքը վտանգավոր է</translation>
+<translation id="5895834791314695851">Գաղտնաբառերը շուտով հնարավոր է, որ այլևս չաշխատեն այս սարքում։ Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերն օգտագործելու համար։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">«Հասանելի մուտքի բանալիներ չկան» թերթը փակվեց</translation>
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5919204609460789179">Թարմացրեք <ph name="PRODUCT_NAME" />-ը՝ համաժամացումը սկսելու համար</translation>
@@ -1557,6 +1558,7 @@
 <translation id="820568752112382238">Հաճախ այցելած կայքեր</translation>
 <translation id="8209050860603202033">Բացել պատկերը</translation>
 <translation id="8210770465353466621">Ձեր ներդիրները կգտնեք այստեղ</translation>
+<translation id="8211101263765532799">Որոշ գաղտնաբառեր շուտով այլևս չեն աշխատի</translation>
 <translation id="8215740705341534369">Կողային էկրան</translation>
 <translation id="8218622182176210845">Կառավարեք ձեր հաշիվը</translation>
 <translation id="8221401890884589479">Դուք կարող եք արգելափակել անցանկալի կայքերը։ Chrome-ը նաև ցանկից ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 30 օր առաջ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -1657,6 +1659,7 @@
 <translation id="864544049772947936">Կառավարել պատուհանները (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Կարգավորեք Chrome-ն ըստ ձեր ճաշակի</translation>
 <translation id="8664979001105139458">Այս անունով ֆայլ արդեն գոյություն ունի</translation>
+<translation id="8672883760227492369">Այս սարքում պահված որոշ գաղտնաբառեր շուտով այլևս չեն աշխատի։ Դուք կարող եք տեղափոխել այս գաղտնաբառերը Google գաղտնաբառերի կառավարիչ։</translation>
 <translation id="8676276370198826499">Գրանցվեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքում <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
 <translation id="8676789164135894283">Ծանուցումներ մուտքի մասին</translation>
 <translation id="8683039184091909753">պատկեր</translation>

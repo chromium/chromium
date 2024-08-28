@@ -1437,6 +1437,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="199610894463449797">{0,plural, =1{Luk denne profil}one{Luk denne profil (# vindue)}other{Luk denne profil (# vinduer)}}</translation>
 <translation id="1997433994358798851">Chrome skal have tilladelse til at bruge Bluetooth for at oprette forbindelse til din enhed</translation>
 <translation id="1997616988432401742">Dine certifikater</translation>
+<translation id="1998715278591719161">Har tilladelse til at registrere dine hænder</translation>
 <translation id="1999115740519098545">Ved opstart</translation>
 <translation id="2002109485265116295">Realtid</translation>
 <translation id="2002160221914907025">Eksperimentel AI</translation>
@@ -3435,7 +3436,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3439970425423980614">Åbner PDF i fremviseren</translation>
 <translation id="3440663250074896476">Flere handlinger for <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Skærm</translation>
-<translation id="3441663102605358937">Log ind på <ph name="ACCOUNT" /> igen for at verificere denne konto</translation>
 <translation id="3441824746233675597">Gør det sværere for personer med adgang til din internettrafik at se, hvilke websites du besøger. <ph name="PRODUCT_NAME" /> anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
 <translation id="3442674350323953953">Giv Google tilladelse til at bruge dine hardwaredata til at hjælpe med at forbedre <ph name="DEVICE_OS" />. Hvis du afviser, bliver disse data stadig sendt til Google med henblik på at levere de rigtige opdateringer, men de bliver ikke gemt eller brugt udover det.</translation>
 <translation id="3443545121847471732">Angiv en 6-cifret pinkode</translation>
@@ -3551,6 +3551,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3521606918211282604">Skift diskstørrelse</translation>
 <translation id="3522088408596898827">Der er næsten ikke mere diskplads. Frigør diskplads, og prøv igen.</translation>
 <translation id="3522979239100719575">Søger efter tilgængelige profiler. Dette kan tage et par minutter.</translation>
+<translation id="3523447078673133727">Tillad ikke, at websites registrerer dine hænder</translation>
 <translation id="3524518036046613664">Find enheder på dit lokale netværk, f.eks. printere</translation>
 <translation id="3524965460886318643">Eksportér aktiviteter</translation>
 <translation id="3525426269008462093">Gennemgå enhedssynkronisering efter konfiguration</translation>
@@ -4240,6 +4241,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
 <translation id="3988124842897276887">Denne fane er tilsluttet en USB-enhed</translation>
 <translation id="3988996860813292272">Vælg tidszone</translation>
+<translation id="3989635538409502728">Log ud</translation>
 <translation id="3991055816270226534">Administrer tredjepartscookies og sporingsbeskyttelse</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Når Lokationsnøjagtighed er aktiveret, bruges oplysninger om trådløse signaler såsom Wi-Fi-adgangspunkter og mobilnetværksmaster samt enhedssensordata såsom accelerometer og gyroskop til at anslå enhedslokationen på en mere nøjagtig måde, hvilket hjælper Android-apps og -tjenester med at levere lokationsbaserede funktioner. Google muliggør dette ved jævnligt at indsamle oplysninger om enhedssensorer og trådløse signaler i nærheden af denne enhed for at bidrage til lokationer med trådløse signaler, der er crowdsourcet.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google anvender oplysningerne, der er indsamlet fra denne enhed, med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester generelt. Vi behandler disse oplysninger baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov. Disse oplysninger anvendes ikke til at identificere brugere.<ph name="END_PARAGRAPH2" />
@@ -5929,6 +5931,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="52550593576409946">Terminalapplikationen kunne ikke startes.</translation>
 <translation id="5255726914791076208">Din <ph name="RP_ID" />-konto ændres ikke, når du redigerer din adgangsnøgle</translation>
 <translation id="5255859108402770436">Log ind igen</translation>
+<translation id="5256174546894739043">Spørg, når et website vil registrere dine hænder</translation>
 <translation id="52566111838498928">Indlæser skrifttyper...</translation>
 <translation id="5256861893479663409">På alle websites</translation>
 <translation id="5258992782919386492">Installer på denne enhed</translation>
@@ -6676,6 +6679,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5801051031414037185">Konfigurer telefon</translation>
 <translation id="5801568494490449797">Præferencer</translation>
 <translation id="5803689677801500549">Dine gemte adgangskoder vises her. <ph name="BEGIN_LINK" />Vælg en CSV-fil<ph name="END_LINK" /> for at importere adgangskoder til <ph name="BRAND" /> for <ph name="USER_EMAIL" />.</translation>
+<translation id="5804198298544152115">Websites registrerer normalt dine hænder og fingre for at forbedre brugeroplevelsen</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5804259315582798390">Gendannelse af lokale data kunne ikke aktiveres</translation>
 <translation id="5805268472388605531">Hold tastaturtasterne nede for at se accenttegn og specialtegn</translation>
@@ -7765,6 +7769,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
 <translation id="6613267708691765962">Søger efter malware…</translation>
 <translation id="6613668613087513143">Der er ikke nok plads på denne enhed til at fuldføre denne opdatering. Frigør <ph name="NECESSARY_SPACE" /> på din enhed, og prøv igen via din Chrome-browser.</translation>
+<translation id="6614172284067813496">Siden blev føjet til læselisten</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7778,6 +7783,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6622980291894852883">Fortsæt blokering af billeder</translation>
 <translation id="6624036901798307345">I tablettilstand skal du trykke på knappen til faneoptælling på værktøjslinjen for at åbne den nye fanelinje, der viser miniaturebilleder af hver fane.</translation>
 <translation id="6624687053722465643">Sukkersød</translation>
+<translation id="6627743754845412571">Har ikke tilladelse til at registrere dine hænder</translation>
 <translation id="6628316682330029452">Klientcertifikater er certifikater, der identificerer dig over for andre servere.</translation>
 <translation id="6628328486509726751">Uploadet <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Større sikkerhed</translation>
@@ -10768,6 +10774,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="876956356450740926">Kør udviklerværktøjer, IDE'er og redigeringsværktøjer. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Udvidelsens rodmappe</translation>
 <translation id="8771300903067484968">Baggrunden for startsiden er nulstillet til standardbaggrunden.</translation>
+<translation id="8773535891252326047">Linket er kopieret til fremhævning</translation>
 <translation id="8774379074441005279">Bekræft gendannelse</translation>
 <translation id="8774934320277480003">Topmargen</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>

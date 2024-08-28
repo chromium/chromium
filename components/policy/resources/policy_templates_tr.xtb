@@ -3246,6 +3246,7 @@ Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açı
 <translation id="3417418267404583991">Bu politika true olarak ayarlanırsa veya hiçbir şekilde ayarlanmazsa, <ph name="PRODUCT_OS_NAME" /> misafir modunda giriş yapılmasına izin verir. misafir girişleri adsız kullanıcı oturumlarıdır ve şifre gerektirmez.
 
       Bu politika false değerine ayarlanırsa, <ph name="PRODUCT_OS_NAME" /> misafir oturumlarının başlamasına izin vermez.</translation>
+<translation id="3419726087743433857">Yapay zeka modellerini iyileştirmeden üretken yapay zeka özelliklerine izin ver</translation>
 <translation id="3423703250826790403">Android uygulamaları</translation>
 <translation id="3426434797050451264">Bu politika, Android uygulamalarını varsayılan dosya işleyicileri olarak belirtmek için de kullanılabilir.</translation>
 <translation id="3428247105888806363">Ağ tahminini etkinleştir</translation>
@@ -3741,6 +3742,7 @@ zorunlu kılınmaz ve istekler engellenmez.
 <translation id="377044054160169374">Kötüye Kullanım Deneyimi Müdahele Yaptırımı</translation>
 <translation id="3778689139323007309">Yerel olarak yüklü CA sertifikaları tarafından imzalanmış başarıyla doğrulanmış sunucu sertifikaları için iptal kontrolleri gerçekleştir</translation>
 <translation id="3780152581321609624">Kerberos SPN'sine standart dışı bağlantı noktasını dahil et</translation>
+<translation id="3785423718413114598">GenAI özelliklerine izin verme</translation>
 <translation id="3788662722837364290">Kullanıcının işlem yapmadığı zaman için güç yönetimi ayarları</translation>
 <translation id="3788876528643861853">Microsoft® bulut kimlik doğrulamasını devre dışı bırak</translation>
 <translation id="3790085888761753785">Bu ayar etkinleştirilirse, kullanıcılar Smart Lock kullanarak hesaplarında oturum açabilirler. Bu, kullanıcıların yalnızca ekranlarının kilidini açmalarına izin veren normal Smart Lock davranışından daha serbest bir ayardır.
@@ -5499,6 +5501,17 @@ Bu politikayı etkinleştirirseniz veya yapılandırmazsanız QR kodu oluşturma
 
 Bu politikayı devre dışı bırakırsanız QR kodu oluşturma aracı özelliği devre dışı bırakılır.</translation>
 <translation id="5170018694841697392">Google Arama'da Güvenli Arama kullanımını zorlama</translation>
+<translation id="5172783335366295717">Bu politika, kapsanan tüm üretken yapay zeka özellikleri için varsayılan ayarı tanımlar. Örneğin, bu politika 1 değeri ayarlanırsa, kapsam dahilindeki tüm üretken yapay zeka özelliklerinin varsayılan ayarı 1 olacaktır. Manuel olarak ayarlanmış herhangi bir politika değeri etkilenmez. Kapsam dahilindeki özellikler için https://support.google.com/chrome/a?p=generative_ai_settings adresini ziyaret edin.
+
+0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Bu bilgiler, gerçek kişiler tarafından da yapay zeka modellerini iyileştirmek için incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliğin kullanılmasına izin verir ancak Google'ın kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+2 = Özelliği devre dışı bırakın.
+
+Kapsanan bir özellik eşdeğer politika değerine sahip değilse en yakın üst değer kullanılır. Bu özelliğin, bu politikadaki değerlerle nasıl etkileşime girdiği hakkında daha fazla bilgi için lütfen ilgili özelliğin belgelerini inceleyin.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="5172841243186654432"><ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> politikası, önceki oturumlardan URL'lerin geri yükleneceği şekilde ayarlanmamışsa, <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ayarı bir oturum için çerezlere izin veren ve vermeyen siteleri belirten URL kalıpları için liste yapmanıza olanak tanır.
 
       Politika ayarlanmadan bırakılırsa tüm siteler için <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (etkinse) kullanılır. Aksi takdirde kullanıcının kişisel ayarları geçerlidir. Belirtilen kalıplarda yer almayan URL'ler için de varsayılan ayarlar geçerlidir.
@@ -7407,6 +7420,7 @@ Politika ayarlanmadan bırakılırsa ya da boş bir URL listesi sağlanırsa tü
 <translation id="6506486086262398387">Politika Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> için Ağ Üzerinde Dosya Paylaşımı özelliği, gerektiğinde SMB paylaşımlarında NTLM ile kimlik doğrulama kullanır. Politika, Devre Dışı değerine ayarlanırsa SMB paylaşımlarında NTLM ile kimlik doğrulama devre dışı bırakılır.
 
       Politika ayarlanmadan bırakılırsa paylaşım keşfi, varsayılan olarak yönetilen kullanıcılar için devre dışı bırakılır, diğer kullanıcılar için etkinleştirilir.</translation>
+<translation id="6508403116553969858"><ph name="PRODUCT_NAME" /> kapsamı dahilindeki üretken yapay zeka özellikleri için varsayılan politika değerini ayarlayın</translation>
 <translation id="6508882314969525299">Kiosk Vision'ın telemetri raporlamasını devre dışı bırak.</translation>
 <translation id="6509376413448002446">Kilit ekranındaki kullanıcı ekran koruyucusunu yapılandırır.
 
@@ -9959,6 +9973,7 @@ Bu politika, belirli URL'lerdeki verilerin panoya kopyalanmasını engeller.
 Kaynakları eşleşen kalıplar, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır.
 
 <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />, kalıp kontrolünü tetikleyen bayt cinsinden minimum veri miktarını gösterir. Bu da kopyalanan verilerin boyutunun bu alanda belirtilen değerden küçük olması halinde, engellenen bir URL'den panoya yazmaya izin verileceği anlamına gelir. Alan ayarlanmadan bırakılırsa varsayılan değer 100 bayttır.</translation>
+<translation id="8471860377920321311">Üretken yapay zeka özelliklerine izin ver ve yapay zeka modellerini iyileştir</translation>
 <translation id="8473107305327396242">Kullanıcılar tarafından eklenen TLS sunucusu sertifikalarını platformun güvenilir sertifika depolarından içe aktar</translation>
 <translation id="8473841363404590708">Yerel dosyaları Microsoft OneDrive'a taşı ve yerel klasörleri gizle</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

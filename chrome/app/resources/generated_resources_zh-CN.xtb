@@ -3412,7 +3412,6 @@
 <translation id="3439970425423980614">准备使用预览程序打开 PDF</translation>
 <translation id="3440663250074896476">显示可对“<ph name="BOOKMARK_NAME" />”执行的更多操作</translation>
 <translation id="3441653493275994384">屏幕</translation>
-<translation id="3441663102605358937">请重新登录 <ph name="ACCOUNT" /> 以验证此账号</translation>
 <translation id="3441824746233675597">让对您的互联网流量有访问权限的用户更难看到您访问的网站。<ph name="PRODUCT_NAME" /> 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
 <translation id="3442674350323953953">允许 Google 使用您的硬件数据协助改进 <ph name="DEVICE_OS" />。如果您拒绝，系统仍会将这些数据发送给 Google 以确定适当的更新，但不会存储或以其他方式使用这些数据。</translation>
 <translation id="3443545121847471732">请输入由 6 位数组成的 PIN 码</translation>
@@ -4217,6 +4216,7 @@
 <translation id="3987993985790029246">复制链接</translation>
 <translation id="3988124842897276887">此标签页已连接到 USB 设备</translation>
 <translation id="3988996860813292272">选择时区</translation>
+<translation id="3989635538409502728">退出</translation>
 <translation id="3991055816270226534">管理第三方 Cookie 和跟踪保护</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”设置处于开启状态时，系统将使用无线信号（例如 Wi-Fi 接入点、移动网络信号塔）的相关信息以及设备传感器数据（例如加速度计和陀螺仪）来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集此设备附近的设备传感器和无线信号的相关信息，然后汇总根据无线信号识别的位置信息。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google 会将从此设备收集的这些信息用于以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益来处理这些信息，以满足用户的需求。这些信息不会用于识别任何个人的身份。<ph name="END_PARAGRAPH2" />
@@ -4392,6 +4392,7 @@
         您可以从卡片菜单中管理设置，或者在“自定义 Chrome”中查看更多选项。</translation>
 <translation id="4115002065223188701">检测不到网络</translation>
 <translation id="4115378294792113321">洋红色</translation>
+<translation id="4116480382905329353">检测到 1 次</translation>
 <translation id="4116704186509653070">重新打开</translation>
 <translation id="4117714603282104018">触控板触感反馈</translation>
 <translation id="4118579674665737931">请重新启动此设备，然后重试。</translation>
@@ -4795,6 +4796,7 @@
 <translation id="4426508677408162512">所有书签</translation>
 <translation id="4426513927906544654">获取内容推荐</translation>
 <translation id="4426857487270413362">无法下载安装程序文件。请检查您的互联网连接，确保您有足够的可用磁盘空间，然后重试。错误代码为 <ph name="ERROR" />。</translation>
+<translation id="4427111270137140798">检测到 <ph name="COUNT" /> 次</translation>
 <translation id="4427365070557649936">正在验证确认码…</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
 <translation id="4430019312045809116">音量</translation>
@@ -7855,6 +7857,7 @@
 <translation id="6701535245008341853">无法获取个人资料。</translation>
 <translation id="6702639462873609204">修改(&amp;E)...</translation>
 <translation id="6702859741546259407">若要使用“<ph name="FEATURE_NAME" />”功能，请开启蓝牙和 Wi-Fi</translation>
+<translation id="6703109186846420472">、</translation>
 <translation id="6703212423117969852">您可以稍后在 Chrome 中重试。</translation>
 <translation id="6703254819490889819">恢复备份</translation>
 <translation id="6703613667804166784">此文件可能会危害您的个人和社交网络账号，包括 <ph name="USER_EMAIL" /></translation>
@@ -8119,6 +8122,7 @@
 <translation id="6876155724392614295">自行车</translation>
 <translation id="6876469544038980967">没用</translation>
 <translation id="6878422606530379992">已获准使用传感器</translation>
+<translation id="6878862640969460273">横向</translation>
 <translation id="6880587130513028875">已拦截此网页上的图片。</translation>
 <translation id="6881845890692344060">您的管理员已退出账号。现在一切由您掌控。</translation>
 <translation id="6882210908253838664">如果某个网站无法正常运行，您可尝试向其授予对第三方 Cookie 的临时使用权限。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -8214,6 +8218,7 @@
 <translation id="6960648667961844909">无法下载<ph name="LANGUAGE" />语音识别结果文件。系统会于晚些时候再次尝试下载。系统会将语音发送给 Google 以供处理，直到下载完毕。</translation>
 <translation id="696103774840402661">这部 <ph name="DEVICE_TYPE" /> 上所有用户的全部文件和本地数据都已被永久删除。</translation>
 <translation id="6961327401577924850">网站通常会寻找蓝牙设备以实现某些功能（例如设置或同步低功耗信标、健康/健身智能手环或智能灯泡）</translation>
+<translation id="6963772203726867701">未检测到</translation>
 <translation id="6963872466817251924">文本光标突出显示工具</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">从组中移除</translation>
@@ -8612,6 +8617,7 @@
 <translation id="7258192266780953209">转换</translation>
 <translation id="7258225044283673131">此应用无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7260186537988033909">自助服务终端和数字标牌设备注册已完成</translation>
+<translation id="7260206782629605806">如果您降低阈值，就可以做出轻微的动作。如果您提高阈值，可能需要做出更夸张的动作。</translation>
 <translation id="7261217796641151584">分享分组</translation>
 <translation id="7261612856573623172">系统默认文字转语音声音</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
@@ -9657,6 +9663,7 @@
 
 请妥善保存您的密钥文件。您还需要使用该文件创建新版扩展程序。</translation>
 <translation id="8000020256436988724">工具栏</translation>
+<translation id="800117767980299235">语音突出显示</translation>
 <translation id="8002274832045662704">高级打印机配置</translation>
 <translation id="8002670234429879764">“<ph name="PRINTER_NAME" />”已断开连接</translation>
 <translation id="8004092996156083991">如果您的密码已泄露，我们会通知您。</translation>

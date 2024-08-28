@@ -462,7 +462,6 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC kartın arxa hissəsindədir. Bu, imza xanasının yuxarı sağ tərəfindəki son 3 rəqəmdir.</translation>
 <translation id="1810391395243432441">Parolları ekran kilidinizlə qoruyun</translation>
-<translation id="1810597570737826742">{count,plural, =1{{count} plyus ünvandan {position}}other{{count} plyus ünvandan {position}}}</translation>
 <translation id="1812527064848182527">peyzaj</translation>
 <translation id="1812975699435941848">Səhiyyə təhsili və tibbi təlim</translation>
 <translation id="1816436748874040213">Paylaşılan tabları sürüşdürüb zumlamaq istəyə bilər</translation>
@@ -1289,6 +1288,7 @@
 <translation id="3402261774528610252">Bu saytı yükləmək üçün istifadə edilən bağlantı köhnələn və gələcəkdə söndürüləcək TLS 1.0 və ya TLS 1.1 versiyasından istifadə etdi. Söndürüldükdən sonra istifadəçilərin bu saytı yükləməsinin qarşısı alınacaq. Server TLS 1.2 və ya daha sonrakı versiyanı aktivləşdirməlidir.</translation>
 <translation id="3405664148539009465">Şriftləri fərdiləşdirin</translation>
 <translation id="3407789382767355356">üçüncü tərəfin girişi</translation>
+<translation id="340924996148642843">Müqayisə hazırda əlçatan deyil</translation>
 <translation id="3409896703495473338">Təhlükəsizlik ayarlarını idarə edin</translation>
 <translation id="3414275587143250384">Paylanmış və Bulud Hesablaması</translation>
 <translation id="3414952576877147120">Ölçü:</translation>
@@ -1444,6 +1444,7 @@
 <translation id="365641980390710834">Gündəlik geyim</translation>
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3659521826520353662">Administratorun müəyyən etdiyi hansı veb-saytlara nə zaman daxil olunur: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Bu məhsulu satan digər mağazalarda digər alış seçimlərini axtarın.</translation>
 <translation id="3664782872746246217">Açar sözlər:</translation>
 <translation id="3665100783276035932">Əksər saytlar düzgün işləməlidir</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Ətraflı məlumat<ph name="LINK_END1" /></translation>
@@ -1881,6 +1882,7 @@
 <translation id="4451135742916150903">Saytlar HID cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="4451684391620232683">İstifadəçiyə təqdim olunan mətn:</translation>
 <translation id="4452328064229197696">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Hesablarınızı qorumaq üçün Google Parol Meneceri yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
+<translation id="4452957520362597816">Veb-tətbiqlər quraşdırmaq üçün soruşun</translation>
 <translation id="4456937135469235202">Macəra səyahəti</translation>
 <translation id="4464826014807964867">Təşkilatınızın məlumatları olan veb saytlar</translation>
 <translation id="4466576951214254884">Tələbə Kreditləri və Kollec Maliyyələşdirməsi</translation>
@@ -2814,6 +2816,7 @@
 <translation id="6240964651812394252">Əməliyyat sisteminiz ilə Google Parol menecerindən istifadə üçün Chrome-u yenidən başladın və kompüterin parol menecerinə giriş imkanı verin. Yenidən başlatmadan sonra tablar təkrar açılacaq.</translation>
 <translation id="6241121617266208201">Təklifləri gizlədin</translation>
 <translation id="624499991300733384">Çap məhsullarının tərtibi xidməti</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> gün əvvəl</translation>
 <translation id="6246868321321344665">Təşkilat həm iş, həm də şəxsi profillərdə parollar və tarixçə kimi baxış datasını görə bilər</translation>
 <translation id="6250932670816326647">Hamam və Bədən Məhsulları</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faylın köçürülməsi bloklandı}other{<ph name="FILE_COUNT" /> faylın köçürülməsi bloklandı}}</translation>
@@ -2987,6 +2990,7 @@
 <translation id="6529602333819889595">Silinməni yenidən edin</translation>
 <translation id="6535617236508021606">Google xidmətlərində istifadə edə bilməyiniz üçün bu kart Google Hesabında yadda saxlanılır.</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> cihazından Keçid nöqtəsi abunəsini sildikdə əlaqədar şəbəkələr silinəcək. Abunə planına dəyişikliklər etmək üçün "<ph name="FRIENDLY_NAME" />" ilə əlaqə saxlayın. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Müqayisə cədvəllərinə baxmaq üçün sinxronlaşdırmanı yandırın</translation>
 <translation id="6539092367496845964">Xəta baş verdi. Sonra cəhd edin.</translation>
 <translation id="6540488083026747005">Bu saytda üçüncü tərəf kukilərinə icazə verdiniz</translation>
 <translation id="6545864417968258051">Bluetooth axtarışı</translation>
@@ -3401,6 +3405,7 @@
 <translation id="7346081071264046066">"bu toy dəvətinə həyəcanla "hə" cavabı verin"</translation>
 <translation id="7352651011704765696">Xəta oldu</translation>
 <translation id="7353601530677266744">Əmr sahəsi</translation>
+<translation id="7356678400607112844">Son dəfə daxil olunub</translation>
 <translation id="7359588939039777303">Reklamlar blok edildi.</translation>
 <translation id="7360451453306104998">Google əlçatan endirimləri tapdıqda, onlar ödəniş zamanı göstəriləcək</translation>
 <translation id="7363096869660964304">Siz görünməz olmursunuz. Anonim rejim brauzeri şirkətinizdən, internet xidməti provayderi və ya daxil olduğunuz veb saytdan gizlətmir.</translation>

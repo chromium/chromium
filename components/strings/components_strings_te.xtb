@@ -423,6 +423,7 @@
 <translation id="1739422091279046802">స్క్రోల్ చేయడం, జూమ్ చేయడం</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode అనేది, <ph name="SECURE_DNS_MODE_SECURE" />గా సెట్ చేసి ఉన్నప్పుడు ఖచ్చితంగా పేర్కొనాలి, చెల్లుబాటు అయ్యే స్ట్రింగ్ అయి ఉండాలి.</translation>
 <translation id="1743393865165844832">పరుపులు &amp; దుప్పట్లు, దిండు గలేబాలు</translation>
+<translation id="1743892871127720056">కంపార్ టేబుల్ టైటిల్, ఎడిట్ టెక్స్ట్</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />మేము ఈ డేటాను ఎలా ఉపయోగిస్తాము:<ph name="END_BOLD" /> మీరు బ్రౌజ్ చేస్తున్నప్పుడు మీకు ఆసక్తి ఉన్న టాపిక్‌లను Chrome నోట్ చేస్తుంది. టాపిక్ లేబుల్స్ ముందే నిర్వచించబడి ఉంటాయి, ఉదాహరణకు కళలు &amp; వినోదం, షాపింగ్, స్పోర్ట్స్ మొదలైనవి. ఆ తర్వాత, మీకు కనిపించే యాడ్‌లను వ్యక్తిగతీకరించడానికి, మీరు తెరిచిన ఏదైనా సైట్ మీ టాపిక్‌లలో కొన్నింటిని (మీ బ్రౌజింగ్ హిస్టరీ కాదు) అందించాల్సిందిగా Chromeను అడగవచ్చు.</translation>
 <translation id="1746113442205726301">చిత్రాన్ని Y అక్షంలో జరపు</translation>
 <translation id="1746531169546376413">0 డిగ్రీలు</translation>
@@ -457,7 +458,6 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">మీ CVC అన్నది మీ కార్డ్ వెనుక భాగాన ఉంటుంది. ఇది సంతకం పెట్టె ఎగువ కుడివైపు ఉండే చివరి 3 అంకెలు.</translation>
 <translation id="1810391395243432441">మీ స్క్రీన్ లాక్‌తో పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
-<translation id="1810597570737826742">{count,plural, =1{{count} ప్లస్ అడ్రస్‌లో {position}‌వది}other{{count} ప్లస్ అడ్రస్‌లలో {position}‌వది}}</translation>
 <translation id="1812527064848182527">ల్యాండ్‌స్కేప్‌లో ఉంది</translation>
 <translation id="1812975699435941848">ఆరోగ్య విద్య &amp; వైద్యపరమైన శిక్షణ</translation>
 <translation id="1816436748874040213">షేర్ చేసిన ట్యాబ్‌లను స్క్రోల్ చేయడానికి, జూమ్ చేయడానికి అనుమతి అడగవచ్చు</translation>
@@ -1256,6 +1256,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 సెకన్లు రీప్లే చేయండి</translation>
 <translation id="3352881017886802007">క్రీడా గేమ్‌లు</translation>
+<translation id="3354508510846323339"><ph name="MAX_CITATIONS" />‌లో <ph name="CURRENT_CITATION" />‌వ సైటేషన్, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">ప్రాక్సీ సెట్టింగ్‌లను మార్చు...</translation>
 <translation id="335809815767823">ఎగుమతి చేయబడింది</translation>
 <translation id="3359387651158939842">మీరు Google Payతో ఉపయోగించడానికి మీ కార్డ్‌ను సేవ్ చేసినప్పుడు భవిష్యత్తులో కొనుగోళ్లు చేయడం కోసం ఆటోఫిల్ చేయండి</translation>
@@ -1402,6 +1403,7 @@
 <translation id="3586931643579894722">వివరాలను దాచిపెట్టు</translation>
 <translation id="3587725436724465984">మీ సంస్థ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ను పాలసీని ఉల్లంఘించే అవకాశం వున్న సైట్‌గా గుర్తించింది. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">మధ్యలో</translation>
+<translation id="3600106876108433070">టేబుల్స్‌ను కంపార్ చేయడం గురించి తెలుసుకోండి</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">'Google గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, మీ Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లకు వెళ్లడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="3603507503523709">మీ నిర్వాహకుడు యాప్‌ను బ్లాక్ చేశారు</translation>
@@ -2920,6 +2922,7 @@
 <translation id="640163077447496506">ఈ రోజు గడువు ముగుస్తుంది</translation>
 <translation id="6402537308870515461">తరలించడానికి ముందు, రివ్యూ చేయడం ముఖ్యం</translation>
 <translation id="6403167778944553">బెడ్‌రూమ్ &amp; బాత్రూమ్ సామాగ్రి</translation>
+<translation id="6403434564317313607">మీరు టేబుల్‌కు జోడించే పేజీల ట్యాబ్ టైటిళ్లు, URLలు Googleకు పంపబడతాయి, మీ <ph name="EMAIL" /> ఖాతాకు సేవ్ అవుతాయి, ఇంకా ఈ ఫీచర్‌ను మెరుగుపరచడానికి రివ్యూవర్‌లు చూసే అవకాశం ఉంది.</translation>
 <translation id="6404511346730675251">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" />‌కు కొనసాగించాలా?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> గడువు ముగింపు తేదీ మరియు CVCని నమోదు చేయండి</translation>
@@ -3361,6 +3364,7 @@
 <translation id="722454870747268814">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="7227293336683593977">ధర హిస్టరీ</translation>
 <translation id="7227747683324411744">మీరు చూడటానికి ట్రై చేస్తున్న సైట్‌పై అటాక్ చేసే వ్యక్తులు మీరు బ్రౌజ్ చేసే విధానాన్ని ప్రభావితం చేసే హానికరమైన సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేసేలా మిమ్మల్ని మోసగించవచ్చు — ఉదాహరణకు, మీ హోమ్‌పేజీని మార్చడం ద్వారా లేదా మీరు చూసే సైట్‌లలో అదనపు యాడ్‌లను చూపడం ద్వారా మిమ్మల్ని మోసగించవచ్చు.</translation>
+<translation id="7232352818707016189">కంపార్ టేబుల్ కోసం మరిన్ని చర్యలు</translation>
 <translation id="7233592378249864828">ప్రింట్ చేయడాన్ని నిర్ధారించే షీట్</translation>
 <translation id="7234112195906418665">ట్రావెల్ &amp; ట్రాన్స్‌పోర్టేషన్</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% పూర్తయింది | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -4106,6 +4110,7 @@
 <translation id="8558347880669160417">ఈసారి కెమెరాకు, అలాగే మైక్రోఫోన్‌కు అనుమతి ఉంది</translation>
 <translation id="8559762987265718583">మీ పరికరం తేదీ మరియు సమయం <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> తప్పుగా ఉన్నందున (<ph name="DATE_AND_TIME" />)కు ప్రైవేట్ కనెక్షన్ ఏర్పాటు చేయబడదు.</translation>
 <translation id="8564182942834072828">విడి డాక్యుమెంట్‌లు/విడి కాపీలు</translation>
+<translation id="8564466070529550495">ప్రస్తుతానికి వర్చువల్ కార్డ్ అందుబాటులో లేదు, దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8564985650692024650">మీరు మీ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="8570895683659698018">అభిరుచులు &amp; కాలక్షేపం</translation>
 <translation id="8574841453995331336">రెఫ్రిజిరేటర్‌లు &amp; ఫ్రీజర్‌లు</translation>

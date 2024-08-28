@@ -1426,6 +1426,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="199610894463449797">{0,plural, =1{Chiudi questo profilo}other{Chiudi questo profilo (# finestre)}}</translation>
 <translation id="1997433994358798851">Chrome deve avere l'autorizzazione per utilizzare il Bluetooth per connettersi al dispositivo</translation>
 <translation id="1997616988432401742">I tuoi certificati</translation>
+<translation id="1998715278591719161">Autorizzati a monitorare le tue mani</translation>
 <translation id="1999115740519098545">All'avvio</translation>
 <translation id="2002109485265116295">In tempo reale</translation>
 <translation id="2002160221914907025">AI sperimentale</translation>
@@ -3420,7 +3421,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3439970425423980614">Apertura PDF in anteprima in corso</translation>
 <translation id="3440663250074896476">Altre azioni per <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Schermo</translation>
-<translation id="3441663102605358937">Accedi di nuovo all'account <ph name="ACCOUNT" /> per effettuare la verifica</translation>
 <translation id="3441824746233675597">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. <ph name="PRODUCT_NAME" /> utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">Consenti a Google di usare i dati relativi al tuo hardware per migliorare <ph name="DEVICE_OS" />. Se rifiuti, questi dati vengono comunque inviati a Google per stabilire gli aggiornamenti appropriati, ma non vengono archiviati o usati in altro modo.</translation>
 <translation id="3443545121847471732">Inserisci un PIN di 6 cifre</translation>
@@ -3536,6 +3536,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3521606918211282604">Cambia dimensioni disco</translation>
 <translation id="3522088408596898827">Lo spazio sul disco sta per esaurirsi. Libera spazio sul disco e riprova.</translation>
 <translation id="3522979239100719575">È in corso la ricerca dei profili disponibili. Questa operazione può richiedere alcuni minuti.</translation>
+<translation id="3523447078673133727">Non consentire ai siti di monitorare le tue mani</translation>
 <translation id="3524518036046613664">Rilevamento di dispositivi sulla rete locale, come le stampanti</translation>
 <translation id="3524965460886318643">Esporta attività</translation>
 <translation id="3525426269008462093">Rivedi la sincronizzazione del dispositivo dopo la configurazione</translation>
@@ -4225,6 +4226,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3987993985790029246">Copia link</translation>
 <translation id="3988124842897276887">La scheda è connessa a un dispositivo USB</translation>
 <translation id="3988996860813292272">Seleziona il fuso orario</translation>
+<translation id="3989635538409502728">Esci</translation>
 <translation id="3991055816270226534">Gestisci i cookie di terze parti e Protezione antitracciamento</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Quando la precisione della posizione è attiva, le informazioni sui segnali wireless, ad esempio i punti di accesso Wi-Fi, le torri di reti mobile, così come i dati dei sensori dei dispositivi, ad esempio l'accelerometro e il giroscopio, vengono usati per stimare con maggiore precisione la posizione del dispositivo, che le app e i servizi Android usano per offrire funzionalità basate sulla posizione. A questo scopo, Google raccoglie periodicamente informazioni relative a sensori dei dispositivi e segnali wireless nelle vicinanze del dispositivo per contribuire alla localizzazione dei segnali wireless mediante crowdsourcing.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google utilizza queste informazioni raccolte da questo dispositivo per: migliorare la precisione della posizione e i servizi basati sulla posizione geografica e, in generale, migliorare, fornire e gestire i servizi di Google. Trattiamo queste informazioni in base agli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti. Queste informazioni non vengono utilizzate per identificare alcuna persona.<ph name="END_PARAGRAPH2" />
@@ -5913,6 +5915,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="52550593576409946">Impossibile avviare l'applicazione kiosk.</translation>
 <translation id="5255726914791076208">Quando modifichi questa passkey, il tuo account <ph name="RP_ID" /> non subirà modifiche</translation>
 <translation id="5255859108402770436">Accedi di nuovo</translation>
+<translation id="5256174546894739043">Chiedi conferma quando un sito vuole monitorare le tue mani</translation>
 <translation id="52566111838498928">Caricamento dei caratteri in corso…</translation>
 <translation id="5256861893479663409">Su tutti i siti</translation>
 <translation id="5258992782919386492">Installa su questo dispositivo</translation>
@@ -6658,6 +6661,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5801051031414037185">Configura il telefono</translation>
 <translation id="5801568494490449797">Preferenze</translation>
 <translation id="5803689677801500549">Le password salvate verranno visualizzate qui. Per importare password in <ph name="BRAND" /> per <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />seleziona un file CSV<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">In genere, i siti monitorano mani e dita per migliorare le esperienze immersive</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5804259315582798390">Impossibile attivare il recupero dei dati locali</translation>
 <translation id="5805268472388605531">Tieni premuti i tasti della tastiera per vedere accenti e caratteri speciali</translation>
@@ -7744,6 +7748,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul Web.</translation>
 <translation id="6613267708691765962">Ricerca di malware in corso…</translation>
 <translation id="6613668613087513143">Spazio su questo dispositivo insufficiente per completare l'aggiornamento. Libera <ph name="NECESSARY_SPACE" /> sul dispositivo e riprova dal browser Chrome.</translation>
+<translation id="6614172284067813496">Pagina aggiunta all'elenco di lettura</translation>
 <translation id="6615455863669487791">Mostrami</translation>
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7757,6 +7762,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6622980291894852883">Continua a bloccare le immagini</translation>
 <translation id="6624036901798307345">In modalità tablet, tocca il pulsante della barra degli strumenti del contatore di schede per aprire una nuova tabstrip che mostra le miniature di ogni scheda.</translation>
 <translation id="6624687053722465643">Dolcezza</translation>
+<translation id="6627743754845412571">Non autorizzati a monitorare le tue mani</translation>
 <translation id="6628316682330029452">I certificati client sono certificati che ti identificano agli altri server.</translation>
 <translation id="6628328486509726751">Data/ora caricamento: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Sicurezza maggiore</translation>
@@ -8124,6 +8130,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6876155724392614295">Bicicletta</translation>
 <translation id="6876469544038980967">Non utili</translation>
 <translation id="6878422606530379992">Sensori consentiti</translation>
+<translation id="6878862640969460273">Orizzontale</translation>
 <translation id="6880587130513028875">Le immagini sono state bloccate in questa pagina.</translation>
 <translation id="6881845890692344060">L'amministratore si è disconnesso. Ora sei tu ad avere il controllo.</translation>
 <translation id="6882210908253838664">Se un sito non funziona, puoi provare a concedergli l'autorizzazione temporanea a utilizzare i cookie di terze parti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -9662,6 +9669,7 @@ File di chiave: <ph name="KEY_FILE" />
 
 Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove versioni dell'estensione.</translation>
 <translation id="8000020256436988724">Barra degli strumenti</translation>
+<translation id="800117767980299235">Punto saliente vocale</translation>
 <translation id="8002274832045662704">Configurazione avanzata stampante</translation>
 <translation id="8002670234429879764">La stampante <ph name="PRINTER_NAME" /> non è più disponibile</translation>
 <translation id="8004092996156083991">Ti informeremo se le tue password vengono compromesse</translation>
@@ -10745,6 +10753,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="876956356450740926">Esegui strumenti per sviluppatori, IDE ed editor. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Directory principale dell'estensione</translation>
 <translation id="8771300903067484968">Lo sfondo della pagina iniziale è stato reimpostato allo sfondo predefinito.</translation>
+<translation id="8773535891252326047">Link copiato per l'evidenziazione</translation>
 <translation id="8774379074441005279">Conferma il ripristino</translation>
 <translation id="8774934320277480003">Margine superiore</translation>
 <translation id="8775144690796719618">URL non valido</translation>

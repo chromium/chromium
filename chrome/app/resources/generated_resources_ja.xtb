@@ -3084,6 +3084,7 @@
 <translation id="3184591616546256659">この PIN を使用して保護者による使用制限の設定を変更できます。
     PIN を忘れた場合は、このデバイスを出荷時設定にリセットしてから、もう一度設定してください。</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{このアプリはブロックされています}other{一部のアプリはブロックされています}}</translation>
+<translation id="3185454065699440434"><ph name="SITE_NAME" /> で拡張機能を許可する</translation>
 <translation id="3187472288455401631">広告の測定</translation>
 <translation id="3187556136478864255"><ph name="BEGIN_LINK" />Google Home アプリ<ph name="END_LINK" />にキャスト デバイスは表示されましたか？</translation>
 <translation id="3188257591659621405">マイファイル</translation>
@@ -3414,7 +3415,6 @@
 <translation id="3439970425423980614">PDF をプレビューしています</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> に対するその他の操作</translation>
 <translation id="3441653493275994384">画面</translation>
-<translation id="3441663102605358937">もう一度 <ph name="ACCOUNT" /> にログインしてこのアカウントの確認を行ってください</translation>
 <translation id="3441824746233675597">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。<ph name="PRODUCT_NAME" /> では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
 <translation id="3442674350323953953">Google とハードウェア データを共有して <ph name="DEVICE_OS" /> の改善に協力する。同意されない場合も、このデータは適切なアップデートを確認するため Google に送信されますが、それ以外の目的で保存または使用されることはありません。</translation>
 <translation id="3443545121847471732">6 桁の PIN を入力</translation>
@@ -3879,6 +3879,7 @@
 <translation id="3760460896538743390">バックグラウンド ページの検証(&amp;B)</translation>
 <translation id="37613671848467444">シークレット ウィンドウで開く(&amp;I)</translation>
 <translation id="3761556954875533505">サイトにファイルの編集を許可しますか？</translation>
+<translation id="3761560059647741692">風景</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> のその他の操作、CVC を保存しました</translation>
 <translation id="3763433740586298940">広告主のウェブサイトを訪れた後、その企業からの広告を希望しない場合はブロックすることができます。また、30 日以上経過した広告主のウェブサイトはリストから自動削除されます。</translation>
 <translation id="3763549179847864476">プライバシー ガイドの戻るボタン</translation>
@@ -4219,6 +4220,7 @@
 <translation id="3987993985790029246">リンクのコピー</translation>
 <translation id="3988124842897276887">このタブは USB デバイスに接続されています</translation>
 <translation id="3988996860813292272">タイムゾーンの選択</translation>
+<translation id="3989635538409502728">ログアウト</translation>
 <translation id="3991055816270226534">サードパーティ Cookie とトラッキング防止機能を管理します</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
 　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
@@ -4394,6 +4396,7 @@
         カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="4115002065223188701">ネットワークが圏外です</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
+<translation id="4116480382905329353">1 回検出</translation>
 <translation id="4116704186509653070">もう一度開く</translation>
 <translation id="4117714603282104018">タッチパッドの触覚フィードバック</translation>
 <translation id="4118579674665737931">デバイスを再起動してもう一度お試しください。</translation>
@@ -4795,6 +4798,7 @@
 <translation id="4426508677408162512">すべてのブックマーク</translation>
 <translation id="4426513927906544654">コンテンツの候補を表示する</translation>
 <translation id="4426857487270413362">インストーラ ファイルをダウンロードできません。インターネット接続とディスクの空き容量を確認し、もう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
+<translation id="4427111270137140798"><ph name="COUNT" /> 回検出</translation>
 <translation id="4427365070557649936">確認コードを確認しています...</translation>
 <translation id="4429163740524851942">物理キーボード配列</translation>
 <translation id="4430019312045809116">音量</translation>
@@ -7401,6 +7405,7 @@
 <translation id="6351178441572658285">アプリの言語</translation>
 <translation id="6354918092619878358">SECG 楕円曲線 secp256r1（別名 ANSI X9.62 prime256v1、NIST P-256）</translation>
 <translation id="635609604405270300">デバイスの電源を切らないでください</translation>
+<translation id="6356537493253478650">穏やか</translation>
 <translation id="63566973648609420">パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />する必要があります。</translation>
 <translation id="6356718524173428713">上にスクロールすると、ページ下部に移動します</translation>
 <translation id="6356893102071098867">正しいアカウントを選択していることを確認してください</translation>
@@ -7855,6 +7860,7 @@
 <translation id="6701535245008341853">プロフィールを取得できませんでした。</translation>
 <translation id="6702639462873609204">編集(&amp;E)...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" />　を使うには、Bluetooth と Wi-Fi をオンにしてください</translation>
+<translation id="6703109186846420472">、</translation>
 <translation id="6703212423117969852">しばらくしてから Chrome でもう一度お試しください。</translation>
 <translation id="6703254819490889819">バックアップを復元</translation>
 <translation id="6703613667804166784">このファイルは、個人アカウントやソーシャル ネットワークのアカウント（<ph name="USER_EMAIL" /> など）に危害を及ぼす可能性があります</translation>
@@ -8156,6 +8162,7 @@
 <translation id="6909422577741440844">このデバイスから受信しますか？</translation>
 <translation id="6910190732484284349">ユーザー名 <ph name="USER_EMAIL" /> のパスキーを削除</translation>
 <translation id="6910211073230771657">削除済み</translation>
+<translation id="6910274140210351823">ダーク</translation>
 <translation id="6911734910326569517">メモリ使用量</translation>
 <translation id="6912007319859991306">モバイル SIM PIN</translation>
 <translation id="6912380255120084882">別のデバイスを試す</translation>
@@ -8214,6 +8221,7 @@
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> の音声ファイルをダウンロードできませんでした。ダウンロードは後で試行されます。音声はダウンロードが完了するまで処理のために Google に送信されます。</translation>
 <translation id="696103774840402661">この <ph name="DEVICE_TYPE" /> にあるすべてのユーザーのファイルとローカルデータをすべて完全に削除しました。</translation>
 <translation id="6961327401577924850">Bluetooth Low Energy ビーコン、ヘルス トラッカー、フィットネス トラッカー、スマート電球の設定や同期などの機能に対応するために、サイトは通常 Bluetooth デバイスを検出します。</translation>
+<translation id="6963772203726867701">検出されませんでした</translation>
 <translation id="6963872466817251924">テキスト カーソルのハイライト表示</translation>
 <translation id="6964390816189577014">ヒーロー</translation>
 <translation id="6964760285928603117">グループから削除</translation>
@@ -8307,6 +8315,7 @@
 <translation id="7014174261166285193">インストールできませんでした。</translation>
 <translation id="7014480873681694324">テキストの選択を解除</translation>
 <translation id="7014741021609395734">ズームレベル</translation>
+<translation id="7015135594296285641">拡張機能を許可</translation>
 <translation id="7016995776279438971">赤 - 緑、赤色弱（第一色弱）</translation>
 <translation id="7017004637493394352">もう一度「OK Google」と言ってください</translation>
 <translation id="7017219178341817193">新しいページを追加</translation>
@@ -8611,6 +8620,7 @@
 <translation id="7258192266780953209">変換</translation>
 <translation id="7258225044283673131">アプリケーションから応答がありません。終了するには [強制終了] を選択してください。</translation>
 <translation id="7260186537988033909">キオスクとサイネージ デバイスの登録が完了しました</translation>
+<translation id="7260206782629605806">しきい値を下げると、わずかな動きで操作できます。しきい値を上げると、大きな動きが必要になります。</translation>
 <translation id="7261217796641151584">グループを共有</translation>
 <translation id="7261612856573623172">システムのテキスト読み上げの音声</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>

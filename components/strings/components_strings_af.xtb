@@ -462,7 +462,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="180757923930449935">(64-bis geëmuleer)</translation>
 <translation id="180991881384371158">Jou CVC is op die agterkant van jou kaart. Dis die laaste 3 syfers bo regs in die handtekeningkassie.</translation>
 <translation id="1810391395243432441">Beskerm wagwoorde met jou skermslot</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position} van {count} plusadres}other{{position} van {count} plusadresse}}</translation>
 <translation id="1812527064848182527">landskap</translation>
 <translation id="1812975699435941848">Gesondheidsonderwys en mediese opleiding</translation>
 <translation id="1816436748874040213">Kan vra om gedeelde oortjies te rollees en te zoem</translation>
@@ -718,6 +717,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2276057643614339130">Drukbasis</translation>
 <translation id="2277103315734023688">Soek vorentoe</translation>
 <translation id="2277753418458118549">Wys verbindingbesonderhede</translation>
+<translation id="2277949605527755300"><ph name="URL" /> wil jou hande naspoor</translation>
 <translation id="22792995594807632">Kontrolering word vereis voordat lêers afgelaai word</translation>
 <translation id="2283340219607151381">Stoor en vul adresse in</translation>
 <translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" is uitgevee</translation>
@@ -1529,6 +1529,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3793574014653384240">Aantal en oorsake van die omvalle wat onlangs voorgekom het</translation>
 <translation id="3799805948399000906">Lettertipe versoek</translation>
 <translation id="3801265110651850478">Stuur ’n “Moenie naspoor nie”-versoek saam met jou blaaiverkeer.</translation>
+<translation id="3801297763951514916">Jy besoek gereeld</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803801106042434208">Hierdie soekenjins is gewild in jou streek</translation>
 <translation id="3807366285948165054">Skuif prent langs X-as</translation>
@@ -1622,6 +1623,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Minder as 1 MB</translation>
 <translation id="3990250421422698716">Gelykskudafwyking</translation>
+<translation id="3990532701115075684">Spoor jou hande na</translation>
 <translation id="3992684624889376114">Meer oor hierdie bladsy</translation>
 <translation id="3995639283717357522">Pas beleide toe</translation>
 <translation id="399754345297554962">Gestandaardiseerde en toelatingstoetse</translation>
@@ -2367,6 +2369,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Kan nie nie-HTTPS URL voorbeskou nie</translation>
 <translation id="5386426401304769735">Die sertifikaatketting vir hierdie werf bevat 'n sertifikaat wat met gebruik van SHA-1 onderteken is.</translation>
+<translation id="5391010642126249196">Jy het besoek op</translation>
 <translation id="539203134595252721">Tafeltennis</translation>
 <translation id="5392506727170022660">Metaal (semiglans)</translation>
 <translation id="5394069166371280357">Gesinsgerigte TV-programme</translation>
@@ -2566,6 +2569,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5742806904559466333">Kroeë, klubs en naglewe</translation>
 <translation id="5743684619253032786">Naelsorgprodukte</translation>
 <translation id="5745733273847572235">Kan vir jou ligging vra</translation>
+<translation id="5750869797196646528">Handnasporing</translation>
 <translation id="5759751709240058861">Gebruik en beweeg jou kamera</translation>
 <translation id="5763042198335101085">Voer 'n geldige e-posadres in</translation>
 <translation id="5764725887548570807">Ongeldige oorsprongformaat.</translation>
@@ -2821,6 +2825,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6240964651812394252">Herbegin Chrome en laat jou rekenaar se wagwoordbestuurder toe om Google Wagwoordbestuurder met jou bedryfstelsel te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="6241121617266208201">Versteek voorstelle</translation>
 <translation id="624499991300733384">Druksamestellerdiens</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> dae gelede</translation>
 <translation id="6246868321321344665">Jou organisasie kan in sowel werk- as persoonlike profiele blaaierdata sien, soos wagwoorde en geskiedenis</translation>
 <translation id="6250932670816326647">Bad- en liggaamprodukte</translation>
 <translation id="6251906504834538140">{0,plural, =1{Lêer kan weens blokkering nie geskuif word nie}other{<ph name="FILE_COUNT" /> lêers kan weens blokkering nie geskuif word nie}}</translation>
@@ -2984,6 +2989,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6513005815064132016">Kan vra om jou kameraposisie na te spoor</translation>
 <translation id="6517596291481585650">Waarskuwing: Hierdie beleid is nie saamgevoeg as 'n lys soos deur die beleid gespesifiseer nie omdat dit nie 'n lys is nie.</translation>
 <translation id="6518133107902771759">Verifieer</translation>
+<translation id="6519885440226079262">Kan vra om jou hande na te spoor</translation>
 <translation id="6520026037299163656">Webapps en aanlyn nutsgoed</translation>
 <translation id="65203098586853226">Vertaal uit <ph name="SOURCE" /> in <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">Onaktief</translation>
@@ -3024,6 +3030,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6599642189720630047">Nagespoorde produkte</translation>
 <translation id="6606309334576464871">Chrome blokkeer werwe om derdepartywebkoekies te gebruik om jou na te spoor terwyl jy blaai.
             <ph name="NEW_LINE" />Probeer om <ph name="START_LINK" />derdepartywebkoekies tydelik toe te laat<ph name="END_LINK" /> as werfkenmerke nie werk nie.</translation>
+<translation id="6613742613135780554">handnasporing</translation>
 <translation id="6613866251791999074">Kom meer te wete oor jou soekenjin in Chrome</translation>
 <translation id="6615297766614333076">Stapelaar 2</translation>
 <translation id="6619496928666593220">IBAN nie ingevul nie</translation>
@@ -3409,6 +3416,7 @@ Bykomende besonderhede:
 <translation id="7346081071264046066">“antwoord met opgewondenheid ja op hierdie trou-uitnodiging”</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
 <translation id="7353601530677266744">Bevellyn</translation>
+<translation id="7356678400607112844">Laaste besoek</translation>
 <translation id="7359588939039777303">Advertensies is geblokkeer.</translation>
 <translation id="7360451453306104998">Wanneer Google beskikbare afslag vind, sal dit by die betaalpunt wys</translation>
 <translation id="7363096869660964304">Jy is egter nie onsigbaar nie. As jy Incognito is, versteek dit nie jou blaaihandelinge vir jou werkgewer, jou internetdiensverskaffer of die webwerwe wat jy besoek nie.</translation>
@@ -3474,6 +3482,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7440140511386898319">Verken terwyl jy vanlyn is</translation>
 <translation id="7441627299479586546">Verkeerde beleidonderwerp</translation>
 <translation id="7441864845853794192">Gourmet- en spesialiskosse</translation>
+<translation id="7442389976360981500">Laat handnasporing toe?</translation>
 <translation id="7442725080345379071">Ligoranje</translation>
 <translation id="7444046173054089907">Hierdie werf is geblokkeer</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Webkoekies sal vandag weer geblokkeer word}=1{Webkoekies sal môre weer geblokkeer word}other{# dae totdat webkoekies weer geblokkeer word}}</translation>
@@ -4132,6 +4141,7 @@ Bykomende besonderhede:
 <translation id="865032292777205197">bewegingsensors</translation>
 <translation id="865255447216708819">Agterdrukfilm</translation>
 <translation id="8654126188050905496">55x91 mm</translation>
+<translation id="8660780831677950176">Jy besoek gereeld op hierdie tyd</translation>
 <translation id="8662463432865928030">Kommersiële eiendomme</translation>
 <translation id="8663226718884576429">Bestellingopsomming, <ph name="TOTAL_LABEL" />, meer besonderhede</translation>
 <translation id="8663909737634214500">Optiese skyf</translation>

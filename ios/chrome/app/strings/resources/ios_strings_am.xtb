@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">የትር ቡድን ይሰረዝ?</translation>
 <translation id="2195124168004379331">የእርስዎ አሳሽ ጥሩ ይመስላል</translation>
 <translation id="2199562093267256223">ይህ ቡድኑን ወደ <ph name="USER_EMAIL" /> የገቡትን ሁሉም መሣሪያዎች ይሰርዛል።</translation>
+<translation id="2214453882118345682">በካሜራዎ የሚያዩትን ይሸምቱ፣ ይተርጉሙ እና ይለዩ</translation>
 <translation id="2218443599109088993">አሳንስ</translation>
 <translation id="2220529011494928058">ችግር ሪፖርት አድርግ</translation>
 <translation id="2230173723195178503">ድረ-ገፅ ተጭኗል</translation>
@@ -1317,6 +1318,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{አዲስ ጥቅል ክትትል ተደርጎበታል}one{አዲስ ጥቅል ክትትል ተደርጎበታል}other{አዳዲስ ጥቅሎች ክትትል ተደርጎባቸዋል}}</translation>
 <translation id="7291368939935408496">የይለፍ ቃላትን በማዘጋጀት ላይ...</translation>
+<translation id="7300448350764260141">ከመስመር ላይ ዛቻዎች ለመጠበቅ ተጨማሪ የጥበቃ ንብርብር ያክሉ።</translation>
 <translation id="7302503784943202842">በሁሉም መሣሪያዎችዎ ላይ የይለፍ ቃላትን ይጠቀሙ</translation>
 <translation id="7313347584264171202">የእርስዎን ማንነት የማያሳውቁ ትሮች እዚህ ያገኛሉ</translation>
 <translation id="7335132237885014335">ማሳወቂያዎችን ያግኙ</translation>

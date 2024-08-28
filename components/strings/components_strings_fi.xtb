@@ -462,7 +462,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="180757923930449935">(64-bittinen emuloitu)</translation>
 <translation id="180991881384371158">CVC on kortin takaosassa. Koodi on allekirjoituskentän oikeassa yläkulmassa olevat kolme viimeistä numeroa.</translation>
 <translation id="1810391395243432441">Suojaa salasanoja näytön lukituksella</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position}/{count} lisäosoite}other{{position}/{count} lisäosoitetta}}</translation>
 <translation id="1812527064848182527">vaakasuunta</translation>
 <translation id="1812975699435941848">Terveystieto ja lääketieteellinen koulutus</translation>
 <translation id="1816436748874040213">Saa pyytää vierittämään ja zoomaamaan jaettuja välilehtiä</translation>
@@ -718,6 +717,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2276057643614339130">Tulostusalusta</translation>
 <translation id="2277103315734023688">Kelaa eteenpäin</translation>
 <translation id="2277753418458118549">Näytä yhteyden tiedot</translation>
+<translation id="2277949605527755300"><ph name="URL" /> haluaa seurata käsiäsi</translation>
 <translation id="22792995594807632">Tarkasta tiedostot ennen lataamista</translation>
 <translation id="2283340219607151381">Tallenna ja täytä osoitteet</translation>
 <translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" poistettu</translation>
@@ -1530,6 +1530,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3793574014653384240">Viime aikoina tapahtuneiden kaatumisten määrät ja syyt</translation>
 <translation id="3799805948399000906">Fonttia pyydetty</translation>
 <translation id="3801265110651850478">Lähetä selaustietojesi mukana Do Not Track ‑pyyntö</translation>
+<translation id="3801297763951514916">Käyt sivustolla usein</translation>
 <translation id="380329542618494757">Nimi</translation>
 <translation id="3803801106042434208">Nämä hakukoneet ovat suosittuja alueellasi</translation>
 <translation id="3807366285948165054">Kuvan X vaihto</translation>
@@ -1623,6 +1624,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Alle 1 Mt</translation>
 <translation id="3990250421422698716">Jog offset</translation>
+<translation id="3990532701115075684">Seurata käsiäsi</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
 <translation id="3995639283717357522">Ota käytäntöjä käyttöön</translation>
 <translation id="399754345297554962">Standardoidut kokeet ja pääsykokeet</translation>
@@ -2368,6 +2370,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5385857628869214740">Huumori</translation>
 <translation id="5385966243497224160">Muita kuin HTTPS-URL-osoitteita ei voi esikatsella</translation>
 <translation id="5386426401304769735">Tämän sivuston varmenneketju sisältää varmenteen, joka on allekirjoitettu SHA-1:llä.</translation>
+<translation id="5391010642126249196">Kävit täällä</translation>
 <translation id="539203134595252721">Pöytätennis</translation>
 <translation id="5392506727170022660">Metalli (puolikiiltävä)</translation>
 <translation id="5394069166371280357">TV-perheohjelmat</translation>
@@ -2567,6 +2570,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5742806904559466333">Baarit, klubit ja yöelämä</translation>
 <translation id="5743684619253032786">Kynsienhoitotuotteet</translation>
 <translation id="5745733273847572235">Saa pyytää sijaintiasi</translation>
+<translation id="5750869797196646528">Käsien seuranta</translation>
 <translation id="5759751709240058861">käyttää ja liikuttaa kameraasi</translation>
 <translation id="5763042198335101085">Anna voimassa oleva sähköpostiosoite.</translation>
 <translation id="5764725887548570807">Virheellinen alkuperän muoto.</translation>
@@ -2986,6 +2990,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6513005815064132016">Saa pyytää kameran asennon seuraamislupaa</translation>
 <translation id="6517596291481585650">Varoitus: tätä käytäntöä ei yhdistetty käytännössä kuvatulla tavalla luettelona, sillä se ei ole luettelo.</translation>
 <translation id="6518133107902771759">Vahvista</translation>
+<translation id="6519885440226079262">Saa pyytää lupaa seurata käsiäsi</translation>
 <translation id="6520026037299163656">Verkkosovellukset ja -työkalut</translation>
 <translation id="65203098586853226"><ph name="SOURCE" /> käännetään kielelle <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">Ei aktiivinen</translation>
@@ -3026,6 +3031,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6599642189720630047">Seuratut tuotteet</translation>
 <translation id="6606309334576464871">Chrome estää sivustoja seuraamasta sinua selaamisen aikana kolmansien osapuolten evästeiden avulla.
             <ph name="NEW_LINE" />Jos sivuston ominaisuudet eivät toimi, <ph name="START_LINK" />kokeile sallia kolmannen osapuolen evästeet tilapäisesti<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">käsien seuranta</translation>
 <translation id="6613866251791999074">Lue lisää hakukoneesta Chromessa</translation>
 <translation id="6615297766614333076">Pinoaja 2</translation>
 <translation id="6619496928666593220">IBAN-numeroa ei ole täytetty</translation>
@@ -3478,6 +3484,7 @@ Lisätietoja:
 <translation id="7440140511386898319">Tutki offline-tilassa</translation>
 <translation id="7441627299479586546">Väärä käytännön aihe</translation>
 <translation id="7441864845853794192">Gourmet ja erikoisherkut</translation>
+<translation id="7442389976360981500">Sallitaanko käsien seuranta?</translation>
 <translation id="7442725080345379071">Vaaleanoranssi</translation>
 <translation id="7444046173054089907">Tämä sivusto on estetty</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Evästeet estetään uudelleen tänään}=1{Evästeet estetään uudelleen huomenna}other{# päivää ennen kuin evästeet estetään uudelleen}}</translation>
@@ -4137,6 +4144,7 @@ Lisätietoja:
 <translation id="865032292777205197">liiketunnistimet</translation>
 <translation id="865255447216708819">Filmin takapuolen tulostus</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
+<translation id="8660780831677950176">Käyt sivustolla usein tähän aikaan</translation>
 <translation id="8662463432865928030">Liikekiinteistöt</translation>
 <translation id="8663226718884576429">Tilauksen yhteenveto, <ph name="TOTAL_LABEL" />, lisätietoja</translation>
 <translation id="8663909737634214500">Optinen levy</translation>

@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Dileu'r Grŵp Tabiau?</translation>
 <translation id="2195124168004379331">Mae Eich Porwr yn Edrych yn Dda</translation>
 <translation id="2199562093267256223">Bydd hyn yn dileu'r grŵp o bob dyfais sydd wedi'i mewngofnodi i <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Siopa, cyfieithu, a nodi'r hyn a welwch gyda'ch camera.</translation>
 <translation id="2218443599109088993">Pellhau</translation>
 <translation id="2220529011494928058">Adrodd am broblem</translation>
 <translation id="2230173723195178503">Mae tudalen we wedi'i llwytho</translation>
@@ -470,6 +471,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3268451620468152448">Tabiau sydd ar Agor</translation>
 <translation id="3269051798482119531">Parhau gyda'r Tab Hwn</translation>
 <translation id="3272527697863656322">Canslo</translation>
+<translation id="3273510436356991673">Addasu eich sgrîn hafan</translation>
 <translation id="3277021493514034324">Copïwyd cyfeiriad y wefan</translation>
 <translation id="3285962946108803577">Rhannu'r dudalen...</translation>
 <translation id="3289505634533552500">Chwilio â Llais</translation>
@@ -1317,6 +1319,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7272437679830969316">Methu â chadarnhau'ch hunaniaeth. Ni chopïwyd y cyfrinair.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Pecyn Newydd wedi'i Dracio}zero{Pecynnau Newydd wedi'u Tracio}two{Pecynnau Newydd wedi'u Tracio}few{Pecynnau Newydd wedi'u Tracio}many{Pecynnau Newydd wedi'u Tracio}other{Pecynnau Newydd wedi'u Tracio}}</translation>
 <translation id="7291368939935408496">Wrthi'n Paratoi Cyfrineiriau...</translation>
+<translation id="7300448350764260141">Ychwanegu haen ychwanegol o amddiffyniad rhag bygythiadau ar-lein.</translation>
 <translation id="7302503784943202842">Defnyddio Cyfrineiriau ar Eich Holl Ddyfeisiadau</translation>
 <translation id="7313347584264171202">Byddwch yn gweld eich tabiau Anhysbys yma</translation>
 <translation id="7335132237885014335">Cael Hysbysiadau</translation>

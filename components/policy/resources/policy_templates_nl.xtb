@@ -3188,6 +3188,7 @@ Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-
 <translation id="3417418267404583991">Als dit beleid is ingesteld op 'true' of niet is geconfigureerd, staat <ph name="PRODUCT_OS_NAME" /> gasten toe zich aan te melden. Gastensessies zijn anonieme sessies waar geen wachtwoord voor hoeft te worden ingevoerd.
 
       Als dit beleid is ingesteld op 'false', staat <ph name="PRODUCT_OS_NAME" /> niet toe dat er gastensessies worden gestart.</translation>
+<translation id="3419726087743433857">Generatieve AI-functies toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="3423703250826790403">Android-apps</translation>
 <translation id="3426434797050451264">Dit beleid kan ook worden gebruikt om Android-apps op te geven als standaard bestandshandlers.</translation>
 <translation id="3428247105888806363">Netwerkvoorspelling aanzetten</translation>
@@ -3658,6 +3659,7 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
 <translation id="377044054160169374">Interventie voor misleidende functionaliteit afdwingen</translation>
 <translation id="3778689139323007309">Intrekkingscontroles uitvoeren voor gevalideerde servercertificaten die zijn ondertekend door lokaal geïnstalleerde CA-certificaten</translation>
 <translation id="3780152581321609624">Niet-standaardpoort in Kerberos-SPN opnemen</translation>
+<translation id="3785423718413114598">Generatieve AI-functies niet toestaan</translation>
 <translation id="3788662722837364290">Instellingen voor energiebeheer wanneer de gebruiker inactief is</translation>
 <translation id="3788876528643861853">Microsoft®-cloudverificatie uitzetten</translation>
 <translation id="3790085888761753785">Als deze instelling aanstaat, kunnen gebruikers inloggen op hun account via Smart Lock. Dit is toleranter dan het normale Smart Lock-gedrag, dat gebruikers alleen toestaat om hun scherm te ontgrendelen.
@@ -5378,6 +5380,17 @@ Als je dit beleid aanzet of niet instelt, wordt de functie voor de generator van
 
 Als je dit beleid uitzet, wordt de functie voor de generator van QR-codes uitgezet.</translation>
 <translation id="5170018694841697392">Het gebruik van SafeSearch op Google Zoeken niet afdwingen</translation>
+<translation id="5172783335366295717">Dit beleid definieert de standaardinstelling voor alle gedekte generatieve AI-functies. Als je dit beleid bijvoorbeeld instelt op de waarde 1, is 1 de standaardinstelling voor alle gedekte generatieve AI-functies. Dit heeft geen invloed op handmatig ingestelde beleidswaarden. Bekijk de lijst met gedekte functies op https://support.google.com/chrome/a?p=generative_ai_settings.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = De functie uitzetten.
+
+Als een gedekte functie geen gelijkwaardige beleidswaarde heeft, wordt de dichtstbijliggende hogere waarde gebruikt. Neem de documentatie voor die functie door voor meer informatie over hoe deze omgaat met waarden in dit beleid.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="5172841243186654432">Als je <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> instelt, kun je een lijst met URL-patronen opgeven van sites die geen cookies kunnen instellen voor 1 sessie, tenzij het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> is ingesteld op het permanent herstellen van URL's uit vorige sessies.
 
       Als je het beleid niet instelt, wordt <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> gebruikt voor alle sites als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker. Voor URL's die niet overeenkomen met de opgegeven patronen worden de standaardwaarden gebruikt.
@@ -7247,6 +7260,7 @@ Als je het beleid niet instelt of als je een lege lijst met URL's invoert, mogen
 <translation id="6506486086262398387">Als je het beleid toepast, gebruikt de functie Network File Shares voor <ph name="PRODUCT_OS_NAME" /> waar nodig NTLM om SMB-fileshares te verifiëren. Als je het beleid niet toepast, staat NTLM-verificatie voor SMB-fileshares uit.
 
       Als je dit beleid niet instelt, staat dit gedrag standaard uit voor beheerde gebruikers en aan voor andere gebruikers.</translation>
+<translation id="6508403116553969858">De standaard beleidswaarde instellen voor de gedekte generatieve AI-functies van <ph name="PRODUCT_NAME" /></translation>
 <translation id="6508882314969525299">Zet de telemetrierapportage van Kiosk Vision uit.</translation>
 <translation id="6509376413448002446">Hiermee stel je de screensaver voor het vergrendelscherm in.
 
@@ -9730,6 +9744,7 @@ De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTE
 De patronen voor overeenkomende oorsprong gebruiken een vergelijkbare indeling als die voor het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> (deze worden gedocumenteerd op https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoeveelheid gegevens in bytes aan die de patrooncontrole activeert. Dit betekent dat een schrijfactie naar het klembord vanaf een geblokkeerde URL is toegestaan als de grootte van de gekopieerde gegevens kleiner is dan de waarde in dit veld. De standaardwaarde is 100 bytes als het veld niet is ingesteld.</translation>
+<translation id="8471860377920321311">Generatieve AI-functies toestaan en AI-modellen verbeteren</translation>
 <translation id="8473107305327396242">Importeer door de gebruiker toegevoegde TLS-servercertificaten uit truststores van het platform.</translation>
 <translation id="8473841363404590708">Lokale bestanden migreren naar Microsoft OneDrive en lokale mappen verbergen</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

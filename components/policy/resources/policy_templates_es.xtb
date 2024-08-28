@@ -537,8 +537,10 @@ Si se le asigna el valor "PromptInTab", cuando la autenticación del usuario cad
 <translation id="1395988776118675626">Habilitar la función Recordar contraseña con Kerberos</translation>
 <translation id="1396119629372155901">Función ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes inhabilitada</translation>
 <translation id="1397855852561539316">URL de sugerencia del proveedor de búsquedas predeterminadas</translation>
+<translation id="140076409387986842">Permitir la función Ayúdame a escribir sin mejorar los modelos de IA.</translation>
 <translation id="1402227992519954892">Habilitar los informes sobre las aplicaciones del dispositivo</translation>
 <translation id="1405444733221330570">Habilitar Orca</translation>
+<translation id="1407977345632185991">No permitir Crear temas.</translation>
 <translation id="141279920573530952">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a todos los puertos serie disponibles.
 
       Las URLs deben ser válidas; si no, se ignorará la política. Solo se tiene en cuenta el origen de la URL (esquema, host y puerto).
@@ -769,6 +771,15 @@ Si no se establece esta política, los usuarios podrán añadir excepciones para
 <translation id="1574258262373444557">No usa <ph name="AES_KL_NAME" /> como algoritmo de cifrado para el cifrado del almacenamiento de los datos del usuario</translation>
 <translation id="1575015449587326319">Política de configuración del conector OnFileDownloaded de Chrome Enterprise Connectors</translation>
 <translation id="1583248206450240930">Utilizar <ph name="PRODUCT_FRAME_NAME" /> de forma predeterminada</translation>
+<translation id="1584963377073400553">Con la opción Crear temas con IA, los usuarios pueden crear temas o fondos de pantalla personalizados seleccionando previamente opciones de una lista.
+
+Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+1 = Habilitar la función para los usuarios, pero no enviar datos a Google para entrenar o mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="1587585749332985896">No permite utilizar el modo sin interfaz gráfica</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
 <translation id="1590802206069983683">Función ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes disponible</translation>
@@ -851,6 +862,7 @@ Las APIs del sistema operativo definen qué es una "entrada del usuario" (por ej
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1621245029534873770">Esta política está obsoleta y no se admite. Usa la política <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="162162247775156979">Inhabilitar los informes sobre el estado del almacenamiento del dispositivo</translation>
+<translation id="1622982680869126605">Permitir la función Organizador de pestañas y mejorar los modelos de IA.</translation>
 <translation id="1625700732886306811">Permitir que <ph name="PRODUCT_NAME" /> se conecte a dispositivos a través de cualquier dirección IP</translation>
 <translation id="1626379196197114720">Permitir usar la caché de páginas completas</translation>
 <translation id="1628974048137236820">La página Nueva pestaña no mostrará tarjetas</translation>
@@ -1118,6 +1130,7 @@ Esta política no tiene efecto cuando se establece en un nivel de equipo.</trans
 <translation id="1839042185432919430">Permitir que la aplicación web de kiosco muestre un mensaje de red al iniciar la aplicación si el dispositivo no tiene conexión</translation>
 <translation id="1843102210803941014">Habilitar solo las cookies y los datos esenciales en la búsqueda</translation>
 <translation id="1843117931376765605">Frecuencia con la que se actualiza la política de usuario</translation>
+<translation id="1844616986352942647">Permitir la función Crear temas y mejorar los modelos de IA.</translation>
 <translation id="1844620919405873871">Configura las políticas relacionadas con el desbloqueo rápido.</translation>
 <translation id="1844833120200057817">Habilitar el almacenamiento de registros del sistema de las extensiones</translation>
 <translation id="1844972978764975668">Permitir que consultas ocasionales a un servidor de Google obtengan una marca de tiempo precisa</translation>
@@ -1595,6 +1608,7 @@ Si se deja esta política sin definir para los usuarios normales, funcionará ig
       Consulta https://support.google.com/chrome?p=safe_browsing_preferences para obtener más información sobre Navegación segura.</translation>
 <translation id="2177696016354404697">Inhabilitar siempre la pantalla de privacidad</translation>
 <translation id="2178899310296064282">Aplicar como mínimo el modo restringido moderado en YouTube</translation>
+<translation id="2180260434916939385">Permitir la búsqueda en el historial basada en IA y mejorar los modelos de IA.</translation>
 <translation id="2180795125410219364">Los ajustes de Inicio y Fin están inhabilitados</translation>
 <translation id="2180958780733364832">Controla el uso del modo sin interfaz gráfica</translation>
 <translation id="2182291258410176649">El usuario decide si quiere habilitar la opción para crear una copia de seguridad y restaurar los datos</translation>
@@ -3185,6 +3199,7 @@ Si no se define esta política, no se podrá navegar en el navegador mientras la
 <translation id="3417418267404583991">Si esta política no se configura o el valor correspondiente se establece en "true", <ph name="PRODUCT_OS_NAME" /> permitirá iniciar sesión como invitado. Los inicios de sesión como invitado son sesiones de usuario anónimas y no necesitan contraseña.
 
       Si el valor correspondiente a esta política se establece en "false", <ph name="PRODUCT_OS_NAME" /> no permitirá el inicio de sesiones de invitados.</translation>
+<translation id="3419726087743433857">Permitir funciones de IA generativa sin mejorar modelos de IA</translation>
 <translation id="3423703250826790403">Aplicaciones Android</translation>
 <translation id="3426434797050451264">Esta política también se puede usar para especificar aplicaciones Android como controladores de archivos predeterminados.</translation>
 <translation id="3428247105888806363">Habilitar predicción de red</translation>
@@ -3237,6 +3252,7 @@ Si no se define esta política, no se podrá navegar en el navegador mientras la
 
       Ten en cuenta que, si la política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> se inhabilita y <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> se habilita o no se establece, la página del historial de Chrome organizada en grupos seguirá estando disponible en chrome://history/grouped, pero puede que sea menos relevante para el usuario.
 </translation>
+<translation id="3469713571374938745">Permitir Crear temas sin mejorar los modelos de IA.</translation>
 <translation id="3478024346823118645">Borrar los datos del usuario al cerrar sesión</translation>
 <translation id="3478406829037689272">Habilitar los análisis profundos de las descargas con Navegación segura</translation>
 <translation id="3480961938508521469">Carga totalmente la batería a velocidad estándar.</translation>
@@ -3457,6 +3473,7 @@ Nota: Esta política no se aplica al modo Incógnito ni al modo Invitado.</trans
 <translation id="3625900437628963632">Indica si se recordará el valor de la contraseña de Kerberos definido en este elemento de la política. Si no se define o se le asigna el valor true, se recordará la contraseña. Si se le asigna el valor false, no se recordará la contraseña. Se ignorará si el campo de contraseña de esta cuenta no se especifica. Este campo es compatible desde la versión 116 de ChromeOS.</translation>
 <translation id="3627678165642179114">Habilitar o inhabilitar el servicio web de corrección ortográfica</translation>
 <translation id="3628480121685794414">Habilitar impresión por una cara</translation>
+<translation id="36319015509487508">No permitir la función Ayúdame a leer.</translation>
 <translation id="3634125384445314047">Permite acceder a través de la función Mi teléfono a fotos y vídeos recientes hechos con el teléfono.</translation>
 <translation id="3637063789824963261">Si se habilita esta política, los dispositivos registrados informarán sobre los contadores de tiempo de ejecución del dispositivo (solo Intel vPro de una generación superior a la 14).
 
@@ -3607,6 +3624,7 @@ Consulta https://wicg.github.io/private-network-access/ para saber las restricci
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 3 horas.</translation>
 <translation id="3755796472192036324">Color blanco para la retroiluminación del teclado</translation>
+<translation id="3755902888263933411">Permitir la búsqueda en el historial basada en IA sin mejorar los modelos de IA</translation>
 <translation id="3756011779061588474">Bloquear el modo de desarrollador</translation>
 <translation id="3756516139200532906">Permitir al usuario administrado configurar el nombre de host del dispositivo</translation>
 <translation id="3756737071958233151">Habilitar la subida de registros del sistema en el dispositivo</translation>
@@ -3657,6 +3675,7 @@ Consulta https://wicg.github.io/private-network-access/ para saber las restricci
 <translation id="377044054160169374">Aplicar intervención de experiencia abusiva</translation>
 <translation id="3778689139323007309">Realizar comprobaciones de revocación de los certificados del servidor validados correctamente y firmados por certificados AC instalados localmente</translation>
 <translation id="3780152581321609624">Incluir un puerto no estándar en SPN de Kerberos</translation>
+<translation id="3785423718413114598">No permitir funciones de IA generativa</translation>
 <translation id="3788662722837364290">Configuración de la administración de energía cuando el usuario está inactivo</translation>
 <translation id="3788876528643861853">Inhabilitar la autenticación en la nube de Microsoft®</translation>
 <translation id="3790085888761753785">Si este ajuste está habilitado, los usuarios pueden iniciar sesión en su cuenta con Smart Lock. Es más permisivo que el funcionamiento habitual de Smart Lock, que solo permite a los usuarios desbloquear la pantalla.
@@ -3677,6 +3696,15 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="379318040165550702">Permitir que los usuarios elijan</translation>
+<translation id="3793244042614155322">Ayúdame a escribir es un asistente de escritura basado en la IA para contenido de formato corto en la Web. El contenido sugerido se basa en las peticiones que introduce el usuario y en el contenido de la página web.
+
+Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+1 = Habilitar la función para los usuarios, pero no enviar datos a Google para entrenar o mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3796527892245558832">Selector de perfil disponible al iniciar</translation>
 <translation id="3798922329287609568">Si se establece esta política, se restringe el modo de impresión por las dos caras.
 
@@ -4267,6 +4295,17 @@ Esta política se usaba para inhabilitar la actualización automática de conten
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 10 minutos.</translation>
 <translation id="4290231183305601970">Texto que se mostrará al usuario en Chrome Web Store si se bloquea la instalación.</translation>
+<translation id="4291413477651927481">Estas funciones de DevTools de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recoger datos como mensajes de error, rastreos de la pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor que pertenece a Google y ejecuta un modelo de IA generativa. En los datos enviados al servidor no se incluyen el cuerpo de las respuestas ni los encabezados de autenticación y cookies de las solicitudes de red.
+
+Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+1 = Habilitar la función para los usuarios, pero no enviar datos a Google para entrenar o mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.
+
+Entre las funciones de IA generativa de DevTools se incluyen las siguientes:
+
+- Console Insights: explica los mensajes de la consola y ofrece sugerencias sobre cómo corregir errores de la consola.</translation>
 <translation id="4293187705196369087">Permite habilitar o inhabilitar la notificación de poco espacio en disco. Se aplica a todos los usuarios del dispositivo.
 
       Si se habilita esta política, se mostrará una notificación cuando quede poco espacio en el disco.
@@ -4500,6 +4539,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4461400898496433231">No anular la comprobación de alcanzabilidad de IPv6. Consultar el registro AAAA para la resolución de nombres de host solo cuando el dispositivo sea alcanzable para un host IPv6 global.</translation>
+<translation id="4463467966408770621">No permitir funciones de IA generativa de DevTools.</translation>
 <translation id="4463675333222095358">Habilitar conversión de unidades de Respuestas rápidas</translation>
 <translation id="4464365009416584564">Inhabilitar <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
@@ -4556,6 +4596,7 @@ Esta política no tendrá efecto si se habilita, se deja vacía o no se define.<
 <translation id="4512407512989846472">Permitir bloquear la copia en el portapapeles en URLs especificadas</translation>
 <translation id="4513691822411041977">No forzar el uso de Búsqueda Segura en la Búsqueda de Google ni en el modo Restringido de YouTube</translation>
 <translation id="4515404363392014383">Habilitar Navegación segura en fuentes de confianza</translation>
+<translation id="4517327050150780380">Configuración de la función Ayúdame a leer</translation>
 <translation id="4518251772179446575">Preguntar siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios</translation>
 <translation id="4521193243799782295">Durante el inicio de sesión, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
 
@@ -4791,6 +4832,7 @@ Si el usuario no lleva sus datos de navegación al perfil gestionado, se creará
 <translation id="4674542060943819878">Habilitar la opción de cerrar alertas de contraseñas vulneradas</translation>
 <translation id="4674871290487541952">Permite los algoritmos no seguros en las comprobaciones de integridad de las actualizaciones e instalaciones de extensiones</translation>
 <translation id="4680961954980851756">Habilitar Autocompletar</translation>
+<translation id="46845898956959634">Permitir la función Ayúdame a escribir y mejorar los modelos de IA.</translation>
 <translation id="4685721728282448265">Acuerdo de claves poscuántico CECPQ2 habilitado para TLS</translation>
 <translation id="468822697351680932">Usar la política de lista de sitios de Internet Explorer como fuente de reglas</translation>
 <translation id="4693190628432874457">Habilitar los informes de ubicación del dispositivo</translation>
@@ -5153,6 +5195,7 @@ Si no se establece esta política para un sitio, se le aplicará la política de
 <translation id="4970046075219007744">Permite que las aplicaciones web soliciten al usuario que les conceda acceso a ciertos tipos de archivo a través de la API File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar inicio de sesión en el navegador</translation>
 <translation id="4974091268178043378">Modo de color de Chrome OS</translation>
+<translation id="4976825008579439428">No permitir la búsqueda en el historial basada en IA.</translation>
 <translation id="4978533099939732984">Mostrar siempre las advertencias de poco espacio en disco</translation>
 <translation id="4979614740553442831">Esta política controla la disponibilidad de la integración de Lens en la aplicación Galería de <ph name="PRODUCT_OS_NAME" />.
 
@@ -5373,6 +5416,17 @@ Si habilitas esta política o no la configuras, se habilitará la función de ge
 
 Si inhabilitas esta política, se inhabilitará la función de generador de códigos QR.</translation>
 <translation id="5170018694841697392">No forzar el uso de Búsqueda Segura en la Búsqueda de Google</translation>
+<translation id="5172783335366295717">Esta política define el ajuste predeterminado de todas las funciones de IA generativa incluidas. Por ejemplo, si se le asigna el valor 1 a la política, este será el ajuste predeterminado de todas las funciones de IA generativa incluidas. No afectará a ningún valor de política definido manualmente. Consulta https://support.google.com/chrome/a?p=generative_ai_settings para ver la lista de funciones incluidas.
+
+Si se asigna el valor 0, permite que se use la función y permite que Google use datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios por escrito. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitan las funciones.
+
+Si una función incluida no tiene un valor de política equivalente, se usará el valor más alto más cercano. Consulta la documentación de esa función para obtener más información sobre cómo interactúa con los valores de esta política.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5172841243186654432">A menos que la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> se configure para que siempre restaure las URLs de sesiones anteriores, podrás asignarle el valor <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> para crear una lista de patrones de URL que especifique qué sitios pueden establecer cookies en una sesión y cuáles no.
 
       Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios, si se ha definido previamente. Si no, se aplicará la configuración personal del usuario. También se utilizarán valores predeterminados para aquellas URLs que no se vean afectadas por los patrones especificados.
@@ -5727,6 +5781,17 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite est
       Si se asigna una lista de identificadores de métodos de introducción a esta política, esos métodos estarán disponibles en la pantalla de inicio de sesión. El primer método de introducción estará preseleccionado. El grupo de un usuario aparece centrado en la pantalla de inicio de sesión, pero también se mostrará el último método de introducción por el usuario junto a los métodos de introducción proporcionados por esta política. Si esta política no se configura, los métodos de introducción de la pantalla de inicio de sesión procederán de la configuración regional en la que se muestre esa pantalla. Los valores que no sean identificadores de métodos de introducción válidos se ignorarán.</translation>
 <translation id="5406626703145660021">Habilitar el acuerdo de claves poscuántico para TLS en dispositivos</translation>
 <translation id="5407008856008996384">Permitir acceso a impresoras CUPS</translation>
+<translation id="5412932514296195873">La búsqueda en el historial basada en IA es una función que permite a los usuarios buscar en su historial de navegación en función del contenido de las páginas, no solo de su título y URL.
+
+Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+1 = Habilitar la función para los usuarios, pero no enviar datos a Google para entrenar o mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.
+
+Si esta política no se define, el comportamiento predeterminado será asignar el valor 0 a los usuarios normales y el valor 2 a los usuarios gestionados en <ph name="PRODUCT_OS_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5413051574966911176">Inhabilitar la UI relacionada con la conexión en el escritorio del host remoto cuando una conexión esté activa</translation>
 <translation id="5415713057512333739">URL de los datos que se van a descargar.</translation>
 <translation id="5416263061774624216">No usar la política de lista de sitios de Internet Explorer como fuente de reglas</translation>
@@ -5870,6 +5935,7 @@ Se eliminó en la versión M112.</translation>
 <translation id="55057839818162162">Permitir búsqueda asistida mediante cámara de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="55057971769693300">Inhabilitar el resaltado del cursor de texto</translation>
 <translation id="5508307164752647432">Habilitar la función Kerberos</translation>
+<translation id="5511266910976210617">No permitir la función Ayúdame a escribir.</translation>
 <translation id="5511702823008968136">Habilitar barra de marcadores</translation>
 <translation id="5512418063782665071">URL de la página de inicio</translation>
 <translation id="5516293691820655022">Cerrar Chrome por completo</translation>
@@ -7033,6 +7099,7 @@ ADVERTENCIA: Ten cuidado al cambiar este ajuste, ya que podría interferir en ot
 <translation id="6353890097388312479">Si se asigna el valor All (0) a esta política o no se establece, los usuarios podrán editar la configuración de confianza de todos los certificados AC, quitar certificados importados por el usuario e importar certificados mediante el administrador de certificados. Si se le asigna el valor UserOnly (1), los usuarios podrán gestionar únicamente certificados importados por usuarios, pero no podrán cambiar la configuración de confianza de los certificados integrados. Si se le asigna el valor None (2), los usuarios podrán ver los certificados AC, pero no gestionarlos.</translation>
 <translation id="6358320368815225772">Inhabilitar la atestación remota para el dispositivo</translation>
 <translation id="6362589180545896213">Inhabilitar la decodificación de vídeo del hardware GPU</translation>
+<translation id="6362805033373293870">Permitir la función Organizador de pestañas sin mejorar los modelos de IA.</translation>
 <translation id="6362856770865555544">Si se habilita la política o no se establece, se habilitará la optimización de WPAD (detección automática de proxy web) en <ph name="PRODUCT_NAME" />.
 
       Si se inhabilita la política, se inhabilitará la optimización de WPAD, lo que hará que <ph name="PRODUCT_NAME" /> tenga que esperar más tiempo la respuesta de los servidores WPAD basados en DNS.
@@ -7260,6 +7327,7 @@ Si no se define esta política o se proporciona una lista vacía de URLs, todas 
 <translation id="6506486086262398387">Si se habilita esta política, la función de sistemas de archivos compartidos en red de <ph name="PRODUCT_OS_NAME" /> usará NTLM para la autenticación en sistemas de archivos compartidos SMB si es necesario. Si se inhabilita, se desactivará el uso de NTLM para la autenticación en sistemas de archivos compartidos SMB.
 
       Si no se asigna ningún valor a esta política, el comportamiento estará inhabilitado para los usuarios gestionados y habilitado para el resto de los usuarios de forma predeterminada.</translation>
+<translation id="6508403116553969858">Establecer el valor de política predeterminado para las funciones de IA generativa incluidas en <ph name="PRODUCT_NAME" /></translation>
 <translation id="6508882314969525299">Inhabilitar los informes de telemetría de Kiosk Vision.</translation>
 <translation id="6509376413448002446">Configura el salvapantallas del usuario para la pantalla de bloqueo.
 
@@ -7303,6 +7371,7 @@ Nota: Las contraseñas podrían mantenerse más tiempo del especificado si el cl
 
       Si esta política no se establece, los usuarios recibirán notificaciones sobre los dispositivos USB conectados.</translation>
 <translation id="6536600139108165863">Reinicio automático al cerrar el dispositivo</translation>
+<translation id="6538355612742474835">Permitir la función Ayúdame a leer y mejorar los modelos de IA.</translation>
 <translation id="6538653424603921690">Inhabilitar siempre la pantalla de privacidad en la pantalla de inicio de sesión</translation>
 <translation id="6539246272469751178">Esta política no afecta a las aplicaciones para Android. Siempre utilizan el directorio de descargas predeterminado y no pueden acceder a ningún archivo que <ph name="PRODUCT_OS_NAME" /> haya descargado en un directorio de descargas que no sea el predeterminado.</translation>
 <translation id="6541383786427998658">Habilitar el almacenamiento de registros del sistema de las extensiones de empresa</translation>
@@ -7817,6 +7886,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_ALLOWED_FOR
 
 Si se inhabilita esta política o no se define, se aplicará el comportamiento predeterminado de bloquear dichas solicitudes.</translation>
 <translation id="6915524162137327111">Mostrar etiquetas de gestión durante 30 s</translation>
+<translation id="6919205861950516688">No permitir la función Organizador de pestañas.</translation>
 <translation id="6919819553978815392">Si se le asigna el valor true a esta política o no se configura, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> habilitarán los inicios de sesión como invitado. Los inicios de sesión como invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que todas las ventanas están en modo Incógnito.
 
       Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se inicien perfiles para invitados.
@@ -8085,6 +8155,15 @@ Si se le asigna el valor "Ninguno", la lupa siempre estará inhabilitada en la p
 Si defines esta política, los usuarios no podrán cambiarla ni anularla.
 
 Si no se define, la lupa estará inhabilitada inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="7107649610561925752">El Organizador de pestañas es una herramienta basada en la IA que crea automáticamente grupos de pestañas a partir de las pestañas abiertas de un usuario. Las sugerencias se basan en pestañas abiertas, pero no en el contenido de la página.
+
+Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+1 = Habilitar la función para los usuarios, pero no enviar datos a Google para entrenar o mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
 <translation id="7113439794629928551">Mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos</translation>
 <translation id="7113803652772945829">Si se le asigna el valor true a esta política, los usuarios podrán usar un gestor de contraseñas de terceros.
@@ -9738,6 +9817,7 @@ Si la política no se define o el valor es 0, al ir a una URL designada se abrir
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parámetros para URL instantánea que utiliza POST</translation>
 <translation id="8467267413626499807">Habilitar el servicio de SSO flotante</translation>
+<translation id="8467463980805035993">Permitir la función Ayúdame a leer sin mejorar los modelos de IA.</translation>
 <translation id="846994437739309080">Si se habilita (o no se define) esta política, se usarán certificados TLS añadidos por el usuario de almacenes de confianza de la plataforma al crear rutas para autenticar el servidor TLS.
 
 Si se inhabilita, los certificados TLS añadidos por el usuario de almacenes de confianza de la plataforma no se usarán al crear rutas para autenticar el servidor TLS.</translation>
@@ -9751,6 +9831,7 @@ Las listas de URLs <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="E
 Los patrones que coinciden con el origen tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal y como se indica en https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 
 El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad mínima de datos (en bytes) que activa la comprobación de patrones. Esto significa que la escritura en el portapapeles desde una URL bloqueada se permitiría si el tamaño de los datos copiados es inferior al valor especificado en este campo. El valor predeterminado es 100 bytes si el campo no se establece.</translation>
+<translation id="8471860377920321311">Permitir funciones de IA generativa y mejorar modelos de IA</translation>
 <translation id="8473107305327396242">Importar certificados de servidor TLS añadidos por el usuario desde almacenes de confianza de la plataforma.</translation>
 <translation id="8473841363404590708">Migrar archivos locales a Microsoft OneDrive y ocultar carpetas locales</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
@@ -10002,6 +10083,7 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
       Nota: Consulta una lista de variables que puedes usar en https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="8657543427358173663">Permitir que se recojan registros de eventos WebRTC de los servicios de Google</translation>
 <translation id="8659843732895043951">Permitir portapapeles en estos sitios</translation>
+<translation id="8660214745436301739">Permitir las funciones de IA generativa de DevTools y mejorar los modelos de IA.</translation>
 <translation id="8661297125441579970">No permitir la migración de datos ni ARC.</translation>
 <translation id="8661538142776716004">Borrar configuración de sitios</translation>
 <translation id="8661980316738569557">Habilitar el contraste alto</translation>
@@ -10489,6 +10571,13 @@ A diferencia de otras políticas, esta política definida a nivel de perfil tien
 <translation id="9015759770696099204">Los ajustes de F11/F12 están inhabilitados</translation>
 <translation id="9015952763003753868">Hacer que los <ph name="ACAM_HEADER_NAME" /> que coinciden en la solicitud preparatoria de <ph name="CORS" /> cumplan las especificaciones</translation>
 <translation id="9020630127193895800">Color índigo para la retroiluminación del teclado</translation>
+<translation id="9026905189580734497">Esta política controla la configuración de la función Ayúdame a leer de <ph name="PRODUCT_OS_NAME" />.
+
+Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+1 = Habilitar la función para los usuarios, pero no enviar datos a Google para entrenar o mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.</translation>
 <translation id="9031831501689819108">Habilitar la compatibilidad con navegadores antiguos</translation>
 <translation id="9032595854515551464">Habilitar la versión 2 del servicio <ph name="PRODUCT_NAME" /> e iniciar el escritorio remoto al iniciar sesión</translation>
 <translation id="9034285085962866065">Permitir la personalización de los accesos directos del sistema</translation>
@@ -10759,6 +10848,7 @@ Esta política no tendrá efecto si se inhabilita <ph name="METRICS_REPORTING_EN
       Si se le asigna el valor <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, se usará el modo EDU de la experiencia de incorporación del Asistente.</translation>
 <translation id="9191821120522935133">Permite habilitar la limitación de iframes no visibles de orígenes cruzados.</translation>
 <translation id="9192220384862917760">Habilitar el modo de cortina en hosts de acceso remoto</translation>
+<translation id="9194693367692364911">Permitir funciones de IA generativa de DevTools sin mejorar los modelos de IA.</translation>
 <translation id="9195766455191826480">No enviar información sobre el estado de seguridad</translation>
 <translation id="9197238499850071076">Especifica si el dispositivo debería restaurar la versión establecida por <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> si ya utiliza una versión posterior.
 

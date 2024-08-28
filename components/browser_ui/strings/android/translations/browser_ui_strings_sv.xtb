@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">När detta är aktiverat kan webbplatser be om att få använda kameran. När detta är inaktiverat får webbplatser inte använda kameran.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Cookies blockeras i Chrome igen i morgon}other{Cookies blockeras i Chrome igen om # dagar}}</translation>
 <translation id="3521663503435878242">Webbplatser under <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Tillåt inte att webbplatser spårar dina händer</translation>
 <translation id="3536227077203206203">Tillåts den här gången</translation>
 <translation id="3538390592868664640">Blockera webbplatser från att skapa en 3D-karta över dina omgivningar eller registrera kamerans position</translation>
 <translation id="3544058026430919413">Ett företag kan definiera en grupp av webbplatser som kan använda cookies för att dela din aktivitet i gruppen. Detta är inaktiverat i inkognitoläge.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">När detta är aktiverat kan webbplatser använda JavaScript. När detta är inaktiverat får webbplatser inte använda JavaScript.</translation>
 <translation id="5099358668261120049">All data och alla cookies som har sparats av <ph name="ORIGIN" /> eller motsvarande app på startskärmen raderas.</translation>
 <translation id="5100237604440890931">Vyn har komprimerats. Expandera den genom att klicka.</translation>
+<translation id="5116239826668864748">Du kan använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="5123685120097942451">Inkognitoflik</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sänkt pris på öppna flikar}other{Sänkta priser på öppna flikar}}</translation>
 <translation id="5186036860380548585">Alternativet visas högt upp på skärmen</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Den här webbplatsen ingår i en grupp som kan se din aktivitet. Gruppen har definierats av <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilfoton</translation>
 <translation id="6697925417670533197">Pågående nedladdningar</translation>
+<translation id="6709432001666529933">Fråga innan webbplatser tillåts att spåra dina händer (rekommenderas)</translation>
 <translation id="6722828510648505498">Blockera inloggningsmeddelanden från identitetstjänster.</translation>
 <translation id="6746124502594467657">Flytta ned</translation>
 <translation id="6749077623962119521">Vill du återställa behörigheter?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">Välj ett alternativ för <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6818926723028410516">Välj objekt</translation>
+<translation id="6838525730752203626">Använd Chrome som standard</translation>
 <translation id="6840760312327750441">Gruppera flikar genom att trycka länge på en flik. Dra sedan fliken ovanpå en annan flik.</translation>
 <translation id="6864395892908308021">Enheten kan inte läsa NFC</translation>
 <translation id="6870169401250095575">Dölj kortet Säkerhetskontroll</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7667547420449112975">Trollkarlen från Oz</translation>
 <translation id="7684642910516280563">Tillåt inte att en webbplats använder tredjepartscookies</translation>
+<translation id="7688240020069572972">Dölj kortet med tips om Chrome</translation>
 <translation id="7719367874908701697">Sidzoom</translation>
 <translation id="7759147511335618829">Styra/omprogrammera MIDI-enheter</translation>
 <translation id="7781829728241885113">Igår</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Flytta upp</translation>
 <translation id="8617611086246832542">När detta är aktiverat visas datorvyn för webbplatser. När detta är inaktiverat visas mobilvyn för webbplatser.</translation>
 <translation id="8649036394979866943">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies för att spåra dig när du surfar. Öppna inställningarna för att <ph name="BEGIN_LINK" />hantera spårningsskydd<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">När detta är aktiverat kan webbplatser be om att få spåra dina händer. När detta är inaktiverat får webbplatser inte spåra dina händer.</translation>
 <translation id="8676374126336081632">Radera inmatning</translation>
 <translation id="8681886425883659911">Annonser blockeras på webbplatser som är kända för att visa påträngande eller vilseledande annonser</translation>
 <translation id="868929229000858085">Sök bland kontakterna</translation>

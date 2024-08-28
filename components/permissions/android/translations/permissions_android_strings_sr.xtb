@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Овај сајт не може да вам тражи дозволу</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Потражите помоћ<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Укључите Bluetooth<ph name="END_LINK" /> да бисте омогућили упаривање</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> треба да добије дозволу за праћење руку.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Потражите помоћ<ph name="END_LINK" /> док скенирате уређаје…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> тражи дозволу да приступи микрофону за овај сајт.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> жели да тражи Bluetooth уређаје у близини. Пронађени су следећи уређаји:</translation>

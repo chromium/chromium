@@ -3436,7 +3436,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3439970425423980614">Binubuksan ang PDF sa Preview</translation>
 <translation id="3440663250074896476">Higit pang aksyon para sa <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Screen</translation>
-<translation id="3441663102605358937">Mag-sign in ulit sa <ph name="ACCOUNT" /> para ma-verify ang account na ito</translation>
 <translation id="3441824746233675597">Gawing mas mahirap para sa mga taong may access sa iyong internet traffic na makita kung aling mga site ang binibisita mo. Gumagamit ang <ph name="PRODUCT_NAME" /> ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System).</translation>
 <translation id="3442674350323953953">Hayaan ang Google na gamitin ang data ng iyong hardware para makatulong na mapahusay ang <ph name="DEVICE_OS" />. Kung tatanggi ka, ipapadala pa rin ang data na ito sa Google para makatukoy ng mga angkop na update, pero hindi ito iso-store o gagamitin sa ibang paraan.</translation>
 <translation id="3443545121847471732">Maglagay ng 6 na digit na PIN</translation>
@@ -4242,6 +4241,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3987993985790029246">Kopyahin ang link</translation>
 <translation id="3988124842897276887">Nakakonekta ang tab na ito sa isang USB device</translation>
 <translation id="3988996860813292272">Pumili ng timezone</translation>
+<translation id="3989635538409502728">Mag-sign Out</translation>
 <translation id="3991055816270226534">Pamahalaan ang third-party na cookies at mga proteksyon sa pag-track</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Kapag naka-on ang Katumpakan ng Lokasyon, gagamitin ang impormasyon tungkol sa mga wireless na signal, gaya ng mga access point ng Wi-Fi at tower ng cellular network, pati ang data ng sensor ng device, gaya ng accelerometer at gyroscope, para matantya ang mas tumpak na lokasyon ng device, na ginagamit ng mga app at serbisyo ng Android para magbigay ng mga feature na batay sa lokasyon. Para magawa ito, pana-panahong kinokolekta ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal malapit sa device na ito para mag-ambag sa mga na-crowdsource na lokasyon ng wireless na signal.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ginagamit ng Google ang impormasyong ito na kinolekta mula sa device na ito para: mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon; at mapahusay, maibigay, at mapanatili sa pangkalahatan ang mga serbisyo ng Google. Pinoproseso namin ang impormasyong ito batay sa mga lehitimong interes ng Google at mga third party para tugunan ang mga pangangailangan ng mga user. Hindi ginagamit ang impormasyong ito para tumukoy ng sinumang indibidwal.<ph name="END_PARAGRAPH2" />
@@ -7769,6 +7769,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="661266467055912436">Pinapahusay ang seguridad para sa iyo at sa lahat ng tao sa web.</translation>
 <translation id="6613267708691765962">Sina-scan para sa malware...</translation>
 <translation id="6613668613087513143">Kulang ang espasyo sa device na ito para matapos ang pag-update na ito. Magbakante ng <ph name="NECESSARY_SPACE" /> sa iyong device at subukan ulit mula sa Chrome browser mo.</translation>
+<translation id="6614172284067813496">Idinagdag ang page sa listahan ng babasahin</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
 <translation id="6618744767048954150">Tumatakbo</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8150,6 +8151,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6876155724392614295">Bisikleta</translation>
 <translation id="6876469544038980967">Hindi Nakatulong</translation>
 <translation id="6878422606530379992">Pinapayagan ang mga sensor</translation>
+<translation id="6878862640969460273">Landscape</translation>
 <translation id="6880587130513028875">Hinarangan ang mga larawan sa pahinang ito.</translation>
 <translation id="6881845890692344060">Nag-log out ang iyong administrator. Ikaw na ang may kontrol.</translation>
 <translation id="6882210908253838664">Kung hindi gumagana ang isang site, puwede mong subukang bigyan ito ng pansamantalang pahintulot na gumamit ng third-party na cookies. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -9688,6 +9690,7 @@ Key File: <ph name="KEY_FILE" />
 
 Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng mga bagong bersyon ng iyong extension.</translation>
 <translation id="8000020256436988724">Toolbar</translation>
+<translation id="800117767980299235">Pag-highlight ng boses</translation>
 <translation id="8002274832045662704">Advanced na configuration ng printer</translation>
 <translation id="8002670234429879764">Hindi na available ang <ph name="PRINTER_NAME" /></translation>
 <translation id="8004092996156083991">Ipapaalam namin sa iyo kung nakompromiso ang mga password mo.</translation>
@@ -10772,6 +10775,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="876956356450740926">Magpatakbo ng mga tool ng developer, IDE, at editor. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Root directory ng extension</translation>
 <translation id="8771300903067484968">Na-reset sa default na background ang background ng start page.</translation>
+<translation id="8773535891252326047">Nakopya ang link para i-highlight</translation>
 <translation id="8774379074441005279">Kumpirmahin ang Pag-restore</translation>
 <translation id="8774934320277480003">Tuktok na margin</translation>
 <translation id="8775144690796719618">Di-wastong URL</translation>

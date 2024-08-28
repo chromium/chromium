@@ -1018,6 +1018,7 @@
 <translation id="587735546353481577">ဝဘ်ဆိုက်တစ်ခုကို လိုက်ကြည့်ရန် ၎င်းသို့သွားပြီး Chrome မီနူးဖွင့်ကာ ‘လိုက်ကြည့်ရန်’ ကို တို့ပါ။</translation>
 <translation id="5879072387416556377">ပိုကောင်းသည့်အကြံပြုချက်များ ရယူခြင်း</translation>
 <translation id="5885378508678660271">အကြောင်းကြားချက်များ <ph name="SEPARATOR" /> ဤဝဘ်ဆိုက်သည် အန္တရာယ်ရှိသဖြင့် Chrome က ဤခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
+<translation id="5895834791314695851">ဤစက်တွင် စကားဝှက်များကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ။ သင့်စကားဝှက်များ ဆက်သုံးရန် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">ပိတ်ထားသော လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5919204609460789179">စင့်ခ်လုပ်ရန် <ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
@@ -1556,6 +1557,7 @@
 <translation id="820568752112382238">အများဆုံး ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များ</translation>
 <translation id="8209050860603202033">ပုံဖွင့်</translation>
 <translation id="8210770465353466621">သင့်တဘ်များကို ဤနေရာတွင် ပြပါမည်</translation>
+<translation id="8211101263765532799">စကားဝှက်အချို့ကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ</translation>
 <translation id="8215740705341534369">အရန်စာမျက်နှာ</translation>
 <translation id="8218622182176210845">သင့်အကောင့်ကို စီမံခန့်ခွဲခြင်း</translation>
 <translation id="8221401890884589479">သင်မလိုလားသည့် ဝဘ်ဆိုက်များကို ပိတ်ထားနိုင်သည်။ ရက် ၃၀ ကျော်ပြီဖြစ်သော ဝဘ်ဆိုက်များကိုလည်း Chrome က အလိုအလျောက်ဖျက်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -1656,6 +1658,7 @@
 <translation id="864544049772947936">ဝင်းဒိုး (<ph name="INSTANCE_COUNTS" />) ခုကို စီမံရန်</translation>
 <translation id="8664215986015753476">Chrome ကို သင့်အလိုကျသုံးခြင်း</translation>
 <translation id="8664979001105139458">ဖိုင်အမည် ရှိပြီးသားဖြစ်သည်</translation>
+<translation id="8672883760227492369">ဤစက်တွင် စကားဝှက်အချို့ကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ။ ဤစကားဝှက်များကို Google Password Manager သို့ ရွှေ့နိုင်သည်။</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> သို့ စာရင်းသွင်းပါ</translation>
 <translation id="8676789164135894283">လက်မှတ်ထိုးဝင်မှု စိစစ်ချက်များ</translation>
 <translation id="8683039184091909753">ပုံ</translation>

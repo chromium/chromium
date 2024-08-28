@@ -1423,6 +1423,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="199610894463449797">{0,plural, =1{Mbylle këtë profil}other{Mbylle këtë profil (# dritare)}}</translation>
 <translation id="1997433994358798851">Chrome ka nevojë për leje për të përdorur Bluetooth-in për t'u lidhur me pajisjen tënde</translation>
 <translation id="1997616988432401742">Certifikatat e tua</translation>
+<translation id="1998715278591719161">Lejohen që të gjurmojnë duart e tua</translation>
 <translation id="1999115740519098545">Në nisje</translation>
 <translation id="2002109485265116295">Kohë reale</translation>
 <translation id="2002160221914907025">Inteligjenca artificiale eksperimentale</translation>
@@ -3417,7 +3418,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3439970425423980614">Po hap PDF-në në "Pamje paraprake"</translation>
 <translation id="3440663250074896476">Më shumë veprime për <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Ekrani</translation>
-<translation id="3441663102605358937">Identifikohu përsëri në <ph name="ACCOUNT" /> për ta verifikuar këtë llogari</translation>
 <translation id="3441824746233675597">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. <ph name="PRODUCT_NAME" /> përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="3442674350323953953">Lejo Google të përdorë të dhënat e harduerit për të ndihmuar në përmirësimin e <ph name="DEVICE_OS" />. Nëse refuzon, këto të dhëna do të dërgohen gjithsesi te Google për të përcaktuar përditësimet e duhura, por nuk do të ruhen apo përdoren.</translation>
 <translation id="3443545121847471732">Fut një kod PIN me 6 shifra</translation>
@@ -3533,6 +3533,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3521606918211282604">Ndrysho madhësinë e diskut</translation>
 <translation id="3522088408596898827">Hapësira e diskut është jashtëzakonisht e ulët. Liro hapësirë në disk dhe provo përsëri.</translation>
 <translation id="3522979239100719575">Po kërkon për profilet e disponueshme. Kjo mund të zgjasë disa minuta.</translation>
+<translation id="3523447078673133727">Mos lejo që sajtet të gjurmojnë duart e tua</translation>
 <translation id="3524518036046613664">Zbulo pajisje në rrjetin tënd lokal, si p.sh. printerë</translation>
 <translation id="3524965460886318643">Eksporto aktivitetet</translation>
 <translation id="3525426269008462093">Rishiko sinkronizimin e pajisjes pas konfigurimit</translation>
@@ -4222,6 +4223,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
 <translation id="3988124842897276887">Kjo skedë është e lidhur me një pajisje me USB</translation>
 <translation id="3988996860813292272">Zgjidh zonën orare</translation>
+<translation id="3989635538409502728">Dil</translation>
 <translation id="3991055816270226534">Menaxho kukit e palëve të treta dhe mbrojtjet ndaj gjurmimit</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Kur "Saktësia e vendndodhjes" është aktive, informacionet për sinjalet wireless, si p.sh. pikat e qasjes Wi-Fi dhe kullat e rrjetit celular, bashkë me të dhënat e sensorëve të pajisjes, si p.sh. përshpejtuesi dhe xhiroskopi, përdoren për të përllogaritur një vendndodhje më të saktë të pajisjes, të cilën shërbimet dhe aplikacionet për Android e përdorin për të ofruar veçoritë bazuar te vendndodhja. Për ta bërë këtë, Google mbledh në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless në afërsi me këtë pajisje për të kontribuar në mbledhjen e vendndodhjeve të sinjaleve wireless.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google i përdor këto informacione të mbledhura nga kjo pajisje për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur në përgjithësi shërbimet e Google. Ne i përpunojmë këto informacione bazuar në interesat legjitimë të Google dhe palëve të treta për t'u shërbyer nevojave të përdoruesve. Këto informacione nuk përdoren për të identifikuar asnjë individ.<ph name="END_PARAGRAPH2" />
@@ -5910,6 +5912,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="52550593576409946">Aplikacioni "kioskë" nuk mund të hapej.</translation>
 <translation id="5255726914791076208">Kur të modifikosh çelësin e kalimit, llogaria jote e <ph name="RP_ID" /> nuk do të ndryshojë</translation>
 <translation id="5255859108402770436">Identifikohu përsëri</translation>
+<translation id="5256174546894739043">Pyet kur një sajt kërkon që të gjurmojë duart e tua</translation>
 <translation id="52566111838498928">Po ngarkon fontet...</translation>
 <translation id="5256861893479663409">Në të gjitha sajtet</translation>
 <translation id="5258992782919386492">Instaloje në këtë pajisje</translation>
@@ -6656,6 +6659,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5801051031414037185">Konfiguro telefonin</translation>
 <translation id="5801568494490449797">Preferencat</translation>
 <translation id="5803689677801500549">Fjalëkalimet e ruajtura do të shfaqen këtu. Për të importuar fjalëkalimet te "<ph name="BRAND" />" për <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />zgjidh një skedar CSV<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">Sajtet i gjurmojnë zakonisht duart dhe gishtat e tu për të përmirësuar përvojat gjithëpërfshirëse</translation>
 <translation id="5804241973901381774">Lejet</translation>
 <translation id="5804259315582798390">Aktivizimi i rikuperimit të të dhënave lokale dështoi</translation>
 <translation id="5805268472388605531">Shtyp dhe mbaj shtypur tastet e tastierës për të parë shenjat e theksimit dhe karakteret e veçanta</translation>
@@ -7743,6 +7747,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="661266467055912436">Përmirëson sigurinë për ty dhe këdo në ueb.</translation>
 <translation id="6613267708691765962">Po skanon për softuerë keqdashës...</translation>
 <translation id="6613668613087513143">Nuk ka hapësirë të mjaftueshme në këtë pajisje për ta përfunduar këtë përditësim. Pastro <ph name="NECESSARY_SPACE" /> në pajisjen tënde dhe provo përsëri nga shfletuesi Chrome.</translation>
+<translation id="6614172284067813496">Faqja u shtua te lista e leximit</translation>
 <translation id="6615455863669487791">Ma trego</translation>
 <translation id="6618744767048954150">Në ekzekutim</translation>
 <translation id="6619058681307408113">Daemon-i i printerit të linjës (LPD)</translation>
@@ -7756,6 +7761,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6622980291894852883">Vazhdo bllokimin e imazheve</translation>
 <translation id="6624036901798307345">Në modalitetin e tabletit, trokit në butonin e shiritit të veglave të numëruesit të skedave për të hapur një shirit të ri skedash që shfaq miniaturat e çdo skede.</translation>
 <translation id="6624687053722465643">Ëmbëlsia</translation>
+<translation id="6627743754845412571">Nuk lejohen që të gjurmojnë duart e tua</translation>
 <translation id="6628316682330029452">Certifikatat e klientit janë certifikatat që të identifikojnë ty në serverët e tjerë.</translation>
 <translation id="6628328486509726751">U ngarkua në <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Siguri më e fortë</translation>
@@ -7998,7 +8004,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">Ky sajt lejohet të ruajë të dhëna në pajisjen tënde.</translation>
 <translation id="680488281839478944">VM "<ph name="DEFAULT_VM_NAME" />" ekziston</translation>
-<translation id="6805478749741295868">Kjo është një veçori eksperimentale nga IA dhe nuk do t'ia dalë gjithmonë.</translation>
+<translation id="6805478749741295868">Kjo është një veçori eksperimentale nga IA dhe nuk do të jetë gjithmonë e saktë.</translation>
 <translation id="6805647936811177813">Identifikohu te <ph name="TOKEN_NAME" /> për të importuar certifikatën e klientit nga <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Aktivizo gjurmimin RLZ në <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Mos lejon, por pyet më vonë</translation>
@@ -8123,6 +8129,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6876155724392614295">Biçikletë</translation>
 <translation id="6876469544038980967">Jo i dobishëm</translation>
 <translation id="6878422606530379992">Sensorët lejohen</translation>
+<translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">Imazhet u bllokuan në këtë faqe.</translation>
 <translation id="6881845890692344060">Administratori yt ka dalë. Kontrollin e ke ti tani.</translation>
 <translation id="6882210908253838664">Nëse një sajt nuk funksionon, mund të provosh t'i japësh një leje të përkohshme për të përdorur kukit e palëve të treta. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -9659,6 +9666,7 @@ Skedari i çelësit: <ph name="KEY_FILE" />
 
 Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për të krijuar versione të reja të shtesës tënde.</translation>
 <translation id="8000020256436988724">Shiriti i veglave</translation>
+<translation id="800117767980299235">Theksimi i zërit</translation>
 <translation id="8002274832045662704">Konfigurimi i përparuar i printerit</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> nuk ofrohet më</translation>
 <translation id="8004092996156083991">Nëse fjalëkalimet e tua janë komprometuar, do të të njoftojmë.</translation>
@@ -10741,6 +10749,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="876956356450740926">Ekzekuto veglat e zhvilluesve, IDE-të dhe modifikuesit. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Direktoria rrënjë e shtesës</translation>
 <translation id="8771300903067484968">Sfondi i faqes së nisjes është rivendosur në sfondin e parazgjedhur.</translation>
+<translation id="8773535891252326047">Lidhja u kopjua për te teksti i theksuar</translation>
 <translation id="8774379074441005279">Konfirmo restaurimin</translation>
 <translation id="8774934320277480003">Kufiri i sipërm</translation>
 <translation id="8775144690796719618">URL-ja është e pavlefshme</translation>

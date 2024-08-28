@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">要刪除分頁群組嗎？</translation>
 <translation id="2195124168004379331">你的瀏覽器安全無虞</translation>
 <translation id="2199562093267256223">此操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
+<translation id="2214453882118345682">使用相機購物、翻譯及識別所見內容。</translation>
 <translation id="2218443599109088993">縮小</translation>
 <translation id="2220529011494928058">報告問題</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
@@ -470,6 +471,7 @@
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3269051798482119531">繼續使用此分頁</translation>
 <translation id="3272527697863656322">取消</translation>
+<translation id="3273510436356991673">自訂主畫面</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
 <translation id="3285962946108803577">分享網頁…</translation>
 <translation id="3289505634533552500">語音搜尋</translation>
@@ -1317,6 +1319,7 @@
 <translation id="7272437679830969316">無法驗證您的身分。未複製密碼。</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{已追蹤新包裹}other{已追蹤新包裹}}</translation>
 <translation id="7291368939935408496">正在準備密碼…</translation>
+<translation id="7300448350764260141">為對抗網上威脅增添多一重安全保障。</translation>
 <translation id="7302503784943202842">在所有裝置上使用密碼</translation>
 <translation id="7313347584264171202">您可在此查看無痕式分頁</translation>
 <translation id="7335132237885014335">接收通知</translation>

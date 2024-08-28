@@ -3103,6 +3103,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3184591616546256659">Gunakan PIN ini untuk mengubah setelan kontrol orang tua.
     Jika Anda lupa PIN, powerwash perangkat ini dan siapkan lagi.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Aplikasi ini diblokir}other{Beberapa aplikasi diblokir}}</translation>
+<translation id="3185454065699440434">Izinkan ekstensi di <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Pengukuran iklan</translation>
 <translation id="3187556136478864255">Bisakah Anda melihat perangkat transmisi Anda di
     <ph name="BEGIN_LINK" />
@@ -3435,7 +3436,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3439970425423980614">Membuka PDF dalam Pratinjau</translation>
 <translation id="3440663250074896476">Tindakan lainnya untuk <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Layar</translation>
-<translation id="3441663102605358937">Login ke <ph name="ACCOUNT" /> lagi untuk memverifikasi akun ini</translation>
 <translation id="3441824746233675597">Persulit orang yang memiliki akses ke traffic internet Anda untuk melihat situs yang Anda kunjungi. <ph name="PRODUCT_NAME" /> menggunakan koneksi aman untuk mencari alamat IP situs di Domain Name System (DNS).</translation>
 <translation id="3442674350323953953">Izinkan Google menggunakan data hardware Anda untuk membantu meningkatkan <ph name="DEVICE_OS" />. Jika Anda menolak, data ini tetap dikirimkan ke Google untuk menentukan update yang tepat, tetapi tidak disimpan ataupun digunakan.</translation>
 <translation id="3443545121847471732">Masukkan PIN 6 digit</translation>
@@ -3901,6 +3901,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3760460896538743390">Periksa Halaman Latar &amp;Belakang</translation>
 <translation id="37613671848467444">Buka di &amp;Jendela Samaran</translation>
 <translation id="3761556954875533505">Izinkan situs mengedit file?</translation>
+<translation id="3761560059647741692">Lanskap</translation>
 <translation id="3761733456040768239">Tindakan lainnya untuk <ph name="CARD_DESCRIPTION" />, CVC disimpan</translation>
 <translation id="3763433740586298940">Anda dapat memblokir situs yang tidak diinginkan. Chrome juga otomatis menghapus situs dari daftar yang tersimpan lebih dari 30 hari.</translation>
 <translation id="3763549179847864476">Tombol kembali Panduan Privasi</translation>
@@ -4241,6 +4242,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3987993985790029246">Salin link</translation>
 <translation id="3988124842897276887">Tab ini terhubung ke perangkat USB</translation>
 <translation id="3988996860813292272">Pilih zona waktu</translation>
+<translation id="3989635538409502728">Logout</translation>
 <translation id="3991055816270226534">Kelola cookie pihak ketiga dan fitur anti-pelacakan</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat yang lebih akurat. Perkiraan lokasi perangkat yang lebih akurat tersebut digunakan oleh aplikasi dan layanan Android untuk menyediakan fitur berdasarkan lokasi. Untuk melakukannya, Google secara berkala mengumpulkan informasi tentang sensor perangkat dan sinyal nirkabel di dekat perangkat ini untuk berkontribusi pada lokasi sinyal nirkabel yang diperoleh melalui crowdsource.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google menggunakan informasi yang dikumpulkan dari perangkat ini untuk: meningkatkan akurasi lokasi dan layanan berdasarkan lokasi; dan secara umum meningkatkan, menyediakan, serta mengelola layanan Google. Kami memproses informasi ini berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna. Informasi ini tidak digunakan untuk mengidentifikasi individu mana pun.<ph name="END_PARAGRAPH2" />
@@ -7429,6 +7431,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6351178441572658285">Bahasa aplikasi</translation>
 <translation id="6354918092619878358">Kurva eliptis SECG secp256r1 (alias ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Jaga perangkat tetap menyala</translation>
+<translation id="6356537493253478650">Tenang</translation>
 <translation id="63566973648609420">Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, Anda perlu <ph name="BEGIN_LINK" />menyetel ulang sinkronisasi<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Scroll ke atas untuk memindahkan halaman ke bawah</translation>
 <translation id="6356893102071098867">Pastikan Anda memilih akun yang benar</translation>
@@ -8186,6 +8189,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6909422577741440844">Terima dari perangkat ini?</translation>
 <translation id="6910190732484284349">Hapus kunci sandi untuk nama pengguna: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Dihapus</translation>
+<translation id="6910274140210351823">Gelap</translation>
 <translation id="6911734910326569517">Jejak memori</translation>
 <translation id="6912007319859991306">PIN SIM Seluler</translation>
 <translation id="6912380255120084882">Coba perangkat lain</translation>
@@ -8337,6 +8341,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7014174261166285193">Pemasangan gagal.</translation>
 <translation id="7014480873681694324">Hapus Sorotan</translation>
 <translation id="7014741021609395734">Tingkat zoom</translation>
+<translation id="7015135594296285641">Izinkan ekstensi</translation>
 <translation id="7016995776279438971">Merah-hijau, lemah terhadap merah (Protanomali)</translation>
 <translation id="7017004637493394352">Ucapkan "Ok Google" lagi</translation>
 <translation id="7017219178341817193">Tambahkan halaman baru</translation>

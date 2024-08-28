@@ -462,7 +462,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">Il CVC si trova sul retro della tua carta. Sono le ultime 3 cifre in alto a destra della casella della firma.</translation>
 <translation id="1810391395243432441">Proteggi le password con il blocco schermo</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position} di oltre {count} indirizzo}other{{position} di oltre {count} indirizzi}}</translation>
 <translation id="1812527064848182527">orizzontale</translation>
 <translation id="1812975699435941848">Istruzione e formazione medica</translation>
 <translation id="1816436748874040213">Può chiedere di scorrere e aumentare lo zoom delle schede condivise</translation>
@@ -1165,7 +1164,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3176929007561373547">Controlla le impostazioni del proxy o contatta il tuo amministratore di rete per verificare che il server proxy funzioni. Se non ritieni di dover utilizzare un server proxy: <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Sapere quando usi attivamente questo dispositivo</translation>
 <translation id="3180358318770512945">Educazione dei figli</translation>
-<translation id="3182185041786697613">Vuoi salvare il codice di sicurezza?</translation>
+<translation id="3182185041786697613">Salvare il codice di sicurezza?</translation>
 <translation id="3185635157430775689">Componenti per computer</translation>
 <translation id="3187472288455401631">Misurazione degli annunci</translation>
 <translation id="3190736958609431397">Annulla monitoraggio</translation>
@@ -1288,6 +1287,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3402261774528610252">La connessione utilizzata per caricare il sito usava TLS 1.0 o TLS 1.1, che ora sono obsoleti e in futuro verranno disattivati. In seguito alla disattivazione, gli utenti non potranno caricare questo sito. Il server dovrà abilitare TLS 1.2 o versione successiva.</translation>
 <translation id="3405664148539009465">Personalizza caratteri</translation>
 <translation id="3407789382767355356">accesso di terze parti</translation>
+<translation id="340924996148642843">La funzionalità di confronto non è al momento disponibile</translation>
 <translation id="3409896703495473338">Gestisci le impostazioni di sicurezza</translation>
 <translation id="3414275587143250384">Sistemi distribuiti e cloud computing</translation>
 <translation id="3414952576877147120">Dimensioni:</translation>
@@ -1445,6 +1445,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="365641980390710834">Abbigliamento casual</translation>
 <translation id="3658742229777143148">Revisione</translation>
 <translation id="3659521826520353662">Quali siti web definiti dall'amministratore vengono visitati e quando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Cerca altre opzioni di acquisto in altri negozi che vendono questo prodotto.</translation>
 <translation id="3664782872746246217">Parole chiave:</translation>
 <translation id="3665100783276035932">La maggior parte dei siti dovrebbe funzionare come previsto</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Scopri di più<ph name="LINK_END1" /></translation>
@@ -1882,6 +1883,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4451135742916150903">Può chiedere di connettersi ai dispositivi HID</translation>
 <translation id="4451684391620232683">Testo presentato all'utente:</translation>
 <translation id="4452328064229197696">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di controllare le password salvate.</translation>
+<translation id="4452957520362597816">Chiedere di installare app web</translation>
 <translation id="4456937135469235202">Viaggi avventura</translation>
 <translation id="4464826014807964867">Siti web con informazioni della tua organizzazione</translation>
 <translation id="4466576951214254884">Prestiti per studenti e finanziamenti per lo studio</translation>
@@ -2540,7 +2542,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="57094364128775171">Suggerisci password efficace…</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinari</translation>
-<translation id="5715150588940290235">Vuoi eliminare i codici di sicurezza salvati?</translation>
+<translation id="5715150588940290235">Eliminare i codici di sicurezza salvati?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> di <ph name="WINDOW_COUNT" /> su questo dispositivo</translation>
 <translation id="5716325061445053985">Tocca per aprire la scheda sullo smartphone</translation>
 <translation id="5717509257172454543">Pattinaggio su ghiaccio</translation>
@@ -2814,6 +2816,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6240964651812394252">Per usare Gestore delle password di Google con il tuo sistema operativo, riavvia Chrome e consenti l'accesso al gestore delle password del tuo computer. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="6241121617266208201">Nascondi suggerimenti</translation>
 <translation id="624499991300733384">Servizio compositore di stampa</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> giorni fa</translation>
 <translation id="6246868321321344665">La tua organizzazione può vedere i dati di navigazione, ad esempio le password e la cronologia, sia nel profilo di lavoro sia in quello personale</translation>
 <translation id="6250932670816326647">Prodotti per il corpo e per il bagno</translation>
 <translation id="6251906504834538140">{0,plural, =1{Spostamento del file bloccato}other{Spostamento di <ph name="FILE_COUNT" /> file bloccato}}</translation>
@@ -2987,6 +2990,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6529602333819889595">&amp;Ripeti eliminazione</translation>
 <translation id="6535617236508021606">Questa carta è stata salvata nel tuo Account Google per consentirti di utilizzarla sui servizi Google.</translation>
 <translation id="6536221421038631327">Se rimuovi un abbonamento Passpoint da <ph name="DEVICE_TYPE" />, verranno rimosse le reti associate. Contatta "<ph name="FRIENDLY_NAME" />" per apportare modifiche al piano di abbonamento. <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Per visualizzare le tabelle di confronto, attiva la sincronizzazione</translation>
 <translation id="6539092367496845964">Si è verificato un problema. Riprova più tardi.</translation>
 <translation id="6540488083026747005">Hai consentito i cookie di terze parti su questo sito</translation>
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
@@ -3402,6 +3406,7 @@ Ulteriori dettagli:
 <translation id="7346081071264046066">"rispondi sì a questo invito a nozze con entusiasmo"</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7353601530677266744">Riga di comando</translation>
+<translation id="7356678400607112844">Ultima visita</translation>
 <translation id="7359588939039777303">Annunci bloccati.</translation>
 <translation id="7360451453306104998">Quando Google trova sconti disponibili, li mostra nella fase di pagamento</translation>
 <translation id="7363096869660964304">Non sei completamente invisibile: se navighi in incognito, la tua navigazione non viene nascosta al tuo datore di lavoro, al provider di servizi Internet o ai siti web che visiti.</translation>
@@ -3734,7 +3739,7 @@ Ulteriori dettagli:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Il CVC di questa carta verrà criptato e salvato sul tuo dispositivo per un pagamento più rapido</translation>
 <translation id="7937554595067888181">Scadenza: <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Mostra i premi e i vantaggi disponibili per le tue carte al momento del pagamento <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Scopri di più sui vantaggi delle carte<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="7938490694919717008">Mostra i premi e i vantaggi disponibili per le tue carte al momento del pagamento. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Scopri di più sui vantaggi delle carte<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Il certificato del server non è ancora valido.</translation>
 <translation id="7941628148012649605">Busta Chou 4</translation>
 <translation id="794169214536209644">Caramelle e dolciumi</translation>

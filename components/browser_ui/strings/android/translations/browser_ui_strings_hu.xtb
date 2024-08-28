@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">Ha be van kapcsolva, a webhelyek hozzáférést kérhetnek a kamerához. Ha ki van kapcsolva, a webhelyek nem használhatják a kamerát.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{A Chrome holnap ismét letiltja a cookie-kat}other{# nap, amíg a Chrome ismét letiltja a cookie-kat}}</translation>
 <translation id="3521663503435878242">Webhelyek a(z) <ph name="DOMAIN" /> domain alatt</translation>
+<translation id="3523447078673133727">A webhelyek nem követhetik a kézmozgását</translation>
 <translation id="3536227077203206203">Erre az alkalomra engedélyezve van</translation>
 <translation id="3538390592868664640">Az Ön környezetéről készített 3D-s térkép létrehozásának, valamint a kamerapozíció követésének letiltása a webhelyek számára</translation>
 <translation id="3544058026430919413">Az egyes vállalatok meghatározhatják azon webhelyek csoportját, amelyek cookie-k használatával megoszthatják egymással az Ön által a csoportban végzett tevékenységeket. Inkognitóban ki van kapcsolva ez a funkció.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">Ha be van kapcsolva, a webhelyek használhatnak JavaScriptet. Ha ki van kapcsolva, a webhelyek nem használhatnak JavaScriptet.</translation>
 <translation id="5099358668261120049">Ezzel törli a(z) <ph name="ORIGIN" /> vagy az alkalmazása által tárolt összes adatot és cookie-t a kezdőképernyőn.</translation>
 <translation id="5100237604440890931">Összecsukva – kattintson a kibontáshoz.</translation>
+<translation id="5116239826668864748">Bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint</translation>
 <translation id="5123685120097942451">Inkognitó lap</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Árcsökkenés a megnyitott lapokon}other{Árcsökkenések a megnyitott lapokon}}</translation>
 <translation id="5186036860380548585">A lehetőség a képernyő tetején található</translation>
@@ -360,6 +362,7 @@
 <translation id="6683865262523156564">Ez a webhely egy olyan csoportban található, amely láthatja az Ön tevékenységeit. A csoportot a következő határozza meg: <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Profilfotók</translation>
 <translation id="6697925417670533197">Aktív letöltések</translation>
+<translation id="6709432001666529933">Rákérdezés, mielőtt engedélyezi a webhelyek számára a kézmozgás nyomon követését (ajánlott)</translation>
 <translation id="6722828510648505498">Letilthatja az identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
 <translation id="6746124502594467657">Mozgatás lefelé</translation>
 <translation id="6749077623962119521">Visszaállítja az engedélyeket?</translation>
@@ -367,6 +370,7 @@
 <translation id="6787751205395685251">Válassza ki a kívánt lehetőséget a következőhöz: <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6818926723028410516">Válasszon elemeket</translation>
+<translation id="6838525730752203626">A Chrome használata alapértelmezettként</translation>
 <translation id="6840760312327750441">Lapok csoportosításához tartsa nyomva az egyik lapot, majd húzza rá a másikra.</translation>
 <translation id="6864395892908308021">Ez az eszköz nem képes az NFC-alapú kommunikáció olvasására</translation>
 <translation id="6870169401250095575">A Biztonsági ellenőrzés kártya elrejtése</translation>
@@ -418,6 +422,7 @@
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7667547420449112975">Óz, a csodák csodája</translation>
 <translation id="7684642910516280563">Annak letiltása egy webhely számára, hogy harmadik féltől származó cookie-t használjon</translation>
+<translation id="7688240020069572972">Chrome-tippek kártyájának elrejtése</translation>
 <translation id="7719367874908701697">Oldal nagyítása/kicsinyítése</translation>
 <translation id="7759147511335618829">MIDI-eszköz vezérlése/átprogramozása</translation>
 <translation id="7781829728241885113">Tegnap</translation>
@@ -483,6 +488,7 @@
 <translation id="8609465669617005112">Mozgatás felfelé</translation>
 <translation id="8617611086246832542">Ha be van kapcsolva, a webhelyek asztali nézete jelenik meg. Ha ki van kapcsolva, a webhelyek mobilnézete látható.</translation>
 <translation id="8649036394979866943">A Chrome a legtöbb webhely számára korlátozza, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a követés elleni védelmeket<ph name="END_LINK" />.</translation>
+<translation id="8676316391139423634">Ha be van kapcsolva, a webhelyek kérhetik a kézmozgása nyomon követését. Ha ki van kapcsolva, a webhelyek nem követhetik a kézmozgását.</translation>
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
 <translation id="8681886425883659911">A hirdetések le vannak tiltva a köztudottan tolakodó vagy félrevezető hirdetéseket megjelenítő webhelyeken</translation>
 <translation id="868929229000858085">Keresés a névjegyek között</translation>

@@ -149,6 +149,7 @@
 <translation id="3448554387819310837">When on, sites can ask to use your camera. When off, sites can't use your camera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome will block cookies again tomorrow}other{# days until Chrome blocks cookies again}}</translation>
 <translation id="3521663503435878242">Sites under <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Don't allow sites to track your hands</translation>
 <translation id="3536227077203206203">Allowed this time</translation>
 <translation id="3538390592868664640">Block sites from creating a 3D map of your surroundings or tracking camera position</translation>
 <translation id="3544058026430919413">A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.</translation>
@@ -249,6 +250,7 @@
 <translation id="5091663350197390230">When on, sites can use JavaScript. When off, sites can't use JavaScript.</translation>
 <translation id="5099358668261120049">This will clear all data and cookies stored by <ph name="ORIGIN" /> or by its app on your home screen.</translation>
 <translation id="5100237604440890931">Collapsed – click to expand.</translation>
+<translation id="5116239826668864748">You can use Chrome any time that you tap links in messages, documents and other apps</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Price drop on your open tabs}other{Price drops on your open tabs}}</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
@@ -291,6 +293,7 @@
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5740126560802162366">Sites can save data on your device</translation>
+<translation id="5750869797196646528">Hand tracking</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5844448279347999754">When on, sites can ask to see text and images saved to your clipboard. When off, sites can't see text or images saved to your clipboard.</translation>
@@ -360,6 +363,7 @@
 <translation id="6683865262523156564">This site is in a group that can see your activity. The group is defined by <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
+<translation id="6709432001666529933">Ask before allowing sites to track your hands (recommended)</translation>
 <translation id="6722828510648505498">Block sign-in prompts from identity services.</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="6749077623962119521">Reset permissions?</translation>
@@ -367,6 +371,7 @@
 <translation id="6787751205395685251">Select an option for <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6818926723028410516">Select items</translation>
+<translation id="6838525730752203626">Use Chrome by default</translation>
 <translation id="6840760312327750441">To group tabs, touch and hold a tab. Then, drag it onto another tab.</translation>
 <translation id="6864395892908308021">This device can't read NFC</translation>
 <translation id="6870169401250095575">Hide safety check card</translation>
@@ -418,6 +423,7 @@
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">Don't allow a site to use third-party cookies</translation>
+<translation id="7688240020069572972">Hide Chrome tips card</translation>
 <translation id="7719367874908701697">Page zoom</translation>
 <translation id="7759147511335618829">MIDI device control and reprogramme.</translation>
 <translation id="7781829728241885113">Yesterday</translation>
@@ -483,6 +489,7 @@
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8617611086246832542">When on, the desktop view of websites is shown. When off, the mobile view of websites is shown.</translation>
 <translation id="8649036394979866943">Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage your tracking protections<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">When on, sites can ask to track your hands. When off, sites can't track your hands.</translation>
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>
 <translation id="868929229000858085">Search your contacts</translation>

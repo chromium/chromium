@@ -236,6 +236,7 @@
 <translation id="2188919919468240749">Eyða flipahóp?</translation>
 <translation id="2195124168004379331">Vafrinn virðist í fínu standi</translation>
 <translation id="2199562093267256223">Þetta eyðir hópnum úr öllum tækjum sem eru skráð inn á <ph name="USER_EMAIL" />.</translation>
+<translation id="2214453882118345682">Notaðu myndavélina þína til að versla, þýða og bera kennsl á það sem þú sérð.</translation>
 <translation id="2218443599109088993">Minnka aðdrátt</translation>
 <translation id="2220529011494928058">Tilkynna vandamál</translation>
 <translation id="2230173723195178503">Vefsíða sótt</translation>
@@ -470,6 +471,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3268451620468152448">Opna flipa</translation>
 <translation id="3269051798482119531">Halda áfram með þennan flipa</translation>
 <translation id="3272527697863656322">Hætta við</translation>
+<translation id="3273510436356991673">Sérsníddu heimaskjáinn þinn</translation>
 <translation id="3277021493514034324">Veffang afritað</translation>
 <translation id="3285962946108803577">Deila síðu...</translation>
 <translation id="3289505634533552500">Raddleit</translation>
@@ -1317,6 +1319,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nýr pakki rakinn}one{Nýir pakkar raktir}other{Nýir pakkar raktir}}</translation>
 <translation id="7291368939935408496">Undirbýr aðgangsorð...</translation>
+<translation id="7300448350764260141">Auktu vörn gegn netógnum.</translation>
 <translation id="7302503784943202842">Nota aðgangsorð í öllum tækjum</translation>
 <translation id="7313347584264171202">Þú finnur huliðsflipana þína hér</translation>
 <translation id="7335132237885014335">Fá tilkynningar</translation>

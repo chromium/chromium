@@ -3087,6 +3087,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3184591616546256659">Usa este PIN para cambiar la configuración de los controles parentales.
     Si olvidas el PIN, aplica Powerwash en el dispositivo y vuelve a configurarlo.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Se bloqueó esta app}other{Se bloquearon algunas apps.}}</translation>
+<translation id="3185454065699440434">Permitir extensiones en <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3187556136478864255">¿Puedes ver tu dispositivo de transmisión en la
     <ph name="BEGIN_LINK" />
@@ -3419,7 +3420,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3439970425423980614">Abriendo PDF en vista previa</translation>
 <translation id="3440663250074896476">Más acciones para <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Pantalla</translation>
-<translation id="3441663102605358937">Vuelve a acceder a <ph name="ACCOUNT" /> para verificar esta cuenta</translation>
 <translation id="3441824746233675597">Haz que sea más difícil que las personas con acceso a tu tráfico de Internet vean los sitios que visitas. <ph name="PRODUCT_NAME" /> usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="3442674350323953953">Permitir que Google utilice tus datos de hardware para mejorar <ph name="DEVICE_OS" />. Si lo rechazas, se enviarán estos datos a Google para determinar las actualizaciones adecuadas, pero no se almacenarán ni se utilizarán de otra manera.</translation>
 <translation id="3443545121847471732">Ingresa un PIN de 6 dígitos</translation>
@@ -3885,6 +3885,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3760460896538743390">Inspeccionar página &amp;de fondo</translation>
 <translation id="37613671848467444">Abrir en una ventana de &amp;incógnito</translation>
 <translation id="3761556954875533505">¿Quieres permitir que el sitio edite archivos?</translation>
+<translation id="3761560059647741692">Paisaje</translation>
 <translation id="3761733456040768239">Más acciones para <ph name="CARD_DESCRIPTION" />, CVC guardado</translation>
 <translation id="3763433740586298940">Puedes bloquear los sitios que no quieres. Chrome también borra los sitios de la lista que tienen más de 30 días de forma automática.</translation>
 <translation id="3763549179847864476">Botón Atrás de la Guía de privacidad</translation>
@@ -4225,6 +4226,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3987993985790029246">Copiar vínculo</translation>
 <translation id="3988124842897276887">Esta pestaña está conectada a un dispositivo USB</translation>
 <translation id="3988996860813292272">Seleccionar zona horaria</translation>
+<translation id="3989635538409502728">Salir</translation>
 <translation id="3991055816270226534">Administra las cookies de terceros y las protecciones contra el seguimiento</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Cuando la Precisión de la ubicación está activada, la información sobre señales inalámbricas, como los puntos de acceso Wi‑Fi y las torres de redes móviles, junto con los datos de sensores del dispositivo, como el acelerómetro y el giroscopio, se utiliza para calcular una ubicación más precisa del dispositivo, la cual pueden usar las apps y los servicios para Android para proporcionar funciones basadas en la ubicación. Para ello, Google recopila periódicamente información sobre los sensores de los dispositivos y las señales inalámbricas cercanas a este dispositivo para contribuir a las ubicaciones de las señales inalámbricas con participación colectiva.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google usa la información recopilada de este dispositivo para mejorar la precisión de la ubicación y los servicios basados en la ubicación, y para mejorar, proporcionar y mantener los servicios de Google en general. Procesamos esta información según los intereses legítimos de Google (y de terceros) de satisfacer las necesidades de los usuarios. Esta información no se usa para identificar a ninguna persona.<ph name="END_PARAGRAPH2" />
@@ -4400,6 +4402,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
         Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="4115002065223188701">La red está fuera de alcance</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116480382905329353">Se detectó 1 vez</translation>
 <translation id="4116704186509653070">Volver a abrir</translation>
 <translation id="4117714603282104018">Respuesta del panel táctil</translation>
 <translation id="4118579674665737931">Reinicia el dispositivo y vuelve a intentarlo.</translation>
@@ -4803,6 +4806,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4426508677408162512">Todos los favoritos</translation>
 <translation id="4426513927906544654">Obtener recomendaciones de contenido</translation>
 <translation id="4426857487270413362">No se pudieron descargar los archivos del instalador. Comprueba tu conexión a Internet y que tienes suficiente espacio libre en el disco, y vuelve a intentarlo. El código de error es <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Se detectó <ph name="COUNT" /> veces</translation>
 <translation id="4427365070557649936">Verificando el código de confirmación…</translation>
 <translation id="4429163740524851942">Diseño del teclado físico</translation>
 <translation id="4430019312045809116">Volumen</translation>
@@ -7413,6 +7417,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6351178441572658285">Idiomas de la app</translation>
 <translation id="6354918092619878358">Curva elíptica SECG elliptic secp256r1 (también conocido como ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">No apagues el dispositivo</translation>
+<translation id="6356537493253478650">Sereno</translation>
 <translation id="63566973648609420">Solo las personas que tengan tu frase de contraseña pueden leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar esta configuración, deberás <ph name="BEGIN_LINK" />restablecer la sincronización<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Desplázate hacia arriba para bajar la página</translation>
 <translation id="6356893102071098867">Revisa si elegiste la cuenta correcta</translation>
@@ -7868,6 +7873,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6701535245008341853">No se pudo obtener el perfil.</translation>
 <translation id="6702639462873609204">&amp;Editar</translation>
 <translation id="6702859741546259407">Para usar <ph name="FEATURE_NAME" />, activa Bluetooth y Wi-Fi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Vuelve a intentarlo más tarde desde Chrome.</translation>
 <translation id="6703254819490889819">Restablecer la copia de seguridad</translation>
 <translation id="6703613667804166784">Este archivo puede dañar tus cuentas de redes sociales y personales, incluido <ph name="USER_EMAIL" /></translation>
@@ -8170,6 +8176,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6909422577741440844">¿Deseas recibir contenido de este dispositivo?</translation>
 <translation id="6910190732484284349">Borrar la llave de acceso para el nombre de usuario <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Eliminado</translation>
+<translation id="6910274140210351823">Oscuro</translation>
 <translation id="6911734910326569517">Espacio en memoria</translation>
 <translation id="6912007319859991306">PIN de la SIM de red móvil</translation>
 <translation id="6912380255120084882">Prueba con otro dispositivo</translation>
@@ -8228,6 +8235,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6960648667961844909">No se pudieron descargar los archivos de voz en <ph name="LANGUAGE" />. Se intentará completar la descarga más tarde. La enunciación se enviará a Google para su procesamiento hasta que se complete la descarga.</translation>
 <translation id="696103774840402661">Se borraron de forma permanente todos los archivos y datos locales de todos los usuarios de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6961327401577924850">Por lo general, los sitios buscan dispositivos Bluetooth para usarlos en funciones, como configurar o sincronizar una baliza electrónica, un monitor de estado físico o de salud, o una lámpara inteligente</translation>
+<translation id="6963772203726867701">No se detectó</translation>
 <translation id="6963872466817251924">Destacador del cursor de texto</translation>
 <translation id="6964390816189577014">Héroe</translation>
 <translation id="6964760285928603117">Quitar del grupo</translation>
@@ -8321,6 +8329,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7014174261166285193">Error de instalación</translation>
 <translation id="7014480873681694324">Dejar de destacar</translation>
 <translation id="7014741021609395734">Nivel del zoom</translation>
+<translation id="7015135594296285641">Permitir extensiones</translation>
 <translation id="7016995776279438971">Rojo-verde, rojo débil (protanomalía)</translation>
 <translation id="7017004637493394352">Di "OK Google" otra vez.</translation>
 <translation id="7017219178341817193">Agregar nueva página</translation>
@@ -8626,6 +8635,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7258192266780953209">Transformaciones</translation>
 <translation id="7258225044283673131">La app no responde. Selecciona "Forzar cierre" para cerrar la app.</translation>
 <translation id="7260186537988033909">Se completó la inscripción del dispositivo en el modo de kiosko y señalización</translation>
+<translation id="7260206782629605806">Si disminuyes el umbral, puedes usar un movimiento sutil. Si aumentas el umbral, es posible que necesites un movimiento más exagerado.</translation>
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7261612856573623172">Voz en la función de texto a voz del sistema</translation>
 <translation id="7262004276116528033">El servicio de acceso a la cuenta está alojado en <ph name="SAML_DOMAIN" /></translation>

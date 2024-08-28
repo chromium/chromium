@@ -463,7 +463,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="180757923930449935">(64-bit diemulasikan)</translation>
 <translation id="180991881384371158">CVC Anda terletak di bagian belakang kartu. CVC adalah 3 digit terakhir di kanan atas kotak tanda tangan.</translation>
 <translation id="1810391395243432441">Lindungi sandi dengan kunci layar</translation>
-<translation id="1810597570737826742">{count,plural, =1{{position} dari {count} alamat Plus}other{{position} dari {count} alamat Plus}}</translation>
 <translation id="1812527064848182527">lanskap</translation>
 <translation id="1812975699435941848">Pendidikan Kesehatan &amp; Pelatihan Medis</translation>
 <translation id="1816436748874040213">Dapat meminta untuk men-scroll dan memperbesar/memperkecil tab yang dibagikan</translation>
@@ -719,6 +718,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2276057643614339130">Dasar cetak</translation>
 <translation id="2277103315734023688">Cari Maju</translation>
 <translation id="2277753418458118549">Tampilkan detail koneksi</translation>
+<translation id="2277949605527755300"><ph name="URL" /> ingin melacak tangan Anda</translation>
 <translation id="22792995594807632">Peninjauan diperlukan sebelum mendownload</translation>
 <translation id="2283340219607151381">Simpan dan isi alamat</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' dihapus</translation>
@@ -1529,6 +1529,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3793574014653384240">Jumlah dan penyebab error yang terjadi baru-baru ini</translation>
 <translation id="3799805948399000906">Font diminta</translation>
 <translation id="3801265110651850478">Kirim permintaan “Do Not Track” untuk traffic penjelajahan Anda</translation>
+<translation id="3801297763951514916">Sering Anda buka</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803801106042434208">Mesin telusur ini populer di wilayah Anda</translation>
 <translation id="3807366285948165054">Perpindahan image X</translation>
@@ -1622,6 +1623,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Kurang dari 1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
+<translation id="3990532701115075684">Melacak tangan Anda</translation>
 <translation id="3992684624889376114">Tentang halaman ini</translation>
 <translation id="3995639283717357522">Terapkan kebijakan</translation>
 <translation id="399754345297554962">Ujian Terstandardisasi &amp; Ujian Masuk</translation>
@@ -2367,6 +2369,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Tidak dapat melihat pratinjau URL non-HTTPS</translation>
 <translation id="5386426401304769735">Rantai sertifikat untuk situs ini berisi sertifikat yang ditandatangani menggunakan SHA-1.</translation>
+<translation id="5391010642126249196">Anda membukanya</translation>
 <translation id="539203134595252721">Tenis Meja</translation>
 <translation id="5392506727170022660">Logam (Semi-Kilap)</translation>
 <translation id="5394069166371280357">Acara TV Berorientasi Keluarga</translation>
@@ -2566,6 +2569,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5742806904559466333">Bar, Klub, &amp; Kehidupan Malam</translation>
 <translation id="5743684619253032786">Produk Perawatan Kuku</translation>
 <translation id="5745733273847572235">Dapat meminta lokasi Anda</translation>
+<translation id="5750869797196646528">Pelacakan tangan</translation>
 <translation id="5759751709240058861">Menggunakan &amp; menggerakkan kamera Anda</translation>
 <translation id="5763042198335101085">Masukkan alamat email yang valid</translation>
 <translation id="5764725887548570807">Format asal tidak valid.</translation>
@@ -2985,6 +2989,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6513005815064132016">Dapat meminta untuk melacak posisi kamera Anda</translation>
 <translation id="6517596291481585650">Peringatan: Kebijakan ini tidak digabung sebagai daftar sebagaimana yang ditetapkan oleh kebijakan karena bukan merupakan daftar.</translation>
 <translation id="6518133107902771759">Verifikasi</translation>
+<translation id="6519885440226079262">Dapat meminta untuk melacak tangan Anda</translation>
 <translation id="6520026037299163656">Aplikasi Web &amp; Alat Online</translation>
 <translation id="65203098586853226">Menerjemahkan <ph name="SOURCE" /> ke <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">Tidak aktif</translation>
@@ -3025,6 +3030,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6599642189720630047">Produk yang Dipantau</translation>
 <translation id="6606309334576464871">Chrome memblokir situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah.
             <ph name="NEW_LINE" />Jika fitur situs tidak berfungsi, <ph name="START_LINK" />coba izinkan sementara cookie pihak ketiga<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">pelacakan tangan</translation>
 <translation id="6613866251791999074">Pelajari lebih lanjut mesin telusur di Chrome</translation>
 <translation id="6615297766614333076">Tempat kertas 2</translation>
 <translation id="6619496928666593220">IBAN belum diisi</translation>
@@ -3475,6 +3481,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7440140511386898319">Jelajahi saat offline</translation>
 <translation id="7441627299479586546">Subjek kebijakan salah</translation>
 <translation id="7441864845853794192">Makanan Adiboga &amp; Khas</translation>
+<translation id="7442389976360981500">Izinkan pelacakan tangan?</translation>
 <translation id="7442725080345379071">Oranye Muda</translation>
 <translation id="7444046173054089907">Situs ini diblokir</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie akan diblokir lagi hari ini}=1{Cookie akan diblokir lagi besok}other{# hari sebelum cookie diblokir lagi}}</translation>
@@ -4131,6 +4138,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="865032292777205197">sensor gerakan</translation>
 <translation id="865255447216708819">Film Cetak Belakang</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
+<translation id="8660780831677950176">Anda sering membukanya pada waktu ini</translation>
 <translation id="8662463432865928030">Properti Komersial</translation>
 <translation id="8663226718884576429">Ringkasan Pesanan, <ph name="TOTAL_LABEL" />, Detail Selengkapnya</translation>
 <translation id="8663909737634214500">Cakram Optis</translation>

@@ -661,6 +661,7 @@
 <translation id="3386978599540877378">सामग्री को बड़ा दिखाने की फ़ुल-स्क्रीन की सुविधा</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">क्या आपको लिखवाने की सुविधा चालू करनी है?</translation>
+<translation id="3392702002175498061">ब्राउज़िंग इतिहास से जुड़ा सारा कॉन्टेंट दिखाएं</translation>
 <translation id="3394432020929931914">, बड़ा किया गया</translation>
 <translation id="3401474642070997151">सुझावों को अपनी पसंद के मुताबिक बनाने के लिए, किसी सुझाव पर राइट क्लिक करें या उसे दबाकर रखें</translation>
 <translation id="3405101454990027959">माइक्रोफ़ोन का ऐक्सेस दें</translation>
@@ -814,6 +815,7 @@
 <translation id="385300504083504382">टेक्स्ट की शुरुआत में जाएं</translation>
 <translation id="3859364108019690">ऐप्लिकेशन स्ट्रीम नहीं किए जा सकते</translation>
 <translation id="3861651314799684201">पूरी स्क्रीन को रिकॉर्ड करने के लिए, Enter दबाएं</translation>
+<translation id="3870197372373144624">अपने डिवाइस को बंद करके देखें.</translation>
 <translation id="3886872229787704059">इसे आज खोला गया था</translation>
 <translation id="3891340733213178823">साइन आउट करने के लिए दो बार Ctrl+Shift+Q दबाएं.</translation>
 <translation id="3893630138897523026">ChromeVox (बोला गया फ़ीडबैक)</translation>
@@ -929,6 +931,7 @@
 <translation id="4264977415328155183">, छोटा किया गया</translation>
 <translation id="4265259722091164182">टाइटल केस</translation>
 <translation id="4269883910223712419">इस डिवाइस के एडमिन ये काम कर सकते हैं:</translation>
+<translation id="4271841440229266861">Files में मौजूद सारा कॉन्टेंट दिखाएं</translation>
 <translation id="4274537685965975248">Ctrl + Alt + डाउन ऐरो कीबोर्ड शॉर्टकट बदल गया है. End बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + राइट ऐरो दबाएं.</translation>
 <translation id="4275283744500212192">विंडो लेआउट के विकल्प खोलें</translation>
 <translation id="4275663329226226506">मीडिया</translation>
@@ -956,6 +959,7 @@
 <translation id="4327147325944669226">गेम रिकॉर्ड करें</translation>
 <translation id="4333628967105022692">अगर एक से ज़्यादा उपयोगकर्ताओं ने साइन इन किया हो, तो Lacros काम नहीं करता.</translation>
 <translation id="4338109981321384717">आवर्धक ग्लास</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, म्यूट किया गया</translation>
 <translation id="4351244548802238354">संवाद बंद करें</translation>
 <translation id="4356872429719185452">हॉटस्पॉट की जानकारी दिखाएं. हॉटस्पॉट चालू किया जा रहा है.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  रिकॉर्ड किया जा रहा है</translation>
@@ -1302,6 +1306,7 @@
 <translation id="5503884284981862082">Google Assistant को खोलने या बंद करने के लिए</translation>
 <translation id="550391772491508736">कास्ट करना फिर से शुरू करें</translation>
 <translation id="5506975627792768506">ज़ूम करने की सुविधा को चालू या बंद करने के लिए</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, Enter दबाने से ऑडियो म्यूट हो जाएगा.</translation>
 <translation id="5512042095225963688">पिछला शब्द मिटाएं</translation>
 <translation id="5519005148254860683">Google Tasks को बड़ा करें</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -2112,6 +2117,7 @@
 <translation id="8239034820133090126">दाईं ओर मौजूद डेस्क को चालू करें</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, फ़ोन की बैटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ऐप्लिकेशन</translation>
+<translation id="825129991941217170">Google Drive में मौजूद सारा कॉन्टेंट दिखाएं</translation>
 <translation id="8257510091797044096">अपना डिवाइस सेट अप करें</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="8262312463845990408">'चुनें और सुनें' सुविधा को रोकें या चालू करें</translation>
@@ -2342,6 +2348,7 @@
 <translation id="9098969848082897657">फ़ोन को साइलेंट करें</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> या <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">पिछली कार्रवाई को पहले जैसा करें</translation>
+<translation id="9126642911267312373">ब्लूटूथ उपलब्ध नहीं है</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 मिनट में}one{# मिनट में}other{# मिनट में}}</translation>
 <translation id="9129245940793250979">रीयर बटन</translation>
 <translation id="9133335900048457298">सुरक्षित कॉन्टेंट को रिकॉर्ड नहीं किया जा सकता</translation>

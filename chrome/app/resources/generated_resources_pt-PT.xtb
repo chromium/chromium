@@ -3424,7 +3424,6 @@ Quer pará-lo?</translation>
 <translation id="3439970425423980614">A abrir PDF na Pré-visualização</translation>
 <translation id="3440663250074896476">Mais ações para <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Ecrã</translation>
-<translation id="3441663102605358937">Inicie sessão na sua conta <ph name="ACCOUNT" /> novamente para validar esta conta.</translation>
 <translation id="3441824746233675597">Torne mais difícil a visualização dos sites que visita por parte das pessoas com acesso ao seu tráfego da Internet. O <ph name="PRODUCT_NAME" /> usa uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>
 <translation id="3442674350323953953">Permitir que a Google utilize os dados do seu hardware para ajudar a melhorar o dispositivo <ph name="DEVICE_OS" />. Se recusar, estes dados ainda são enviados para a Google para determinar quais são as atualizações adequadas, mas não são armazenados nem utilizados em qualquer outro local.</translation>
 <translation id="3443545121847471732">Introduza um PIN de 6 dígitos</translation>
@@ -4231,6 +4230,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3987993985790029246">Cop. link</translation>
 <translation id="3988124842897276887">Este separador está associado a um dispositivo USB</translation>
 <translation id="3988996860813292272">Selecionar fuso horário</translation>
+<translation id="3989635538409502728">Terminar sessão</translation>
 <translation id="3991055816270226534">Gerir cookies de terceiros e proteções contra acompanhamento</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Quando a Precisão da localização está ativada, são usadas informações sobre sinais sem fios, como pontos de acesso Wi‑Fi e torres de redes móveis, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para calcular uma localização do dispositivo mais precisa, que os serviços e as apps Android usam para oferecer funcionalidades baseadas na localização. Para isso, a Google trata periodicamente informações sobre os sensores do dispositivo e os sinais sem fios próximos deste dispositivo para contribuir para a recolha de localizações de sinais sem fios.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A Google usa estas informações recolhidas deste dispositivo para o seguinte: melhorar a Precisão da localização e os serviços baseados na localização; e melhorar, oferecer e manter, de forma geral, os serviços Google. A Google trata estas informações com base nos interesses legítimos da Google e de terceiros para atender às necessidades dos utilizadores. Estas informações não são usadas para identificar nenhum indivíduo.<ph name="END_PARAGRAPH2" />
