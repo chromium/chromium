@@ -6,19 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-NSString* const kWhatsNewPromoRegistrationKey = @"whatsNewPromoRegistration";
-
-NSString* const kWhatsNewM116PromoRegistrationKey =
-    @"whatsNewM116PromoRegistration";
-
-NSString* const kWhatsNewDaysAfterFre = @"whatsNewDaysAfterFre";
-
-NSString* const kWhatsNewLaunchesAfterFre = @"whatsNewLaunchesAfterFre";
-
-NSString* const kWhatsNewM116DaysAfterFre = @"whatsNewM116DaysAfterFre";
-
-NSString* const kWhatsNewM116LaunchesAfterFre = @"whatsNewM116LaunchesAfterFre";
-
 NSString* const kWhatsNewUsageEntryKey = @"userHasInteractedWithWhatsNew";
 
 NSString* const kWhatsNewM116UsageEntryKey =
