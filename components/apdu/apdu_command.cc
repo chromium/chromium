@@ -42,18 +42,21 @@ std::optional<ApduCommand> ApduCommand::CreateFromMessage(
     // No data present; response expected.
     case kApduMinHeader + 3:
       // Fifth byte must be 0.
-      if (message[4] != 0)
+      if (message[4] != 0) {
         return std::nullopt;
+      }
       response_length = ParseMessageLength(message, kApduCommandLengthOffset);
       // Special case where response length of 0x0000 corresponds to 65536
       // as defined in ISO7816-4.
-      if (response_length == 0)
+      if (response_length == 0) {
         response_length = kApduMaxResponseLength;
+      }
       break;
     default:
       // Fifth byte must be 0.
-      if (message[4] != 0)
+      if (message[4] != 0) {
         return std::nullopt;
+      }
       auto data_length = ParseMessageLength(message, kApduCommandLengthOffset);
 
       if (message.size() == data_length + kApduCommandDataOffset) {
@@ -68,8 +71,9 @@ std::optional<ApduCommand> ApduCommand::CreateFromMessage(
         response_length = ParseMessageLength(message, response_length_offset);
         // Special case where response length of 0x0000 corresponds to 65536
         // as defined in ISO7816-4.
-        if (response_length == 0)
+        if (response_length == 0) {
           response_length = kApduMaxResponseLength;
+        }
       } else {
         return std::nullopt;
       }
@@ -111,8 +115,9 @@ std::vector<uint8_t> ApduCommand::GetEncodedCommand() const {
     size_t data_length = data_.size();
 
     encoded.push_back(0x0);
-    if (data_length > kApduMaxDataLength)
+    if (data_length > kApduMaxDataLength) {
       data_length = kApduMaxDataLength;
+    }
     encoded.push_back((data_length >> 8) & 0xff);
     encoded.push_back(data_length & 0xff);
     encoded.insert(encoded.end(), data_.begin(), data_.begin() + data_length);
@@ -122,8 +127,9 @@ std::vector<uint8_t> ApduCommand::GetEncodedCommand() const {
 
   if (response_length_ > 0) {
     size_t response_length = response_length_;
-    if (response_length > kApduMaxResponseLength)
+    if (response_length > kApduMaxResponseLength) {
       response_length = kApduMaxResponseLength;
+    }
     // A zero value represents a response length of 65,536 bytes.
     encoded.push_back((response_length >> 8) & 0xff);
     encoded.push_back(response_length & 0xff);
