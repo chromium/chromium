@@ -332,7 +332,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   private hasSevereWarnings_(): boolean {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
-        this.data.runtimeWarnings.length > 0 || !!this.data.blacklistText;
+        this.data.runtimeWarnings.length > 0 || !!this.data.blocklistText;
   }
 
   /**

@@ -77,7 +77,7 @@ declare global {
         ENABLED = 'ENABLED',
         DISABLED = 'DISABLED',
         TERMINATED = 'TERMINATED',
-        BLACKLISTED = 'BLACKLISTED',
+        BLOCKLISTED = 'BLOCKLISTED',
       }
 
       export enum ComandScope {
@@ -226,7 +226,7 @@ declare global {
       }
 
       export interface ExtensionInfo {
-        blacklistText?: string;
+        blocklistText?: string;
         safetyCheckText?: SafetyCheckStrings;
         commands: Command[];
         controlledInfo?: ControlledInfo;

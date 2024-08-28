@@ -1041,13 +1041,13 @@ TEST_F(ExtensionInfoGeneratorUnitTest, Blocklisted) {
   info2 = GetInfoFromList(info_list, id2);
   ASSERT_NE(nullptr, info1);
   ASSERT_NE(nullptr, info2);
-  EXPECT_EQ(developer::ExtensionState::kBlacklisted, info1->state);
+  EXPECT_EQ(developer::ExtensionState::kBlocklisted, info1->state);
   EXPECT_EQ(developer::ExtensionState::kEnabled, info2->state);
 
   // Verify getExtensionInfo() returns data on blocklisted extensions.
   auto info3 = GenerateExtensionInfo(id1);
   ASSERT_NE(nullptr, info3);
-  EXPECT_EQ(developer::ExtensionState::kBlacklisted, info3->state);
+  EXPECT_EQ(developer::ExtensionState::kBlocklisted, info3->state);
 }
 
 // Test generating extension action commands properly.

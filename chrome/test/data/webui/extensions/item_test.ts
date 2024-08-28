@@ -95,7 +95,7 @@ suite('ExtensionItemTest', function() {
     assertTrue(item.$.enableToggle.checked);
     item.set('data.state', 'DISABLED');
     assertFalse(item.$.enableToggle.checked);
-    item.set('data.state', 'BLACKLISTED');
+    item.set('data.state', 'BLOCKLISTED');
     assertFalse(item.$.enableToggle.checked);
   });
 
@@ -250,7 +250,7 @@ suite('ExtensionItemTest', function() {
     // Severe warnings.
     const kCorrupt = 1 << 0;
     const kSuspicious = 1 << 1;
-    const kBlacklisted = 1 << 2;
+    const kBlocklisted = 1 << 2;
     const kRuntime = 1 << 3;
     // Allowlist warning.
     const kSafeBrowsingAllowlist = 1 << 4;
@@ -263,8 +263,8 @@ suite('ExtensionItemTest', function() {
       assertEquals(
           !!(mask & kSuspicious), isChildVisible(item, '#suspicious-warning'));
       assertEquals(
-          !!(mask & kBlacklisted),
-          isChildVisible(item, '#blacklisted-warning'));
+          !!(mask & kBlocklisted),
+          isChildVisible(item, '#blocklisted-warning'));
       assertEquals(
           !!(mask & kRuntime), isChildVisible(item, '#runtime-warnings'));
       assertEquals(
@@ -286,11 +286,11 @@ suite('ExtensionItemTest', function() {
     flush();
     assertWarnings(kCorrupt | kSuspicious);
 
-    item.set('data.blacklistText', 'This item is blacklisted');
+    item.set('data.blocklistText', 'This item is blocklisted');
     flush();
-    assertWarnings(kCorrupt | kSuspicious | kBlacklisted);
+    assertWarnings(kCorrupt | kSuspicious | kBlocklisted);
 
-    item.set('data.blacklistText', null);
+    item.set('data.blocklistText', null);
     flush();
     assertWarnings(kCorrupt | kSuspicious);
 
@@ -381,8 +381,8 @@ suite('ExtensionItemTest', function() {
     item.set('data.userMayModify', true);
     flush();
 
-    // Test case of a blacklisted extension.
-    item.set('data.state', 'BLACKLISTED');
+    // Test case of a blocklisted extension.
+    item.set('data.state', 'BLOCKLISTED');
     flush();
     assertTrue(item.$.enableToggle.disabled);
     // Reset state.

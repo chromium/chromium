@@ -427,7 +427,7 @@ void ExtensionInfoGenerator::CreateExtensionInfo(
   else if ((ext = registry->terminated_extensions().GetByID(id)) != nullptr)
     state = developer::ExtensionState::kTerminated;
   else if ((ext = registry->blocklisted_extensions().GetByID(id)) != nullptr)
-    state = developer::ExtensionState::kBlacklisted;
+    state = developer::ExtensionState::kBlocklisted;
 
   if (ext && ui_util::ShouldDisplayInExtensionSettings(*ext)) {
     CreateExtensionInfoHelper(*ext, state);
@@ -463,7 +463,7 @@ void ExtensionInfoGenerator::CreateExtensionsInfo(
     add_to_list(registry->disabled_extensions(),
                 developer::ExtensionState::kDisabled);
     add_to_list(registry->blocklisted_extensions(),
-                developer::ExtensionState::kBlacklisted);
+                developer::ExtensionState::kBlocklisted);
   }
   if (include_terminated) {
     add_to_list(registry->terminated_extensions(),
@@ -551,7 +551,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
       break;
   }
   if (blocklist_text != -1) {
-    info->blacklist_text = l10n_util::GetStringUTF8(blocklist_text);
+    info->blocklist_text = l10n_util::GetStringUTF8(blocklist_text);
   }
 
   if (extension_system_->extension_service()->allowlist()->ShouldDisplayWarning(
