@@ -26498,7 +26498,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "WebViewSupervisedUserSiteDetection"
+                        "WebViewSupervisedUserSiteBlock"
                     ]
                 }
             ]
