@@ -638,8 +638,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewAudio"),
         TestCase("openQuickViewAudioOnDrive"),
         TestCase("openQuickViewAudioWithImageMetadata"),
-        // TODO(b/361765762): Re-enable this test. Test became flaky.
-        // TestCase("openQuickViewImageJpg"),
+        TestCase("openQuickViewImageJpg"),
         TestCase("openQuickViewImageJpeg"),
         TestCase("openQuickViewImageJpeg").InGuestMode(),
         TestCase("openQuickViewImageExif"),
