@@ -74,6 +74,15 @@ BASE_FEATURE(kPlusAddressGlobalToggle,
              "PlusAddressGlobalToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// When enabled, users that have accepted the legal notice will see a
+// streamlined flow for creating plus addresses that never leaves the Autofill
+// popup.
+BASE_FEATURE(kPlusAddressInlineCreation,
+             "PlusAddressInlineCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, mobile manual fallbacks for addresses and passwords show plus
 // address filling information.

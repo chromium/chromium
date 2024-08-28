@@ -151,6 +151,36 @@ bool IsSiteExcluded(const base::flat_set<std::string>& excluded_sites,
   return excluded_sites.contains(GetEtldPlusOne(origin));
 }
 
+// Returns an Autofill `Suggestion` for creating a new plus address.
+// TODO(crbug.com/362445807): Add tests for the inline suggestion once we set
+// more suggestion properties.
+Suggestion CreateNewPlusAddressSuggestion(bool has_accepted_notice) {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
+      SuggestionType::kCreateNewPlusAddress);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (has_accepted_notice &&
+      base::FeatureList::IsEnabled(features::kPlusAddressInlineCreation)) {
+    suggestion.type = SuggestionType::kCreateNewPlusAddressInline;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  if constexpr (!BUILDFLAG(IS_ANDROID)) {
+    suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+  }
+  suggestion.icon = Suggestion::Icon::kPlusAddress;
+  suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
+  suggestion.feature_for_iph =
+      &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
+#if BUILDFLAG(IS_ANDROID)
+  suggestion.iph_description_text =
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID);
+#endif  // BUILDFLAG(IS_ANDROID)
+  return suggestion;
+}
+
 }  // namespace
 
 PlusAddressService::PlusAddressService(
@@ -374,27 +404,13 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
       std::move(callback).Run({});
       return;
     }
-    Suggestion create_plus_address_suggestion(
-        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
-        SuggestionType::kCreateNewPlusAddress);
+
     RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
                                       kCreateNewPlusAddressSuggested);
-    if constexpr (!BUILDFLAG(IS_ANDROID)) {
-      create_plus_address_suggestion.labels = {
-          {Suggestion::Text(l10n_util::GetStringUTF16(
-              IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-    }
-    create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
-    create_plus_address_suggestion.feature_for_new_badge =
-        &features::kPlusAddressesEnabled;
-    create_plus_address_suggestion.feature_for_iph =
-        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
-#if BUILDFLAG(IS_ANDROID)
-    create_plus_address_suggestion.iph_description_text =
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID);
-#endif  // BUILDFLAG(IS_ANDROID)
-    std::move(callback).Run({std::move(create_plus_address_suggestion)});
+    std::move(callback).Run({CreateNewPlusAddressSuggestion(
+        !base::FeatureList::IsEnabled(
+            features::kPlusAddressUserOnboardingEnabled) ||
+        setting_service_->GetHasAcceptedNotice())});
     return;
   }
 
