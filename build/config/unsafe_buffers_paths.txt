@@ -120,8 +120,6 @@
 -printing/
 -remoting/host/
 -remoting/client/input/
--sandbox/linux/seccomp-bpf-helpers/
--sandbox/win/fuzzer/
 -services/accessibility
 -services/data_decoder
 -services/shape_detection
