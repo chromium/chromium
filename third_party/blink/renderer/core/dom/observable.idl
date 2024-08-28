@@ -8,6 +8,7 @@ callback SubscribeCallback = void (Subscriber subscriber);
 callback ObserverCallback = void (any value);
 callback ObserverCompleteCallback = void ();
 
+callback Reducer = any (any accumulator, any currentValue, unsigned long long index);
 callback Mapper = any (any element, unsigned long long index);
 
 // Differs from Mapper only in return type, since this callback is exclusively
@@ -72,5 +73,6 @@ interface Observable {
   [CallWith=ScriptState] Promise<boolean> some(Predicate predicate, optional SubscribeOptions options = {});
   [CallWith=ScriptState] Promise<boolean> every(Predicate predicate, optional SubscribeOptions options = {});
   [CallWith=ScriptState] Promise<any> find(Predicate predicate, optional SubscribeOptions options = {});
+  [CallWith=ScriptState] Promise<any> reduce(Reducer reducer, optional any initialValue, optional SubscribeOptions options = {});
 };
 

@@ -1361,6 +1361,7 @@ interface Observable
     method inspect
     method last
     method map
+    method reduce
     method some
     method subscribe
     method switchMap

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_complete_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predicate.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_reducer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_observableinspector_observercallback.h"
@@ -153,6 +154,106 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
  private:
   Member<ScriptPromiseResolver<IDLSequence<IDLAny>>> resolver_;
   HeapVector<ScriptValue> values_;
+  Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
+// This is the internal observer associated with the `reduce()` operator. See
+// https://wicg.github.io/observable/#dom-observable-reduce for its definition
+// and spec prose.
+class OperatorReduceInternalObserver final : public ObservableInternalObserver {
+ public:
+  OperatorReduceInternalObserver(ScriptPromiseResolver<IDLAny>* resolver,
+                                 AbortController* controller,
+                                 V8Reducer* reducer,
+                                 std::optional<ScriptValue> initial_value,
+                                 AbortSignal::AlgorithmHandle* handle)
+      : resolver_(resolver),
+        controller_(controller),
+        reducer_(reducer),
+        abort_algorithm_handle_(handle) {
+    CHECK(resolver_);
+    CHECK(controller_);
+    CHECK(reducer_);
+    CHECK(abort_algorithm_handle_);
+    if (initial_value) {
+      accumulator_ = MakeGarbageCollected<ScriptValueHolder>(*initial_value);
+    }
+  }
+
+  void Next(ScriptValue value) override {
+    if (!accumulator_) [[unlikely]] {
+      // For all subsequent values, we will take the path where `accumulator_`
+      // is *not* null, and we invoke `reducer_` with it.
+      accumulator_ = MakeGarbageCollected<ScriptValueHolder>(value);
+      // Adjust the index, so that when we first call `reducer_` on the *second*
+      // value, the index is adjusted accordingly.
+      idx_++;
+      return;
+    }
+
+    // `ScriptState::Scope` can only be created in a valid context, so
+    // early-return if we're in a detached one.
+    ScriptState* script_state = resolver_->GetScriptState();
+    if (!script_state->ContextIsValid()) {
+      return;
+    }
+
+    ScriptState::Scope scope(script_state);
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    const v8::Maybe<ScriptValue> result = reducer_->Invoke(
+        /*thisArg=*/nullptr, /*accumulator=*/accumulator_->Value(),
+        /*currentValue=*/value, /*index=*/idx_++);
+    if (try_catch.HasCaught()) {
+      abort_algorithm_handle_.Clear();
+      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      resolver_->Reject(exception);
+      controller_->abort(script_state, exception);
+      return;
+    }
+
+    // Since we handled the exception case above, `result` must not be
+    // `v8::Nothing`.
+    accumulator_ = MakeGarbageCollected<ScriptValueHolder>(result.ToChecked());
+  }
+
+  void Error(ScriptState* script_state, ScriptValue error_value) override {
+    abort_algorithm_handle_.Clear();
+
+    resolver_->Reject(error_value);
+  }
+  void Complete() override {
+    abort_algorithm_handle_.Clear();
+
+    if (accumulator_) {
+      resolver_->Resolve(accumulator_->Value());
+    } else {
+      v8::Isolate* isolate = resolver_->GetScriptState()->GetIsolate();
+      resolver_->Reject(V8ThrowException::CreateTypeError(
+          isolate, "Reduce of empty array with no initial value"));
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ObservableInternalObserver::Trace(visitor);
+
+    visitor->Trace(resolver_);
+    visitor->Trace(controller_);
+    visitor->Trace(reducer_);
+    visitor->Trace(accumulator_);
+    visitor->Trace(abort_algorithm_handle_);
+  }
+
+ private:
+  uint64_t idx_ = 0;
+  Member<ScriptPromiseResolver<IDLAny>> resolver_;
+  Member<AbortController> controller_;
+  Member<V8Reducer> reducer_;
+  // `accumulator_` is initually null unless `initialValue` is passed into the
+  // constructor of `this`. When `accumulator_` is initially null, we eventually
+  // set it to the first value that `this` encounters in `Next()`. Then, for all
+  // subsequent values, we use `accumulator_` as the "accumulator" argument for
+  // `reducer_` callback above.
+  Member<ScriptValueHolder> accumulator_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
 };
 
@@ -2448,6 +2549,62 @@ ScriptPromise<IDLAny> Observable::find(ScriptState* script_state,
   OperatorFindInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorFindInternalObserver>(
           resolver, controller, predicate, algorithm_handle);
+  SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
+                    internal_options);
+
+  return promise;
+}
+
+ScriptPromise<IDLAny> Observable::reduce(ScriptState* script_state,
+                                         V8Reducer* reducer) {
+  return ReduceInternal(script_state, reducer, std::nullopt,
+                        MakeGarbageCollected<SubscribeOptions>());
+}
+
+ScriptPromise<IDLAny> Observable::reduce(ScriptState* script_state,
+                                         V8Reducer* reducer,
+                                         v8::Local<v8::Value> initialValue,
+                                         SubscribeOptions* options) {
+  DCHECK(options);
+  return ReduceInternal(
+      script_state, reducer,
+      std::make_optional(ScriptValue(script_state->GetIsolate(), initialValue)),
+      options);
+}
+
+ScriptPromise<IDLAny> Observable::ReduceInternal(
+    ScriptState* script_state,
+    V8Reducer* reducer,
+    std::optional<ScriptValue> initial_value,
+    SubscribeOptions* options) {
+  ScriptPromiseResolver<IDLAny>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+  ScriptPromise<IDLAny> promise = resolver->Promise();
+
+  AbortController* controller = AbortController::Create(script_state);
+  HeapVector<Member<AbortSignal>> signals;
+  signals.push_back(controller->signal());
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
+  }
+
+  SubscribeOptions* internal_options = MakeGarbageCollected<SubscribeOptions>();
+  internal_options->setSignal(
+      MakeGarbageCollected<AbortSignal>(script_state, signals));
+
+  if (internal_options->signal()->aborted()) {
+    resolver->Reject(options->signal()->reason(script_state));
+    return promise;
+  }
+
+  AbortSignal::AlgorithmHandle* algorithm_handle =
+      internal_options->signal()->AddAlgorithm(
+          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
+              resolver, internal_options->signal()));
+
+  OperatorReduceInternalObserver* internal_observer =
+      MakeGarbageCollected<OperatorReduceInternalObserver>(
+          resolver, controller, reducer, initial_value, algorithm_handle);
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     internal_options);
 

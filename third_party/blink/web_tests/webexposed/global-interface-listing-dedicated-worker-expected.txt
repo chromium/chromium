@@ -1432,6 +1432,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method inspect
 [Worker]     method last
 [Worker]     method map
+[Worker]     method reduce
 [Worker]     method some
 [Worker]     method subscribe
 [Worker]     method switchMap
