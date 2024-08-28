@@ -47,6 +47,7 @@ void FacilitatedPaymentsManager::Reset() {
   if (is_test_) {
     return;
   }
+  has_payflow_started_ = false;
   pix_code_detection_attempt_count_ = 0;
   ukm_source_id_ = 0;
   trigger_source_ = TriggerSource::kUnknown;
@@ -97,6 +98,10 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
     const GURL& render_frame_host_url,
     const std::string& pix_code,
     ukm::SourceId ukm_source_id) {
+  if (has_payflow_started_) {
+    return;
+  }
+  has_payflow_started_ = true;
   ukm_source_id_ = ukm_source_id;
   trigger_source_ = TriggerSource::kCopyEvent;
   // Check whether the domain for the render_frame_host_url is allowlisted.
@@ -106,11 +111,6 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
       /*optimization_metadata=*/nullptr);
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     // The merchant is not part of the allowlist, ignore the copy event.
-    return;
-  }
-  if (valid_pix_code_detected_) {
-    // A valid Pix code has already been detected previously. This can happen
-    // because a Pix code would've already been found via DOM search.
     return;
   }
   initiate_payment_request_details_->merchant_payment_page_hostname_ =
@@ -158,11 +158,6 @@ void FacilitatedPaymentsManager::TriggerPixCodeDetection() {
 
 void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
     mojom::PixCodeDetectionResult result, const std::string& pix_code) {
-  if (valid_pix_code_detected_) {
-    // A valid Pix code has already been detected previously. This can happen
-    // because a Pix code would've already been found via copy event.
-    return;
-  }
   // If a PIX code was not found, re-trigger PIX code detection after a short
   // duration to allow async content to load completely.
   if (result == mojom::PixCodeDetectionResult::kPixCodeNotFound &&
@@ -182,6 +177,11 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
     Reset();
     return;
   }
+  // Clicking on the copy button could have initiated the payflow.
+  if (has_payflow_started_) {
+    return;
+  }
+  has_payflow_started_ = true;
   trigger_source_ = TriggerSource::kDOMSearch;
   utility_process_validator_.ValidatePixCode(
       pix_code, base::BindOnce(&FacilitatedPaymentsManager::OnPixCodeValidated,
@@ -204,7 +204,6 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
     Reset();
     return;
   }
-  valid_pix_code_detected_ = true;
   // If a valid PIX code is found, and the user has Google wallet linked PIX
   // accounts, verify that the payments API is available, and then show the PIX
   // payment prompt.

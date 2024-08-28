@@ -1167,12 +1167,10 @@ TEST_F(FacilitatedPaymentsManagerTest,
 }
 
 TEST_F(FacilitatedPaymentsManagerTest,
-       CopyTriggerHappenedBeforeDOMSearch_ApiClientIsAvailableCalledOnlyOnce) {
+       TestPayFlowCanBeTriggeredOnlyOncePerPageLoad) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
   GURL url("https://example.com/");
-  // Mock allowlist check result. This is only called for the copy trigger. The
-  // DOM Search method `ProcessPixCodeDetectionResult` already assumes that the
-  // URL is in the allowlist.
+  // Mock allowlist check result.
   SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
   EXPECT_CALL(*optimization_guide_decider_,
               CanApplyOptimization(
@@ -1181,59 +1179,14 @@ TEST_F(FacilitatedPaymentsManagerTest,
                       testing::Eq(nullptr))))
       .WillOnce(testing::ReturnPointee(&allowlist_result_));
 
-  // Pix code is found via copy trigger. This should trigger the Pix code
-  // validation which can be verified with the IsAvailable call.
+  // Even if there are multiple copy events, the payflow should be initiated
+  // only once. This can be verified with a single IsAvailable call.
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+
   std::string pix_code =
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F";
   manager_->OnPixCodeCopiedToClipboard(url, pix_code,
                                        ukm::UkmRecorder::GetNewSourceID());
-  // The DataDecoder (utility process) validates the PIX code string
-  // asynchronously.
-  task_environment_.RunUntilIdle();
-
-  // Pix code is found again via DOM Search. However, since Pix code validation
-  // was already run above, it should not be run again. This can be verified
-  // with IsAvailable not being called again.
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound, pix_code);
-
-  // The DataDecoder (utility process) validates the PIX code string
-  // asynchronously.
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(FacilitatedPaymentsManagerTest,
-       DOMSearchHappenedBeforeCopyTrigger_ApiClientIsAvailableCalledOnlyOnce) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
-  GURL url("https://example.com/");
-  // Mock allowlist check result. This is only called for the copy trigger. The
-  // DOM Search method `ProcessPixCodeDetectionResult` already assumes that the
-  // URL is in the allowlist.
-  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
-  EXPECT_CALL(*optimization_guide_decider_,
-              CanApplyOptimization(
-                  testing::Eq(url), testing::_,
-                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
-                      testing::Eq(nullptr))))
-      .WillOnce(testing::ReturnPointee(&allowlist_result_));
-
-  // Pix code is found again via DOM Search. This should trigger the Pix code
-  // validation which can be verified with the IsAvailable call.
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
-  std::string pix_code =
-      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F";
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound, pix_code);
-  // The DataDecoder (utility process) validates the PIX code string
-  // asynchronously.
-  task_environment_.RunUntilIdle();
-
-  // Pix code is found again via copy trigger. However, since Pix code
-  // validation was already run above, it should not be run again. This can be
-  // verified with IsAvailable not being called again.
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
   manager_->OnPixCodeCopiedToClipboard(url, pix_code,
                                        ukm::UkmRecorder::GetNewSourceID());
   // The DataDecoder (utility process) validates the PIX code string

@@ -377,12 +377,11 @@ class FacilitatedPaymentsManager {
   std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
       initiate_payment_request_details_;
 
-  // Flag to help determine whether a valid Pix code has already been detected
-  // and acted upon. This is required as there are mupltiple ways of detecting a
-  // Pix code (DOM Search or Copy trigger) and it is expected that if the
-  // process of showing the FOP selector is triggered by one of the triggers,
-  // the following trigger should simply be ignored.
-  bool valid_pix_code_detected_ = false;
+  // Flag to help determine whether the payflow has been triggered since the
+  // last page load. It protects against multiple triggers to initiate the
+  // payflow like Pix code detection, copy button click, and copy button
+  // double-click.
+  bool has_payflow_started_ = false;
 
   // Informs whether this instance was created in a test.
   bool is_test_ = false;
