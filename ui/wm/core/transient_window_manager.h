@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "ui/aura/window_observer.h"
 
@@ -104,9 +103,7 @@ class COMPONENT_EXPORT(UI_WM) TransientWindowManager
 
   // If non-null we're actively restacking transient as the result of a
   // transient ancestor changing.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION aura::Window* stacking_target_;
+  raw_ptr<aura::Window> stacking_target_;
 
   bool parent_controls_visibility_;
   bool parent_controls_lifetime_;
