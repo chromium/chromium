@@ -218,4 +218,12 @@ bool FakeStreamSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
 
+HttpStreamKey GroupIdToHttpStreamKey(
+    const ClientSocketPool::GroupId& group_id) {
+  return HttpStreamKey(group_id.destination(), group_id.privacy_mode(),
+                       SocketTag(), group_id.network_anonymization_key(),
+                       group_id.secure_dns_policy(),
+                       group_id.disable_cert_network_fetches());
+}
+
 }  // namespace net

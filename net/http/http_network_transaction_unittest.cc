@@ -37,6 +37,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -89,6 +90,8 @@
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_test_util.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -18933,12 +18936,14 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   // Use a TCP Socket Pool with only one connection per group. This is used
   // to validate that the TCP socket is not released to the pool between
   // each round of multi-round authentication.
+  constexpr size_t kMaxSocketsPerPool = 50u;
+  constexpr size_t kMaxSocketsPerGroup = 1u;
   HttpNetworkSessionPeer session_peer(session.get());
   CommonConnectJobParams common_connect_job_params(
       session->CreateCommonConnectJobParams());
   auto transport_pool = std::make_unique<TransportClientSocketPool>(
-      50,  // Max sockets for pool
-      1,   // Max sockets per group
+      kMaxSocketsPerPool,   // Max sockets for pool
+      kMaxSocketsPerGroup,  // Max sockets per group
       /*unused_idle_socket_timeout=*/base::Seconds(10), ProxyChain::Direct(),
       /*is_for_websockets=*/false, &common_connect_job_params);
   auto* transport_pool_ptr = transport_pool.get();
@@ -18946,6 +18951,13 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
                                    std::move(transport_pool));
   session_peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    session->http_stream_pool()->set_max_stream_sockets_per_group_for_testing(
+        kMaxSocketsPerGroup);
+    session->http_stream_pool()->set_max_stream_sockets_per_pool_for_testing(
+        kMaxSocketsPerPool);
+  }
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
@@ -19003,6 +19015,17 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
       url::SchemeHostPort(url::kHttpScheme, "www.example.com", 80),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
       SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
+  const HttpStreamKey kHttpStreamKey(GroupIdToHttpStreamKey(kSocketGroup));
+
+  auto IdleSocketCountInGroup = [&] {
+    if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      return session->http_stream_pool()
+          ->GetOrCreateGroupForTesting(kHttpStreamKey)
+          .IdleStreamSocketCount();
+    } else {
+      return transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup);
+    }
+  };
 
   // First round of authentication.
   auth_handler_ptr->SetGenerateExpectation(false, OK);
@@ -19014,7 +19037,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_TRUE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
             auth_handler_ptr->state());
 
@@ -19040,7 +19063,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
             auth_handler_ptr->state());
 
@@ -19054,7 +19077,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
             auth_handler_ptr->state());
 
@@ -19068,7 +19091,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
 
   // In WAIT_FOR_CHALLENGE, although in reality the auth handler is done. A real
   // auth handler should transition to a DONE state in concert with the remote
@@ -19089,7 +19112,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   EXPECT_EQ(0, rv);
   // There are still 0 idle sockets, since the trans_compete transaction
   // will be handed it immediately after trans releases it to the group.
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
 
   // The competing request can now finish. Wait for the headers and then
   // read the body.
@@ -19104,7 +19127,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   EXPECT_EQ(0, rv);
 
   // Finally, the socket is released to the group.
-  EXPECT_EQ(1u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(1u, IdleSocketCountInGroup());
 }
 
 // This tests the case that a request is issued via http instead of spdy after
