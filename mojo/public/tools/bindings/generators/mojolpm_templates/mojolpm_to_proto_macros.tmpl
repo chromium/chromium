@@ -330,8 +330,9 @@ bool ToProto(
     {{proto_type}}& output) {
 {%-   if struct|is_native_only_kind %}
   {{struct_type}}* new_instance = output.mutable_new_();
-  new_instance->mutable_native_bytes()->resize(sizeof({{mojom_type}}), 0);
-  memcpy(&new_instance->mutable_native_bytes()[0], (void*)&input, sizeof({{mojom_type}}));
+  std::string* bytes = new_instance->mutable_native_bytes();
+  bytes->resize(sizeof({{mojom_type}}), 0);
+  memcpy(bytes->data(), (void*)&input, sizeof({{mojom_type}}));
   return true;
 {%-   elif struct|is_typemapped_kind %}
   // TODO(markbrand): ToProto for typemapped struct kind
