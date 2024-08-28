@@ -139,10 +139,6 @@ bool TextPaintTimingDetector::ShouldWalkObject(
     return false;
   }
 
-  if (RuntimeEnabledFeatures::LCPMultipleUpdatesPerElementEnabled()) {
-    return true;
-  }
-
   if (rewalkable_set_.Contains(&object))
     return true;
 

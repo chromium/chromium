@@ -2521,9 +2521,6 @@
       status: "test",
     },
     {
-      name: "LCPMultipleUpdatesPerElement",
-    },
-    {
       name: "LegacyWindowsDWriteFontFallback",
       // Enabled by features::kLegacyWindowsDWriteFontFallback;
       base_feature: "none",

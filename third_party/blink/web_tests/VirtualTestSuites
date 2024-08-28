@@ -1595,18 +1595,6 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "lcp-multiple-updates-per-element",
-    "owners": ["haoliuk@chromium.org", "iclelland@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/largest-contentful-paint/update-on-style-change.tentative.html"
-    ],
-    "args": [
-      "--enable-features=LCPMultipleUpdatesPerElement"
-    ],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "low-priority-async-script-execution",
     "platforms": ["Linux", "Mac", "Win"],
     "exclusive_tests": "ALL",
