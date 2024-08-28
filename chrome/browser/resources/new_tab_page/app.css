@@ -35,7 +35,7 @@
  * point available to be shown.
  */
 :host([realbox-can-show-secondary-side][realbox-had-secondary-side]),
-:host([realbox-can-show-secondary-side][realbox-width-behavior_='wide']) {
+:host([realbox-can-show-secondary-side][searchbox-width-behavior_='wide']) {
   --ntp-search-box-width: 746px;
 }
 
