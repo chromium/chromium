@@ -2617,7 +2617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormFillingComplexScore.{AutofillFormType}"
-    units="complex filling score" expires_after="2024-08-20">
+    units="complex filling score" expires_after="2024-12-20">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2640,7 +2640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormFillingScore.{AutofillFormType}"
-    units="filling score" expires_after="2024-08-20">
+    units="filling score" expires_after="2024-12-20">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
