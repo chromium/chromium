@@ -12,15 +12,12 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-// TODO(crbug.com/358356195): Remove this typedef when this header is updated
-// to use ProfileManagerIOS.
 class ProfileManagerIOS;
-using ChromeBrowserStateManager = ProfileManagerIOS;
 
-// Tracks whether there are any open off-the-record tabs open by any
-// ChromeBrowserState in the application. Allow to be notified when
-// the state changes or to poll it when needed.
-class IncognitoSessionTracker final : public ChromeBrowserStateManagerObserver {
+// Tracks whether there are any open off-the-record tabs open by any Profile in
+// the application. Allow to be notified when the state changes or to poll it
+// when needed.
+class IncognitoSessionTracker final : public ProfileManagerObserverIOS {
  public:
   // Container for the callbacks registered with RegisterCallback().
   using SessionStateChangedCallbackList =
@@ -30,7 +27,7 @@ class IncognitoSessionTracker final : public ChromeBrowserStateManagerObserver {
   using SessionStateChangedCallback =
       SessionStateChangedCallbackList::CallbackType;
 
-  explicit IncognitoSessionTracker(ChromeBrowserStateManager* manager);
+  explicit IncognitoSessionTracker(ProfileManagerIOS* manager);
   ~IncognitoSessionTracker() final;
 
   // Returns whether there are any off-the-record tabs open.
@@ -42,30 +39,28 @@ class IncognitoSessionTracker final : public ChromeBrowserStateManagerObserver {
   base::CallbackListSubscription RegisterCallback(
       SessionStateChangedCallback callback);
 
-  // ChromeBrowserStateManagerObserver:
-  void OnChromeBrowserStateManagerDestroyed(
-      ChromeBrowserStateManager* manager) final;
-  void OnChromeBrowserStateCreated(ChromeBrowserStateManager* manager,
-                                   ChromeBrowserState* browser_state) final;
-  void OnChromeBrowserStateLoaded(ChromeBrowserStateManager* manager,
-                                  ChromeBrowserState* browser_state) final;
+  // ProfileManagerObserverIOS:
+  void OnProfileManagerDestroyed(ProfileManagerIOS* manager) override;
+  void OnProfileCreated(ProfileManagerIOS* manager,
+                        ChromeBrowserState* profile) override;
+  void OnProfileLoaded(ProfileManagerIOS* manager,
+                       ChromeBrowserState* profile) override;
 
  private:
   // Forward-declaration of the observer used to track the state of
-  // an individual ChromeBrowserState.
+  // an individual Profile.
   class Observer;
 
   // Invoked when the state of invoked when the presence of off-the-record
   // tabs for a specific ChromeBrowserState has changed.
   void OnIncognitoSessionStateChanged(bool has_incognito_tabs);
 
-  // Manage observing the ChromeBrowserStateManager.
-  base::ScopedObservation<ChromeBrowserStateManager,
-                          ChromeBrowserStateManagerObserver>
+  // Manage observing the ProfileManagerIOS.
+  base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
       scoped_manager_observation_{this};
 
-  // Map from ChromeBrowserState to the observer used to track whether it
-  // has any open off-the-record tabs.
+  // Map from Profile to the observer used to track whether it has any open
+  // off-the-record tabs.
   base::flat_map<ChromeBrowserState*, std::unique_ptr<Observer>> observers_;
 
   // List of registered callbacks.

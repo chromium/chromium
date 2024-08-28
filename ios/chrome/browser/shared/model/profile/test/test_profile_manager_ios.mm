@@ -25,24 +25,23 @@ TestProfileManagerIOS::~TestProfileManagerIOS() {
 
   // Notify observers before unregistering from ApplicationContext.
   for (auto& observer : observers_) {
-    observer.OnChromeBrowserStateManagerDestroyed(this);
+    observer.OnProfileManagerDestroyed(this);
   }
 
   TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(nullptr);
 }
 
-void TestProfileManagerIOS::AddObserver(
-    ChromeBrowserStateManagerObserver* observer) {
+void TestProfileManagerIOS::AddObserver(ProfileManagerObserverIOS* observer) {
   observers_.AddObserver(observer);
 
   for (auto& [key, browser_state] : browser_states_) {
-    observer->OnChromeBrowserStateCreated(this, browser_state.get());
-    observer->OnChromeBrowserStateLoaded(this, browser_state.get());
+    observer->OnProfileCreated(this, browser_state.get());
+    observer->OnProfileLoaded(this, browser_state.get());
   }
 }
 
 void TestProfileManagerIOS::RemoveObserver(
-    ChromeBrowserStateManagerObserver* observer) {
+    ProfileManagerObserverIOS* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -135,11 +134,11 @@ TestProfileManagerIOS::AddBrowserStateWithBuilder(
   }
 
   for (auto& observer : observers_) {
-    observer.OnChromeBrowserStateCreated(this, iterator->second.get());
+    observer.OnProfileCreated(this, iterator->second.get());
   }
 
   for (auto& observer : observers_) {
-    observer.OnChromeBrowserStateLoaded(this, iterator->second.get());
+    observer.OnProfileLoaded(this, iterator->second.get());
   }
 
   return iterator->second.get();

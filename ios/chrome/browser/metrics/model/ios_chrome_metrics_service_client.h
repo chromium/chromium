@@ -31,11 +31,7 @@
 
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
-
-// TODO(crbug.com/358356195): Remove this typedef when this header is updated
-// to use ProfileManagerIOS.
 class ProfileManagerIOS;
-using ChromeBrowserStateManager = ProfileManagerIOS;
 
 namespace metrics {
 class MetricsService;
@@ -56,7 +52,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                       public ukm::HistoryDeleteObserver,
                                       public ukm::UkmConsentStateObserver,
                                       public web::GlobalWebStateObserver,
-                                      public ChromeBrowserStateManagerObserver {
+                                      public ProfileManagerObserverIOS {
  public:
   IOSChromeMetricsServiceClient(const IOSChromeMetricsServiceClient&) = delete;
   IOSChromeMetricsServiceClient& operator=(
@@ -107,13 +103,12 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   void WebStateDidStartLoading(web::WebState* web_state) override;
   void WebStateDidStopLoading(web::WebState* web_state) override;
 
-  // ChromeBrowserStateManagerObserver:
-  void OnChromeBrowserStateManagerDestroyed(
-      ChromeBrowserStateManager* manager) override;
-  void OnChromeBrowserStateCreated(ChromeBrowserStateManager* manager,
-                                   ChromeBrowserState* browser_state) override;
-  void OnChromeBrowserStateLoaded(ChromeBrowserStateManager* manager,
-                                  ChromeBrowserState* browser_state) override;
+  // ProfileManagerObserverIOS:
+  void OnProfileManagerDestroyed(ProfileManagerIOS* manager) override;
+  void OnProfileCreated(ProfileManagerIOS* manager,
+                        ChromeBrowserState* profile) override;
+  void OnProfileLoaded(ProfileManagerIOS* manager,
+                       ChromeBrowserState* profile) override;
 
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
 
@@ -147,9 +142,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // there was recent activity.
   void RegisterForNotifications();
 
-  // Register to observe events on a browser state's services.
+  // Register to observe events on a Profile's services.
   // Returns true if registration was successful.
-  bool RegisterForBrowserStateEvents(ChromeBrowserState* browser_state);
+  bool RegisterForProfileEvents(ChromeBrowserState* profile);
 
   // Called when a tab is parented.
   void OnTabParented(web::WebState* web_state);
@@ -177,10 +172,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // The UkmService that `this` is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
 
-  // Observation of the ChromeBrowserStateManager.
-  base::ScopedObservation<ChromeBrowserStateManager,
-                          ChromeBrowserStateManagerObserver>
-      browser_state_manager_observation_{this};
+  // Observation of the ProfileManagerIOS.
+  base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
+      profile_manager_observation_{this};
 
   // Whether we registered all notification listeners successfully.
   bool notification_listeners_active_ = true;

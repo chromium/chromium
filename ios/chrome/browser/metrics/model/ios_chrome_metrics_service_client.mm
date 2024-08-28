@@ -469,22 +469,21 @@ void IOSChromeMetricsServiceClient::RegisterForNotifications() {
               &IOSChromeMetricsServiceClient::OnURLOpenedFromOmnibox,
               base::Unretained(this)));
 
-  // ChromeBrowserStateManager invoke OnChromeBrowserStateLoaded(...) for
-  // all ChromeBrowserState already loaded, so there is no need to manually
-  // iterate over them.
-  browser_state_manager_observation_.Observe(
-      GetApplicationContext()->GetChromeBrowserStateManager());
+  // ProfileManagerIOS invoke OnProfileLoaded(...) for all Profiles already
+  // loaded, so there is no need to manually iterate over them.
+  profile_manager_observation_.Observe(
+      GetApplicationContext()->GetProfileManager());
 }
 
-bool IOSChromeMetricsServiceClient::RegisterForBrowserStateEvents(
-    ChromeBrowserState* browser_state) {
+bool IOSChromeMetricsServiceClient::RegisterForProfileEvents(
+    ChromeBrowserState* profile) {
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+          profile, ServiceAccessType::IMPLICIT_ACCESS);
   ObserveServiceForDeletions(history_service);
   syncer::SyncService* sync =
-      SyncServiceFactory::GetInstance()->GetForBrowserState(browser_state);
-  StartObserving(sync, browser_state->GetPrefs());
+      SyncServiceFactory::GetInstance()->GetForBrowserState(profile);
+  StartObserving(sync, profile->GetPrefs());
   return (history_service != nullptr && sync != nullptr);
 }
 
@@ -552,22 +551,22 @@ void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
   UpdateRunningServices();
 }
 
-void IOSChromeMetricsServiceClient::OnChromeBrowserStateManagerDestroyed(
-    ChromeBrowserStateManager* manager) {
-  browser_state_manager_observation_.Reset();
+void IOSChromeMetricsServiceClient::OnProfileManagerDestroyed(
+    ProfileManagerIOS* manager) {
+  profile_manager_observation_.Reset();
 }
 
-void IOSChromeMetricsServiceClient::OnChromeBrowserStateCreated(
-    ChromeBrowserStateManager* manager,
-    ChromeBrowserState* browser_state) {
-  // Nothing to do, the ChromeBrowserState is not fully loaded, and it is
-  // not possible to access the KeyedService yet.
+void IOSChromeMetricsServiceClient::OnProfileCreated(
+    ProfileManagerIOS* manager,
+    ChromeBrowserState* profile) {
+  // Nothing to do, the Profile is not fully loaded, and it is not possible to
+  // access the KeyedService yet.
 }
 
-void IOSChromeMetricsServiceClient::OnChromeBrowserStateLoaded(
-    ChromeBrowserStateManager* manager,
-    ChromeBrowserState* browser_state) {
-  if (!RegisterForBrowserStateEvents(browser_state)) {
+void IOSChromeMetricsServiceClient::OnProfileLoaded(
+    ProfileManagerIOS* manager,
+    ChromeBrowserState* profile) {
+  if (!RegisterForProfileEvents(profile)) {
     notification_listeners_active_ = false;
   }
 }

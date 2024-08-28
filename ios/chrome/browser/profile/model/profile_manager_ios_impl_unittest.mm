@@ -42,40 +42,35 @@ class ScopedTestProfileManagerObserverIOS final
 
   ~ScopedTestProfileManagerObserverIOS() final = default;
 
-  // TODO(crbug.com/359516222): Rename those APIs
   // Accessor for the booleans used to store which method has been called.
-  bool on_chrome_browser_state_created_called() const {
-    return on_chrome_browser_state_created_called_;
-  }
+  bool on_profile_created_called() const { return on_profile_created_called_; }
 
-  bool on_chrome_browser_state_loaded_called() const {
-    return on_chrome_browser_state_loaded_called_;
-  }
+  bool on_profile_loaded_called() const { return on_profile_loaded_called_; }
 
   // ProfileManagerObserverIOS implementation:
-  void OnChromeBrowserStateManagerDestroyed(ProfileManagerIOS* manager) final {
+  void OnProfileManagerDestroyed(ProfileManagerIOS* manager) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
     scoped_observation_.Reset();
   }
 
-  void OnChromeBrowserStateCreated(ProfileManagerIOS* manager,
-                                   ChromeBrowserState* browser_state) final {
+  void OnProfileCreated(ProfileManagerIOS* manager,
+                        ChromeBrowserState* profile) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
-    on_chrome_browser_state_created_called_ = true;
+    on_profile_created_called_ = true;
   }
 
-  void OnChromeBrowserStateLoaded(ProfileManagerIOS* manager,
-                                  ChromeBrowserState* browser_state) final {
+  void OnProfileLoaded(ProfileManagerIOS* manager,
+                       ChromeBrowserState* profile) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
-    on_chrome_browser_state_loaded_called_ = true;
+    on_profile_loaded_called_ = true;
   }
 
  private:
   base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
       scoped_observation_{this};
 
-  bool on_chrome_browser_state_created_called_ = false;
-  bool on_chrome_browser_state_loaded_called_ = false;
+  bool on_profile_created_called_ = false;
+  bool on_profile_loaded_called_ = false;
 };
 
 // Returns a callback taking a single parameter and storing it in `output`.
@@ -184,8 +179,8 @@ TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates) {
   // Register an observer and check that it is correctly notified that
   // a ChromeBrowserState is created and then fully loaded.
   ScopedTestProfileManagerObserverIOS observer(profile_manager());
-  ASSERT_FALSE(observer.on_chrome_browser_state_created_called());
-  ASSERT_FALSE(observer.on_chrome_browser_state_loaded_called());
+  ASSERT_FALSE(observer.on_profile_created_called());
+  ASSERT_FALSE(observer.on_profile_loaded_called());
 
   // Load the BrowserStates, this will implicitly add "Default" as a
   // BrowserState if there is no saved BrowserStates. Thus it should
@@ -193,8 +188,8 @@ TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates) {
   profile_manager().LoadBrowserStates();
 
   // Check that the observer has been notified of the creation and load.
-  ASSERT_TRUE(observer.on_chrome_browser_state_created_called());
-  ASSERT_TRUE(observer.on_chrome_browser_state_loaded_called());
+  ASSERT_TRUE(observer.on_profile_created_called());
+  ASSERT_TRUE(observer.on_profile_loaded_called());
 
   // Exactly one ChromeBrowserState must be loaded, it must be the last
   // used ChromeBrowserState with name `kIOSChromeInitialBrowserState`.

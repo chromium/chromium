@@ -162,7 +162,7 @@ ProfileManagerIOSImpl::ProfileManagerIOSImpl(PrefService* local_state,
 ProfileManagerIOSImpl::~ProfileManagerIOSImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
-    observer.OnChromeBrowserStateManagerDestroyed(this);
+    observer.OnProfileManagerDestroyed(this);
   }
 }
 
@@ -175,9 +175,9 @@ void ProfileManagerIOSImpl::AddObserver(ProfileManagerObserverIOS* observer) {
     ChromeBrowserState* browser_state = info.browser_state();
     DCHECK(browser_state);
 
-    observer->OnChromeBrowserStateCreated(this, browser_state);
+    observer->OnProfileCreated(this, browser_state);
     if (info.is_loaded()) {
-      observer->OnChromeBrowserStateLoaded(this, browser_state);
+      observer->OnProfileLoaded(this, browser_state);
     }
   }
 }
@@ -333,7 +333,7 @@ void ProfileManagerIOSImpl::OnChromeBrowserStateCreationStarted(
   DCHECK(browser_state);
 
   for (auto& observer : observers_) {
-    observer.OnChromeBrowserStateCreated(this, browser_state);
+    observer.OnProfileCreated(this, browser_state);
   }
 }
 
@@ -384,7 +384,7 @@ void ProfileManagerIOSImpl::OnChromeBrowserStateCreationFinished(
   if (success) {
     DCHECK(browser_state);
     for (auto& observer : observers_) {
-      observer.OnChromeBrowserStateLoaded(this, browser_state);
+      observer.OnProfileLoaded(this, browser_state);
     }
   }
 }

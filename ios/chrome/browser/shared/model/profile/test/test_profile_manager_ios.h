@@ -22,7 +22,7 @@ using TestChromeBrowserStateManager = TestProfileManagerIOS;
 //
 // Register itself with the TestApplicationContext on creation. Requires
 // the ApplicationContext's local State to be created before this object.
-class TestProfileManagerIOS : public ChromeBrowserStateManager {
+class TestProfileManagerIOS : public ProfileManagerIOS {
  public:
   TestProfileManagerIOS();
 
@@ -31,9 +31,9 @@ class TestProfileManagerIOS : public ChromeBrowserStateManager {
 
   ~TestProfileManagerIOS() override;
 
-  // ChromeBrowserStateManager:
-  void AddObserver(ChromeBrowserStateManagerObserver* observer) override;
-  void RemoveObserver(ChromeBrowserStateManagerObserver* observer) override;
+  // ProfileManagerIOS:
+  void AddObserver(ProfileManagerObserverIOS* observer) override;
+  void RemoveObserver(ProfileManagerObserverIOS* observer) override;
   void LoadBrowserStates() override;
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
@@ -70,7 +70,7 @@ class TestProfileManagerIOS : public ChromeBrowserStateManager {
       browser_states_;
 
   // The list of registered observers.
-  base::ObserverList<ChromeBrowserStateManagerObserver, true> observers_;
+  base::ObserverList<ProfileManagerObserverIOS, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TEST_PROFILE_MANAGER_IOS_H_
