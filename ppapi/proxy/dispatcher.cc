@@ -43,8 +43,7 @@ InterfaceProxy* Dispatcher::GetInterfaceProxy(ApiID id) {
     InterfaceProxy::Factory factory =
         InterfaceList::GetInstance()->GetFactoryForID(id);
     if (!factory) {
-      NOTREACHED_IN_MIGRATION();
-      return NULL;
+      NOTREACHED();
     }
     proxy = factory(this);
     DCHECK(proxy);
@@ -70,8 +69,7 @@ bool Dispatcher::OnMessageReceived(const IPC::Message& msg) {
   InterfaceProxy* proxy = GetInterfaceProxy(
       static_cast<ApiID>(msg.routing_id()));
   if (!proxy) {
-    NOTREACHED_IN_MIGRATION();
-    return true;
+    NOTREACHED();
   }
   return proxy->OnMessageReceived(msg);
 }

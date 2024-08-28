@@ -333,8 +333,7 @@ int32_t TCPSocketResourceBase::SetOptionImpl(
       break;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return PP_ERROR_BADARGUMENT;
+      NOTREACHED();
     }
   }
 
@@ -483,8 +482,7 @@ void TCPSocketResourceBase::OnPluginMsgAcceptReply(
 void TCPSocketResourceBase::OnPluginMsgSetOptionReply(
     const ResourceMessageReplyParams& params) {
   if (set_option_callbacks_.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   scoped_refptr<TrackedCallback> callback = set_option_callbacks_.front();
   set_option_callbacks_.pop();

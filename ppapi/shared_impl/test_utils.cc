@@ -201,8 +201,7 @@ bool Equals(const PP_Var& expected,
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace

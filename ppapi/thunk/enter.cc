@@ -69,9 +69,7 @@ EnterBase::~EnterBase() {
 int32_t EnterBase::SetResult(int32_t result) {
   if (!callback_) {
     // It doesn't make sense to call SetResult if there is no callback.
-    NOTREACHED_IN_MIGRATION();
-    retval_ = result;
-    return result;
+    NOTREACHED();
   }
   if (result == PP_OK_COMPLETIONPENDING) {
     retval_ = result;

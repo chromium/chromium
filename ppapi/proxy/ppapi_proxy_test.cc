@@ -29,13 +29,12 @@ namespace {
 // HostDispatcher requires a PPB_Proxy_Private, so we always provide a fallback
 // do-nothing implementation.
 void PluginCrashed(PP_Module module) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 PP_Instance GetInstanceForResource(PP_Resource resource) {
   // If a test relies on this, we need to implement it.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void SetReserveInstanceIDCallback(PP_Module module,

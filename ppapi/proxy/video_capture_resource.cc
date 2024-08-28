@@ -62,7 +62,7 @@ void VideoCaptureResource::OnReplyReceived(
     PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL(
         PpapiPluginMsg_VideoCapture_OnBufferReady,
         OnPluginMsgOnBufferReady)
-    PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL_UNHANDLED(NOTREACHED_IN_MIGRATION())
+    PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL_UNHANDLED(NOTREACHED())
   PPAPI_END_MESSAGE_MAP()
 }
 
@@ -186,8 +186,7 @@ void VideoCaptureResource::OnPluginMsgOnStatus(
     case PP_VIDEO_CAPTURE_STATUS_STARTING:
     case PP_VIDEO_CAPTURE_STATUS_STOPPING:
       // Those states are not sent by the browser.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   if (ppp_video_capture_impl_) {
     CallWhileUnlocked(ppp_video_capture_impl_->OnStatus,

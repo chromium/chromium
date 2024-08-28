@@ -183,8 +183,7 @@ void FileSystemResource::ReserveQuota(int64_t amount) {
        it != files_.end(); ++it) {
     EnterResourceNoLock<PPB_FileIO_API> enter(*it, true);
     if (enter.failed()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     PPB_FileIO_API* file_io_api = enter.object();
     file_growths[*it] = FileGrowth(

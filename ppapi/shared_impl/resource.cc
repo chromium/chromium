@@ -70,7 +70,7 @@ void Resource::NotifyInstanceWasDeleted() {
 
 void Resource::OnReplyReceived(const proxy::ResourceMessageReplyParams& params,
                                const IPC::Message& msg) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void Resource::Log(PP_LogLevel level, const std::string& message) {

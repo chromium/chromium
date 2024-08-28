@@ -74,8 +74,7 @@ void DidChangeView(PP_Instance instance, PP_Resource view_resource) {
 
   EnterResourceNoLock<PPB_View_API> enter_view(view_resource, false);
   if (enter_view.failed()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   EnterInstanceNoLock enter_instance(instance);
@@ -93,8 +92,7 @@ void DidChangeFocus(PP_Instance instance, PP_Bool has_focus) {
 PP_Bool HandleDocumentLoad(PP_Instance instance, PP_Resource url_loader) {
   // This should never get called. Out-of-process document loads are handled
   // specially.
-  NOTREACHED_IN_MIGRATION();
-  return PP_FALSE;
+  NOTREACHED();
 }
 
 static const PPP_Instance_1_1 instance_interface = {

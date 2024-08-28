@@ -68,8 +68,7 @@ bool VarTracker::AddRefVar(int32_t var_id) {
       << var_id << " is not a PP_Var ID.";
   VarMap::iterator found = live_vars_.find(var_id);
   if (found == live_vars_.end()) {
-    NOTREACHED_IN_MIGRATION();  // Invalid var.
-    return false;
+    NOTREACHED();  // Invalid var.
   }
 
   VarInfo& info = found->second;
@@ -106,8 +105,7 @@ bool VarTracker::ReleaseVar(int32_t var_id) {
 
   VarInfo& info = found->second;
   if (info.ref_count == 0) {
-    NOTREACHED_IN_MIGRATION() << "Releasing an object with zero ref";
-    return false;
+    NOTREACHED() << "Releasing an object with zero ref";
   }
   info.ref_count--;
 
@@ -252,7 +250,7 @@ std::vector<PP_Var> VarTracker::GetLiveVars() {
 
 void VarTracker::TrackedObjectGettingOneRef(VarMap::const_iterator obj) {
   // Anybody using tracked objects should override this.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void VarTracker::ObjectGettingZeroRef(VarMap::iterator iter) {

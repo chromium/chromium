@@ -25,14 +25,12 @@ namespace {
 PP_Bool HandleInputEvent(PP_Instance instance, PP_Resource input_event) {
   EnterResourceNoLock<PPB_InputEvent_API> enter(input_event, false);
   if (enter.failed()) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_FALSE;
+    NOTREACHED();
   }
   const InputEventData& data = enter.object()->GetInputEventData();
   HostDispatcher* dispatcher = HostDispatcher::GetForInstance(instance);
   if (!dispatcher) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_FALSE;
+    NOTREACHED();
   }
 
   // Need to send different messages depending on whether filtering is needed.

@@ -105,8 +105,7 @@ int32_t TCPSocketPrivateResource::SetOption(
                            true,  // Check connect() state.
                            callback);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return PP_ERROR_BADARGUMENT;
+      NOTREACHED();
   }
 }
 
@@ -114,8 +113,7 @@ PP_Resource TCPSocketPrivateResource::CreateAcceptedSocket(
     int /* pending_host_id */,
     const PP_NetAddress_Private& /* local_addr */,
     const PP_NetAddress_Private& /* remote_addr */) {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace proxy

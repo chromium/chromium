@@ -507,10 +507,11 @@ void PPB_Var_Deprecated_Proxy::OnMsgCreateObjectDeprecated(
 }
 
 void PPB_Var_Deprecated_Proxy::SetAllowPluginReentrancy() {
-  if (dispatcher()->IsPlugin())
-    NOTREACHED_IN_MIGRATION();
-  else
+  if (dispatcher()->IsPlugin()) {
+    NOTREACHED();
+  } else {
     static_cast<HostDispatcher*>(dispatcher())->set_allow_plugin_reentrancy();
+  }
 }
 
 void PPB_Var_Deprecated_Proxy::DoReleaseObject(int64_t object_id) {
