@@ -6715,7 +6715,7 @@
   {
     "name": "omnibox-zero-suggest-prefetch-debouncing",
     "owners": [ "khalidpeer@chromium.org", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-zero-suggest-prefetching",
@@ -6725,7 +6725,7 @@
   {
     "name": "omnibox-zero-suggest-prefetching-on-srp",
     "owners": [ "khalidpeer@chromium.org", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-zero-suggest-prefetching-on-web",
