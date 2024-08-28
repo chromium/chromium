@@ -203,9 +203,6 @@ IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, ContextMenu) {
       MoveMouseTo(kBrowserViewElementId), ClickMouse(ui_controls::RIGHT),
       // 5. Make sure context menu is displayed correctly at the expected
       // location when chrome is in full screen mode.
-      // WaitForShow and FlushEvents is required to prevent re-enter
-      // views::MenuController::OpenMenu from the same call stack during the
-      // NotifyElementShown.
       InAnyContext(WaitForShow(RenderViewContextMenu::kExitFullscreenMenuItem)),
       CreateFullscreenWaiter(waiter2, false),
       InAnyContext(

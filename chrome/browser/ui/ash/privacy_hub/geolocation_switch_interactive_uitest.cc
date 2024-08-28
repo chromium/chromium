@@ -84,11 +84,7 @@ class GeolocationSwitchInteractiveTest : public InteractiveBrowserTest {
           CheckJsResult(kWebContentsElementId, "geoStartWithSyncResponse",
                         "requested"),
           WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-          WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId)
-          // We need to call `FlushEvents` here before `PressButton` because a
-          // `view_` variable in PermissionRequestManager is not yet
-          // initialized.
-          ,
+          WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
 
           PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
           WaitForHide(PermissionPromptBubbleBaseView::kMainViewId));

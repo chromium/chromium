@@ -134,8 +134,6 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
                                   /*alt=*/false, /*command=*/false);
       }),
 
-      // Note: FlushEvents is needed here. Without it, the desk
-      // name text field does not gain focus
       Log("Wait for the overview desk bar to show"),
       AfterShow(kOverviewDeskBarElementId,
                 [&desk_bar_view](ui::TrackedElement* el) {
