@@ -15,6 +15,7 @@
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -42,6 +43,12 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
       kChromeosBocaAppBundleResources, kChromeosBocaAppBundleResourcesSize));
   return source;
 }
+
+void PopulateLoadTimeData(content::WebUIDataSource* source) {
+  source->AddBoolean("isProducer", ash::boca_util::IsProducer());
+  source->AddBoolean("isConsumer", ash::boca_util::IsConsumer());
+}
+
 }  // namespace
 
 BocaUI::BocaUI(content::WebUI* web_ui)
@@ -85,6 +92,7 @@ BocaUI::BocaUI(content::WebUI* web_ui)
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
+  PopulateLoadTimeData(host_source);
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
