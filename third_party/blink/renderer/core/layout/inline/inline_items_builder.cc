@@ -39,9 +39,6 @@ InlineItemsBuilderTemplate<MappingBuilder>::InlineItemsBuilderTemplate(
       items_(items),
       text_chunk_offsets_(chunk_offsets),
       is_text_combine_(block_flow_->IsLayoutTextCombine()) {
-  if (!RuntimeEnabledFeatures::RecollectInlinesReserveCapacityEnabled()) {
-    return;
-  }
   const LayoutObject* child = block_flow->FirstChild();
   if (!previous_text_content.IsNull() && child && child->NextSibling()) {
     // 10 avoids reallocations in many cases of Speedometer3.

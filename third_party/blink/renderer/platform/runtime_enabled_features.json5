@@ -3408,10 +3408,6 @@
       name: "ReadableStreamAsyncIterable",
       status: "stable",
     },
-    {
-      name: "RecollectInlinesReserveCapacity",
-      status: "stable",
-    },
     // If enabled, the Accept-Language header will be reduced.
     {
       name: "ReduceAcceptLanguage",
