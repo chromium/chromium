@@ -36,6 +36,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/page_capture",
     "//chrome/browser/extensions/api/permissions",
     "//chrome/browser/extensions/api/preference",
+    "//chrome/browser/extensions/api/processes",
     "//chrome/browser/extensions/api/scripting",
     "//chrome/browser/extensions/api/webrtc_desktop_capture_private",
     "//chrome/browser/extensions/api/webrtc_logging_private",
@@ -121,6 +122,7 @@ source_set("keyed_service_factories") {
     "//chrome/browser/extensions/api/cookies",
     "//chrome/browser/extensions/api/font_settings",
     "//chrome/browser/extensions/api/preference",
+    "//chrome/browser/extensions/api/processes",
   ]
 
   if (is_chromeos) {
