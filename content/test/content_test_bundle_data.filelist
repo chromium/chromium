@@ -5904,6 +5904,7 @@ data/attribution_reporting/interop/null_aggregatable_report.json
 data/attribution_reporting/interop/os_debug_reports.json
 data/attribution_reporting/interop/parse_failures.json
 data/attribution_reporting/interop/preferred_platform.json
+data/attribution_reporting/interop/prio_dup.json
 data/attribution_reporting/interop/randomized_response_0_reports.json
 data/attribution_reporting/interop/randomized_response_1_report.json
 data/attribution_reporting/interop/rate_limit_max_attribution_reporting_endpoints.json
