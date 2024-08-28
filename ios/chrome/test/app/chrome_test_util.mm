@@ -63,9 +63,7 @@ namespace {
 // `incognito` is true, returns an off-the-record ChromeBrowserState.
 ChromeBrowserState* GetBrowserState(bool incognito) {
   std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
   DCHECK(!browser_states.empty());
 
   ChromeBrowserState* browser_state = browser_states.front();

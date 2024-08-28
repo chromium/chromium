@@ -292,9 +292,7 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   }
 
   std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
   for (ChromeBrowserState* browserState : loadedBrowserStates) {
     enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
         ->OnApplicationWillEnterBackground();
@@ -375,9 +373,7 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
 
   _applicationInBackground = NO;
   std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
   for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
     AuthenticationServiceFactory::GetForBrowserState(chromeBrowserState)
         ->OnApplicationWillEnterForeground();
@@ -499,9 +495,7 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
 
   // Record session metrics.
   std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
   for (ChromeBrowserState* browserState : loadedBrowserStates) {
     SessionMetrics::FromBrowserState(browserState)
         ->RecordAndClearSessionMetrics(

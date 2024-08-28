@@ -38,9 +38,7 @@
   NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
 
   std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
   if (!self.migratingTracker) {
     self.migratingTracker =
         [NSMutableSet setWithCapacity:loadedBrowserStates.size()];

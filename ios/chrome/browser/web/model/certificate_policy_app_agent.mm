@@ -105,9 +105,7 @@ void CleanCertificatePolicyCache(
 
 - (void)appDidEnterBackground {
   std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
 
   for (ChromeBrowserState* browserState : loadedBrowserStates) {
     // Evict all the certificate policies except for the current entries of the

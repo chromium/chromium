@@ -27,9 +27,7 @@ void IOSChromeSigninAndSyncStatusMetricsProvider::ProvideCurrentSessionData(
 signin_metrics::ProfilesStatus
 IOSChromeSigninAndSyncStatusMetricsProvider::GetStatusOfAllProfiles() const {
   std::vector<ChromeBrowserState*> browser_state_list =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
   signin_metrics::ProfilesStatus profiles_status;
   for (ChromeBrowserState* browser_state : browser_state_list) {
     auto* session_duration =

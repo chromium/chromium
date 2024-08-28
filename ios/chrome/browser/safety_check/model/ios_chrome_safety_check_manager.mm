@@ -41,7 +41,7 @@ scoped_refptr<IOSChromePasswordCheckManager>
 GetPasswordCheckManagerForLastUsedBrowserState() {
   ChromeBrowserState* last_used_browser_state =
       GetApplicationContext()
-          ->GetChromeBrowserStateManager()
+          ->GetProfileManager()
           ->GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   return IOSChromePasswordCheckManagerFactory::GetForBrowserState(

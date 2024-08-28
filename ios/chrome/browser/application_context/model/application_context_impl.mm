@@ -538,8 +538,8 @@ AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
 IncognitoSessionTracker* ApplicationContextImpl::GetIncognitoSessionTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!incognito_session_tracker_) {
-    incognito_session_tracker_ = std::make_unique<IncognitoSessionTracker>(
-        GetChromeBrowserStateManager());
+    incognito_session_tracker_ =
+        std::make_unique<IncognitoSessionTracker>(GetProfileManager());
   }
   return incognito_session_tracker_.get();
 }

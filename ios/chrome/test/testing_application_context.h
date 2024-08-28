@@ -39,8 +39,8 @@ class TestingApplicationContext : public ApplicationContext {
   // Sets the last shutdown "clean" state.
   void SetLastShutdownClean(bool clean);
 
-  // Sets the ChromeBrowserStateManager.
-  void SetChromeBrowserStateManager(ChromeBrowserStateManager* manager);
+  // Sets the ProfileManager.
+  void SetProfileManager(ProfileManagerIOS* manager);
 
   // Sets the VariationsService.
   void SetVariationsService(variations::VariationsService* variations_service);

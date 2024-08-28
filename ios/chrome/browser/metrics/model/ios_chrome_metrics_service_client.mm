@@ -435,9 +435,7 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
   }
 
   std::vector<ChromeBrowserState*> loaded_browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
 
   int open_tabs_count = 0;
   for (ChromeBrowserState* browser_state : loaded_browser_states) {

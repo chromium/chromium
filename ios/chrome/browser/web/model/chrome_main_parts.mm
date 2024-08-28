@@ -319,7 +319,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   // Ensure the ChromeBrowserState is loaded and initialized.
   ChromeBrowserStateManager* browser_state_manager =
-      application_context_->GetChromeBrowserStateManager();
+      application_context_->GetProfileManager();
 
   // Load all BrowserStates.
   browser_state_manager->LoadBrowserStates();

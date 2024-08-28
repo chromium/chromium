@@ -86,7 +86,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 
     PrefService* pref_service =
         GetApplicationContext()
-            ->GetChromeBrowserStateManager()
+            ->GetProfileManager()
             ->GetBrowserStateByName(attr.GetProfileName())
             ->GetPrefs();
 

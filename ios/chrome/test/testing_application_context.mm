@@ -76,8 +76,7 @@ void TestingApplicationContext::SetLastShutdownClean(bool clean) {
   was_last_shutdown_clean_ = clean;
 }
 
-void TestingApplicationContext::SetChromeBrowserStateManager(
-    ChromeBrowserStateManager* manager) {
+void TestingApplicationContext::SetProfileManager(ProfileManagerIOS* manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   chrome_browser_state_manager_ = manager;
 }

@@ -20,7 +20,7 @@ SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
     : identity_manager_(identity_manager),
       signin_error_controller_(signin_error_controller),
       browser_state_name_(browser_state_name) {
-  DCHECK(GetApplicationContext()->GetChromeBrowserStateManager());
+  DCHECK(GetApplicationContext()->GetProfileManager());
   identity_manager_observation_.Observe(identity_manager_.get());
 
   signin_error_controller_observation_.Observe(signin_error_controller);

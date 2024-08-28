@@ -152,9 +152,7 @@ void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
     std::vector<const syncer::DeviceInfoTracker*>* trackers) {
   DCHECK(trackers);
   std::vector<ChromeBrowserState*> browser_state_list =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
   for (ChromeBrowserState* browser_state : browser_state_list) {
     syncer::DeviceInfoSyncService* service =
         DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);

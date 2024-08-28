@@ -57,7 +57,7 @@ ChromeBrowserState* DemographicsClient::GetCachedBrowserState() {
   ChromeBrowserState* chrome_browser_state = chrome_browser_state_.get();
   if (!chrome_browser_state) {
     chrome_browser_state = GetApplicationContext()
-                               ->GetChromeBrowserStateManager()
+                               ->GetProfileManager()
                                ->GetLastUsedBrowserStateDeprecatedDoNotUse();
 
     CHECK(chrome_browser_state);

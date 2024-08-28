@@ -98,7 +98,7 @@ class ProfileManagerIOSImplTest : public PlatformTest {
 
     // Register the objects with the TestingApplicationContext.
     application_context->SetIOSChromeIOThread(chrome_io_.get());
-    application_context->SetChromeBrowserStateManager(&profile_manager_);
+    application_context->SetProfileManager(&profile_manager_);
 
     // Initialize the prediction model store (required by some KeyedServices).
     optimization_guide::IOSChromePredictionModelStore::GetInstance()
@@ -133,7 +133,7 @@ class ProfileManagerIOSImplTest : public PlatformTest {
 
     application_context->GetBrowserPolicyConnector()->Shutdown();
     application_context->GetIOSChromeIOThread()->NetworkTearDown();
-    application_context->SetChromeBrowserStateManager(nullptr);
+    application_context->SetProfileManager(nullptr);
     application_context->SetIOSChromeIOThread(nullptr);
   }
 

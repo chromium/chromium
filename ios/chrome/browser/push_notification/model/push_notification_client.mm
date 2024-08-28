@@ -114,6 +114,6 @@ ChromeBrowserState* PushNotificationClient::GetLastUsedBrowserState() {
     return last_used_browser_state_for_testing_;
   }
   return GetApplicationContext()
-      ->GetChromeBrowserStateManager()
+      ->GetProfileManager()
       ->GetLastUsedBrowserStateDeprecatedDoNotUse();
 }

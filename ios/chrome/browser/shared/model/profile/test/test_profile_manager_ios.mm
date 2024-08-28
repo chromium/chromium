@@ -16,19 +16,19 @@
 TestProfileManagerIOS::TestProfileManagerIOS()
     : profile_attributes_storage_(GetApplicationContext()->GetLocalState()),
       data_dir_(base::CreateUniqueTempDirectoryScopedToTest()) {
-  CHECK_EQ(GetApplicationContext()->GetChromeBrowserStateManager(), nullptr);
-  TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(this);
+  CHECK_EQ(GetApplicationContext()->GetProfileManager(), nullptr);
+  TestingApplicationContext::GetGlobal()->SetProfileManager(this);
 }
 
 TestProfileManagerIOS::~TestProfileManagerIOS() {
-  CHECK_EQ(GetApplicationContext()->GetChromeBrowserStateManager(), this);
+  CHECK_EQ(GetApplicationContext()->GetProfileManager(), this);
 
   // Notify observers before unregistering from ApplicationContext.
   for (auto& observer : observers_) {
     observer.OnProfileManagerDestroyed(this);
   }
 
-  TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(nullptr);
+  TestingApplicationContext::GetGlobal()->SetProfileManager(nullptr);
 }
 
 void TestProfileManagerIOS::AddObserver(ProfileManagerObserverIOS* observer) {

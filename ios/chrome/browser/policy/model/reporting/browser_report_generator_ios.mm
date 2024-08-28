@@ -34,9 +34,8 @@ version_info::Channel BrowserReportGeneratorIOS::GetChannel() {
 std::vector<BrowserReportGenerator::ReportedProfileData>
 BrowserReportGeneratorIOS::GetReportedProfiles() {
   std::vector<BrowserReportGenerator::ReportedProfileData> reportedProfileData;
-  for (const auto* browser_state : GetApplicationContext()
-                                       ->GetChromeBrowserStateManager()
-                                       ->GetLoadedBrowserStates()) {
+  for (const auto* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates()) {
     // ChromeBrowserStateManager should not return off-the-record BrowserStates.
     CHECK(!browser_state->IsOffTheRecord());
     reportedProfileData.push_back({
