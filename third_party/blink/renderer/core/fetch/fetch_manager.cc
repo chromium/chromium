@@ -244,6 +244,22 @@ ResourceLoadPriority ComputeFetchLaterLoadPriority(
   // TODO(crbug.com/1465781): Apply kLow when IsSubframeDeprioritizationEnabled.
 }
 
+class FetchManagerResourceRequestContext final : public ResourceRequestContext {
+  STACK_ALLOCATED();
+
+ public:
+  ~FetchManagerResourceRequestContext() override = default;
+
+  // Computes the ResourceLoadPriority. This is called if the priority was not
+  // set.
+  ResourceLoadPriority ComputeLoadPriority(
+      const FetchParameters& params) override {
+    return ComputeFetchLaterLoadPriority(params);
+  }
+
+  void RecordTrace() override {}
+};
+
 }  // namespace
 
 // FetchLoaderBase provides common logic to prepare a blink::ResourceRequest
@@ -1782,25 +1798,25 @@ FetchLaterManager::PrepareNetworkRequest(
   const FetchClientSettingsObject& fetch_client_settings_object =
       fetcher->GetProperties().GetFetchClientSettingsObject();
 
+  FetchManagerResourceRequestContext resource_request_context;
   if (!RuntimeEnabledFeatures::
           MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
-    if (PrepareResourceRequest(kFetchLaterResourceType,
-                               fetch_client_settings_object, params,
-                               fetcher->Context(), unused_virtual_time_pauser,
-                               WTF::BindOnce(&ComputeFetchLaterLoadPriority),
-                               base::NullCallback(), KURL()) != std::nullopt) {
+    if (PrepareResourceRequest(
+            kFetchLaterResourceType, fetch_client_settings_object, params,
+            fetcher->Context(), unused_virtual_time_pauser,
+            resource_request_context, KURL()) != std::nullopt) {
       return nullptr;
     }
   } else {
     if (PrepareResourceRequestForCacheAccess(
             kFetchLaterResourceType, fetch_client_settings_object, KURL(),
-            WTF::BindOnce(&ComputeFetchLaterLoadPriority), fetcher->Context(),
+            resource_request_context, fetcher->Context(),
             params) != std::nullopt) {
       return nullptr;
     }
     UpgradeResourceRequestForLoaderNew(
         kFetchLaterResourceType, params, fetcher->Context(),
-        unused_virtual_time_pauser, base::NullCallback());
+        resource_request_context, unused_virtual_time_pauser);
   }
 
   // From `ResourceFetcher::StartLoad()`:

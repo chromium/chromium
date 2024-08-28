@@ -444,11 +444,6 @@ class PLATFORM_EXPORT ResourceFetcher
       const std::optional<float> resource_height = std::nullopt,
       bool is_potentially_lcp_element = false,
       bool is_potentially_lcp_influencer = false);
-  // A helper that uses `params` to fill out other remaining parameters.
-  ResourceLoadPriority ComputeLoadPriorityHelper(
-      ResourceType,
-      ResourcePriority::VisibilityStatus,
-      const FetchParameters& params);
   ResourceLoadPriority AdjustImagePriority(
       const ResourceLoadPriority priority_so_far,
       const ResourceType type,
@@ -461,15 +456,6 @@ class PLATFORM_EXPORT ResourceFetcher
 
   std::optional<ResourceRequestBlockedReason>
   UpdateRequestForTransparentPlaceholderImage(FetchParameters& params);
-
-  // |virtual_time_pauser| is an output parameter. PrepareRequest may
-  // create a new WebScopedVirtualTimePauser and set it to
-  // |virtual_time_pauser|.
-  std::optional<ResourceRequestBlockedReason> PrepareRequest(
-      FetchParameters&,
-      const ResourceFactory&,
-      WebScopedVirtualTimePauser& virtual_time_pauser,
-      const KURL& bundle_url_for_uuid_resources);
 
   Resource* CreateResourceForStaticData(const FetchParameters&,
                                         const ResourceFactory&);

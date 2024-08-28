@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
@@ -38,14 +37,21 @@ AdjustPriorityWithPriorityHintAndRenderBlocking(
     mojom::blink::FetchPriorityHint fetch_priority_hint,
     RenderBlockingBehavior render_blocking_behavior);
 
-// A callback type to compute ResourceLoadPriority for the ResourceRequest from
-// the given FetchParameters. Returns the computed result.
-using ResourceLoadPriorityCalculator =
-    base::OnceCallback<ResourceLoadPriority(const FetchParameters&)>;
+// Used by PrepareResourceRequestForCacheAccess() and
+// UpgradeResourceRequestForLoader().
+class ResourceRequestContext {
+ public:
+  // Computes the ResourceLoadPriority. This is called if the priority was not
+  // set.
+  virtual ResourceLoadPriority ComputeLoadPriority(
+      const FetchParameters& params) = 0;
 
-// A callback type to enable tracing using the given ResourceRequest.
-using ResourceRequestTraceCallback =
-    base::OnceCallback<void(const ResourceRequest&)>;
+  // Called to record a trace.
+  virtual void RecordTrace() = 0;
+
+ protected:
+  virtual ~ResourceRequestContext() = default;
+};
 
 // Prepares the underlying ResourceRequest for `params` with enough information
 // to do a cache lookup. If a cached value is not used,
@@ -63,7 +69,7 @@ PrepareResourceRequestForCacheAccess(
     ResourceType type,
     const FetchClientSettingsObject& fetch_client_settings_object,
     const KURL& bundle_url_for_uuid_resources,
-    ResourceLoadPriorityCalculator compute_load_priority_callback,
+    ResourceRequestContext& resource_request_context,
     FetchContext& context,
     FetchParameters& params);
 
@@ -87,15 +93,14 @@ PrepareResourceRequest(
     FetchParameters& params,
     FetchContext& context,
     WebScopedVirtualTimePauser& virtual_time_pauser,
-    ResourceLoadPriorityCalculator compute_load_priority_callback,
-    ResourceRequestTraceCallback trace_callback,
+    ResourceRequestContext& resource_request_context,
     const KURL& bundle_url_for_uuid_resources);
 BLINK_PLATFORM_EXPORT void UpgradeResourceRequestForLoaderNew(
     ResourceType resource_type,
     FetchParameters& params,
     FetchContext& context,
-    WebScopedVirtualTimePauser& virtual_time_pauser,
-    ResourceRequestTraceCallback trace_callback);
+    ResourceRequestContext& resource_request_context,
+    WebScopedVirtualTimePauser& virtual_time_pauser);
 
 }  // namespace blink
 

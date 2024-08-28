@@ -378,25 +378,32 @@ void RecordDeferUnusedPreloadHistograms(const Resource* resource) {
 // PrepareRequestForCacheAccess() is called first. If the resource can not be
 // served from the cache, UpgradeForLoaderIfNecessary() is called to complete
 // the necessary steps before loading.
-class ResourceFetcher::ResourcePrepareHelper {
+class ResourceFetcher::ResourcePrepareHelper final
+    : public ResourceRequestContext {
   STACK_ALLOCATED();
 
  public:
-  ResourcePrepareHelper(ResourceFetcher& fetcher, FetchParameters& params);
+  ResourcePrepareHelper(ResourceFetcher& fetcher,
+                        FetchParameters& params,
+                        const ResourceFactory& factory);
 
   std::optional<ResourceRequestBlockedReason> PrepareRequestForCacheAccess(
-      const ResourceFactory& factory,
       WebScopedVirtualTimePauser& pauser);
-  void UpgradeForLoaderIfNecessary(const ResourceFactory& factory,
-                                   WebScopedVirtualTimePauser& pauser);
+  void UpgradeForLoaderIfNecessary(WebScopedVirtualTimePauser& pauser);
   bool WasUpgradeForLoaderCalled() const {
     return was_upgrade_for_loader_called_;
   }
+
+  // ResourceRequestContext:
+  ResourceLoadPriority ComputeLoadPriority(
+      const FetchParameters& params) override;
+  void RecordTrace() override;
 
  private:
   ResourceFetcher& fetcher_;
   FetchParameters& params_;
   KURL bundle_url_for_uuid_resources_;
+  const ResourceFactory& factory_;
   const bool has_transparent_placeholder_image_;
   bool was_upgrade_for_loader_called_ = true;
 #if DCHECK_IS_ON()
@@ -689,18 +696,6 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   }
 
   return priority;
-}
-
-ResourceLoadPriority ResourceFetcher::ComputeLoadPriorityHelper(
-    ResourceType resource_type,
-    ResourcePriority::VisibilityStatus visibility,
-    const FetchParameters& params) {
-  return ComputeLoadPriority(
-      resource_type, params.GetResourceRequest(), visibility, params.Defer(),
-      params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
-      params.GetScriptType(), params.IsLinkPreload(), params.GetResourceWidth(),
-      params.GetResourceHeight(), params.IsPotentiallyLCPElement(),
-      params.IsPotentiallyLCPInfluencer());
 }
 
 // Boost the priority for the first N not-small images from the preload scanner
@@ -1256,57 +1251,6 @@ ResourceFetcher::UpdateRequestForTransparentPlaceholderImage(
   return std::nullopt;
 }
 
-std::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
-    FetchParameters& params,
-    const ResourceFactory& factory,
-    WebScopedVirtualTimePauser& virtual_time_pauser,
-    const KURL& bundle_url_for_uuid_resources) {
-  ResourceRequest& resource_request = params.MutableResourceRequest();
-  // This case is handled in UpdateRequestForTransparentPlaceholderImage().
-  DCHECK(!(IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
-           (resource_request.GetKnownTransparentPlaceholderImageIndex() !=
-            kNotFound)));
-
-  ResourceType resource_type = factory.GetType();
-  const ResourceLoaderOptions& options = params.Options();
-
-  DCHECK(options.synchronous_policy == kRequestAsynchronously ||
-         resource_type == ResourceType::kRaw ||
-         resource_type == ResourceType::kXSLStyleSheet);
-
-  params.OverrideContentType(factory.ContentType());
-
-  if (RuntimeEnabledFeatures::
-          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
-    UpgradeResourceRequestForLoaderNew(
-        resource_type, params, Context(), virtual_time_pauser,
-        WTF::BindOnce([](const ResourceRequest& r) {
-          TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-              TRACE_DISABLED_BY_DEFAULT("network"), "ResourcePrioritySet",
-              TRACE_ID_WITH_SCOPE("BlinkResourceID",
-                                  TRACE_ID_LOCAL(r.InspectorId())),
-              "priority", r.Priority());
-        }));
-    return std::nullopt;
-  }
-
-  return PrepareResourceRequest(
-      resource_type, properties_->GetFetchClientSettingsObject(), params,
-      Context(), virtual_time_pauser,
-      WTF::BindOnce(
-          &ResourceFetcher::ComputeLoadPriorityHelper,
-          // This callback will be run synchronously, so no cyclic dependency.
-          WrapPersistent(this), resource_type, ResourcePriority::kNotVisible),
-      WTF::BindOnce([](const ResourceRequest& r) {
-        TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-            TRACE_DISABLED_BY_DEFAULT("network"), "ResourcePrioritySet",
-            TRACE_ID_WITH_SCOPE("BlinkResourceID",
-                                TRACE_ID_LOCAL(r.InspectorId())),
-            "priority", r.Priority());
-      }),
-      bundle_url_for_uuid_resources);
-}
-
 KURL ResourceFetcher::PrepareRequestForWebBundle(
     ResourceRequest& resource_request) const {
   if (resource_request.GetWebBundleTokenParams()) {
@@ -1416,9 +1360,9 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   WebScopedVirtualTimePauser pauser;
 
-  ResourcePrepareHelper prepare_helper(*this, params);
+  ResourcePrepareHelper prepare_helper(*this, params, factory);
   std::optional<ResourceRequestBlockedReason> blocked_reason =
-      prepare_helper.PrepareRequestForCacheAccess(factory, pauser);
+      prepare_helper.PrepareRequestForCacheAccess(pauser);
   if (blocked_reason) {
     auto* resource = ResourceForBlockedRequest(params, factory,
                                                blocked_reason.value(), client);
@@ -1444,7 +1388,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   // deferred.
   if (!is_stale_revalidation &&
       (archive_ || (is_data_url && defer_policy != DeferPolicy::kDefer))) {
-    prepare_helper.UpgradeForLoaderIfNecessary(factory, pauser);
+    prepare_helper.UpgradeForLoaderIfNecessary(pauser);
     resource = CreateResourceForStaticData(params, factory);
     if (resource) {
       policy =
@@ -1467,12 +1411,12 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     if (!prepare_helper.WasUpgradeForLoaderCalled() &&
         preloads_.find(PreloadKey(params.Url(), resource_type)) !=
             preloads_.end()) {
-      prepare_helper.UpgradeForLoaderIfNecessary(factory, pauser);
+      prepare_helper.UpgradeForLoaderIfNecessary(pauser);
     }
     resource = MatchPreload(params, resource_type);
     if (resource) {
       policy = RevalidationPolicy::kUse;
-      prepare_helper.UpgradeForLoaderIfNecessary(factory, pauser);
+      prepare_helper.UpgradeForLoaderIfNecessary(pauser);
       // If |params| is for a blocking resource and a preloaded resource is
       // found, we may need to make it block the onload event.
       MakePreloadedResourceBlockOnloadIfNeeded(resource, params);
@@ -1498,7 +1442,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
   if (!prepare_helper.WasUpgradeForLoaderCalled() &&
       policy != RevalidationPolicy::kUse) {
-    prepare_helper.UpgradeForLoaderIfNecessary(factory, pauser);
+    prepare_helper.UpgradeForLoaderIfNecessary(pauser);
   }
 
   UpdateMemoryCacheStats(
@@ -1594,7 +1538,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     // If a load is necessary, force upgrade so that the resource width is
     // updated. This is a bit heavyweight, and could be optimized by adding
     // a new function specifically to add the width.
-    prepare_helper.UpgradeForLoaderIfNecessary(factory, pauser);
+    prepare_helper.UpgradeForLoaderIfNecessary(pauser);
   }
 
   // The resource width can change after the request was initially created.
@@ -3458,9 +3402,11 @@ void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(
 
 ResourceFetcher::ResourcePrepareHelper::ResourcePrepareHelper(
     ResourceFetcher& fetcher,
-    FetchParameters& params)
+    FetchParameters& params,
+    const ResourceFactory& factory)
     : fetcher_(fetcher),
       params_(params),
+      factory_(factory),
       has_transparent_placeholder_image_(
           fetcher.IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
           (params.GetResourceRequest()
@@ -3468,7 +3414,6 @@ ResourceFetcher::ResourcePrepareHelper::ResourcePrepareHelper(
 
 std::optional<ResourceRequestBlockedReason>
 ResourceFetcher::ResourcePrepareHelper::PrepareRequestForCacheAccess(
-    const ResourceFactory& factory,
     WebScopedVirtualTimePauser& pauser) {
 #if DCHECK_IS_ON()
   DCHECK(!determined_initial_blocked_reason_);
@@ -3480,37 +3425,38 @@ ResourceFetcher::ResourcePrepareHelper::PrepareRequestForCacheAccess(
   ResourceRequest& resource_request = params_.MutableResourceRequest();
   bundle_url_for_uuid_resources_ =
       fetcher_.PrepareRequestForWebBundle(resource_request);
-  auto compute_load_priority_callback = WTF::BindOnce(
-      &ResourceFetcher::ComputeLoadPriorityHelper,
-      // This callback will be run synchronously, so no cyclic dependency.
-      WrapPersistent(&fetcher_), factory.GetType(),
-      ResourcePriority::kNotVisible);
+
+  ResourceType resource_type = factory_.GetType();
+  const ResourceLoaderOptions& options = params_.Options();
+
+  DCHECK(options.synchronous_policy == kRequestAsynchronously ||
+         resource_type == ResourceType::kRaw ||
+         resource_type == ResourceType::kXSLStyleSheet);
 
   if (!RuntimeEnabledFeatures::
           MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
-    return fetcher_.PrepareRequest(params_, factory, pauser,
-                                   bundle_url_for_uuid_resources_);
+    params_.OverrideContentType(factory_.ContentType());
+    return PrepareResourceRequest(
+        resource_type, fetcher_.properties_->GetFetchClientSettingsObject(),
+        params_, fetcher_.Context(), pauser, *this,
+        bundle_url_for_uuid_resources_);
   }
 
   std::optional<ResourceRequestBlockedReason> blocked_reason =
       PrepareResourceRequestForCacheAccess(
-          factory.GetType(),
-          fetcher_.properties_->GetFetchClientSettingsObject(),
-          bundle_url_for_uuid_resources_,
-          std::move(compute_load_priority_callback), fetcher_.Context(),
-          params_);
+          resource_type, fetcher_.properties_->GetFetchClientSettingsObject(),
+          bundle_url_for_uuid_resources_, *this, fetcher_.Context(), params_);
   if (blocked_reason) {
     return blocked_reason;
   }
   was_upgrade_for_loader_called_ = false;
   if (params_.GetResourceRequest().RequiresUpgradeForLoader()) {
-    UpgradeForLoaderIfNecessary(factory, pauser);
+    UpgradeForLoaderIfNecessary(pauser);
   }
   return std::nullopt;
 }
 
 void ResourceFetcher::ResourcePrepareHelper::UpgradeForLoaderIfNecessary(
-    const ResourceFactory& factory,
     WebScopedVirtualTimePauser& pauser) {
 #if DCHECK_IS_ON()
   DCHECK(determined_initial_blocked_reason_);
@@ -3519,8 +3465,30 @@ void ResourceFetcher::ResourcePrepareHelper::UpgradeForLoaderIfNecessary(
     return;
   }
   was_upgrade_for_loader_called_ = true;
-  fetcher_.PrepareRequest(params_, factory, pauser,
-                          bundle_url_for_uuid_resources_);
+  params_.OverrideContentType(factory_.ContentType());
+  UpgradeResourceRequestForLoaderNew(factory_.GetType(), params_,
+                                     fetcher_.Context(), *this, pauser);
+}
+
+ResourceLoadPriority
+ResourceFetcher::ResourcePrepareHelper::ComputeLoadPriority(
+    const FetchParameters& params) {
+  return fetcher_.ComputeLoadPriority(
+      factory_.GetType(), params.GetResourceRequest(),
+      ResourcePriority::kNotVisible, params.Defer(),
+      params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
+      params.GetScriptType(), params.IsLinkPreload(), params.GetResourceWidth(),
+      params.GetResourceHeight(), params.IsPotentiallyLCPElement(),
+      params.IsPotentiallyLCPInfluencer());
+}
+
+void ResourceFetcher::ResourcePrepareHelper::RecordTrace() {
+  const ResourceRequest& resource_request = params_.GetResourceRequest();
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
+      TRACE_DISABLED_BY_DEFAULT("network"), "ResourcePrioritySet",
+      TRACE_ID_WITH_SCOPE("BlinkResourceID",
+                          TRACE_ID_LOCAL(resource_request.InspectorId())),
+      "priority", resource_request.Priority());
 }
 
 }  // namespace blink

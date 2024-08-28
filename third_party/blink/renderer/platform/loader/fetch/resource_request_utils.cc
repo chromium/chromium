@@ -149,8 +149,7 @@ std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
     FetchParameters& params,
     FetchContext& context,
     WebScopedVirtualTimePauser& virtual_time_pauser,
-    ResourceLoadPriorityCalculator compute_load_priority_callback,
-    ResourceRequestTraceCallback trace_callback,
+    ResourceRequestContext& resource_request_context,
     const KURL& bundle_url_for_uuid_resources) {
   ResourceRequest& resource_request = params.MutableResourceRequest();
   const ResourceLoaderOptions& options = params.Options();
@@ -195,10 +194,9 @@ std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
   ResourceLoadPriority computed_load_priority = resource_request.Priority();
   // We should only compute the priority for ResourceRequests whose priority has
   // not already been set.
-  if (!resource_request.PriorityHasBeenSet() &&
-      compute_load_priority_callback) {
+  if (!resource_request.PriorityHasBeenSet()) {
     computed_load_priority =
-        std::move(compute_load_priority_callback).Run(params);
+        resource_request_context.ComputeLoadPriority(params);
   }
   CHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);
   resource_request.SetPriority(computed_load_priority);
@@ -243,9 +241,7 @@ std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
 
   context.AddAdditionalRequestHeaders(resource_request);
 
-  if (trace_callback) {
-    std::move(trace_callback).Run(resource_request);
-  }
+  resource_request_context.RecordTrace();
 
   const std::optional<ResourceRequestBlockedReason> blocked_reason =
       context.CanRequest(resource_type, resource_request,
@@ -282,8 +278,8 @@ void UpgradeResourceRequestForLoaderNew(
     ResourceType resource_type,
     FetchParameters& params,
     FetchContext& context,
-    WebScopedVirtualTimePauser& virtual_time_pauser,
-    ResourceRequestTraceCallback trace_callback) {
+    ResourceRequestContext& resource_request_context,
+    WebScopedVirtualTimePauser& virtual_time_pauser) {
   DCHECK(RuntimeEnabledFeatures::
              MinimimalResourceRequestPrepBeforeCacheLookupEnabled());
   ResourceRequest& resource_request = params.MutableResourceRequest();
@@ -317,9 +313,7 @@ void UpgradeResourceRequestForLoaderNew(
 
   context.AddAdditionalRequestHeaders(resource_request);
 
-  if (trace_callback) {
-    std::move(trace_callback).Run(resource_request);
-  }
+  resource_request_context.RecordTrace();
 
   if (context.CalculateIfAdSubresource(resource_request,
                                        std::nullopt /* alias_url */,
@@ -341,7 +335,7 @@ PrepareResourceRequestForCacheAccess(
     ResourceType resource_type,
     const FetchClientSettingsObject& fetch_client_settings_object,
     const KURL& bundle_url_for_uuid_resources,
-    ResourceLoadPriorityCalculator compute_load_priority_callback,
+    ResourceRequestContext& resource_request_context,
     FetchContext& context,
     FetchParameters& params) {
   DCHECK(RuntimeEnabledFeatures::
@@ -385,10 +379,9 @@ PrepareResourceRequestForCacheAccess(
   ResourceLoadPriority computed_load_priority = resource_request.Priority();
   // We should only compute the priority for ResourceRequests whose priority has
   // not already been set.
-  if (!resource_request.PriorityHasBeenSet() &&
-      compute_load_priority_callback) {
+  if (!resource_request.PriorityHasBeenSet()) {
     computed_load_priority =
-        std::move(compute_load_priority_callback).Run(params);
+        resource_request_context.ComputeLoadPriority(params);
   }
   CHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);
   resource_request.SetPriority(computed_load_priority);
