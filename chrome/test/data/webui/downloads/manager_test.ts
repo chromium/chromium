@@ -268,7 +268,7 @@ suite('manager tests', function() {
             'recordOpenBypassWarningDialog');
         assertEquals('itemId', recordOpenId);
         const dialog = manager.shadowRoot!.querySelector(
-            'download-bypass-warning-confirmation-dialog');
+            'downloads-bypass-warning-confirmation-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);
         assertEquals('item.pdf', dialog.fileName);
@@ -307,7 +307,7 @@ suite('manager tests', function() {
         'recordOpenBypassWarningDialog');
     assertEquals('itemId', recordOpenId);
     const dialog = manager.shadowRoot!.querySelector(
-        'download-bypass-warning-confirmation-dialog');
+        'downloads-bypass-warning-confirmation-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
     assertEquals('item.pdf', dialog.fileName);
@@ -343,7 +343,7 @@ suite('manager tests', function() {
         }));
         flush();
         const dialog = manager.shadowRoot!.querySelector(
-            'download-bypass-warning-confirmation-dialog');
+            'downloads-bypass-warning-confirmation-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);
         // Remove the file and check that the dialog is hidden.

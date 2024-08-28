@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 import './bypass_warning_confirmation_dialog.js';
-import './bypass_warning_confirmation_interstitial.js';
+import './dangerous_download_interstitial.js';
 import './item.js';
 import './toolbar.js';
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
@@ -27,7 +27,7 @@ import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/ir
 import {Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import type {DownloadsDangerousDownloadInterstitialElement as DangerousInterstitialElement} from './bypass_warning_confirmation_interstitial.js';
+import type {DownloadsDangerousDownloadInterstitialElement as DangerousInterstitialElement} from './dangerous_download_interstitial.js';
 import type {MojomData} from './data.js';
 import type {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
 import {State} from './downloads.mojom-webui.js';
@@ -313,7 +313,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
   private onBypassWarningConfirmationDialogClose_() {
     const dialog = this.shadowRoot!.querySelector(
-        'download-bypass-warning-confirmation-dialog');
+        'downloads-bypass-warning-confirmation-dialog');
     assert(dialog);
     assert(this.bypassPromptItemId_ !== '');
     assert(!!this.mojoHandler_);

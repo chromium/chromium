@@ -1,47 +1,22 @@
-<style>
-  #body {
-    display: flex;
-  }
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-  .tonal-button {
-    margin-inline-end: 8px;
-  }
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-  #icon-wrapper,
-  iron-icon {
-    height: var(--cr-icon-size);
-    width: var(--cr-icon-size);
-    color: var(--google-red-700);
-  }
+import type {DownloadsBypassWarningConfirmationDialogElement} from './bypass_warning_confirmation_dialog.js';
 
-  @media (prefers-color-scheme: dark) {
-    #icon-wrapper,
-    iron-icon {
-      color: var(--google-red-300);
-    }
-  }
-
-  #icon-wrapper {
-    margin-inline-end: 8px;
-  }
-
-  #body-text {
-    color: var(--cr-primary-text-color);
-  }
-
-  #file-name {
-    font-weight: bold;
-  }
-</style>
+export function getHtml(this: DownloadsBypassWarningConfirmationDialogElement) {
+  return html`<!--_html_template_start_-->
 <cr-dialog show-on-attach id="dialog">
   <div slot="title">$i18n{warningBypassDialogTitle}</div>
   <div slot="body" id="body">
     <div id="icon-wrapper" role="img"
         aria-label="$i18n{accessibleLabelDangerous}">
-      <iron-icon icon="downloads:dangerous"></iron-icon>
+      <cr-icon icon="downloads:dangerous"></cr-icon>
     </div>
     <div id="body-text">
-      <div id="file-name">[[fileName]]</div>
+      <div id="file-name">${this.fileName}</div>
       <div id="danger-description">$i18n{warningBypassPromptDescription}</div>
       <div id="learn-more-link">
         <!-- noopener cuts off the script connection between chrome://downloads,
@@ -54,15 +29,17 @@
     </div>
   </div>
   <div slot="button-container">
-    <cr-button class="tonal-button" on-click="onDownloadDangerousClick_"
+    <cr-button class="tonal-button" @click="${this.onDownloadDangerousClick_}"
         id="download-dangerous-button">
       $i18n{controlKeepDangerous}
     </cr-button>
     <!-- The cancel button is the primary action because we don't want the user
       to download the dangerous file. -->
-    <cr-button class="action-button" on-click="onCancelClick_"
+    <cr-button class="action-button" @click="${this.onCancelClick_}"
         id="cancel-button">
       $i18n{warningBypassDialogCancel}
     </cr-button>
   </div>
 </cr-dialog>
+<!--_html_template_end_-->`;
+}

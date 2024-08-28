@@ -17,14 +17,16 @@ build_webui("build") {
 
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
-    "bypass_warning_confirmation_dialog.ts",
-    "bypass_warning_confirmation_interstitial.ts",
     "item.ts",
     "manager.ts",
   ]
 
   non_web_component_files = [
     "browser_proxy.ts",
+    "bypass_warning_confirmation_dialog.html.ts",
+    "bypass_warning_confirmation_dialog.ts",
+    "dangerous_download_interstitial.html.ts",
+    "dangerous_download_interstitial.ts",
     "data.ts",
     "downloads.ts",
     "icon_loader.ts",
@@ -33,7 +35,11 @@ build_webui("build") {
     "toolbar.ts",
   ]
 
-  css_files = [ "toolbar.css" ]
+  css_files = [
+    "bypass_warning_confirmation_dialog.css",
+    "dangerous_download_interstitial.css",
+    "toolbar.css",
+  ]
 
   icons_html_files = [ "icons.html" ]
 

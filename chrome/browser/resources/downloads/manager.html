@@ -152,9 +152,9 @@
     </downloads-dangerous-download-interstitial>
   </template>
   <template is="dom-if" if="[[!dangerousDownloadInterstitial_]]" restamp>
-    <download-bypass-warning-confirmation-dialog
+    <downloads-bypass-warning-confirmation-dialog
         file-name="[[computeBypassWarningDialogFileName_(bypassPromptItemId_)]]"
         on-close="onBypassWarningConfirmationDialogClose_">
-    </download-bypass-warning-confirmation-dialog>
+    </downloads-bypass-warning-confirmation-dialog>
   </template>
 </template>

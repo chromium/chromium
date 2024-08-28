@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'bypass-warning-confirmation-interstitial' is the interstitial
+ * @fileoverview 'downloads-dangerous-download-interstitial' is the interstitial
  * that allows bypassing a download warning (keeping a file flagged as
  * dangerous). A 'success' indicates the warning interstitial was confirmed and
  * the dangerous file was downloaded.
@@ -18,10 +18,11 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {getTemplate} from './bypass_warning_confirmation_interstitial.html.js';
+import {getCss} from './dangerous_download_interstitial.css.js';
+import {getHtml} from './dangerous_download_interstitial.html.js';
 import type {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {DangerousDownloadInterstitialSurveyOptions as surveyOptions} from './downloads.mojom-webui.js';
 
@@ -34,44 +35,40 @@ export interface DownloadsDangerousDownloadInterstitialElement {
 }
 
 export class DownloadsDangerousDownloadInterstitialElement extends
-    PolymerElement {
+    CrLitElement {
   static get is() {
     return 'downloads-dangerous-download-interstitial';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      bypassPromptItemId: String,
-
-      hideSurveyAndDownloadButton_: {
-        type: Boolean,
-        value: true,
-      },
-
-      selectedRadioOption_: String,
-
-      trustSiteLine: String,
-
-      trustSiteLineAccessibleText: String,
+      bypassPromptItemId: {type: String},
+      hideSurveyAndDownloadButton_: {type: Boolean},
+      selectedRadioOption_: {type: String},
+      trustSiteLine: {type: String},
+      trustSiteLineAccessibleText: {type: String},
     };
   }
 
-  bypassPromptItemId: string;
-  trustSiteLine: string;
-  trustSiteLineAccessibleText: string;
+  bypassPromptItemId: string = '';
+  trustSiteLine: string = '';
+  trustSiteLineAccessibleText: string = '';
 
   private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;
-  private hideSurveyAndDownloadButton_: boolean;
-  private selectedRadioOption_: string;
+  protected hideSurveyAndDownloadButton_: boolean = true;
+  protected selectedRadioOption_?: string;
 
   private mojoHandler_: PageHandlerInterface|null = null;
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.mojoHandler_ = BrowserProxy.getInstance().handler;
   }
 
@@ -110,14 +107,14 @@ export class DownloadsDangerousDownloadInterstitialElement extends
     document.body.addEventListener('keydown', this.boundKeydown_);
   }
 
-  private onBackToSafetyClick_() {
+  protected onBackToSafetyClick_() {
     this.$.dialog.close();
     assert(!this.$.dialog.open);
     this.dispatchEvent(
         new CustomEvent('cancel', {bubbles: true, composed: true}));
   }
 
-  private onContinueAnywayClick_() {
+  protected onContinueAnywayClick_() {
     const continueAnywayButton = this.$.continueAnywayButton;
     assert(!!continueAnywayButton);
     continueAnywayButton.setAttribute('disabled', 'true');
@@ -133,11 +130,11 @@ export class DownloadsDangerousDownloadInterstitialElement extends
         this.bypassPromptItemId);
   }
 
-  private onDownloadClick_() {
+  protected onDownloadClick_() {
     getAnnouncerInstance().announce(
         loadTimeData.getString('screenreaderSavedDangerous'));
 
-    this.$.dialog.close(this.selectedRadioOption_);
+    this.$.dialog.close(this.selectedRadioOption_ || '');
     assert(!this.$.dialog.open);
     this.dispatchEvent(
         new CustomEvent('close', {bubbles: true, composed: true}));
@@ -159,7 +156,7 @@ export class DownloadsDangerousDownloadInterstitialElement extends
     this.boundKeydown_ = null;
   }
 
-  private onSelectedRadioOptionChanged_(e: CustomEvent<{value: string}>) {
+  protected onSelectedRadioOptionChanged_(e: CustomEvent<{value: string}>) {
     this.selectedRadioOption_ = e.detail.value;
   }
 }
