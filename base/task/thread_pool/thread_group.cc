@@ -14,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/task_tracker.h"
-#include "base/task/thread_pool/thread_group_worker_delegate.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
@@ -397,7 +396,6 @@ void ThreadGroup::PushTaskSourceAndWakeUpWorkersImpl(
 }
 
 void ThreadGroup::EnqueueAllTaskSources(PriorityQueue* new_priority_queue) {
-  std::unique_ptr<BaseScopedCommandsExecutor> executor = GetExecutor();
   CheckedAutoLock lock(lock_);
   while (!new_priority_queue->IsEmpty()) {
     TaskSourceSortKey top_sort_key = new_priority_queue->PeekSortKey();
@@ -603,66 +601,6 @@ void ThreadGroup::MaybeScheduleAdjustMaxTasksLockRequired(
     executor->ScheduleAdjustMaxTasks();
     adjust_max_tasks_posted_ = true;
   }
-}
-
-void ThreadGroup::ScheduleAdjustMaxTasks() {
-  // |adjust_max_tasks_posted_| can't change before the task posted below runs.
-  // Skip check on NaCl to avoid unsafe reference acquisition warning.
-#if !BUILDFLAG(IS_NACL)
-  DCHECK(TS_UNCHECKED_READ(adjust_max_tasks_posted_));
-#endif
-
-  after_start().service_thread_task_runner->PostDelayedTask(
-      FROM_HERE, BindOnce(&ThreadGroup::AdjustMaxTasks, Unretained(this)),
-      after_start().blocked_workers_poll_period);
-}
-
-void ThreadGroup::AdjustMaxTasks() {
-  DCHECK(
-      after_start().service_thread_task_runner->RunsTasksInCurrentSequence());
-
-  std::unique_ptr<BaseScopedCommandsExecutor> executor = GetExecutor();
-  CheckedAutoLock auto_lock(lock_);
-  DCHECK(adjust_max_tasks_posted_);
-  adjust_max_tasks_posted_ = false;
-
-  // Increment max tasks for each worker that has been within a MAY_BLOCK
-  // ScopedBlockingCall for more than may_block_threshold.
-  for (scoped_refptr<WorkerThread> worker : workers_) {
-    // The delegates of workers inside a ThreadGroup should be
-    // WaitableEventWorkerDelegates.
-    ThreadGroupWorkerDelegate* delegate = GetWorkerDelegate(worker.get());
-    AnnotateAcquiredLockAlias annotate(lock_, delegate->lock());
-    delegate->MaybeIncrementMaxTasksLockRequired();
-  }
-
-  // Wake up workers according to the updated |max_tasks_|. This will also
-  // reschedule AdjustMaxTasks() if necessary.
-  EnsureEnoughWorkersLockRequired(executor.get());
-}
-
-void ThreadGroup::OnShutDownStartedImpl(BaseScopedCommandsExecutor* executor) {
-  CheckedAutoLock auto_lock(lock_);
-
-  // Don't do anything if the thread group isn't started.
-  if (max_tasks_ == 0) {
-    return;
-  }
-  if (join_for_testing_started_) [[unlikely]] {
-    return;
-  }
-
-  // Start a MAY_BLOCK scope on each worker that is already running a task.
-  for (scoped_refptr<WorkerThread>& worker : workers_) {
-    // The delegates of workers inside a ThreadGroup should be
-    // WorkerThreadDelegateImpls.
-    ThreadGroupWorkerDelegate* delegate = GetWorkerDelegate(worker.get());
-    AnnotateAcquiredLockAlias annotate(lock_, delegate->lock());
-    delegate->OnShutdownStartedLockRequired(executor);
-  }
-  EnsureEnoughWorkersLockRequired(executor);
-
-  shutdown_started_ = true;
 }
 
 bool ThreadGroup::ShouldPeriodicallyAdjustMaxTasksLockRequired() {

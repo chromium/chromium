@@ -796,8 +796,6 @@ component("base") {
     "task/thread_pool/thread_group.h",
     "task/thread_pool/thread_group_impl.cc",
     "task/thread_pool/thread_group_impl.h",
-    "task/thread_pool/thread_group_worker_delegate.cc",
-    "task/thread_pool/thread_group_worker_delegate.h",
     "task/thread_pool/thread_pool_impl.cc",
     "task/thread_pool/thread_pool_impl.h",
     "task/thread_pool/thread_pool_instance.cc",
