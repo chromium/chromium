@@ -445,6 +445,14 @@ bool ClientSideDetectionService::AtPhishingReportLimit() {
     return true;
   }
 
+  // Clear the expired timestamps
+  const auto cutoff = base::Time::Now() - base::Days(kReportsIntervalDays);
+  // Erase items older than cutoff because we will never care about them again.
+  while (!phishing_report_times_.empty() &&
+         phishing_report_times_.front() < cutoff) {
+    phishing_report_times_.pop_front();
+  }
+
   // `delegate_` and prefs can be null in unit tests.
   if (base::FeatureList::IsEnabled(kSafeBrowsingDailyPhishingReportsLimit) &&
       (delegate_ && delegate_->GetPrefs()) &&
@@ -460,14 +468,6 @@ int ClientSideDetectionService::GetPhishingNumReports() {
 }
 
 bool ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
-  base::Time cutoff = base::Time::Now() - base::Days(kReportsIntervalDays);
-
-  // Erase items older than cutoff because we will never care about them again.
-  while (!phishing_report_times_.empty() &&
-         phishing_report_times_.front() < cutoff) {
-    phishing_report_times_.pop_front();
-  }
-
   // We should not be adding a report when we are at the limit when this
   // function calls, but in case it does, we want to track how far back the
   // last report was prior to the current report and exit the function early.
