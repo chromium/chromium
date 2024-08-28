@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string>
 
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/i18n/base_i18n_switches.h"
@@ -138,6 +139,24 @@ std::string GetScreenshotName(const std::string& test_name,
 //   --enable-pixel-output-in-tests
 //   --browser-ui-tests-verify-pixels
 //   --skia-gold-local-png-write-directory=/tmp/qa_pixel_test
+//
+// Tip: you can use a screenshot test result for a screenshot of string
+// translations.
+//
+// e.g.,
+// MESSAGE_ID=IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_TRY_IT_BUTTON && \
+// TEST_NAME=QuickAnswersPixelTestUserConsentView.Dictionary && \
+// SCREENSHOT_NAME=UserConsentIntentDictionary && \
+// VARIANT=Light.Ltr.Wide.Refresh.ash && \
+// autoninja -C out/Default browser_tests && \
+// testing/xvfb.py out/Default/browser_tests --gtest_filter=*${TEST_NAME}* \
+//   --enable-pixel-output-in-tests \
+//   --browser-ui-tests-verify-pixels \
+//   --skia-gold-local-png-write-directory=/tmp/qa_pixel_test ; \
+// cp /tmp/qa_pixel_test/quick_answers.${SCREENSHOT_NAME}.${VARIANT}.png \
+//   ./chromeos/chromeos_strings_grd/${MESSAGE_ID}.png
+//
+// See //docs/translation_screenshots.md on how to upload it.
 class QuickAnswersPixelTestBase
     : public InProcessBrowserTest,
       public testing::WithParamInterface<PixelTestParam> {
@@ -201,6 +220,7 @@ class QuickAnswersPixelTestBase
   }
 
   void CreateAndShowUserConsentView(IntentType intent_type,
+                                    const std::u16string& intent_text,
                                     bool use_refreshed_design) {
     QuickAnswersUiController* quick_answers_ui_controller =
         GetQuickAnswersUiController();
@@ -213,7 +233,7 @@ class QuickAnswersPixelTestBase
     ASSERT_TRUE(quick_answers_controller);
     quick_answers_controller->SetVisibility(QuickAnswersVisibility::kPending);
     quick_answers_ui_controller->CreateUserConsentViewForPixelTest(
-        GetContextMenuRect(), intent_type, u"Test", use_refreshed_design);
+        GetContextMenuRect(), intent_type, intent_text, use_refreshed_design);
     read_write_cards_ui_controller.SetContextMenuBounds(GetContextMenuRect());
     ASSERT_TRUE(read_write_cards_ui_controller.widget_for_test())
         << "A widget must be created to show a UI.";
@@ -348,7 +368,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, UserConsent) {
   }
 
   CreateAndShowUserConsentView(
-      IntentType::kDictionary,
+      IntentType::kDictionary, u"Test",
       /*use_refreshed_design=*/design == Design::kRefresh);
 
   // For Narrow layout, we intentionally let it overflow in x-axis. See comments
@@ -361,11 +381,53 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, UserConsent) {
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Unknown) {
   Design design = GetDesign(GetParam());
   CreateAndShowUserConsentView(
-      IntentType::kUnknown,
+      IntentType::kUnknown, u"IntentText",
       /*use_refreshed_design=*/design == Design::kRefresh);
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("UserConsentIntentUnknown", GetParam()),
+      GetWidget()->GetContentsView()));
+}
+
+IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Dictionary) {
+  Design design = GetDesign(GetParam());
+  if (design != Design::kRefresh) {
+    GTEST_SKIP() << "This test is for testing refreshed UI";
+  }
+
+  CreateAndShowUserConsentView(IntentType::kDictionary, u"unfathomable",
+                               /*use_refreshed_design=*/true);
+
+  EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
+      GetScreenshotName("UserConsentIntentDictionary", GetParam()),
+      GetWidget()->GetContentsView()));
+}
+
+IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Translation) {
+  Design design = GetDesign(GetParam());
+  if (design != Design::kRefresh) {
+    GTEST_SKIP() << "This test is for testing refreshed UI";
+  }
+
+  CreateAndShowUserConsentView(IntentType::kTranslation, u"信息",
+                               /*use_refreshed_design=*/true);
+
+  EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
+      GetScreenshotName("UserConsentIntentTranslation", GetParam()),
+      GetWidget()->GetContentsView()));
+}
+
+IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Unit) {
+  Design design = GetDesign(GetParam());
+  if (design != Design::kRefresh) {
+    GTEST_SKIP() << "This test is for testing refreshed UI";
+  }
+
+  CreateAndShowUserConsentView(IntentType::kUnit, u"1kg",
+                               /*use_refreshed_design=*/true);
+
+  EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
+      GetScreenshotName("UserConsentIntentUnit", GetParam()),
       GetWidget()->GetContentsView()));
 }
 

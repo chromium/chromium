@@ -16,6 +16,7 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -67,6 +68,7 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
 
  private:
   void UpdateUiText();
+  void UpdateIcon();
 
   // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();
@@ -83,6 +85,10 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
   raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<views::LabelButton> no_thanks_button_ = nullptr;
   raw_ptr<views::LabelButton> allow_button_ = nullptr;
+  raw_ptr<views::ImageView> dictionary_intent_icon_ = nullptr;
+  raw_ptr<views::ImageView> translation_intent_icon_ = nullptr;
+  raw_ptr<views::ImageView> unit_intent_icon_ = nullptr;
+  raw_ptr<views::ImageView> unknown_intent_icon_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

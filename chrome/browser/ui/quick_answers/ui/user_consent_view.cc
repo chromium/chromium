@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
+#include "chrome/browser/ui/quick_answers/ui/typography.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -22,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
@@ -60,9 +63,13 @@ constexpr int kLineHeightDip = 20;
 constexpr int kContentSpacingDip = 8;
 constexpr auto kMainViewInsets = gfx::Insets::TLBR(16, 12, 16, 16);
 constexpr auto kContentInsets = gfx::Insets::TLBR(0, 12, 0, 0);
+constexpr auto kContentInsetsRefresh = gfx::Insets::TLBR(0, 16, 0, 0);
 
-// Google icon.
+// Icon.
 constexpr int kGoogleIconSizeDip = 16;
+constexpr int kIntentIconSizeDip = 20;
+constexpr int kIconBackgroundCornerRadiusDip = 12;
+constexpr gfx::Insets kIntentIconInsets = gfx::Insets(8);
 
 // Label.
 constexpr int kTitleFontSizeDelta = 2;
@@ -106,7 +113,18 @@ bool ShouldUseCompactButtonLayout(int anchor_view_width) {
   return GetActualLabelWidth(anchor_view_width) < kCompactButtonLayoutThreshold;
 }
 
-views::Builder<views::Label> GetConfiguredLabelBuilder(int font_size_delta) {
+views::Builder<views::Label> GetConfiguredLabelBuilder(
+    bool use_refreshed_design,
+    bool is_first_line) {
+  if (use_refreshed_design) {
+    return views::Builder<views::Label>()
+        .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+        .SetLineHeight(is_first_line ? GetFirstLineHeight(Design::kRefresh)
+                                     : GetSecondLineHeight(Design::kRefresh))
+        .SetFontList(is_first_line ? GetFirstLineFontList(Design::kRefresh)
+                                   : GetSecondLineFontList(Design::kRefresh));
+  }
+
   return views::Builder<views::Label>()
       // TODO(b/340628664): This is from old code. Consider if we can remove
       // AutoColorReadabilityEnabled=false.
@@ -114,7 +132,7 @@ views::Builder<views::Label> GetConfiguredLabelBuilder(int font_size_delta) {
       .SetLineHeight(kLineHeightDip)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetFontList(views::Label::GetDefaultFontList().DeriveWithSizeDelta(
-          font_size_delta));
+          is_first_line ? kTitleFontSizeDelta : kDescFontSizeDelta));
 }
 
 // `views::LabelButton` with custom line-height, color and font-list for the
@@ -144,6 +162,23 @@ class CustomizedLabelButton : public views::MdTextButton {
 BEGIN_METADATA(CustomizedLabelButton)
 END_METADATA
 
+// TODO(b/340628526): Use `quick_answers::Intent` in `UserConsentView`. For
+// `IntentType::kUnknown`, it can be `std::nullopt` of `std::optional<Intent>`.
+ResultType ToResultType(IntentType intent_type) {
+  switch (intent_type) {
+    case IntentType::kDictionary:
+      return ResultType::kDefinitionResult;
+    case IntentType::kTranslation:
+      return ResultType::kTranslationResult;
+    case IntentType::kUnit:
+      return ResultType::kUnitConversionResult;
+    case IntentType::kUnknown:
+      return ResultType::kNoResult;
+  }
+
+  CHECK(false) << "An invalid IntentType enum class value is provided";
+}
+
 std::u16string GetTitle(IntentType intent_type,
                         const std::u16string& intent_text) {
   if (intent_type == IntentType::kUnknown || intent_text.empty()) {
@@ -158,6 +193,33 @@ std::u16string GetTitle(IntentType intent_type,
       ToUiString(intent_type), intent_text);
 }
 
+std::optional<int> GetTitleMessageIdFor(IntentType intent_type) {
+  switch (intent_type) {
+    case IntentType::kDictionary:
+      return IDS_QUICK_ANSWERS_USER_CONSENT_TITLE_DEFINITION_INTENT;
+    case IntentType::kTranslation:
+      return IDS_QUICK_ANSWERS_USER_CONSENT_TITLE_TRANSLATION_INTENT;
+    case IntentType::kUnit:
+      return IDS_QUICK_ANSWERS_USER_CONSENT_TITLE_UNIT_CONVERSION_INTENT;
+    case IntentType::kUnknown:
+      return std::nullopt;
+  }
+
+  CHECK(false) << "An invalid IntentType enum class value is provided";
+}
+
+std::u16string GetTitleForRefreshedUi(IntentType intent_type,
+                                      const std::u16string& intent_text) {
+  std::optional<int> message_id = GetTitleMessageIdFor(intent_type);
+  if (!message_id.has_value() || intent_text.empty()) {
+    // This is used only from Linux-ChromeOS, i.e., non-prod environment.
+    return l10n_util::GetStringUTF16(
+        IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT);
+  }
+
+  return l10n_util::GetStringFUTF16(message_id.value(), intent_text);
+}
+
 views::Builder<views::ImageView> GetGoogleIcon() {
   return views::Builder<views::ImageView>()
       .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
@@ -165,6 +227,24 @@ views::Builder<views::ImageView> GetGoogleIcon() {
       .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kGoogleColorIcon,
                                                gfx::kPlaceholderColor,
                                                kGoogleIconSizeDip));
+}
+
+views::Builder<views::ImageView> GetIconFor(IntentType intent_type) {
+  return views::Builder<views::ImageView>().SetImage(
+      ui::ImageModel::FromVectorIcon(
+          GetResultTypeIcon(ToResultType(intent_type)), ui::kColorSysOnSurface,
+          kIntentIconSizeDip));
+}
+
+views::Builder<views::MdTextButton> GetButtonBuilder(bool use_refreshed_design,
+                                                     int context_menu_width) {
+  if (use_refreshed_design) {
+    return views::Builder<views::MdTextButton>();
+  }
+
+  return views::Builder<views::MdTextButton>(
+      std::make_unique<CustomizedLabelButton>(
+          ShouldUseCompactButtonLayout(context_menu_width)));
 }
 
 }  // namespace
@@ -185,28 +265,57 @@ UserConsentView::UserConsentView(
   views::FlexLayoutView* content;
   views::FlexLayoutView* buttons_container;
 
-  // This is to avoid 80 char limit lint errors caused by long string ids and
+  // This is to avoid 80 char limit lint errors caused by long message ids and
   // indents.
-  constexpr int kNoThanksButtonStringId =
+  constexpr int kDescriptionMessageId =
+      IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT;
+  constexpr int kDescriptionRefreshedMessageId =
+      IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESCRIPTION_TEXT;
+  constexpr int kNoThanksButtonMessageId =
       IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_NO_THANKS_BUTTON;
-  constexpr int kAllowButtonStringId =
+  constexpr int kAllowButtonMessageId =
       IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON;
+  constexpr int kTryItButtonMessageId =
+      IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_TRY_IT_BUTTON;
 
   AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .SetInteriorMargin(kMainViewInsets)
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-          .AddChild(GetGoogleIcon())
+          .AddChild(views::Builder<views::FlexLayoutView>()
+                        .SetBackground(views::CreateThemedRoundedRectBackground(
+                            ui::kColorSysPrimaryContainer,
+                            kIconBackgroundCornerRadiusDip))
+                        .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+                        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+                        .SetInteriorMargin(kIntentIconInsets)
+                        .SetVisible(use_refreshed_design_)
+                        .AddChild(GetIconFor(IntentType::kDictionary)
+                                      .SetVisible(false)
+                                      .CopyAddressTo(&dictionary_intent_icon_))
+                        .AddChild(GetIconFor(IntentType::kTranslation)
+                                      .SetVisible(false)
+                                      .CopyAddressTo(&translation_intent_icon_))
+                        .AddChild(GetIconFor(IntentType::kUnit)
+                                      .SetVisible(false)
+                                      .CopyAddressTo(&unit_intent_icon_))
+                        .AddChild(GetIconFor(IntentType::kUnknown)
+                                      .SetVisible(false)
+                                      .CopyAddressTo(&unknown_intent_icon_)))
+          .AddChild(GetGoogleIcon().SetVisible(!use_refreshed_design_))
           .AddChild(
               views::Builder<views::FlexLayoutView>()
                   .CopyAddressTo(&content)
                   .SetOrientation(views::LayoutOrientation::kVertical)
                   .SetIgnoreDefaultMainAxisMargins(true)
-                  .SetInteriorMargin(kContentInsets)
+                  .SetInteriorMargin(use_refreshed_design_
+                                         ? kContentInsetsRefresh
+                                         : kContentInsets)
                   .SetCollapseMargins(true)
                   .AddChild(
-                      GetConfiguredLabelBuilder(kTitleFontSizeDelta)
+                      GetConfiguredLabelBuilder(use_refreshed_design_,
+                                                /*is_first_line=*/true)
                           .CopyAddressTo(&title_)
                           .SetProperty(views::kMarginsKey, kLabelMargin)
                           .SetProperty(
@@ -215,10 +324,13 @@ UserConsentView::UserConsentView(
                                   views::MinimumFlexSizeRule::kScaleToMinimum,
                                   views::MaximumFlexSizeRule::kPreferred)))
                   .AddChild(
-                      GetConfiguredLabelBuilder(kDescFontSizeDelta)
+                      GetConfiguredLabelBuilder(use_refreshed_design_,
+                                                /*is_first_line=*/false)
                           .CopyAddressTo(&description_)
                           .SetText(l10n_util::GetStringUTF16(
-                              IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT))
+                              use_refreshed_design_
+                                  ? kDescriptionRefreshedMessageId
+                                  : kDescriptionMessageId))
                           .SetMultiLine(true)
                           .SetProperty(views::kMarginsKey, kLabelMargin)
                           .SetProperty(
@@ -245,17 +357,18 @@ UserConsentView::UserConsentView(
                                                       kButtonSpacingDip));
                               }))
                           .AddChild(
-                              views::Builder<views::MdTextButton>(
-                                  std::make_unique<CustomizedLabelButton>(
-                                      ShouldUseCompactButtonLayout(
-                                          context_menu_bounds().width())))
+                              GetButtonBuilder(use_refreshed_design_,
+                                               context_menu_bounds().width())
                                   .CopyAddressTo(&no_thanks_button_)
                                   .SetText(l10n_util::GetStringUTF16(
-                                      kNoThanksButtonStringId))
+                                      kNoThanksButtonMessageId))
                                   .SetCallback(base::BindRepeating(
                                       &QuickAnswersUiController::
                                           OnUserConsentResult,
                                       controller_, false))
+                                  .SetStyle(use_refreshed_design_
+                                                ? ui::ButtonStyle::kText
+                                                : ui::ButtonStyle::kDefault)
                                   // TODO(b/340628664): Consider if we can set
                                   // min size for `UserConsentView` itself. Use
                                   // MinimumFlexSizeRule=kPreferred instead of
@@ -277,13 +390,13 @@ UserConsentView::UserConsentView(
                                                    views::MaximumFlexSizeRule::
                                                        kPreferred)))
                           .AddChild(
-                              views::Builder<views::MdTextButton>(
-                                  std::make_unique<CustomizedLabelButton>(
-                                      ShouldUseCompactButtonLayout(
-                                          context_menu_bounds().width())))
+                              GetButtonBuilder(use_refreshed_design_,
+                                               context_menu_bounds().width())
                                   .CopyAddressTo(&allow_button_)
                                   .SetText(l10n_util::GetStringUTF16(
-                                      kAllowButtonStringId))
+                                      use_refreshed_design_
+                                          ? kTryItButtonMessageId
+                                          : kAllowButtonMessageId))
                                   .SetStyle(ui::ButtonStyle::kProminent)
                                   // TODO(b/340628664): Consider if we can set
                                   // min size for `UserConsentView` itself. Use
@@ -316,6 +429,7 @@ UserConsentView::UserConsentView(
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
 
+  UpdateIcon();
   UpdateUiText();
 
   // Focus should cycle to each of the buttons the view contains and back to it.
@@ -368,6 +482,7 @@ void UserConsentView::SetAllowButtonPressed(
 void UserConsentView::SetIntentType(IntentType intent_type) {
   intent_type_ = intent_type;
 
+  UpdateIcon();
   UpdateUiText();
 }
 
@@ -388,8 +503,23 @@ std::vector<views::View*> UserConsentView::GetFocusableViews() {
   return focusable_views;
 }
 
+void UserConsentView::UpdateIcon() {
+  // Intent specific icons are used only in a refreshed design.
+  if (!use_refreshed_design_) {
+    return;
+  }
+
+  dictionary_intent_icon_->SetVisible(intent_type_ == IntentType::kDictionary);
+  translation_intent_icon_->SetVisible(intent_type_ ==
+                                       IntentType::kTranslation);
+  unit_intent_icon_->SetVisible(intent_type_ == IntentType::kUnit);
+  unknown_intent_icon_->SetVisible(intent_type_ == IntentType::kUnknown);
+}
+
 void UserConsentView::UpdateUiText() {
-  title_->SetText(GetTitle(intent_type_, intent_text_));
+  title_->SetText(use_refreshed_design_
+                      ? GetTitleForRefreshedUi(intent_type_, intent_text_)
+                      : GetTitle(intent_type_, intent_text_));
 
   GetViewAccessibility().SetName(GetTitle(intent_type_, intent_text_));
 }
