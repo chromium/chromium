@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -83,6 +84,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
 
     private static final String EMPTY_DATA = "";
+    private static MultiInstanceState sState;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected final int mMaxInstances;
@@ -107,6 +109,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             };
 
     private final Supplier<DesktopWindowStateProvider> mDesktopWindowStateProviderSupplier;
+    private final MultiInstanceStateObserver mOnMultiInstanceStateChanged;
 
     MultiInstanceManagerApi31(
             Activity activity,
@@ -125,6 +128,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         mMaxInstances = MultiWindowUtils.getMaxInstances();
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mDesktopWindowStateProviderSupplier = desktopWindowStateProviderSupplier;
+        mOnMultiInstanceStateChanged = this::onMultiInstanceStateChanged;
     }
 
     @Override
@@ -411,7 +415,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
         String launchActivityName = ChromeTabbedActivity.MAIN_LAUNCHER_ACTIVITY_NAME;
         if (activityManager != null) {
-            MultiInstanceState state =
+            sState =
                     MultiInstanceState.maybeCreate(
                             activityManager::getAppTasks,
                             (activityName) ->
@@ -419,7 +423,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                                                     activityName,
                                                     ChromeTabbedActivity.class.getName())
                                             || TextUtils.equals(activityName, launchActivityName));
-            state.addObserver(this::onMultiInstanceStateChanged);
+            sState.addObserver(mOnMultiInstanceStateChanged);
         }
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
     }
@@ -888,6 +892,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (mInstanceId != INVALID_INSTANCE_ID) {
             ApplicationStatus.unregisterActivityStateListener(this);
         }
+        if (sState != null) {
+            if (getAllRunningActivities().isEmpty()) {
+                sState.clear();
+            } else {
+                sState.removeObserver(mOnMultiInstanceStateChanged);
+            }
+        }
+
         super.onDestroy();
     }
 
