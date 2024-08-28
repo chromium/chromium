@@ -249,7 +249,9 @@ enum class NudgeCatalogName {
   kCapsLockShortcutPressed = 33,
   kMahi = 34,
   kBirchPrivacy = 35,
-  kMaxValue = kBirchPrivacy
+  kVideoConferenceTraySidetoneNotSupported = 36,
+  kVideoConferenceTraySidetoneEnabled = 37,
+  kMaxValue = kVideoConferenceTraySidetoneEnabled
 };
 
 // A living catalog that registers toasts.

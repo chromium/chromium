@@ -1541,6 +1541,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="33" label="Switch Caps Lock Key Pressed Nudge"/>
   <int value="34" label="Help Me Read Nudge"/>
   <int value="35" label="Birch Privacy Nudge"/>
+  <int value="36" label="Video Conference Tray Sidetone Not Supported"/>
+  <int value="37" label="Video Conference Tray Sidetone Enabled"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">

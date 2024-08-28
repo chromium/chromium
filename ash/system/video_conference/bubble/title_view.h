@@ -24,7 +24,6 @@ class TitleView : public views::BoxLayoutView {
 
  private:
   raw_ptr<IconButton> sidetone_button_ = nullptr;
-  views::UniqueWidgetPtr sidetone_bubble_widget_;
 
   void OnSidetoneButtonClicked(const ui::Event& event);
   void CloseSidetoneBubble();
