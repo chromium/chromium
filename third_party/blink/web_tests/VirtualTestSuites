@@ -3550,6 +3550,7 @@
     "bases": [
       "external/wpt/css/css-values/attr-color-invalid-cast.html",
       "external/wpt/css/css-values/attr-color-valid.html",
+      "external/wpt/css/css-values/attr-container-style-query.html",
       "external/wpt/css/css-values/attr-in-max.html",
       "external/wpt/css/css-values/attr-invalidation.html",
       "external/wpt/css/css-values/attr-length-invalid-cast.html",
