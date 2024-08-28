@@ -7,7 +7,8 @@
   </cr-icon-button>
 </div>
 
-<cr-action-menu id="actionMenu">
+<cr-action-menu id="actionMenu"
+    role-description="$i18n{moduleHeaderMoreActionsMenu}">
   ${this.menuItemGroups.map((group, index) => html`
     ${group.map(item => html`
       <button id="${item.action}" class="dropdown-item"

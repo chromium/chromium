@@ -8682,6 +8682,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_MORE_ACTIONS" desc="The tooltip and accessibility label for the 3 dot menu on a module.">
         More actions for <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
       </message>
+      <message name="IDS_NTP_MODULE_HEADER_MORE_ACTIONS_MENU" desc="Text read to screen reader users when navigating to a module's more actions menu.">
+        More actions
+      </message>
       <message name="IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT" desc="Text shown on the customize button of an NTP module.">
         Customize cards
       </message>
