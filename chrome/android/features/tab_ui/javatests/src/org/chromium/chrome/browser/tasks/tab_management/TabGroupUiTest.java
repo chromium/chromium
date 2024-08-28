@@ -221,7 +221,7 @@ public class TabGroupUiTest {
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testRenderStrip_toggleNotificationBubble() throws IOException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
+        AtomicReference<ViewGroup> controlsReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 1);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
@@ -247,9 +247,10 @@ public class TabGroupUiTest {
                     ImageView notificationView =
                             stripRecyclerView.findViewById(R.id.tab_strip_notification_bubble);
                     notificationView.setVisibility(View.VISIBLE);
-                    recyclerViewReference.set(stripRecyclerView);
+                    controlsReference.set(bottomToolbar);
                 });
-        mRenderTestRule.render(recyclerViewReference.get(), "tab_strip_notification_bubble_on");
+        mRenderTestRule.render(
+                controlsReference.get(), "bottom_controls_tab_strip_notification_bubble_on");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -260,9 +261,10 @@ public class TabGroupUiTest {
                     ImageView notificationView =
                             stripRecyclerView.findViewById(R.id.tab_strip_notification_bubble);
                     notificationView.setVisibility(View.GONE);
-                    recyclerViewReference.set(stripRecyclerView);
+                    controlsReference.set(bottomToolbar);
                 });
-        mRenderTestRule.render(recyclerViewReference.get(), "tab_strip_notification_bubble_off");
+        mRenderTestRule.render(
+                controlsReference.get(), "bottom_controls_tab_strip_notification_bubble_off");
     }
 
     @Test

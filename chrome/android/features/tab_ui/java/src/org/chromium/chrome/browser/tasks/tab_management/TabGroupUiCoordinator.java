@@ -9,6 +9,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
@@ -20,6 +21,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -97,10 +99,14 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             mScrimCoordinator = scrimCoordinator;
             mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
             mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
+            @LayoutRes
+            int layoutId =
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                            ? R.layout.dynamic_bottom_tab_strip_toolbar
+                            : R.layout.bottom_tab_strip_toolbar;
             mToolbarView =
                     (TabGroupUiToolbarView)
-                            LayoutInflater.from(mContext)
-                                    .inflate(R.layout.bottom_tab_strip_toolbar, parentView, false);
+                            LayoutInflater.from(mContext).inflate(layoutId, parentView, false);
             mTabListContainerView = mToolbarView.getViewContainer();
             mBottomSheetController = bottomSheetController;
             mDataSharingTabManager = dataSharingTabManager;

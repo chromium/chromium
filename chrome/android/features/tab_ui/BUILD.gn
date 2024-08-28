@@ -74,6 +74,7 @@ android_resources("java_resources") {
     "java/res/layout/bottom_tab_strip_toolbar.xml",
     "java/res/layout/color_picker_item.xml",
     "java/res/layout/custom_message_card_item.xml",
+    "java/res/layout/dynamic_bottom_tab_strip_toolbar.xml",
     "java/res/layout/large_message_card_item.xml",
     "java/res/layout/price_card.xml",
     "java/res/layout/strip_tab_drag_shadow_view.xml",

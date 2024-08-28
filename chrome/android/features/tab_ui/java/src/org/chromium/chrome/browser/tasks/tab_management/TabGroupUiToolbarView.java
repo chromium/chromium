@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import androidx.annotation.ColorRes;
 import androidx.core.content.ContextCompat;
@@ -28,7 +27,7 @@ public class TabGroupUiToolbarView extends FrameLayout {
     private ChromeImageView mFadingEdgeStart;
     private ChromeImageView mFadingEdgeEnd;
     private ViewGroup mContainerView;
-    private LinearLayout mMainContent;
+    private ViewGroup mMainContent;
 
     public TabGroupUiToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
