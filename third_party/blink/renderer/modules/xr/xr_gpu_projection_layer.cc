@@ -9,11 +9,17 @@
 
 namespace blink {
 
-XRGPUProjectionLayer::XRGPUProjectionLayer(XRGPUBinding* binding,
-                                           const XRGPUProjectionLayerInit* init)
-    : XRProjectionLayer(binding) {}
+XRGPUProjectionLayer::XRGPUProjectionLayer(
+    XRGPUBinding* binding,
+    XRGPULayerTextureSwapChain* color_swap_chain,
+    XRGPULayerTextureSwapChain* depth_stencil_swap_chain)
+    : XRProjectionLayer(binding),
+      color_swap_chain_(color_swap_chain),
+      depth_stencil_swap_chain_(depth_stencil_swap_chain) {}
 
 void XRGPUProjectionLayer::Trace(Visitor* visitor) const {
+  visitor->Trace(color_swap_chain_);
+  visitor->Trace(depth_stencil_swap_chain_);
   XRProjectionLayer::Trace(visitor);
 }
 

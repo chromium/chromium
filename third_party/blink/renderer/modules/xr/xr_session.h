@@ -260,6 +260,12 @@ class XRSession final : public EventTarget,
   // value that provides a good balance between quality and performance.
   gfx::SizeF RecommendedFramebufferSize() const;
 
+  // Describes the recommended dimensions of layers represented by an array
+  // texture. Should be a value that provides a good balance between quality
+  // and performance.
+  gfx::SizeF RecommendedArrayTextureSize() const;
+  size_t array_texture_layers() const { return views_.size(); }
+
   // Reports the size of the output canvas, if one is available. If not
   // reports (0, 0);
   gfx::Size OutputCanvasSize() const;

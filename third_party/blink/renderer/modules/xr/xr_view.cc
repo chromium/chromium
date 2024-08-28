@@ -94,12 +94,13 @@ XRWebGLDepthInformation* XRView::GetWebGLDepthInformation(
 }
 
 XRViewData::XRViewData(
+    wtf_size_t index,
     device::mojom::blink::XRViewPtr view,
     double depth_near,
     double depth_far,
     const device::mojom::blink::XRSessionDeviceConfig& device_config,
     const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set)
-    : eye_(view->eye), viewport_(view->viewport) {
+    : index_(index), eye_(view->eye), viewport_(view->viewport) {
   if (base::Contains(enabled_feature_set,
                      device::mojom::XRSessionFeature::DEPTH)) {
     if (!device_config.depth_configuration) {

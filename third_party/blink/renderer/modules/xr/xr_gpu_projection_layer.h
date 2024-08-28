@@ -10,16 +10,27 @@
 namespace blink {
 
 class XRGPUBinding;
-class XRGPUProjectionLayerInit;
+class XRGPULayerTextureSwapChain;
 
 class XRGPUProjectionLayer final : public XRProjectionLayer {
  public:
-  XRGPUProjectionLayer(XRGPUBinding*, const XRGPUProjectionLayerInit*);
+  XRGPUProjectionLayer(XRGPUBinding*,
+                       XRGPULayerTextureSwapChain* color_swap_chain,
+                       XRGPULayerTextureSwapChain* depth_stencil_swap_chain_);
   ~XRGPUProjectionLayer() override = default;
+
+  XRGPULayerTextureSwapChain* color_swap_chain() {
+    return color_swap_chain_.Get();
+  }
+  XRGPULayerTextureSwapChain* depth_stencil_swap_chain() {
+    return depth_stencil_swap_chain_.Get();
+  }
 
   void Trace(Visitor*) const override;
 
  private:
+  Member<XRGPULayerTextureSwapChain> color_swap_chain_;
+  Member<XRGPULayerTextureSwapChain> depth_stencil_swap_chain_;
 };
 
 }  // namespace blink

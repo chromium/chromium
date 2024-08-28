@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -14,11 +15,22 @@ namespace blink {
 
 class ExceptionState;
 class GPUDevice;
+class GPUTexture;
 class XRSession;
 class XRView;
 class XRProjectionLayer;
 class XRGPUProjectionLayerInit;
 class XRGPUSubImage;
+
+class XRGPULayerTextureSwapChain
+    : public GarbageCollected<XRGPULayerTextureSwapChain> {
+ public:
+  virtual GPUTexture* GetCurrentTexture() = 0;
+  virtual void OnFrameStart();
+  virtual void OnFrameEnd();
+
+  virtual void Trace(Visitor* visitor) const;
+};
 
 class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
   DEFINE_WRAPPERTYPEINFO();

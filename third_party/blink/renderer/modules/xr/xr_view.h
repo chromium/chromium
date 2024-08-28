@@ -76,9 +76,12 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
 class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
  public:
-  explicit XRViewData(device::mojom::blink::XREye eye, gfx::Rect viewport)
-      : eye_(eye), viewport_(viewport) {}
+  explicit XRViewData(wtf_size_t index,
+                      device::mojom::blink::XREye eye,
+                      gfx::Rect viewport)
+      : index_(index), eye_(eye), viewport_(viewport) {}
   XRViewData(
+      wtf_size_t index,
       device::mojom::blink::XRViewPtr view,
       double depth_near,
       double depth_far,
@@ -107,6 +110,7 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
 
   void SetMojoFromView(const gfx::Transform& mojo_from_view);
 
+  wtf_size_t index() const { return index_; }
   device::mojom::blink::XREye Eye() const { return eye_; }
   const gfx::Transform& MojoFromView() const { return mojo_from_view_; }
   const gfx::Transform& ProjectionMatrix() const { return projection_matrix_; }
@@ -141,6 +145,7 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   void Trace(Visitor*) const;
 
  private:
+  const wtf_size_t index_;
   const device::mojom::blink::XREye eye_;
   gfx::Transform mojo_from_view_;
   gfx::Transform projection_matrix_;

@@ -56,7 +56,8 @@ TEST(XRViewTest, ViewMatrices) {
   HashSet<device::mojom::XRSessionFeature> features = {
       device::mojom::XRSessionFeature::REF_SPACE_VIEWER};
   XRViewData* view_data = MakeGarbageCollected<XRViewData>(
-      std::move(xr_view), kDepthNear, kDepthFar, *device_config, features);
+      /*index=*/0, std::move(xr_view), kDepthNear, kDepthFar, *device_config,
+      features);
   XRView* view =
       MakeGarbageCollected<XRView>(nullptr, view_data, ref_space_from_mojo);
 
