@@ -2049,6 +2049,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kNativeClientForceAllowed,
     prefs::kNativeClientForceAllowed,
     base::Value::Type::BOOLEAN },
+  { key::kKioskActiveWiFiCredentialsScopeChangeEnabled,
+    prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

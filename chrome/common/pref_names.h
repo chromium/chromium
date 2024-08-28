@@ -3188,6 +3188,11 @@ inline constexpr char kKioskBrowserPermissionsAllowedForOrigins[] =
 inline constexpr char kKioskWebAppOfflineEnabled[] =
     "policy.kiosk_web_app_offline_enabled";
 
+// A boolean pref to change the kiosk active WiFi credentials scope from in
+// session level to the device level.
+inline constexpr char kKioskActiveWiFiCredentialsScopeChangeEnabled[] =
+    "kiosk_active_wifi_credentials_scope_change_enabled";
+
 // A boolean pref which determines whether a Web Kiosk can open more than one
 // browser window.
 inline constexpr char kNewWindowsInKioskAllowed[] =

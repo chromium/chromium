@@ -215,6 +215,12 @@ void KioskSystemSession::OnGuestAdded(
   browser_session_.OnGuestAdded(guest_web_contents);
 }
 
+void KioskSystemSession::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled, false);
+}
+
 Profile* KioskSystemSession::profile() const {
   CHECK(profile_);
   return profile_;

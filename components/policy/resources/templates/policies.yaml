@@ -1295,6 +1295,7 @@ policies:
   1294: GraduationEnablementStatus
   1295: HelpMeReadSettings
   1296: GenAiDefaultSettings
+  1297: KioskActiveWiFiCredentialsScopeChangeEnabled
 
 atomic_groups:
   1: Homepage
