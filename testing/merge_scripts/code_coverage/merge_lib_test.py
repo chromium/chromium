@@ -35,7 +35,8 @@ class MergeLibTest(unittest.TestCase):
                                            output_profdata_files,
                                            invalid_profraw_files,
                                            counter_overflows,
-                                           '/usr/bin/llvm-cov')
+                                           '/usr/bin/llvm-cov',
+                                           show_profdata=False)
       self.assertEqual(
           expected_results,
           [output_profdata_files, invalid_profraw_files, counter_overflows])

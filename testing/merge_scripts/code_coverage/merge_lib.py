@@ -24,7 +24,8 @@ def _call_profdata_tool(profile_input_file_paths,
                         profile_output_file_path,
                         profdata_tool_path,
                         sparse=False,
-                        timeout=3600):
+                        timeout=3600,
+                        show_profdata=True):
   """Calls the llvm-profdata tool.
 
   Args:
@@ -36,6 +37,8 @@ def _call_profdata_tool(profile_input_file_paths,
       Doc: https://llvm.org/docs/CommandGuide/llvm-profdata.html#profdata-merge
     timeout (int): timeout (sec) for the call to merge profiles. This should
       not take > 1 hr, and so defaults to 3600 seconds.
+    show_profdata (bool): flag on whether the merged output information should
+    be shown for debugging purposes.
 
   Raises:
     CalledProcessError: An error occurred merging profiles.
@@ -84,7 +87,47 @@ def _call_profdata_tool(profile_input_file_paths,
     logging.info('stdout: %s', e.output)
     raise e
 
+  if show_profdata:
+    _call_profdata_show(profile_output_file_path, profdata_tool_path)
+
   logging.info('Profile data is created as: "%r".', profile_output_file_path)
+
+
+def _call_profdata_show(profile_path,
+                        profdata_tool_path,
+                        topn=1000,
+                        timeout=60):
+  """Calls the llvm-profdata show command.
+
+  Args:
+    profile_path: The path to the profdata file to show.
+    profdata_tool_path: The path to the llvm-profdata executable.
+    topn: Only show functions with the topn hottest basic blocks.
+    timeout (int): timeout (sec) for the call to show profiles.
+  """
+
+  try:
+    subprocess_cmd = [
+        profdata_tool_path,
+        'show',
+        '-topn',
+        str(topn),
+        profile_path,
+    ]
+    logging.info('profdata command: %r', subprocess_cmd)
+
+    p = subprocess.run(subprocess_cmd,
+                       capture_output=True,
+                       text=True,
+                       timeout=timeout,
+                       check=True)
+    logging.info(p.stdout)
+  except subprocess.CalledProcessError as error:
+    logging.info('stdout: %s', error.output)
+    logging.error('Failed to show profile, return code (%d), error: %r',
+                  error.returncode, error.stderr)
+  except subprocess.TimeoutExpired as e:
+    logging.info('stdout: %s', e.output)
 
 
 def _get_profile_paths(input_dir, input_extension, input_filename_pattern='.*'):
@@ -165,7 +208,8 @@ def _validate_and_convert_profraw(profraw_file,
                                   invalid_profraw_files,
                                   counter_overflows,
                                   profdata_tool_path,
-                                  sparse=False):
+                                  sparse=False,
+                                  show_profdata=True):
   output_profdata_file = profraw_file.replace('.profraw', '.profdata')
   subprocess_cmd = [
       profdata_tool_path,
@@ -222,6 +266,10 @@ def _validate_and_convert_profraw(profraw_file,
       # merge scripts.
       os.remove(output_profdata_file)
 
+  # 5. Show profdata information.
+  if show_profdata:
+    _call_profdata_show(output_profdata_file, profdata_tool_path)
+
 
 def merge_java_exec_files(input_dir, output_path, jacococli_path):
   """Merges generated .exec files to output_path.
@@ -252,7 +300,8 @@ def merge_profiles(input_dir,
                    input_filename_pattern='.*',
                    sparse=False,
                    skip_validation=False,
-                   merge_timeout=3600):
+                   merge_timeout=3600,
+                   show_profdata=True):
   """Merges the profiles produced by the shards using llvm-profdata.
 
   Args:
@@ -310,7 +359,8 @@ def merge_profiles(input_dir,
                       profile_output_file_path=output_file,
                       profdata_tool_path=profdata_tool_path,
                       sparse=sparse,
-                      timeout=merge_timeout)
+                      timeout=merge_timeout,
+                      show_profdata=show_profdata)
 
   # Remove inputs when merging profraws as they won't be needed and they can be
   # pretty large. If the inputs are profdata files, do not remove them as they
