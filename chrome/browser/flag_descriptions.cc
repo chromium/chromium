@@ -3472,8 +3472,8 @@ const char kSiteSearchSettingsPolicyName[] = "Enable SiteSearchSettings policy";
 const char kSiteSearchSettingsPolicyDescription[] =
     "Allow site search engines to be defined by the SiteSearchSettings policy.";
 
-const char kDesktopPWAsUserLinkCapturingName[] = "Desktop PWA Link Capturing";
-const char kDesktopPWAsUserLinkCapturingDescription[] =
+const char kPwaNavigationCapturingName[] = "Desktop PWA Link Capturing";
+const char kPwaNavigationCapturingDescription[] =
     "Enables opening links from Chrome in an installed PWA. Currently under "
     "reimplementation.";
 #endif

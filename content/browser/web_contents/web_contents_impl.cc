@@ -4833,18 +4833,23 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         this, std::move(new_contents), params.target_url, params.disposition,
         *params.features, has_user_gesture, &was_blocked);
 
-    // The delegate may delete |new_contents_impl| during AddNewContents().
-    // If that occurs and there isn't a replacement contents returned, exit.
-    // Otherwise, use the replacement web contents that was navigated in.
-    if (web_contents_navigated != nullptr && weak_new_contents) {
-      CHECK(web_contents_navigated == weak_new_contents.get());
-    }
-
-    if (!weak_new_contents) {
-      if (web_contents_navigated == nullptr) {
-        return nullptr;
+    if (base::FeatureList::IsEnabled(features::kPwaNavigationCapturing)) {
+      // The delegate may delete |new_contents_impl| during AddNewContents().
+      // If that occurs and there isn't a replacement contents returned, exit.
+      // Otherwise, use the replacement web contents that was navigated in.
+      if (web_contents_navigated != nullptr && weak_new_contents) {
+        CHECK(web_contents_navigated == weak_new_contents.get());
       }
-      contents_to_load = static_cast<WebContentsImpl*>(web_contents_navigated);
+
+      if (!weak_new_contents) {
+        if (web_contents_navigated == nullptr) {
+          return nullptr;
+        }
+        contents_to_load =
+            static_cast<WebContentsImpl*>(web_contents_navigated);
+      }
+    } else if (!weak_new_contents) {
+      return nullptr;
     }
   }
 

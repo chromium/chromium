@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 
 namespace apps::features {
 
@@ -22,16 +23,16 @@ bool ShouldShowLinkCapturingUX() {
 #if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kLinkCapturingUiUpdate);
 #else
-  return base::FeatureList::IsEnabled(::features::kDesktopPWAsLinkCapturing);
+  return base::FeatureList::IsEnabled(::features::kPwaNavigationCapturing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool IsLinkCapturingReimplementationEnabled() {
-  return base::FeatureList::IsEnabled(::features::kDesktopPWAsLinkCapturing) &&
-         (::features::kLinkCapturingDefaultState.Get() ==
-              ::features::LinkCapturingState::kReimplDefaultOn ||
-          ::features::kLinkCapturingDefaultState.Get() ==
-              ::features::LinkCapturingState::kReimplDefaultOff);
+bool IsNavigationCapturingReimplEnabled() {
+  return base::FeatureList::IsEnabled(::features::kPwaNavigationCapturing) &&
+         (::features::kNavigationCapturingDefaultState.Get() ==
+              ::features::CapturingState::kReimplDefaultOn ||
+          ::features::kNavigationCapturingDefaultState.Get() ==
+              ::features::CapturingState::kReimplDefaultOff);
 }
 
 }  // namespace apps::features

@@ -2004,8 +2004,8 @@ extern const char kSiteInstanceGroupsForDataUrlsDescription[];
 extern const char kSiteSearchSettingsPolicyName[];
 extern const char kSiteSearchSettingsPolicyDescription[];
 
-extern const char kDesktopPWAsUserLinkCapturingName[];
-extern const char kDesktopPWAsUserLinkCapturingDescription[];
+extern const char kPwaNavigationCapturingName[];
+extern const char kPwaNavigationCapturingDescription[];
 #endif
 
 extern const char kSkiaRendererName[];

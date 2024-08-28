@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
@@ -29,12 +29,12 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
   return {{::apps::features::kLinkCapturingUiUpdate, {}}};
 #else
   // TODO(crbug.com/351775835): Integrate testing for all enum states of
-  // `LinkCapturingState`.
+  // `CapturingState`.
   bool should_override_by_default = override_captures_by_default.value_or(
-      ::features::kLinkCapturingDefaultState.default_value ==
-      ::features::LinkCapturingState::kDefaultOn);
-  return {{::features::kDesktopPWAsLinkCapturing,
-           {{::features::kLinkCapturingDefaultState.name,
+      ::features::kNavigationCapturingDefaultState.default_value ==
+      ::features::CapturingState::kDefaultOn);
+  return {{::features::kPwaNavigationCapturing,
+           {{::features::kNavigationCapturingDefaultState.name,
              std::string(should_override_by_default ? "on_by_default"
                                                     : "off_by_default")}}}};
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -44,7 +44,7 @@ std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX() {
 #if BUILDFLAG(IS_CHROMEOS)
   return {::apps::features::kLinkCapturingUiUpdate};
 #else
-  return {::features::kDesktopPWAsLinkCapturing};
+  return {::features::kPwaNavigationCapturing};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

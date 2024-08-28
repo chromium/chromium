@@ -930,7 +930,7 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
 
   // Below here handles the states outlined in
   // https://bit.ly/pwa-navigation-capturing
-  if (!apps::features::IsLinkCapturingReimplementationEnabled() ||
+  if (!apps::features::IsNavigationCapturingReimplEnabled() ||
       params.started_from_context_menu) {
     return std::nullopt;
   }

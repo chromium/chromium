@@ -162,29 +162,8 @@ BASE_DECLARE_FEATURE(kDesktopPWAsFlashAppNameInsteadOfOrigin);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDesktopPWAsIconHealthChecks);
 
-// Enables user link capturing on all desktop platforms.
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kDesktopPWAsLinkCapturing);
-enum class LinkCapturingState {
-  kDefaultOn = 0,
-  kDefaultOff = 1,
-  kReimplDefaultOn = 2,
-  kReimplDefaultOff = 3
-};
-// If links should be captured by apps by default.
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<LinkCapturingState> kLinkCapturingDefaultState;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kDesktopPWAsLinkCapturingWithScopeExtensions);
-
-// Default amount of days after which the global link capturing IPH guardrails
-// are cleared from storage.
-inline constexpr int kTotalDaysToStoreLinkCapturingIPHGuardrails = 30;
-// Number of days to "store" IPH guardrails for link captured app launches till
-// they are cleared.
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<int> kLinkCapturingIPHGuardrailStorageDuration;
+BASE_DECLARE_FEATURE(kPwaNavigationCapturingWithScopeExtensions);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDesktopPWAsRunOnOsLogin);

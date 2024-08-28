@@ -3686,28 +3686,26 @@ const flags_ui::FeatureEntry::FeatureVariation
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
+const flags_ui::FeatureEntry::FeatureParam kPwaNavigationCapturingDefaultOn[] =
+    {{"link_capturing_state", "on_by_default"}};
+const flags_ui::FeatureEntry::FeatureParam kPwaNavigationCapturingDefaultOff[] =
+    {{"link_capturing_state", "off_by_default"}};
 const flags_ui::FeatureEntry::FeatureParam
-    kDesktopPWAsLinkCapturingDefaultOn[] = {
-        {"link_capturing_state", "on_by_default"}};
-const flags_ui::FeatureEntry::FeatureParam
-    kDesktopPWAsLinkCapturingDefaultOff[] = {
-        {"link_capturing_state", "off_by_default"}};
-const flags_ui::FeatureEntry::FeatureParam
-    kDesktopPWAsLinkCapturingReimplDefaultOn[] = {
+    kPwaNavigationCapturingReimplDefaultOn[] = {
         {"link_capturing_state", "reimpl_default_on"}};
 const flags_ui::FeatureEntry::FeatureParam
-    kDesktopPWAsLinkCapturingReimplDefaultOff[] = {
+    kPwaNavigationCapturingReimplDefaultOff[] = {
         {"link_capturing_state", "reimpl_default_off"}};
 const flags_ui::FeatureEntry::FeatureVariation
-    kDesktopPWAsLinkCapturingVariations[] = {
-        {"On by default", kDesktopPWAsLinkCapturingDefaultOn,
-         std::size(kDesktopPWAsLinkCapturingDefaultOn), nullptr},
-        {"Off by default", kDesktopPWAsLinkCapturingDefaultOff,
-         std::size(kDesktopPWAsLinkCapturingDefaultOff), nullptr},
-        {"(Reimpl) On by default", kDesktopPWAsLinkCapturingReimplDefaultOn,
-         std::size(kDesktopPWAsLinkCapturingReimplDefaultOn), nullptr},
-        {"(Reimpl) Off by default", kDesktopPWAsLinkCapturingReimplDefaultOff,
-         std::size(kDesktopPWAsLinkCapturingReimplDefaultOff), nullptr}};
+    kPwaNavigationCapturingVariations[] = {
+        {"On by default", kPwaNavigationCapturingDefaultOn,
+         std::size(kPwaNavigationCapturingDefaultOn), nullptr},
+        {"Off by default", kPwaNavigationCapturingDefaultOff,
+         std::size(kPwaNavigationCapturingDefaultOff), nullptr},
+        {"(Reimpl) On by default", kPwaNavigationCapturingReimplDefaultOn,
+         std::size(kPwaNavigationCapturingReimplDefaultOn), nullptr},
+        {"(Reimpl) Off by default", kPwaNavigationCapturingReimplDefaultOff,
+         std::size(kPwaNavigationCapturingReimplDefaultOff), nullptr}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -10780,8 +10778,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsUserLinkCapturingScopeExtensionsName,
      flag_descriptions::kDesktopPWAsUserLinkCapturingScopeExtensionsDescription,
      kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         features::kDesktopPWAsLinkCapturingWithScopeExtensions)},
+     FEATURE_VALUE_TYPE(features::kPwaNavigationCapturingWithScopeExtensions)},
 
     {"sync-enable-contact-info-data-type-in-transport-mode",
      flag_descriptions::kSyncEnableContactInfoDataTypeInTransportModeName,
@@ -10793,13 +10790,13 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-    {"enable-user-link-capturing-pwa",
-     flag_descriptions::kDesktopPWAsUserLinkCapturingName,
-     flag_descriptions::kDesktopPWAsUserLinkCapturingDescription,
+    {"enable-user-navigation-capturing-pwa",
+     flag_descriptions::kPwaNavigationCapturingName,
+     flag_descriptions::kPwaNavigationCapturingDescription,
      kOsLinux | kOsMac | kOsWin | kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDesktopPWAsLinkCapturing,
-                                    kDesktopPWAsLinkCapturingVariations,
-                                    "DesktopPWAsLinkCapturing")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kPwaNavigationCapturing,
+                                    kPwaNavigationCapturingVariations,
+                                    "PwaNavigationCapturing")},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 

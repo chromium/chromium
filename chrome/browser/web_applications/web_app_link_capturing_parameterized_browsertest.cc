@@ -40,13 +40,13 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -478,7 +478,7 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 
 }  // namespace
 
-// This test verifies the link capture logic by testing by launching sites
+// This test verifies the navigation capture logic by testing by launching sites
 // inside app containers and tabs and test what happens when links are
 // left/middle clicked and window.open is used (whether browser objects are
 // reused and what type gets launched).
@@ -512,7 +512,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     std::map<std::string, std::string> parameters;
     parameters["link_capturing_state"] = "reimpl_default_on";
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDesktopPWAsLinkCapturing, parameters);
+        features::kPwaNavigationCapturing, parameters);
     InitializeTestExpectations();
   }
 

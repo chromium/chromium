@@ -7758,7 +7758,7 @@
                         "link_capturing_state": "on_by_default"
                     },
                     "enable_features": [
-                        "DesktopPWAsLinkCapturing"
+                        "PwaNavigationCapturing"
                     ]
                 },
                 {
@@ -7768,7 +7768,7 @@
                         "link_capturing_state": "off_by_default"
                     },
                     "enable_features": [
-                        "DesktopPWAsLinkCapturing"
+                        "PwaNavigationCapturing"
                     ]
                 }
             ]

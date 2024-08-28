@@ -301,6 +301,23 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kSonomaAccessibilityActivationRefinements);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebRtcPipeWireCapturer);
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 
+// Number of days to "store" IPH guardrails for navigation captured app launches
+// till they are cleared.
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kNavigationCapturingIPHGuardrailStorageDuration;
+
+// Enables user link capturing on all desktop platforms.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPwaNavigationCapturing);
+enum class CapturingState {
+  kDefaultOn = 0,
+  kDefaultOff = 1,
+  kReimplDefaultOn = 2,
+  kReimplDefaultOff = 3
+};
+// If links should be captured by apps by default.
+CONTENT_EXPORT extern const base::FeatureParam<CapturingState>
+    kNavigationCapturingDefaultState;
+
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in
 // alphabetical order, or in one of the ifdefs (also in order in each section).
 

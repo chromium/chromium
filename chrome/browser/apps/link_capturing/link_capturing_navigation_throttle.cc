@@ -160,7 +160,7 @@ LinkCapturingNavigationThrottle::MaybeCreate(
     std::unique_ptr<Delegate> delegate) {
   // If the reimplementation params of the link capturing feature flag is
   // enabled, turn off the "old" link capturing behavior.
-  if (features::IsLinkCapturingReimplementationEnabled()) {
+  if (features::IsNavigationCapturingReimplEnabled()) {
     return nullptr;
   }
 

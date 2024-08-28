@@ -21,6 +21,7 @@
 #include "components/webapps/browser/features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 
 namespace web_app {
 
@@ -91,12 +92,12 @@ WebAppPrefGuardrails WebAppPrefGuardrails::GetForMlInstallPrompt(
 }
 
 // static
-WebAppPrefGuardrails WebAppPrefGuardrails::GetForLinkCapturingIph(
+WebAppPrefGuardrails WebAppPrefGuardrails::GetForNavigationCapturingIph(
     PrefService* pref_service) {
   return WebAppPrefGuardrails(
-      pref_service, web_app::kIPHLinkCapturingGuardrails,
-      web_app::kIPHLinkCapturingPrefNames,
-      features::kLinkCapturingIPHGuardrailStorageDuration.Get());
+      pref_service, web_app::kIPHNavigationCapturingGuardrails,
+      web_app::kIPHNavigationCapturingPrefNames,
+      features::kNavigationCapturingIPHGuardrailStorageDuration.Get());
 }
 
 // static

@@ -5,7 +5,7 @@
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 
 #include "base/containers/extend.h"
-#include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
@@ -33,7 +33,7 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
   enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
 #else
   // TOOD(b/313492499): Update test driver to work with new intent picker UI.
-  enabled_features.push_back(features::kDesktopPWAsLinkCapturing);
+  enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

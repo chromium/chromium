@@ -79,10 +79,10 @@ bool WebAppSourceSupported(const WebApp& web_app) {
 }
 
 bool IsLinkCapturingDisabledByDefaultBasedOnFlagState() {
-  return features::kLinkCapturingDefaultState.Get() ==
-             features::LinkCapturingState::kDefaultOff ||
-         features::kLinkCapturingDefaultState.Get() ==
-             features::LinkCapturingState::kReimplDefaultOff;
+  return features::kNavigationCapturingDefaultState.Get() ==
+             features::CapturingState::kDefaultOff ||
+         features::kNavigationCapturingDefaultState.Get() ==
+             features::CapturingState::kReimplDefaultOff;
 }
 
 }  // namespace
@@ -1096,7 +1096,7 @@ WebAppRegistrar::SaveAndGetInMemoryControlledFramePartitionConfig(
 
 bool WebAppRegistrar::CanCaptureLinksInScope(
     const webapps::AppId& app_id) const {
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsLinkCapturing)) {
+  if (!base::FeatureList::IsEnabled(features::kPwaNavigationCapturing)) {
     return false;
   }
   if (!IsInstallState(app_id,
@@ -1180,7 +1180,7 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
     }
     int score;
     if (base::FeatureList::IsEnabled(
-            features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
+            features::kPwaNavigationCapturingWithScopeExtensions)) {
       score = GetAppExtendedScopeScore(url, app_id);
     } else {
       score = GetUrlInAppScopeScore(url.spec(), app_id);
@@ -1212,7 +1212,7 @@ bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
   CHECK(url.is_valid());
   int app_score;
   if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
+          features::kPwaNavigationCapturingWithScopeExtensions)) {
     app_score = GetAppExtendedScopeScore(url, app);
   } else {
     app_score = GetUrlInAppScopeScore(url.spec(), app);
@@ -1223,7 +1223,7 @@ bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
   return base::ranges::none_of(GetAppIds(), [&](const webapps::AppId& app_id) {
     int other_score;
     if (base::FeatureList::IsEnabled(
-            features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
+            features::kPwaNavigationCapturingWithScopeExtensions)) {
       other_score = GetAppExtendedScopeScore(url, app_id);
 
     } else {

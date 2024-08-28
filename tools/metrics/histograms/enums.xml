@@ -15856,6 +15856,7 @@ from previous Chrome versions.
   <int value="-1981692093"
       label="SafeBrowsingPasswordProtectionForSignedInUsers:enabled"/>
   <int value="-1980328793" label="trace-upload-url"/>
+  <int value="-1978938699" label="PwaNavigationCapturing:disabled"/>
   <int value="-1978625006" label="PcieBillboardNotification:disabled"/>
   <int value="-1978116081" label="SeaPen:disabled"/>
   <int value="-1978003156" label="EnableExtensibleEnterpriseSSO:disabled"/>
@@ -16607,6 +16608,7 @@ from previous Chrome versions.
   <int value="-1655535052" label="enable-pointer-events"/>
   <int value="-1655495554" label="NtpCalendarModule:disabled"/>
   <int value="-1655281250" label="DefaultCalculatorWebApp:enabled"/>
+  <int value="-1654902085" label="PwaNavigationCapturing:enabled"/>
   <int value="-1654476091" label="cast-streaming-force-enable-hardware-vp8"/>
   <int value="-1654344175" label="disable-extension-info-dialog"/>
   <int value="-1653991213" label="CrossOriginIsolated:disabled"/>
