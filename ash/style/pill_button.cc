@@ -232,10 +232,6 @@ gfx::Size PillButton::CalculatePreferredSize(
   return size;
 }
 
-int PillButton::GetHeightForWidth(int width) const {
-  return GetButtonHeight(type_);
-}
-
 gfx::Insets PillButton::GetInsets() const {
   const int vertical_spacing = (GetButtonHeight(type_) - kIconSize) / 2;
   const int icon_padding = IsIconPillButton(type_)

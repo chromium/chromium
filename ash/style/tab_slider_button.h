@@ -111,7 +111,6 @@ class ASH_EXPORT LabelSliderButton : public TabSliderButton {
   void OnSelectedChanged() override;
 
   // views::Button:
-  int GetHeightForWidth(int w) const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void StateChanged(ButtonState old_state) override;
