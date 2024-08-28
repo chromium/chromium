@@ -11,7 +11,7 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/quick_pair",
-  "+chrome/browser/ui/webui/ash/bluetooth_shared_load_time_data_provider.h",
+  "+chrome/browser/ui/webui/ash/bluetooth",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/settings",

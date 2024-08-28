@@ -36,6 +36,7 @@ static_library("system") {
     "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/browser/ui/webui/ash/set_time_dialog",
     "//chrome/browser/web_applications",

@@ -26,7 +26,7 @@ static_library("bluetooth") {
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/bluetooth",
     "//components/arc",
     "//components/arc/common:arc_intent_helper_constants",
     "//components/device_event_log",

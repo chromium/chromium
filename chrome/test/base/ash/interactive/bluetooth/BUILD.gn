@@ -24,7 +24,7 @@ source_set("interactive_ui_tests") {
     "//base/test:test_support",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/test:test_support",
     "//chrome/test/base/ash/interactive:test_support",
     "//chrome/test/base/ash/interactive/settings:test_support",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/bluetooth_shared_load_time_data_provider.h"
+#include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_shared_load_time_data_provider.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
