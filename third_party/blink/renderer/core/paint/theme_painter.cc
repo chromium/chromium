@@ -240,7 +240,20 @@ bool ThemePainter::PaintBorderOnly(const Node* node,
       return false;
     case kBaseSelectPart:
       return true;
-    default:
+    case kNoControlPart:
+    case kAutoPart:
+      // kNoControlPart isn't possible because callers should only call this
+      // function when HasEffectiveAppearance is true.
+      // kAutoPart isn't possible because it can't be an effective appearance.
+      NOTREACHED();
+    // TODO(dbaron): The following values were previously covered by a
+    // default: case and should be classified correctly:
+    case kMediaControlPart:
+    case kMeterPart:
+    case kMediaSliderPart:
+    case kMediaSliderThumbPart:
+    case kMediaVolumeSliderPart:
+    case kMediaVolumeSliderThumbPart:
       UseCounter::Count(
           element.GetDocument(),
           WebFeature::kCSSValueAppearanceNoImplementationSkipBorder);
