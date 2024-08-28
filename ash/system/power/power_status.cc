@@ -274,8 +274,13 @@ PowerStatus::BatteryImageInfo PowerStatus::GenerateBatteryImageInfo(
 
 void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
   if (!proto_initialized_) {
-    info->icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
-    info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
+    info->icon_badge = chromeos::features::IsBatteryBadgeIconEnabled()
+                           ? &kUnifiedMenuBatteryUnreliableIcon
+                           : &kUnifiedMenuBatteryUnreliableLegacyIcon;
+    info->badge_outline =
+        chromeos::features::IsBatteryBadgeIconEnabled()
+            ? &kUnifiedMenuBatteryUnreliableOutlineMaskIcon
+            : &kUnifiedMenuBatteryUnreliableOutlineMaskLegacyIcon;
     return;
   }
 
