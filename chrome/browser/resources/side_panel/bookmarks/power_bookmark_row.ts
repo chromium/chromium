@@ -110,6 +110,9 @@ export class PowerBookmarkRowElement extends CrLitElement {
         this.onInputDisplayChange_();
       }
     }
+    if (changedProperties.has('listItemSize')) {
+      this.handleListItemSizeChanged_();
+    }
   }
 
   override shouldUpdate(changedProperties: PropertyValues<this>) {
@@ -167,6 +170,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
       // drag interactions.
       this.$.crUrlListItem.focus();
     }
+  }
+
+  protected async handleListItemSizeChanged_() {
+    await this.$.crUrlListItem.updateComplete;
+    this.dispatchEvent(new CustomEvent('list-item-size-changed', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   protected renamingItem_(id: string) {
