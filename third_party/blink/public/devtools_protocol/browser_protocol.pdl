@@ -9220,6 +9220,13 @@ domain Page
         # A new frame target will be created (see Target.attachedToTarget).
         swap
 
+  # Fired before frame subtree is detached. Emitted before any frame of the
+  # subtree is actually detached.
+  experimental event frameSubtreeWillBeDetached
+    parameters
+      # Id of the frame that is the root of the subtree that will be detached.
+      FrameId frameId
+
   # The type of a frameNavigated event.
   experimental type NavigationType extends string
     enum

@@ -230,6 +230,7 @@ class CORE_EXPORT InspectorPageAgent final
       LocalFrame*,
       const std::optional<AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
+  void FrameSubtreeWillBeDetached(Frame* frame);
   void FrameStoppedLoading(LocalFrame*);
   void FrameRequestedNavigation(Frame* target_frame,
                                 const KURL&,

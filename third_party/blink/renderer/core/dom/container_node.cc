@@ -658,7 +658,9 @@ void ContainerNode::WillRemoveChild(Node& child) {
     // above.
     //
     // CHECK_EQ(GetDocument(), child.GetDocument());
-    ChildFrameDisconnector(child).Disconnect();
+    ChildFrameDisconnector(
+        child, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+        .Disconnect();
   }
 
   if (GetDocument() != child.GetDocument()) {
@@ -694,8 +696,9 @@ void ContainerNode::WillRemoveChildren() {
   }
 
   CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
-  ChildFrameDisconnector(*this).Disconnect(
-      ChildFrameDisconnector::kDescendantsOnly);
+  ChildFrameDisconnector(
+      *this, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+      .Disconnect(ChildFrameDisconnector::kDescendantsOnly);
 }
 
 LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
@@ -855,9 +858,11 @@ void ContainerNode::ParserRemoveChild(Node& old_child) {
 
   // This may cause arbitrary Javascript execution via onunload handlers.
   CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
-  if (old_child.ConnectedSubframeCount())
-    ChildFrameDisconnector(old_child).Disconnect();
-
+  if (old_child.ConnectedSubframeCount()) {
+    ChildFrameDisconnector(
+        old_child, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+        .Disconnect();
+  }
   if (old_child.parentNode() != this)
     return;
 

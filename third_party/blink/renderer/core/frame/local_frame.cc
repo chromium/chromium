@@ -928,7 +928,10 @@ bool LocalFrame::ShouldClose() {
 
 bool LocalFrame::DetachChildren() {
   DCHECK(GetDocument());
-  ChildFrameDisconnector(*GetDocument()).Disconnect();
+  ChildFrameDisconnector(
+      *GetDocument(),
+      ChildFrameDisconnector::DisconnectReason::kDisconnectParent)
+      .Disconnect();
   return !!Client();
 }
 

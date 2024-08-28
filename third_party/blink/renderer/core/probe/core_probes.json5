@@ -236,6 +236,7 @@
         "FrameAttachedToParent",
         "FrameClearedScheduledNavigation",
         "FrameDetachedFromParent",
+        "FrameSubtreeWillBeDetached",
         "FrameRequestedNavigation",
         "FrameScheduledNavigation",
         "FrameStoppedLoading",

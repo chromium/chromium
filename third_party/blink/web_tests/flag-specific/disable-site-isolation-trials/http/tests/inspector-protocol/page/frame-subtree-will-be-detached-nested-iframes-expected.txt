@@ -1,0 +1,110 @@
+Tests that `Page.frameSubtreeWillBeDetached` event is emitted before the frame subtree is detached
+... creating and navigating iframe http://127.0.0.1:8000/inspector-protocol/resources/same_origin_iframe.html
+... iframe created and navigated
+... removing the frame
+Received event{
+    method : Page.frameSubtreeWillBeDetached
+    params : {
+        frameId : <string 0>
+    }
+    sessionId : <string>
+}
+Received event{
+    method : Page.frameDetached
+    params : {
+        frameId : <string 1>
+        reason : remove
+    }
+    sessionId : <string>
+}
+Received event{
+    method : Page.frameDetached
+    params : {
+        frameId : <string 0>
+        reason : remove
+    }
+    sessionId : <string>
+}
+... done removing the frame
+... creating and navigating iframe http://127.0.0.1:8000/inspector-protocol/resources/cross_origin_iframe.html
+... iframe created and navigated
+... removing the frame
+Received event{
+    method : Page.frameSubtreeWillBeDetached
+    params : {
+        frameId : <string 2>
+    }
+    sessionId : <string>
+}
+Received event{
+    method : Page.frameDetached
+    params : {
+        frameId : <string 3>
+        reason : remove
+    }
+    sessionId : <string>
+}
+Received event{
+    method : Page.frameDetached
+    params : {
+        frameId : <string 2>
+        reason : remove
+    }
+    sessionId : <string>
+}
+... done removing the frame
+... creating and navigating iframe http://oopif.test:8000/inspector-protocol/resources/cross_origin_iframe.html
+... iframe created and navigated
+... removing the frame
+Received event{
+    method : Page.frameSubtreeWillBeDetached
+    params : {
+        frameId : <string 4>
+    }
+    sessionId : <string>
+}
+Received event{
+    method : Page.frameDetached
+    params : {
+        frameId : <string 5>
+        reason : remove
+    }
+    sessionId : <string>
+}
+Received event{
+    method : Page.frameDetached
+    params : {
+        frameId : <string 4>
+        reason : remove
+    }
+    sessionId : <string>
+}
+... done removing the frame
+... creating and navigating iframe http://devtools.test:8000/inspector-protocol/resources/cross_origin_iframe.html
+... iframe created and navigated
+... removing the frame
+Received event{
+    method : Page.frameSubtreeWillBeDetached
+    params : {
+        frameId : <string 6>
+    }
+    sessionId : <string>
+}
+Received event{
+    method : Page.frameDetached
+    params : {
+        frameId : <string 7>
+        reason : remove
+    }
+    sessionId : <string>
+}
+Received event{
+    method : Page.frameDetached
+    params : {
+        frameId : <string 6>
+        reason : remove
+    }
+    sessionId : <string>
+}
+... done removing the frame
+
