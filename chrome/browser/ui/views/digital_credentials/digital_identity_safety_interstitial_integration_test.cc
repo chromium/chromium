@@ -54,7 +54,7 @@ class TestDigitalIdentityProvider final
 
   void Request(content::WebContents* web_contents,
                const url::Origin& origin,
-               const std::string& request,
+               base::Value request,
                DigitalIdentityCallback callback) override {
     did_request_credential_ = true;
 

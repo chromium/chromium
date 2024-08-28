@@ -36,7 +36,7 @@ class MockDigitalIdentityProvider : public DigitalIdentityProvider {
               Request,
               (WebContents*,
                const url::Origin& origin,
-               const std::string& request,
+               const base::Value request,
                DigitalIdentityCallback),
               (override));
 };

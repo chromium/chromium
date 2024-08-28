@@ -67,7 +67,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // Called when the request JSON has been parsed.
   void OnRequestJsonParsed(
       Protocol protocol,
-      std::string request_to_send,
+      base::Value request_to_send,
       data_decoder::DataDecoder::ValueOrError parsed_result);
 
   // Called after fetching the user's identity. Shows an interstitial if needed.
@@ -80,7 +80,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // Called when the user has fulfilled the interstitial requirement. Will be
   // called immediately after OnRequestJsonParsed() if no interstitial is
   // needed.
-  void OnInterstitialDone(const std::string& request_to_send,
+  void OnInterstitialDone(base::Value request_to_send,
                           DigitalIdentityProvider::RequestStatusForMetrics
                               status_after_interstitial);
 

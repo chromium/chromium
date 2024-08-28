@@ -45,7 +45,7 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
       DigitalIdentityInterstitialCallback callback) override;
   void Request(content::WebContents* web_contents,
                const url::Origin& origin,
-               const std::string& request,
+               const base::Value request,
                DigitalIdentityCallback callback) override;
 
  private:

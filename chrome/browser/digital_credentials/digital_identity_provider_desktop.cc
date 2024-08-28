@@ -7,7 +7,8 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "chrome/browser/digital_credentials/digital_identity_fido_handler_observer.h"
+#include "base/functional/overloaded.h"
+#include "base/json/json_writer.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h"
@@ -17,6 +18,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/qr_code_generator/bitmap_generator.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/digital_credentials_cross_device.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/random.h"
@@ -31,8 +33,6 @@
 
 namespace {
 
-using BleStatus = device::FidoRequestHandlerBase::BleStatus;
-
 // Smaller than DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH.
 const int kQrCodeSize = 240;
 
@@ -40,8 +40,14 @@ using DigitalIdentityInterstitialAbortCallback =
     content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
 using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
-using TransportAvailabilityInfo =
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo;
+using content::digital_credentials::cross_device::Error;
+using content::digital_credentials::cross_device::Event;
+using content::digital_credentials::cross_device::ProtocolError;
+using content::digital_credentials::cross_device::RemoteError;
+using content::digital_credentials::cross_device::Response;
+using content::digital_credentials::cross_device::SystemError;
+using content::digital_credentials::cross_device::SystemEvent;
+using content::digital_credentials::cross_device::Transaction;
 
 void RunDigitalIdentityCallback(
     std::unique_ptr<DigitalIdentitySafetyInterstitialControllerDesktop>
@@ -75,13 +81,7 @@ std::unique_ptr<views::View> MakeQrCodeImageView(const std::string& qr_url) {
 
 DigitalIdentityProviderDesktop::DigitalIdentityProviderDesktop() = default;
 
-DigitalIdentityProviderDesktop::~DigitalIdentityProviderDesktop() {
-  // Destroy members with raw_ptrs to `request_handler_observer_`.
-  bluetooth_manual_dialog_controller_.reset();
-  request_handler_.reset();
-
-  request_handler_observer_.reset();
-}
+DigitalIdentityProviderDesktop::~DigitalIdentityProviderDesktop() = default;
 
 bool DigitalIdentityProviderDesktop::IsLowRiskOrigin(
     const url::Origin& to_check) const {
@@ -105,41 +105,94 @@ DigitalIdentityProviderDesktop::ShowDigitalIdentityInterstitial(
 
 void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
                                              const url::Origin& rp_origin,
-                                             const std::string& request,
+                                             base::Value request,
                                              DigitalIdentityCallback callback) {
   web_contents_ = web_contents->GetWeakPtr();
   rp_origin_ = rp_origin;
   callback_ = std::move(callback);
 
-  const auto fido_request_type = device::FidoRequestType::kGetAssertion;
   std::array<uint8_t, device::cablev2::kQRKeySize> qr_generator_key;
   crypto::RandBytes(qr_generator_key);
 
-  discovery_factory_ = std::make_unique<device::FidoDiscoveryFactory>();
-  discovery_factory_->set_cable_data(fido_request_type, {}, qr_generator_key);
-  discovery_factory_->set_network_context_factory(base::BindRepeating([]() {
-    return SystemNetworkContextManager::GetInstance()->GetContext();
-  }));
+  transaction_ = Transaction::New(
+      rp_origin, std::move(request), qr_generator_key,
+      base::BindRepeating([]() {
+        return SystemNetworkContextManager::GetInstance()->GetContext();
+      }),
+      base::BindRepeating(&DigitalIdentityProviderDesktop::OnEvent,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&DigitalIdentityProviderDesktop::OnFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 
-  qr_url_ = device::cablev2::qr::Encode(qr_generator_key, fido_request_type);
-
-  request_handler_ = std::make_unique<device::DigitalIdentityRequestHandler>(
-      discovery_factory_.get());
-  request_handler_observer_ =
-      std::make_unique<DigitalIdentityFidoHandlerObserver>(
-          base::BindOnce(&DigitalIdentityProviderDesktop::OnReadyToShowUi,
-                         weak_ptr_factory_.GetWeakPtr()));
-  request_handler_->set_observer(request_handler_observer_.get());
+  qr_url_ = device::cablev2::qr::Encode(
+      qr_generator_key, device::cablev2::CredentialRequestType::kPresentation);
 }
 
-void DigitalIdentityProviderDesktop::OnReadyToShowUi(
-    const TransportAvailabilityInfo& availability_info) {
-  if (availability_info.ble_status == BleStatus::kOn) {
-    ShowQrCodeDialog();
+void DigitalIdentityProviderDesktop::OnEvent(Event event) {
+  absl::visit(base::Overloaded{
+                  [this](SystemEvent event) {
+                    switch (event) {
+                      case SystemEvent::kBluetoothNotPowered:
+                        ShowBluetoothManualTurnOnDialog();
+                        break;
+                      case SystemEvent::kNeedPermission:
+                        // The user is being asked for Bluetooth permission by
+                        // the system. Nothing for Chrome UI to do.
+                        break;
+                      case SystemEvent::kReady:
+                        bluetooth_manual_dialog_controller_.reset();
+                        ShowQrCodeDialog();
+                        break;
+                    }
+                  },
+                  [](device::cablev2::Event event) {
+                    // caBLE events notify when the user has started the
+                    // transaction on their phone. The desktop UI could update
+                    // at this point to instruct the user to complete the action
+                    // there.
+                  },
+              },
+              event);
+}
+
+void DigitalIdentityProviderDesktop::OnFinished(
+    base::expected<Response, Error> result) {
+  if (result.has_value()) {
+    std::string encoded_result =
+        base::WriteJsonWithOptions(result.value().value(),
+                                   base::JSONWriter::OPTIONS_PRETTY_PRINT)
+            .value_or("");
+    std::move(callback_).Run(std::move(encoded_result));
     return;
   }
 
-  ShowBluetoothManualTurnOnDialog();
+  absl::visit(
+      base::Overloaded{
+          [this](SystemError error) {
+            EndRequestWithError(RequestStatusForMetrics::kErrorOther);
+          },
+          [this](ProtocolError error) {
+            EndRequestWithError(RequestStatusForMetrics::kErrorOther);
+          },
+          [this](RemoteError error) {
+            switch (error) {
+              case RemoteError::kNoCredential:
+                EndRequestWithError(
+                    RequestStatusForMetrics::kErrorNoCredential);
+                break;
+              case RemoteError::kUserCanceled:
+                EndRequestWithError(
+                    RequestStatusForMetrics::kErrorUserDeclined);
+                break;
+              case RemoteError::kDeviceAborted:
+                EndRequestWithError(RequestStatusForMetrics::kErrorAborted);
+                break;
+              case RemoteError::kOther:
+                EndRequestWithError(RequestStatusForMetrics::kErrorOther);
+                break;
+            }
+          }},
+      result.error());
 }
 
 DigitalIdentityMultiStepDialog*
@@ -158,7 +211,7 @@ void DigitalIdentityProviderDesktop::ShowQrCodeDialog() {
       url_formatter::FormatOriginForSecurityDisplay(
           rp_origin_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
   EnsureDialogCreated()->TryShow(
-      /*ok_button=*/std::nullopt, base::OnceClosure(),
+      /*accept_button=*/std::nullopt, base::OnceClosure(),
       ui::DialogModel::Button::Params(),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -168,26 +221,31 @@ void DigitalIdentityProviderDesktop::ShowQrCodeDialog() {
 void DigitalIdentityProviderDesktop::ShowBluetoothManualTurnOnDialog() {
   bluetooth_manual_dialog_controller_ =
       std::make_unique<DigitalIdentityBluetoothManualDialogController>(
-          EnsureDialogCreated(), request_handler_observer_.get());
+          EnsureDialogCreated());
   bluetooth_manual_dialog_controller_->Show(
-      base::BindRepeating(&DigitalIdentityProviderDesktop::OnBluetoothTurnedOn,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&DigitalIdentityProviderDesktop::OnCanceled,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &DigitalIdentityProviderDesktop::OnUserRequestedBluetoothPowerOn,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DigitalIdentityProviderDesktop::OnBluetoothTurnedOn() {
-  bluetooth_manual_dialog_controller_.reset();
-  ShowQrCodeDialog();
+void DigitalIdentityProviderDesktop::OnUserRequestedBluetoothPowerOn() {
+  transaction_->PowerBluetoothAdapter();
 }
 
 void DigitalIdentityProviderDesktop::OnCanceled() {
+  EndRequestWithError(RequestStatusForMetrics::kErrorOther);
+}
+
+void DigitalIdentityProviderDesktop::EndRequestWithError(
+    RequestStatusForMetrics status) {
   if (callback_.is_null()) {
     return;
   }
 
   bluetooth_manual_dialog_controller_.reset();
-  dialog_ = nullptr;
-  std::move(callback_).Run(
-      base::unexpected(RequestStatusForMetrics::kErrorOther));
+  dialog_.reset();
+
+  std::move(callback_).Run(base::unexpected(status));
 }
