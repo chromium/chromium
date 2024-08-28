@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <sys/socket.h>
 
 #include "base/compiler_specific.h"
@@ -16,9 +15,14 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#include "base/message_loop/message_pump_epoll.h"
+#endif
 
 namespace base {
 
@@ -26,7 +30,8 @@ namespace base {
 
 namespace {
 
-class FdWatchControllerPosixTest : public testing::Test {
+class FdWatchControllerPosixTest : public testing::Test,
+                                   public testing::WithParamInterface<bool> {
  public:
   FdWatchControllerPosixTest() = default;
 
@@ -36,6 +41,12 @@ class FdWatchControllerPosixTest : public testing::Test {
 
   // testing::Test interface.
   void SetUp() override {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+    features_.InitWithFeatureStates(
+        {{kUsePollForMessagePumpEpoll, GetParam()}});
+    MessagePumpEpoll::InitializeFeatures();
+#endif
+
     // Create a file descriptor.  Doesn't need to be readable or writable,
     // as we don't need to actually get any notifications.
     // pipe() is just the easiest way to do it.
@@ -55,6 +66,7 @@ class FdWatchControllerPosixTest : public testing::Test {
  protected:
   ScopedFD read_fd_;
   ScopedFD write_fd_;
+  base::test::ScopedFeatureList features_;
 };
 
 class TestHandler : public MessagePumpForIO::FdWatcher {
@@ -130,7 +142,7 @@ class CallClosureHandler : public MessagePumpForIO::FdWatcher {
   OnceClosure write_closure_;
 };
 
-TEST_F(FdWatchControllerPosixTest, FileDescriptorWatcherOutlivesMessageLoop) {
+TEST_P(FdWatchControllerPosixTest, FileDescriptorWatcherOutlivesMessageLoop) {
   // Simulate a MessageLoop that dies before an FileDescriptorWatcher.
   // This could happen when people use the Singleton pattern or atexit.
   TestHandler handler;
@@ -150,7 +162,7 @@ TEST_F(FdWatchControllerPosixTest, FileDescriptorWatcherOutlivesMessageLoop) {
   ASSERT_FALSE(handler.is_writable_);
 }
 
-TEST_F(FdWatchControllerPosixTest, FileDescriptorWatcherDoubleStop) {
+TEST_P(FdWatchControllerPosixTest, FileDescriptorWatcherDoubleStop) {
   // Verify that it's ok to call StopWatchingFileDescriptor().
 
   // Arrange for message loop to live longer than watcher.
@@ -167,7 +179,7 @@ TEST_F(FdWatchControllerPosixTest, FileDescriptorWatcherDoubleStop) {
   }
 }
 
-TEST_F(FdWatchControllerPosixTest, FileDescriptorWatcherDeleteInCallback) {
+TEST_P(FdWatchControllerPosixTest, FileDescriptorWatcherDeleteInCallback) {
   // Verify that it is OK to delete the FileDescriptorWatcher from within a
   // callback.
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
@@ -331,8 +343,10 @@ TEST_P(MessageLoopForIoPosixReadAndWriteTest, AfterWrite) {
   }
 }
 
+INSTANTIATE_TEST_SUITE_P(All, FdWatchControllerPosixTest, ::testing::Bool());
+
 // Verify that basic readable notification works.
-TEST_F(FdWatchControllerPosixTest, WatchReadable) {
+TEST_P(FdWatchControllerPosixTest, WatchReadable) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
   TestHandler handler;
   base::RunLoop loop;
@@ -358,8 +372,121 @@ TEST_F(FdWatchControllerPosixTest, WatchReadable) {
   ASSERT_FALSE(handler.is_writable_);
 }
 
+// Verify that you can re-add the same FD with the same watcher.
+TEST_P(FdWatchControllerPosixTest, WatchReadableTwiceSameWatcher) {
+  test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
+  TestHandler handler;
+  base::RunLoop loop;
+  handler.set_run_loop(&loop);
+  // Watch the pipe for readability.
+  MessagePumpForIO::FdWatchController watcher(FROM_HERE);
+  ASSERT_TRUE(CurrentIOThread::Get()->WatchFileDescriptor(
+      read_fd_.get(), /*persistent=*/false, MessagePumpForIO::WATCH_READ,
+      &watcher, &handler));
+
+  // The pipe should not be readable when first created.
+  loop.RunUntilIdle();
+  ASSERT_FALSE(handler.is_readable_);
+  ASSERT_FALSE(handler.is_writable_);
+
+  TriggerReadEvent();
+
+  // We don't want to assume that the read fd becomes readable the
+  // instant a bytes is written, so Run until quit by an event.
+  loop.Run();
+
+  ASSERT_TRUE(handler.is_readable_);
+  ASSERT_FALSE(handler.is_writable_);
+
+  // Clear the write and run the test again.
+  char c;
+  int result = HANDLE_EINTR(read(read_fd_.get(), &c, 1));
+  if (result == -1) {
+    PLOG(ERROR) << "read";
+    FAIL();
+  }
+  TestHandler handler2;
+  base::RunLoop loop2;
+  handler2.set_run_loop(&loop2);
+
+  ASSERT_TRUE(CurrentIOThread::Get()->WatchFileDescriptor(
+      read_fd_.get(), /*persistent=*/false, MessagePumpForIO::WATCH_READ,
+      &watcher, &handler2));
+
+  loop2.RunUntilIdle();
+  ASSERT_FALSE(handler2.is_readable_);
+  ASSERT_FALSE(handler2.is_writable_);
+
+  TriggerReadEvent();
+
+  // We don't want to assume that the read fd becomes readable the
+  // instant a bytes is written, so Run until quit by an event.
+  loop2.Run();
+
+  ASSERT_TRUE(handler2.is_readable_);
+  ASSERT_FALSE(handler2.is_writable_);
+}
+
+// Verify that you can re-add the same FD with a different watcher.
+TEST_P(FdWatchControllerPosixTest, WatchReadableTwiceDifferentWatcher) {
+  test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
+  TestHandler handler;
+  base::RunLoop loop;
+  handler.set_run_loop(&loop);
+  // Watch the pipe for readability.
+  {
+    MessagePumpForIO::FdWatchController watcher(FROM_HERE);
+    ASSERT_TRUE(CurrentIOThread::Get()->WatchFileDescriptor(
+        read_fd_.get(), /*persistent=*/false, MessagePumpForIO::WATCH_READ,
+        &watcher, &handler));
+
+    // The pipe should not be readable when first created.
+    loop.RunUntilIdle();
+    ASSERT_FALSE(handler.is_readable_);
+    ASSERT_FALSE(handler.is_writable_);
+
+    TriggerReadEvent();
+
+    // We don't want to assume that the read fd becomes readable the
+    // instant a bytes is written, so Run until quit by an event.
+    loop.Run();
+
+    ASSERT_TRUE(handler.is_readable_);
+    ASSERT_FALSE(handler.is_writable_);
+  }
+
+  // Clear the write and run the test again.
+  char c;
+  int result = HANDLE_EINTR(read(read_fd_.get(), &c, 1));
+  if (result == -1) {
+    PLOG(ERROR) << "read";
+    FAIL();
+  }
+  MessagePumpForIO::FdWatchController watcher(FROM_HERE);
+  TestHandler handler2;
+  base::RunLoop loop2;
+  handler2.set_run_loop(&loop2);
+
+  ASSERT_TRUE(CurrentIOThread::Get()->WatchFileDescriptor(
+      read_fd_.get(), /*persistent=*/false, MessagePumpForIO::WATCH_READ,
+      &watcher, &handler2));
+
+  loop2.RunUntilIdle();
+  ASSERT_FALSE(handler2.is_readable_);
+  ASSERT_FALSE(handler2.is_writable_);
+
+  TriggerReadEvent();
+
+  // We don't want to assume that the read fd becomes readable the
+  // instant a bytes is written, so Run until quit by an event.
+  loop2.Run();
+
+  ASSERT_TRUE(handler2.is_readable_);
+  ASSERT_FALSE(handler2.is_writable_);
+}
+
 // Verify that watching a file descriptor for writability succeeds.
-TEST_F(FdWatchControllerPosixTest, WatchWritable) {
+TEST_P(FdWatchControllerPosixTest, WatchWritable) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
   TestHandler handler;
   base::RunLoop loop;
@@ -384,7 +511,7 @@ TEST_F(FdWatchControllerPosixTest, WatchWritable) {
 }
 
 // Verify that RunUntilIdle() receives IO notifications.
-TEST_F(FdWatchControllerPosixTest, RunUntilIdle) {
+TEST_P(FdWatchControllerPosixTest, RunUntilIdle) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
   TestHandler handler;
   base::RunLoop loop;
@@ -412,7 +539,7 @@ void StopWatching(MessagePumpForIO::FdWatchController* controller,
 }
 
 // Verify that StopWatchingFileDescriptor() works from an event handler.
-TEST_F(FdWatchControllerPosixTest, StopFromHandler) {
+TEST_P(FdWatchControllerPosixTest, StopFromHandler) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
   RunLoop run_loop;
   MessagePumpForIO::FdWatchController watcher(FROM_HERE);
@@ -433,7 +560,7 @@ TEST_F(FdWatchControllerPosixTest, StopFromHandler) {
 }
 
 // Verify that non-persistent watcher is called only once.
-TEST_F(FdWatchControllerPosixTest, NonPersistentWatcher) {
+TEST_P(FdWatchControllerPosixTest, NonPersistentWatcher) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
 
   RunLoop run_loop;
@@ -454,7 +581,7 @@ TEST_F(FdWatchControllerPosixTest, NonPersistentWatcher) {
 }
 
 // Verify that persistent watcher is called every time the event is triggered.
-TEST_F(FdWatchControllerPosixTest, PersistentWatcher) {
+TEST_P(FdWatchControllerPosixTest, PersistentWatcher) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
 
   RunLoop run_loop1;
@@ -492,7 +619,7 @@ void StopWatchingAndWatchAgain(MessagePumpForIO::FdWatchController* controller,
 }
 
 // Verify that a watcher can be stopped and reused from an event handler.
-TEST_F(FdWatchControllerPosixTest, StopAndRestartFromHandler) {
+TEST_P(FdWatchControllerPosixTest, StopAndRestartFromHandler) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
 
   RunLoop run_loop1;
@@ -519,7 +646,7 @@ TEST_F(FdWatchControllerPosixTest, StopAndRestartFromHandler) {
 }
 
 // Verify that the pump properly handles a delayed task after an IO event.
-TEST_F(FdWatchControllerPosixTest, IoEventThenTimer) {
+TEST_P(FdWatchControllerPosixTest, IoEventThenTimer) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
 
   RunLoop timer_run_loop;
@@ -548,7 +675,7 @@ TEST_F(FdWatchControllerPosixTest, IoEventThenTimer) {
 }
 
 // Verify that the pipe can handle an IO event after a delayed task.
-TEST_F(FdWatchControllerPosixTest, TimerThenIoEvent) {
+TEST_P(FdWatchControllerPosixTest, TimerThenIoEvent) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
 
   // Trigger read event from a delayed task.

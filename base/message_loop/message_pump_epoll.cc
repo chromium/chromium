@@ -4,7 +4,6 @@
 
 #include "base/message_loop/message_pump_epoll.h"
 
-#include <sys/epoll.h>
 #include <sys/eventfd.h>
 
 #include <cstddef>
@@ -36,7 +35,20 @@ BASE_FEATURE(kBatchNativeEventsInMessagePumpEpoll,
 
 // Caches the state of the "BatchNativeEventsInMessagePumpEpoll".
 std::atomic_bool g_use_batched_version = false;
+std::atomic_bool g_use_poll = false;
 
+constexpr std::pair<uint32_t, short int> kEpollToPollEvents[] = {
+    {EPOLLIN, POLLIN},   {EPOLLOUT, POLLOUT}, {EPOLLRDHUP, POLLRDHUP},
+    {EPOLLPRI, POLLPRI}, {EPOLLERR, POLLERR}, {EPOLLHUP, POLLHUP}};
+
+void SetEventsForPoll(const uint32_t epoll_events, struct pollfd* poll_entry) {
+  poll_entry->events = 0;
+  for (const auto& epoll_poll : kEpollToPollEvents) {
+    if (epoll_events & epoll_poll.first) {
+      poll_entry->events |= epoll_poll.second;
+    }
+  }
+}
 }  // namespace
 
 // Parameters used to construct and describe an interest.
@@ -130,6 +142,12 @@ MessagePumpEpoll::MessagePumpEpoll() {
   int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_ADD, wake_event_.get(), &wake);
   PCHECK(rv == 0);
 
+  struct pollfd poll_entry;
+  poll_entry.fd = wake_event_.get();
+  poll_entry.events = POLLIN;
+  poll_entry.revents = 0;
+  pollfds_.push_back(poll_entry);
+
   next_metrics_time_ = base::TimeTicks::Now() + base::Minutes(1);
 }
 
@@ -140,6 +158,8 @@ void MessagePumpEpoll::InitializeFeatures() {
   g_use_batched_version.store(
       base::FeatureList::IsEnabled(kBatchNativeEventsInMessagePumpEpoll),
       std::memory_order_relaxed);
+  g_use_poll.store(base::FeatureList::IsEnabled(kUsePollForMessagePumpEpoll),
+                   std::memory_order_relaxed);
 }
 
 bool MessagePumpEpoll::WatchFileDescriptor(int fd,
@@ -295,6 +315,14 @@ void MessagePumpEpoll::AddEpollEvent(EpollEventEntry& entry) {
   int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_ADD, entry.fd, &event);
   DPCHECK(rv == 0);
   entry.registered_events = events;
+
+  DCHECK(FindPollEntry(entry.fd) == pollfds_.end());
+  struct pollfd poll_entry;
+  poll_entry.fd = entry.fd;
+  poll_entry.revents = 0;
+  SetEventsForPoll(events, &poll_entry);
+
+  pollfds_.push_back(poll_entry);
 }
 
 void MessagePumpEpoll::UpdateEpollEvent(EpollEventEntry& entry) {
@@ -310,6 +338,12 @@ void MessagePumpEpoll::UpdateEpollEvent(EpollEventEntry& entry) {
         // entry from `entries_` to keep the reference alive because handling
         // the entry isn't finished yet.
         StopEpollEvent(entry);
+      } else {
+        // No work needs to be done for epoll, but for poll we have to implement
+        // the equivalent of oneshot ourselves by unregistering for all events.
+        auto poll_entry = FindPollEntry(entry.fd);
+        CHECK(poll_entry != pollfds_.end());
+        poll_entry->events = 0;
       }
       return;
     }
@@ -321,6 +355,10 @@ void MessagePumpEpoll::UpdateEpollEvent(EpollEventEntry& entry) {
     int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_MOD, entry.fd, &event);
     DPCHECK(rv == 0);
     entry.registered_events = events;
+
+    auto poll_entry = FindPollEntry(entry.fd);
+    CHECK(poll_entry != pollfds_.end());
+    SetEventsForPoll(events, &(*poll_entry));
   } else if (events != 0) {
     // An interest for the fd has been reactivated. Re-enable the fd.
     entry.stopped = false;
@@ -335,6 +373,7 @@ void MessagePumpEpoll::StopEpollEvent(EpollEventEntry& entry) {
     DPCHECK(rv == 0);
     entry.stopped = true;
     entry.registered_events = 0;
+    RemovePollEntry(entry.fd);
   }
 }
 
@@ -369,21 +408,43 @@ bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout) {
   const int epoll_timeout =
       timeout.is_max() ? -1
                        : saturated_cast<int>(timeout.InMillisecondsRoundedUp());
-  epoll_event events[16];
-  const int epoll_result =
-      epoll_wait(epoll_.get(), events, std::size(events), epoll_timeout);
-  if (epoll_result < 0) {
-    DPCHECK(errno == EINTR);
-    return false;
+
+  // Used in the "epoll" code path.
+  epoll_event epoll_events[16];
+  // Used in the "poll" code path.
+  std::vector<epoll_event> poll_events;
+  // Will refer to `events` or `events_vector` depending on which
+  // code path is taken.
+  span<epoll_event> ready_events;
+
+  // When there are many FDs, epoll() can be significantly faster as poll needs
+  // to iterate through the list of watched fds. This value is pretty arbitrary,
+  // the internet suggests that under 1000 fds that epoll isn't noticeably
+  // faster than poll but this isn't easy to empirically measure.
+  bool use_poll =
+      g_use_poll.load(std::memory_order_relaxed) && entries_.size() < 500;
+
+  if (use_poll) {
+    if (!GetEventsPoll(epoll_timeout, &poll_events)) {
+      return false;
+    }
+    ready_events = span(poll_events).first(poll_events.size());
+  } else {
+    const int epoll_result = epoll_wait(epoll_.get(), epoll_events,
+                                        std::size(epoll_events), epoll_timeout);
+    if (epoll_result < 0) {
+      DPCHECK(errno == EINTR);
+      return false;
+    }
+    if (epoll_result == 0) {
+      return false;
+    }
+
+    ready_events =
+        span(epoll_events).first(base::checked_cast<size_t>(epoll_result));
   }
 
-  if (epoll_result == 0) {
-    return false;
-  }
-
-  const span<epoll_event> ready_events =
-      span(events).first(base::checked_cast<size_t>(epoll_result));
-  for (auto& e : ready_events) {
+  for (epoll_event& e : ready_events) {
     if (e.data.ptr == &wake_event_) {
       // Wake-up events are always safe to handle immediately. Unlike other
       // events used by MessagePumpEpoll they also don't point to an
@@ -411,6 +472,56 @@ bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout) {
     }
   }
 
+  return true;
+}
+
+std::vector<struct pollfd>::iterator MessagePumpEpoll::FindPollEntry(int fd) {
+  return std::find_if(
+      pollfds_.begin(), pollfds_.end(),
+      [fd](const struct pollfd poll_entry) { return poll_entry.fd == fd; });
+}
+
+void MessagePumpEpoll::RemovePollEntry(int fd) {
+  pollfds_.erase(FindPollEntry(fd));
+}
+
+bool MessagePumpEpoll::GetEventsPoll(int epoll_timeout,
+                                     std::vector<epoll_event>* epoll_events) {
+  int retval = poll(&pollfds_[0], base::checked_cast<nfds_t>(pollfds_.size()),
+                    epoll_timeout);
+  if (retval < 0) {
+    DPCHECK(errno == EINTR);
+    return false;
+  }
+  // Nothing to do, timeout.
+  if (retval == 0) {
+    return false;
+  }
+
+  for (struct pollfd& pollfd_entry : pollfds_) {
+    if (pollfd_entry.revents == 0) {
+      continue;
+    }
+
+    epoll_event event;
+    memset(&event, 0, sizeof(event));
+
+    if (pollfd_entry.fd == wake_event_.get()) {
+      event.data.ptr = &wake_event_;
+    } else {
+      auto entry = entries_.find(pollfd_entry.fd);
+      CHECK(entry != entries_.end());
+      event.data.ptr = &(entry->second);
+    }
+
+    for (const auto& epoll_poll : kEpollToPollEvents) {
+      if (pollfd_entry.revents & epoll_poll.second) {
+        event.events |= epoll_poll.first;
+      }
+    }
+    epoll_events->push_back(event);
+    pollfd_entry.revents = 0;
+  }
   return true;
 }
 
@@ -551,7 +662,7 @@ MessagePumpEpoll::EpollEventEntry::~EpollEventEntry() {
   }
 }
 
-uint32_t MessagePumpEpoll::EpollEventEntry::ComputeActiveEvents() {
+uint32_t MessagePumpEpoll::EpollEventEntry::ComputeActiveEvents() const {
   uint32_t events = 0;
   bool one_shot = true;
   for (const auto& interest : interests) {

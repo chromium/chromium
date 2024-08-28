@@ -5,12 +5,14 @@
 #ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_EPOLL_H_
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_EPOLL_H_
 
+#include <poll.h>
 #include <sys/epoll.h>
 
 #include <cstdint>
 #include <map>
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -23,6 +25,25 @@
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base {
+
+// Use poll() rather than epoll().
+//
+// Why? epoll() is supposed to be strictly better. But it has one consequence
+// we don't necessarily want: when writing to a AF_UNIX socket, the kernel
+// will wake up the waiter with a "sync" wakeup. The concept of a "sync"
+// wakeup has various consequences, but on Android it tends to bias the
+// scheduler towards a "baton passing" mode, where the current thread yields
+// its CPU to the target. This is desirable to lower latency.
+//
+// However, when using epoll_wait(), the "sync" flag is dropped from the
+// wakeup path. This is not the case with poll(). So let's use it to preserve
+// this behavior.
+//
+// Caveat: Since both we and the kernel need to walk the list of all fds at
+// every call, don't do it when we have too many FDs.
+BASE_FEATURE(kUsePollForMessagePumpEpoll,
+             "UsePollForMessagePumpEpoll",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A MessagePump implementation suitable for I/O message loops on Linux-based
 // systems with epoll API support.
@@ -136,7 +157,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
     //   - EPOLLIN is set if any active Interest wants to `read`.
     //   - EPOLLOUT is set if any active Interest wants to `write`.
     //   - EPOLLONESHOT is set if all active Interests are one-shot.
-    uint32_t ComputeActiveEvents();
+    uint32_t ComputeActiveEvents() const;
 
     // The file descriptor to which this entry pertains.
     const int fd;
@@ -181,6 +202,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   void StopEpollEvent(EpollEventEntry& entry);
   void UnregisterInterest(const scoped_refptr<Interest>& interest);
   bool WaitForEpollEvents(TimeDelta timeout);
+  bool GetEventsPoll(int epoll_timeout, std::vector<epoll_event>* epoll_events);
   void OnEpollEvent(EpollEventEntry& entry, uint32_t events);
   void HandleEvent(int fd,
                    bool can_read,
@@ -190,6 +212,9 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
 
   void BeginNativeWorkBatch();
   void RecordPeriodicMetrics();
+
+  std::vector<struct pollfd>::iterator FindPollEntry(int fd);
+  void RemovePollEntry(int fd);
 
   // Null if Run() is not currently executing. Otherwise it's a pointer into the
   // stack of the innermost nested Run() invocation.
@@ -204,6 +229,9 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   // (2) we don't do frequent lookups, and (3) values need stable addresses
   // across insertion or removal of other elements.
   std::map<int, EpollEventEntry> entries_;
+
+  // pollfd array passed to poll() when not using epoll.
+  std::vector<struct pollfd> pollfds_;
 
   // The epoll instance used by this message pump to monitor file descriptors.
   ScopedFD epoll_;
