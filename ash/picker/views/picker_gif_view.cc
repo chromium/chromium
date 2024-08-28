@@ -61,11 +61,20 @@ PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
 
 PickerGifView::~PickerGifView() = default;
 
-int PickerGifView::GetHeightForWidth(int width) const {
-  return original_dimensions_.width() == 0
-             ? 0
-             : (width * original_dimensions_.height()) /
-                   original_dimensions_.width();
+gfx::Size PickerGifView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  int width = 0;
+  if (!available_size.width().is_bounded()) {
+    width = views::ImageView::CalculatePreferredSize(available_size).width();
+  } else {
+    width = available_size.width().value();
+  }
+
+  const int height = original_dimensions_.width() == 0
+                         ? 0
+                         : (width * original_dimensions_.height()) /
+                               original_dimensions_.width();
+  return gfx::Size(width, height);
 }
 
 void PickerGifView::OnBoundsChanged(const gfx::Rect& previous_bounds) {

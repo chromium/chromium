@@ -46,7 +46,8 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
   ~PickerGifView() override;
 
   // views::ImageViewBase:
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
