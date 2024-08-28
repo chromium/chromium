@@ -258,7 +258,11 @@ class SidePanel::VisibleBoundsViewClipper : public views::ViewObserver {
       // BrowserViewLayout.
       clip_bounds.Inset(
           gfx::Insets::TLBR(-views::Separator::kThickness, 0, 0, 0));
-      layer->SetClipRect(clip_bounds);
+      // Only clip the bounds while animating. This makes sure we don't
+      // incorrectly clip things like focus rings for header buttons or the
+      // resize handle.
+      layer->SetClipRect(side_panel_->GetAnimationValue() < 1 ? clip_bounds
+                                                              : gfx::Rect());
       layer->SetVisible(clip_bounds.width() != 0);
     }
   }
