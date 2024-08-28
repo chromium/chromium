@@ -938,7 +938,7 @@ template("test_runner_script") {
       deps += [ ":${invoker.test_suite}$build_config_target_suffix" ]
 
       _rebased_robolectric_runtime_deps_dir =
-          rebase_path("//third_party/robolectric/lib", root_build_dir)
+          rebase_path("//third_party/robolectric/cipd/lib", root_build_dir)
       _rebased_resource_apk = rebase_path(invoker.resource_apk, root_build_dir)
       executable_args += [
         "--resource-apk",

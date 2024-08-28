@@ -2417,7 +2417,7 @@ deps = {
       'condition': 'checkout_android',
   },
 
-  'src/third_party/robolectric': {
+  'src/third_party/robolectric/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/robolectric',

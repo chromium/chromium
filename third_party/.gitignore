@@ -117,8 +117,6 @@
 /qemu-linux-arm64
 /qemu-linux-x64
 /qemu-mac-x64
-/robolectric/lib/
-/robolectric/robolectric
 /rust-src
 /rust-toolchain/
 /rust-toolchain-intermediate
