@@ -26559,7 +26559,7 @@
             ]
         }
     ],
-    "WebViewSupervisedUser": [
+    "WebViewSupervisedUserV2": [
         {
             "platforms": [
                 "android_webview"
