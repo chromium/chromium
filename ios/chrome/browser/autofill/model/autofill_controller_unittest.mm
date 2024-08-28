@@ -977,8 +977,6 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
 // submitted with scripts (simulating form removal) results in a credit
 // card being successfully imported into the PersonalDataManager.
 TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
-  ScopedFeatureList feature_list(
-      features::kAutofillEnableXHRSubmissionDetectionIOS);
   InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
@@ -1049,8 +1047,6 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
 // the submitted form.
 TEST_F(AutofillControllerTest,
        CreditCardImportWithFieldDataManagerValuesAfterFormRemoval) {
-  ScopedFeatureList feature_list(
-      features::kAutofillEnableXHRSubmissionDetectionIOS);
   InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
@@ -1138,8 +1134,6 @@ TEST_F(AutofillControllerTest,
 // submitted with scripts (simulating form removal) results in a profile being
 // successfully imported into the PersonalDataManager.
 TEST_F(AutofillControllerTest, ProfileImportAfterFormlessFormRemoval) {
-  ScopedFeatureList feature_list(
-      features::kAutofillEnableXHRSubmissionDetectionIOS);
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(browser_state_.get()));

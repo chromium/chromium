@@ -869,11 +869,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 - (void)webState:(web::WebState*)webState
     didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
                    inFrame:(web::WebFrame*)frame {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableXHRSubmissionDetectionIOS)) {
-    return;
-  }
-
   CHECK_EQ(_webState, webState);
   CHECK(!params.removed_forms.empty() || !params.removed_unowned_fields.empty())
       << "Invalid params. Form removal events with missing input should have "
@@ -1312,10 +1307,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   FormUtilJavaScriptFeature::GetInstance()->SetAutofillAcrossIframes(
       frame, base::FeatureList::IsEnabled(
                  autofill::features::kAutofillAcrossIframesIos));
-
-  FormUtilJavaScriptFeature::GetInstance()->SetAutofillXHRSubmissionDetection(
-      frame, base::FeatureList::IsEnabled(
-                 autofill::features::kAutofillEnableXHRSubmissionDetectionIOS));
 
   FormUtilJavaScriptFeature::GetInstance()->SetAutofillIsolatedContentWorld(
       frame,

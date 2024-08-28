@@ -18,14 +18,6 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 let autofillAcrossIframes: boolean = false;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_across_iframes_ios)
 
-// LINT.IfChange(autofill_xhr_submission_detection_ios)
-/**
- * Enables sending all form removal events to the browser for submission detection.
- * Corresponds to autofill::feature::AutofillEnableXHRSubmissionDetectionIOS.
- */
-let autofillXHRSubmissionDetection: boolean = true;
-// LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_xhr_submission_detection_ios)
-
 // LINT.IfChange(autofill_isolated_content_world)
 /**
  Enables the logic necessary for Autofill to work from an isolated content world
@@ -49,20 +41,6 @@ function isAutofillAcrossIframesEnabled(): boolean {
 }
 
 /**
- * @see autofillXHRSubmissionDetectionEnabled
- */
-function setAutofillXHRSubmissionDetection(enabled: boolean): void {
-  autofillXHRSubmissionDetection = enabled;
-}
-
-/**
- * @see autofillXHRSubmissionDetection
- */
-function isAutofillXHRSubmissionDetectionEnabled(): boolean {
-  return autofillXHRSubmissionDetection;
-}
-
-/**
  * @see autofillIsolatedContentWorld
  */
 function setAutofillIsolatedContentWorld(enabled: boolean): void {
@@ -81,8 +59,6 @@ function isAutofillIsolatedContentWorldEnabled(): boolean {
 gCrWeb.autofill_form_features = {
   setAutofillAcrossIframes,
   isAutofillAcrossIframesEnabled,
-  setAutofillXHRSubmissionDetection,
-  isAutofillXHRSubmissionDetectionEnabled,
   setAutofillIsolatedContentWorld,
   isAutofillIsolatedContentWorldEnabled,
 };

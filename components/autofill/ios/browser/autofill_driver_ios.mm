@@ -14,7 +14,6 @@
 #import "components/autofill/core/browser/autofill_driver_router.h"
 #import "components/autofill/core/browser/form_filler.h"
 #import "components/autofill/core/browser/form_structure.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -462,12 +461,6 @@ void AutofillDriverIOS::SetSelfAsParent(const autofill::FormData& form,
 void AutofillDriverIOS::UpdateLastInteractedForm(
     const FormData& form_data,
     const FieldRendererId& formless_field) {
-  // No-op when XHR submission detection disabled.
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableXHRSubmissionDetectionIOS)) {
-    return;
-  }
-
   last_interacted_form_.emplace(form_data, formless_field);
 }
 
@@ -513,9 +506,6 @@ void AutofillDriverIOS::OnAfterFormsSeen(
 void AutofillDriverIOS::FormsRemoved(
     const std::set<FormRendererId>& removed_forms,
     const std::set<FieldRendererId>& removed_unowned_fields) {
-  CHECK(base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableXHRSubmissionDetectionIOS));
-
   const bool submission_detected = DetectFormSubmissionAfterFormRemoval(
       removed_forms, removed_unowned_fields);
   RecordFormRemoval(

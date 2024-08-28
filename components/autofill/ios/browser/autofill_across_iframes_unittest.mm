@@ -1431,10 +1431,6 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFrameDeletion) {
 // Tests that form deletion in a child frame is taken into consideration where
 // the parent browser form is updated accordingly.
 TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion) {
-  // Enable Autofill XHR detection to enable the detection of deleted forms.
-  base::test::ScopedFeatureList feature_list(
-      autofill::features::kAutofillEnableXHRSubmissionDetectionIOS);
-
   AddIframe("cf1", "<form><input type=\"text\"></form>");
   AddIframe("cf2", "<form><input type=\"text\"></form>");
   StartTestServerAndLoad();
@@ -1479,10 +1475,6 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion) {
 // Tests that synthethic form deletion in a child frame is taken into
 // consideration where the parent browser form is updated accordingly.
 TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion_Synthetic) {
-  // Enable Autofill XHR detection to enable the detection of deleted forms.
-  base::test::ScopedFeatureList feature_list(
-      autofill::features::kAutofillEnableXHRSubmissionDetectionIOS);
-
   AddIframe("cf1", "<div id=\"form1\"><input type=\"text\">"
                    "<input type=\"text\"></div>");
   AddIframe("cf2", "<div id=\"form1\"><input type=\"text\">"
@@ -1531,10 +1523,6 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion_Synthetic) {
 // Tests that the partial deletion of fields in the synthethic form of a child
 // frame isn't reported as form removal since the synthetic still remains.
 TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion_Synthetic_Partial) {
-  // Enable Autofill XHR detection to enable the detection of deleted forms.
-  base::test::ScopedFeatureList feature_list(
-      autofill::features::kAutofillEnableXHRSubmissionDetectionIOS);
-
   AddIframe("cf1", "<input type=\"text\">"
                    "<input type=\"text\">");
   AddIframe("cf2", "<input type=\"text\">"

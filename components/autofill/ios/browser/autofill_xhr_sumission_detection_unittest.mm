@@ -12,7 +12,6 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/test_autofill_client.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
@@ -58,10 +57,6 @@ class TestingAutofillManager : public BrowserAutofillManager {
 // AutofillDriverIOS.
 class AutofillXHRSubmissionDetectionTest : public PlatformTest {
  public:
-  AutofillXHRSubmissionDetectionTest()
-      : PlatformTest(),
-        feature_list_(features::kAutofillEnableXHRSubmissionDetectionIOS) {}
-
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -106,7 +101,6 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
         main_frame_driver()->GetAutofillManager());
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   autofill::TestAutofillClient autofill_client_;
   web::FakeWebState web_state_;

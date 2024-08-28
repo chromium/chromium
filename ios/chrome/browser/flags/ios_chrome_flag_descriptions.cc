@@ -137,12 +137,6 @@ const char kAutofillEnableVirtualCardsDescription[] =
     "When enabled, virtual card enrollment and retrieval will be available on "
     "Bling.";
 
-const char kAutofillEnableXHRSubmissionDetectionIOSName[] =
-    "Enable XHR submission detection for Autofill";
-const char kAutofillEnableXHRSubmissionDetectionIOSDescription[] =
-    "When enabled, Chrome will detect forms submitted asynchronously (e.g. "
-    "AJAX and XMLHttpRequest) for Autofill.";
-
 const char kAutofillIsolatedWorldForJavascriptIOSName[] =
     "Isolated content world for Autofill";
 const char kAutofillIsolatedWorldForJavascriptIOSDescription[] =

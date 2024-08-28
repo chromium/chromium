@@ -254,15 +254,6 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
              "AutofillExtractOnlyNonAdFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// LINT.IfChange(autofill_xhr_submission_detection_ios)
-// If enabled, XHR form submissions are detected on iOS when the last interacted
-// form in a frame is removed. Otherwise only HTTP form submissions are detected
-// on iOS.
-BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
-             "AutofillEnableXHRSubmissionDetectionIOS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_xhr_submission_detection_ios)
-
 // When enabled, focusing on an autofilled field that was traditionally filled
 // with address data (meaning filled with the value of their classified type)
 // will yield field-by-field filling suggestions without prefix matching.

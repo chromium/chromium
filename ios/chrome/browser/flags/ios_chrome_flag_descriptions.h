@@ -110,10 +110,6 @@ extern const char kAutofillEnableVerveCardSupportDescription[];
 extern const char kAutofillEnableVirtualCardsName[];
 extern const char kAutofillEnableVirtualCardsDescription[];
 
-// Title and description for flag to enable XHR submission detection on iOS.
-extern const char kAutofillEnableXHRSubmissionDetectionIOSName[];
-extern const char kAutofillEnableXHRSubmissionDetectionIOSDescription[];
-
 // Title and description for the flag to control whether to use the
 // isolated content world instead of the page content world for the Autofill JS
 // feature scripts.

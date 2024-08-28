@@ -808,11 +808,6 @@
     "expiry_milestone": 128
   },
   {
-      "name": "autofill-enable-xhr-submission-detection-ios",
-      "owners": [ "eic@google.com", "bling-transactions@google.com" , "bling-flags@google.com"],
-      "expiry_milestone": 129
-  },
-  {
     "name": "autofill-for-unclassified-fields-available",
     "owners": [ "tchudakov@chromium.org", "vykochko@chromium.org", "brunobraga@chromium.org" ],
     "expiry_milestone": 130

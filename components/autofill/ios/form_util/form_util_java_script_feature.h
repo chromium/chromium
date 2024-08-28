@@ -25,9 +25,6 @@ class FormUtilJavaScriptFeature : public web::JavaScriptFeature {
   // Enables/disables the AutofillAcrossIframes feature in `frame`.
   void SetAutofillAcrossIframes(web::WebFrame* frame, bool enabled);
 
-  // Enables/disables XHR form submission detection in `frame`.
-  void SetAutofillXHRSubmissionDetection(web::WebFrame* frame, bool enabled);
-
   // Enables/disables the renderer side behaviours in `frame` needed for
   // Autofill features to work in an isolated content world.
   void SetAutofillIsolatedContentWorld(web::WebFrame* frame, bool enabled);
