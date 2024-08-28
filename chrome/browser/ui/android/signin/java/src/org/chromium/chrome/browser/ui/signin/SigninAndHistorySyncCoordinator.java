@@ -313,8 +313,10 @@ public class SigninAndHistorySyncCoordinator implements SigninAccountPickerCoord
     /** Implements {@link HistorySyncDelegate} */
     @Override
     public void dismissHistorySync() {
-        mHistorySyncCoordinator.destroy();
-        mHistorySyncCoordinator = null;
+        if (mHistorySyncCoordinator != null) {
+            mHistorySyncCoordinator.destroy();
+            mHistorySyncCoordinator = null;
+        }
         onFlowComplete();
     }
 
