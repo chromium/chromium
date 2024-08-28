@@ -324,7 +324,8 @@ void WaitForEmpyOmnibox() {
 }
 
 // Types JavaScript into Omnibox and verify that an alert is displayed.
-- (void)testTypeJavaScriptIntoOmnibox {
+// TODO(crbug.com/362621166): Test is flaky.
+- (void)DISABLED_testTypeJavaScriptIntoOmnibox {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   [ChromeEarlGreyUI
