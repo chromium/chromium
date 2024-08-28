@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] Test that the autocorrect attribute is available on HTMLInputElement.
+  assert_true: expected true got false
+[FAIL] Test that the autocorrect attribute is available on HTMLTextAreaElement.
+  assert_true: expected true got false
+[FAIL] Test that the autocorrect attribute is available on div.
+  assert_true: expected true got false
+[FAIL] Test that the autocorrect attribute is available on form.
+  assert_true: expected true got false
+[FAIL] Test setting the autocorrect IDL attribute.
+  assert_equals: expected (string) "on" but got (object) null
+[FAIL] Test setting the autocorrect attribute using setAttribute.
+  assert_true: expected true got undefined
+[FAIL] Test inheriting autocorrection from a form.
+  assert_equals: button element with form parent with "null" and form element with "null" expected (boolean) true but got (undefined) undefined
+[FAIL] Test autocorrection in password, URL, and email inputs.
+  assert_false: Input of type password expected false got undefined
+Harness: the test ran to completion.
+

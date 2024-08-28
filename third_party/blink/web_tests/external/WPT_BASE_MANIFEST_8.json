@@ -1887,6 +1887,20 @@
          null,
          {}
         ]
+       ],
+       "top-layer-crash.html": [
+        "54861d13f58367a642fe9bfd94c17e0530d6527d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "top-layer-nested-crash.html": [
+        "a2000dd9136e299089d8d78f6725c6570a942919",
+        [
+         null,
+         {}
+        ]
        ]
       }
      }
@@ -6389,6 +6403,13 @@
      ],
      "remove-right-block-during-joining-with-parent-left-block.html": [
       "29ee228fea44fdaedb85188610f5088619ff8c4f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "remove_body_in_design_mode_during_focus_move.html": [
+      "20559c6dc1ca61321358f7f1ad912f5cdf608a8f",
       [
        null,
        {}
@@ -282520,7 +282541,7 @@
          ]
         ],
         "select-icon-color.tentative.html": [
-         "13026cd5f8c4aea0cec65248a3684a4eed11fcec",
+         "833e55164b2bf55151b728f1a50596ce822535db",
          [
           null,
           [
@@ -299928,15 +299949,27 @@
       []
      ],
      "eddsa.https.any-expected.txt": [
-      "47813cd0a558dbe4c24b0824c9bf702db90e9cdb",
+      "a3c791dfc4385fb5e57f0b99ce450046f357e9e8",
       []
      ],
      "eddsa.https.any.worker-expected.txt": [
-      "47813cd0a558dbe4c24b0824c9bf702db90e9cdb",
+      "a3c791dfc4385fb5e57f0b99ce450046f357e9e8",
       []
      ],
      "eddsa.js": [
-      "74452d26091ae28fb6ed3ff020bb7f30c9917e1d",
+      "de9a5268827d75217cc9e1b9f9f69af88049e52f",
+      []
+     ],
+     "eddsa_small_order_points.https.any-expected.txt": [
+      "57e1d82bf8968efd930ec94639682371ce347db7",
+      []
+     ],
+     "eddsa_small_order_points.https.any.worker-expected.txt": [
+      "57e1d82bf8968efd930ec94639682371ce347db7",
+      []
+     ],
+     "eddsa_small_order_points.js": [
+      "ae973155992c87a9f659ff50d548cd6836745f68",
       []
      ],
      "eddsa_vectors.js": [
@@ -340253,6 +340286,10 @@
       "8eee65a27045ae97d10ed22050126d94fa69ed9b",
       []
      ],
+     "pseudo-classes-after-part-expected.txt": [
+      "9e89ee7e601fa9ffbbe0fb53502feab3826225ed",
+      []
+     ],
      "support": {
       "shadow-helper.js": [
        "94accd6b1f9b095fda0079f7b86b866d88ffee01",
@@ -377884,6 +377921,12 @@
       }
      },
      "editing-0": {
+      "autocorrection": {
+       "autocorrection-expected.txt": [
+        "c9a3d206397d282f49375be986eef52dfbfcc4c3",
+        []
+       ]
+      },
       "contenteditable": {
        "DIR_METADATA": [
         "a70c6e73fcc9273f0bcf1836f8c830a38e820e0c",
@@ -381798,11 +381841,7 @@
         ],
         "resources": {
          "stylable-select-styles.css": [
-          "0052b3863e2ef5de0048968e11312bba631f1264",
-          []
-         ],
-         "stylable-select-utils.js": [
-          "38e93459161422622e6e88ab39dbcbe55fb017e9",
+          "ee94ae35c1e3095128b74967c8ac6e325f1d87a5",
           []
          ]
         },
@@ -381811,7 +381850,7 @@
          []
         ],
         "select-icon-color-ref.html": [
-         "575b42a200e382ba4d278638e2e45d762d30e7c6",
+         "224bdd7eb5d746b3ffccec4f0973fb179c645d37",
          []
         ],
         "select-open-invalidation-ref.html": [
@@ -382439,7 +382478,7 @@
        []
       ],
       "popover-anchor-display-ref.html": [
-       "646cf5c26639be186252f46ad44f2e49048d8f8f",
+       "7b8410f67a7c7f9499e206d86847bdebc3b6b00c",
        []
       ],
       "popover-anchor-inset-rule-display-ref.html": [
@@ -393924,6 +393963,14 @@
     ],
     "pointerevent_pointer_boundary_events_after_removing_last_over_element-expected.txt": [
      "59643ca5ba557acb22f73e0033f61ecbb31b955f",
+     []
+    ],
+    "pointerevent_pointercapture_in_frame_mouse-expected.txt": [
+     "be6da2668f5106e74c5e86b211b944e125d71cd7",
+     []
+    ],
+    "pointerevent_pointercapture_in_frame_touch-expected.txt": [
+     "e94d02d6b0677b91bbfa65b3204e1ad0277a1bb4",
      []
     ],
     "pointerevent_pointermove_after_pointerup_target_removed-expected.txt": [
@@ -414660,7 +414707,7 @@
       []
      ],
      "echo-headers.py": [
-      "58a7ed5637f9d2b193f40380f0a6e4e96306b905",
+      "63943082b63f6a58e28ac19a2994304512e33043",
       []
      ],
      "echo-method.py": [
@@ -429366,6 +429413,57 @@
          [
           "script",
           "eddsa.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "eddsa_small_order_points.https.any.js": [
+      "be025557fc20aba4fe0fbc718ef81105402b8c95",
+      [
+       "WebCryptoAPI/sign_verify/eddsa_small_order_points.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: verify() Using EdDSA with small-order points"
+         ],
+         [
+          "script",
+          "eddsa_vectors.js"
+         ],
+         [
+          "script",
+          "eddsa_small_order_points.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/sign_verify/eddsa_small_order_points.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: verify() Using EdDSA with small-order points"
+         ],
+         [
+          "script",
+          "eddsa_vectors.js"
+         ],
+         [
+          "script",
+          "eddsa_small_order_points.js"
          ],
          [
           "timeout",
@@ -453579,6 +453677,13 @@
        {}
       ]
      ],
+     "anchor-position-top-layer-007.html": [
+      "944911f70085b9412e2865a90d52889cc6d37cc0",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-position-writing-modes-001.html": [
       "c75a7c1e393ac934dae1bcebd8d84c8cc6b1a4ad",
       [
@@ -474877,7 +474982,7 @@
       ]
      ],
      "pseudo-classes-after-part.html": [
-      "1c60e644e4ba7821f0c14395b317702a07abc47d",
+      "00950307497bf97e2c0bef1ffb8748b9d873ee01",
       [
        null,
        {}
@@ -492818,7 +492923,7 @@
        ]
       ],
       "parse-part.html": [
-       "fa1856ad2a9ff3bddeb73ba673c548f31b36bba7",
+       "a8e47493887b3006540e85b9f0d249bbe7908571",
        [
         null,
         {}
@@ -584761,6 +584866,15 @@
         ]
        ]
       },
+      "autocorrection": {
+       "autocorrection.html": [
+        "25a9b994f73cc39e8969fd55c0b936ee15bfdc5a",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "contenteditable": {
        "contentEditable-slotted-inherit.html": [
         "42da515920e6eacf35bc2ac9ffd43765b667a362",
@@ -627922,7 +628036,7 @@
      ]
     ],
     "coalesced_events_attributes_under_load.https.optional.html": [
-     "ac3da236e7d3db667e87a70442f68b7b9f7a8210",
+     "d89244e73e00236baf83796952ab2da8a035dc1f",
      [
       "pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse",
       {
@@ -628782,7 +628896,7 @@
      ]
     ],
     "pointerevent_pointercapture_in_frame.html": [
-     "14be00968fad173347a0e29e0eb285d1283f12f6",
+     "9c26c4d5a3869bde8e201653f185a6cb023cb779",
      [
       "pointerevents/pointerevent_pointercapture_in_frame.html?mouse",
       {
