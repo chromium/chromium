@@ -386,6 +386,37 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, DiscardFrameTree) {
   EXPECT_TRUE(final_rfh->IsRenderFrameLive());
 }
 
+// Regression test for crbug.com/361658816. Ensures that same-document
+// navigations triggered in the document's unload handler are handled without
+// crashing.
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
+                       DiscardHandlesSameDocumentNavigationsDuringUnload) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
+
+  // Setup a same-document navigation in the unload handler.
+  ASSERT_TRUE(ExecJs(shell(), R"(
+    addEventListener('unload', () => {
+      history.pushState({}, '', 'title1.html');
+    });
+  )"));
+
+  // Discard the rfh, the frame and its children should be cleared successfully.
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  EXPECT_EQ(3UL, root->child_count());
+  frame_tree.Discard();
+  EXPECT_TRUE(root->was_discarded());
+  EXPECT_TRUE(wc->GetController().NeedsReload());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return 0u == root->child_count(); }));
+}
+
 class DedicatedWorkerObserver : public DedicatedWorkerService::Observer {
  public:
   explicit DedicatedWorkerObserver(DedicatedWorkerService* worker_service) {

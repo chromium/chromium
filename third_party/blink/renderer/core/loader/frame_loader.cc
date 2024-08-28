@@ -1100,8 +1100,12 @@ void FrameLoader::CommitNavigation(
   if (commit_reason == CommitReason::kXSLT ||
       commit_reason == CommitReason::kJavascriptUrl ||
       commit_reason == CommitReason::kDiscard) {
+    // It is important to clone the previous loader's ExtraData instead of
+    // extracting it since it may be needed to handle operations in the
+    // document's unload handler (such as same-site navigation, see
+    // crbug.com/361658816).
     DCHECK(!extra_data);
-    extra_data = document_loader_->TakeExtraData();
+    extra_data = document_loader_->CloneExtraData();
   }
 
   // Create the OldDocumentInfoForCommit for the old document (that might be in

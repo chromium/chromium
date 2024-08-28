@@ -3677,8 +3677,8 @@ WebDocumentLoader::ExtraData* DocumentLoader::GetExtraData() const {
   return extra_data_.get();
 }
 
-std::unique_ptr<WebDocumentLoader::ExtraData> DocumentLoader::TakeExtraData() {
-  return std::move(extra_data_);
+std::unique_ptr<WebDocumentLoader::ExtraData> DocumentLoader::CloneExtraData() {
+  return extra_data_ ? extra_data_->Clone() : nullptr;
 }
 
 void DocumentLoader::SetExtraData(std::unique_ptr<ExtraData> extra_data) {
