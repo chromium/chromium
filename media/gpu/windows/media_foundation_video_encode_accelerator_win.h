@@ -330,6 +330,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   base::circular_deque<OutOfBandMetadata> sample_metadata_queue_;
   gpu::GpuDriverBugWorkarounds workarounds_;
 
+  // This counter starts from 0, used for managing the METransformNeedInput
+  // events sent by MFT encoder.
+  uint32_t encoder_needs_input_counter_;
+
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
   base::WeakPtr<MediaFoundationVideoEncodeAccelerator> weak_ptr_;

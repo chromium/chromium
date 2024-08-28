@@ -1003,6 +1003,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
              PrintHr(hr)});
     return false;
   }
+  encoder_needs_input_counter_ = 0;
 
   encoder_info_.implementation_name = "MediaFoundationVideoEncodeAccelerator";
   // Currently, MFVEA does not support odd resolution well. The implementation
@@ -1097,7 +1098,11 @@ void MediaFoundationVideoEncodeAccelerator::EncodeInternal(
     case kEncoding: {
       pending_input_queue_.push_back(
           MakeInput(std::move(frame), options, discard_output));
-      FeedInputs();
+      // Check the status of METransformNeedInput counter, only feed input when
+      // MFT is ready.
+      if (encoder_needs_input_counter_ > 0) {
+        FeedInputs();
+      }
       break;
     }
     case kInitializing: {
@@ -1320,6 +1325,8 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
       return;
     }
   }
+  // Reset the need input counter since MFT was notified to end stream.
+  encoder_needs_input_counter_ = 0;
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, 0);
   if (FAILED(hr)) {
     NotifyErrorStatus(
@@ -1914,6 +1921,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
   DVLOG(3) << __func__;
   DCHECK(input_sample_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(encoder_needs_input_counter_ > 0);
   TRACE_EVENT2("media", "MediaFoundationVideoEncodeAccelerator::ProcessInput",
                "timestamp", input.frame->timestamp(), "discard_output",
                input.discard_output);
@@ -2029,6 +2037,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     TRACE_EVENT1("media", "IMFTransform::ProcessInput", "timestamp",
                  input.frame->timestamp());
     hr = encoder_->ProcessInput(input_stream_id_, input_sample_.Get(), 0);
+    encoder_needs_input_counter_--;
   }
   // Check if ProcessInput() actually accepted the sample, if not, remember
   // that we don't need to prepare sample next time and can just use it.
@@ -2537,6 +2546,7 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
 
   switch (event_type) {
     case METransformNeedInput: {
+      encoder_needs_input_counter_++;
       if (state_ == kInitializing) {
         // HMFT is not ready for receiving inputs until the first
         // METransformNeedInput event is published.
@@ -2563,6 +2573,8 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
       DCHECK(pending_input_queue_.empty());
       DCHECK(sample_metadata_queue_.empty());
       DCHECK_EQ(state_, kFlushing);
+      // Reset the need input counter after drain complete.
+      encoder_needs_input_counter_ = 0;
       auto hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
       if (FAILED(hr)) {
         SetState(kError);
