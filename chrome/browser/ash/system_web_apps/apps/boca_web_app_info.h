@@ -26,6 +26,7 @@ class BocaSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldAllowResize() const override;
   bool ShouldAllowMaximize() const override;
   bool ShouldHaveTabStrip() const override;
+  bool ShouldHideNewTabButton() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
   bool ShouldPinTab(GURL url) const override;
   bool IsAppEnabled() const override;
