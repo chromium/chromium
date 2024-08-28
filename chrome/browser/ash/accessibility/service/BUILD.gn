@@ -30,6 +30,7 @@ static_library("service") {
     "//ash",
     "//ash/public/cpp",
     "//chrome/browser/ash/extensions/speech",
+    "//chrome/browser/ui/aura/accessibility",
     "//chrome/common:constants",
     "//content/public/browser",
     "//services/accessibility/public/mojom:os_service_mojom_shared",

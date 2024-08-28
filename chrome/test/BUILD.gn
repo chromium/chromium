@@ -4346,7 +4346,10 @@ if (!is_android) {
     }
 
     if (use_aura) {
-      deps += [ "//components/eye_dropper" ]
+      deps += [
+        "//chrome/browser/ui/aura/accessibility",
+        "//components/eye_dropper",
+      ]
 
       if (use_nss_certs) {
         sources += [ "../browser/ui/views/crypto_module_password_dialog_view_browsertest.cc" ]
@@ -11171,11 +11174,10 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (use_aura) {
-      sources += [
-        "../browser/ui/aura/accessibility/automation_manager_aura_browsertest.cc",
-        "../browser/ui/views/drag_and_drop_interactive_uitest.cc",
-      ]
+      sources += [ "../browser/ui/views/drag_and_drop_interactive_uitest.cc" ]
+
       deps += [
+        "//chrome/browser/ui/aura/accessibility:interactive_ui_tests",
         "//ui/aura:aura_interactive_ui_tests",
         "//ui/aura:test_support",
         "//ui/base/dragdrop:types",

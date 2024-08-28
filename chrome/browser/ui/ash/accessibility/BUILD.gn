@@ -21,6 +21,7 @@ static_library("accessibility") {
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ui/aura/accessibility",
     "//chromeos/ash/components/audio",
     "//content/public/browser",
     "//ui/aura",

@@ -5683,6 +5683,8 @@ static_library("ui") {
     ]
 
     deps += [
+      "//chrome/browser/ui/aura/accessibility",
+      "//chrome/browser/ui/aura/accessibility:impl",
       "//chrome/browser/ui/aura/tab_contents",
       "//chrome/browser/ui/aura/tab_contents:impl",
       "//components/eye_dropper",

@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ui.gni")
 import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -263,6 +264,10 @@ if (!is_android) {
         "//extensions/browser:test_support",
         "//ui/base:test_support",
       ]
+    }
+
+    if (use_aura) {
+      deps += [ "//chrome/browser/ui/aura/accessibility" ]
     }
   }
 }

@@ -5947,6 +5947,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/chromeos/tast_support",
       "//chrome/browser/lacros/cros_apps/api/diagnostics",
+      "//chrome/browser/ui/aura/accessibility",
       "//chrome/common/chromeos/extensions",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",
@@ -7082,6 +7083,8 @@ static_library("browser") {
       "platform_util_aura.cc",
     ]
     deps += [
+      "//chrome/browser/ui/aura/accessibility",
+      "//chrome/browser/ui/aura/accessibility:impl",
       "//ui/aura",
       "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom:mojom_shared",

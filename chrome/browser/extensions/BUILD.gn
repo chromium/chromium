@@ -1542,7 +1542,10 @@ source_set("extensions") {
   }
 
   if (use_aura) {
-    deps += [ "//ui/aura" ]
+    deps += [
+      "//chrome/browser/ui/aura/accessibility",
+      "//ui/aura",
+    ]
   }
 
   if (use_brlapi) {
