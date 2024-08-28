@@ -543,11 +543,6 @@ struct URLRequest {
   // TODO(crbug.com/40255884): Remove this flag when we launch
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled = false;
-
-  // Indicates where the original ResourceRequest is created.
-  // TODO(crbug.com/40066149): Remove this once the issue is fixed.
-  [EnableIf=is_android]
-  string created_location;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.
