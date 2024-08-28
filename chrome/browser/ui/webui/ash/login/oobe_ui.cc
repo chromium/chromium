@@ -375,6 +375,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
                      base::FeatureList::IsEnabled(
                          remoting::features::kEnableCrdAdminRemoteAccessV2));
 
+  source->AddBoolean("isSplitModifierKeyboardInfoEnabled",
+                     features::IsOobeSplitModifierKeyboardInfoEnabled());
+
   // Configure shared resources
   AddProductLogoResources(source);
   if (ash::features::IsBootAnimationEnabled()) {

@@ -44,6 +44,7 @@ import './screens/common/remote_activity_notification.js';
 import './screens/common/saml_confirm_password.js';
 import './screens/common/signin_fatal_error.js';
 import './screens/common/smart_privacy_protection.js';
+import './screens/common/split_modifier_keyboard_info.js';
 import './screens/common/sync_consent.js';
 import './screens/common/theme_selection.js';
 import './screens/common/touchpad_scroll.js';
@@ -203,6 +204,11 @@ export const commonScreensList: OobeTypes.ScreensList = [
   {tag: 'saml-confirm-password-element', id: 'saml-confirm-password'},
   {tag: 'signin-fatal-error-element', id: 'signin-fatal-error'},
   {tag: 'smart-privacy-protection-element', id: 'smart-privacy-protection'},
+  {
+    tag: 'split-modifier-keyboard-info-element',
+    id: 'split-modifier-keyboard-info',
+    condition: 'isSplitModifierKeyboardInfoEnabled',
+  },
   {tag: 'sync-consent-element', id: 'sync-consent'},
   {tag: 'theme-selection-element', id: 'theme-selection'},
   {

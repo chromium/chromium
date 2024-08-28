@@ -160,6 +160,8 @@ static_library("login") {
     "signin_fatal_error_screen_handler.h",
     "smart_privacy_protection_screen_handler.cc",
     "smart_privacy_protection_screen_handler.h",
+    "split_modifier_keyboard_info_screen_handler.cc",
+    "split_modifier_keyboard_info_screen_handler.h",
     "ssh_configured_handler.cc",
     "ssh_configured_handler.h",
     "sync_consent_screen_handler.cc",

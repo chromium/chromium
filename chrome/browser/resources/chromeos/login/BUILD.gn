@@ -122,6 +122,7 @@ build_webui("build") {
     "screens/common/saml_confirm_password.ts",
     "screens/common/signin_fatal_error.ts",
     "screens/common/smart_privacy_protection.ts",
+    "screens/common/split_modifier_keyboard_info.ts",
     "screens/common/sync_consent.ts",
     "screens/common/theme_selection.ts",
     "screens/common/touchpad_scroll.ts",

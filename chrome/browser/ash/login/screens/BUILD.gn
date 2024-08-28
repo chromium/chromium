@@ -131,6 +131,8 @@ static_library("screens") {
     "signin_fatal_error_screen.h",
     "smart_privacy_protection_screen.cc",
     "smart_privacy_protection_screen.h",
+    "split_modifier_keyboard_info_screen.cc",
+    "split_modifier_keyboard_info_screen.h",
     "sync_consent_screen.cc",
     "sync_consent_screen.h",
     "terms_of_service_screen.cc",
