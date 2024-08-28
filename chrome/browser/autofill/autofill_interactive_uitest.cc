@@ -3204,14 +3204,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 //    09 / 99 instead.
 // 4) The promise waits to see 09 / 99 and resolved.
 // Flaky on Linux MSAN https://crbug.com/362299091.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_FillCardOnReformattingForm \
-  DISABLED_FillCardOnReformattingForm
-#else
-#define MAYBE_FillCardOnReformattingForm FillCardOnReformattingForm
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_FillCardOnReformattingForm) {
+                       FillCardOnReformattingForm) {
   CreateTestCreditCart();
   GURL url = https_server()->GetURL(
       "a.com", "/autofill/autofill_creditcard_form_with_date_formatter.html");
@@ -3231,13 +3225,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   // Additionally, we wait for a navigation because that's when the key metrics
   // are emitted.
   content::LoadStopObserver load_stop_observer(GetWebContents());
-  BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
-  TestAutofillManagerWaiter submission_waiter(
-      *autofill_manager, {AutofillManagerEvent::kFormSubmitted});
+  BrowserAutofillManager& autofill_manager = *GetBrowserAutofillManager();
+  base::OnceCallback<AssertionResult()> wait_for_submission = WaitForEvent(
+      autofill_manager, &AutofillManager::Observer::OnFormSubmitted, _);
   ASSERT_TRUE(content::ExecJs(GetWebContents(),
                               "document.getElementById('testform').submit();"));
-  ASSERT_TRUE(submission_waiter.Wait(1));
-  ASSERT_TRUE(test_api(*autofill_manager).FlushPendingVotes());
+  ASSERT_TRUE(std::move(wait_for_submission).Run());
+  ASSERT_TRUE(test_api(autofill_manager).FlushPendingVotes());
   load_stop_observer.Wait();
 
   // Short hand for ExpectBucketCount:
