@@ -24,6 +24,18 @@
       </button>
       <div id="iwa-updates-message"></div>
     </div>
+    <div id="iwa-kr-container" style="display: none;">
+      <h3>Key Rotation</h3>
+      Set Rotated Key for Web Bundle ID:
+      <div>
+        <input type="text" id="iwa-kr-web-bundle-id" size="20" required
+              placeholder="web-bundle-id...">
+        <input type="text" id="iwa-kr-public-key-b64" size="20" required
+              placeholder="public-key-b64...">
+        <button id="iwa-rotate-key-button" type="submit">Rotate</button>
+      </div>
+      <div id="iwa-kr-message"></div>
+    </div>
     <div id="iwa-dev-container" style="display: none;">
       <h3>Developer Mode</h3>
       <p>Install IWA via Dev Mode Proxy:

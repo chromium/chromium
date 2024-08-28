@@ -59,4 +59,8 @@ interface WebAppInternalsHandler {
   SearchForIsolatedWebAppUpdates() => (string result);
   // Returns information about installed dev mode IWAs.
   GetIsolatedWebAppDevModeAppInfo() => (array<IwaDevModeAppInfo> apps);
+
+  // Rotates the key for `web_bundle_id` to `rotated_key` and informs all
+  // observers that a key rotation has taken place.
+  RotateKey(string web_bundle_id, array<uint8>? rotated_key);
 };

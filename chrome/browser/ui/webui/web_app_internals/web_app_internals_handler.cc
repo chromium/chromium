@@ -17,6 +17,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -91,6 +93,8 @@ constexpr char kIsolatedWebAppUpdateManager[] = "IsolatedWebAppUpdateManager";
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kIsolatedWebAppPolicyManager[] = "IsolatedWebAppPolicyManager";
 #endif  // BUILDFLAG(IS_CHROMEOS)
+constexpr char kIwaKeyDistributionInfoProvider[] =
+    "IwaKeyDistributionInfoProvider";
 
 constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
@@ -345,6 +349,12 @@ base::Value BuildIsolatedWebAppPolicyManagerJson(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+base::Value BuildIwaKeyDistributionInfoProviderJson() {
+  return base::Value(base::Value::Dict().Set(
+      kIwaKeyDistributionInfoProvider,
+      web_app::IwaKeyDistributionInfoProvider::GetInstance()->AsDebugValue()));
+}
+
 void BuildDirectoryState(base::FilePath file_or_folder,
                          base::Value::Dict* folder) {
   base::File::Info info;
@@ -490,6 +500,7 @@ void WebAppInternalsHandler::BuildDebugInfo(
 #if BUILDFLAG(IS_CHROMEOS)
   root.Append(BuildIsolatedWebAppPolicyManagerJson(*provider));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  root.Append(BuildIwaKeyDistributionInfoProviderJson());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,
@@ -770,4 +781,11 @@ void WebAppInternalsHandler::ApplyDevModeUpdate(
         }
         return "Update failed: " + result.error();
       }).Then(std::move(callback)));
+}
+
+void WebAppInternalsHandler::RotateKey(
+    const std::string& web_bundle_id,
+    const std::optional<std::vector<uint8_t>>& public_key) {
+  web_app::IwaKeyDistributionInfoProvider::GetInstance()->RotateKeyForDevMode(
+      base::PassKey<WebAppInternalsHandler>(), web_bundle_id, public_key);
 }
