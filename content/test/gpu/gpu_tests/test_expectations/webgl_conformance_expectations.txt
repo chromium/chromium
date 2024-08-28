@@ -578,7 +578,7 @@ crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-arr
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/354627705 [ angle-metal intel-0x3e9b mac ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
+crbug.com/354627705 [ angle-metal intel-0x3e9b mac no-clang-coverage release ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
 
 ## Mac Retina NVidia failures / flakes ##
@@ -708,7 +708,6 @@ crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan
 crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 ## Moto G Power 5G failures ##
 
