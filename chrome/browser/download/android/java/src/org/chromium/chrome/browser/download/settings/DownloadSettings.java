@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.MimeUtils;
@@ -32,10 +34,11 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
     private ChromeSwitchPreference mLocationPromptEnabledPref;
     private ManagedPreferenceDelegate mLocationPromptEnabledPrefDelegate;
     private ChromeSwitchPreference mAutoOpenPdfEnabledPref;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, String s) {
-        getActivity().setTitle(R.string.menu_downloads);
+        mPageTitle.set(getString(R.string.menu_downloads));
         SettingsUtils.addPreferencesFromResource(this, R.xml.download_preferences);
 
         mLocationPromptEnabledPref =
@@ -63,6 +66,11 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
                                         MimeUtils.getDefaultPdfViewerName())
                         : getActivity().getString(R.string.auto_open_pdf_enabled_description);
         mAutoOpenPdfEnabledPref.setSummaryOn(summary);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

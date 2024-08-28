@@ -25,6 +25,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -111,11 +113,12 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private CustomTabIntentHelper mCustomTabIntentHelper;
     private PasswordStoreBridge mPasswordStoreBridge;
     private SigninManager mSigninManager;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
-        getActivity().setTitle(R.string.prefs_safety_check);
+        mPageTitle.set(getString(R.string.prefs_safety_check));
 
         mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
         mNotificationPermissionReviewBridge =
@@ -156,6 +159,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             default:
                 throw new IllegalArgumentException();
         }
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private void setUpBrowserStateModule() {

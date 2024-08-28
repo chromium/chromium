@@ -10,6 +10,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.toolbar.R;
@@ -36,10 +38,11 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
 
     private @NonNull ChromeSwitchPreference mToolbarShortcutSwitch;
     private @NonNull RadioButtonGroupAdaptiveToolbarPreference mRadioButtonGroup;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        getActivity().setTitle(R.string.toolbar_shortcut);
+        mPageTitle.set(getString(R.string.toolbar_shortcut));
         SettingsUtils.addPreferencesFromResource(this, R.xml.adaptive_toolbar_preference);
 
         mToolbarShortcutSwitch =
@@ -73,6 +76,11 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
                 });
         mRadioButtonGroup.setEnabled(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
         AdaptiveToolbarStats.recordToolbarShortcutToggleState(/* onStartup= */ true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     /**

@@ -49,6 +49,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.CardPreference;
@@ -62,6 +64,7 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference.SiteAddedCallback;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
@@ -108,7 +111,8 @@ import java.util.Set;
  */
 @UsedByReflection("site_settings_preferences.xml")
 public class SingleCategorySettings extends BaseSiteSettingsFragment
-        implements OnPreferenceChangeListener,
+        implements SettingsPage,
+                OnPreferenceChangeListener,
                 OnPreferenceClickListener,
                 SiteAddedCallback,
                 OnPreferenceTreeClickListener,
@@ -181,6 +185,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private CardPreference mCardPreference;
 
     @Nullable private Set<String> mSelectedDomains;
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     private static final String TP_LEARN_MORE_URL =
             "https://support.google.com/chrome/?p=tracking_protection";
@@ -488,7 +494,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.website_preferences);
 
         String title = getArguments().getString(EXTRA_TITLE);
-        if (title != null) getActivity().setTitle(title);
+        if (title != null) mPageTitle.set(title);
 
         mSelectedDomains =
                 getArguments().containsKey(EXTRA_SELECTED_DOMAINS)
@@ -504,6 +510,11 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         setHasOptionsMenu(true);
 
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

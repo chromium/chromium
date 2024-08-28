@@ -94,6 +94,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -195,17 +196,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.content, fragment)
-                    // Set width constraints after commit is done, since recycler view is not
-                    // accessible before transaction completes.
-                    .runOnCommit(this::configureWideDisplayStyle)
+                    .runOnCommit(this::onMainFragmentCommitted)
                     .commit();
         } else {
-            // Still commit the wide screen configuration without replacing the fragment content.
-            // Using FragmentTransaction so that the config is set after view is created, and before
-            // fragment is shown.
             getSupportFragmentManager()
                     .beginTransaction()
-                    .runOnCommit(this::configureWideDisplayStyle)
+                    .runOnCommit(this::onMainFragmentCommitted)
                     .commit();
         }
 
@@ -223,10 +219,36 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     /**
-     * When this layout has a wide display style, it will be width constrained to
-     * {@link UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}. If the current screen width is greater than
-     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, the settings layout will be visually centered
-     * by adding padding to both sides.
+     * Called when the main fragment is committed with a fragment transaction. We can assume here
+     * that the main fragment and its views exist.
+     */
+    private void onMainFragmentCommitted() {
+        Fragment mainFragment = getMainFragment();
+        // TODO(b/356743945): Enforce that all main fragments implement SettingsPage.
+        // For now, PrivacyGuideFragment is shown with SettingsActivity but it does not implement
+        // SettingsPage.
+        if (mainFragment instanceof SettingsPage settingFragment) {
+            settingFragment
+                    .getPageTitle()
+                    .addObserver(
+                            (title) -> {
+                                if (title == null) {
+                                    title = "";
+                                }
+                                setTitle(title);
+                            });
+        }
+
+        // Apply the wide display style after the main fragment is committed since its views
+        // (particularly a recycler view) are not accessible before the transaction completes.
+        configureWideDisplayStyle();
+    }
+
+    /**
+     * When this layout has a wide display style, it will be width constrained to {@link
+     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}. If the current screen width is greater than
+     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, the settings layout will be visually centered by
+     * adding padding to both sides.
      */
     private void configureWideDisplayStyle() {
         if (mUiConfig != null) {

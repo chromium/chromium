@@ -30,6 +30,8 @@ import androidx.preference.PreferenceCategory;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -223,8 +225,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private SyncService.SyncSetupInProgressHandle mSyncSetupInProgressHandle;
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     /**
      * Creates an argument bundle for this fragment.
+     *
      * @param isFromSigninScreen Whether the screen is started from the sign-in screen.
      */
     public static Bundle createArguments(boolean isFromSigninScreen) {
@@ -245,7 +250,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
         if (shouldReplaceSyncSettingsWithAccountSettings()) {
             // Set title with an empty string to have no title on the top of the page.
-            getActivity().setTitle("");
+            mPageTitle.set("");
 
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.unified_account_settings_preferences);
@@ -347,7 +352,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
             }
         } else {
-            getActivity().setTitle(R.string.sync_category_title);
+            mPageTitle.set(getString(R.string.sync_category_title));
 
             SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
 
@@ -462,6 +467,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSyncEncryption = findPreference(PREF_ENCRYPTION);
         mSyncEncryption.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

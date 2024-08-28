@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.os.Bundle;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -31,14 +33,21 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
 
     private TabArchiveSettings mArchiveSettings;
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         mArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
         mArchiveSettings.addObserver(mTabArchiveSettingsObserver);
         SettingsUtils.addPreferencesFromResource(this, R.xml.tab_archive_settings);
-        getActivity().setTitle(R.string.archive_settings_title);
+        mPageTitle.set(getString(R.string.archive_settings_title));
 
         configureSettings();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

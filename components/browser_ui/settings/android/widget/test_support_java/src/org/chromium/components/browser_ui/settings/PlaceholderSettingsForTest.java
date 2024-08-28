@@ -10,14 +10,23 @@ import android.os.Bundle;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+
 /** A placeholder {@link PreferenceFragmentCompat} for use in tests. */
-public class PlaceholderSettingsForTest extends PreferenceFragmentCompat {
+public class PlaceholderSettingsForTest extends PreferenceFragmentCompat implements SettingsPage {
+    private static final ObservableSupplier<String> sPageTitle =
+            new ObservableSupplierImpl<>("Placeholder Settings");
+
     @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {
-        getActivity().setTitle("Placeholder Settings");
-
         Context context = getPreferenceManager().getContext();
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(context);
         setPreferenceScreen(screen);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return sPageTitle;
     }
 }

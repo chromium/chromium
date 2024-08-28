@@ -14,6 +14,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -22,12 +24,13 @@ import java.util.List;
 
 /** Fragment that allows the user to configure chrome home modules related preferences. */
 public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.home_modules_configuration);
+        mPageTitle.set(getString(R.string.home_modules_configuration));
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
-        HomeModulesConfigManager homeModulesConfigManager =
-                HomeModulesConfigManager.getInstance();
+        HomeModulesConfigManager homeModulesConfigManager = HomeModulesConfigManager.getInstance();
 
         List<Integer> moduleTypeShownInSettings =
                 homeModulesConfigManager.getModuleListShownInSettings();
@@ -61,6 +64,11 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
                     });
             getPreferenceScreen().addPreference(currentSwitch);
         }
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private Context getStyledContext() {

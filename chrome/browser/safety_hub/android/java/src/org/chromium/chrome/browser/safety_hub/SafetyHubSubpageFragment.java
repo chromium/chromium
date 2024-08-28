@@ -18,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.ui.widget.ButtonCompat;
@@ -30,11 +32,12 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     protected PreferenceCategory mPreferenceList;
     protected ButtonCompat mBottomButton;
     protected boolean mBulkActionConfirmed;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_subpage_preferences);
-        getActivity().setTitle(getTitleId());
+        mPageTitle.set(getString(getTitleId()));
 
         TextMessagePreference headPreference = (TextMessagePreference) findPreference(PREF_HEADER);
         headPreference.setSummary(getHeaderId());
@@ -42,6 +45,11 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
         mPreferenceList = findPreference(PREF_LIST);
         mPreferenceList.setTitle(getPermissionsListTextId());
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @NonNull

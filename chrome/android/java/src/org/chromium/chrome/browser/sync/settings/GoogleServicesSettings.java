@@ -15,6 +15,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
@@ -100,10 +102,11 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
     private Preference mPriceNotificationSection;
     private Preference mUsageStatsReporting;
     private SnackbarManager mSnackbarManager;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.prefs_google_services);
+        mPageTitle.set(getString(R.string.prefs_google_services));
         setHasOptionsMenu(true);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getActivity());
@@ -176,6 +179,11 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         mUsageStatsReporting.setVisible(true);
 
         updatePreferences();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

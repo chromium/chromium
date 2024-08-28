@@ -11,6 +11,8 @@ import android.view.MenuItem;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -53,6 +55,8 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         int COUNT = 2;
     }
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     /** This default constructor is required to instantiate the fragment. */
     public AutofillOptionsFragment() {}
 
@@ -77,9 +81,14 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.autofill_options_title);
+        mPageTitle.set(getString(R.string.autofill_options_title));
         setHasOptionsMenu(true);
         SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_options_preferences);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

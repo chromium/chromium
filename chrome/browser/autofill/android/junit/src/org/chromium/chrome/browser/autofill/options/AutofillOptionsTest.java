@@ -413,12 +413,18 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    public void setsTitleAndPref() {
+    public void suppliesTitle() {
+        AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
+
+        assertEquals(mFragment.getPageTitle().get(), getString(R.string.autofill_options_title));
+    }
+
+    @Test
+    @SmallTest
+    public void setsPref() {
         // Update on initial binding. Shouldn't trigger dialogs or restart.
         AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
 
-        assertEquals(
-                mFragment.getActivity().getTitle(), getString(R.string.autofill_options_title));
         assertEquals(
                 getRadioButtonComponent().getKey(),
                 AutofillOptionsFragment.PREF_AUTOFILL_THIRD_PARTY_FILLING);

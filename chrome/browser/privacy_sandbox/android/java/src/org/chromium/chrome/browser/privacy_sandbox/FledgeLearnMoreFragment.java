@@ -11,6 +11,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -22,11 +24,12 @@ public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
             "fledge_learn_more_bullet_3";
 
     private TextMessagePreference mFledgeLearnMoreBullet3Preference;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /** Initializes all the objects related to the preferences page. */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        getActivity().setTitle(R.string.settings_fledge_page_title);
+        mPageTitle.set(getString(R.string.settings_fledge_page_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_learn_more_preference);
         mFledgeLearnMoreBullet3Preference = findPreference(FLEDGE_LEARN_MORE_BULLET_3_PREFERENCE);
         mFledgeLearnMoreBullet3Preference.setSummary(
@@ -39,6 +42,11 @@ public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
                                         getContext(), this::onLearnMoreClicked))));
         // Enable the options menu to be able to clear it.
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private void onLearnMoreClicked(View view) {

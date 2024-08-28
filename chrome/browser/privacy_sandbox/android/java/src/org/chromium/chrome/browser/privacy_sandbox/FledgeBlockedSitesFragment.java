@@ -13,6 +13,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -26,14 +28,20 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
 
     private PreferenceCategory mBlockedSitesCategory;
     private LargeIconBridge mLargeIconBridge;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_fledge_page_blocked_sites_sub_page_title);
+        mPageTitle.set(getString(R.string.settings_fledge_page_blocked_sites_sub_page_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.block_list_preference);
 
         mBlockedSitesCategory = findPreference(BLOCKED_SITES_PREFERENCE);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

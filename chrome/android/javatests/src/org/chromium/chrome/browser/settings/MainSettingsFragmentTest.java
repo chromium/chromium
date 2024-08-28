@@ -29,6 +29,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
@@ -192,6 +193,8 @@ public class MainSettingsFragmentTest {
 
     @Before
     public void setup() {
+        // ObservableSupplierImpl needs a Looper.
+        Looper.prepare();
         MockitoAnnotations.initMocks(this);
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);

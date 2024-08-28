@@ -38,6 +38,8 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.BrowsingDataCounterCallback;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
@@ -55,6 +57,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -82,6 +85,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 Preference.OnPreferenceChangeListener,
                 SigninManager.SignInStateObserver,
                 CustomDividerFragment,
+                SettingsPage,
                 ProfileDependentSetting {
     static final String FETCHER_SUPPLIED_FROM_OUTSIDE =
             "ClearBrowsingDataFetcherSuppliedFromOutside";
@@ -250,6 +254,8 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
     private @TimePeriod int mLastSelectedTimePeriod;
     private boolean mShouldShowPostDeleteFeedback;
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /**
      * @return All available {@link DialogOption} entries.
@@ -601,7 +607,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         assert fragmentArgs != null : "A valid fragment argument is required.";
 
         setUpClearBrowsingDataFetcher(savedInstanceState, fragmentArgs);
-        getActivity().setTitle(R.string.clear_browsing_data_title);
+        mPageTitle.set(getString(R.string.clear_browsing_data_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.clear_browsing_data_preferences_tab);
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         List<Integer> options = getDialogOptions(fragmentArgs);
@@ -673,6 +679,11 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         mSigninManager.addSignInStateObserver(this);
 
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

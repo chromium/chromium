@@ -11,11 +11,14 @@ import android.view.MenuItem;
 
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.components.browser_ui.settings.SettingsPage;
+
 /**
  * Base structure to be shared by fragments displaying: saved credentials to be edited, saved
  * federated credentials and sites blocklisted for saving by the user.
  */
-public abstract class CredentialEntryFragmentViewBase extends PreferenceFragmentCompat {
+public abstract class CredentialEntryFragmentViewBase extends PreferenceFragmentCompat
+        implements SettingsPage {
     ComponentStateDelegate mComponentStateDelegate;
     UiActionHandler mUiActionHandler;
 

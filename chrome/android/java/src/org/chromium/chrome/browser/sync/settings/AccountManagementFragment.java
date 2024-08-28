@@ -22,6 +22,8 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -99,6 +101,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     private SyncService mSyncService;
     private @Nullable SyncService.SyncSetupInProgressHandle mSyncSetupInProgressHandle;
     private SnackbarManager mSnackbarManager;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle savedState, String rootKey) {
@@ -114,6 +117,11 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         }
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override
@@ -176,12 +184,9 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
         DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(mSignedInCoreAccountInfo.getEmail());
-        getActivity()
-                .setTitle(
-                        SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
-                                profileData,
-                                getContext(),
-                                SyncSettingsUtils.TitlePreference.FULL_NAME));
+        mPageTitle.set(
+                SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
+                        profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
         addPreferencesFromResource(R.xml.account_management_preferences);
         configureSignOutSwitch();
         configureChildAccountPreferences();

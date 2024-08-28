@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 
@@ -19,9 +21,11 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment {
     private static Callback<Fragment> sObserverForTest;
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.autofill_card_benefits_settings_page_title);
+        mPageTitle.set(getString(R.string.autofill_card_benefits_settings_page_title));
 
         // Create blank preference screen.
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
@@ -29,6 +33,11 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment {
         if (sObserverForTest != null) {
             sObserverForTest.onResult(this);
         }
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private Context getStyledContext() {

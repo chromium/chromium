@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtils.java",
     "java/src/org/chromium/components/browser_ui/settings/SearchUtils.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsLauncher.java",
+    "java/src/org/chromium/components/browser_ui/settings/SettingsPage.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardPreference.java",

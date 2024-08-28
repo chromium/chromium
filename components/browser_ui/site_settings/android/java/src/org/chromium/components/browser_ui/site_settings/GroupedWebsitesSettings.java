@@ -17,14 +17,17 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
 /** Shows the permissions and other settings for a group of websites. */
 public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
-        implements Preference.OnPreferenceClickListener, CustomDividerFragment {
+        implements SettingsPage, Preference.OnPreferenceClickListener, CustomDividerFragment {
     public static final String EXTRA_GROUP = "org.chromium.chrome.preferences.site_group";
 
     // Preference keys, see grouped_websites_preferences.xml.
@@ -37,6 +40,8 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     private WebsiteGroup mSiteGroup;
 
     private Dialog mConfirmationDialog;
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -70,7 +75,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
         // Set title
         Activity activity = getActivity();
-        activity.setTitle(activity.getString(R.string.domain_settings_title, domainAndRegistry));
+        mPageTitle.set(activity.getString(R.string.domain_settings_title, domainAndRegistry));
 
         // Preferences screen
         SettingsUtils.addPreferencesFromResource(this, R.xml.grouped_websites_preferences);
@@ -83,6 +88,11 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         setUpResetGroupPreference();
         setUpRelatedSitesPreferences();
         updateSitesInGroup();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

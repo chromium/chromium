@@ -31,6 +31,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/settings/android:java",
     "//components/externalauth/android:java",
     "//components/module_installer/android:module_installer_java",
     "//components/prefs/android:java",

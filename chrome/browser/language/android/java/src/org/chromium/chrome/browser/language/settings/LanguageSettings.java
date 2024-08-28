@@ -15,6 +15,8 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
@@ -59,10 +61,11 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     private AppLanguagePreferenceDelegate mAppLanguageDelegate =
             new AppLanguagePreferenceDelegate();
     private PrefChangeRegistrar mPrefChangeRegistrar;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.language_settings);
+        mPageTitle.set(getString(R.string.language_settings));
         mPrefChangeRegistrar = new PrefChangeRegistrar();
 
         // Create the correct version of language settings.
@@ -75,10 +78,16 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         LanguagesManager.recordImpression(LanguagesManager.LanguageSettingsPageType.PAGE_MAIN);
     }
 
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
     /**
      * The detailed language preferences should be shown if the flag to enable them or the app
      * language prompt is enabled. If neither flag is enabled, but an override language is set the
      * detailed language preferences should still be shown.
+     *
      * @return Whether or not to show the detailed language preferences.
      */
     private boolean shouldShowDetailedPreferences() {

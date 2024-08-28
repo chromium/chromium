@@ -14,6 +14,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -56,6 +58,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     private LargeIconBridge mLargeIconBridge;
     private ClickableSpansTextMessagePreference mFooterPreference;
     private boolean mMoreThanMaxSitesToDisplay;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     static boolean isFledgePrefEnabled(Profile profile) {
         PrefService prefService = UserPrefs.get(profile);
@@ -75,7 +78,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_fledge_page_title);
+        mPageTitle.set(getString(R.string.settings_fledge_page_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_preference);
 
         mFledgeTogglePreference = findPreference(FLEDGE_TOGGLE_PREFERENCE);
@@ -138,6 +141,11 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                                 "</link3>",
                                 new NoUnderlineClickableSpan(
                                         getContext(), this::onManagingAdPrivacyClicked))));
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private void onLearnMoreClicked(View view) {

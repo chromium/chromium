@@ -22,10 +22,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -41,7 +44,8 @@ import java.util.Collection;
  * menu and added with the `Add Language` button. Subclasses will override makeFragmentListDelegate
  * to populate the LanguageItem list and provide callbacks for adding and removing items.
  */
-public abstract class LanguageItemListFragment extends Fragment implements ProfileDependentSetting {
+public abstract class LanguageItemListFragment extends Fragment
+        implements SettingsPage, ProfileDependentSetting {
     // Request code for returning from Select Language Fragment
     private static final int REQUEST_CODE_SELECT_LANGUAGE = 1;
 
@@ -96,13 +100,19 @@ public abstract class LanguageItemListFragment extends Fragment implements Profi
     private Profile mProfile;
     private ListAdapter mAdapter;
     private ListDelegate mListDelegate;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mListDelegate = makeFragmentListDelegate();
-        getActivity().setTitle(getLanguageListTitle(getContext()));
+        mPageTitle.set(getLanguageListTitle(getContext()));
         recordFragmentImpression();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

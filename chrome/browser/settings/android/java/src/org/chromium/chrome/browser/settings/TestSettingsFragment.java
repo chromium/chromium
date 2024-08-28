@@ -9,16 +9,22 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** A TestSettingsFragment that has several preference inside. */
-public class TestSettingsFragment extends PreferenceFragmentCompat implements BackPressHandler {
+public class TestSettingsFragment extends PreferenceFragmentCompat
+        implements SettingsPage, BackPressHandler {
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
 
     private final CallbackHelper mBackPressCallback = new CallbackHelper();
+
+    private static final ObservableSupplier<String> sPageTitle =
+            new ObservableSupplierImpl<>("title");
 
     public CallbackHelper getBackPressCallback() {
         return mBackPressCallback;
@@ -27,6 +33,11 @@ public class TestSettingsFragment extends PreferenceFragmentCompat implements Ba
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         addPreferencesFromResource(R.xml.test_settings_fragment);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return sPageTitle;
     }
 
     @Override
