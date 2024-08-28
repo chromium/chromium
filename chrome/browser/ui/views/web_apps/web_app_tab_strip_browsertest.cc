@@ -1322,4 +1322,83 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PageTitle) {
                                u"Favicon only"));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Browser tests that verify web-app tab strip behavior when locked (and not
+// locked) for OnTask. Only relevant for non-web browser scenarios.
+using WebAppTabStripForOnTaskBrowserTest = WebAppTabStripBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripForOnTaskBrowserTest,
+                       MiddleClickDoesNotCloseTabsWhenLockedForOnTask) {
+  // Set up app and lock the app for OnTask.
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  const webapps::AppId app_id = InstallTestWebApp(start_url);
+  Browser* const app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  app_browser->SetLockedForOnTask(true);
+
+  const TabStripModel* const tab_strip_model = app_browser->tab_strip_model();
+  ASSERT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+  ASSERT_EQ(tab_strip_model->count(), 1);
+  ASSERT_TRUE(tab_strip_model->IsTabPinned(0));
+
+  // Open another tab so we can test tab close behavior on both home and
+  // non-home tabs.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+  ASSERT_EQ(tab_strip_model->count(), 2);
+
+  // Verify home tab cannot be closed.
+  auto* const tab_strip =
+      BrowserView::GetBrowserViewForBrowser(app_browser)->tabstrip();
+  tab_strip->CloseTab(tab_strip->tab_at(0),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+
+  // Also verify the non-home tab cannot be closed.
+  tab_strip->CloseTab(tab_strip->tab_at(1),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  EXPECT_EQ(tab_strip_model->count(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripForOnTaskBrowserTest,
+                       MiddleClickCanCloseTabsWhenNotLockedForOnTask) {
+  // Set up app and do not lock the app for OnTask.
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  const webapps::AppId app_id = InstallTestWebApp(start_url);
+  Browser* const app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  app_browser->SetLockedForOnTask(false);
+
+  const TabStripModel* const tab_strip_model = app_browser->tab_strip_model();
+  ASSERT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+  ASSERT_EQ(tab_strip_model->count(), 1);
+  ASSERT_TRUE(tab_strip_model->IsTabPinned(0));
+
+  // Open another tab so we can test tab close behavior on both home and
+  // non-home tabs.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+  ASSERT_EQ(tab_strip_model->count(), 2);
+
+  // Verify home tab cannot be closed (default behavior on tabbed web apps).
+  auto* const tab_strip =
+      BrowserView::GetBrowserViewForBrowser(app_browser)->tabstrip();
+  tab_strip->CloseTab(tab_strip->tab_at(0),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+
+  // Verify the non-home tab can be closed.
+  tab_strip->CloseTab(tab_strip->tab_at(1),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  ASSERT_EQ(tab_strip_model->count(), 1);
+
+  // The home tab is the only tab open so it can be closed now.
+  tab_strip->CloseTab(tab_strip->tab_at(0),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  EXPECT_EQ(tab_strip_model->count(), 0);
+}
+
+#endif
+
 }  // namespace web_app
