@@ -244,6 +244,11 @@ gfx::Size AuthContainerView::CalculatePreferredSize(
     preferred_height += pin_status_->GetPreferredSize(available_size).height();
   }
 
+  if (fingerprint_view_->GetVisible()) {
+    preferred_height +=
+        fingerprint_view_->GetPreferredSize(available_size).height();
+  }
+
   if (switch_button_->GetVisible()) {
     preferred_height +=
         switch_button_->GetPreferredSize(available_size).height();
