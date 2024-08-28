@@ -58,7 +58,7 @@
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
-#include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
+#include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"

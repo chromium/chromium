@@ -10,12 +10,6 @@ assert(is_chromeos_ash)
 
 static_library("ash") {
   sources = [
-    "arc_custom_tab_modal_dialog_host.cc",
-    "arc_custom_tab_modal_dialog_host.h",
-    "arc_open_url_delegate_impl.cc",
-    "arc_open_url_delegate_impl.h",
-    "arc_vm_data_migration_confirmation_dialog.cc",
-    "arc_vm_data_migration_confirmation_dialog.h",
     "crosapi_new_window_delegate.cc",
     "crosapi_new_window_delegate.h",
     "login_screen_shown_observer.h",
@@ -133,6 +127,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/accessibility",
     "//chrome/browser/ui/ash/annotator",
     "//chrome/browser/ui/ash/app_access",
+    "//chrome/browser/ui/ash/arc",
     "//chrome/browser/ui/ash/back_gesture",
     "//chrome/browser/ui/ash/boca",
     "//chrome/browser/ui/ash/capture_mode",
@@ -301,7 +296,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "arc_vm_data_migration_confirmation_dialog_unittest.cc",
     "window_pin_util_ash_unittest.cc",
   ]
 
@@ -345,6 +339,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/annotator:unit_tests",
     "//chrome/browser/ui/ash/app_access:unit_tests",
     "//chrome/browser/ui/ash/app_icon_color_cache:unit_tests",
+    "//chrome/browser/ui/ash/arc:unit_tests",
     "//chrome/browser/ui/ash/assistant:unit_tests",
     "//chrome/browser/ui/ash/birch:unit_tests",
     "//chrome/browser/ui/ash/boca:unit_tests",
@@ -378,7 +373,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "arc_open_url_delegate_impl_browsertest.cc",
     "screen_orientation_delegate_chromeos_browsertest.cc",
     "snap_group_browsertest.cc",
   ]
@@ -440,6 +434,7 @@ source_set("browser_tests") {
     # Gather browser tests from subdirectories.
     "//chrome/browser/ui/ash/annotator:browser_tests",
     "//chrome/browser/ui/ash/app_list:browser_tests",
+    "//chrome/browser/ui/ash/arc:browser_tests",
     "//chrome/browser/ui/ash/back_gesture:browser_tests",
     "//chrome/browser/ui/ash/birch:browser_tests",
     "//chrome/browser/ui/ash/boca:browser_tests",

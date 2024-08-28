@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_ARC_OPEN_URL_DELEGATE_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_ARC_OPEN_URL_DELEGATE_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_ARC_ARC_OPEN_URL_DELEGATE_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_ARC_ARC_OPEN_URL_DELEGATE_IMPL_H_
 
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
@@ -33,4 +33,4 @@ class ArcOpenUrlDelegateImpl : public arc::OpenUrlDelegate {
                          arc::mojom::LaunchIntentPtr intent) override;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_ARC_OPEN_URL_DELEGATE_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_ARC_ARC_OPEN_URL_DELEGATE_IMPL_H_

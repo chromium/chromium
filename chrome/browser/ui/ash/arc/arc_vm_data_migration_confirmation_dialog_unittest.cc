@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/arc_vm_data_migration_confirmation_dialog.h"
+#include "chrome/browser/ui/ash/arc/arc_vm_data_migration_confirmation_dialog.h"
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"

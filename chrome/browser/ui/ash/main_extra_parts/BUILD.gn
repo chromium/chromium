@@ -52,6 +52,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/ui/ash/accessibility",
     "//chrome/browser/ui/ash/annotator",
     "//chrome/browser/ui/ash/app_access",
+    "//chrome/browser/ui/ash/arc",
     "//chrome/browser/ui/ash/cast_config",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/in_session_auth",

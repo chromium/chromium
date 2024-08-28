@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
+#include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
 
 #include <memory>
 #include <optional>
