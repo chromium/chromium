@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -151,6 +152,27 @@ UNNotificationContent* NotificationForUpdateChromeCheckState(
   }
 
   return nil;
+}
+
+UNNotificationRequest* SafeBrowsingNotificationRequest(
+    SafeBrowsingSafetyCheckState state) {
+  UNNotificationContent* content = NotificationForSafeBrowsingCheckState(state);
+
+  if (!content) {
+    return nil;
+  }
+
+  // TODO(crbug.com/362475364): Enable Safe Browsing notification trigger
+  // to be configurable via Finch to allow for better testing and
+  // experimentation.
+  return [UNNotificationRequest
+      requestWithIdentifier:kSafetyCheckSafeBrowsingNotificationID
+                    content:content
+                    trigger:[UNTimeIntervalNotificationTrigger
+                                triggerWithTimeInterval:
+                                    kSafetyCheckNotificationDefaultDelay
+                                        .InSecondsF()
+                                                repeats:NO]];
 }
 
 UNNotificationContent* NotificationForSafeBrowsingCheckState(

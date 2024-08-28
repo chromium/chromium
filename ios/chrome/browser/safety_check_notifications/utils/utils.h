@@ -24,6 +24,12 @@ UNNotificationContent* NotificationForPasswordCheckState(
 UNNotificationContent* NotificationForUpdateChromeCheckState(
     UpdateChromeSafetyCheckState state);
 
+// Returns a notification request for the most critical Safe Browsing issue
+// found using `state`. Returns `nil` if no notification request can be
+// created.
+UNNotificationRequest* SafeBrowsingNotificationRequest(
+    SafeBrowsingSafetyCheckState state);
+
 // Returns notification content for the most critical Safe Browsing issue found
 // using `state`. Returns `nil` if no notification content can be created, i.e.,
 // no issue is found.

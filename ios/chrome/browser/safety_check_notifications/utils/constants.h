@@ -7,6 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/time/time.h"
+
+// The default duration of user inactivity required before displaying a Safety
+// Check push notification.
+inline constexpr base::TimeDelta kSafetyCheckNotificationDefaultDelay =
+    base::Hours(24);
+
 // Unique identifiers and keys for Safety Check push notifications.
 
 // Notification ID for the current Password notification.

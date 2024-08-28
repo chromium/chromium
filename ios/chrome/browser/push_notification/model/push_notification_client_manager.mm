@@ -8,6 +8,7 @@
 
 #import <vector>
 
+#import "base/task/sequenced_task_runner.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
@@ -34,8 +35,8 @@ PushNotificationClientManager::PushNotificationClientManager() {
   }
 
   if (IsSafetyCheckNotificationsEnabled()) {
-    AddPushNotificationClient(
-        std::make_unique<SafetyCheckNotificationClient>());
+    AddPushNotificationClient(std::make_unique<SafetyCheckNotificationClient>(
+        base::SequencedTaskRunner::GetCurrentDefault()));
   }
 }
 PushNotificationClientManager::~PushNotificationClientManager() = default;
