@@ -13,6 +13,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/common/load_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents.h"
@@ -176,11 +177,12 @@ void FingerprintingProtectionWebContentsHelper::WillDestroyThrottleManager(
 
 void FingerprintingProtectionWebContentsHelper::NotifyPageActivationComputed(
     content::NavigationHandle* navigation_handle,
-    const subresource_filter::mojom::ActivationState& activation_state) {
+    const subresource_filter::mojom::ActivationState& activation_state,
+    const subresource_filter::ActivationDecision& activation_decision) {
   if (ThrottleManager* throttle_manager =
           GetThrottleManager(*navigation_handle)) {
-    throttle_manager->OnPageActivationComputed(navigation_handle,
-                                               activation_state);
+    throttle_manager->OnPageActivationComputed(
+        navigation_handle, activation_state, activation_decision);
   }
 }
 
@@ -190,6 +192,13 @@ void FingerprintingProtectionWebContentsHelper::
         subresource_filter::LoadPolicy load_policy) {
   // TODO(https://crbug.com/40280666): Notify throttle manager after blink
   // communication is implemented.
+  if (load_policy == subresource_filter::LoadPolicy::WOULD_DISALLOW ||
+      load_policy == subresource_filter::LoadPolicy::DISALLOW) {
+    if (ThrottleManager* throttle_manager =
+            GetThrottleManager(*navigation_handle)) {
+      throttle_manager->NotifyDisallowLoadPolicy(navigation_handle);
+    }
+  }
 }
 
 void FingerprintingProtectionWebContentsHelper::FrameDeleted(

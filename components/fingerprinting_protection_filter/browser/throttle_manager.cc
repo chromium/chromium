@@ -33,7 +33,9 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/net_errors.h"
-#include "url/gurl.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 
 namespace fingerprinting_protection_filter {
 namespace {
@@ -270,9 +272,12 @@ void ThrottleManager::OnPageCreated(content::Page& page) {
 // activation for that page load.
 void ThrottleManager::OnPageActivationComputed(
     content::NavigationHandle* navigation_handle,
-    const subresource_filter::mojom::ActivationState& activation_state) {
+    const subresource_filter::mojom::ActivationState& activation_state,
+    const subresource_filter::ActivationDecision& activation_decision) {
   CHECK(IsInSubresourceFilterRoot(navigation_handle));
   CHECK(!navigation_handle->HasCommitted());
+
+  page_activation_decision_ = activation_decision;
 
   ChildActivationThrottleHandle* throttle_handle =
       ChildActivationThrottleHandle::GetForNavigationHandle(*navigation_handle);
@@ -320,6 +325,28 @@ ThrottleManager::GetFrameActivationState(content::RenderFrameHost* frame_host) {
   return std::nullopt;
 }
 
+void ThrottleManager::LogActivationDecisionUkm(
+    content::NavigationHandle* navigation_handle) {
+  ukm::SourceId source_id = navigation_handle->GetNextPageUkmSourceId();
+  ukm::builders::FingerprintingProtection builder(source_id);
+
+  FilterHandle* filter_handle =
+      FilterHandle::GetForCurrentDocument(&page_->GetMainDocument());
+  if (!filter_handle) {
+    // Without any active filtering, no need to emit ukm.
+    return;
+  }
+  if (filter_handle->filter()->activation_state().activation_level ==
+      subresource_filter::mojom::ActivationLevel::kDryRun) {
+    DCHECK_EQ(subresource_filter::ActivationDecision::ACTIVATED,
+              page_activation_decision_);
+    builder.SetDryRun(true);
+  }
+  builder.SetActivationDecision(
+      static_cast<int64_t>(page_activation_decision_));
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
 void ThrottleManager::MaybeNotifyOnBlockedResource(
     content::RenderFrameHost* frame_host) {
   CHECK(page_);
@@ -332,8 +359,14 @@ void ThrottleManager::MaybeNotifyOnBlockedResource(
   FilterHandle* filter_handle =
       FilterHandle::GetForCurrentDocument(&page_->GetMainDocument());
   if (!filter_handle ||
-      filter_handle->filter()->activation_state().activation_level !=
-          subresource_filter::mojom::ActivationLevel::kEnabled) {
+      filter_handle->filter()->activation_state().activation_level ==
+          subresource_filter::mojom::ActivationLevel::kDisabled) {
+    return;
+  }
+
+  if (!filter_handle ||
+      filter_handle->filter()->activation_state().activation_level ==
+          subresource_filter::mojom::ActivationLevel::kDryRun) {
     return;
   }
 
@@ -345,6 +378,11 @@ void ThrottleManager::MaybeNotifyOnBlockedResource(
   if (page_->IsPrimary()) {
     web_contents_helper_->NotifyOnBlockedResources();
   }
+}
+
+void ThrottleManager::NotifyDisallowLoadPolicy(
+    content::NavigationHandle* navigation_handle) {
+  LogActivationDecisionUkm(navigation_handle);
 }
 
 subresource_filter::mojom::ActivationState
