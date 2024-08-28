@@ -478,7 +478,7 @@ AXLanguageDetectionObserver::~AXLanguageDetectionObserver() {
 }
 
 void AXLanguageDetectionObserver::OnAtomicUpdateFinished(
-    ui::AXTree* tree,
+    AXTree* tree,
     bool root_changed,
     const std::vector<Change>& changes) {
   // TODO(chrishall): We likely want to re-consider updating or resetting

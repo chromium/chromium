@@ -181,7 +181,7 @@ class AX_BASE_EXPORT AXMode {
   static constexpr uint32_t kExperimentalLastFlag = 1 << 0;
 
  private:
-  friend struct mojo::StructTraits<ax::mojom::AXModeDataView, ui::AXMode>;
+  friend struct mojo::StructTraits<ax::mojom::AXModeDataView, AXMode>;
 
   uint32_t flags_ = 0U;
   uint32_t experimental_flags_ = 0U;

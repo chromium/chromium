@@ -110,8 +110,8 @@ class TestAXTreeObserver final : public AXTreeObserver {
                          const AXNodeData& old_node_data,
                          const AXNodeData& new_node_data) override {}
   void OnTreeDataChanged(AXTree* tree,
-                         const ui::AXTreeData& old_data,
-                         const ui::AXTreeData& new_data) override {
+                         const AXTreeData& old_data,
+                         const AXTreeData& new_data) override {
     tree_data_changed_ = true;
   }
 
@@ -376,10 +376,10 @@ TEST(AXTreeTest, SerializeSimpleAXTree) {
   initial_state.tree_data.title = "Title";
   AXSerializableTree src_tree(initial_state);
 
-  std::unique_ptr<AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+  std::unique_ptr<AXTreeSource<const AXNode*, AXTreeData*, AXNodeData>>
       tree_source(src_tree.CreateTreeSource());
-  AXTreeSerializer<const AXNode*, std::vector<const AXNode*>, ui::AXTreeUpdate*,
-                   ui::AXTreeData*, ui::AXNodeData>
+  AXTreeSerializer<const AXNode*, std::vector<const AXNode*>, AXTreeUpdate*,
+                   AXTreeData*, AXNodeData>
       serializer(tree_source.get());
   AXTreeUpdate update;
   serializer.SerializeChanges(src_tree.root(), &update);
@@ -1240,7 +1240,7 @@ TEST(AXTreeTest, DISABLED_BogusAXTree) {
   node.id = 0;
   initial_state.nodes.push_back(node);
   initial_state.nodes.push_back(node);
-  ui::AXTree tree;
+  AXTree tree;
 #if DCHECK_IS_ON()
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
                             "AXTreeUpdate contains invalid node");
@@ -1261,7 +1261,7 @@ TEST(AXTreeTest, BogusAXTree2) {
   node2.child_ids.push_back(1);
   node2.child_ids.push_back(1);
   initial_state.nodes.push_back(node2);
-  ui::AXTree tree;
+  AXTree tree;
 #if defined(AX_FAIL_FAST_BUILD)
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
                             "Node 1 has duplicate child id 1");
@@ -1285,7 +1285,7 @@ TEST(AXTreeTest, BogusAXTree3) {
   node2.id = 2;
   initial_state.nodes.push_back(node2);
 
-  ui::AXTree tree;
+  AXTree tree;
 #if defined(AX_FAIL_FAST_BUILD)
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
                             "Node 1 has duplicate child id 2");
@@ -4998,26 +4998,26 @@ TEST(AXTreeTest, TestIsInListMarker) {
 }
 
 TEST(AXTreeTest, UpdateFromOutOfSyncTree) {
-  ui::AXNodeData empty_document;
+  AXNodeData empty_document;
   empty_document.id = 1;
   empty_document.role = ax::mojom::Role::kRootWebArea;
-  ui::AXTreeUpdate empty_document_initial_update;
+  AXTreeUpdate empty_document_initial_update;
   empty_document_initial_update.root_id = empty_document.id;
   empty_document_initial_update.nodes.push_back(empty_document);
 
   AXTree tree;
   EXPECT_TRUE(tree.Unserialize(empty_document_initial_update));
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 3;
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids = {1};
 
-  ui::AXNodeData div;
+  AXNodeData div;
   div.id = 1;
   div.role = ax::mojom::Role::kGenericContainer;
 
-  ui::AXTreeUpdate first_update;
+  AXTreeUpdate first_update;
   first_update.root_id = root.id;
   first_update.node_id_to_clear = root.id;
   first_update.nodes = {root, div};
@@ -5027,19 +5027,19 @@ TEST(AXTreeTest, UpdateFromOutOfSyncTree) {
 
 TEST(AXTreeTest, UnserializeErrors) {
   base::HistogramTester histogram_tester;
-  ui::AXNodeData empty_document;
+  AXNodeData empty_document;
   empty_document.id = 1;
   empty_document.role = ax::mojom::Role::kRootWebArea;
-  ui::AXTreeUpdate tree_update;
+  AXTreeUpdate tree_update;
   tree_update.root_id = empty_document.id;
   tree_update.nodes.push_back(empty_document);
 
   AXTree tree;
   EXPECT_TRUE(tree.Unserialize(tree_update));
 
-  ui::AXTreeUpdate tree_update_3;
+  AXTreeUpdate tree_update_3;
   tree_update_3.root_id = empty_document.id;
-  ui::AXNodeData disconnected_node;
+  AXNodeData disconnected_node;
   disconnected_node.id = 2;
   tree_update_3.nodes.push_back(disconnected_node);
 #if defined(AX_FAIL_FAST_BUILD)

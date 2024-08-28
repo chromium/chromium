@@ -38,46 +38,46 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
   // Record individual mode flags transitioning from unset to set state.
   int new_mode_flags = mode.flags() & (~previous_mode.flags());
   if (new_mode_flags) {
-    if (new_mode_flags & ui::AXMode::kNativeAPIs) {
+    if (new_mode_flags & AXMode::kNativeAPIs) {
       RecordModeFlag(prefix,
                      AXMode::ModeFlagHistogramValue::UMA_AX_MODE_NATIVE_APIS);
     }
 
-    if (new_mode_flags & ui::AXMode::kWebContents) {
+    if (new_mode_flags & AXMode::kWebContents) {
       RecordModeFlag(prefix,
                      AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS);
     }
 
-    if (new_mode_flags & ui::AXMode::kInlineTextBoxes) {
+    if (new_mode_flags & AXMode::kInlineTextBoxes) {
       RecordModeFlag(
           prefix,
           AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES);
     }
 
-    if (new_mode_flags & ui::AXMode::kScreenReader) {
+    if (new_mode_flags & AXMode::kScreenReader) {
       RecordModeFlag(prefix,
                      AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
     }
 
-    if (new_mode_flags & ui::AXMode::kHTML) {
+    if (new_mode_flags & AXMode::kHTML) {
       RecordModeFlag(prefix, AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML);
     }
 
-    if (new_mode_flags & ui::AXMode::kHTMLMetadata) {
+    if (new_mode_flags & AXMode::kHTMLMetadata) {
       RecordModeFlag(prefix,
                      AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML_METADATA);
     }
 
-    if (new_mode_flags & ui::AXMode::kLabelImages) {
+    if (new_mode_flags & AXMode::kLabelImages) {
       RecordModeFlag(prefix,
                      AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES);
     }
 
-    if (new_mode_flags & ui::AXMode::kPDFPrinting) {
+    if (new_mode_flags & AXMode::kPDFPrinting) {
       RecordModeFlag(prefix, AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF);
     }
 
-    if (new_mode_flags & ui::AXMode::kAnnotateMainNode) {
+    if (new_mode_flags & AXMode::kAnnotateMainNode) {
       RecordModeFlag(
           prefix,
           AXMode::ModeFlagHistogramValue::UMA_AX_MODE_ANNOTATE_MAIN_NODE);
@@ -87,7 +87,7 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
   // Record forms control flag transitioning from unset to set.
   int new_experimental_mode_flags =
       mode.experimental_flags() & (~previous_mode.experimental_flags());
-  if (new_experimental_mode_flags & ui::AXMode::kExperimentalFormControls) {
+  if (new_experimental_mode_flags & AXMode::kExperimentalFormControls) {
     switch (prefix) {
       case AXHistogramPrefix::kNone:
         base::UmaHistogramBoolean(

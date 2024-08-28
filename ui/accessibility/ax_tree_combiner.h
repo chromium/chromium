@@ -39,7 +39,7 @@ class AX_EXPORT AXTreeCombiner {
   void ProcessTree(AXTreeUpdate* tree,
                    const std::map<AXTreeID, AXTreeUpdate*>& tree_id_map);
 
-  std::vector<ui::AXTreeUpdate> trees_;
+  std::vector<AXTreeUpdate> trees_;
   AXTreeID root_tree_id_;
   AXNodeID next_id_ = 1;
   std::map<std::pair<AXTreeID, AXNodeID>, AXNodeID> tree_id_node_id_map_;

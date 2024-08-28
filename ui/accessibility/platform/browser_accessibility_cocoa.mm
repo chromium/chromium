@@ -46,10 +46,6 @@ using AXPosition = ui::AXPlatformNodeDelegate::AXPosition;
 using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 using StringAttribute = ax::mojom::StringAttribute;
 using ui::AccessibilityMatchPredicate;
-using ui::BrowserAccessibility;
-using ui::BrowserAccessibilityManager;
-using ui::BrowserAccessibilityManagerMac;
-using ui::OneShotAccessibilityTreeSearch;
 using ui::AXActionHandlerRegistry;
 using ui::AXNodeData;
 using ui::AXPlatformTreeManagerDelegate;
@@ -57,6 +53,10 @@ using ui::AXPositionToAXTextMarker;
 using ui::AXRangeToAXTextMarkerRange;
 using ui::AXTextMarkerRangeToAXRange;
 using ui::AXTextMarkerToAXPosition;
+using ui::BrowserAccessibility;
+using ui::BrowserAccessibilityManager;
+using ui::BrowserAccessibilityManagerMac;
+using ui::OneShotAccessibilityTreeSearch;
 
 static_assert(
     std::is_trivially_copyable<BrowserAccessibility::SerializedPosition>::value,

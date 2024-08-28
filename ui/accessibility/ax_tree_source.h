@@ -87,13 +87,13 @@ class AXTreeSource {
   // updated in this tree source.
 
   virtual void AddObserver(
-      ui::AXTreeSourceObserver<AXNodeSource, AXTreeDataType, AXNodeDataType>*
+      AXTreeSourceObserver<AXNodeSource, AXTreeDataType, AXNodeDataType>*
           observer) {
     NOTIMPLEMENTED();
   }
 
   virtual void RemoveObserver(
-      ui::AXTreeSourceObserver<AXNodeSource, AXTreeDataType, AXNodeDataType>*
+      AXTreeSourceObserver<AXNodeSource, AXTreeDataType, AXNodeDataType>*
           observer) {
     NOTIMPLEMENTED();
   }

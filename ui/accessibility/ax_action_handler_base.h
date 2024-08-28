@@ -36,11 +36,11 @@ class AX_BASE_EXPORT AXActionHandlerBase {
   const AXTreeID& ax_tree_id() const { return tree_id_; }
 
  protected:
-  // Initializes the AXActionHandlerBase subclass with ui::AXTreeIDUnknown().
+  // Initializes the AXActionHandlerBase subclass with AXTreeIDUnknown().
   AXActionHandlerBase();
 
   // Initializes the AXActionHandlerBase subclass with |ax_tree_id|. It is Ok to
-  // pass ui::AXTreeIDUnknown() and then call SetAXTreeID() at a later point.
+  // pass AXTreeIDUnknown() and then call SetAXTreeID() at a later point.
   explicit AXActionHandlerBase(const AXTreeID& ax_tree_id);
 
   // Change the AXTreeID.

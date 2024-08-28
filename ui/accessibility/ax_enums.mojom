@@ -1439,7 +1439,7 @@ enum TreeOrder {
   kAfter,
 };
 
-// For internal use by ui::AXTreeID / ax::mojom::AXTreeID.
+// For internal use by AXTreeID / ax::mojom::AXTreeID.
 enum AXTreeIDType {
   kUnknown,  // The Tree ID is unknown.
   kToken,    // Every other tree ID must have a valid unguessable token.

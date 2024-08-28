@@ -98,35 +98,32 @@ void AccessibilityState::NotifyRecordAccessibilityServiceInfoHistogram() {
 // static
 int AccessibilityState::GetAccessibilityServiceEventTypeMask() {
   JNIEnv* env = AttachCurrentThread();
-  return ui::Java_AccessibilityState_getAccessibilityServiceEventTypeMask(env);
+  return Java_AccessibilityState_getAccessibilityServiceEventTypeMask(env);
 }
 
 // static
 int AccessibilityState::GetAccessibilityServiceFeedbackTypeMask() {
   JNIEnv* env = AttachCurrentThread();
-  return ui::Java_AccessibilityState_getAccessibilityServiceFeedbackTypeMask(
-      env);
+  return Java_AccessibilityState_getAccessibilityServiceFeedbackTypeMask(env);
 }
 
 // static
 int AccessibilityState::GetAccessibilityServiceFlagsMask() {
   JNIEnv* env = AttachCurrentThread();
-  return ui::Java_AccessibilityState_getAccessibilityServiceFlagsMask(env);
+  return Java_AccessibilityState_getAccessibilityServiceFlagsMask(env);
 }
 
 // static
 int AccessibilityState::GetAccessibilityServiceCapabilitiesMask() {
   JNIEnv* env = AttachCurrentThread();
-  return ui::Java_AccessibilityState_getAccessibilityServiceCapabilitiesMask(
-      env);
+  return Java_AccessibilityState_getAccessibilityServiceCapabilitiesMask(env);
 }
 
 // static
 std::vector<std::string> AccessibilityState::GetAccessibilityServiceIds() {
   JNIEnv* env = AttachCurrentThread();
 
-  auto j_service_ids =
-      ui::Java_AccessibilityState_getAccessibilityServiceIds(env);
+  auto j_service_ids = Java_AccessibilityState_getAccessibilityServiceIds(env);
   std::vector<std::string> service_ids;
   AppendJavaStringArrayToStringVector(env, j_service_ids, &service_ids);
   return service_ids;
@@ -135,8 +132,8 @@ std::vector<std::string> AccessibilityState::GetAccessibilityServiceIds() {
 // static
 bool AccessibilityState::ShouldRespectDisplayedPasswordText() {
   JNIEnv* env = AttachCurrentThread();
-  return ui::
-      Java_AccessibilityAutofillHelper_shouldRespectDisplayedPasswordText(env);
+  return Java_AccessibilityAutofillHelper_shouldRespectDisplayedPasswordText(
+      env);
 }
 
 // static
@@ -149,7 +146,7 @@ void AccessibilityState::ForceRespectDisplayedPasswordTextForTesting() {
 // static
 bool AccessibilityState::ShouldExposePasswordText() {
   JNIEnv* env = AttachCurrentThread();
-  return ui::Java_AccessibilityAutofillHelper_shouldExposePasswordText(env);
+  return Java_AccessibilityAutofillHelper_shouldExposePasswordText(env);
 }
 
 }  // namespace ui

@@ -111,7 +111,7 @@ std::u16string GetText(const AXNode* node) {
 
   ax::mojom::NameFrom name_from = node->GetNameFrom();
 
-  if (!ui::IsLeaf(node) && name_from == ax::mojom::NameFrom::kContents) {
+  if (!IsLeaf(node) && name_from == ax::mojom::NameFrom::kContents) {
     return std::u16string();
   }
 
@@ -168,8 +168,8 @@ std::u16string GetText(const AXNode* node) {
     }
   }
 
-  if (text.empty() && (ui::IsLink(node->GetRole()) ||
-                       node->GetRole() == ax::mojom::Role::kImage)) {
+  if (text.empty() &&
+      (IsLink(node->GetRole()) || node->GetRole() == ax::mojom::Role::kImage)) {
     std::u16string url =
         node->GetString16Attribute(ax::mojom::StringAttribute::kUrl);
     text = AXUrlBaseText(url);

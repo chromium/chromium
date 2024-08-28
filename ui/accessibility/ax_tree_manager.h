@@ -68,8 +68,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // Return |node| by default, but some platforms want to update the target node
   // based on the event type.
   virtual AXNode* RetargetForEvents(AXNode* node, RetargetEventType type) const;
-  virtual void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                                  const ui::AXNode* node) {}
+  virtual void FireGeneratedEvent(AXEventGenerator::Event event_type,
+                                  const AXNode* node) {}
   virtual bool CanFireEvents() const;
 
   // Returns whether or not this tree manager is for a view.
@@ -88,12 +88,12 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
   // Returns true if the manager has a tree with a valid (not unknown) ID.
   bool HasValidTreeID() const {
-    return ax_tree_ && ax_tree_->GetAXTreeID() != ui::AXTreeIDUnknown();
+    return ax_tree_ && ax_tree_->GetAXTreeID() != AXTreeIDUnknown();
   }
 
   // Returns the tree id of the tree managed by this AXTreeManager.
   const AXTreeID& GetTreeID() const {
-    return ax_tree_ ? ax_tree_->GetAXTreeID() : ui::AXTreeIDUnknown();
+    return ax_tree_ ? ax_tree_->GetAXTreeID() : AXTreeIDUnknown();
   }
 
   // Returns the AXTreeData for the tree managed by this AXTreeManager.

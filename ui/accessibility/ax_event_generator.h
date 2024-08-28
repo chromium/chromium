@@ -240,7 +240,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   // Note that events are organized by node and then by event id to
   // efficiently remove duplicates, so events won't be retrieved in the
   // same order they were added.
-  void AddEvent(ui::AXNode* node, Event event);
+  void AddEvent(AXNode* node, Event event);
 
   // Registers for events on the node or one of its descendants.
   // Registration offers a more performant path for event generation.
@@ -299,8 +299,8 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
       const std::vector<int32_t>& old_value,
       const std::vector<int32_t>& new_value) override;
   void OnTreeDataChanged(AXTree* tree,
-                         const ui::AXTreeData& old_data,
-                         const ui::AXTreeData& new_data) override;
+                         const AXTreeData& old_data,
+                         const AXTreeData& new_data) override;
   void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
   void OnNodeWillBeReparented(AXTree* tree, AXNode* node) override;
   void OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) override;

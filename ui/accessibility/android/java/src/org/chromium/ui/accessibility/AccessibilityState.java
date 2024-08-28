@@ -51,7 +51,7 @@ import java.util.WeakHashMap;
 
 /**
  * Provides utility methods relating to measuring accessibility state on Android. See native
- * counterpart in ui::accessibility::AccessibilityState.
+ * counterpart in accessibility::AccessibilityState.
  */
 @JNINamespace("ui")
 public class AccessibilityState {
