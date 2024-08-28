@@ -337,16 +337,6 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
           function->extension(), function->source_context_type(),
           navigate_params.navigated_or_inserted_contents);
 
-  if (tab_strip) {
-    std::optional<tab_groups::TabGroupId> group =
-        tab_strip->GetTabGroupForTab(new_index);
-    if (group.has_value()) {
-      if (tab_groups_util::IsGroupSaved(group.value(), tab_strip)) {
-        return base::unexpected(tabs_constants::kSavedTabGroupNotEditableError);
-      }
-    }
-  }
-
   // Return data about the newly created tab.
   return ExtensionTabUtil::CreateTabObject(
              navigate_params.navigated_or_inserted_contents, scrub_tab_behavior,

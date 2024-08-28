@@ -1637,18 +1637,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
         ->SetAutoDiscardable(state);
   }
 
-  const bool contents_in_an_uneditable_saved_group =
-      contents && ExtensionTabUtil::TabIsInSavedTabGroup(
-                      web_contents_, browser->tab_strip_model()) &&
-                  !ExtensionHasLockedFullscreenPermission(extension());
-
   if (params->update_properties.pinned) {
-    // Pinning will result in changes to the tabs index/group affiliation in
-    // some cases, Throw an error if a tab is attempting to be pinned.
-    if (contents_in_an_uneditable_saved_group) {
-      return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
-    }
-
     // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
     // the user is dragging tabs.
     if (!ExtensionTabUtil::IsTabStripEditable()) {
@@ -1668,10 +1657,6 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
 
   // Navigate the tab to a new location if the url is different.
   if (params->update_properties.url) {
-    if (contents_in_an_uneditable_saved_group) {
-      return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
-    }
-
     std::string updated_url = *params->update_properties.url;
     if (browser->profile()->IsIncognitoProfile() &&
         !IsURLAllowedInIncognito(GURL(updated_url), browser->profile())) {
@@ -1753,24 +1738,6 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
   if (params->tab_ids.as_integers) {
     std::vector<int>& tab_ids = *params->tab_ids.as_integers;
     num_tabs = tab_ids.size();
-
-    for (int tab_id : tab_ids) {
-      // Check that the tab is not part of a SavedTabGroup.
-      content::WebContents* web_contents = nullptr;
-      TabStripModel* tab_strip_model = nullptr;
-      GetTabById(tab_id, browser_context(), include_incognito_information(),
-                 nullptr, &tab_strip_model, &web_contents, nullptr, &error);
-      if (!error.empty()) {
-        return RespondNow(Error(std::move(error)));
-      }
-      if (web_contents &&
-          ExtensionTabUtil::TabIsInSavedTabGroup(web_contents,
-                                                 tab_strip_model) &&
-          !ExtensionHasLockedFullscreenPermission(extension())) {
-        return RespondNow(
-            Error(tabs_constants::kSavedTabGroupNotEditableError));
-      }
-    }
 
     for (int tab_id : tab_ids) {
       if (!MoveTab(tab_id, &new_index, tab_values, window_id, &error))
@@ -1917,14 +1884,6 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
                     &browser, nullptr, &web_contents, nullptr, &error)) {
       return RespondNow(Error(std::move(error)));
     }
-  }
-
-  // Prevent Reloading if the tab is in a savedTabGroup.
-  if (web_contents &&
-      ExtensionTabUtil::TabIsInSavedTabGroup(web_contents,
-                                             browser->tab_strip_model()) &&
-      !ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
   }
 
   web_contents->GetController().Reload(
@@ -2100,13 +2059,6 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
       return RespondNow(Error(std::move(error)));
     }
 
-    if (web_contents &&
-        ExtensionTabUtil::TabIsInSavedTabGroup(
-            web_contents, tab_browser->tab_strip_model()) &&
-        !ExtensionHasLockedFullscreenPermission(extension())) {
-      return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
-    }
-
     tab_browsers.push_back(tab_browser);
 
     if (DevToolsWindow::IsDevToolsWindow(web_contents))
@@ -2178,20 +2130,6 @@ ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
 
   std::string error;
   for (int tab_id : tab_ids) {
-    // Check that the tab is not part of a SavedTabGroup.
-    content::WebContents* web_contents = nullptr;
-    TabStripModel* tab_strip_model = nullptr;
-    GetTabById(tab_id, browser_context(), include_incognito_information(),
-               nullptr, &tab_strip_model, &web_contents, nullptr, &error);
-    if (!error.empty()) {
-      return RespondNow(Error(std::move(error)));
-    }
-    if (web_contents &&
-        ExtensionTabUtil::TabIsInSavedTabGroup(web_contents, tab_strip_model) &&
-        !ExtensionHasLockedFullscreenPermission(extension())) {
-      return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
-    }
-
     if (!UngroupTab(tab_id, &error))
       return RespondNow(Error(std::move(error)));
   }
@@ -2801,12 +2739,6 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
       return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
   }
 
-  // Check that the tab is not in a SavedTabGroup.
-  if (contents && ExtensionTabUtil::TabIsInSavedTabGroup(contents, nullptr) &&
-      !ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
-  }
-
   // Discard the tab.
   contents =
       g_browser_process->GetTabManager()->DiscardTabByExtension(contents);
@@ -2845,12 +2777,6 @@ ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {
   if (!controller.CanGoForward())
     return RespondNow(Error(tabs_constants::kNotFoundNextPageError));
 
-  // Check that the tab is not in a SavedTabGroup.
-  if (ExtensionTabUtil::TabIsInSavedTabGroup(web_contents, nullptr) &&
-      !ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
-  }
-
   controller.GoForward();
   return RespondNow(NoArguments());
 }
@@ -2870,12 +2796,6 @@ ExtensionFunction::ResponseAction TabsGoBackFunction::Run() {
   NavigationController& controller = web_contents->GetController();
   if (!controller.CanGoBack())
     return RespondNow(Error(tabs_constants::kNotFoundNextPageError));
-
-  // Check that the tab is not part of a saved tab group.
-  if (ExtensionTabUtil::TabIsInSavedTabGroup(web_contents, nullptr) &&
-      !ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
-  }
 
   controller.GoBack();
   return RespondNow(NoArguments());

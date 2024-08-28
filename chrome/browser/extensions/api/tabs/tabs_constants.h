@@ -92,7 +92,6 @@ extern const char kTabNotFoundError[];
 extern const char kCannotDiscardTab[];
 extern const char kCannotDuplicateTab[];
 extern const char kCannotFindTabToDiscard[];
-extern const char kSavedTabGroupNotEditableError[];
 extern const char kTabStripNotEditableError[];
 extern const char kTabStripNotEditableQueryError[];
 extern const char kTabStripDoesNotSupportTabGroupsError[];
