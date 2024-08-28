@@ -983,6 +983,15 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsProhibited(ax::mojom::blink::StringAttribute attribute) const;
   bool IsProhibited(ax::mojom::blink::IntListAttribute attribute) const;
 
+  // Helpers for menulist, aka <select size=1>.
+  bool IsMenuList() const;
+  bool ComputeIsInMenuListSubtree();
+  bool IsInMenuListSubtree() const { return cached_is_in_menu_list_subtree_; }
+  bool IsInMenuListSubtree();
+  // Find first ancestor or |this| that matches.
+  const AXObject* AncestorMenuListOption() const;
+  const AXObject* AncestorMenuList() const;
+
   // ARIA live-region features.
   bool IsLiveRegionRoot() const;  // Any live region, including polite="off".
   bool IsActiveLiveRegionRoot() const;  // Live region that is not polite="off".
@@ -1621,6 +1630,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool cached_is_used_for_label_or_description_ : 1;
   bool cached_is_descendant_of_disabled_node_ : 1 = false;
   bool cached_can_set_focus_attribute_ : 1 = false;
+  bool cached_is_in_menu_list_subtree_ : 1 = false;
 
   Member<AXObject> cached_live_region_root_;
   gfx::RectF cached_local_bounding_box_;

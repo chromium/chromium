@@ -423,7 +423,7 @@ RootWebArea
     none
       *combobox
         MenuListPopup
-        none
+        MenuListPopup
 {
     childIds : <object>
     chromeRole : {

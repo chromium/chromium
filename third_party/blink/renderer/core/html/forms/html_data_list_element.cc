@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
