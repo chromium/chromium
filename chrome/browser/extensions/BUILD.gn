@@ -123,8 +123,6 @@ source_set("extensions") {
     "api/file_system/chrome_file_system_delegate.h",
     "api/file_system/file_entry_picker.cc",
     "api/file_system/file_entry_picker.h",
-    "api/font_settings/font_settings_api.cc",
-    "api/font_settings/font_settings_api.h",
     "api/gcm/gcm_api.cc",
     "api/gcm/gcm_api.h",
     "api/history/history_api.cc",
