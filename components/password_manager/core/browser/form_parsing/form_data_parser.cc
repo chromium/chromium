@@ -482,6 +482,14 @@ void ParseUsingPredictions(std::vector<ProcessedField>& processed_fields,
           processed_field->is_predicted_as_password = true;
         }
         break;
+      case CredentialFieldType::kNonCredential:
+        // Fields with non credential fields predictions do not participate in
+        // filling/saving.
+        processed_field = FindField(processed_fields, prediction);
+        if (processed_field) {
+          processed_field->server_hints_non_credential_field = true;
+        }
+        break;
       case CredentialFieldType::kNone:
         break;
     }
@@ -526,22 +534,6 @@ void ParseUsingPredictions(std::vector<ProcessedField>& processed_fields,
   // something went wrong. Sanitize the result.
   if (result->confirmation_password && !result->new_password) {
     result->confirmation_password = nullptr;
-  }
-
-  // Fields with non credential fields predictions do not participate in
-  // filling/saving.
-  for (const PasswordFieldPrediction& prediction : predictions.fields) {
-    ProcessedField* current_field = FindField(processed_fields, prediction);
-    if (!current_field) {
-      continue;
-    }
-    if (prediction.type == autofill::ONE_TIME_CODE ||
-        prediction.type == autofill::NOT_PASSWORD ||
-        prediction.type == autofill::NOT_USERNAME ||
-        GroupTypeOfFieldType(prediction.type) ==
-            autofill::FieldTypeGroup::kCreditCard) {
-      current_field->server_hints_non_credential_field = true;
-    }
   }
 }
 

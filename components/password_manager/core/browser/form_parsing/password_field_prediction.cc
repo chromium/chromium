@@ -55,6 +55,9 @@ FieldType GetServerType(const AutofillType::ServerPrediction& prediction) {
 }  // namespace
 
 CredentialFieldType DeriveFromFieldType(FieldType type) {
+  if (GroupTypeOfFieldType(type) == autofill::FieldTypeGroup::kCreditCard) {
+    return CredentialFieldType::kNonCredential;
+  }
   // TODO: crbug/40925827 - Move if statement under switch case after the
   // feature is launched.
   if (type == autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES &&
@@ -76,6 +79,10 @@ CredentialFieldType DeriveFromFieldType(FieldType type) {
       return CredentialFieldType::kNewPassword;
     case autofill::CONFIRMATION_PASSWORD:
       return CredentialFieldType::kConfirmationPassword;
+    case autofill::NOT_PASSWORD:
+    case autofill::NOT_USERNAME:
+    case autofill::ONE_TIME_CODE:
+      return CredentialFieldType::kNonCredential;
     default:
       return CredentialFieldType::kNone;
   }
