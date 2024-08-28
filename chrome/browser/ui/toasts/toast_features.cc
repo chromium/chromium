@@ -16,9 +16,6 @@ BASE_FEATURE(kToastFramework,
              "ToastFramework",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<base::TimeDelta> kToastTimeout{
-    &kToastFramework, "toast_timeout", base::Seconds(10)};
-
 const base::FeatureParam<bool> kToastDemoMode{&kToastFramework,
                                               "toast_demo_mode", false};
 

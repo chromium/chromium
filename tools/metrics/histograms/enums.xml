@@ -20047,7 +20047,6 @@ from previous Chrome versions.
   <int value="-231426350" label="AutofillEnableToolbarStatusChip:enabled"/>
   <int value="-230824955" label="NTPMostLikelyFaviconsFromServer:enabled"/>
   <int value="-229995076" label="AltClickAndSixPackCustomization:disabled"/>
-  <int value="-228933177" label="ToastFramework:disabled"/>
   <int value="-228847300" label="OmniboxLimitKeywordModeSuggestions:disabled"/>
   <int value="-227261557" label="CrosSodaConchLanguages:enabled"/>
   <int value="-226826278" label="ForceEnableFastCheckoutCapabilities:disabled"/>
@@ -22351,7 +22350,6 @@ from previous Chrome versions.
   <int value="732081309" label="ReadAloudLanguagePackDownloading:disabled"/>
   <int value="732703958" label="enable-gesture-tap-highlight"/>
   <int value="733484229" label="PrivacyGuide3:disabled"/>
-  <int value="734892932" label="ToastFramework:enabled"/>
   <int value="734900932" label="RecurrentInterstitialFeature:enabled"/>
   <int value="735180038"
       label="AccessibilitySelectToSpeakHoverTextImprovements:disabled"/>

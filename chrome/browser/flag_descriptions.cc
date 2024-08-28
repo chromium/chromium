@@ -3644,12 +3644,6 @@ const char kToolbarPinningDescription[] =
     "Chrome side panel.";
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kTopChromeToastsName[] = "Top Chrome Toasts";
-const char kTopChromeToastsDescription[] =
-    "Enables the use of toasts to present confirmation of user actions.";
-#endif
-
 const char kTopChromeTouchUiName[] = "Touch UI Layout";
 const char kTopChromeTouchUiDescription[] =
     "Enables touch UI layout in the browser's top chrome.";
