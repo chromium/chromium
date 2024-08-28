@@ -1,0 +1,1096 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is a modified version of the grammar at
+# https://github.com/googleprojectzero/domato/blob/master/rules/html.txt
+# This modifies the <head> tag so that it doesn't recursively contains other
+# fuzzers. This is not necessary with the way DomatoLPM works.
+
+
+!include ../../../../third_party/domato/src/rules/common.txt
+
+<framesrc> = x
+<framesrc> = data:text/html,foo
+
+<attribute_imgsrc> = src="<imgsrc>"
+<attribute_videosrc> = src="<videosrc>"
+<attribute_audiosrc> = src="<audiosrc>"
+<attribute_framesrc> = src="<framesrc>"
+
+<inputtype> = "button"
+<inputtype> = "checkbox"
+<inputtype> = "color"
+<inputtype> = "date"
+<inputtype> = "datetime"
+<inputtype> = "datetime-local"
+<inputtype> = "emailNew"
+<inputtype> = "file"
+<inputtype> = "hidden"
+<inputtype> = "image"
+<inputtype> = "month"
+<inputtype> = "number"
+<inputtype> = "password"
+<inputtype> = "radio"
+<inputtype> = "range"
+<inputtype> = "reset"
+<inputtype> = "search"
+<inputtype> = "submit"
+<inputtype> = "tel"
+<inputtype> = "text"
+<inputtype> = "time"
+<inputtype> = "url"
+<inputtype> = "week"
+
+#<html root=true> = <lt>!-- saved from url=(0014)about:internet --<gt><lf><lt>html<gt><lt>head<gt><newline><lt>style<gt><newline><lt>cssfuzzer<gt><newline><lt>/style<gt><newline><lt>script<gt><newline><lt>jsfuzzer<gt><newline><lt>/script<gt><newline><lt>/head<gt><newline><lt>body onload=jsfuzzer()<gt><newline><svgelement_svg><lt>/body<gt><lt>/html<gt>
+
+<html root=true> = <lt>!-- saved from url=(0014)about:internet --<gt><lf><lt>html<gt><head><body><newline><lt>/html<gt>
+<head> = <newline><lt>head<gt><newline><lt>/head<gt>
+<body> = <newline><lt>body onload=jsfuzzer()<gt><newline><lt>!--beginhtml--<gt><bodyelements><lt>!--endhtml--<gt><newline><lt>/body<gt>
+
+<attributes> = <attribute> <attribute> <attribute> <attribute> <attribute>
+
+<bodyelements> = <newline><element><newline><element><newline><element><newline><element><newline><element><newline><element><newline><element><newline><element><newline><element><newline><element><newline>
+<headelements> = <htmlsafestring min=32 max=126>
+
+<innerelements nonrecursive=true p=0.5> = <htmlsafestring min=32 max=126>
+<innerelements> = <newline><element><newline>
+<innerelements> = <newline><element><newline><element><newline>
+
+<innerformelements nonrecursive=true p=0.5> = <htmlsafestring min=32 max=126>
+<formchildren> = <newline><formchildelement><newline>
+<formchildren> = <newline><formchildelement><newline><formchildelement><newline>
+
+<selectchildren> = <optionelements>
+<selectchildren> = <optgroupelements>
+
+<optgroupelements> = <newline><HTMLOptGroupElement><newline>
+<optgroupelements> = <newline><HTMLOptGroupElement><newline><HTMLOptGroupElement><newline>
+
+<optionelements> = <htmlsafestring min=32 max=126>
+<optionelements> = <newline><HTMLOptionElement><newline>
+<optionelements> = <newline><HTMLOptionElement><newline><HTMLOptionElement><newline>
+
+<areaelements> = <htmlsafestring min=32 max=126>
+<areaelements> = <newline><HTMLAreaElement><newline>
+<areaelements> = <newline><HTMLAreaElement><newline><HTMLAreaElement><newline>
+
+<tablechildren> = <htmlsafestring min=32 max=126>
+<tablechildren> = <tablechild>
+<tablechildren> = <newline><tablechild><newline><tablechild><newline>
+<tablechildren> = <newline><tablechild><newline><tablechild><newline><tablechild><newline>
+<tablechildren> = <newline><tablechild><newline><tablechild><newline><tablechild><newline><tablechild><newline>
+
+<tablechild> = <HTMLTableCaptionElement>
+<tablechild> = <HTMLTableSectionElement>
+<tablechild> = <colgroupelement>
+<tablechild> = <HTMLTableRowElement>
+<tablechild> = <HTMLTableRowElement>
+<tablechild> = <element>
+
+<colelements> = <htmlsafestring min=32 max=126>
+<colelements> = <newline><HTMLTableColElement><newline>
+<colelements> = <newline><HTMLTableColElement><newline><HTMLTableColElement><newline>
+
+<trelements> = <htmlsafestring min=32 max=126>
+<trelements> = <newline><HTMLTableRowElement><newline>
+<trelements> = <newline><HTMLTableRowElement><newline><HTMLTableRowElement><newline>
+
+<thelements> = <htmlsafestring min=32 max=126>
+<thelements> = <newline><HTMLTableCellElement><newline>
+<thelements> = <newline><HTMLTableCellElement><newline><HTMLTableCellElement><newline>
+
+<lielements> = <htmlsafestring min=32 max=126>
+<lielements> = <newline><HTMLLIElement><newline>
+<lielements> = <newline><HTMLLIElement><newline><HTMLLIElement><newline>
+
+<formchildelement> = <HTMLLegendElement>
+<formchildelement> = <HTMLInputElement>
+<formchildelement> = <HTMLTextAreaElement>
+<formchildelement> = <HTMLButtonElement>
+<formchildelement> = <HTMLLegendElement>
+<formchildelement> = <HTMLKeygenElement>
+<formchildelement> = <HTMLObjectElement>
+<formchildelement> = <HTMLSelectElement>
+<formchildelement> = <HTMLOutputElement>
+<formchildelement> = <HTMLLabelElement>
+<formchildelement> = <HTMLFieldSetElement>
+<formchildelement> = <HTMLOptionElement>
+<formchildelement> = <HTMLDataListElement>
+<formchildelement> = <element>
+
+<detailchildren> = <innerelements>
+<detailchildren> = <newline><summaryelement><newline><innerelements>
+
+<dlchildren> = <htmlsafestring min=32 max=126>
+<dlchildren> = <newline><dlchild><newline><dlchild><newline>
+<dlchildren> = <newline><dlchild><newline><dlchild><newline><dlchild><newline><dlchild><newline>
+
+<frames> = <htmlsafestring min=32 max=126>
+<frames> = <newline><HTMLFrameElement><newline>
+<frames> = <newline><HTMLFrameElement><newline><HTMLFrameElement><newline>
+
+<dlchild> = <dtelement>
+<dlchild> = <ddelement>
+
+<menuchildren> = <htmlsafestring min=32 max=126>
+<menuchildren> = <newline><menuchild><newline>
+<menuchildren> = <newline><menuchild><newline><menuchild><newline>
+
+<menuchild> = <menuitemelement>
+<menuchild> = <HTMLMenuElement>
+
+<paramelements> = <htmlsafestring min=32 max=126>
+<paramelements> = <newline><HTMLParamElement><newline>
+<paramelements> = <newline><HTMLParamElement><newline><HTMLParamElement><newline>
+
+<mediachildren> = <htmlsafestring min=32 max=126>
+<mediachildren> = <newline><mediachild><newline>
+<mediachildren> = <newline><mediachild><newline><mediachild><newline>
+
+<mediachild> = <htmlsafestring min=32 max=126>
+<mediachild> = <HTMLSourceElement>
+<mediachild> = <HTMLTrackElement>
+<mediachild> = <element>
+
+<eventhandler> = eventhandler1()
+<eventhandler> = eventhandler2()
+<eventhandler> = eventhandler3()
+<eventhandler> = eventhandler4()
+<eventhandler> = eventhandler5()
+
+<element> = <HTMLAnchorElement>
+#<element> = <HTMLAppletElement>
+#<element> = <HTMLAreaElement>
+<element> = <HTMLBaseElement>
+<element> = <HTMLBaseFontElement>
+<element> = <HTMLBRElement>
+<element> = <HTMLButtonElement>
+<element> = <HTMLCanvasElement>
+<element> = <HTMLDataElement>
+<element> = <HTMLDataListElement>
+<element> = <HTMLDetailsElement>
+<element> = <HTMLDialogElement>
+<element> = <HTMLDirectoryElement>
+<element> = <HTMLDivElement>
+<element> = <HTMLDListElement>
+<element> = <HTMLEmbedElement>
+#<element> = <HTMLFieldSetElement>
+<element> = <HTMLFontElement>
+<element> = <HTMLFormElement>
+#<element> = <HTMLFrameElement>
+#<element> = <HTMLFrameSetElement>
+<element> = <HTMLHeadingElement>
+<element> = <HTMLHRElement>
+<element> = <HTMLIFrameElement>
+<element> = <HTMLImageElement>
+<element> = <HTMLInputElement>
+<element> = <HTMLKeygenElement>
+<element> = <HTMLLabelElement>
+#<element> = <HTMLLegendElement>
+#<element> = <HTMLLIElement>
+<element> = <HTMLLinkElement>
+<element> = <HTMLMapElement>
+<element> = <HTMLMarqueeElement>
+<element> = <HTMLAudioElement>
+<element> = <HTMLMenuElement>
+<element> = <HTMLMetaElement>
+<element> = <HTMLMeterElement>
+<element> = <HTMLModElement>
+#<element> = <HTMLObjectElement>
+<element> = <HTMLOListElement>
+#<element> = <HTMLOptGroupElement>
+#<element> = <HTMLOptionElement>
+<element> = <HTMLOutputElement>
+<element> = <HTMLParagraphElement>
+#<element> = <HTMLParamElement>
+<element> = <HTMLPreElement>
+<element> = <HTMLProgressElement>
+<element> = <HTMLQuoteElement>
+#<element> = <HTMLScriptElement>
+<element> = <HTMLSelectElement>
+#<element> = <HTMLSourceElement>
+<element> = <HTMLSpanElement>
+<element> = <HTMLStyleElement>
+#<element> = <HTMLTableCaptionElement>
+#<element> = <HTMLTableCellElement>
+#<element> = <HTMLTableColElement>
+<element> = <HTMLTableElement>
+#<element> = <HTMLTableRowElement>
+#<element> = <HTMLTableSectionElement>
+<element> = <HTMLTemplateElement>
+<element> = <HTMLTextAreaElement>
+<element> = <HTMLTimeElement>
+<element> = <HTMLTitleElement>
+#<element> = <HTMLTrackElement>
+<element> = <HTMLUListElement>
+<element> = <HTMLVideoElement>
+<element> = <HTMLContentElement>
+<element> = <HTMLShadowElement>
+#<element> = <colgroupelement>
+
+<element> = <svgelement_svg>
+<element> = <mathmlelement_math>
+
+<element> = <otherelement>
+<element> = <otherelement>
+
+<attribute> = <attribute_abbr>
+<attribute> = <attribute_accept>
+<attribute> = <attribute_accesskey>
+<attribute> = <attribute_accumulate>
+<attribute> = <attribute_additive>
+<attribute> = <attribute_align>
+<attribute> = <attribute_alink>
+<attribute> = <attribute_allowfullscreen>
+<attribute> = <attribute_alt>
+<attribute> = <attribute_archive>
+<attribute> = <attribute_as>
+<attribute> = <attribute_async>
+<attribute> = <attribute_autocomplete>
+<attribute> = <attribute_autofocus>
+<attribute> = <attribute_autoload>
+<attribute> = <attribute_autoplay>
+<attribute> = <attribute_axis>
+<attribute> = <attribute_azimuth>
+<attribute> = <attribute_background>
+<attribute> = <attribute_basefrequency>
+<attribute> = <attribute_baseprofile>
+<attribute> = <attribute_behavior>
+<attribute> = <attribute_bgcolor>
+<attribute> = <attribute_bgproperties>
+<attribute> = <attribute_border>
+<attribute> = <attribute_bordercolor>
+<attribute> = <attribute_case>
+<attribute> = <attribute_capture>
+<attribute> = <attribute_cellpadding>
+<attribute> = <attribute_cellspacing>
+<attribute> = <attribute_challenge>
+<attribute> = <attribute_char>
+<attribute> = <attribute_charoff>
+<attribute> = <attribute_charset>
+<attribute> = <attribute_checked>
+<attribute> = <attribute_cite>
+<attribute> = <attribute_class>
+<attribute> = <attribute_classid>
+<attribute> = <attribute_clear>
+<attribute> = <attribute_code>
+<attribute> = <attribute_codebase>
+<attribute> = <attribute_codetype>
+<attribute> = <attribute_color>
+<attribute> = <attribute_cols>
+<attribute> = <attribute_colspan>
+<attribute> = <attribute_compact>
+<attribute> = <attribute_content>
+<attribute> = <attribute_contenteditable>
+<attribute> = <attribute_contextmenu>
+<attribute> = <attribute_controls>
+<attribute> = <attribute_coords>
+<attribute> = <attribute_crossorigin>
+<attribute> = <attribute_data>
+<attribute> = <attribute_datetime>
+<attribute> = <attribute_declare>
+<attribute> = <attribute_default>
+<attribute> = <attribute_defer>
+<attribute> = <attribute_desc>
+<attribute> = <attribute_description>
+<attribute> = <attribute_dir>
+<attribute> = <attribute_direction>
+<attribute> = <attribute_dirname>
+<attribute> = <attribute_disabled>
+<attribute> = <attribute_display>
+<attribute> = <attribute_disposition>
+<attribute> = <attribute_download>
+<attribute> = <attribute_draggable>
+<attribute> = <attribute_encoding>
+<attribute> = <attribute_enctype>
+<attribute> = <attribute_expanded>
+<attribute> = <attribute_face>
+<attribute> = <attribute_focus>
+<attribute> = <attribute_focused>
+<attribute> = <attribute_for>
+<attribute> = <attribute_form>
+<attribute> = <attribute_formaction>
+<attribute> = <attribute_formenctype>
+<attribute> = <attribute_formmethod>
+<attribute> = <attribute_formnovalidate>
+<attribute> = <attribute_formtarget>
+<attribute> = <attribute_frame>
+<attribute> = <attribute_frameborder>
+<attribute> = <attribute_framemargin>
+<attribute> = <attribute_framespacing>
+<attribute> = <attribute_headers>
+<attribute> = <attribute_height>
+<attribute> = <attribute_hidden>
+<attribute> = <attribute_high>
+<attribute> = <attribute_href>
+<attribute> = <attribute_hreflang>
+<attribute> = <attribute_hspace>
+<attribute> = <attribute_icon>
+<attribute> = <attribute_incremental>
+<attribute> = <attribute_indeterminate>
+<attribute> = <attribute_inner>
+<attribute> = <attribute_inputmode>
+<attribute> = <attribute_is>
+<attribute> = <attribute_ismap>
+<attribute> = <attribute_item>
+<attribute> = <attribute_itemid>
+<attribute> = <attribute_itemprop>
+<attribute> = <attribute_itemref>
+<attribute> = <attribute_itemscope>
+<attribute> = <attribute_itemtype>
+<attribute> = <attribute_keytype>
+<attribute> = <attribute_kind>
+<attribute> = <attribute_label>
+<attribute> = <attribute_lang>
+<attribute> = <attribute_language>
+<attribute> = <attribute_layout>
+<attribute> = <attribute_left>
+<attribute> = <attribute_leftmargin>
+<attribute> = <attribute_link>
+<attribute> = <attribute_list>
+<attribute> = <attribute_longdesc>
+<attribute> = <attribute_loop>
+<attribute> = <attribute_loopend>
+<attribute> = <attribute_loopstart>
+<attribute> = <attribute_low>
+<attribute> = <attribute_lowsrc>
+<attribute> = <attribute_manifest>
+<attribute> = <attribute_margin>
+<attribute> = <attribute_marginheight>
+<attribute> = <attribute_marginwidth>
+<attribute> = <attribute_max>
+<attribute> = <attribute_maxlength>
+<attribute> = <attribute_mayscript>
+<attribute> = <attribute_media>
+<attribute> = <attribute_menu>
+<attribute> = <attribute_method>
+<attribute> = <attribute_min>
+<attribute> = <attribute_minlength>
+<attribute> = <attribute_mode>
+<attribute> = <attribute_multiple>
+<attribute> = <attribute_muted>
+<attribute> = <attribute_name>
+<attribute> = <attribute_nohref>
+<attribute> = <attribute_nonce>
+<attribute> = <attribute_noresize>
+<attribute> = <attribute_noshade>
+<attribute> = <attribute_novalidate>
+<attribute> = <attribute_nowrap>
+<attribute> = <attribute_open>
+<attribute> = <attribute_optimum>
+<attribute> = <attribute_pattern>
+<attribute> = <attribute_ping>
+<attribute> = <attribute_placeholder>
+<attribute> = <attribute_playcount>
+<attribute> = <attribute_pluginspage>
+<attribute> = <attribute_poster>
+<attribute> = <attribute_preload>
+<attribute> = <attribute_profile>
+<attribute> = <attribute_prompt>
+<attribute> = <attribute_quality>
+<attribute> = <attribute_radiogroup>
+<attribute> = <attribute_readonly>
+<attribute> = <attribute_ref>
+<attribute> = <attribute_referrerpolicy>
+<attribute> = <attribute_rel>
+<attribute> = <attribute_required>
+<attribute> = <attribute_results>
+<attribute> = <attribute_rev>
+<attribute> = <attribute_reversed>
+<attribute> = <attribute_right>
+<attribute> = <attribute_rightmargin>
+<attribute> = <attribute_role>
+<attribute> = <attribute_row>
+<attribute> = <attribute_rows>
+<attribute> = <attribute_rowspan>
+<attribute> = <attribute_rules>
+<attribute> = <attribute_sandbox>
+<attribute> = <attribute_scheme>
+<attribute> = <attribute_scope>
+<attribute> = <attribute_scoped>
+<attribute> = <attribute_scrollamount>
+<attribute> = <attribute_scrolldelay>
+<attribute> = <attribute_scrolling>
+<attribute> = <attribute_seamless>
+<attribute> = <attribute_seed>
+<attribute> = <attribute_select>
+<attribute> = <attribute_selected>
+<attribute> = <attribute_shape>
+<attribute> = <attribute_shouldfocus>
+<attribute> = <attribute_size>
+<attribute> = <attribute_sizes>
+<attribute> = <attribute_slope>
+<attribute> = <attribute_slot>
+<attribute> = <attribute_span>
+<attribute> = <attribute_spellcheck>
+<attribute> = <attribute_src>
+<attribute> = <attribute_srcdoc>
+<attribute> = <attribute_srcset>
+<attribute> = <attribute_srclang>
+<attribute> = <attribute_standby>
+<attribute> = <attribute_start>
+<attribute> = <attribute_startoffset>
+<attribute> = <attribute_startval>
+<attribute> = <attribute_step>
+<attribute> = <attribute_style>
+<attribute> = <attribute_summary>
+<attribute> = <attribute_tabindex>
+<attribute> = <attribute_target>
+<attribute> = <attribute_text>
+<attribute> = <attribute_title>
+<attribute> = <attribute_topmargin>
+<attribute> = <attribute_translate>
+<attribute> = <attribute_truespeed>
+<attribute> = <attribute_type>
+<attribute> = <attribute_usemap>
+<attribute> = <attribute_valign>
+<attribute> = <attribute_value>
+<attribute> = <attribute_valuetype>
+<attribute> = <attribute_version>
+<attribute> = <attribute_vlink>
+<attribute> = <attribute_vspace>
+<attribute> = <attribute_width>
+<attribute> = <attribute_wrap>
+
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+<attribute> = <attribute_eventhandler>
+
+<attribute_eventhandler> = <attribute_onabort>
+<attribute_eventhandler> = <attribute_onautocomplete>
+<attribute_eventhandler> = <attribute_onautocompleteerror>
+<attribute_eventhandler> = <attribute_onafterscriptexecute>
+<attribute_eventhandler> = <attribute_onanimationend>
+<attribute_eventhandler> = <attribute_onanimationiteration>
+<attribute_eventhandler> = <attribute_onanimationstart>
+<attribute_eventhandler> = <attribute_onbeforecopy>
+<attribute_eventhandler> = <attribute_onbeforecut>
+<attribute_eventhandler> = <attribute_onbeforeload>
+<attribute_eventhandler> = <attribute_onbeforepaste>
+<attribute_eventhandler> = <attribute_onbeforescriptexecute>
+<attribute_eventhandler> = <attribute_onbeforeunload>
+<attribute_eventhandler> = <attribute_onbegin>
+<attribute_eventhandler> = <attribute_onblur>
+<attribute_eventhandler> = <attribute_oncanplay>
+<attribute_eventhandler> = <attribute_oncanplaythrough>
+<attribute_eventhandler> = <attribute_onchange>
+<attribute_eventhandler> = <attribute_onclick>
+<attribute_eventhandler> = <attribute_oncontextmenu>
+<attribute_eventhandler> = <attribute_oncopy>
+<attribute_eventhandler> = <attribute_oncut>
+<attribute_eventhandler> = <attribute_ondblclick>
+<attribute_eventhandler> = <attribute_ondrag>
+<attribute_eventhandler> = <attribute_ondragend>
+<attribute_eventhandler> = <attribute_ondragenter>
+<attribute_eventhandler> = <attribute_ondragleave>
+<attribute_eventhandler> = <attribute_ondragover>
+<attribute_eventhandler> = <attribute_ondragstart>
+<attribute_eventhandler> = <attribute_ondrop>
+<attribute_eventhandler> = <attribute_ondurationchange>
+<attribute_eventhandler> = <attribute_onend>
+<attribute_eventhandler> = <attribute_onemptied>
+<attribute_eventhandler> = <attribute_onended>
+<attribute_eventhandler> = <attribute_onerror>
+<attribute_eventhandler> = <attribute_onfocus>
+<attribute_eventhandler> = <attribute_onfocusin>
+<attribute_eventhandler> = <attribute_onfocusout>
+<attribute_eventhandler> = <attribute_onhashchange>
+<attribute_eventhandler> = <attribute_oninput>
+<attribute_eventhandler> = <attribute_oninvalid>
+<attribute_eventhandler> = <attribute_onkeydown>
+<attribute_eventhandler> = <attribute_onkeypress>
+<attribute_eventhandler> = <attribute_onkeyup>
+<attribute_eventhandler> = <attribute_onload>
+<attribute_eventhandler> = <attribute_onloadeddata>
+<attribute_eventhandler> = <attribute_onloadedmetadata>
+<attribute_eventhandler> = <attribute_onloadstart>
+<attribute_eventhandler> = <attribute_onmessage>
+<attribute_eventhandler> = <attribute_onmousedown>
+<attribute_eventhandler> = <attribute_onmouseenter>
+<attribute_eventhandler> = <attribute_onmouseleave>
+<attribute_eventhandler> = <attribute_onmousemove>
+<attribute_eventhandler> = <attribute_onmouseout>
+<attribute_eventhandler> = <attribute_onmouseover>
+<attribute_eventhandler> = <attribute_onmouseup>
+<attribute_eventhandler> = <attribute_onmousewheel>
+<attribute_eventhandler> = <attribute_onoffline>
+<attribute_eventhandler> = <attribute_ononline>
+<attribute_eventhandler> = <attribute_onorientationchange>
+<attribute_eventhandler> = <attribute_onpagehide>
+<attribute_eventhandler> = <attribute_onpageshow>
+<attribute_eventhandler> = <attribute_onpaste>
+<attribute_eventhandler> = <attribute_onpause>
+<attribute_eventhandler> = <attribute_onplay>
+<attribute_eventhandler> = <attribute_onplaying>
+<attribute_eventhandler> = <attribute_onpopstate>
+<attribute_eventhandler> = <attribute_onprogress>
+<attribute_eventhandler> = <attribute_onratechange>
+<attribute_eventhandler> = <attribute_onreset>
+<attribute_eventhandler> = <attribute_onresize>
+<attribute_eventhandler> = <attribute_onscroll>
+<attribute_eventhandler> = <attribute_onsearch>
+<attribute_eventhandler> = <attribute_onseeked>
+<attribute_eventhandler> = <attribute_onseeking>
+<attribute_eventhandler> = <attribute_onselect>
+<attribute_eventhandler> = <attribute_onselectionchange>
+<attribute_eventhandler> = <attribute_onselectstart>
+<attribute_eventhandler> = <attribute_onstalled>
+<attribute_eventhandler> = <attribute_onstorage>
+<attribute_eventhandler> = <attribute_onsubmit>
+<attribute_eventhandler> = <attribute_onsuspend>
+<attribute_eventhandler> = <attribute_ontimeupdate>
+<attribute_eventhandler> = <attribute_ontoggle>
+<attribute_eventhandler> = <attribute_ontouchcancel>
+<attribute_eventhandler> = <attribute_ontouchend>
+<attribute_eventhandler> = <attribute_ontouchmove>
+<attribute_eventhandler> = <attribute_ontouchstart>
+<attribute_eventhandler> = <attribute_ontransitionend>
+<attribute_eventhandler> = <attribute_onunload>
+<attribute_eventhandler> = <attribute_onvolumechange>
+<attribute_eventhandler> = <attribute_onwaiting>
+<attribute_eventhandler> = <attribute_onwebkitanimationend>
+<attribute_eventhandler> = <attribute_onwebkitanimationiteration>
+<attribute_eventhandler> = <attribute_onwebkitanimationstart>
+<attribute_eventhandler> = <attribute_onwebkitfullscreenchange>
+<attribute_eventhandler> = <attribute_onwebkitfullscreenerror>
+<attribute_eventhandler> = <attribute_onwebkitkeyadded>
+<attribute_eventhandler> = <attribute_onwebkitkeyerror>
+<attribute_eventhandler> = <attribute_onwebkitkeymessage>
+<attribute_eventhandler> = <attribute_onwebkitneedkey>
+<attribute_eventhandler> = <attribute_onwebkitsourceclose>
+<attribute_eventhandler> = <attribute_onwebkitsourceended>
+<attribute_eventhandler> = <attribute_onwebkitsourceopen>
+<attribute_eventhandler> = <attribute_onwebkitspeechchange>
+<attribute_eventhandler> = <attribute_onwebkittransitionend>
+<attribute_eventhandler> = <attribute_onwheel>
+
+<attribute_abbr> = abbr="<abbr_value>"
+<attribute_accept> = accept="<accept_value>"
+<attribute_accept-charset> = accept-charset="<accept-charset_value>"
+<attribute_accepts-touch> = accepts-touch="<accepts-touch_value>"
+<attribute_accesskey> = accesskey="<accesskey_value>"
+<attribute_accumulate> = accumulate="<accumulate_value>"
+#<attribute_action> = action="<action_value>"
+<attribute_additive> = additive="<additive_value>"
+<attribute_align> = align="<align_value>"
+<attribute_alink> = alink="<alink_value>"
+<attribute_allowfullscreen> = allowfullscreen="<allowfullscreen_value>"
+<attribute_alt> = alt="<alt_value>"
+<attribute_archive> = archive="<archive_value>"
+<attribute_aria-activedescendant> = aria-activedescendant="<aria-activedescendant_value>"
+<attribute_aria-autocomplete> = aria-autocomplete="<aria-autocomplete_value>"
+<attribute_aria-atomic> = aria-atomic="<aria-atomic_value>"
+<attribute_aria-busy> = aria-busy="<aria-busy_value>"
+<attribute_aria-checked> = aria-checked="<aria-checked_value>"
+<attribute_aria-controls> = aria-controls="<aria-controls_value>"
+<attribute_aria-describedby> = aria-describedby="<aria-describedby_value>"
+<attribute_aria-disabled> = aria-disabled="<aria-disabled_value>"
+<attribute_aria-dropeffect> = aria-dropeffect="<aria-dropeffect_value>"
+<attribute_aria-expanded> = aria-expanded="<aria-expanded_value>"
+<attribute_aria-flowto> = aria-flowto="<aria-flowto_value>"
+<attribute_aria-grabbed> = aria-grabbed="<aria-grabbed_value>"
+<attribute_aria-haspopup> = aria-haspopup="<aria-haspopup_value>"
+<attribute_aria-help> = aria-help="<aria-help_value>"
+<attribute_aria-hidden> = aria-hidden="<aria-hidden_value>"
+<attribute_aria-invalid> = aria-invalid="<aria-invalid_value>"
+<attribute_aria-label> = aria-label="<aria-label_value>"
+<attribute_aria-labeledby> = aria-labeledby="<aria-labeledby_value>"
+<attribute_aria-labelledby> = aria-labelledby="<aria-labelledby_value>"
+<attribute_aria-level> = aria-level="<aria-level_value>"
+<attribute_aria-live> = aria-multiline="<aria-live_value>"
+<attribute_aria-multiline> = aria-multiline="<aria-multiline_value>"
+<attribute_aria-multiselectable> = aria-multiselectable="<aria-multiselectable_value>"
+<attribute_aria-name> = aria-name="<aria-name_value>"
+<attribute_aria-orientation> = aria-orientation="<aria-orientation_value>"
+<attribute_aria-owns> = aria-owns="<aria-owns_value>"
+<attribute_aria-posinset> = aria-posinset="<aria-posinset_value>"
+<attribute_aria-pressed> = aria-pressed="<aria-pressed_value>"
+<attribute_aria-readonly> = aria-readonly="<aria-readonly_value>"
+<attribute_aria-relevant> = aria-relevant="<aria-relevant_value>"
+<attribute_aria-required> = aria-required="<aria-required_value>"
+<attribute_aria-selected> = aria-selected="<aria-selected_value>"
+<attribute_aria-setsize> = aria-setsize="<aria-setsize_value>"
+<attribute_aria-sort> = aria-sort="<aria-sort_value>"
+<attribute_aria-valuemax> = aria-valuemax="<aria-valuemax_value>"
+<attribute_aria-valuemin> = aria-valuemin="<aria-valuemin_value>"
+<attribute_aria-valuenow> = aria-valuenow="<aria-valuenow_value>"
+<attribute_aria-valuetext> = aria-valuetext="<aria-valuetext_value>"
+<attribute_as> = as="<as_value>"
+<attribute_async> = async="<async_value>"
+<attribute_autocomplete> = autocomplete="<autocomplete_value>"
+<attribute_autofocus> = autofocus="<autofocus_value>"
+<attribute_autoload> = autoload="<autoload_value>"
+<attribute_autoplay> = autoplay="<autoplay_value>"
+<attribute_axis> = axis="<axis_value>"
+<attribute_azimuth> = azimuth="<azimuth_value>"
+<attribute_background> = background="<background_value>"
+<attribute_background-color> = background-color="<background-color_value>"
+<attribute_basefrequency> = basefrequency="<basefrequency_value>"
+<attribute_baseprofile> = baseprofile="<baseprofile_value>"
+<attribute_behavior> = behavior="<behavior_value>"
+<attribute_bgcolor> = bgcolor="<bgcolor_value>"
+<attribute_bgproperties> = bgproperties="<bgproperties_value>"
+<attribute_border> = border="<border_value>"
+<attribute_bordercolor> = bordercolor="<bordercolor_value>"
+<attribute_buffered-rendering> = buffered-rendering="<buffered-rendering_value>"
+<attribute_can-process-drag> = can-process-drag="<can-process-drag_value>"
+<attribute_case> = case="<case_value>"
+<attribute_capture> = case="<capture_value>"
+<attribute_cellpadding> = cellpadding="<cellpadding_value>"
+<attribute_cellspacing> = cellspacing="<cellspacing_value>"
+<attribute_challenge> = challenge="<challenge_value>"
+<attribute_char> = char="<char_value>"
+<attribute_charoff> = charoff="<charoff_value>"
+<attribute_charset> = charset="<charset_value>"
+<attribute_checked> = checked="<checked_value>"
+<attribute_cite> = cite="<cite_value>"
+<attribute_class> = class="<class_value>"
+<attribute_classid> = classid="<classid_value>"
+<attribute_clear> = clear="<clear_value>"
+<attribute_code> = code="<code_value>"
+<attribute_codebase> = codebase="<codebase_value>"
+<attribute_codetype> = codetype="<codetype_value>"
+<attribute_color> = color="<color_value>"
+<attribute_cols> = cols="<cols_value>"
+<attribute_colspan> = colspan="<colspan_value>"
+<attribute_compact> = compact="<compact_value>"
+<attribute_content> = content="<content_value>"
+<attribute_contenteditable> = contenteditable="<contenteditable_value>"
+<attribute_contextmenu> = contextmenu="<contextmenu_value>"
+<attribute_controls> = controls="<controls_value>"
+<attribute_coords> = coords="<coords_value>"
+<attribute_crossorigin> = crossorigin="<crossorigin_value>"
+<attribute_data> = data="<data_value>"
+<attribute_datetime> = datetime="<datetime_value>"
+<attribute_declare> = declare="<declare_value>"
+<attribute_default> = default="<default_value>"
+<attribute_defer> = defer="<defer_value>"
+<attribute_desc> = desc="<desc_value>"
+<attribute_description> = description="<description_value>"
+<attribute_dir> = dir="<dir_value>"
+<attribute_direction> = direction="<direction_value>"
+<attribute_dirname> = dirname="<dirname_value>"
+<attribute_disabled> = disabled="<disabled_value>"
+<attribute_display> = display="<display_value>"
+<attribute_disposition> = disposition="<disposition_value>"
+<attribute_download> = download="<download_value>"
+<attribute_draggable> = draggable="<draggable_value>"
+<attribute_encoding> = encoding="<encoding_value>"
+<attribute_enctype> = enctype="<enctype_value>"
+<attribute_expanded> = expanded="<expanded_value>"
+<attribute_face> = face="<face_value>"
+<attribute_focus> = focus="<focus_value>"
+<attribute_focused> = focused="<focused_value>"
+<attribute_for> = for="<for_value>"
+<attribute_form> = form="<form_value>"
+<attribute_formaction> = formaction="<formaction_value>"
+<attribute_formenctype> = formenctype="<formenctype_value>"
+<attribute_formmethod> = formmethod="<formmethod_value>"
+<attribute_formnovalidate> = formnovalidate="<formnovalidate_value>"
+<attribute_formtarget> = formtarget="<formtarget_value>"
+<attribute_frame> = frame="<frame_value>"
+<attribute_frameborder> = frameborder="<frameborder_value>"
+<attribute_framemargin> = framemargin="<framemargin_value>"
+<attribute_framespacing> = framespacing="<framespacing_value>"
+<attribute_headers> = headers="<headers_value>"
+<attribute_height> = height="<height_value>"
+<attribute_hidden> = hidden="<hidden_value>"
+<attribute_high> = high="<high_value>"
+<attribute_href> = href="<href_value>"
+<attribute_hreflang> = hreflang="<hreflang_value>"
+<attribute_hspace> = hspace="<hspace_value>"
+<attribute_http-equiv> = http-equiv="<http-equiv_value>"
+<attribute_icon> = icon="<icon_value>"
+#<attribute_id> = id="<id_value>"
+<attribute_incremental> = incremental="<incremental_value>"
+<attribute_indeterminate> = indeterminate="<indeterminate_value>"
+<attribute_inner> = inner="<inner_value>"
+<attribute_inputmode> = inputmode="<inputmode_value>"
+<attribute_is> = is="<is_value>"
+<attribute_ismap> = ismap="<ismap_value>"
+<attribute_item> = item="<item_value>"
+<attribute_itemid> = itemid="<itemid_value>"
+<attribute_itemprop> = itemprop="<itemprop_value>"
+<attribute_itemref> = itemref="<itemref_value>"
+<attribute_itemscope> = itemscope="<itemscope_value>"
+<attribute_itemtype> = itemtype="<itemtype_value>"
+<attribute_keytype> = keytype="<keytype_value>"
+<attribute_kind> = kind="<kind_value>"
+<attribute_label> = label="<label_value>"
+<attribute_lang> = lang="<lang_value>"
+<attribute_language> = language="<language_value>"
+<attribute_layout> = layout="<layout_value>"
+<attribute_left> = left="<left_value>"
+<attribute_leftmargin> = leftmargin="<leftmargin_value>"
+<attribute_link> = link="<link_value>"
+<attribute_list> = list="<list_value>"
+<attribute_longdesc> = longdesc="<longdesc_value>"
+<attribute_loop> = loop="<loop_value>"
+<attribute_loopend> = loopend="<loopend_value>"
+<attribute_loopstart> = loopstart="<loopstart_value>"
+<attribute_low> = low="<low_value>"
+<attribute_lowsrc> = lowsrc="<lowsrc_value>"
+<attribute_manifest> = manifest="<manifest_value>"
+<attribute_margin> = margin="<margin_value>"
+<attribute_marginheight> = marginheight="<marginheight_value>"
+<attribute_marginwidth> = marginwidth="<marginwidth_value>"
+<attribute_max> = max="<max_value>"
+<attribute_maxlength> = maxlength="<maxlength_value>"
+<attribute_mayscript> = mayscript="<mayscript_value>"
+<attribute_media> = media="<media_value>"
+<attribute_menu> = menu="<menu_value>"
+<attribute_method> = method="<method_value>"
+<attribute_min> = min="<min_value>"
+<attribute_minlength> = minlength="<minlength_value>"
+<attribute_mode> = mode="<mode_value>"
+<attribute_multiple> = multiple="<multiple_value>"
+<attribute_muted> = muted="<muted_value>"
+<attribute_name> = name="<name_value>"
+<attribute_nohref> = nohref="<nohref_value>"
+<attribute_nonce> = nonce="<nonce_value>"
+<attribute_noresize> = noresize="<noresize_value>"
+<attribute_noshade> = noshade="<noshade_value>"
+<attribute_novalidate> = novalidate="<novalidate_value>"
+<attribute_nowrap> = nowrap="<nowrap_value>"
+<attribute_open> = open="<open_value>"
+<attribute_optimum> = optimum="<optimum_value>"
+<attribute_pattern> = pattern="<pattern_value>"
+<attribute_ping> = ping="<ping_value>"
+<attribute_placeholder> = placeholder="<placeholder_value>"
+<attribute_playcount> = playcount="<playcount_value>"
+<attribute_pluginspage> = pluginspage="<pluginspage_value>"
+<attribute_poster> = poster="<poster_value>"
+<attribute_preload> = preload="<preload_value>"
+<attribute_profile> = profile="<profile_value>"
+<attribute_prompt> = prompt="<prompt_value>"
+<attribute_quality> = quality="<quality_value>"
+<attribute_radiogroup> = radiogroup="<radiogroup_value>"
+<attribute_readonly> = readonly="<readonly_value>"
+<attribute_ref> = ref="<ref_value>"
+<attribute_referrerpolicy> = referrerpolicy="<referrerpolicy_value>"
+<attribute_rel> = rel="<rel_value>"
+<attribute_required> = required="<required_value>"
+<attribute_results> = results="<results_value>"
+<attribute_rev> = rev="<rev_value>"
+<attribute_reversed> = reversed="<reversed_value>"
+<attribute_right> = right="<right_value>"
+<attribute_rightmargin> = rightmargin="<rightmargin_value>"
+<attribute_role> = role="<role_value>"
+<attribute_row> = row="<row_value>"
+<attribute_rows> = rows="<rows_value>"
+<attribute_rowspan> = rowspan="<rowspan_value>"
+<attribute_rules> = rules="<rules_value>"
+<attribute_sandbox> = sandbox="<sandbox_value>"
+<attribute_scheme> = scheme="<scheme_value>"
+<attribute_scope> = scope="<scope_value>"
+<attribute_scoped> = scoped="<scoped_value>"
+<attribute_scrollamount> = scrollamount="<scrollamount_value>"
+<attribute_scrolldelay> = scrolldelay="<scrolldelay_value>"
+<attribute_scrolling> = scrolling="<scrolling_value>"
+<attribute_seamless> = seamless="<seamless_value>"
+<attribute_seed> = seed="<seed_value>"
+<attribute_select> = select="<select_value>"
+<attribute_selected> = selected="<selected_value>"
+<attribute_shape> = shape="<shape_value>"
+<attribute_shouldfocus> = shouldfocus="<shouldfocus_value>"
+<attribute_size> = size="<size_value>"
+<attribute_sizes> = sizes="<sizes_value>"
+<attribute_slope> = slope="<slope_value>"
+<attribute_slot> = slot="<slot_value>"
+<attribute_span> = span="<span_value>"
+<attribute_spellcheck> = spellcheck="<spellcheck_value>"
+<attribute_src> = src="<src_value>"
+<attribute_srcdoc> = srcdoc="<srcdoc_value>"
+<attribute_srcset> = srcset="<srcset_value>"
+<attribute_srclang> = srclang="<srclang_value>"
+<attribute_standby> = standby="<standby_value>"
+<attribute_start> = start="<start_value>"
+<attribute_startoffset> = startoffset="<startoffset_value>"
+<attribute_startval> = startval="<startval_value>"
+<attribute_step> = step="<step_value>"
+<attribute_style> = style="<style_value>"
+<attribute_summary> = summary="<summary_value>"
+<attribute_tabindex> = tabindex="<tabindex_value>"
+<attribute_target> = target="<target_value>"
+<attribute_text> = text="<text_value>"
+<attribute_title> = title="<title_value>"
+<attribute_topmargin> = topmargin="<topmargin_value>"
+<attribute_translate> = translate="<translate_value>"
+<attribute_truespeed> = truespeed="<truespeed_value>"
+<attribute_type> = type="<type_value>"
+<attribute_usemap> = usemap="<usemap_value>"
+<attribute_valign> = valign="<valign_value>"
+<attribute_value> = value="<value_value>"
+<attribute_valuetype> = valuetype="<valuetype_value>"
+<attribute_version> = version="<version_value>"
+<attribute_vlink> = vlink="<vlink_value>"
+<attribute_vspace> = vspace="<vspace_value>"
+<attribute_width> = width="<width_value>"
+<attribute_wrap> = wrap="<wrap_value>"
+
+#event handlers
+<attribute_onabort> = onabort="<eventhandler>"
+<attribute_onautocomplete> = onautocomplete="<eventhandler>"
+<attribute_onautocompleteerror> = onautocompleteerror="<eventhandler>"
+<attribute_onafterscriptexecute> = onafterscriptexecute="<eventhandler>"
+<attribute_onanimationend> = onanimationend="<eventhandler>"
+<attribute_onanimationiteration> = onanimationiteration="<eventhandler>"
+<attribute_onanimationstart> = onanimationstart="<eventhandler>"
+<attribute_onbeforecopy> = onbeforecopy="<eventhandler>"
+<attribute_onbeforecut> = onbeforecut="<eventhandler>"
+<attribute_onbeforeload> = onbeforeload="<eventhandler>"
+<attribute_onbeforepaste> = onbeforepaste="<eventhandler>"
+<attribute_onbeforescriptexecute> = onbeforescriptexecute="<eventhandler>"
+<attribute_onbeforeunload> = onbeforeunload="<eventhandler>"
+<attribute_onbegin> = onbegin="<eventhandler>"
+<attribute_onblur> = onblur="<eventhandler>"
+<attribute_oncanplay> = oncanplay="<eventhandler>"
+<attribute_oncanplaythrough> = oncanplaythrough="<eventhandler>"
+<attribute_onchange> = onchange="<eventhandler>"
+<attribute_onclick> = onclick="<eventhandler>"
+<attribute_oncontextmenu> = oncontextmenu="<eventhandler>"
+<attribute_oncopy> = oncopy="<eventhandler>"
+<attribute_oncut> = oncut="<eventhandler>"
+<attribute_ondblclick> = ondblclick="<eventhandler>"
+<attribute_ondrag> = ondrag="<eventhandler>"
+<attribute_ondragend> = ondragend="<eventhandler>"
+<attribute_ondragenter> = ondragenter="<eventhandler>"
+<attribute_ondragleave> = ondragleave="<eventhandler>"
+<attribute_ondragover> = ondragover="<eventhandler>"
+<attribute_ondragstart> = ondragstart="<eventhandler>"
+<attribute_ondrop> = ondrop="<eventhandler>"
+<attribute_ondurationchange> = ondurationchange="<eventhandler>"
+<attribute_onend> = onend="<eventhandler>"
+<attribute_onemptied> = onemptied="<eventhandler>"
+<attribute_onended> = onended="<eventhandler>"
+<attribute_onerror> = onerror="<eventhandler>"
+<attribute_onfocus> = onfocus="<eventhandler>"
+<attribute_onfocusin> = onfocusin="<eventhandler>"
+<attribute_onfocusout> = onfocusout="<eventhandler>"
+<attribute_onhashchange> = onhashchange="<eventhandler>"
+<attribute_oninput> = oninput="<eventhandler>"
+<attribute_oninvalid> = oninvalid="<eventhandler>"
+<attribute_onkeydown> = onkeydown="<eventhandler>"
+<attribute_onkeypress> = onkeypress="<eventhandler>"
+<attribute_onkeyup> = onkeyup="<eventhandler>"
+<attribute_onload> = onload="<eventhandler>"
+<attribute_onloadeddata> = onloadeddata="<eventhandler>"
+<attribute_onloadedmetadata> = onloadedmetadata="<eventhandler>"
+<attribute_onloadstart> = onloadstart="<eventhandler>"
+<attribute_onmessage> = onmessage="<eventhandler>"
+<attribute_onmousedown> = onmousedown="<eventhandler>"
+<attribute_onmouseenter> = onmouseenter="<eventhandler>"
+<attribute_onmouseleave> = onmouseleave="<eventhandler>"
+<attribute_onmousemove> = onmousemove="<eventhandler>"
+<attribute_onmouseout> = onmouseout="<eventhandler>"
+<attribute_onmouseover> = onmouseover="<eventhandler>"
+<attribute_onmouseup> = onmouseup="<eventhandler>"
+<attribute_onmousewheel> = onmousewheel="<eventhandler>"
+<attribute_onoffline> = onoffline="<eventhandler>"
+<attribute_ononline> = ononline="<eventhandler>"
+<attribute_onorientationchange> = onorientationchange="<eventhandler>"
+<attribute_onpagehide> = onpagehide="<eventhandler>"
+<attribute_onpageshow> = onpageshow="<eventhandler>"
+<attribute_onpaste> = onpaste="<eventhandler>"
+<attribute_onpause> = onpause="<eventhandler>"
+<attribute_onplay> = onplay="<eventhandler>"
+<attribute_onplaying> = onplaying="<eventhandler>"
+<attribute_onpopstate> = onpopstate="<eventhandler>"
+<attribute_onprogress> = onprogress="<eventhandler>"
+<attribute_onratechange> = onratechange="<eventhandler>"
+<attribute_onreset> = onreset="<eventhandler>"
+<attribute_onresize> = onresize="<eventhandler>"
+<attribute_onscroll> = onscroll="<eventhandler>"
+<attribute_onsearch> = onsearch="<eventhandler>"
+<attribute_onseeked> = onseeked="<eventhandler>"
+<attribute_onseeking> = onseeking="<eventhandler>"
+<attribute_onselect> = onselect="<eventhandler>"
+<attribute_onselectionchange> = onselectionchange="<eventhandler>"
+<attribute_onselectstart> = onselectstart="<eventhandler>"
+<attribute_onstalled> = onstalled="<eventhandler>"
+<attribute_onstorage> = onstorage="<eventhandler>"
+<attribute_onsubmit> = onsubmit="<eventhandler>"
+<attribute_onsuspend> = onsuspend="<eventhandler>"
+<attribute_ontimeupdate> = ontimeupdate="<eventhandler>"
+<attribute_ontoggle> = ontoggle="<eventhandler>"
+<attribute_ontouchcancel> = ontouchcancel="<eventhandler>"
+<attribute_ontouchend> = ontouchend="<eventhandler>"
+<attribute_ontouchmove> = ontouchmove="<eventhandler>"
+<attribute_ontouchstart> = ontouchstart="<eventhandler>"
+<attribute_ontransitionend> = ontransitionend="<eventhandler>"
+<attribute_onunload> = onunload="<eventhandler>"
+<attribute_onvolumechange> = onvolumechange="<eventhandler>"
+<attribute_onwaiting> = onwaiting="<eventhandler>"
+<attribute_onwebkitanimationend> = onwebkitanimationend="<eventhandler>"
+<attribute_onwebkitanimationiteration> = onwebkitanimationiteration="<eventhandler>"
+<attribute_onwebkitanimationstart> = onwebkitanimationstart="<eventhandler>"
+<attribute_onwebkitfullscreenchange> = onwebkitfullscreenchange="<eventhandler>"
+<attribute_onwebkitfullscreenerror> = onwebkitfullscreenerror="<eventhandler>"
+<attribute_onwebkitkeyadded> = onwebkitkeyadded="<eventhandler>"
+<attribute_onwebkitkeyerror> = onwebkitkeyerror="<eventhandler>"
+<attribute_onwebkitkeymessage> = onwebkitkeymessage="<eventhandler>"
+<attribute_onwebkitneedkey> = onwebkitneedkey="<eventhandler>"
+<attribute_onwebkitsourceclose> = onwebkitsourceclose="<eventhandler>"
+<attribute_onwebkitsourceended> = onwebkitsourceended="<eventhandler>"
+<attribute_onwebkitsourceopen> = onwebkitsourceopen="<eventhandler>"
+<attribute_onwebkitspeechchange> = onwebkitspeechchange="<eventhandler>"
+<attribute_onwebkittransitionend> = onwebkittransitionend="<eventhandler>"
+<attribute_onwheel> = onwheel="<eventhandler>"
+
+<attributestring> = <htmlsafestring min=32 max=126>
+<attributechar> = <char min=32 max=126>
+
+!include ../../../../third_party/domato/src/rules/attributevalues.txt
+!include ../../../../third_party/domato/src/rules/tagattributes.txt
+
+<HTMLAnchorElement> = <lt>a <a_attributes> <attributes><gt><innerelements><lt>/a<gt>
+<otherelement> = <lt>abbr <abbr_attributes> <attributes><gt><innerelements><lt>/abbr<gt>
+<otherelement> = <lt>acronym <acronym_attributes> <attributes><gt><innerelements><lt>/acronym<gt>
+<otherelement> = <lt>address <address_attributes> <attributes><gt><innerelements><lt>/address<gt>
+<HTMLAppletElement> = <lt>applet <applet_attributes> <attributes><gt><htmlsafestring min=32 max=126><lt>/applet<gt>
+<HTMLAreaElement> = <lt>area <area_attributes> <attributes><gt><lt>/area<gt>
+<otherelement> = <lt>article <article_attributes> <attributes><gt><innerelements><lt>/article<gt>
+<otherelement> = <lt>aside <aside_attributes> <attributes><gt><innerelements><lt>/aside<gt>
+<HTMLAudioElement> = <lt>audio <audio_attributes> <attributes><gt><mediachildren><lt>/audio<gt>
+<otherelement> = <lt>b <b_attributes> <attributes><gt><innerelements><lt>/b<gt>
+<HTMLBaseElement> = <lt>base <base_attributes> <attributes><gt><lt>/base<gt>
+<HTMLBaseFontElement> = <lt>basefont <basefont_attributes> <attributes><gt><lt>/basefont<gt>
+<otherelement> = <lt>bdi <bdi_attributes> <attributes><gt><innerelements><lt>/bdi<gt>
+<otherelement> = <lt>bdo <bdo_attributes> <attributes><gt><innerelements><lt>/bdo<gt>
+<otherelement> = <lt>bgsound <attributes><gt><innerelements><lt>/bgsound<gt>
+<otherelement> = <lt>big <big_attributes> <attributes><gt><innerelements><lt>/big<gt>
+<otherelement> = <lt>blink <attributes><gt><innerelements><lt>/big<gt>
+<otherelement> = <lt>blockquote <blockquote_attributes> <attributes><gt><innerelements><lt>/blockquote<gt>
+<HTMLBRElement> = <lt>br <br_attributes> <attributes><gt><lt>/br<gt>
+<HTMLButtonElement> = <lt>button <button_attributes> <attributes><gt><innerelements><lt>/button<gt>
+<HTMLCanvasElement> = <lt>canvas <canvas_attributes> <attributes><gt><innerelements><lt>/canvas<gt>
+<HTMLTableCaptionElement> = <lt>caption <caption_attributes> <attributes><gt><innerelements><lt>/caption<gt>
+<otherelement> = <lt>center <center_attributes> <attributes><gt><innerelements><lt>/center<gt>
+<otherelement> = <lt>cite <cite_attributes> <attributes><gt><innerelements><lt>/cite<gt>
+<otherelement> = <lt>code <code_attributes> <attributes><gt><innerelements><lt>/code<gt>
+<HTMLTableColElement> = <lt>col <col_attributes> <attributes><gt><innerelements><lt>/col<gt>
+<colgroupelement> = <lt>colgroup <colgroup_attributes> <attributes><gt><colelements><lt>/colgroup<gt>
+<otherelement> = <lt>command <command_attributes> <attributes><gt><innerelements><lt>/command<gt>
+<HTMLContentElement> = <lt>content <content_attributes> <attributes><gt><innerelements><lt>/content<gt>
+<HTMLDataElement> = <lt>data <data_attributes> <attributes><gt><innerelements><lt>/command<gt>
+<HTMLDataListElement> = <lt>datalist <datalist_attributes> <attributes><gt><optionelements><lt>/datalist<gt>
+<ddelement> = <lt>dd <dd_attributes> <attributes><gt><innerelements><lt>/dd<gt>
+<HTMLModElement> = <lt>del <del_attributes> <attributes><gt><innerelements><lt>/del<gt>
+<HTMLDetailsElement> = <lt>details <details_attributes> <attributes><gt><detailchildren><lt>/details<gt>
+<otherelement> = <lt>dfn <dfn_attributes> <attributes><gt><innerelements><lt>/dfn<gt>
+<HTMLDialogElement> = <lt>dialog <dialog_attributes> <attributes><gt><innerelements><lt>/dialog<gt>
+<HTMLDirectoryElement> = <lt>dir <dir_attributes> <attributes><gt><lielements><lt>/dir<gt>
+<HTMLDivElement> = <lt>div <div_attributes> <attributes><gt><innerelements><lt>/div<gt>
+<HTMLDListElement> = <lt>dl <dl_attributes> <attributes><gt><dlchildren><lt>/dl<gt>
+<dtelement> = <lt>dt <dt_attributes> <attributes><gt><innerelements><lt>/dt<gt>
+<otherelement> = <lt>em <em_attributes> <attributes><gt><innerelements><lt>/em<gt>
+<HTMLEmbedElement> = <lt>embed <embed_attributes> <attributes><gt><innerelements><lt>/embed<gt>
+<HTMLFieldSetElement> = <lt>fieldset <fieldset_attributes> <attributes><gt><formchildren><lt>/fieldset<gt>
+<otherelement> = <lt>figcaption <attributes><gt><innerelements><lt>/figcaption<gt>
+<otherelement> = <lt>figure <figure_attributes> <attributes><gt><innerelements><lt>/figure<gt>
+<HTMLFontElement> = <lt>font <font_attributes> <attributes><gt><innerelements><lt>/font<gt>
+<otherelement> = <lt>footer <footer_attributes> <attributes><gt><innerelements><lt>/footer<gt>
+<HTMLFormElement> = <lt>form <form_attributes> <attributes><gt><formchildren><lt>/form<gt>
+<HTMLFrameElement> = <lt>frame <frame_attributes> <attributes><gt><innerelements><lt>/frame<gt>
+<HTMLFrameSetElement> = <lt>frameset <frameset_attributes> <attributes><gt><frames><lt>/frameset<gt>
+<HTMLHeadingElement> = <lt>h1 <h1_attributes> <attributes><gt><innerelements><lt>/h1<gt>
+<HTMLHeadingElement> = <lt>h2 <h2_attributes> <attributes><gt><innerelements><lt>/h2<gt>
+<HTMLHeadingElement> = <lt>h3 <h3_attributes> <attributes><gt><innerelements><lt>/h3<gt>
+<HTMLHeadingElement> = <lt>h4 <h4_attributes> <attributes><gt><innerelements><lt>/h4<gt>
+<HTMLHeadingElement> = <lt>h5 <h5_attributes> <attributes><gt><innerelements><lt>/h5<gt>
+<HTMLHeadingElement> = <lt>h6 <h6_attributes> <attributes><gt><innerelements><lt>/h6<gt>
+<otherelement> = <lt>header <header_attributes> <attributes><gt><innerelements><lt>/header<gt>
+<otherelement> = <lt>hgroup <hgroup_attributes> <attributes><gt><innerelements><lt>/hgroup<gt>
+<HTMLHRElement> = <lt>hr <hr_attributes> <attributes><gt><innerelements><lt>/hr<gt>
+<otherelement> = <lt>i <i_attributes> <attributes><gt><innerelements><lt>/i<gt>
+<HTMLIFrameElement> = <lt>iframe <iframe_attributes> <attributes><gt><htmlsafestring min=32 max=126><lt>/iframe<gt>
+<HTMLImageElement> = <lt>image <image_attributes> <attributes><gt><lt>/image<gt>
+<HTMLImageElement> = <lt>img <img_attributes> <attributes><gt><lt>/img<gt>
+<HTMLInputElement> = <lt>input <input_attributes> type=<inputtype> <attributes><gt>
+<HTMLModElement> = <lt>ins <ins_attributes> <attributes><gt><innerelements><lt>/ins<gt>
+<otherelement> = <lt>isindex <attributes><gt><innerelements><lt>/isindex<gt>
+<otherelement> = <lt>kbd <kbd_attributes> <attributes><gt><innerelements><lt>/kbd<gt>
+<HTMLKeygenElement> = <lt>keygen <keygen_attributes> <attributes><gt>
+<HTMLLabelElement> = <lt>label <label_attributes> <attributes><gt><innerelements><lt>/label<gt>
+<otherelement> = <lt>layer <attributes><gt><innerelements><lt>/layer<gt>
+<HTMLLegendElement> = <lt>legend <legend_attributes> <attributes><gt><innerelements><lt>/legend<gt>
+<HTMLLIElement> = <lt>li <li_attributes> <attributes><gt><innerelements><lt>/li<gt>
+<HTMLLinkElement> = <lt>link <link_attributes> <attributes><gt><innerelements><lt>/link<gt>
+<otherelement> = <lt>listing <listing_attributes> <attributes><gt><innerelements><lt>/listing<gt>
+<otherelement> = <lt>main <main_attributes> <attributes><gt><innerelements><lt>/main<gt>
+<HTMLMapElement> = <lt>map <map_attributes> <attributes><gt><areaelements><lt>/map<gt>
+<otherelement> = <lt>mark <mark_attributes> <attributes><gt><innerelements><lt>/mark<gt>
+<HTMLMarqueeElement> = <lt>marquee <marquee_attributes> <attributes><gt><innerelements><lt>/marquee<gt>
+<HTMLMenuElement> = <lt>menu <menu_attributes> <attributes><gt><menuchildren><lt>/menu<gt>
+<menuitemelement> = <lt>menuitem <menuitem_attributes> <attributes><gt><innerelements><lt>/menu<gt>
+<HTMLMetaElement> = <lt>meta <meta_attributes> <attributes><gt><lt>/meta<gt>
+<HTMLMeterElement> = <lt>meter <meter_attributes> <attributes><gt><innerelements><lt>/meter<gt>
+<otherelement> = <lt>nav <nav_attributes> <attributes><gt><innerelements><lt>/nav<gt>
+<otherelement> = <lt>nobr <nobr_attributes> <attributes><gt><innerelements><lt>/nobr<gt>
+<otherelement> = <lt>noembed <attributes><gt><innerelements><lt>/noembed<gt>
+<otherelement> = <lt>noframes <noframes_attributes> <attributes><gt><htmlsafestring min=32 max=126><lt>/noframes<gt>
+<otherelement> = <lt>nolayer <attributes><gt><innerelements><lt>/nolayer<gt>
+<otherelement> = <lt>noscript <noscript_attributes> <attributes><gt><htmlsafestring min=32 max=126><lt>/noscript<gt>
+<HTMLObjectElement> = <lt>object <object_attributes> <attributes><gt><paramelements><lt>/object<gt>
+<HTMLOListElement> = <lt>ol <ol_attributes> <attributes><gt><lielements><lt>/ol<gt>
+<HTMLOptGroupElement> = <lt>optgroup <optgroup_attributes> <attributes><gt><optionelements><lt>/optgroup<gt>
+<HTMLOptionElement> = <lt>option <option_attributes> <attributes><gt><innerelements><lt>/option<gt>
+<HTMLOutputElement> = <lt>output <output_attributes> <attributes><gt><innerelements><lt>/output<gt>
+<HTMLParagraphElement> = <lt>p <p_attributes> <attributes><gt><innerelements><lt>/p<gt>
+<HTMLParamElement> = <lt>param <param_attributes> <attributes><gt><lt>/param<gt>
+#<otherelement> = <lt>plaintext <attributes><gt><innerelements><lt>/plaintext<gt>
+<HTMLPreElement> = <lt>pre <pre_attributes> <attributes><gt><innerelements><lt>/pre<gt>
+<HTMLProgressElement> = <lt>progress <progress_attributes> <attributes><gt><innerelements><lt>/progress<gt>
+<HTMLQuoteElement> = <lt>q <q_attributes> <attributes><gt><innerelements><lt>/q<gt>
+<otherelement> = <lt>rp <rp_attributes> <attributes><gt><innerelements><lt>/rp<gt>
+<otherelement> = <lt>rt <rt_attributes> <attributes><gt><innerelements><lt>/rt<gt>
+<otherelement> = <lt>ruby <ruby_attributes> <attributes><gt><innerelements><lt>/ruby<gt>
+<otherelement> = <lt>s <s_attributes> <attributes><gt><innerelements><lt>/s<gt>
+<otherelement> = <lt>samp <samp_attributes> <attributes><gt><innerelements><lt>/samp<gt>
+#<HTMLScriptElement> = <lt>script <script_attributes> <attributes><gt><innerelements><lt>/script<gt>
+<otherelement> = <lt>section <section_attributes> <attributes><gt><innerelements><lt>/section<gt>
+<HTMLSelectElement> = <lt>select <select_attributes> <attributes><gt><selectchildren><lt>/select<gt>
+<HTMLShadowElement> = <lt>shadow <attributes><gt><innerelements><lt>/shadow<gt>
+<otherelement> = <lt>small <small_attributes> <attributes><gt><innerelements><lt>/small<gt>
+<HTMLSourceElement> = <lt>source <source_attributes> <attributes><gt><innerelements><lt>/source<gt>
+<otherelement> = <lt>spacer <spacer_attributes> <attributes><gt><innerelements><lt>/strike<gt>
+<HTMLSpanElement> = <lt>span <span_attributes> <attributes><gt><innerelements><lt>/span<gt>
+<otherelement> = <lt>strike <strike_attributes> <attributes><gt><innerelements><lt>/strike<gt>
+<otherelement> = <lt>strong <strong_attributes> <attributes><gt><innerelements><lt>/strong<gt>
+<HTMLStyleElement> = <lt>style <style_attributes> <attributes><gt><htmlsafestring min=32 max=126><lt>/style<gt>
+<otherelement> = <lt>sub <sub_attributes> <attributes><gt><innerelements><lt>/sub<gt>
+<summaryelement> = <lt>summary <summary_attributes> <attributes><gt><innerelements><lt>/summary<gt>
+<otherelement> = <lt>sup <sup_attributes> <attributes><gt><innerelements><lt>/sup<gt>
+<HTMLTableElement> = <lt>table <table_attributes> <attributes><gt><tablechildren><lt>/table<gt>
+<HTMLTableSectionElement> = <lt>tbody <tbody_attributes> <attributes><gt><trelements><lt>/tbody<gt>
+<otherelement> = <lt>td <td_attributes> <attributes><gt><innerelements><lt>/td<gt>
+<HTMLTemplateElement> = <lt>template <template_attributes> <attributes><gt><innerelements><lt>/template<gt>
+<HTMLTextAreaElement> = <lt>textarea <textarea_attributes> <attributes><gt><htmlsafestring min=32 max=126><lt>/textarea<gt>
+<HTMLTableSectionElement> = <lt>tfoot <tfoot_attributes> <attributes><gt><trelements><lt>/tfoot<gt>
+<HTMLTableCellElement> = <lt>th <th_attributes> <attributes><gt><innerelements><lt>/th<gt>
+<HTMLTableSectionElement> = <lt>thead <thead_attributes> <attributes><gt><trelements><lt>/thead<gt>
+<HTMLTimeElement> = <lt>time <time_attributes> <attributes><gt><innerelements><lt>/time<gt>
+<HTMLTitleElement> = <lt>title <title_attributes> <attributes><gt><htmlsafestring min=32 max=126><lt>/title<gt>
+<HTMLTableRowElement> = <lt>tr <tr_attributes> <attributes><gt><thelements><lt>/tr<gt>
+<HTMLTrackElement> = <lt>track <track_attributes> <attributes><gt><innerelements><lt>/track<gt>
+<otherelement> = <lt>tt <tt_attributes> <attributes><gt><innerelements><lt>/tt<gt>
+<otherelement> = <lt>u <u_attributes> <attributes><gt><innerelements><lt>/u<gt>
+<HTMLUListElement> = <lt>ul <ul_attributes> <attributes><gt><lielements><lt>/ul<gt>
+<otherelement> = <lt>var <var_attributes> <attributes><gt><innerelements><lt>/var<gt>
+<HTMLVideoElement> = <lt>video <video_attributes> <attributes><gt><mediachildren><lt>/video<gt>
+<otherelement> = <lt>wbr <wbr_attributes> <attributes><gt><innerelements><lt>/wbr<gt>
+<otherelement> = <lt>xmp <xmp_attributes> <attributes><gt><htmlsafestring min=32 max=126><lt>/xmp<gt>
+
+!include ../../../../third_party/domato/src/rules/svg.txt
+!include ../../../../third_party/domato/src/rules/svgattrvalues.txt
+!include ../../../../third_party/domato/src/rules/mathml.txt
+!include ../../../../third_party/domato/src/rules/mathmlattrvalues.txt

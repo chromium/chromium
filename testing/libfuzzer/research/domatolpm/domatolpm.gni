@@ -1,0 +1,144 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+template("domatolpm") {
+  _name = target_name
+  _script_target_name = "${_name}_domatolpm_gen"
+  _gen_target_name = "${_name}_proto_gen"
+  _gen_file_format = "${target_gen_dir}/${_name}"
+  _target_gen_dir = target_gen_dir
+  action(_script_target_name) {
+    testonly = true
+    script = "//testing/libfuzzer/research/domatolpm/generator.py"
+    args = [
+      "-p",
+      rebase_path(invoker.grammar_file, root_build_dir),
+      "-f",
+      rebase_path(_gen_file_format, root_build_dir),
+      "-n",
+      invoker.grammar_name,
+      "-d",
+      rebase_path(_target_gen_dir, root_gen_dir),
+    ]
+    inputs = [
+      "//testing/libfuzzer/research/domatolpm/templates/domatolpm.cc.tmpl",
+      "//testing/libfuzzer/research/domatolpm/templates/domatolpm.h.tmpl",
+      "//testing/libfuzzer/research/domatolpm/templates/domatolpm.proto.tmpl",
+    ]
+    outputs = [
+      "${_gen_file_format}.proto",
+      "${_gen_file_format}_sub.proto",
+      "${_gen_file_format}.cc",
+      "${_gen_file_format}.h",
+    ]
+  }
+  proto_library(_gen_target_name) {
+    testonly = true
+    deps = [ ":${_script_target_name}" ]
+    sources = [
+      "${_gen_file_format}.proto",
+      "${_gen_file_format}_sub.proto",
+    ]
+    proto_in_dir = "${root_gen_dir}"
+    proto_out_dir = "."
+    generate_python = false
+  }
+  static_library(_name) {
+    testonly = true
+    public_deps = [
+      ":${_gen_target_name}",
+      ":${_script_target_name}",
+      "//base",
+    ]
+    deps = [ "//testing/libfuzzer/research/domatolpm:domatolpm_context" ]
+    sources = [
+      "${_gen_file_format}.cc",
+      "${_gen_file_format}.h",
+    ]
+  }
+}
+
+template("domatolpm_fuzzer") {
+  # invoker.template_file
+  # invoker.grammars [ "jsfuzzer://path/to/grammar/js.txt", "cssfuzzer":"//path/to/grammar/css.txt" ]
+  _templated_deps = []
+  foreach(grammar, invoker.grammars) {
+    _grammars = []
+    _grammars = string_split(grammar, ":")
+    _target_name = _grammars[0]
+    _templated_deps += [ ":${_target_name}" ]
+    domatolpm(_target_name) {
+      grammar_file = _grammars[1]
+      grammar_name = _grammars[0]
+    }
+  }
+
+  _target_gen_dir = target_gen_dir
+  _gen_file_format = "${target_gen_dir}/${target_name}"
+  _generator_target_name = "${target_name}_template_gen"
+  _target_name = target_name
+  action(_generator_target_name) {
+    testonly = true
+    script = "//testing/libfuzzer/research/domatolpm/fuzzer_generator.py"
+    deps = _templated_deps
+    args = [
+      "-p",
+      rebase_path(invoker.template_file, root_build_dir),
+      "-f",
+      rebase_path(_gen_file_format, root_build_dir),
+      "-n",
+      "${_target_name}",
+      "-d",
+      rebase_path(_target_gen_dir, root_gen_dir),
+    ]
+    foreach(grammar, invoker.grammars) {
+      _g = []
+      _g = string_split(grammar, ":")
+      args += [
+        "-g",
+        "${_g[0]}:${_g[0]}",
+      ]
+    }
+    inputs = [
+      "//testing/libfuzzer/research/domatolpm/templates/domatolpm_fuzzer.h.tmpl",
+      "//testing/libfuzzer/research/domatolpm/templates/domatolpm_fuzzer.cc.tmpl",
+      "//testing/libfuzzer/research/domatolpm/templates/domatolpm_fuzzer.proto.tmpl",
+    ]
+    outputs = [
+      "${_gen_file_format}.proto",
+      "${_gen_file_format}.h",
+      "${_gen_file_format}.cc",
+    ]
+  }
+
+  _proto_gen_target_name = "${target_name}_proto_gen"
+  _target_gen_dir = "${target_gen_dir}"
+  proto_library(_proto_gen_target_name) {
+    testonly = true
+    proto_deps = _templated_deps
+    proto_deps += [ ":${_generator_target_name}" ]
+    sources = [ "${_gen_file_format}.proto" ]
+    import_dirs = [ _target_gen_dir ]
+    proto_in_dir = "${root_gen_dir}"
+    proto_out_dir = "."
+    generate_python = false
+  }
+
+  static_library(target_name) {
+    testonly = true
+    public_deps = _templated_deps
+    public_deps += [
+      ":${_generator_target_name}",
+      ":${_proto_gen_target_name}",
+      "//base",
+    ]
+    deps = [ "//testing/libfuzzer/research/domatolpm:domatolpm_context" ]
+    sources = [
+      "${_gen_file_format}.cc",
+      "${_gen_file_format}.h",
+    ]
+  }
+}

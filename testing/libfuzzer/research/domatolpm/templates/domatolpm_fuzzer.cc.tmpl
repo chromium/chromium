@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "{{template_name}}.h"
+
+namespace domatolpm::{{template_name}} {
+
+bool handle_fuzzer(domatolpm::Context* ctx, const domatolpm::generated::{{template_name}}::fuzzcase& fuzzcase) {
+{% for grammar in grammar_elements %}
+{% if grammar['is_str'] %}
+  ctx->GetBuilder()->append("{{grammar['content']}}");
+{% else %}
+  domatolpm::{{grammar['proto_type']}}::handle_fuzzcase(ctx, fuzzcase.{{grammar['proto_field_name']}}());
+{% endif %}
+{% endfor %}
+  return true;
+}
+
+}
