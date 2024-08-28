@@ -11,14 +11,23 @@ export function getHtml(this: TabOrganizationSelectorElement) {
   // clang-format off
   return html`
 <!--_html_template_start_-->
-<div id="buttonContainer"
-    ?hidden=${this.selectedState_ !== OrganizationFeature.NONE}>
-  <cr-button id="autoTabGroupsButton" @click="${this.onAutoTabGroupsClick_}">
-    Auto tab groups
-  </cr-button>
-  <cr-button id="declutterButton" @click="${this.onDeclutterClick_}">
-    Declutter
-  </cr-button>
+<div ?hidden=${this.selectedState_ !== OrganizationFeature.NONE}>
+  <div id="buttonContainer">
+    <tab-organization-selector-button id="autoTabGroupsButton"
+        top="true"
+        heading="Auto tab groups"
+        subheading="Check for suggestions"
+        icon="cr:group"
+        @click="${this.onAutoTabGroupsClick_}">
+    </tab-organization-selector-button>
+    <tab-organization-selector-button id="declutterButton"
+        bottom="true"
+        heading="Declutter"
+        subheading="No inactive tabs"
+        icon="cr:delete"
+        @click="${this.onDeclutterClick_}">
+    </tab-organization-selector-button>
+  </div>
 </div>
 
 <div ?hidden=${this.selectedState_ !== OrganizationFeature.AUTO_TAB_GROUPS}>

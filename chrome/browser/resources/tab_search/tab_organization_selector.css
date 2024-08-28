@@ -7,6 +7,9 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-cr-button {
-  background-color: pink;
+#buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 20px;
 }
