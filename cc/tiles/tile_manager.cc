@@ -362,7 +362,7 @@ class DidFinishRunningAllTilesTask : public TileTask {
         completion_cb_(std::move(completion_cb)) {}
 
   void RunOnWorkerThread() override {
-    TRACE_EVENT0("cc", "TaskSetFinishedTaskImpl::RunOnWorkerThread");
+    TRACE_EVENT0("cc", "DidFinishRunningAllTilesTask::RunOnWorkerThread");
     bool has_pending_queries = false;
     if (pending_raster_queries_) {
       has_pending_queries =
