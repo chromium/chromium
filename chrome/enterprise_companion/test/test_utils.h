@@ -7,6 +7,7 @@
 
 #include "base/functional/function_ref.h"
 #include "base/process/process.h"
+#include "build/build_config.h"
 
 namespace enterprise_companion {
 
@@ -21,6 +22,35 @@ int WaitForProcess(base::Process&);
 [[nodiscard]] bool WaitFor(
     base::FunctionRef<bool()> predicate,
     base::FunctionRef<void()> still_waiting = [] {});
+
+#if BUILDFLAG(IS_WIN)
+// Asserts that the application has been properly registered with the updater.
+void ExpectUpdaterRegistration();
+#endif
+
+#if BUILDFLAG(IS_MAC)
+// Install a fake ksadmin which produces an exit code determined by
+// `should_succeed`.
+void InstallFakeKSAdmin(bool should_succeed);
+#endif
+
+// Test methods which can be overridden for per-platform behavior.
+class TestMethods {
+ public:
+  TestMethods() = default;
+  virtual ~TestMethods() = default;
+
+  // Removes traces of the application from the system.
+  virtual void Clean();
+
+  // Asserts the absence of traces of the application from the system.
+  virtual void ExpectClean();
+
+  // Asserts that the application has been installed.
+  virtual void ExpectInstalled();
+};
+
+TestMethods& GetTestMethods();
 
 }  // namespace enterprise_companion
 

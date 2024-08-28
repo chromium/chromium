@@ -4,6 +4,13 @@
 
 #include "chrome/enterprise_companion/test/test_utils.h"
 
+#include <optional>
+
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/function_ref.h"
+#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
@@ -14,6 +21,8 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
+#include "chrome/enterprise_companion/installer_paths.h"
 
 namespace enterprise_companion {
 
@@ -51,6 +60,41 @@ bool WaitFor(base::FunctionRef<bool()> predicate,
     base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
   }
   return false;
+}
+
+void TestMethods::Clean() {
+  std::optional<base::FilePath> path = GetInstallDirectory();
+  ASSERT_TRUE(path);
+  // Deleting the install directory may transiently fail. This has been observed
+  // on Windows in particular with access denied and "file is open in another
+  // program" errors.
+  ASSERT_TRUE(
+      WaitFor([&] { return base::DeletePathRecursively(*path); },
+              [&] { VLOG(1) << "Waiting to delete " << *path << "..."; }));
+
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  ASSERT_TRUE(dm_storage);
+  EXPECT_TRUE(dm_storage->DeleteDMToken());
+  EXPECT_TRUE(dm_storage->DeleteEnrollmentToken());
+  EXPECT_TRUE(dm_storage->RemoveAllPolicies());
+}
+
+void TestMethods::ExpectClean() {
+  std::optional<base::FilePath> path = GetInstallDirectory();
+  EXPECT_FALSE(base::PathExists(*path));
+
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  ASSERT_TRUE(dm_storage);
+  EXPECT_EQ(dm_storage->GetDmToken(), "");
+  EXPECT_EQ(dm_storage->GetEnrollmentToken(), "");
+}
+
+void TestMethods::ExpectInstalled() {
+  std::optional<base::FilePath> install_dir = GetInstallDirectory();
+  ASSERT_TRUE(install_dir);
+  ASSERT_TRUE(base::PathExists(install_dir->AppendASCII(kExecutableName)));
 }
 
 }  // namespace enterprise_companion

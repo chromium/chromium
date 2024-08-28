@@ -7,6 +7,12 @@
 
 #include <optional>
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <string>
+#endif
+
 namespace base {
 class FilePath;
 }
@@ -21,6 +27,9 @@ extern const char kDMEncryptedReportingUrlKey[];
 extern const char kDMRealtimeReportingUrlKey[];
 extern const char kDMServerUrlKey[];
 extern const char kEventLoggingUrlKey[];
+#if BUILDFLAG(IS_WIN)
+extern const char kNamedPipeSecurityDescriptorKey[];
+#endif
 
 // Constants for the application which may be overridden in test builds via a
 // JSON file at the path returned by `GetOverridesFilePath`. See above for
@@ -34,6 +43,11 @@ class GlobalConstants {
   virtual GURL DeviceManagementRealtimeReportingURL() const = 0;
   virtual GURL DeviceManagementServerURL() const = 0;
   virtual GURL EnterpriseCompanionEventLoggingURL() const = 0;
+#if BUILDFLAG(IS_WIN)
+  // The security descriptor to be applied to the server's named pipe for Mojo
+  // connections.
+  virtual std::wstring NamedPipeSecurityDescriptor() const = 0;
+#endif
 };
 
 // Returns the path to the overrides JSON file.

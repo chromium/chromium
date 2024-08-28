@@ -153,6 +153,37 @@ executable("test_crashpad_embedder") {
   }
 }
 
+source_set("test_utils") {
+  testonly = true
+
+  sources = [
+    "test/test_utils.cc",
+    "test/test_utils.h",
+  ]
+  deps = [
+    ":base",
+    ":branding_header",
+    ":installer_paths",
+    ":version_header",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/enterprise_companion/device_management_storage:device_management_storage",
+    "//testing/gtest",
+  ]
+  visibility = [
+    ":enterprise_companion_integration_tests",
+    ":enterprise_companion_tests",
+  ]
+
+  if (is_linux) {
+    sources += [ "test/test_utils_linux.cc" ]
+  } else if (is_mac) {
+    sources += [ "test/test_utils_mac.cc" ]
+  } else if (is_win) {
+    sources += [ "test/test_utils_win.cc" ]
+  }
+}
+
 test("enterprise_companion_tests") {
   testonly = true
 
@@ -165,8 +196,6 @@ test("enterprise_companion_tests") {
     "enterprise_companion_status_unittest.cc",
     "event_logger_unittest.cc",
     "test/run_all_unittests.cc",
-    "test/test_utils.cc",
-    "test/test_utils.h",
     "url_loader_factory_provider_unittest.cc",
   ]
   deps = [
@@ -174,6 +203,7 @@ test("enterprise_companion_tests") {
     ":branding_header",
     ":client",
     ":constants_test",
+    ":test_utils",
     "mojom/",
     "//base",
     "//base/test:test_support",
@@ -207,24 +237,30 @@ test("enterprise_companion_integration_tests") {
   testonly = true
 
   sources = [
+    "test/integration_tests.cc",
     "test/run_all_integration_tests.cc",
-    "test/test_utils.cc",
-    "test/test_utils.h",
   ]
   deps = [
     ":base",
     ":branding_header",
+    ":client",
     ":constants_test",
     ":installer_paths",
+    ":test_utils",
     ":version_header",
     "//base",
     "//base/test:test_support",
+    "//base/test:test_support",
+    "//chrome/enterprise_companion/device_management_storage",
     "//chrome/updater:constants_test",
     "//chrome/updater:public_sources",
+    "//components/named_mojo_ipc_server:named_mojo_ipc_server",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
     "//testing/gtest",
   ]
   data = [ "//testing/scripts/run_telemetry_as_googletest.py" ]
-  data_deps = []
+  data_deps = [ ":enterprise_companion_test" ]
 
   # The MacOS integration tests require the pkg installer to be built, which is
   # only possible on MacOS hosts.

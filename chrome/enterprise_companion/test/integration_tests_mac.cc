@@ -43,18 +43,6 @@ class InstallerPkgTest : public ::testing::Test {
   base::test::TaskEnvironment environment_;
   base::FilePath install_dir_;
 
-  // Install a fake ksadmin which produces an exit code determined by
-  // `should_succeed`.
-  void InstallFakeKSAdmin(bool should_succeed) {
-    base::FilePath ksadmin_path = GetKSAdminPath();
-    ASSERT_TRUE(base::CreateDirectory(ksadmin_path.DirName()));
-    ASSERT_TRUE(base::WriteFile(
-        ksadmin_path,
-        base::StrCat({"#!/bin/bash\nexit ", should_succeed ? "0" : "1"})));
-    ASSERT_TRUE(base::SetPosixFilePermissions(ksadmin_path,
-                                              base::FILE_PERMISSION_USER_MASK));
-  }
-
   // Deletes ksadmin, if it exists.
   void DeleteKSAdmin() {
     base::FilePath ksadmin_path = GetKSAdminPath();
@@ -86,15 +74,7 @@ TEST_F(InstallerPkgTest, Installs) {
 
   RunInstaller(/*expect_success=*/true);
 
-  ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
-  int exe_mode = 0;
-  ASSERT_TRUE(base::GetPosixFilePermissions(
-      install_dir_.AppendASCII(kExecutableName), &exe_mode));
-  EXPECT_EQ(exe_mode, base::FILE_PERMISSION_USER_MASK |
-                          base::FILE_PERMISSION_READ_BY_GROUP |
-                          base::FILE_PERMISSION_EXECUTE_BY_GROUP |
-                          base::FILE_PERMISSION_READ_BY_OTHERS |
-                          base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+  GetTestMethods().ExpectInstalled();
 }
 
 TEST_F(InstallerPkgTest, FirstInstallFailsIfKSAdminMissing) {

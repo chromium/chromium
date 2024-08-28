@@ -16,9 +16,14 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#endif
 
 namespace enterprise_companion {
 
@@ -28,6 +33,9 @@ const char kDMEncryptedReportingUrlKey[] = "dm_encrypted_reporting_url";
 const char kDMRealtimeReportingUrlKey[] = "dm_realtime_reporting_url";
 const char kDMServerUrlKey[] = "dm_server_url";
 const char kEventLoggingUrlKey[] = "event_logging_url";
+#if BUILDFLAG(IS_WIN)
+const char kNamedPipeSecurityDescriptorKey[] = "named-pipe-security-descriptor";
+#endif
 
 namespace {
 
@@ -59,6 +67,12 @@ class GlobalConstantsImpl : public GlobalConstants {
     return enterprise_companion_event_logging_url_;
   }
 
+#if BUILDFLAG(IS_WIN)
+  std::wstring NamedPipeSecurityDescriptor() const override {
+    return named_pipe_security_descriptor_;
+  }
+#endif
+
  private:
   GURL crash_upload_url_ = GURL(CRASH_UPLOAD_URL);
   GURL device_management_encrypted_reporting_url_ =
@@ -68,6 +82,11 @@ class GlobalConstantsImpl : public GlobalConstants {
   GURL device_management_server_url_ = GURL(DEVICE_MANAGEMENT_SERVER_URL);
   GURL enterprise_companion_event_logging_url_ =
       GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL);
+
+#if BUILDFLAG(IS_WIN)
+  // By default allow access from the local system account only.
+  std::wstring named_pipe_security_descriptor_ = L"D:(A;;GA;;;SY)";
+#endif
 
 #ifdef ENTERPRISE_COMPANION_TEST_ONLY
   void ApplyOverrides() {
@@ -104,6 +123,11 @@ class GlobalConstantsImpl : public GlobalConstants {
     ApplyOverride(overrides, kDMServerUrlKey, device_management_server_url_);
     ApplyOverride(overrides, kEventLoggingUrlKey,
                   enterprise_companion_event_logging_url_);
+
+#if BUILDFLAG(IS_WIN)
+    ApplyOverride(overrides, kNamedPipeSecurityDescriptorKey,
+                  named_pipe_security_descriptor_);
+#endif
   }
 
   void ApplyOverride(const base::Value::Dict& overrides,
@@ -114,6 +138,17 @@ class GlobalConstantsImpl : public GlobalConstants {
       value = GURL(*str);
     }
   }
+
+#if BUILDFLAG(IS_WIN)
+  void ApplyOverride(const base::Value::Dict& overrides,
+                     const std::string& key,
+                     std::wstring& value) {
+    const std::string* str = overrides.FindString(key);
+    if (str) {
+      value = base::ASCIIToWide(*str);
+    }
+  }
+#endif
 #endif  // ENTERPRISE_COMPANION_TEST_ONLY
 };
 
