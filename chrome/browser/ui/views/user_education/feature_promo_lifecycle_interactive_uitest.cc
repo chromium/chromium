@@ -7,6 +7,7 @@
 #include <sstream>
 #include <utility>
 
+#include "build/build_config.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -610,7 +611,13 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, HasPromoBeenDismissed) {
       CheckDismissed(true, &kFeaturePromoLifecycleTestPromo, app1_id_));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForTwoApps) {
+// TODO(crbug.com/362182859): flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ShowForTwoApps DISABLED_ShowForTwoApps
+#else
+#define MAYBE_ShowForTwoApps ShowForTwoApps
+#endif
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, MAYBE_ShowForTwoApps) {
   Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
   Browser* const app_browser2 = LaunchWebAppBrowser(app2_id_);
   RunTestSequenceInContext(
