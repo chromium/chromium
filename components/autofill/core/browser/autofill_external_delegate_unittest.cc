@@ -1852,7 +1852,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
-  const CreditCard unlocked_card = test::GetFullServerCard();
   EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm(
                              Property(&FormData::global_id, form.global_id()),
                              Property(&FormFieldData::global_id,
