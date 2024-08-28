@@ -2515,8 +2515,9 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
 
     def v8_type_and_symbol_node(argument, v8_arg_name, blink_arg_name):
         unwrapped_idl_type = argument.idl_type.unwrap()
-        if "PassAsSpan" in argument.idl_type.effective_annotations:
-            return ("v8::Local<v8::Value>",
+        if unwrapped_idl_type.is_interface or unwrapped_idl_type.is_sequence:
+            return ("v8::Local<v8::Value>" if unwrapped_idl_type.is_interface
+                    else "v8::Local<v8::Array>",
                     make_v8_to_blink_value(
                         blink_arg_name,
                         "${{{}}}".format(v8_arg_name),
@@ -2524,9 +2525,10 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                         argument=argument,
                         error_exit_return_statement="return;",
                         cg_context=cg_context))
-        if unwrapped_idl_type.is_interface or unwrapped_idl_type.is_sequence:
-            return ("v8::Local<v8::Value>" if unwrapped_idl_type.is_interface
-                    else "v8::Local<v8::Array>",
+        elif unwrapped_idl_type.is_typed_array_type:
+            assert "AllowShared" in argument.idl_type.effective_annotations
+            assert "PassAsSpan" in argument.idl_type.effective_annotations
+            return ("v8::Local<v8::Value>",
                     make_v8_to_blink_value(
                         blink_arg_name,
                         "${{{}}}".format(v8_arg_name),
