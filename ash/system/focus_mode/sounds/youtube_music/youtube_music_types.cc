@@ -112,4 +112,16 @@ std::string PlaybackData::ToString() const {
       initial_playback);
 }
 
+bool PlaybackData::CanAggregateWithNewData(const PlaybackData& new_data) const {
+  return url == new_data.url;
+}
+
+void PlaybackData::AggregateWithNewData(const PlaybackData& new_data) {
+  CHECK(CanAggregateWithNewData(new_data));
+  for (const auto& media_segment : new_data.media_segments) {
+    media_segments.insert(media_segment);
+  }
+  initial_playback |= new_data.initial_playback;
+}
+
 }  // namespace ash::youtube_music

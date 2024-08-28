@@ -9,6 +9,8 @@
 
 #include "ash/webui/focus_mode/focus_mode_ui.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/url_constants.h"
 #include "ash/style/switch.h"
@@ -24,6 +26,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -46,6 +49,10 @@ namespace {
 // smaller, we'll scale it up to this size. This constant is based on
 // global_media_controls::kMediaItemArtworkMinSize.
 constexpr gfx::Size kArtworkMinSize(114, 114);
+
+// Minimum time interval of the rate limiter between two playback reports for
+// the same track.
+constexpr base::TimeDelta kRateLimitingInterval = base::Seconds(6);
 
 // Resizes an image so that it is at least `kArtworkMinSize`.
 gfx::ImageSkia EnsureMinSize(const gfx::ImageSkia& image) {
@@ -148,22 +155,21 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
   }
 
   void ReportPlayback(focus_mode::mojom::PlaybackDataPtr data) override {
-    if (auto* sounds_controller =
-            FocusModeController::Get()->focus_mode_sounds_controller()) {
-      if (ValidatePlaybackData(data)) {
-        // TODO(b/345309770): We may need to add rate limiting for
-        // reports.playback API.
-        base::flat_set<std::pair<int, int>> media_segments;
-        if (data->media_start.has_value() && data->media_end.has_value()) {
-          media_segments.insert(
-              {data->media_start.value(), data->media_end.value()});
-        }
-        sounds_controller->ReportYouTubeMusicPlayback(
-            youtube_music::PlaybackData(GetPlaybackState(data->state),
-                                        data->title, data->url, media_segments,
-                                        data->initial_playback));
-      }
+    if (!ValidatePlaybackData(data)) {
+      return;
     }
+
+    base::flat_set<std::pair<int, int>> media_segments;
+    if (data->media_start.has_value() && data->media_end.has_value()) {
+      media_segments.insert(
+          {data->media_start.value(), data->media_end.value()});
+    }
+
+    rate_limiter_.OnPlaybackEvent(
+        youtube_music::PlaybackData(GetPlaybackState(data->state), data->title,
+                                    data->url, media_segments,
+                                    data->initial_playback),
+        base::Time::Now());
   }
 
   void BindInterface(
@@ -173,6 +179,86 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
   }
 
  private:
+  // A simple rate limiter for YouTube Music APIs.
+  class YTMRateLimiter {
+   public:
+    bool ShouldLimit(const youtube_music::PlaybackData& playback_data,
+                     const base::Time timestamp) {
+      // Do not limit if it's a different track that can not be aggregated.
+      const bool same_track =
+          last_playback_.has_value() &&
+          last_playback_.value().CanAggregateWithNewData(playback_data) &&
+          (!pending_playback_.has_value() ||
+           pending_playback_.value().CanAggregateWithNewData(playback_data));
+      if (!same_track) {
+        return false;
+      }
+
+      // Do not limit if it's not within the interval.
+      const bool within_interval =
+          last_timestamp_.has_value() &&
+          timestamp < last_timestamp_.value() + kRateLimitingInterval;
+      if (!within_interval) {
+        return false;
+      }
+
+      // Do not limit if it's the last event for the track.
+      const bool last_event =
+          playback_data.state ==
+              youtube_music::PlaybackState::kSwitchedToNext ||
+          playback_data.state == youtube_music::PlaybackState::kEnded;
+      return !last_event;
+    }
+
+    void OnPlaybackEvent(youtube_music::PlaybackData playback_data,
+                         const base::Time timestamp) {
+      FocusModeSoundsController* sounds_controller =
+          FocusModeController::Get()->focus_mode_sounds_controller();
+      if (!sounds_controller) {
+        return;
+      }
+
+      if (ShouldLimit(playback_data, timestamp)) {
+        // If it should limit, aggregate the new data into the pending data and
+        // wait for the next event.
+        if (pending_playback_.has_value()) {
+          pending_playback_->AggregateWithNewData(playback_data);
+        } else {
+          pending_playback_ = playback_data;
+        }
+      } else {
+        // If it should *not* limit, either:
+        //   - If the pending data and the new data are from the *same* track,
+        //   aggregate the pending data into the new data and report it.
+        //   - If the pending data and the new data are from *different* tracks,
+        //   report the pending data and the new data separately.
+        if (pending_playback_.has_value()) {
+          if (pending_playback_.value().CanAggregateWithNewData(
+                  playback_data)) {
+            playback_data.AggregateWithNewData(pending_playback_.value());
+          } else {
+            sounds_controller->ReportYouTubeMusicPlayback(
+                pending_playback_.value());
+          }
+          pending_playback_.reset();
+        }
+        sounds_controller->ReportYouTubeMusicPlayback(playback_data);
+        last_timestamp_ = timestamp;
+        last_playback_ = playback_data;
+      }
+    }
+
+   private:
+    // Timestamp for last reported playback.
+    std::optional<base::Time> last_timestamp_ = std::nullopt;
+
+    // Last reported playback data.
+    std::optional<youtube_music::PlaybackData> last_playback_ = std::nullopt;
+
+    // Pending playback data to report to the backend.
+    std::optional<youtube_music::PlaybackData> pending_playback_ = std::nullopt;
+  };
+
   void HandleTrack(focus_mode::mojom::TrackProvider::GetTrackCallback callback,
                    const std::optional<FocusModeSoundsDelegate::Track>& track) {
     if (!track) {
@@ -206,6 +292,7 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
     std::move(callback).Run(std::move(mojo_track));
   }
 
+  YTMRateLimiter rate_limiter_;
   mojo::Remote<focus_mode::mojom::MediaClient> client_remote_;
   mojo::Receiver<focus_mode::mojom::TrackProvider> receiver_{this};
   base::WeakPtrFactory<FocusModeTrackProvider> weak_factory_{this};

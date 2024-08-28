@@ -142,6 +142,13 @@ struct ASH_EXPORT PlaybackData {
 
   std::string ToString() const;
 
+  // Returns true if this can aggregate with the new playback data.
+  bool CanAggregateWithNewData(const PlaybackData& new_data) const;
+
+  // Aggregates with the new playback data instance. It's useful for
+  // `reports.playback` request retries and rate limiting.
+  void AggregateWithNewData(const PlaybackData& new_data);
+
   // Playback state.
   PlaybackState state;
 
