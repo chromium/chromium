@@ -14,12 +14,11 @@
 namespace blink::test {
 
 TaskEnvironment::~TaskEnvironment() {
-  RunUntilIdle();
-
   // Run a full GC before resetting the main thread overrider. This ensures that
   // we can properly clean up objects like PerformanceMonitor that need to call
   // MainThreadImpl::RemoveTaskTimeObserver().
   ThreadState::Current()->CollectAllGarbageForTesting();
+  RunUntilIdle();
 
   main_thread_overrider_.reset();
   main_thread_isolate_.reset();

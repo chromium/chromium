@@ -28,10 +28,6 @@ DEFINE_TEXT_PROTO_FUZZER(const wc_fuzzer::VideoFrameCopyToCase& proto) {
   auto page_holder = std::make_unique<DummyPageHolder>();
   page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
 
-  // Request a full GC upon returning.
-  auto scoped_gc =
-      MakeScopedGarbageCollectionRequest(task_environment.isolate());
-
   ScriptState* script_state =
       ToScriptStateForMainWorld(&page_holder->GetFrame());
   ScriptState::Scope scope(script_state);

@@ -36,10 +36,6 @@ DEFINE_TEXT_PROTO_FUZZER(
   auto page_holder = std::make_unique<DummyPageHolder>();
   page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
 
-  // Request a full GC upon returning.
-  auto scoped_gc =
-      MakeScopedGarbageCollectionRequest(task_environment.isolate());
-
   //
   // NOTE: GC objects that need to survive iterations of the loop below
   // must be Persistent<>!
@@ -51,69 +47,66 @@ DEFINE_TEXT_PROTO_FUZZER(
   //
 
   // Scoping Persistent<> refs so GC can collect these at the end.
-  {
-    Persistent<ScriptState> script_state =
-        ToScriptStateForMainWorld(&page_holder->GetFrame());
-    ScriptState::Scope scope(script_state);
+  Persistent<ScriptState> script_state =
+      ToScriptStateForMainWorld(&page_holder->GetFrame());
+  ScriptState::Scope scope(script_state);
 
-    Persistent<ScriptFunction> error_function =
-        MakeGarbageCollected<ScriptFunction>(
-            script_state, MakeGarbageCollected<FakeFunction>("error"));
-    Persistent<V8WebCodecsErrorCallback> error_callback =
-        V8WebCodecsErrorCallback::Create(error_function->V8Function());
-    Persistent<ScriptFunction> output_function =
-        MakeGarbageCollected<ScriptFunction>(
-            script_state, MakeGarbageCollected<FakeFunction>("output"));
-    Persistent<V8VideoFrameOutputCallback> output_callback =
-        V8VideoFrameOutputCallback::Create(output_function->V8Function());
+  Persistent<ScriptFunction> error_function =
+      MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<FakeFunction>("error"));
+  Persistent<V8WebCodecsErrorCallback> error_callback =
+      V8WebCodecsErrorCallback::Create(error_function->V8Function());
+  Persistent<ScriptFunction> output_function =
+      MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<FakeFunction>("output"));
+  Persistent<V8VideoFrameOutputCallback> output_callback =
+      V8VideoFrameOutputCallback::Create(output_function->V8Function());
 
-    Persistent<VideoDecoderInit> video_decoder_init =
-        MakeGarbageCollected<VideoDecoderInit>();
-    video_decoder_init->setError(error_callback);
-    video_decoder_init->setOutput(output_callback);
+  Persistent<VideoDecoderInit> video_decoder_init =
+      MakeGarbageCollected<VideoDecoderInit>();
+  video_decoder_init->setError(error_callback);
+  video_decoder_init->setOutput(output_callback);
 
-    Persistent<VideoDecoder> video_decoder = VideoDecoder::Create(
-        script_state, video_decoder_init, IGNORE_EXCEPTION_FOR_TESTING);
+  Persistent<VideoDecoder> video_decoder = VideoDecoder::Create(
+      script_state, video_decoder_init, IGNORE_EXCEPTION_FOR_TESTING);
 
-    if (video_decoder) {
-      for (auto& invocation : proto.invocations()) {
-        switch (invocation.Api_case()) {
-          case wc_fuzzer::VideoDecoderApiInvocation::kConfigure: {
-            VideoDecoderConfig* config =
-                MakeVideoDecoderConfig(invocation.configure());
+  if (video_decoder) {
+    for (auto& invocation : proto.invocations()) {
+      switch (invocation.Api_case()) {
+        case wc_fuzzer::VideoDecoderApiInvocation::kConfigure: {
+          VideoDecoderConfig* config =
+              MakeVideoDecoderConfig(invocation.configure());
 
-            // Use the same config to fuzz isConfigSupported().
-            VideoDecoder::isConfigSupported(script_state, config,
-                                            IGNORE_EXCEPTION_FOR_TESTING);
+          // Use the same config to fuzz isConfigSupported().
+          VideoDecoder::isConfigSupported(script_state, config,
+                                          IGNORE_EXCEPTION_FOR_TESTING);
 
-            video_decoder->configure(config, IGNORE_EXCEPTION_FOR_TESTING);
-            break;
-          }
-          case wc_fuzzer::VideoDecoderApiInvocation::kDecode:
-            video_decoder->decode(
-                MakeEncodedVideoChunk(script_state,
-                                      invocation.decode().chunk()),
-                IGNORE_EXCEPTION_FOR_TESTING);
-            break;
-          case wc_fuzzer::VideoDecoderApiInvocation::kFlush: {
-            // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
-            // of the flush promise.
-            video_decoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
-            break;
-          }
-          case wc_fuzzer::VideoDecoderApiInvocation::kReset:
-            video_decoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
-            break;
-          case wc_fuzzer::VideoDecoderApiInvocation::kClose:
-            video_decoder->close(IGNORE_EXCEPTION_FOR_TESTING);
-            break;
-          case wc_fuzzer::VideoDecoderApiInvocation::API_NOT_SET:
-            break;
+          video_decoder->configure(config, IGNORE_EXCEPTION_FOR_TESTING);
+          break;
         }
-
-        // Give other tasks a chance to run (e.g. calling our output callback).
-        base::RunLoop().RunUntilIdle();
+        case wc_fuzzer::VideoDecoderApiInvocation::kDecode:
+          video_decoder->decode(
+              MakeEncodedVideoChunk(script_state, invocation.decode().chunk()),
+              IGNORE_EXCEPTION_FOR_TESTING);
+          break;
+        case wc_fuzzer::VideoDecoderApiInvocation::kFlush: {
+          // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
+          // of the flush promise.
+          video_decoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
+          break;
+        }
+        case wc_fuzzer::VideoDecoderApiInvocation::kReset:
+          video_decoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
+          break;
+        case wc_fuzzer::VideoDecoderApiInvocation::kClose:
+          video_decoder->close(IGNORE_EXCEPTION_FOR_TESTING);
+          break;
+        case wc_fuzzer::VideoDecoderApiInvocation::API_NOT_SET:
+          break;
       }
+
+      // Give other tasks a chance to run (e.g. calling our output callback).
+      base::RunLoop().RunUntilIdle();
     }
   }
 }
