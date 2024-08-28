@@ -2770,6 +2770,7 @@ config("win_pdbaltpath") {
 # Full symbols.
 config("symbols") {
   rustflags = []
+  configs = []
   if (is_win) {
     if (is_clang) {
       cflags = [
@@ -2792,7 +2793,7 @@ config("symbols") {
     }
 
     # All configs using /DEBUG should include this:
-    configs = [ ":win_pdbaltpath" ]
+    configs += [ ":win_pdbaltpath" ]
   } else {
     cflags = []
     if (is_mac && enable_dsyms) {
@@ -2885,8 +2886,6 @@ config("symbols") {
       ldflags += [ "-Wl,--gdb-index" ]
     }
   }
-
-  configs = []
 
   # Compress debug on 32-bit ARM to stay under 4GB file size limit.
   # https://b/243982712, https://crbug.com/1354616, https://crbug.com/334073642
