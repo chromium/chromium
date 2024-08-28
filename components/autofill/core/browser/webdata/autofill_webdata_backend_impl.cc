@@ -124,9 +124,6 @@ void ReportResult(Result result) {
       "WebDatabase.AutofillWebDataBackendImpl.OperationResult", result);
 }
 
-WebDatabase::State DoNothingAndCommit(WebDatabase* db) {
-  return WebDatabase::COMMIT_NEEDED;
-}
 }  // namespace
 
 AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
@@ -173,7 +170,8 @@ WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
 }
 
 void AutofillWebDataBackendImpl::CommitChanges() {
-  web_database_backend_->ExecuteWriteTask(base::BindOnce(&DoNothingAndCommit));
+  web_database_backend_->database()->CommitTransaction();
+  web_database_backend_->database()->BeginTransaction();
 }
 
 std::unique_ptr<WDTypedResult>

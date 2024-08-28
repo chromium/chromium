@@ -45,11 +45,7 @@ struct TokenResult {
 class TokenWebData : public WebDataServiceBase {
  public:
   TokenWebData(scoped_refptr<WebDatabaseService> wdbs,
-               scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-               scoped_refptr<base::SequencedTaskRunner> db_task_runner);
-
-  TokenWebData(scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-               scoped_refptr<base::SequencedTaskRunner> db_task_runner);
+               scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   TokenWebData(const TokenWebData&) = delete;
   TokenWebData& operator=(const TokenWebData&) = delete;

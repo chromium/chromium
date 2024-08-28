@@ -22,10 +22,14 @@ WebDatabaseBackend::WebDatabaseBackend(
     const scoped_refptr<base::SequencedTaskRunner>& db_thread)
     : base::RefCountedDeleteOnSequence<WebDatabaseBackend>(db_thread),
       db_path_(path),
-      delegate_(std::move(delegate)) {}
+      delegate_(std::move(delegate)) {
+  // WebDatabaseBackend is created on the client sequence then accessed on the
+  // DB sequence.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 void WebDatabaseBackend::AddTable(std::unique_ptr<WebDatabaseTable> table) {
-  DCHECK(!db_);
+  CHECK(!init_complete_) << "AddTable must be called before init starts.";
   tables_.push_back(std::move(table));
 }
 
@@ -36,6 +40,7 @@ void WebDatabaseBackend::InitDatabase() {
 }
 
 void WebDatabaseBackend::ShutdownDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (db_ && init_status_ == sql::INIT_OK)
     db_->CommitTransaction();
   db_.reset();
@@ -46,15 +51,17 @@ void WebDatabaseBackend::ShutdownDatabase() {
 void WebDatabaseBackend::DBWriteTaskWrapper(
     WebDatabaseService::WriteTask task,
     std::unique_ptr<WebDataRequest> request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(init_complete_) << "Init must be complete before running a DB task.";
   if (!request->IsActive())
     return;
-
   ExecuteWriteTask(std::move(task));
   request_manager_->RequestCompleted(std::move(request), nullptr);
 }
 
 void WebDatabaseBackend::ExecuteWriteTask(WebDatabaseService::WriteTask task) {
-  LoadDatabaseIfNecessary();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(init_complete_) << "Init must be complete before running a DB task.";
   if (db_ && init_status_ == sql::INIT_OK) {
     WebDatabase::State state = std::move(task).Run(db_.get());
     if (state == WebDatabase::COMMIT_NEEDED)
@@ -65,25 +72,29 @@ void WebDatabaseBackend::ExecuteWriteTask(WebDatabaseService::WriteTask task) {
 void WebDatabaseBackend::DBReadTaskWrapper(
     WebDatabaseService::ReadTask task,
     std::unique_ptr<WebDataRequest> request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(init_complete_) << "Init must be complete before running a DB task.";
   if (!request->IsActive())
     return;
-
   std::unique_ptr<WDTypedResult> result = ExecuteReadTask(std::move(task));
   request_manager_->RequestCompleted(std::move(request), std::move(result));
 }
 
 std::unique_ptr<WDTypedResult> WebDatabaseBackend::ExecuteReadTask(
     WebDatabaseService::ReadTask task) {
-  LoadDatabaseIfNecessary();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(init_complete_) << "Init must be complete before running a DB task.";
   return (db_ && init_status_ == sql::INIT_OK) ? std::move(task).Run(db_.get())
                                                : nullptr;
 }
 
 WebDatabaseBackend::~WebDatabaseBackend() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ShutdownDatabase();
 }
 
 void WebDatabaseBackend::LoadDatabaseIfNecessary() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (init_complete_ || db_path_.empty())
     return;
 
@@ -113,6 +124,7 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
 
 void WebDatabaseBackend::DatabaseErrorCallback(int error,
                                                sql::Statement* statement) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sql::UmaHistogramSqliteResult("WebDatabase.DatabaseErrors", error);
 
   // We ignore any further error callbacks after the first catastrophic error.
@@ -126,6 +138,7 @@ void WebDatabaseBackend::DatabaseErrorCallback(int error,
 }
 
 void WebDatabaseBackend::Commit() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   DCHECK_EQ(sql::INIT_OK, init_status_);
   db_->CommitTransaction();

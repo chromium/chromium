@@ -141,8 +141,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_database_->LoadDatabase();
 
   profile_autofill_web_data_ =
-      base::MakeRefCounted<autofill::AutofillWebDataService>(
-          profile_database_, ui_task_runner, db_task_runner);
+      base::MakeRefCounted<autofill::AutofillWebDataService>(profile_database_,
+                                                             ui_task_runner);
   profile_autofill_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_AUTOFILL));
 
@@ -153,12 +153,12 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 
   plus_address_web_data_ =
       base::MakeRefCounted<plus_addresses::PlusAddressWebDataService>(
-          profile_database_, ui_task_runner, db_task_runner);
+          profile_database_, ui_task_runner);
   plus_address_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_PLUS_ADDRESS));
 
-  token_web_data_ = base::MakeRefCounted<TokenWebData>(
-      profile_database_, ui_task_runner, db_task_runner);
+  token_web_data_ =
+      base::MakeRefCounted<TokenWebData>(profile_database_, ui_task_runner);
   token_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_TOKEN));
 
@@ -198,6 +198,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   // On other (desktop) platforms, the account storage is in-memory.
   account_storage_path = base::FilePath(WebDatabase::kInMemoryPath);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Account database must run backend on same sequence as profile database. See
+  // comment in ChromeSyncClient::CreateDataTypeControllers.
   account_database_ = base::MakeRefCounted<WebDatabaseService>(
       account_storage_path, ui_task_runner, db_task_runner);
   account_database_->AddTable(
@@ -207,8 +209,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   account_database_->LoadDatabase();
 
   account_autofill_web_data_ =
-      base::MakeRefCounted<autofill::AutofillWebDataService>(
-          account_database_, ui_task_runner, db_task_runner);
+      base::MakeRefCounted<autofill::AutofillWebDataService>(account_database_,
+                                                             ui_task_runner);
   account_autofill_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_ACCOUNT_AUTOFILL));
   account_autofill_web_data_->GetAutofillBackend(

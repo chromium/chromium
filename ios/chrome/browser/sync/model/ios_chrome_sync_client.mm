@@ -152,8 +152,6 @@ IOSChromeSyncClient::CreateDataTypeControllers(
   browser_sync::CommonControllerBuilder builder;
   builder.SetAutofillWebDataService(
       web::GetUIThreadTaskRunner({}),
-      profile_web_data_service ? profile_web_data_service->GetDBTaskRunner()
-                               : nullptr,
       profile_web_data_service,
       ios::WebDataServiceFactory::GetAutofillWebDataForAccount(
           browser_state_, ServiceAccessType::IMPLICIT_ACCESS));

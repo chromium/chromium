@@ -109,8 +109,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
     web_database->AddTable(std::make_unique<TokenServiceTable>());
     web_database->LoadDatabase();
     token_web_data_ = new TokenWebData(
-        web_database, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        web_database, base::SingleThreadTaskRunner::GetCurrentDefault());
     token_web_data_->Init(base::NullCallback());
   }
 

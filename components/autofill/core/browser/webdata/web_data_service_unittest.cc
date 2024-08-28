@@ -103,9 +103,7 @@ class MockAutofillWebDataServiceObserver
 class WebDataServiceTest : public testing::Test {
  public:
   WebDataServiceTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
-        db_task_runner_(
-            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
  protected:
   void SetUp() override {
@@ -114,14 +112,15 @@ class WebDataServiceTest : public testing::Test {
 
     wdbs_ = base::MakeRefCounted<WebDatabaseService>(
         base::FilePath(WebDatabase::kInMemoryPath),
-        base::SequencedTaskRunner::GetCurrentDefault(), db_task_runner_);
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
     wdbs_->AddTable(std::make_unique<AddressAutofillTable>());
     wdbs_->AddTable(std::make_unique<AutocompleteTable>());
     wdbs_->AddTable(std::make_unique<PaymentsAutofillTable>());
     wdbs_->LoadDatabase();
 
     wds_ = base::MakeRefCounted<AutofillWebDataService>(
-        wdbs_, base::SequencedTaskRunner::GetCurrentDefault(), db_task_runner_);
+        wdbs_, base::SequencedTaskRunner::GetCurrentDefault());
     wds_->Init(base::NullCallback());
   }
 
@@ -134,13 +133,13 @@ class WebDataServiceTest : public testing::Test {
 
   void WaitForEmptyDBSequence() {
     base::RunLoop run_loop;
-    db_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
-                                      run_loop.QuitClosure());
+    wdbs_->GetDbSequence()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                             run_loop.QuitClosure());
     run_loop.Run();
   }
 
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+  base::FilePath profile_dir_;
   scoped_refptr<WebDatabaseService> wdbs_;
   scoped_refptr<AutofillWebDataService> wds_;
 };

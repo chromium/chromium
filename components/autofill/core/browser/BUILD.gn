@@ -1025,6 +1025,7 @@ static_library("test_support") {
     "//components/variations:test_support",
     "//components/variations/net",
     "//components/version_info:version_info",
+    "//components/webdata/common",
     "//google_apis:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",

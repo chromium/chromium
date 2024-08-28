@@ -366,19 +366,25 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   scoped_refptr<autofill::AutofillWebDataService> account_web_data_service =
       WebDataServiceFactory::GetAutofillWebDataForAccount(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  scoped_refptr<base::SequencedTaskRunner> web_data_service_thread =
-      profile_web_data_service ? profile_web_data_service->GetDBTaskRunner()
-                               : nullptr;
-  // This class assumes that the database thread is the same across the profile
-  // and account storage. This DCHECK makes that assumption explicit.
-  DCHECK(!account_web_data_service ||
-         web_data_service_thread ==
-             account_web_data_service->GetDBTaskRunner());
+
+  // This class assumes that the tasks posted by the profile and account storage
+  // services will execute, in order, on the same sequence.
+  // This DCHECK makes that assumption explicit.
+#if DCHECK_IS_ON()
+  if (account_web_data_service && profile_web_data_service) {
+    profile_web_data_service->GetDBTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](scoped_refptr<base::SequencedTaskRunner> ac_tr) {
+                         CHECK(ac_tr->RunsTasksInCurrentSequence());
+                       },
+                       account_web_data_service->GetDBTaskRunner()));
+  }
+#endif  // DCHECK_IS_ON()
 
   browser_sync::CommonControllerBuilder builder;
-  builder.SetAutofillWebDataService(
-      content::GetUIThreadTaskRunner({}), web_data_service_thread,
-      profile_web_data_service, account_web_data_service);
+  builder.SetAutofillWebDataService(content::GetUIThreadTaskRunner({}),
+                                    profile_web_data_service,
+                                    account_web_data_service);
   builder.SetBookmarkModel(
       BookmarkModelFactory::GetForBrowserContext(profile_));
   builder.SetBookmarkSyncService(

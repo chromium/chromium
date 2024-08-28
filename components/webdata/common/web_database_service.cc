@@ -41,7 +41,7 @@ WebDatabaseService::WebDatabaseService(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : base::RefCountedDeleteOnSequence<WebDatabaseService>(ui_task_runner),
       path_(path),
-      db_task_runner_(db_task_runner) {
+      db_task_runner_(std::move(db_task_runner)) {
   DCHECK(ui_task_runner->RunsTasksInCurrentSequence());
   DCHECK(db_task_runner_);
 }
@@ -81,6 +81,10 @@ WebDatabase* WebDatabaseService::GetDatabaseOnDB() const {
 
 scoped_refptr<WebDatabaseBackend> WebDatabaseService::GetBackend() const {
   return web_db_backend_;
+}
+
+scoped_refptr<base::SequencedTaskRunner> WebDatabaseService::GetDbSequence() {
+  return db_task_runner_;
 }
 
 void WebDatabaseService::ScheduleDBTask(const base::Location& from_here,

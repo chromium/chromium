@@ -179,7 +179,8 @@ bool WalletDataAndMetadataMatch(
   return true;
 }
 
-void WaitForCurrentTasksToComplete(base::SequencedTaskRunner* task_runner) {
+void WaitForCurrentTasksToComplete(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   // We are fine with the UI thread getting blocked. If using RunLoop here, in
   // some uses of this functions, we would get nested RunLoops that tend to
   // cause troubles. This is a more robust solution.

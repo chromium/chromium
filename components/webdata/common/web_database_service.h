@@ -51,8 +51,12 @@ class WEBDATA_EXPORT WebDatabaseService
   using DBLoadErrorCallback =
       base::OnceCallback<void(sql::InitStatus, const std::string&)>;
 
-  // WebDatabaseService lives on the UI sequence and posts tasks to the DB
-  // sequence.  |path| points to the WebDatabase file.
+  // `WebDatabaseService` lives on the UI sequence and posts tasks to the DB
+  // sequence.  `path` points to the WebDatabase file. Do not run any database
+  // tasks on DB sequence after passing to this constructor. Instead, call
+  // `GetDbSequence` to obtain a valid sequenced task runner that ensures that
+  // tasks run in the correct order i.e. after any internal initialization has
+  // taken place.
   WebDatabaseService(const base::FilePath& path,
                      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
                      scoped_refptr<base::SequencedTaskRunner> db_task_runner);
@@ -60,31 +64,38 @@ class WEBDATA_EXPORT WebDatabaseService
   WebDatabaseService(const WebDatabaseService&) = delete;
   WebDatabaseService& operator=(const WebDatabaseService&) = delete;
 
-  // Adds |table| as a WebDatabaseTable that will participate in
+  // Adds |table| as a `WebDatabaseTable` that will participate in
   // managing the database, transferring ownership. All calls to this
-  // method must be made before |LoadDatabase| is called.
-  virtual void AddTable(std::unique_ptr<WebDatabaseTable> table);
+  // method must be made before `LoadDatabase` is called.
+  void AddTable(std::unique_ptr<WebDatabaseTable> table);
 
   // Initializes the web database service.
-  virtual void LoadDatabase();
+  void LoadDatabase();
 
   // Unloads the database and shuts down the service.
-  virtual void ShutdownDatabase();
+  void ShutdownDatabase();
 
-  // Gets a pointer to the WebDatabase (owned by WebDatabaseService).
+  // Gets a pointer to the `WebDatabase` (owned by `WebDatabaseService`).
   // TODO(caitkp): remove this method once SyncServices no longer depend on it.
-  virtual WebDatabase* GetDatabaseOnDB() const;
+  WebDatabase* GetDatabaseOnDB() const;
 
-  // Returns a pointer to the WebDatabaseBackend.
+  // Returns a pointer to the `WebDatabaseBackend`.
   scoped_refptr<WebDatabaseBackend> GetBackend() const;
 
+  // Obtain the sequence to execute any database tasks on. This should be called
+  // rather than using the `db_task_runner` passed into the constructor, because
+  // it might differ from the original `db_task_runner` passed into this class.
+  // Prefer simply calling one of the Schedule* methods to schedule database
+  // tasks to the DB sequence.
+  scoped_refptr<base::SequencedTaskRunner> GetDbSequence();
+
   // Schedule an update/write task on the DB sequence.
-  virtual void ScheduleDBTask(const base::Location& from_here, WriteTask task);
+  void ScheduleDBTask(const base::Location& from_here, WriteTask task);
 
   // Schedule a read task on the DB sequence.
   // Retrieves a WeakPtr to the |consumer| so that |consumer| does not have to
-  // outlive the WebDatabaseService.
-  virtual WebDataServiceBase::Handle ScheduleDBTaskWithResult(
+  // outlive the `WebDatabaseService`.
+  WebDataServiceBase::Handle ScheduleDBTaskWithResult(
       const base::Location& from_here,
       ReadTask task,
       WebDataServiceConsumer* consumer);
@@ -92,7 +103,7 @@ class WEBDATA_EXPORT WebDatabaseService
   // Cancel an existing request for a task on the DB sequence.
   // TODO(caitkp): Think about moving the definition of the Handle type to
   // somewhere else.
-  virtual void CancelRequest(WebDataServiceBase::Handle h);
+  void CancelRequest(WebDataServiceBase::Handle h);
 
   // Register a callback to be notified that the database has failed to load.
   // Multiple callbacks may be registered, and each will be called at most once
@@ -109,7 +120,7 @@ class WEBDATA_EXPORT WebDatabaseService
 
   using ErrorCallbacks = std::vector<DBLoadErrorCallback>;
 
-  virtual ~WebDatabaseService();
+  ~WebDatabaseService();
 
   void OnDatabaseLoadDone(sql::InitStatus status,
                           const std::string& diagnostics);

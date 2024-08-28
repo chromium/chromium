@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webdata/common/web_database_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browsing_data {
@@ -31,7 +32,10 @@ class FakeWebDataService : public autofill::AutofillWebDataService {
  public:
   FakeWebDataService()
       : AutofillWebDataService(
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::MakeRefCounted<WebDatabaseService>(
+                base::FilePath(),
+                base::SingleThreadTaskRunner::GetCurrentDefault(),
+                base::SingleThreadTaskRunner::GetCurrentDefault()),
             base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
  protected:

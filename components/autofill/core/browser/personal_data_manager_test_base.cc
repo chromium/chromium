@@ -37,8 +37,7 @@ void PersonalDataManagerTestBase::SetUpTest() {
       std::unique_ptr<WebDatabaseTable>(profile_autofill_table_));
   profile_web_database_->LoadDatabase();
   profile_database_service_ = new AutofillWebDataService(
-      profile_web_database_, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      profile_web_database_, base::SingleThreadTaskRunner::GetCurrentDefault());
   profile_database_service_->Init(base::NullCallback());
 
   account_web_database_ =
@@ -50,8 +49,7 @@ void PersonalDataManagerTestBase::SetUpTest() {
       std::unique_ptr<WebDatabaseTable>(account_autofill_table_));
   account_web_database_->LoadDatabase();
   account_database_service_ = new AutofillWebDataService(
-      account_web_database_, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      account_web_database_, base::SingleThreadTaskRunner::GetCurrentDefault());
   account_database_service_->Init(base::NullCallback());
 
   strike_database_ = std::make_unique<TestInMemoryStrikeDatabase>();
@@ -62,6 +60,8 @@ void PersonalDataManagerTestBase::SetUpTest() {
 void PersonalDataManagerTestBase::TearDownTest() {
   // Order of destruction is important as BrowserAutofillManager relies on
   // PersonalDataManager to be around when it gets destroyed.
+  account_database_service_->ShutdownDatabase();
+  profile_web_database_->ShutdownDatabase();
   test::ReenableSystemServices();
   OSCryptMocker::TearDown();
 }

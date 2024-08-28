@@ -69,7 +69,6 @@ syncer::DataTypeController::TypeVector CreateControllers(
 
   controller_builder.SetAutofillWebDataService(
       web::GetUIThreadTaskRunner({}),
-      autofill_profile_web_data_service->GetDBTaskRunner(),
       autofill_profile_web_data_service,
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForAccount(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS));

@@ -125,7 +125,6 @@ class CommonControllerBuilder {
   // before invoking `Build()`. In some cases it is allowed to inject nullptr.
   void SetAutofillWebDataService(
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
-      const scoped_refptr<base::SequencedTaskRunner>& db_thread,
       const scoped_refptr<autofill::AutofillWebDataService>&
           web_data_service_on_disk,
       const scoped_refptr<autofill::AutofillWebDataService>&
@@ -258,8 +257,6 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<syncer::UserEventService>> user_event_service_;
   SafeOptional<scoped_refptr<base::SequencedTaskRunner>>
       autofill_web_data_ui_thread_;
-  SafeOptional<scoped_refptr<base::SequencedTaskRunner>>
-      autofill_web_data_db_thread_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>
       autofill_web_data_service_on_disk_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>

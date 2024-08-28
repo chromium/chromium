@@ -31,18 +31,16 @@ namespace plus_addresses {
 
 PlusAddressWebDataService::PlusAddressWebDataService(
     scoped_refptr<WebDatabaseService> wdbs,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : WebDataServiceBase(wdbs, ui_task_runner),
-      ui_task_runner_(std::move(ui_task_runner)),
-      db_task_runner_(std::move(db_task_runner)) {
+      ui_task_runner_(std::move(ui_task_runner)) {
   sync_bridge_wrapper_ =
-      base::MakeRefCounted<SyncBridgeDBSequenceWrapper>(db_task_runner_);
+      base::MakeRefCounted<SyncBridgeDBSequenceWrapper>(wdbs->GetDbSequence());
 
   // When sync changes `PlusAddressTable`, observers on the `ui_task_runner_`
-  // are notified. To avoid round trips to the `db_task_runner_`, this
-  // notification includes the set of addition and removal operations
-  // committed to the database from the sync bridge.
+  // are notified. To avoid round trips to the WebDatabaseService's db task
+  // runner, this notification includes the set of addition and removal
+  // operations committed to the database from the sync bridge.
   PlusAddressSyncBridge::DataChangedBySyncCallback notify_sync_observers =
       base::BindPostTask(
           ui_task_runner_,
@@ -51,8 +49,9 @@ PlusAddressWebDataService::PlusAddressWebDataService(
               weak_factory_.GetWeakPtr()));
 
   // The `state->sync_bridge` can only be used on the sequence that it
-  // was constructed on. Ensure it is created on the `db_task_runner_`.
-  db_task_runner_->PostTask(
+  // was constructed on. Ensure it is created on the WebDatabaseService's db
+  // task runner.
+  wdbs->GetDbSequence()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<WebDatabaseBackend> db_backend,
@@ -119,18 +118,18 @@ void PlusAddressWebDataService::ClearPlusProfiles() {
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 PlusAddressWebDataService::GetSyncControllerDelegate() {
   CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  // `sync_bridge` operates on the `db_task_runner_` - use a
+  // `sync_bridge` operates on the WebDatabaseService's DB sequence - use a
   // `ProxyDataTypeControllerDelegate` to forward calls to that sequence.
-  // Because `db_task_runner_` is a `SequencedTaskRunner`, the `sync_bridge`
-  // will already be initialized in the callback by the task posted in the
-  // constructor.
+  // Because this is a `SequencedTaskRunner`, the `sync_bridge` will already be
+  // initialized in the callback by the task posted in the constructor.
   return std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-      db_task_runner_, base::BindRepeating(
-                           [](SyncBridgeDBSequenceWrapper* wrapper) {
-                             return wrapper->sync_bridge->change_processor()
-                                 ->GetControllerDelegate();
-                           },
-                           base::RetainedRef(sync_bridge_wrapper_)));
+      wdbs_->GetDbSequence(), base::BindRepeating(
+                                  [](SyncBridgeDBSequenceWrapper* wrapper) {
+                                    return wrapper->sync_bridge
+                                        ->change_processor()
+                                        ->GetControllerDelegate();
+                                  },
+                                  base::RetainedRef(sync_bridge_wrapper_)));
 }
 
 void PlusAddressWebDataService::NotifyOnWebDataChangedBySync(
