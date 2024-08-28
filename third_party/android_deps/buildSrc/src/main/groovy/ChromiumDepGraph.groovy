@@ -28,9 +28,6 @@ class ChromiumDepGraph {
             url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
         com_google_android_datatransport_transport_api: new PropertyOverride(
             description: 'Interfaces for data logging in GmsCore SDKs.'),
-        // Chrome uses the window APIs directly instead of going through the androidx middleware.
-        // See //third_party/android_sdk/window_extensions/README.md
-        androidx_window_window: new PropertyOverride(exclude: true),
         com_google_android_datatransport_transport_backend_cct: new PropertyOverride(
             exclude: true),  // We're not using datatransport functionality.
         com_google_android_datatransport_transport_runtime: new PropertyOverride(
