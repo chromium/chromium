@@ -1021,7 +1021,13 @@ void AutofillAgent::ApplyFieldsAction(
     };
     if (auto it = base::ranges::find_if(fields, host_form_is_connected);
         it != fields.end()) {
-      UpdateLastInteractedElement(it->host_form_id);
+      base::FeatureList::IsEnabled(
+          features::kAutofillUnifyAndFixFormTracking) &&
+              base::FeatureList::IsEnabled(
+                  features::kAutofillAcceptDomMutationAfterAutofillSubmission)
+          ? TrackAutofilledElement(
+                form_util::GetFormControlByRendererId(it->renderer_id))
+          : UpdateLastInteractedElement(it->host_form_id);
     } else if (!base::FeatureList::IsEnabled(
                    features::kAutofillUnifyAndFixFormTracking)) {
       UpdateLastInteractedElement(FormRendererId());
@@ -1034,8 +1040,11 @@ void AutofillAgent::ApplyFieldsAction(
           // list could have been removed from the DOM. Updating inside this
           // conditional ensures submission is always tracked with an element
           // currently connected to the DOM.
-          UpdateLastInteractedElement(
-              form_util::GetFieldRendererId(control_element));
+          base::FeatureList::IsEnabled(
+              features::kAutofillAcceptDomMutationAfterAutofillSubmission)
+              ? TrackAutofilledElement(control_element)
+              : UpdateLastInteractedElement(
+                    form_util::GetFieldRendererId(control_element));
         }
       }
     }
@@ -1995,7 +2004,20 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
         password_autofill_agent_->FireHostSubmitEvent(
             FormRendererId(),
             mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
+        if (std::optional<FormData> form_data = GetSubmittedForm();
+            form_data &&
+            base::FeatureList::IsEnabled(
+                features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
+          FireHostSubmitEvents(
+              *form_data, /*known_success=*/true,
+              mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
+        }
       }
+      // `BrowserAutofillManager` ignores submissions with
+      // DOM_MUTATION_AFTER_AUTOFILL as a source, therefore we early return in
+      // this case as to not call `AutofillAgent::ResetLastInteractedElements()`
+      // which could cause us to miss a submission that BAM actually cares
+      // about.
       return;
     // This event occurs only when either this frame or a same process parent
     // frame of it gets detached.

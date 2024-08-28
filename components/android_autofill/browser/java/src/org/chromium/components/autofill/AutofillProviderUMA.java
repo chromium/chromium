@@ -85,8 +85,6 @@ public class AutofillProviderUMA {
     // public static final int DEPRECATED_DOM_MUTATION_AFTER_XHR = 3;
     public static final int PROBABLY_FORM_SUBMITTED = 4;
     public static final int FORM_SUBMISSION = 5;
-    // This bucket is not recorded at the moment because it can only be recorded in relation with
-    // password manager (which doesn't exist in web view).
     public static final int DOM_MUTATION_AFTER_AUTOFILL = 6;
     public static final int SUBMISSION_SOURCE_HISTOGRAM_COUNT = 7;
 

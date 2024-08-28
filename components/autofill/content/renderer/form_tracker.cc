@@ -412,7 +412,11 @@ void FormTracker::FireInferredFormSubmission(SubmissionSource source) {
   base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
   for (auto& observer : observers_)
     observer.OnInferredFormSubmission(source);
-  ResetLastInteractedElements();
+  if (source != SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
+    ResetLastInteractedElements();
+  }
 }
 
 void FormTracker::FireSubmissionIfFormDisappear(SubmissionSource source) {

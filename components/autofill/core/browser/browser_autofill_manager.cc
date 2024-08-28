@@ -854,6 +854,13 @@ bool BrowserAutofillManager::ShouldParseForms() {
 void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                                                  bool known_success,
                                                  SubmissionSource source) {
+  if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL) {
+    // Autofill mostly ignores such submissions because we don't consider them
+    // strong enough indicators and want to avoid false positives. Filling a
+    // country field could sometimes result in fields being deleted or added,
+    // which is definitely not a submission.
+    return;
+  }
   base::UmaHistogramEnumeration("Autofill.FormSubmission.PerProfileType",
                                 client().GetProfileType());
   const base::TimeTicks form_submitted_timestamp = base::TimeTicks::Now();

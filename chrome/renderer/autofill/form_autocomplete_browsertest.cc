@@ -593,6 +593,32 @@ TEST_P(FormAutocompleteSubmissionTest, SubmitEventPrevented) {
                                  SubmissionSource::FORM_SUBMISSION);
 }
 
+// Tests that having the form disappear after autofilling triggers submission
+// from Autofill's point of view.
+TEST_P(FormAutocompleteSubmissionTest, DomMutationAfterAutofill) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillUnifyAndFixFormTracking,
+       features::kAutofillAcceptDomMutationAfterAutofillSubmission},
+      /*disabled_features=*/{});
+  LoadHTML(
+      "<html><form id='myForm' action='http://example.com/blade.php'>"
+      "<input name='fname' id='fname'/>"
+      "<input name='lname'/></form></html>");
+
+  // Simulate removing the form after autofilling.
+  SimulateFillForm();
+  ExecuteJavaScriptForTests(
+      "var element = document.getElementById('myForm');"
+      "element.parentNode.removeChild(element);");
+  base::RunLoop().RunUntilIdle();
+
+  VerifyReceivedRendererMessages(fake_driver_, "John", "Smith",
+                                 /*expect_known_success=*/true,
+                                 SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
+}
+
 // Tests that completing an Ajax request and having the form disappear will
 // trigger submission from Autofill's point of view.
 TEST_P(FormAutocompleteSubmissionTest, AjaxSucceeded_NoLongerVisible) {

@@ -332,6 +332,12 @@ const base::FeatureParam<int> kNumberOfIgnoredSuggestions{
     &kAutofillChangeDisusedAddressSuggestionTreatment, "ignored-suggestions",
     1};
 
+// If enabled, we start forwarding submissions with source
+// DOM_MUTATION_AFTER_AUTOFILL, even for non-password forms.
+BASE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission,
+             "AutofillAcceptDomMutationAfterAutofillSubmission",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Unifies the tracking of the last interacted elements between FormTracker and
 // AutofillAgent and fixes inconsistencies in this tracking.
 BASE_FEATURE(kAutofillUnifyAndFixFormTracking,

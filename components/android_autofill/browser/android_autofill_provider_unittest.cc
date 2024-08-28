@@ -71,6 +71,7 @@ using PrefillRequestState = AndroidAutofillProvider::PrefillRequestState;
 using test::CreateFormDataForFrame;
 using test::CreateTestCreditCardFormData;
 using test::CreateTestFormField;
+using test::CreateTestPasswordFormData;
 using test::CreateTestPersonalInformationFormData;
 
 auto EqualsFieldInfo(size_t index) {
@@ -642,6 +643,60 @@ TEST_F(AndroidAutofillProviderTest, OnFormSubmittedWithKnownSuccess) {
               OnFormSubmitted(mojom::SubmissionSource::FORM_SUBMISSION));
   android_autofill_manager().SimulateOnFormSubmitted(
       form, /*known_success=*/true, mojom::SubmissionSource::FORM_SUBMISSION);
+}
+
+// Tests that a form submission of an ongoing Autofill session with source
+// DOM_MUTATION_AFTER_AUTOFILL is propagated to Java for password forms.
+TEST_F(AndroidAutofillProviderTest,
+       DomMutationAfterAutofillFormSubmission_PasswordForm) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillUnifyAndFixFormTracking,
+       features::kAutofillAcceptDomMutationAfterAutofillSubmission},
+      /*disabled_features=*/{});
+  FormData form =
+      CreateFormDataForFrame(CreateTestPasswordFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+
+  // Start an Autofill session.
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[0]);
+
+  EXPECT_CALL(
+      provider_bridge(),
+      OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL))
+      .Times(1);
+  android_autofill_manager().SimulateOnFormSubmitted(
+      form, /*known_success=*/true,
+      mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
+}
+
+// Tests that a form submission of an ongoing Autofill session with source
+// DOM_MUTATION_AFTER_AUTOFILL is not propagated to Java for non-password forms.
+TEST_F(AndroidAutofillProviderTest,
+       DomMutationAfterAutofillFormSubmission_NonPasswordForm) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillUnifyAndFixFormTracking,
+       features::kAutofillAcceptDomMutationAfterAutofillSubmission},
+      /*disabled_features=*/{});
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+
+  // Start an Autofill session.
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[0]);
+
+  EXPECT_CALL(
+      provider_bridge(),
+      OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL))
+      .Times(0);
+  android_autofill_manager().SimulateOnFormSubmitted(
+      form, /*known_success=*/true,
+      mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
 }
 
 // Tests that a form submission of an ongoing Autofill session is propagated to

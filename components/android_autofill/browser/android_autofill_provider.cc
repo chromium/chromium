@@ -442,6 +442,16 @@ void AndroidAutofillProvider::OnFormSubmitted(AndroidAutofillManager* manager,
     return;
   }
 
+  if (FormStructure* form_structure =
+          manager_->FindCachedFormById(form.global_id());
+      source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL &&
+      (!form_structure ||
+       !base::FeatureList::IsEnabled(
+           features::kAutofillAcceptDomMutationAfterAutofillSubmission) ||
+       !ParseToPasswordForm(*form_structure))) {
+    return;
+  }
+
   if (known_success || source == SubmissionSource::FORM_SUBMISSION ||
       base::FeatureList::IsEnabled(
           features::kAndroidAutofillDirectFormSubmission)) {
