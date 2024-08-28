@@ -1319,8 +1319,7 @@ bool PaintLayerScrollableArea::UsedColorSchemeScrollbarsChanged(
 }
 
 bool PaintLayerScrollableArea::IsGlobalRootNonOverlayScroller() const {
-  return RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled() &&
-         GetLayoutBox()->IsGlobalRootScroller() &&
+  return GetLayoutBox()->IsGlobalRootScroller() &&
          !GetPageScrollbarTheme().UsesOverlayScrollbars();
 }
 

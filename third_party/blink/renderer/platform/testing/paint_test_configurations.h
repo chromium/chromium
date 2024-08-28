@@ -18,16 +18,14 @@
 namespace blink {
 
 inline constexpr unsigned kUnderInvalidationChecking = 1 << 0;
-inline constexpr unsigned kUsedColorSchemeRootScrollbars = 1 << 1;
-inline constexpr unsigned kFluentScrollbar = 1 << 2;
-inline constexpr unsigned kHitTestOpaqueness = 1 << 3;
-inline constexpr unsigned kElementCapture = 1 << 4;
-inline constexpr unsigned kRasterInducingScroll = 1 << 5;
+inline constexpr unsigned kFluentScrollbar = 1 << 1;
+inline constexpr unsigned kHitTestOpaqueness = 1 << 2;
+inline constexpr unsigned kElementCapture = 1 << 3;
+inline constexpr unsigned kRasterInducingScroll = 1 << 4;
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
       private ScopedPaintUnderInvalidationCheckingForTest,
-      private ScopedUsedColorSchemeRootScrollbarsForTest,
       private ScopedHitTestOpaquenessForTest,
       private ScopedFastNonCompositedScrollHitTestForTest,
       private ScopedElementCaptureForTest,
@@ -36,8 +34,6 @@ class PaintTestConfigurations
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
                                                     kUnderInvalidationChecking),
-        ScopedUsedColorSchemeRootScrollbarsForTest(
-            GetParam() & kUsedColorSchemeRootScrollbars),
         ScopedHitTestOpaquenessForTest(GetParam() & kHitTestOpaqueness),
         ScopedFastNonCompositedScrollHitTestForTest(GetParam() &
                                                     kHitTestOpaqueness),
@@ -67,8 +63,8 @@ class PaintTestConfigurations
   base::test::ScopedFeatureList feature_list_;
 };
 
-#define PAINT_TEST_SUITE_P_VALUES                                          \
-  0, kUsedColorSchemeRootScrollbars, kFluentScrollbar, kHitTestOpaqueness, \
+#define PAINT_TEST_SUITE_P_VALUES          \
+  0, kFluentScrollbar, kHitTestOpaqueness, \
       kRasterInducingScroll | kHitTestOpaqueness
 
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
