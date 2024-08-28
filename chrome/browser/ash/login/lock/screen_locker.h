@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_LOCK_SCREEN_LOCKER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -224,7 +225,9 @@ class ScreenLocker
   void MaybeDisablePinAndFingerprintFromTimeout(const std::string& source,
                                                 const AccountId& account_id);
 
-  void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);
+  void OnPinCanAuthenticate(const AccountId& account_id,
+                            bool can_authenticate,
+                            std::optional<base::Time> available_at);
 
   void UpdateFingerprintStateForUser(const user_manager::User* user);
 

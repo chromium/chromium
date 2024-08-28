@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"
@@ -11,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -948,8 +951,10 @@ void ScreenLocker::MaybeDisablePinAndFingerprintFromTimeout(
   }
 }
 
-void ScreenLocker::OnPinCanAuthenticate(const AccountId& account_id,
-                                        bool can_authenticate) {
+void ScreenLocker::OnPinCanAuthenticate(
+    const AccountId& account_id,
+    bool can_authenticate,
+    std::optional<base::Time> available_at) {
   LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
                                                        can_authenticate);
 }

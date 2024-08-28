@@ -111,7 +111,8 @@ class QuickUnlockPrivateCanAuthenticatePinFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void HandleCanAuthenticateResult(bool result);
+  void HandleCanAuthenticateResult(bool result,
+                                   std::optional<base::Time> available_at);
 
   ChromeExtensionFunctionDetails chrome_details_;
 };

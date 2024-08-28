@@ -27,6 +27,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -161,7 +162,8 @@ void UpdatePinAuthAvailability(const AccountId& account_id) {
       // user's cryptohome. So just pass an arbitrary purpose here.
       account_id, quick_unlock::Purpose::kAny,
       base::BindOnce(
-          [](const AccountId& account_id, bool can_authenticate) {
+          [](const AccountId& account_id, bool can_authenticate,
+             std::optional<base::Time> available_at) {
             if (!LoginScreen::Get() || !LoginScreen::Get()->GetModel()) {
               return;
             }

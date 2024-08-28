@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_LOCK_VIEWS_SCREEN_LOCKER_H_
 #define CHROME_BROWSER_ASH_LOGIN_LOCK_VIEWS_SCREEN_LOCKER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -75,7 +76,9 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                        bool success);
   void UpdatePinKeyboardState(const AccountId& account_id);
   void UpdateChallengeResponseAuthAvailability(const AccountId& account_id);
-  void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);
+  void OnPinCanAuthenticate(const AccountId& account_id,
+                            bool can_authenticate,
+                            std::optional<base::Time> available_at);
 
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;
 

@@ -208,8 +208,10 @@ void ViewsScreenLocker::UpdateChallengeResponseAuthAvailability(
       account_id, enable_challenge_response);
 }
 
-void ViewsScreenLocker::OnPinCanAuthenticate(const AccountId& account_id,
-                                             bool can_authenticate) {
+void ViewsScreenLocker::OnPinCanAuthenticate(
+    const AccountId& account_id,
+    bool can_authenticate,
+    std::optional<base::Time> available_at) {
   LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
                                                        can_authenticate);
 }
