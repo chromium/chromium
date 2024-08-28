@@ -9,13 +9,17 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_ash_web_view_factory.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -34,6 +38,9 @@ class SunfishTest : public AshTestBase {
   }
 
  private:
+  // Calling the factory constructor is enough to set it up.
+  TestAshWebViewFactory test_web_view_factory_;
+
   base::test::ScopedFeatureList scoped_feature_list_{features::kSunfishFeature};
 };
 
@@ -126,6 +133,34 @@ TEST_F(SunfishTest, CaptureBarView) {
   // Close the session using the button.
   LeftClickOn(bar_view->close_button());
   ASSERT_FALSE(controller->capture_mode_session());
+}
+
+// Tests that the search results panel is draggable.
+TEST_F(SunfishTest, DragSearchResultsPanel) {
+  auto widget = SearchResultsPanel::CreateWidget(Shell::GetPrimaryRootWindow());
+  widget->Show();
+
+  auto* search_results_panel =
+      views::AsViewClass<SearchResultsPanel>(widget->GetContentsView());
+  auto* event_generator = GetEventGenerator();
+
+  // The results panel can be dragged by points outside the search results view
+  // and searchbox textfield.
+  const gfx::Point draggable_point(search_results_panel->search_results_view()
+                                       ->GetBoundsInScreen()
+                                       .origin() +
+                                   gfx::Vector2d(0, -3));
+  event_generator->MoveMouseTo(draggable_point);
+
+  // Test that dragging the panel to arbitrary points repositions the panel.
+  constexpr gfx::Vector2d kTestDragOffsets[] = {
+      gfx::Vector2d(-25, -5), gfx::Vector2d(-10, 20), gfx::Vector2d(0, 30),
+      gfx::Vector2d(35, -15)};
+  for (const gfx::Vector2d& offset : kTestDragOffsets) {
+    const gfx::Rect widget_bounds(widget->GetWindowBoundsInScreen());
+    event_generator->DragMouseBy(offset.x(), offset.y());
+    EXPECT_EQ(widget->GetWindowBoundsInScreen(), widget_bounds + offset);
+  }
 }
 
 }  // namespace ash
