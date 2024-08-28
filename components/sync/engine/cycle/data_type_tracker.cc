@@ -121,6 +121,8 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case EXTENSION_SETTINGS:         // chrome.storage.sync API.
     case APP_SETTINGS:               // chrome.storage.sync API.
     case HISTORY_DELETE_DIRECTIVES:  // chrome.history and chrome.browsingData.
+    // Accessible via navigator.credentials to both extensions and sites.
+    case WEBAUTHN_CREDENTIAL:
       return true;
     // For these types, extensions can delete existing data using a js API.
     // However, as they cannot generate new entities, the number of deletions is
@@ -166,7 +168,6 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case NIGORI:
     case SAVED_TAB_GROUP:
     case POWER_BOOKMARK:
-    case WEBAUTHN_CREDENTIAL:
     case INCOMING_PASSWORD_SHARING_INVITATION:
     case OUTGOING_PASSWORD_SHARING_INVITATION:
     case SHARED_TAB_GROUP_DATA:
