@@ -513,6 +513,10 @@ bool ReadAloudAppModel::IsValidAXPosition(
     bool is_docs,
     const std::set<ui::AXNodeID>* current_nodes) const {
   ui::AXNode* anchor_node = GetAnchorNode(position);
+  if (!anchor_node) {
+    return false;
+  }
+
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
   bool is_text_node = a11y::IsTextForReadAnything(anchor_node, is_pdf, is_docs);
