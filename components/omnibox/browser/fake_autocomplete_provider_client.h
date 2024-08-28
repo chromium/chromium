@@ -26,7 +26,7 @@
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/history_embeddings/history_embeddings_service.h"
+#include "components/history_embeddings/history_embeddings_service.h"  // nogncheck
 #endif  // IS_IOS
 
 namespace bookmarks {
