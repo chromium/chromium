@@ -32,7 +32,7 @@ TestingApplicationContext::TestingApplicationContext()
     : application_locale_("en-US"),
       application_country_("us"),
       local_state_(nullptr),
-      chrome_browser_state_manager_(nullptr),
+      profile_manager_(nullptr),
       was_last_shutdown_clean_(false),
       test_url_loader_factory_(
           std::make_unique<network::TestURLLoaderFactory>()),
@@ -78,7 +78,7 @@ void TestingApplicationContext::SetLastShutdownClean(bool clean) {
 
 void TestingApplicationContext::SetProfileManager(ProfileManagerIOS* manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  chrome_browser_state_manager_ = manager;
+  profile_manager_ = manager;
 }
 
 void TestingApplicationContext::SetVariationsService(
@@ -149,17 +149,9 @@ const std::string& TestingApplicationContext::GetApplicationCountry() {
   return application_country_;
 }
 
-// TODO(crbug.com/358299872): After all usage has changed to
-// GetProfileManager(), remove this method.
-ChromeBrowserStateManager*
-TestingApplicationContext::GetChromeBrowserStateManager() {
+ProfileManagerIOS* TestingApplicationContext::GetProfileManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetProfileManager();
-}
-
-ChromeBrowserStateManager* TestingApplicationContext::GetProfileManager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return chrome_browser_state_manager_;
+  return profile_manager_;
 }
 
 metrics_services_manager::MetricsServicesManager*

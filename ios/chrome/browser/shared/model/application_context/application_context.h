@@ -126,13 +126,8 @@ class ApplicationContext {
   // Gets the country locale used by the application
   virtual const std::string& GetApplicationCountry() = 0;
 
-  // Gets the ChromeBrowserStateManager used by this application.
-  // TODO(crbug.com/358299872): After all usage has changed to
-  // GetProfileManager(), remove this method.
-  virtual ChromeBrowserStateManager* GetChromeBrowserStateManager() = 0;
-
   // Gets the Profile Manager used by this application.
-  virtual ChromeBrowserStateManager* GetProfileManager() = 0;
+  virtual ProfileManagerIOS* GetProfileManager() = 0;
 
   // Gets the manager for the various metrics-related service, constructing it
   // if necessary. May return null.
