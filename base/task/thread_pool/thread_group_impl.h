@@ -17,8 +17,8 @@
 #include "base/task/thread_pool/thread_group.h"
 #include "base/task/thread_pool/thread_group_worker_delegate.h"
 #include "base/task/thread_pool/tracked_ref.h"
+#include "base/task/thread_pool/worker_thread.h"
 #include "base/task/thread_pool/worker_thread_set.h"
-#include "base/task/thread_pool/worker_thread_waitable_event.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -29,7 +29,7 @@ namespace internal {
 
 class TaskTracker;
 
-// A group of |WorkerThreadWaitableEvent|s that run |Task|s.
+// A group of |WorkerThread|s that run |Task|s.
 //
 // The thread group doesn't create threads until Start() is called. Tasks can be
 // posted at any time but will not run until after Start() is called.
@@ -106,16 +106,13 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
 
   // Creates a worker, adds it to the thread group, schedules its start and
   // returns it. Cannot be called before Start().
-  scoped_refptr<WorkerThreadWaitableEvent> CreateAndRegisterWorkerLockRequired(
+  scoped_refptr<WorkerThread> CreateAndRegisterWorkerLockRequired(
       ScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  bool IsOnIdleSetLockRequired(WorkerThread* worker) const
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns the number of workers that are awake (i.e. not on the idle set).
   size_t GetNumAwakeWorkersLockRequired() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  bool IsOnIdleSetLockRequired(WorkerThreadWaitableEvent* worker) const
+  bool IsOnIdleSetLockRequired(WorkerThread* worker) const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   size_t worker_sequence_num_ GUARDED_BY(lock_) = 0;

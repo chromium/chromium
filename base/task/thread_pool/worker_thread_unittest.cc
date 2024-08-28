@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/task/thread_pool/worker_thread_waitable_event.h"
+#include "base/task/thread_pool/worker_thread.h"
 
 #include <stddef.h>
 
@@ -58,14 +58,14 @@ namespace {
 
 const size_t kNumSequencesPerTest = 150;
 
-class WorkerThreadDefaultDelegate : public WorkerThreadWaitableEvent::Delegate {
+class WorkerThreadDefaultDelegate : public WorkerThread::Delegate {
  public:
   WorkerThreadDefaultDelegate() = default;
   WorkerThreadDefaultDelegate(const WorkerThreadDefaultDelegate&) = delete;
   WorkerThreadDefaultDelegate& operator=(const WorkerThreadDefaultDelegate&) =
       delete;
 
-  // WorkerThreadWaitableEvent::Delegate:
+  // WorkerThread::Delegate:
   WorkerThread::ThreadLabel GetThreadLabel() const override {
     return WorkerThread::ThreadLabel::DEDICATED;
   }
@@ -113,9 +113,9 @@ class ThreadPoolWorkerTestParam : public testing::TestWithParam<int> {
   }
 
   void SetUp() override {
-    worker_ = MakeRefCounted<WorkerThreadWaitableEvent>(
+    worker_ = MakeRefCounted<WorkerThread>(
         ThreadType::kDefault,
-        std::make_unique<TestWorkerThreadWaitableEventDelegate>(this),
+        std::make_unique<TestWorkerThreadDelegate>(this),
         task_tracker_.GetTrackedRef(), 0);
     ASSERT_TRUE(worker_);
     worker_->Start(service_thread_.task_runner());
@@ -166,22 +166,21 @@ class ThreadPoolWorkerTestParam : public testing::TestWithParam<int> {
     return did_run_task_sources_;
   }
 
-  scoped_refptr<WorkerThreadWaitableEvent> worker_;
+  scoped_refptr<WorkerThread> worker_;
   Thread service_thread_ = Thread("ServiceThread");
 
  private:
-  class TestWorkerThreadWaitableEventDelegate
+  class TestWorkerThreadDelegate
       : public WorkerThreadDefaultDelegate {
    public:
-    explicit TestWorkerThreadWaitableEventDelegate(
-        ThreadPoolWorkerTestParam* outer)
+    explicit TestWorkerThreadDelegate(ThreadPoolWorkerTestParam* outer)
         : outer_(outer) {}
-    TestWorkerThreadWaitableEventDelegate(
-        const TestWorkerThreadWaitableEventDelegate&) = delete;
-    TestWorkerThreadWaitableEventDelegate& operator=(
-        const TestWorkerThreadWaitableEventDelegate&) = delete;
+    TestWorkerThreadDelegate(
+        const TestWorkerThreadDelegate&) = delete;
+    TestWorkerThreadDelegate& operator=(
+        const TestWorkerThreadDelegate&) = delete;
 
-    ~TestWorkerThreadWaitableEventDelegate() override {
+    ~TestWorkerThreadDelegate() override {
       EXPECT_FALSE(IsCallToDidProcessTaskExpected());
     }
 
@@ -586,7 +585,7 @@ TEST_F(ThreadPoolWorkerTest, WorkerCleanupFromGetWork) {
       delegate->controls();
   controls->set_can_cleanup(true);
   EXPECT_CALL(*delegate, OnMainEntry(_));
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kDefault, WrapUnique(delegate), task_tracker.GetTrackedRef(),
       0);
   worker->Start(service_thread_.task_runner());
@@ -610,7 +609,7 @@ TEST_F(ThreadPoolWorkerTest, WorkerCleanupDuringWork) {
 
   controls->HaveWorkBlock();
 
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef(),
       0);
   worker->Start(service_thread_.task_runner());
@@ -633,7 +632,7 @@ TEST_F(ThreadPoolWorkerTest, WorkerCleanupDuringWait) {
   scoped_refptr<ControllableCleanupDelegate::Controls> controls =
       delegate->controls();
 
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef(),
       0);
   worker->Start(service_thread_.task_runner());
@@ -657,7 +656,7 @@ TEST_F(ThreadPoolWorkerTest, WorkerCleanupDuringShutdown) {
 
   controls->HaveWorkBlock();
 
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef(),
       0);
   worker->Start(service_thread_.task_runner());
@@ -683,7 +682,7 @@ TEST_F(ThreadPoolWorkerTest, CleanupBeforeStart) {
       delegate->controls();
   controls->set_expect_get_work(false);
 
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef(),
       0);
 
@@ -698,7 +697,7 @@ namespace {
 class CallJoinFromDifferentThread : public SimpleThread {
  public:
   explicit CallJoinFromDifferentThread(
-      WorkerThreadWaitableEvent* worker_to_join)
+      WorkerThread* worker_to_join)
       : SimpleThread("WorkerThreadJoinThread"),
         worker_to_join_(worker_to_join) {}
 
@@ -715,7 +714,7 @@ class CallJoinFromDifferentThread : public SimpleThread {
   void WaitForRunToStart() { run_started_event_.Wait(); }
 
  private:
-  raw_ptr<WorkerThreadWaitableEvent> worker_to_join_;
+  raw_ptr<WorkerThread> worker_to_join_;
   TestWaitableEvent run_started_event_;
 };
 
@@ -734,7 +733,7 @@ TEST_F(ThreadPoolWorkerTest, WorkerCleanupDuringJoin) {
 
   controls->HaveWorkBlock();
 
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef(),
       0);
   worker->Start(service_thread_.task_runner());
@@ -819,7 +818,7 @@ TEST_F(ThreadPoolWorkerTest, BumpThreadTypeOfAliveThreadDuringShutdown) {
       new ExpectThreadTypeDelegate);
   ExpectThreadTypeDelegate* delegate_raw = delegate.get();
   delegate_raw->SetExpectedThreadType(ThreadType::kBackground);
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kBackground, std::move(delegate),
       task_tracker.GetTrackedRef(), 0);
   worker->Start(service_thread_.task_runner());
@@ -870,7 +869,7 @@ TEST_F(ThreadPoolWorkerTest, WorkerThreadObserver) {
   StrictMock<test::MockWorkerThreadObserver> observer;
   TaskTracker task_tracker;
   auto delegate = std::make_unique<VerifyCallsToObserverDelegate>(&observer);
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef(),
       0);
   EXPECT_CALL(observer, OnWorkerThreadMainEntry());
@@ -988,7 +987,7 @@ TEST_F(ThreadPoolWorkerTest, WorkerThreadCacheNoPurgeOnSignal) {
   TaskTracker task_tracker;
   auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();
   auto* delegate_raw = delegate.get();
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef(),
       0);
   delegate_raw->PrepareForTesting();
@@ -1014,7 +1013,7 @@ TEST_F(ThreadPoolWorkerTest, PurgeOnUninteruptedSleep) {
   TaskTracker task_tracker;
   auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();
   auto* delegate_raw = delegate.get();
-  auto worker = MakeRefCounted<WorkerThreadWaitableEvent>(
+  auto worker = MakeRefCounted<WorkerThread>(
       ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef(),
       0);
 
