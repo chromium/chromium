@@ -2894,6 +2894,8 @@ mod printing {
         UsePath, UseRename, Variadic,
     };
     use crate::mac::MacroDelimiter;
+    use crate::path;
+    use crate::path::printing::PathStyle;
     use crate::print::TokensOrDefault;
     use crate::ty::Type;
     use proc_macro2::TokenStream;
@@ -3135,7 +3137,7 @@ mod printing {
     impl ToTokens for ItemMacro {
         fn to_tokens(&self, tokens: &mut TokenStream) {
             tokens.append_all(self.attrs.outer());
-            self.mac.path.to_tokens(tokens);
+            path::printing::print_path(tokens, &self.mac.path, PathStyle::Mod);
             self.mac.bang_token.to_tokens(tokens);
             self.ident.to_tokens(tokens);
             match &self.mac.delimiter {

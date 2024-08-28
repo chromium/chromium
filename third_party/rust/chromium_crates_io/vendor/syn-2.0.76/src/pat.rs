@@ -417,7 +417,8 @@ pub(crate) mod parsing {
     }
 
     fn pat_path_or_macro_or_struct_or_range(input: ParseStream) -> Result<Pat> {
-        let (qself, path) = path::parsing::qpath(input, true)?;
+        let expr_style = true;
+        let (qself, path) = path::parsing::qpath(input, expr_style)?;
 
         if qself.is_none()
             && input.peek(Token![!])
@@ -811,6 +812,7 @@ mod printing {
         PatTuple, PatTupleStruct, PatType, PatWild,
     };
     use crate::path;
+    use crate::path::printing::PathStyle;
     use proc_macro2::TokenStream;
     use quote::{ToTokens, TokenStreamExt};
 
@@ -879,7 +881,7 @@ mod printing {
     impl ToTokens for PatStruct {
         fn to_tokens(&self, tokens: &mut TokenStream) {
             tokens.append_all(self.attrs.outer());
-            path::printing::print_path(tokens, &self.qself, &self.path);
+            path::printing::print_qpath(tokens, &self.qself, &self.path, PathStyle::Expr);
             self.brace_token.surround(tokens, |tokens| {
                 self.fields.to_tokens(tokens);
                 // NOTE: We need a comma before the dot2 token if it is present.
@@ -914,7 +916,7 @@ mod printing {
     impl ToTokens for PatTupleStruct {
         fn to_tokens(&self, tokens: &mut TokenStream) {
             tokens.append_all(self.attrs.outer());
-            path::printing::print_path(tokens, &self.qself, &self.path);
+            path::printing::print_qpath(tokens, &self.qself, &self.path, PathStyle::Expr);
             self.paren_token.surround(tokens, |tokens| {
                 self.elems.to_tokens(tokens);
             });

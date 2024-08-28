@@ -702,33 +702,62 @@ pub(crate) mod printing {
     use quote::ToTokens;
     use std::cmp;
 
+    pub(crate) enum PathStyle {
+        Expr,
+        Mod,
+        AsWritten,
+    }
+
+    impl Copy for PathStyle {}
+
+    impl Clone for PathStyle {
+        fn clone(&self) -> Self {
+            *self
+        }
+    }
+
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for Path {
         fn to_tokens(&self, tokens: &mut TokenStream) {
-            self.leading_colon.to_tokens(tokens);
-            self.segments.to_tokens(tokens);
+            print_path(tokens, self, PathStyle::AsWritten);
+        }
+    }
+
+    pub(crate) fn print_path(tokens: &mut TokenStream, path: &Path, style: PathStyle) {
+        path.leading_colon.to_tokens(tokens);
+        for segment in path.segments.pairs() {
+            print_path_segment(tokens, segment.value(), style);
+            segment.punct().to_tokens(tokens);
         }
     }
 
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for PathSegment {
         fn to_tokens(&self, tokens: &mut TokenStream) {
-            self.ident.to_tokens(tokens);
-            self.arguments.to_tokens(tokens);
+            print_path_segment(tokens, self, PathStyle::AsWritten);
         }
+    }
+
+    fn print_path_segment(tokens: &mut TokenStream, segment: &PathSegment, style: PathStyle) {
+        segment.ident.to_tokens(tokens);
+        print_path_arguments(tokens, &segment.arguments, style);
     }
 
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for PathArguments {
         fn to_tokens(&self, tokens: &mut TokenStream) {
-            match self {
-                PathArguments::None => {}
-                PathArguments::AngleBracketed(arguments) => {
-                    arguments.to_tokens(tokens);
-                }
-                PathArguments::Parenthesized(arguments) => {
-                    arguments.to_tokens(tokens);
-                }
+            print_path_arguments(tokens, self, PathStyle::AsWritten);
+        }
+    }
+
+    fn print_path_arguments(tokens: &mut TokenStream, arguments: &PathArguments, style: PathStyle) {
+        match arguments {
+            PathArguments::None => {}
+            PathArguments::AngleBracketed(arguments) => {
+                print_angle_bracketed_generic_arguments(tokens, arguments, style);
+            }
+            PathArguments::Parenthesized(arguments) => {
+                print_parenthesized_generic_arguments(tokens, arguments, style);
             }
         }
     }
@@ -753,44 +782,56 @@ pub(crate) mod printing {
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for AngleBracketedGenericArguments {
         fn to_tokens(&self, tokens: &mut TokenStream) {
-            self.colon2_token.to_tokens(tokens);
-            self.lt_token.to_tokens(tokens);
-
-            // Print lifetimes before types/consts/bindings, regardless of their
-            // order in self.args.
-            let mut trailing_or_empty = true;
-            for param in self.args.pairs() {
-                match param.value() {
-                    GenericArgument::Lifetime(_) => {
-                        param.to_tokens(tokens);
-                        trailing_or_empty = param.punct().is_some();
-                    }
-                    GenericArgument::Type(_)
-                    | GenericArgument::Const(_)
-                    | GenericArgument::AssocType(_)
-                    | GenericArgument::AssocConst(_)
-                    | GenericArgument::Constraint(_) => {}
-                }
-            }
-            for param in self.args.pairs() {
-                match param.value() {
-                    GenericArgument::Type(_)
-                    | GenericArgument::Const(_)
-                    | GenericArgument::AssocType(_)
-                    | GenericArgument::AssocConst(_)
-                    | GenericArgument::Constraint(_) => {
-                        if !trailing_or_empty {
-                            <Token![,]>::default().to_tokens(tokens);
-                        }
-                        param.to_tokens(tokens);
-                        trailing_or_empty = param.punct().is_some();
-                    }
-                    GenericArgument::Lifetime(_) => {}
-                }
-            }
-
-            self.gt_token.to_tokens(tokens);
+            print_angle_bracketed_generic_arguments(tokens, self, PathStyle::AsWritten);
         }
+    }
+
+    pub(crate) fn print_angle_bracketed_generic_arguments(
+        tokens: &mut TokenStream,
+        arguments: &AngleBracketedGenericArguments,
+        style: PathStyle,
+    ) {
+        if let PathStyle::Mod = style {
+            return;
+        }
+
+        conditionally_print_turbofish(tokens, &arguments.colon2_token, style);
+        arguments.lt_token.to_tokens(tokens);
+
+        // Print lifetimes before types/consts/bindings, regardless of their
+        // order in args.
+        let mut trailing_or_empty = true;
+        for param in arguments.args.pairs() {
+            match param.value() {
+                GenericArgument::Lifetime(_) => {
+                    param.to_tokens(tokens);
+                    trailing_or_empty = param.punct().is_some();
+                }
+                GenericArgument::Type(_)
+                | GenericArgument::Const(_)
+                | GenericArgument::AssocType(_)
+                | GenericArgument::AssocConst(_)
+                | GenericArgument::Constraint(_) => {}
+            }
+        }
+        for param in arguments.args.pairs() {
+            match param.value() {
+                GenericArgument::Type(_)
+                | GenericArgument::Const(_)
+                | GenericArgument::AssocType(_)
+                | GenericArgument::AssocConst(_)
+                | GenericArgument::Constraint(_) => {
+                    if !trailing_or_empty {
+                        <Token![,]>::default().to_tokens(tokens);
+                    }
+                    param.to_tokens(tokens);
+                    trailing_or_empty = param.punct().is_some();
+                }
+                GenericArgument::Lifetime(_) => {}
+            }
+        }
+
+        arguments.gt_token.to_tokens(tokens);
     }
 
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
@@ -826,18 +867,36 @@ pub(crate) mod printing {
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for ParenthesizedGenericArguments {
         fn to_tokens(&self, tokens: &mut TokenStream) {
-            self.paren_token.surround(tokens, |tokens| {
-                self.inputs.to_tokens(tokens);
-            });
-            self.output.to_tokens(tokens);
+            print_parenthesized_generic_arguments(tokens, self, PathStyle::AsWritten);
         }
     }
 
-    pub(crate) fn print_path(tokens: &mut TokenStream, qself: &Option<QSelf>, path: &Path) {
+    fn print_parenthesized_generic_arguments(
+        tokens: &mut TokenStream,
+        arguments: &ParenthesizedGenericArguments,
+        style: PathStyle,
+    ) {
+        if let PathStyle::Mod = style {
+            return;
+        }
+
+        conditionally_print_turbofish(tokens, &None, style);
+        arguments.paren_token.surround(tokens, |tokens| {
+            arguments.inputs.to_tokens(tokens);
+        });
+        arguments.output.to_tokens(tokens);
+    }
+
+    pub(crate) fn print_qpath(
+        tokens: &mut TokenStream,
+        qself: &Option<QSelf>,
+        path: &Path,
+        style: PathStyle,
+    ) {
         let qself = match qself {
             Some(qself) => qself,
             None => {
-                path.to_tokens(tokens);
+                print_path(tokens, path, style);
                 return;
             }
         };
@@ -850,20 +909,31 @@ pub(crate) mod printing {
             TokensOrDefault(&qself.as_token).to_tokens(tokens);
             path.leading_colon.to_tokens(tokens);
             for (i, segment) in segments.by_ref().take(pos).enumerate() {
+                print_path_segment(tokens, segment.value(), PathStyle::AsWritten);
                 if i + 1 == pos {
-                    segment.value().to_tokens(tokens);
                     qself.gt_token.to_tokens(tokens);
-                    segment.punct().to_tokens(tokens);
-                } else {
-                    segment.to_tokens(tokens);
                 }
+                segment.punct().to_tokens(tokens);
             }
         } else {
             qself.gt_token.to_tokens(tokens);
             path.leading_colon.to_tokens(tokens);
         }
         for segment in segments {
-            segment.to_tokens(tokens);
+            print_path_segment(tokens, segment.value(), style);
+            segment.punct().to_tokens(tokens);
+        }
+    }
+
+    fn conditionally_print_turbofish(
+        tokens: &mut TokenStream,
+        colon2_token: &Option<Token![::]>,
+        style: PathStyle,
+    ) {
+        match style {
+            PathStyle::Expr => TokensOrDefault(colon2_token).to_tokens(tokens),
+            PathStyle::Mod => unreachable!(),
+            PathStyle::AsWritten => colon2_token.to_tokens(tokens),
         }
     }
 

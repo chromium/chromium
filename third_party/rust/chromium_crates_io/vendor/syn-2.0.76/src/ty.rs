@@ -1018,6 +1018,7 @@ pub(crate) mod parsing {
 mod printing {
     use crate::attr::FilterAttrs;
     use crate::path;
+    use crate::path::printing::PathStyle;
     use crate::print::TokensOrDefault;
     use crate::ty::{
         Abi, BareFnArg, BareVariadic, ReturnType, TypeArray, TypeBareFn, TypeGroup, TypeImplTrait,
@@ -1116,7 +1117,7 @@ mod printing {
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for TypePath {
         fn to_tokens(&self, tokens: &mut TokenStream) {
-            path::printing::print_path(tokens, &self.qself, &self.path);
+            path::printing::print_qpath(tokens, &self.qself, &self.path, PathStyle::AsWritten);
         }
     }
 

@@ -448,7 +448,7 @@ ast_enum! {
     }
 }
 
-ast_enum_of_structs! {
+ast_enum! {
     /// Content of a compile-time structured attribute.
     ///
     /// ## Path
@@ -625,6 +625,24 @@ impl<'a> FilterAttrs<'a> for &'a [Attribute] {
     }
 }
 
+impl From<Path> for Meta {
+    fn from(meta: Path) -> Meta {
+        Meta::Path(meta)
+    }
+}
+
+impl From<MetaList> for Meta {
+    fn from(meta: MetaList) -> Meta {
+        Meta::List(meta)
+    }
+}
+
+impl From<MetaNameValue> for Meta {
+    fn from(meta: MetaNameValue) -> Meta {
+        Meta::NameValue(meta)
+    }
+}
+
 #[cfg(feature = "parsing")]
 pub(crate) mod parsing {
     use crate::attr::{AttrStyle, Attribute, Meta, MetaList, MetaNameValue};
@@ -757,7 +775,9 @@ pub(crate) mod parsing {
 
 #[cfg(feature = "printing")]
 mod printing {
-    use crate::attr::{AttrStyle, Attribute, MetaList, MetaNameValue};
+    use crate::attr::{AttrStyle, Attribute, Meta, MetaList, MetaNameValue};
+    use crate::path;
+    use crate::path::printing::PathStyle;
     use proc_macro2::TokenStream;
     use quote::ToTokens;
 
@@ -775,9 +795,20 @@ mod printing {
     }
 
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
+    impl ToTokens for Meta {
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            match self {
+                Meta::Path(path) => path::printing::print_path(tokens, path, PathStyle::Mod),
+                Meta::List(meta_list) => meta_list.to_tokens(tokens),
+                Meta::NameValue(meta_name_value) => meta_name_value.to_tokens(tokens),
+            }
+        }
+    }
+
+    #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for MetaList {
         fn to_tokens(&self, tokens: &mut TokenStream) {
-            self.path.to_tokens(tokens);
+            path::printing::print_path(tokens, &self.path, PathStyle::Mod);
             self.delimiter.surround(tokens, self.tokens.clone());
         }
     }
@@ -785,7 +816,7 @@ mod printing {
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for MetaNameValue {
         fn to_tokens(&self, tokens: &mut TokenStream) {
-            self.path.to_tokens(tokens);
+            path::printing::print_path(tokens, &self.path, PathStyle::Mod);
             self.eq_token.to_tokens(tokens);
             self.value.to_tokens(tokens);
         }
