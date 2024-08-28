@@ -749,9 +749,13 @@ struct OperationConnectivity {
   std::vector<uint64_t> output_ids;
 };
 
-OperationConnectivity GetOperationConnectivity(const Operation* operation) {
-  std::vector<uint64_t> input_ids;
-  std::vector<uint64_t> output_ids;
+void RetrieveOperationConnectivity(
+    const Operation* operation,
+    OperationConnectivity& out_operation_connectivity) {
+  std::vector<uint64_t>& input_ids = out_operation_connectivity.input_ids;
+  std::vector<uint64_t>& output_ids = out_operation_connectivity.output_ids;
+  input_ids.clear();
+  output_ids.clear();
   switch (operation->which()) {
     case Operation::Tag::kArgMinMax: {
       const auto& arg_min_max = operation->get_arg_min_max();
@@ -1096,9 +1100,6 @@ OperationConnectivity GetOperationConnectivity(const Operation* operation) {
       break;
     }
   }
-
-  return OperationConnectivity{.input_ids = std::move(input_ids),
-                               .output_ids = std::move(output_ids)};
 }
 
 // The struct contains the information of graph fusion. In `CreateAndBuild`
@@ -1224,11 +1225,13 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
   // Iterate from the end of operations instead from the beginning, so we
   // can easily get the total output edges count of a fusible base operation
   // before visiting it.
+  OperationConnectivity operation_connectivity;
   for (size_t operation_index = graph_info->operations.size();
        operation_index-- > 0;) {
     const auto& operation = graph_info->operations[operation_index];
-    const OperationConnectivity operation_connectivity =
-        GetOperationConnectivity(operation.get());
+    RetrieveOperationConnectivity(
+        operation.get(),
+        /*out_operation_connectivity*/ operation_connectivity);
 
     for (uint64_t input_id : operation_connectivity.input_ids) {
       ++node_output_edge_counts.at(input_id);
