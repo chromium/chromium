@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/webui/ash/emoji/bubble_utils.h"
 #include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -48,16 +49,29 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
 
  public:
   explicit EmojiBubbleDialogView(
-      std::unique_ptr<WebUIContentsWrapper> contents_wrapper)
+      std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
+      gfx::Rect caret_bounds)
       : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
-        contents_wrapper_(std::move(contents_wrapper)) {
+        contents_wrapper_(std::move(contents_wrapper)),
+        caret_bounds_(caret_bounds) {
     set_has_parent(false);
     set_corner_radius(20);
     SetProperty(views::kElementIdentifierKey, ash::kEmojiPickerElementId);
   }
 
+  // WebUIBubbleDialogView:
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override {
+    WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
+    GetWidget()->SetBounds(ash::GetBubbleBoundsAroundCaret(
+        caret_bounds_,
+        -GetBubbleFrameView()->bubble_border()->GetInsets().ToOutsets(),
+        new_size));
+  }
+
  private:
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
+  gfx::Rect caret_bounds_;
 };
 
 BEGIN_METADATA(EmojiBubbleDialogView)
@@ -200,14 +214,10 @@ void EmojiUI::Show(ui::EmojiPickerCategory category,
       ConvertCategoryEnum(category);
   contents_wrapper->GetWebUIController()->initial_query_ = initial_query;
 
-  auto bubble_view =
-      std::make_unique<EmojiBubbleDialogView>(std::move(contents_wrapper));
+  auto bubble_view = std::make_unique<EmojiBubbleDialogView>(
+      std::move(contents_wrapper), caret_bounds);
   auto weak_ptr = bubble_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  weak_ptr->SetAnchorRect(anchor_rect);
-  weak_ptr->GetBubbleFrameView()->SetPreferredArrowAdjustment(
-      views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
-  weak_ptr->set_adjust_if_offscreen(true);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EmojiUI)
