@@ -677,8 +677,7 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
     return;
   // The provided mask should not have a layer mask itself.
   DCHECK(!layer_mask ||
-         (!layer_mask->layer_mask_layer() && layer_mask->children().empty() &&
-          !layer_mask->layer_mask_back_link_));
+         (!layer_mask->layer_mask_layer() && layer_mask->children().empty()));
   DCHECK(!layer_mask_back_link_);
   DCHECK(!layer_mask || layer_mask->type_ == LAYER_TEXTURED);
   // Masks must be backed by a PictureLayer.
@@ -706,6 +705,12 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
     if (no_mutation_) {
       base::debug::DumpWithoutCrashing(FROM_HERE, kMinNoMutationDumpInterval);
     }
+
+    // Clears out other reference to `layer_mask` if there is one.
+    if (layer_mask->layer_mask_back_link_) {
+      layer_mask->layer_mask_back_link_->SetMaskLayer(nullptr);
+    }
+
     layer_mask->layer_mask_back_link_ = this;
     layer_mask->OnDeviceScaleFactorChanged(device_scale_factor_);
   }

@@ -1611,6 +1611,44 @@ TEST_F(LayerWithNullDelegateTest, AlwaysSendsMaskDamagedRects) {
   EXPECT_EQ(mask->damaged_region_for_testing().bounds(), gfx::Rect());
 }
 
+// Tests that mask layer could be set to different layers and released
+// without leaving dangling references.
+TEST_F(LayerWithNullDelegateTest, ReusedMaskLayer) {
+  gfx::Rect bound(gfx::Rect(2, 2));
+  std::unique_ptr<Layer> root = CreateTextureRootLayer(bound);
+
+  std::unique_ptr<Layer> l1 = CreateTextureLayer(bound);
+  root->Add(l1.get());
+  std::unique_ptr<Layer> l2 = CreateTextureLayer(bound);
+  root->Add(l2.get());
+
+  {
+    std::unique_ptr<Layer> mask = CreateTextureLayer(bound);
+    // Set `mask` to `l1`, then `l2`.
+    l1->SetMaskLayer(mask.get());
+    EXPECT_EQ(mask.get(), l1->layer_mask_layer());
+    EXPECT_EQ(l1.get(), mask->layer_mask_back_link());
+
+    l2->SetMaskLayer(mask.get());
+    EXPECT_EQ(mask.get(), l2->layer_mask_layer());
+    EXPECT_EQ(l2.get(), mask->layer_mask_back_link());
+
+    // After setting `mask` to `l2`, `l1` should no longer reference it.
+    ASSERT_EQ(nullptr, l1->layer_mask_layer());
+
+    // Release `mask`.
+    mask.reset();
+  }
+
+  // `l2' should no longer references `mask` either.
+  ASSERT_EQ(nullptr, l2->layer_mask_layer());
+
+  // There should be no use-after-free crashes.
+  root->SendDamagedRects();
+  l1->SendDamagedRects();
+  l2->SendDamagedRects();
+}
+
 // Verifies that when a layer is reflecting other layers, mirror counts of
 // reflected layers are updated properly.
 TEST_F(LayerWithNullDelegateTest, SetShowReflectedLayerSubtree) {
