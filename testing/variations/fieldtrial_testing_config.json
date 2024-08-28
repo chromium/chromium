@@ -12941,6 +12941,8 @@
                     "name": "AllFeatures",
                     "enable_features": [
                         "ForceSafeSearchForUnauthenticatedSupervisedUsers",
+                        "ForceSupervisedUserReauthenticationForBlockedSites",
+                        "ForceSupervisedUserReauthenticationForYouTube",
                         "HideGuestModeForSupervisedUsers",
                         "UncredentialedFilteringFallbackForSupervisedUsers"
                     ]
