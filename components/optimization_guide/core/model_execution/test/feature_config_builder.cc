@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 
+#include <initializer_list>
+
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -113,6 +115,15 @@ proto::FeatureTextSafetyConfiguration ComposeSafetyConfig() {
   proto::FeatureTextSafetyConfiguration config;
   config.set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   return config;
+}
+
+proto::TextSafetyModelMetadata SafetyMetadata(
+    std::initializer_list<proto::FeatureTextSafetyConfiguration> configs) {
+  proto::TextSafetyModelMetadata metadata;
+  for (auto& cfg : configs) {
+    *metadata.add_feature_text_safety_configurations() = std::move(cfg);
+  }
+  return metadata;
 }
 
 }  // namespace optimization_guide

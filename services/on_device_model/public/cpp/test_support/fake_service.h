@@ -17,6 +17,17 @@ namespace on_device_model {
 
 class FakeOnDeviceModel;
 
+// The expected content of safety model files.
+inline constexpr std::string FakeTsData() {
+  return "fake_ts_data";
+}
+inline constexpr std::string FakeTsSpModel() {
+  return "fake_ts_sp_model";
+}
+inline constexpr std::string FakeLanguageModel() {
+  return "fake_language_model";
+}
+
 // Hooks for tests to control the FakeOnDeviceService behavior.
 struct FakeOnDeviceServiceSettings final {
   FakeOnDeviceServiceSettings();
@@ -98,9 +109,13 @@ class FakeOnDeviceSession final : public mojom::Session {
 
 class FakeOnDeviceModel : public mojom::OnDeviceModel {
  public:
-  explicit FakeOnDeviceModel(
-      FakeOnDeviceServiceSettings* settings,
-      std::optional<uint32_t> adaptation_model_id = std::nullopt);
+  struct Data {
+    bool has_safety_model = false;
+    bool has_language_model = false;
+    std::optional<uint32_t> adaptation_model_id = std::nullopt;
+  };
+  explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
+                             Data&& data);
   ~FakeOnDeviceModel() override;
 
   // mojom::OnDeviceModel:
@@ -122,7 +137,7 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
 
  private:
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
-  std::optional<uint32_t> adaptation_model_id_;
+  Data data_;
 
   mojo::UniqueReceiverSet<mojom::Session> receivers_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_adaptation_receivers_;

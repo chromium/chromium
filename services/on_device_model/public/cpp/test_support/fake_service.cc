@@ -9,6 +9,19 @@
 
 namespace on_device_model {
 
+namespace {
+
+std::string ReadFile(base::File& file) {
+  std::vector<uint8_t> contents;
+  contents.resize(file.GetLength());
+  if (!file.ReadAndCheck(0, contents)) {
+    return std::string();
+  }
+  return std::string(contents.begin(), contents.end());
+}
+
+}  // namespace
+
 FakeOnDeviceServiceSettings::FakeOnDeviceServiceSettings() = default;
 FakeOnDeviceServiceSettings::~FakeOnDeviceServiceSettings() = default;
 
@@ -126,17 +139,17 @@ void FakeOnDeviceSession::AddContextInternal(
   }
 }
 
-FakeOnDeviceModel::FakeOnDeviceModel(
-    FakeOnDeviceServiceSettings* settings,
-    std::optional<uint32_t> adaptation_model_id)
-    : settings_(settings), adaptation_model_id_(adaptation_model_id) {}
+FakeOnDeviceModel::FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
+                                     FakeOnDeviceModel::Data&& data)
+    : settings_(settings), data_(std::move(data)) {}
 
 FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 
 void FakeOnDeviceModel::StartSession(
     mojo::PendingReceiver<mojom::Session> session) {
-  AddSession(std::move(session), std::make_unique<FakeOnDeviceSession>(
-                                     settings_, adaptation_model_id_, this));
+  AddSession(std::move(session),
+             std::make_unique<FakeOnDeviceSession>(
+                 settings_, data_.adaptation_model_id, this));
 }
 
 void FakeOnDeviceModel::AddSession(
@@ -150,6 +163,10 @@ void FakeOnDeviceModel::AddSession(
 
 void FakeOnDeviceModel::DetectLanguage(const std::string& text,
                                        DetectLanguageCallback callback) {
+  if (!data_.has_language_model) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
   mojom::LanguageDetectionResultPtr language;
   if (text.find("esperanto") != std::string::npos) {
     language = mojom::LanguageDetectionResult::New("eo", 1.0);
@@ -160,6 +177,10 @@ void FakeOnDeviceModel::DetectLanguage(const std::string& text,
 void FakeOnDeviceModel::ClassifyTextSafety(
     const std::string& text,
     ClassifyTextSafetyCallback callback) {
+  if (!data_.has_safety_model) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
   auto safety_info = mojom::SafetyInfo::New();
 
   // Text is unsafe if it contains "unsafe".
@@ -169,8 +190,10 @@ void FakeOnDeviceModel::ClassifyTextSafety(
   bool has_reasonable = text.find("reasonable") != std::string::npos;
   safety_info->class_scores.emplace_back(has_reasonable ? 0.2 : 0.8);
 
-  if (text.find("esperanto") != std::string::npos) {
-    safety_info->language = mojom::LanguageDetectionResult::New("eo", 1.0);
+  if (data_.has_language_model) {
+    if (text.find("esperanto") != std::string::npos) {
+      safety_info->language = mojom::LanguageDetectionResult::New("eo", 1.0);
+    }
   }
 
   std::move(callback).Run(std::move(safety_info));
@@ -180,8 +203,10 @@ void FakeOnDeviceModel::LoadAdaptation(
     mojom::LoadAdaptationParamsPtr params,
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
     LoadAdaptationCallback callback) {
-  auto test_model = std::make_unique<FakeOnDeviceModel>(
-      settings_, ++settings_->adaptation_model_id_counter);
+  Data data = data_;
+  data.adaptation_model_id = ++settings_->adaptation_model_id_counter;
+  auto test_model =
+      std::make_unique<FakeOnDeviceModel>(settings_, std::move(data));
   model_adaptation_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
@@ -201,7 +226,19 @@ void FakeOnDeviceModelService::LoadModel(
     std::move(callback).Run(settings_->load_model_result);
     return;
   }
-  auto test_model = std::make_unique<FakeOnDeviceModel>(settings_);
+  FakeOnDeviceModel::Data data;
+  if (params->assets.ts_data.IsValid()) {
+    CHECK_EQ(ReadFile(params->assets.ts_data), FakeTsData());
+    CHECK_EQ(ReadFile(params->assets.ts_sp_model), FakeTsSpModel());
+    data.has_safety_model = true;
+  }
+  if (params->assets.language_detection_model.IsValid()) {
+    CHECK_EQ(ReadFile(params->assets.language_detection_model),
+             FakeLanguageModel());
+    data.has_language_model = true;
+  }
+  auto test_model =
+      std::make_unique<FakeOnDeviceModel>(settings_, std::move(data));
   model_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(settings_->load_model_result);
 }

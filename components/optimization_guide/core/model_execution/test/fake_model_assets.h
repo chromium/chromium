@@ -14,6 +14,7 @@
 
 namespace optimization_guide {
 
+// Base model files and metadata suitable for a FakeOnDeviceModelService.
 class FakeBaseModelAsset {
  public:
   FakeBaseModelAsset();
@@ -32,15 +33,43 @@ class FakeBaseModelAsset {
   base::ScopedTempDir temp_dir_;
 };
 
-// Constructs paths for extra files required by safety model.
-// These files won't support actual reads and writes, but must be specified
-// for the ModelInfo to pass validation.
-base::flat_set<base::FilePath> FakeSafetyModelAdditionalFiles();
+// Language model files and metadata suitable for a FakeOnDeviceModelService.
+class FakeLanguageModelAsset {
+ public:
+  FakeLanguageModelAsset();
+  ~FakeLanguageModelAsset();
 
-// Constructs a ModelInfo object holding the feature_config in metadata that
-// should pass as a valid safety model.
-std::unique_ptr<ModelInfo> FakeSafetyModelInfo(
-    proto::FeatureTextSafetyConfiguration&& feature_config);
+  const ModelInfo& model_info() { return *model_info_; }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<ModelInfo> model_info_;
+};
+
+// Safety model files and metadata suitable for a FakeOnDeviceModelService.
+class FakeSafetyModelAsset {
+ public:
+  struct Content {
+    proto::TextSafetyModelMetadata metadata;
+  };
+  // Constructs a safety model with the given content.
+  explicit FakeSafetyModelAsset(Content&& content);
+
+  // Constructs a simple safety model supporting a single feature.
+  explicit FakeSafetyModelAsset(proto::FeatureTextSafetyConfiguration&& config);
+
+  ~FakeSafetyModelAsset();
+
+  const ModelInfo& model_info() { return *model_info_; }
+
+  base::flat_set<base::FilePath> AdditionalFiles() {
+    return model_info_->GetAdditionalFiles();
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<ModelInfo> model_info_;
+};
 
 }  // namespace optimization_guide
 

@@ -96,6 +96,9 @@ inline auto Int64Proto(int64_t value) {
   return v;
 }
 
+proto::TextSafetyModelMetadata SafetyMetadata(
+    std::initializer_list<proto::FeatureTextSafetyConfiguration> configs);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_FEATURE_CONFIG_BUILDER_H_
