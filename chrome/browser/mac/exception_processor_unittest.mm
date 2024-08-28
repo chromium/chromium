@@ -13,8 +13,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chrome {
-
 class ExceptionProcessorTest : public testing::Test {
  public:
   ExceptionProcessorTest() {
@@ -39,7 +37,7 @@ void RaiseExceptionInRunLoop() {
 
 void ThrowExceptionInRunLoop() {
   base::mac::DisableOSCrashDumps();
-  chrome::InstallObjcExceptionPreprocessor();
+  InstallObjcExceptionPreprocessor();
 
   RaiseExceptionInRunLoop();
 
@@ -58,7 +56,7 @@ TEST_F(ExceptionProcessorTest, ThrowExceptionInRunLoop) {
 
 void ThrowAndCatchExceptionInRunLoop() {
   base::mac::DisableOSCrashDumps();
-  chrome::InstallObjcExceptionPreprocessor();
+  InstallObjcExceptionPreprocessor();
 
   CFRunLoopRef run_loop = CFRunLoopGetCurrent();
   CFRunLoopPerformBlock(run_loop, kCFRunLoopCommonModes, ^{
@@ -90,7 +88,7 @@ TEST_F(ExceptionProcessorTest, ThrowAndCatchExceptionInRunLoop) {
 
 void ThrowExceptionFromSelector() {
   base::mac::DisableOSCrashDumps();
-  chrome::InstallObjcExceptionPreprocessor();
+  InstallObjcExceptionPreprocessor();
 
   NSException* exception = [NSException exceptionWithName:@"ThrowFromSelector"
                                                    reason:@""
@@ -114,7 +112,7 @@ TEST_F(ExceptionProcessorTest, ThrowExceptionFromSelector) {
 
 void ThrowInNotificationObserver() {
   base::mac::DisableOSCrashDumps();
-  chrome::InstallObjcExceptionPreprocessor();
+  InstallObjcExceptionPreprocessor();
 
   NSNotification* notification =
       [NSNotification notificationWithName:@"TestExceptionInObserver"
@@ -149,7 +147,7 @@ TEST_F(ExceptionProcessorTest, ThrowInNotificationObserver) {
 
 void ThrowExceptionInRunLoopWithoutProcessor() {
   base::mac::DisableOSCrashDumps();
-  chrome::UninstallObjcExceptionPreprocessor();
+  UninstallObjcExceptionPreprocessor();
 
   @try {
     RaiseExceptionInRunLoop();
@@ -180,5 +178,3 @@ TEST_F(ExceptionProcessorTest, MAYBE_ThrowExceptionInRunLoopWithoutProcessor) {
               },
               ".*TEST PASS.*");
 }
-
-}  // namespace chrome

@@ -24,8 +24,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 
-namespace chrome {
-
 static objc_exception_preprocessor g_next_preprocessor = nullptr;
 
 // It is believed that crashing on exceptions is breaking bucketing on the crash
@@ -164,5 +162,3 @@ void UninstallObjcExceptionPreprocessor() {
   objc_setExceptionPreprocessor(g_next_preprocessor);
   g_next_preprocessor = nullptr;
 }
-
-}  // namespace chrome

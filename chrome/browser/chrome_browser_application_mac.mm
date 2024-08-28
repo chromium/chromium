@@ -151,7 +151,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   if (self != [BrowserCrApplication class]) {
     return;
   }
-  chrome::InstallObjcExceptionPreprocessor();
+  InstallObjcExceptionPreprocessor();
 
   cocoa_l10n_util::ApplyForcedRTL();
 }
