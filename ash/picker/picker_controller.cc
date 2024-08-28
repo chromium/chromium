@@ -593,7 +593,6 @@ void PickerController::OnViewIsDeleting(views::View* view) {
   feature_usage_metrics_.StopUsage();
   session_metrics_.reset();
   emoji_suggester_.reset();
-  emoji_history_model_.reset();
   session_.reset();
 }
 
@@ -607,7 +606,8 @@ PickerController::Session::Session(PrefService* prefs,
                                    ui::TextInputClient* focused_client,
                                    input_method::ImeKeyboard* ime_keyboard,
                                    PickerModel::EditorStatus editor_status)
-    : model(prefs, focused_client, ime_keyboard, editor_status) {}
+    : model(prefs, focused_client, ime_keyboard, editor_status),
+      emoji_history_model(prefs) {}
 
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
                                   WidgetTriggerSource trigger_source) {
@@ -628,9 +628,8 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
       show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
                                       : PickerModel::EditorStatus::kEnabled);
 
-  emoji_history_model_ = std::make_unique<PickerEmojiHistoryModel>(GetPrefs());
   emoji_suggester_ = std::make_unique<PickerEmojiSuggester>(
-      emoji_history_model_.get(),
+      &session_->emoji_history_model,
       base::BindRepeating(
           [](base::WeakPtr<PickerController> weak_controller,
              std::string_view emoji) -> std::string {
@@ -687,7 +686,7 @@ void PickerController::InsertResultOnNextFocus(
   CHECK(session_);
   if (auto* data = std::get_if<PickerEmojiResult>(&result);
       data != nullptr && session_->model.should_do_learning()) {
-    emoji_history_model_->UpdateRecentEmoji(
+    session_->emoji_history_model.UpdateRecentEmoji(
         EmojiResultTypeToCategory(data->type), base::UTF16ToUTF8(data->text));
   }
 

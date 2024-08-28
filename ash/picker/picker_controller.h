@@ -14,6 +14,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/model/picker_emoji_history_model.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "ash/picker/picker_caps_lock_bubble_controller.h"
@@ -47,7 +48,6 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerClient;
-class PickerEmojiHistoryModel;
 class PickerEmojiSuggester;
 class PickerModel;
 class PickerPasteRequest;
@@ -164,6 +164,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // Active Picker session tied to the lifetime of the PickerWidget.
   struct Session {
     PickerModel model;
+    PickerEmojiHistoryModel emoji_history_model;
 
     Session(PrefService* prefs,
             ui::TextInputClient* focused_client,
@@ -185,7 +186,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerFeatureTour feature_tour_;
   PickerCapsLockBubbleController caps_lock_bubble_controller_;
   std::unique_ptr<Session> session_;
-  std::unique_ptr<PickerEmojiHistoryModel> emoji_history_model_;
   std::unique_ptr<PickerEmojiSuggester> emoji_suggester_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
