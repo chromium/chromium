@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/address_data_manager.h"
 
+#include <iterator>
 #include <memory>
 
 #include "base/check_deref.h"
@@ -31,6 +32,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -191,16 +193,17 @@ void AddressDataManager::OnWebDataServiceRequestDone(
 
 std::vector<const AutofillProfile*> AddressDataManager::GetProfiles(
     ProfileOrder order) const {
-  std::vector<const AutofillProfile*> a = GetProfilesByRecordType(
-      AutofillProfile::RecordType::kLocalOrSyncable, ProfileOrder::kNone);
-  std::vector<const AutofillProfile*> b = GetProfilesByRecordType(
-      AutofillProfile::RecordType::kAccount, ProfileOrder::kNone);
-  // TODO(crbug.com/354706653): Query kAccountHome and kAccountWork profiles as
-  // well and add them to the result.
-  a.reserve(a.size() + b.size());
-  base::ranges::move(b, std::back_inserter(a));
-  OrderProfiles(a, order);
-  return a;
+  std::vector<const AutofillProfile*> profiles;
+  for (AutofillProfile::RecordType record_type :
+       DenseSet<AutofillProfile::RecordType>::all()) {
+    std::vector<const AutofillProfile*> profiles_of_type =
+        GetProfilesByRecordType(record_type, ProfileOrder::kNone);
+    profiles.insert(profiles.end(),
+                    std::make_move_iterator(profiles_of_type.begin()),
+                    std::make_move_iterator(profiles_of_type.end()));
+  }
+  OrderProfiles(profiles, order);
+  return profiles;
 }
 
 std::vector<const AutofillProfile*> AddressDataManager::GetProfilesByRecordType(
