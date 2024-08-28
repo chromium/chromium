@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/clipboard/clipboard_mac.h"
 
 #import <Cocoa/Cocoa.h>
@@ -87,13 +82,8 @@ std::vector<uint8_t> GetPngFromPasteboard(NSPasteboard* pasteboard) {
   }
 
   NSData* data = [pasteboard dataForType:NSPasteboardTypePNG];
-  if (!data) {
-    return {};
-  }
-
-  const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
-  std::vector<uint8_t> png(bytes, bytes + data.length);
-  return png;
+  auto span = base::apple::NSDataToSpan(data);
+  return {span.begin(), span.end()};
 }
 
 std::vector<uint8_t> EncodeGfxImageToPng(gfx::Image image) {
@@ -259,10 +249,7 @@ void ClipboardMac::ReadAvailableTypes(
   if ([pb.types containsObject:kUTTypeChromiumDataTransferCustomData]) {
     NSData* data = [pb dataForType:kUTTypeChromiumDataTransferCustomData];
     if ([data length]) {
-      ReadCustomDataTypes(
-          base::span(reinterpret_cast<const uint8_t*>([data bytes]),
-                     [data length]),
-          types);
+      ReadCustomDataTypes(base::apple::NSDataToSpan(data), types);
     }
   }
 }
@@ -380,10 +367,8 @@ void ClipboardMac::ReadDataTransferCustomData(
   if ([[pb types] containsObject:kUTTypeChromiumDataTransferCustomData]) {
     NSData* data = [pb dataForType:kUTTypeChromiumDataTransferCustomData];
     if ([data length]) {
-      if (std::optional<std::u16string> maybe_result = ReadCustomDataForType(
-              base::span(reinterpret_cast<const uint8_t*>([data bytes]),
-                         [data length]),
-              type);
+      if (std::optional<std::u16string> maybe_result =
+              ReadCustomDataForType(base::apple::NSDataToSpan(data), type);
           maybe_result) {
         *result = std::move(*maybe_result);
       }
@@ -437,7 +422,7 @@ void ClipboardMac::ReadData(const ClipboardFormatType& format,
   RecordRead(ClipboardFormatMetric::kData);
   NSData* data = [GetPasteboard() dataForType:format.ToNSString()];
   if ([data length])
-    result->assign(static_cast<const char*>([data bytes]), [data length]);
+    *result = as_string_view(base::apple::NSDataToSpan(data));
 }
 
 void ClipboardMac::WritePortableAndPlatformRepresentations(
