@@ -1013,17 +1013,20 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
 StyleRulePageMargin* CSSParserImpl::ConsumePageMarginRule(
     CSSAtRuleID rule_id,
     CSSParserTokenStream& stream) {
-  // TODO(crbug.com/361525281): Implement inspector support.
-  base::AutoReset<CSSParserObserver*> disable_observer(&observer_, nullptr);
-
+  wtf_size_t header_start = stream.LookAheadOffset();
   // NOTE: @page-margin prelude should be empty.
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream, rule_id)) {
     return nullptr;
   }
+  wtf_size_t header_end = stream.LookAheadOffset();
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kPageMargin, header_start);
+    observer_->EndRuleHeader(header_end);
+  }
+
   CSSParserTokenStream::BlockGuard guard(stream);
 
-  // TODO(crbug.com/361525281): This is a kPageMargin rule, not a kPage rule.
-  ConsumeDeclarationList(stream, StyleRule::kPage, CSSNestingType::kNone,
+  ConsumeDeclarationList(stream, StyleRule::kPageMargin, CSSNestingType::kNone,
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
   return MakeGarbageCollected<StyleRulePageMargin>(
@@ -2684,7 +2687,8 @@ void CSSParserImpl::ConsumeDeclarationList(
 
   bool is_observer_rule_type =
       rule_type == StyleRule::kStyle || rule_type == StyleRule::kProperty ||
-      rule_type == StyleRule::kPage || rule_type == StyleRule::kContainer ||
+      rule_type == StyleRule::kPageMargin || rule_type == StyleRule::kPage ||
+      rule_type == StyleRule::kContainer ||
       rule_type == StyleRule::kCounterStyle ||
       rule_type == StyleRule::kFontPaletteValues ||
       rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kScope ||

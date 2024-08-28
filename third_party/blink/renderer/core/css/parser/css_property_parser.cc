@@ -47,6 +47,7 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
     case StyleRule::kStyle:
       return true;
     case StyleRule::kPage:
+    case StyleRule::kPageMargin:
       // TODO(sesse): Limit the allowed properties here.
       // https://www.w3.org/TR/css-page-3/#page-property-list
       // https://www.w3.org/TR/css-page-3/#margin-property-list

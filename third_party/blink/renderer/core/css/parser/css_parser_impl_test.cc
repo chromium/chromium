@@ -32,18 +32,37 @@ class TestCSSParserObserver : public CSSParserObserver {
  public:
   void StartRuleHeader(StyleRule::RuleType rule_type,
                        unsigned offset) override {
-    rule_type_ = rule_type;
-    rule_header_start_ = offset;
+    if (IsAtTargetLevel()) {
+      rule_type_ = rule_type;
+      rule_header_start_ = offset;
+    }
   }
-  void EndRuleHeader(unsigned offset) override { rule_header_end_ = offset; }
+  void EndRuleHeader(unsigned offset) override {
+    if (IsAtTargetLevel()) {
+      rule_header_end_ = offset;
+    }
+  }
 
   void ObserveSelector(unsigned start_offset, unsigned end_offset) override {}
-  void StartRuleBody(unsigned offset) override { rule_body_start_ = offset; }
-  void EndRuleBody(unsigned offset) override { rule_body_end_ = offset; }
+  void StartRuleBody(unsigned offset) override {
+    if (IsAtTargetLevel()) {
+      rule_body_start_ = offset;
+    }
+    current_nesting_level_++;
+  }
+  void EndRuleBody(unsigned offset) override {
+    current_nesting_level_--;
+    if (IsAtTargetLevel()) {
+      rule_body_end_ = offset;
+    }
+  }
   void ObserveProperty(unsigned start_offset,
                        unsigned end_offset,
                        bool is_important,
                        bool is_parsed) override {
+    // Target nesting level currently not supported / needed here.
+    DCHECK_EQ(target_nesting_level_, kEverything);
+
     property_start_ = start_offset;
   }
   void ObserveComment(unsigned start_offset, unsigned end_offset) override {}
@@ -54,6 +73,19 @@ class TestCSSParserObserver : public CSSParserObserver {
   void ObserveNestedDeclarations(wtf_size_t insert_rule_index) override {
     nested_declarations_insert_rule_index = insert_rule_index;
   }
+
+  bool IsAtTargetLevel() const {
+    return target_nesting_level_ == kEverything ||
+           target_nesting_level_ == current_nesting_level_;
+  }
+
+  const int kEverything = -1;
+
+  // Set to >= 0 to only observe events at a certain level. If kEverything, it
+  // will observe everything.
+  int target_nesting_level_ = kEverything;
+
+  int current_nesting_level_ = 0;
 
   StyleRule::RuleType rule_type_ = StyleRule::RuleType::kStyle;
   unsigned property_start_ = 0;
@@ -176,16 +208,19 @@ TEST(CSSParserImplTest, AtPageMarginOffsets) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
   TestCSSParserObserver test_css_parser_observer;
+
+  // Ignore @page, look for @top-left.
+  test_css_parser_observer.target_nesting_level_ = 1;
+
   CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
                                              test_css_parser_observer);
   EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
-  // TODO(crbug.com/361525281): We should eventually see data from the @top-left
-  // rule here.
-  EXPECT_EQ(test_css_parser_observer.rule_type_, StyleRule::RuleType::kPage);
-  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 6u);
-  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 13u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 14u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 43u);
+  EXPECT_EQ(test_css_parser_observer.rule_type_,
+            StyleRule::RuleType::kPageMargin);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 25u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 25u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 26u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 41u);
 }
 
 TEST(CSSParserImplTest, AtPropertyOffsets) {
