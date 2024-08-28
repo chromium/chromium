@@ -20,6 +20,7 @@ REPOSITORY_ROOT = os.path.abspath(os.path.join(
 
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'components'))
 from cronet.tools import api_static_checks  # pylint: disable=wrong-import-position
+from cronet.tools import update_api  # pylint: disable=wrong-import-position
 
 # pylint: disable=useless-object-inheritance
 
@@ -155,6 +156,40 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
     self.assertEqual(api_stamp, 'Stamp: %s' % api_hash.hexdigest())
 
     return [return_code == 0, output, api, api_version]
+
+  def test_split_by_class_sort(self):
+    expected = [
+        [
+            'public class Api {',
+            'public Api();',
+            'public void a();',
+            'public void b();',
+            '}',
+        ],
+        [
+            'public class zee {',
+            'public abstract int z();',
+            'public void x();',
+            'public void y();',
+            'public zee();',
+            '}',
+        ],
+    ]
+    input = """Compiled from Api.java
+public class Api {
+public void b();
+public Api();
+public void a();
+}
+Compiled from zee.java
+public class zee {
+public void x();
+public zee();
+public void y();
+public abstract int z();
+}
+"""
+    self.assertEqual(update_api._split_by_class(input.splitlines()), expected)
 
 
   def test_update_api_success(self):
