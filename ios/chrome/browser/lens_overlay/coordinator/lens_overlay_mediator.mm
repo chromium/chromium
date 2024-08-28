@@ -112,6 +112,7 @@
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     didGenerateResult:(id<ChromeLensOverlayResult>)result {
   [self.resultConsumer loadResultsURL:result.searchResultURL];
+  [self.omniboxCoordinator setThumbnailImage:result.selectionPreviewImage];
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {

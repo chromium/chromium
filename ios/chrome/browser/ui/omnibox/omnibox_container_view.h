@@ -23,6 +23,9 @@
 /// The contained clear button. Hide with `setClearButtonHidden`.
 @property(nonatomic, strong, readonly) UIButton* clearButton;
 
+/// The contained thumbnail button.
+@property(nonatomic, strong, readonly) UIButton* thumbnailButton;
+
 /// The layout guide center to use to refer to the omnibox leading image.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 

@@ -148,6 +148,12 @@ using base::UserMetricsAction;
                      action:@selector(textFieldDidChange:)
            forControlEvents:UIControlEventEditingChanged];
 
+  if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    [self.view.thumbnailButton addTarget:self
+                                  action:@selector(didTapThumbnailButton)
+                        forControlEvents:UIControlEventTouchUpInside];
+  }
+
   [NSNotificationCenter.defaultCenter
       addObserver:self
          selector:@selector(textInputModeDidChange)
@@ -309,6 +315,10 @@ using base::UserMetricsAction;
   UIImage* image = self.textField.text.length ? self.defaultLeadingImage
                                               : self.emptyTextLeadingImage;
 
+  if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    self.view.thumbnailButton.selected = NO;
+  }
+
   NSString* accessibilityID =
       self.textField.text.length
           ? kOmniboxLeadingImageDefaultAccessibilityIdentifier
@@ -332,6 +342,10 @@ using base::UserMetricsAction;
 - (void)textFieldDidEndEditing:(UITextField*)textField
                         reason:(UITextFieldDidEndEditingReason)reason {
   self.isTextfieldEditing = NO;
+
+  if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    self.view.thumbnailButton.selected = NO;
+  }
 
   if (!self.omniboxInteractedWhileFocused) {
     RecordAction(
@@ -370,6 +384,14 @@ using base::UserMetricsAction;
 }
 
 - (void)onDeleteBackward {
+  // If not in pre-edit, deleting when cursor is at the beginning interacts with
+  // the thumbnail.
+  if (OmniboxTextFieldIOS* textField = self.textField;
+      !textField.isPreEditing && textField.selectedTextRange.empty &&
+      [textField offsetFromPosition:textField.beginningOfDocument
+                         toPosition:textField.selectedTextRange.start] == 0) {
+    [self didTapThumbnailButton];
+  }
   if (!_textChangeDelegate) {
     // This can happen when the view controller is still alive but the model is
     // already deconstructed on shutdown.
@@ -512,6 +534,7 @@ using base::UserMetricsAction;
 
 - (void)setThumbnailImage:(UIImage*)image {
   [self.view setThumbnailImage:image];
+  self.textField.allowsReturnKeyWithEmptyText = !!image;
 }
 
 #pragma mark - EditViewAnimatee
@@ -725,6 +748,17 @@ using base::UserMetricsAction;
 
   if (IsRichAutocompletionEnabled() && _textChangeDelegate) {
     _textChangeDelegate->OnRemoveAdditionalText();
+  }
+}
+
+/// Handles interaction with the thumbnail button. (tap or keyboard delete)
+- (void)didTapThumbnailButton {
+  if (!self.view.thumbnailButton.selected) {
+    self.view.thumbnailButton.selected = YES;
+  } else {
+    if (_textChangeDelegate) {
+      _textChangeDelegate->RemoveThumbnail();
+    }
   }
 }
 

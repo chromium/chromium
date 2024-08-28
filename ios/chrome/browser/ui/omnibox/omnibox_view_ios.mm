@@ -87,11 +87,11 @@ void OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch(
   AutocompleteController* autocomplete_controller =
       controller()->autocomplete_controller();
 
+  AcceptThumbnailEdits();
   OmniboxPopupSelection selection(autocomplete_controller->InjectAdHocMatch(
       autocomplete_controller->clipboard_provider()->NewClipboardURLMatch(
           url)));
   model()->OpenSelection(selection, match_selection_timestamp, disposition);
-  AcceptThumbnailEdits();
 }
 
 void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
@@ -117,11 +117,11 @@ void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
     return;
   }
 
+  AcceptThumbnailEdits();
   OmniboxPopupSelection selection(
       controller()->autocomplete_controller()->InjectAdHocMatch(
           new_match.value()));
   model()->OpenSelection(selection, match_selection_timestamp, disposition);
-  AcceptThumbnailEdits();
 }
 
 void OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch(
@@ -152,11 +152,11 @@ void OmniboxViewIOS::OnReceiveImageMatchForOpenMatch(
   if (!optional_match) {
     return;
   }
+  AcceptThumbnailEdits();
   OmniboxPopupSelection selection(
       controller()->autocomplete_controller()->InjectAdHocMatch(
           optional_match.value()));
   model()->OpenSelection(selection, match_selection_timestamp, disposition);
-  AcceptThumbnailEdits();
 }
 
 std::u16string OmniboxViewIOS::GetText() const {
@@ -509,8 +509,8 @@ void OmniboxViewIOS::OnAccept() {
 
   // TODO(crbug.com/359150039): handle accept with empty text.
   if (model()) {
-    model()->OpenSelection();
     AcceptThumbnailEdits();
+    model()->OpenSelection();
   }
   RevertAll();
 }
@@ -720,10 +720,10 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
   if (index >= autocomplete_controller->result().size() ||
       autocomplete_controller->result().match_at(index).destination_url !=
           match.destination_url) {
+    AcceptThumbnailEdits();
     OmniboxPopupSelection selection(
         autocomplete_controller->InjectAdHocMatch(match));
     model()->OpenSelection(selection, match_selection_timestamp, disposition);
-    AcceptThumbnailEdits();
     return;
   }
 
@@ -755,9 +755,9 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
       return;
     }
   }
+  AcceptThumbnailEdits();
   model()->OpenSelection(OmniboxPopupSelection(index),
                          match_selection_timestamp, disposition);
-  AcceptThumbnailEdits();
 }
 
 #pragma mark - Thumbnail

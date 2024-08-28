@@ -34,6 +34,9 @@
 /// `RichAutocompletion` is enabled with no additional text.
 @property(nonatomic, assign) BOOL omniboxHasRichInline;
 
+/// Whether the return key is enabled with an empty textfield.
+@property(nonatomic, assign) BOOL allowsReturnKeyWithEmptyText;
+
 /// Initialize the omnibox with the given `frame`, `textColor`, and `tintColor`.
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor

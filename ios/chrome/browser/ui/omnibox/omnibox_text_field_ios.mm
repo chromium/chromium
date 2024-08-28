@@ -438,6 +438,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return [super selectionRectsForRange:range];
 }
 
+- (BOOL)hasText {
+  // Returns YES when `allowsReturnKeyWithEmptyText` to enable the 'Go' key in
+  // the keyboard.
+  return self.allowsReturnKeyWithEmptyText || [super hasText];
+}
+
 #pragma mark - UITextInput
 
 - (void)beginFloatingCursorAtPoint:(CGPoint)point {
