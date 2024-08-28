@@ -3090,14 +3090,15 @@ void View::DoRemoveChildView(View* view,
     GetLayoutManager()->ViewRemoved(this, view);
   }
 
+  view->PropagateRemoveNotifications(this, new_parent, is_removed_from_widget);
+
   // Make sure the layers belonging to the subtree rooted at |view| get
-  // removed.
+  // removed. Only do this after all the removal notifications have gone out.
   view->OrphanLayers();
   if (widget) {
     widget->LayerTreeChanged();
   }
 
-  view->PropagateRemoveNotifications(this, new_parent, is_removed_from_widget);
   view->parent_ = nullptr;
 
   if (delete_removed_view && !view->owned_by_client_) {
