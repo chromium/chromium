@@ -751,16 +751,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CertVerifier.PathBuilderIterationCount" units="units"
-    expires_after="2024-09-01">
-  <owner>mattm@chromium.org</owner>
-  <owner>rsleevi@chromium.org</owner>
-  <summary>
-    When using the builtin cert verifier, records the number of iterations taken
-    during path building for each attempted verification.
-  </summary>
-</histogram>
-
 <histogram name="Net.CertVerifier_First_Job_Latency" units="ms"
     expires_after="never">
 <!-- expires-never: core cert verifier metric; monitored by Chirps -->

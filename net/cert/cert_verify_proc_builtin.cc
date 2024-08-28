@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/network_time/time_tracker/time_tracker.h"
@@ -1228,9 +1227,6 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
         flags, ocsp_response, sct_list, crl_set(), ct_verifier_.get(),
         ct_policy_enforcer_.get(), net_fetcher_.get(), ev_metadata,
         &checked_revocation_for_some_path, net_log);
-
-    base::UmaHistogramCounts10000("Net.CertVerifier.PathBuilderIterationCount",
-                                  result.iteration_count);
 
     net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT,
                      [&] { return NetLogPathBuilderResult(result); });
