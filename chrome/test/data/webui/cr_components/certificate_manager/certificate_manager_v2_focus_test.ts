@@ -13,6 +13,7 @@ import type {CertificateManagerV2Element} from 'chrome://resources/cr_components
 import {CertificateSource} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -174,4 +175,30 @@ suite('CertificateManagerV2FocusTest', () => {
     assertEquals('deadbeef4', await navigator.clipboard.readText());
   });
   // </if>
+
+  test('Check Focus when going in and out of subpages', async () => {
+    initializeElement();
+    await microtasksFinished();
+    certManager.$.viewOsImportedCerts.click();
+    await microtasksFinished();
+
+    // Check focus is on back button in platform certs section.
+    assertTrue(
+        certManager.$.platformCertsSection.classList.contains('selected'));
+    const elementInFocus = getDeepActiveElement();
+    assertTrue(!!elementInFocus);
+    assertEquals('backButton', elementInFocus.id);
+    const subsection = (elementInFocus.getRootNode() as ShadowRoot).host;
+    assertEquals('platformCertsSection', subsection.id);
+
+    (elementInFocus as HTMLElement).click();
+    await microtasksFinished();
+
+    // Check focus is on link row going to platform certs section.
+    assertTrue(certManager.$.localCertSection.classList.contains('selected'));
+    const newElementInFocus = getDeepActiveElement();
+    assertTrue(!!newElementInFocus);
+    const linkRow = (newElementInFocus.getRootNode() as ShadowRoot).host;
+    assertEquals('viewOsImportedCerts', linkRow.id);
+  });
 });

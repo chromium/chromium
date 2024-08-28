@@ -74,7 +74,6 @@ export class CertificateSubpageV2Element extends
 
   // Sets initial keyboard focus of the subpage. Assumes that subpage elements
   // are visible.
-  // TODO(crbug.com/40928765): add test for ensuring correct focus behaviour.
   setInitialFocus() {
     focusWithoutInk(this.$.backButton);
   }
