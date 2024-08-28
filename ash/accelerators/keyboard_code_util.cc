@@ -122,6 +122,10 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
 #endif
     case ui::VKEY_KBD_BACKLIGHT_TOGGLE:
       return &ash::kKsKeyboardBrightnessToggleIcon;
+    case ui::VKEY_KBD_BRIGHTNESS_DOWN:
+      return &ash::kKsKeyboardBrightnessDownIcon;
+    case ui::VKEY_KBD_BRIGHTNESS_UP:
+      return &ash::kKsKeyboardBrightnessUpIcon;
     case ui::VKEY_VOLUME_MUTE:
       return &ash::kKsvMuteIcon;
     case ui::VKEY_VOLUME_DOWN:
