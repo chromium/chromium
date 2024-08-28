@@ -153,7 +153,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void ShowWidget(base::TimeTicks trigger_event_timestamp,
                   WidgetTriggerSource trigger_source);
   void CloseWidget();
-  void OnFeatureTourLearnMore();
   void ShowWidgetPostFeatureTour();
   void InsertResultOnNextFocus(const PickerSearchResult& result);
   void OnInsertCompleted(const PickerRichMedia& media,

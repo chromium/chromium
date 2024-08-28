@@ -107,6 +107,9 @@ constexpr int kCapsLockMinimumTopDisplayCount = 5;
 constexpr float kCapsLockRatioThresholdForTop = 0.8;
 constexpr float kCapsLockRatioThresholdForBottom = 0.2;
 
+constexpr std::string_view kSupportUrl =
+    "https://support.google.com/chromebook?p=dugong";
+
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   static const PickerFeatureKeyType key_type = []() {
     // Command line looks like:
@@ -355,8 +358,7 @@ void PickerController::ToggleWidget(
           client_->IsEligibleForEditor()
               ? PickerFeatureTour::EditorStatus::kEligible
               : PickerFeatureTour::EditorStatus::kNotEligible,
-          base::BindRepeating(&PickerController::OnFeatureTourLearnMore,
-                              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(OpenLink, GURL(kSupportUrl)),
           base::BindRepeating(&PickerController::ShowWidgetPostFeatureTour,
                               weak_ptr_factory_.GetWeakPtr()))) {
     return;
@@ -656,10 +658,6 @@ void PickerController::CloseWidget() {
   session_metrics_->SetOutcome(
       PickerSessionMetrics::SessionOutcome::kAbandoned);
   widget_->Close();
-}
-
-void PickerController::OnFeatureTourLearnMore() {
-  OpenLink(GURL("https://support.google.com/chromebook?p=dugong"));
 }
 
 void PickerController::ShowWidgetPostFeatureTour() {
