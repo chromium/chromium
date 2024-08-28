@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"

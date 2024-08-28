@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/mock_callback.h"
@@ -121,7 +122,7 @@ TEST(TCPWritableStreamWrapperTest, WriteArrayBuffer) {
   auto* script_state = scope.GetScriptState();
   auto* writer = tcp_writable_stream_wrapper->Writable()->getWriter(
       script_state, ASSERT_NO_EXCEPTION);
-  auto* chunk = DOMArrayBuffer::Create("A", 1);
+  auto* chunk = DOMArrayBuffer::Create(base::byte_span_from_cstring("A"));
   ScriptPromiseUntyped result =
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);
@@ -140,7 +141,7 @@ TEST(TCPWritableStreamWrapperTest, WriteArrayBufferView) {
   auto* script_state = scope.GetScriptState();
   auto* writer = tcp_writable_stream_wrapper->Writable()->getWriter(
       script_state, ASSERT_NO_EXCEPTION);
-  auto* buffer = DOMArrayBuffer::Create("*B", 2);
+  auto* buffer = DOMArrayBuffer::Create(base::byte_span_from_cstring("*B"));
   // Create a view into the buffer with offset 1, ie. "B".
   auto* chunk = DOMUint8Array::Create(buffer, 1, 1);
   ScriptPromiseUntyped result =
@@ -224,7 +225,7 @@ TEST(TCPWritableStreamWrapperTest, WriteThenClose) {
   auto* script_state = scope.GetScriptState();
   auto* writer = tcp_writable_stream_wrapper->Writable()->getWriter(
       script_state, ASSERT_NO_EXCEPTION);
-  auto* chunk = DOMArrayBuffer::Create("D", 1);
+  auto* chunk = DOMArrayBuffer::Create(base::byte_span_from_cstring("D"));
   ScriptPromiseUntyped write_promise =
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);
@@ -255,7 +256,7 @@ TEST(TCPWritableStreamWrapperTest, DISABLED_TriggerHasAborted) {
   auto* script_state = scope.GetScriptState();
   auto* writer = tcp_writable_stream_wrapper->Writable()->getWriter(
       script_state, ASSERT_NO_EXCEPTION);
-  auto* chunk = DOMArrayBuffer::Create("D", 1);
+  auto* chunk = DOMArrayBuffer::Create(base::byte_span_from_cstring("D"));
   ScriptPromiseUntyped write_promise =
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);
@@ -287,7 +288,8 @@ TEST_P(TCPWritableStreamWrapperCloseTestWithMaybePendingWrite, TriggerClose) {
   std::optional<ScriptPromiseTester> tester;
   if (pending_write) {
     auto* script_state = scope.GetScriptState();
-    auto* chunk = DOMArrayBuffer::Create("D", 2);
+    auto* chunk =
+        DOMArrayBuffer::Create(base::byte_span_with_nul_from_cstring("D"));
     ScriptPromiseUntyped write_promise =
         tcp_writable_stream_wrapper->Writable()
             ->getWriter(script_state, ASSERT_NO_EXCEPTION)
@@ -324,7 +326,8 @@ TEST_P(TCPWritableStreamWrapperCloseTestWithMaybePendingWrite,
   std::optional<ScriptPromiseTester> tester;
   if (pending_write) {
     auto* script_state = scope.GetScriptState();
-    auto* chunk = DOMArrayBuffer::Create("D", 2);
+    auto* chunk =
+        DOMArrayBuffer::Create(base::byte_span_with_nul_from_cstring("D"));
     ScriptPromiseUntyped write_promise =
         tcp_writable_stream_wrapper->Writable()
             ->getWriter(script_state, ASSERT_NO_EXCEPTION)

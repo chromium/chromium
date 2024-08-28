@@ -83,8 +83,7 @@ HeapVector<Member<SmartCardReaderStateOut>> ToV8ReaderStatesOut(
         ToV8ReaderStateFlagsOut(*mojom_state_out->event_state));
     state_out->setEventCount(mojom_state_out->event_count);
     state_out->setAnswerToReset(
-        DOMArrayBuffer::Create(mojom_state_out->answer_to_reset.data(),
-                               mojom_state_out->answer_to_reset.size()));
+        DOMArrayBuffer::Create(mojom_state_out->answer_to_reset));
     reader_states.push_back(state_out);
   }
 

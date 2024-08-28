@@ -540,7 +540,8 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInVector) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  DOMArrayBuffer* foo_buffer = DOMArrayBuffer::Create("foo", 3);
+  DOMArrayBuffer* foo_buffer =
+      DOMArrayBuffer::Create(base::byte_span_from_cstring("foo"));
   Channel()->Send(*foo_buffer, 0, 3, base::OnceClosure());
   test::RunPendingTasks();
 
@@ -560,8 +561,10 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferPartial) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  DOMArrayBuffer* foobar_buffer = DOMArrayBuffer::Create("foobar", 6);
-  DOMArrayBuffer* qbazux_buffer = DOMArrayBuffer::Create("qbazux", 6);
+  DOMArrayBuffer* foobar_buffer =
+      DOMArrayBuffer::Create(base::byte_span_from_cstring("foobar"));
+  DOMArrayBuffer* qbazux_buffer =
+      DOMArrayBuffer::Create(base::byte_span_from_cstring("qbazux"));
   Channel()->Send(*foobar_buffer, 0, 3, base::OnceClosure());
   Channel()->Send(*foobar_buffer, 3, 3, base::OnceClosure());
   Channel()->Send(*qbazux_buffer, 1, 3, base::OnceClosure());
@@ -593,21 +596,30 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferWithNullBytes) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  constexpr int kLengthOfEachMessage = 3;
+  // Used to CHECK() string was not truncated at first NUL.
+  constexpr size_t kLengthOfEachMessage = 3;
   {
-    DOMArrayBuffer* b = DOMArrayBuffer::Create("\0ar", kLengthOfEachMessage);
+    auto byte_span = base::byte_span_from_cstring("\0ar");
+    CHECK_EQ(kLengthOfEachMessage, byte_span.size());
+    DOMArrayBuffer* b = DOMArrayBuffer::Create(byte_span);
     Channel()->Send(*b, 0, 3, base::OnceClosure());
   }
   {
-    DOMArrayBuffer* b = DOMArrayBuffer::Create("b\0z", kLengthOfEachMessage);
+    auto byte_span = base::byte_span_from_cstring("b\0z");
+    CHECK_EQ(kLengthOfEachMessage, byte_span.size());
+    DOMArrayBuffer* b = DOMArrayBuffer::Create(byte_span);
     Channel()->Send(*b, 0, 3, base::OnceClosure());
   }
   {
-    DOMArrayBuffer* b = DOMArrayBuffer::Create("qu\0", kLengthOfEachMessage);
+    auto byte_span = base::byte_span_from_cstring("qu\0");
+    CHECK_EQ(kLengthOfEachMessage, byte_span.size());
+    DOMArrayBuffer* b = DOMArrayBuffer::Create(byte_span);
     Channel()->Send(*b, 0, 3, base::OnceClosure());
   }
   {
-    DOMArrayBuffer* b = DOMArrayBuffer::Create("\0\0\0", kLengthOfEachMessage);
+    auto byte_span = base::byte_span_from_cstring("\0\0\0");
+    CHECK_EQ(kLengthOfEachMessage, byte_span.size());
+    DOMArrayBuffer* b = DOMArrayBuffer::Create(byte_span);
     Channel()->Send(*b, 0, 3, base::OnceClosure());
   }
 
@@ -641,7 +653,8 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferNonLatin1UTF8) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  DOMArrayBuffer* b = DOMArrayBuffer::Create("\xe7\x8b\x90", 3);
+  DOMArrayBuffer* b =
+      DOMArrayBuffer::Create(base::byte_span_from_cstring("\xe7\x8b\x90"));
   Channel()->Send(*b, 0, 3, base::OnceClosure());
 
   test::RunPendingTasks();
@@ -663,7 +676,8 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferNonUTF8) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  DOMArrayBuffer* b = DOMArrayBuffer::Create("\x80\xff\xe7", 3);
+  DOMArrayBuffer* b =
+      DOMArrayBuffer::Create(base::byte_span_from_cstring("\x80\xff\xe7"));
   Channel()->Send(*b, 0, 3, base::OnceClosure());
 
   test::RunPendingTasks();
@@ -760,7 +774,7 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferSync) {
   test::RunPendingTasks();
 
   CallTrackingClosure closure;
-  const auto* b = DOMArrayBuffer::Create("hello", 5);
+  const auto* b = DOMArrayBuffer::Create(base::byte_span_from_cstring("hello"));
   EXPECT_EQ(WebSocketChannel::SendResult::kSentSynchronously,
             Channel()->Send(*b, 0, 5, closure.Closure()));
 
@@ -784,7 +798,7 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferAsyncDueToQueueing) {
   std::string long_message(kMessageSize, 'a');
 
   CallTrackingClosure closure;
-  const auto* b = DOMArrayBuffer::Create(long_message.data(), kMessageSize);
+  const auto* b = DOMArrayBuffer::Create(base::as_byte_span(long_message));
   Channel()->Send(*b, 0, kMessageSize, base::OnceClosure());
   EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(*b, 0, kMessageSize, closure.Closure()));
@@ -812,7 +826,7 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferAsyncDueToMessageSize) {
   std::string long_message(kMessageSize, 'a');
 
   CallTrackingClosure closure;
-  const auto* b = DOMArrayBuffer::Create(long_message.data(), kMessageSize);
+  const auto* b = DOMArrayBuffer::Create(base::as_byte_span(long_message));
   EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(*b, 0, kMessageSize, closure.Closure()));
 

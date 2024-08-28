@@ -1361,8 +1361,7 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
 
   const std::array<const uint8_t, kBufferSize> input_data = {0xAA, 0xAA, 0xAA,
                                                              0xAA};
-  DOMArrayBuffer* array_buffer =
-      DOMArrayBuffer::Create(input_data.data(), input_data.size());
+  DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(input_data);
   ASSERT_THAT(array_buffer, testing::NotNull());
 
   // Writing the full buffer.

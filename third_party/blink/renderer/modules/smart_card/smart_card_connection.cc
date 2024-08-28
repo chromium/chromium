@@ -613,9 +613,7 @@ void SmartCardConnection::OnDataResult(
     return;
   }
 
-  const Vector<uint8_t>& data = result->get_data();
-
-  resolver->Resolve(DOMArrayBuffer::Create(data.data(), data.size()));
+  resolver->Resolve(DOMArrayBuffer::Create(result->get_data()));
 }
 
 void SmartCardConnection::OnStatusDone(
@@ -644,8 +642,7 @@ void SmartCardConnection::OnStatusDone(
   status->setState(connection_state.value());
   if (!mojo_status->answer_to_reset.empty()) {
     status->setAnswerToReset(
-        DOMArrayBuffer::Create(mojo_status->answer_to_reset.data(),
-                               mojo_status->answer_to_reset.size()));
+        DOMArrayBuffer::Create(mojo_status->answer_to_reset));
   }
   resolver->Resolve(status);
 }

@@ -103,9 +103,7 @@ PushSubscriptionOptions::PushSubscriptionOptions(
     bool user_visible_only,
     const Vector<uint8_t>& application_server_key)
     : user_visible_only_(user_visible_only),
-      application_server_key_(DOMArrayBuffer::Create(
-          application_server_key.data(),
-          base::checked_cast<unsigned>(application_server_key.size()))) {}
+      application_server_key_(DOMArrayBuffer::Create(application_server_key)) {}
 
 void PushSubscriptionOptions::Trace(Visitor* visitor) const {
   visitor->Trace(application_server_key_);

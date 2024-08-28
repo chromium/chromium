@@ -558,8 +558,7 @@ TEST_F(WebTransportTest, SendConnectWithArrayBufferHash) {
   auto* hash = MakeGarbageCollected<WebTransportHash>();
   hash->setAlgorithm("sha-256");
   constexpr uint8_t kPattern[] = {0x28, 0x24, 0xa8, 0xa2};
-  DOMArrayBuffer* hashValue =
-      DOMArrayBuffer::Create(kPattern, sizeof(kPattern));
+  DOMArrayBuffer* hashValue = DOMArrayBuffer::Create(kPattern);
   hash->setValue(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(hashValue));
   auto* options = MakeGarbageCollected<WebTransportOptions>();
@@ -582,7 +581,7 @@ TEST_F(WebTransportTest, SendConnectWithOffsetArrayBufferViewHash) {
   auto* hash = MakeGarbageCollected<WebTransportHash>();
   hash->setAlgorithm("sha-256");
   constexpr uint8_t kPattern[6] = {0x28, 0x24, 0xa8, 0xa2, 0x44, 0xee};
-  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(kPattern, sizeof(kPattern));
+  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(kPattern);
   DOMUint8Array* view = DOMUint8Array::Create(buffer, 2, 3);
   hash->setValue(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
       NotShared<DOMUint8Array>(view)));

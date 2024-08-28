@@ -48,8 +48,7 @@ AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
   if (config.hasDescription()) {
     auto desc_wrapper = AsSpan<const uint8_t>(config.description());
     if (!desc_wrapper.empty()) {
-      DOMArrayBuffer* buffer_copy =
-          DOMArrayBuffer::Create(desc_wrapper.data(), desc_wrapper.size());
+      DOMArrayBuffer* buffer_copy = DOMArrayBuffer::Create(desc_wrapper);
       copy->setDescription(
           MakeGarbageCollected<AllowSharedBufferSource>(buffer_copy));
     }

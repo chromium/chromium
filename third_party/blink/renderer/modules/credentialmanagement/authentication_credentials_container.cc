@@ -554,8 +554,7 @@ void OnGetComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
 }
 
 DOMArrayBuffer* VectorToDOMArrayBuffer(const Vector<uint8_t> buffer) {
-  return DOMArrayBuffer::Create(static_cast<const void*>(buffer.data()),
-                                buffer.size());
+  return DOMArrayBuffer::Create(buffer);
 }
 
 AuthenticationExtensionsPRFValues* GetPRFExtensionResults(

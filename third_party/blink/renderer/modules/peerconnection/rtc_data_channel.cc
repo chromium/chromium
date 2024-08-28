@@ -740,9 +740,7 @@ void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
       return;
     }
     if (binary_type_ == kBinaryTypeArrayBuffer) {
-      DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(
-          buffer.data.cdata(),
-          base::checked_cast<unsigned>(buffer.data.size()));
+      DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(buffer.data);
       DispatchEvent(*MessageEvent::Create(dom_buffer));
       return;
     }

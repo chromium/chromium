@@ -87,11 +87,8 @@ PushSubscription::PushSubscription(
       options_(MakeGarbageCollected<PushSubscriptionOptions>(
           user_visible_only,
           application_server_key)),
-      p256dh_(
-          DOMArrayBuffer::Create(p256dh.data(),
-                                 base::checked_cast<unsigned>(p256dh.size()))),
-      auth_(DOMArrayBuffer::Create(auth.data(),
-                                   base::checked_cast<unsigned>(auth.size()))),
+      p256dh_(DOMArrayBuffer::Create(p256dh)),
+      auth_(DOMArrayBuffer::Create(auth)),
       expiration_time_(expiration_time),
       service_worker_registration_(service_worker_registration) {}
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_usvstring.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -71,7 +72,7 @@ PushMessageData::PushMessageData(const char* data, unsigned bytes_size) {
 PushMessageData::~PushMessageData() = default;
 
 DOMArrayBuffer* PushMessageData::arrayBuffer() const {
-  return DOMArrayBuffer::Create(data_.data(), data_.size());
+  return DOMArrayBuffer::Create(base::as_byte_span(data_));
 }
 
 Blob* PushMessageData::blob() const {

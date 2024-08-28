@@ -190,12 +190,6 @@ TypeConverter<blink::Credential*, CredentialInfoPtr>::Convert(
   return nullptr;
 }
 
-static blink::DOMArrayBuffer* VectorToDOMArrayBuffer(
-    const Vector<uint8_t> buffer) {
-  return blink::DOMArrayBuffer::Create(static_cast<const void*>(buffer.data()),
-                                       buffer.size());
-}
-
 #if BUILDFLAG(IS_ANDROID)
 static Vector<Vector<uint32_t>> UvmEntryToArray(
     const Vector<blink::mojom::blink::UvmEntryPtr>& user_verification_methods) {
@@ -234,7 +228,7 @@ TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
         blink::AuthenticationExtensionsLargeBlobOutputs::Create();
     if (extensions->large_blob) {
       large_blob_outputs->setBlob(
-          VectorToDOMArrayBuffer(std::move(*extensions->large_blob)));
+          blink::DOMArrayBuffer::Create(std::move(*extensions->large_blob)));
     }
     if (extensions->echo_large_blob_written) {
       large_blob_outputs->setWritten(extensions->large_blob_written);
@@ -243,7 +237,7 @@ TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
   }
   if (extensions->get_cred_blob) {
     extension_outputs->setGetCredBlob(
-        VectorToDOMArrayBuffer(std::move(*extensions->get_cred_blob)));
+        blink::DOMArrayBuffer::Create(std::move(*extensions->get_cred_blob)));
   }
   if (extensions->supplemental_pub_keys) {
     extension_outputs->setSupplementalPubKeys(
@@ -256,12 +250,12 @@ TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
       auto* values = blink::AuthenticationExtensionsPRFValues::Create();
       values->setFirst(
           MakeGarbageCollected<blink::V8UnionArrayBufferOrArrayBufferView>(
-              VectorToDOMArrayBuffer(
+              blink::DOMArrayBuffer::Create(
                   std::move(extensions->prf_results->first))));
       if (extensions->prf_results->second) {
         values->setSecond(
             MakeGarbageCollected<blink::V8UnionArrayBufferOrArrayBufferView>(
-                VectorToDOMArrayBuffer(
+                blink::DOMArrayBuffer::Create(
                     std::move(extensions->prf_results->second.value()))));
       }
       prf_outputs->setResults(values);
@@ -279,7 +273,7 @@ TypeConverter<blink::AuthenticationExtensionsSupplementalPubKeysOutputs*,
                 supplemental_pub_keys) {
   blink::HeapVector<blink::Member<blink::DOMArrayBuffer>> signatures;
   for (const auto& sig : supplemental_pub_keys->signatures) {
-    signatures.push_back(VectorToDOMArrayBuffer(std::move(sig)));
+    signatures.push_back(blink::DOMArrayBuffer::Create(std::move(sig)));
   }
 
   auto* spk_outputs =

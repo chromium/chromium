@@ -130,8 +130,7 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
       NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
-    DOMArrayBuffer* buffer_copy =
-        DOMArrayBuffer::Create(desc_wrapper.data(), desc_wrapper.size());
+    DOMArrayBuffer* buffer_copy = DOMArrayBuffer::Create(desc_wrapper);
     copy->setDescription(
         MakeGarbageCollected<AllowSharedBufferSource>(buffer_copy));
   }

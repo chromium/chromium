@@ -28,6 +28,8 @@
 #include <cmath>
 #include <limits>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "encrypted_media_utils.h"
 #include "media/base/content_decryption_module.h"
@@ -545,7 +547,7 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
 
   // 7. Let init data be a copy of the contents of the initData parameter.
   DOMArrayBuffer* init_data_buffer =
-      DOMArrayBuffer::Create(init_data.Data(), init_data.ByteLength());
+      DOMArrayBuffer::Create(init_data.ByteSpan());
 
   // 8. Let session type be this object's session type.
   //    (Done in constructor.)
@@ -777,8 +779,7 @@ ScriptPromise<IDLUndefined> MediaKeySession::update(
   }
 
   // 4. Let response copy be a copy of the contents of the response parameter.
-  DOMArrayBuffer* response_copy =
-      DOMArrayBuffer::Create(response.Data(), response.ByteLength());
+  DOMArrayBuffer* response_copy = DOMArrayBuffer::Create(response.ByteSpan());
 
   // Log the usage of update().
   EncryptedMediaUtils::ReportUsage(EmeApiType::kUpdate, GetExecutionContext(),
@@ -991,8 +992,7 @@ void MediaKeySession::OnSessionMessage(media::CdmMessageType message_type,
       break;
   }
   init->setMessage(
-      DOMArrayBuffer::Create(static_cast<const void*>(message),
-                             base::checked_cast<uint32_t>(message_length)));
+      DOMArrayBuffer::Create(UNSAFE_TODO(base::span(message, message_length))));
 
   MediaKeyMessageEvent* event =
       MediaKeyMessageEvent::Create(event_type_names::kMessage, init);

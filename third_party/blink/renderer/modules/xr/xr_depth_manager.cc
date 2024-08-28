@@ -106,8 +106,7 @@ void XRDepthManager::EnsureData() {
   }
 
   // Copy the pixel data into ArrayBuffer:
-  data_ = DOMArrayBuffer::Create(depth_data_->pixel_data.data(),
-                                 depth_data_->pixel_data.size());
+  data_ = DOMArrayBuffer::Create(depth_data_->pixel_data);
 }
 
 void XRDepthManager::Trace(Visitor* visitor) const {

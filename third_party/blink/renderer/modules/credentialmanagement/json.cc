@@ -1,5 +1,6 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/json.h"
 
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -44,7 +45,7 @@ std::optional<DOMArrayBuffer*> WebAuthnBase64UrlDecode(const String& in) {
   if (!Base64UnpaddedURLDecode(in, out)) {
     return std::nullopt;
   }
-  return DOMArrayBuffer::Create(out.data(), out.size());
+  return DOMArrayBuffer::Create(base::as_byte_span(out));
 }
 
 PublicKeyCredentialUserEntity* PublicKeyCredentialUserEntityFromJSON(
