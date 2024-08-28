@@ -427,6 +427,12 @@ enum DefaultLocation {
   onedrive
 };
 
+enum CloudProvider {
+  not_specified,
+  google_drive,
+  onedrive
+};
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -865,6 +871,7 @@ dictionary Preferences {
   boolean driveFsBulkPinningEnabled;
   boolean localUserFilesAllowed;
   DefaultLocation defaultLocation;
+  CloudProvider skyVaultMigrationDestination;
 };
 
 dictionary PreferencesChange {

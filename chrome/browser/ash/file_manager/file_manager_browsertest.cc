@@ -397,6 +397,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         //     .EnableSkyVault(),
         TestCase("fileDisplayFileSystemDisabled")
             .DontMountVolumes()
+            .EnableSkyVault(),
+        TestCase("fileDisplaySkyVaultMigrationToGoogleDrive")
+            .DontMountVolumes()
+            .EnableSkyVault(),
+        TestCase("fileDisplaySkyVaultMigrationToOneDrive")
+            .DontMountVolumes()
             .EnableSkyVault()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

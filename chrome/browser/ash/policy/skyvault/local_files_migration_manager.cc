@@ -24,8 +24,6 @@
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/chrome_features.h"
@@ -48,22 +46,6 @@ namespace {
 bool IsMigrationEnabled(CloudProvider cloud_provider) {
   return cloud_provider == CloudProvider::kGoogleDrive ||
          cloud_provider == CloudProvider::kOneDrive;
-}
-
-// Converts `destination`, which should hold the value of the
-// `kLocalUserFilesMigrationDestination` pref, to the CloudProvider enum value.
-CloudProvider StringToCloudProvider(const std::string destination) {
-  if (destination == download_dir_util::kLocationGoogleDrive) {
-    return CloudProvider::kGoogleDrive;
-  }
-  if (destination == download_dir_util::kLocationOneDrive) {
-    return CloudProvider::kOneDrive;
-  }
-  if (destination == "read_only") {
-    return CloudProvider::kNotSpecified;
-  }
-  LOG(ERROR) << "Unexpected destination value " << destination;
-  return CloudProvider::kNotSpecified;
 }
 
 // Returns a list of files under MyFiles.
@@ -104,18 +86,9 @@ LocalFilesMigrationManager::LocalFilesMigrationManager(
   notification_manager_ =
       MigrationNotificationManagerFactory::GetForBrowserContext(context);
   CHECK(notification_manager_);
-
-  pref_change_registrar_.Init(g_browser_process->local_state());
-  pref_change_registrar_.Add(
-      prefs::kLocalUserFilesMigrationDestination,
-      base::BindRepeating(
-          &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
-          base::Unretained(this)));
 }
 
-LocalFilesMigrationManager::~LocalFilesMigrationManager() {
-  pref_change_registrar_.RemoveAll();
-}
+LocalFilesMigrationManager::~LocalFilesMigrationManager() = default;
 
 void LocalFilesMigrationManager::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
@@ -146,10 +119,8 @@ void LocalFilesMigrationManager::SetCoordinatorForTesting(
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   bool local_user_files_allowed_old = local_user_files_allowed_;
   local_user_files_allowed_ = LocalUserFilesAllowed();
-  std::string destination = g_browser_process->local_state()->GetString(
-      prefs::kLocalUserFilesMigrationDestination);
   CloudProvider cloud_provider_old = cloud_provider_;
-  cloud_provider_ = StringToCloudProvider(destination);
+  cloud_provider_ = GetMigrationDestination();
 
   if (local_user_files_allowed_ == local_user_files_allowed_old &&
       cloud_provider_ == cloud_provider_old) {

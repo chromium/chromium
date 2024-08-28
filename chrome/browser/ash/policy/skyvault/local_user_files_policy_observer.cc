@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 
 #include "base/check_is_test.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 
@@ -18,11 +19,11 @@ LocalUserFilesPolicyObserver::LocalUserFilesPolicyObserver()
     return;
   }
   pref_change_registrar_->Init(g_browser_process->local_state());
-  pref_change_registrar_->Add(
-      prefs::kLocalUserFilesAllowed,
-      base::BindRepeating(
-          &LocalUserFilesPolicyObserver::OnLocalUserFilesPolicyChanged,
-          base::Unretained(this)));
+  const base::RepeatingClosure cb = base::BindRepeating(
+      &LocalUserFilesPolicyObserver::OnLocalUserFilesPolicyChanged,
+      base::Unretained(this));
+  pref_change_registrar_->Add(prefs::kLocalUserFilesAllowed, cb);
+  pref_change_registrar_->Add(prefs::kLocalUserFilesMigrationDestination, cb);
 }
 
 LocalUserFilesPolicyObserver::~LocalUserFilesPolicyObserver() {

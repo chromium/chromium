@@ -249,6 +249,20 @@ api::file_manager_private::DefaultLocation GetDefaultLocation(
   return api::file_manager_private::DefaultLocation::kMyFiles;
 }
 
+// Converts the value of LocalUserFilesMigrationDestination policy to
+// api::file_manager_private::CloudProvider.
+api::file_manager_private::CloudProvider GetSkyVaultMigrationDestination() {
+  auto cloud_provider = policy::local_user_files::GetMigrationDestination();
+  switch (cloud_provider) {
+    case policy::local_user_files::CloudProvider::kNotSpecified:
+      return api::file_manager_private::CloudProvider::kNotSpecified;
+    case policy::local_user_files::CloudProvider::kGoogleDrive:
+      return api::file_manager_private::CloudProvider::kGoogleDrive;
+    case policy::local_user_files::CloudProvider::kOneDrive:
+      return api::file_manager_private::CloudProvider::kOnedrive;
+  }
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
@@ -294,6 +308,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
       policy::local_user_files::LocalUserFilesAllowed();
   result.default_location =
       GetDefaultLocation(prefs->GetString(prefs::kFilesAppDefaultLocation));
+  result.sky_vault_migration_destination = GetSkyVaultMigrationDestination();
 
   return RespondNow(WithArguments(result.ToValue()));
 }

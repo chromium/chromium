@@ -3486,6 +3486,16 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "setLocalFilesMigrationDestination") {
+    const std::string* provider = value.FindString("provider");
+    ASSERT_TRUE(provider);
+    ASSERT_TRUE(*provider == download_dir_util::kLocationGoogleDrive ||
+                *provider == download_dir_util::kLocationOneDrive);
+    g_browser_process->local_state()->SetString(
+        prefs::kLocalUserFilesMigrationDestination, *provider);
+    return;
+  }
+
   if (name == "skipSkyVaultMigration") {
     file_manager::VolumeManager* volume_manager = VolumeManager::Get(profile());
     volume_manager->OnMigrationSucceededForTesting();
