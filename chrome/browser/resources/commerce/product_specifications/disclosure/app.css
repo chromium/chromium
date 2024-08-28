@@ -10,7 +10,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  max-width: 410px;
+  max-width: 450px;
 }
 
 #titleContainer {
