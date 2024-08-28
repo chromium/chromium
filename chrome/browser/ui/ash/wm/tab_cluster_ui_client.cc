@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/tab_cluster_ui_client.h"
+#include "chrome/browser/ui/ash/wm/tab_cluster_ui_client.h"
 
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"

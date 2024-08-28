@@ -19,8 +19,6 @@ static_library("ash") {
     "screenshot_area.h",
     "system_sounds_delegate_impl.cc",
     "system_sounds_delegate_impl.h",
-    "tab_cluster_ui_client.cc",
-    "tab_cluster_ui_client.h",
     "vpn_list_forwarder.cc",
     "vpn_list_forwarder.h",
     "window_pin_util_ash.cc",
@@ -161,6 +159,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/user_education",
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/web_view",
+    "//chrome/browser/ui/ash/wm",
     "//chrome/browser/ui/chromeos",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
@@ -374,7 +373,6 @@ source_set("browser_tests") {
 
   sources = [
     "screen_orientation_delegate_chromeos_browsertest.cc",
-    "snap_group_browsertest.cc",
   ]
 
   deps = [
@@ -462,6 +460,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/user_education:browser_tests",
     "//chrome/browser/ui/ash/user_education/views:browser_tests",
     "//chrome/browser/ui/ash/web_view:browser_tests",
+    "//chrome/browser/ui/ash/wm:browser_tests",
   ]
 
   if (enable_assistant_integration_tests) {
