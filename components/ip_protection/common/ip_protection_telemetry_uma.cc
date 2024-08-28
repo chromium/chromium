@@ -181,4 +181,13 @@ void IpProtectionTelemetryUma::TokenExpirationRate(ProxyLayer proxy_layer,
       value);
 }
 
+void IpProtectionTelemetryUma::MdlEstimatedMemoryUsage(size_t usage) {
+  // TODO(crbug.com/356109549): Consider renaming this metric.
+  base::UmaHistogramMemoryKB(
+      "NetworkService.MaskedDomainList.NetworkServiceProxyAllowList."
+      "EstimatedMemoryUsageInKB",
+      // Convert to KB
+      usage / 1024);
+}
+
 }  // namespace ip_protection

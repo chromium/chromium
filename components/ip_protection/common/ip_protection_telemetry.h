@@ -130,6 +130,10 @@ class IpProtectionTelemetry {
   // Token expiration rate, in tokens per hour. This value is expected to be
   // less than 100,000.
   virtual void TokenExpirationRate(ProxyLayer, int) = 0;
+
+  // The estimated memory usage of the MDL, in KB. This is emitted after the
+  // MDL is fully loaded/updated (with any exclusions applied).
+  virtual void MdlEstimatedMemoryUsage(size_t) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each
