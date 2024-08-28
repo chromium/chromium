@@ -141,8 +141,10 @@ double PointerEvent::offsetY() const {
 }
 
 void PointerEvent::ReceivedTarget() {
-  coalesced_events_targets_dirty_ = true;
-  predicted_events_targets_dirty_ = true;
+  if (!RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
+    coalesced_events_targets_dirty_ = true;
+    predicted_events_targets_dirty_ = true;
+  }
   MouseEvent::ReceivedTarget();
 }
 
@@ -163,8 +165,8 @@ HeapVector<Member<PointerEvent>> PointerEvent::getCoalescedEvents() {
     }
   }
 
-  if (coalesced_events_targets_dirty_ &&
-      !RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
+  if (coalesced_events_targets_dirty_) {
+    CHECK(!RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled());
     for (auto coalesced_event : coalesced_events_)
       coalesced_event->SetTarget(target());
     coalesced_events_targets_dirty_ = false;
@@ -173,8 +175,8 @@ HeapVector<Member<PointerEvent>> PointerEvent::getCoalescedEvents() {
 }
 
 HeapVector<Member<PointerEvent>> PointerEvent::getPredictedEvents() {
-  if (predicted_events_targets_dirty_ &&
-      !RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
+  if (predicted_events_targets_dirty_) {
+    CHECK(!RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled());
     for (auto predicted_event : predicted_events_)
       predicted_event->SetTarget(target());
     predicted_events_targets_dirty_ = false;
@@ -206,10 +208,10 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
     // `coalesced_events_targets_dirty_` and `predicted_events_targets_dirty_`.
 
     for (auto coalesced_event : coalesced_events_) {
-      coalesced_event->SetTarget(target());
+      coalesced_event->SetTarget(&dispatcher.GetNode());
     }
     for (auto predicted_event : predicted_events_) {
-      predicted_event->SetTarget(target());
+      predicted_event->SetTarget(&dispatcher.GetNode());
     }
   }
 

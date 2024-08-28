@@ -45,11 +45,20 @@
       let coalesced_event = coalesced_events[i];
 
       assert_equals(coalesced_event.isTrusted, true,
-          "coalesced_event.isTrusted is true");
+        "coalesced_event.isTrusted is true");
       assert_equals(coalesced_event.bubbles, false,
-          "coalesced_event.bubbles is false");
+        "coalesced_event.bubbles is false");
       assert_equals(coalesced_event.cancelable, false,
-          "coalesced_event.cancelable is false");
+        "coalesced_event.cancelable is false");
+
+      assert_equals(coalesced_event.pointerId, event.pointerId,
+        "coalesced_event.pointerId matches the same in the container event");
+      assert_equals(coalesced_event.pointerType, event.pointerType,
+        "coalesced_event.pointerType matches the same in the container event");
+      assert_equals(coalesced_event.isPrimary, event.isPrimary,
+        "coalesced_event.isPrimary matches the same in the container event");
+      assert_equals(coalesced_event.target, event.target,
+        "coalesced_event.target matches the same in the container event");
 
       if (i > 0) {
         assert_greater_than_equal(coalesced_event.timeStamp,
