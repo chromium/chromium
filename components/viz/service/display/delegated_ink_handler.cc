@@ -6,13 +6,15 @@
 
 #include <utility>
 
-#include "components/viz/common/features.h"
+#include "components/viz/common/switches.h"
 #include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 
 namespace viz {
 DelegatedInkHandler::DelegatedInkHandler(bool platform_supports_delegated_ink)
-    : use_delegated_ink_renderer_(!platform_supports_delegated_ink) {
+    : use_delegated_ink_renderer_((switches::GetDelegatedInkRendererMode() ==
+                                   switches::DelegatedInkRendererMode::kSkia) ||
+                                  !platform_supports_delegated_ink) {
   if (use_delegated_ink_renderer_)
     ink_data_ = std::make_unique<DelegatedInkPointRendererSkia>();
 }

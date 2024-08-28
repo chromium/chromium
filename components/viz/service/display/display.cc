@@ -37,6 +37,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -1415,6 +1416,29 @@ void Display::PreserveChildSurfaceControls() {
 void Display::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
         pending_receiver) {
+  if (std::optional<switches::DelegatedInkRendererMode> mode =
+          switches::GetDelegatedInkRendererMode()) {
+    switch (mode.value()) {
+      case switches::DelegatedInkRendererMode::kSkia:
+        if (DelegatedInkPointRendererBase* ink_renderer =
+                renderer_->GetDelegatedInkPointRenderer(
+                    /*create_if_necessary=*/true)) {
+          ink_renderer->InitMessagePipeline(std::move(pending_receiver));
+        }
+        break;
+      case switches::DelegatedInkRendererMode::kSystem:
+        if (DoesPlatformSupportDelegatedInk()) {
+          output_surface_->InitDelegatedInkPointRendererReceiver(
+              std::move(pending_receiver));
+        }
+        break;
+      case switches::DelegatedInkRendererMode::kNone:
+        // Do not initialize a receiver for `kNone` or any other values.
+        return;
+    }
+    return;
+  }
+
   if (DoesPlatformSupportDelegatedInk() && output_surface_) {
     output_surface_->InitDelegatedInkPointRendererReceiver(
         std::move(pending_receiver));

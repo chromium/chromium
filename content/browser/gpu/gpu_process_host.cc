@@ -256,6 +256,7 @@ static const char* const kSwitchNames[] = {
     switches::kUseRedistributableDirectML,
 #endif  // BUILDFLAG(IS_WIN)
     switches::kEnableANGLEFeatures,
+    switches::kDelegatedInkRenderer,
     switches::kDisableANGLEFeatures,
     switches::kDisableBreakpad,
     switches::kDisableGpuRasterization,
