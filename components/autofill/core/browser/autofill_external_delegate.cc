@@ -265,21 +265,6 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // Hide warnings as appropriate.
   PossiblyRemoveAutofillWarnings(&suggestions);
 
-  // TODO(crbug.com/320126773): consider moving these metrics to a better place.
-  if (base::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
-        return suggestion.type == SuggestionType::kShowAccountCards;
-      })) {
-    autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
-        autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
-            kButtonAppeared);
-    if (!show_cards_from_account_suggestion_was_shown_) {
-      show_cards_from_account_suggestion_was_shown_ = true;
-      autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
-          autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
-              kButtonAppearedOnce);
-    }
-  }
-
   // If anything else is added to modify the values after inserting the data
   // list, AutofillPopupControllerImpl::UpdateDataListValues will need to be
   // updated to match.
@@ -427,6 +412,18 @@ void AutofillExternalDelegate::OnSuggestionsShown() {
 
   manager_->DidShowSuggestions(shown_suggestion_types_, query_form_,
                                query_field_);
+
+  if (base::Contains(shown_suggestion_types_,
+                     SuggestionType::kShowAccountCards)) {
+    autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
+        autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
+            kButtonAppeared);
+    if (!std::exchange(show_cards_from_account_suggestion_was_shown_, true)) {
+      autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
+          autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
+              kButtonAppearedOnce);
+    }
+  }
 
   if (base::Contains(shown_suggestion_types_,
                      SuggestionType::kScanCreditCard)) {

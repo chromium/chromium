@@ -2676,33 +2676,27 @@ TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
 
 TEST_F(AutofillExternalDelegateCardsFromAccountTest,
        ShowCardsFromAccountMetrics) {
+  using Event = autofill_metrics::ShowCardsFromGoogleAccountButtonEvent;
+  static constexpr std::string_view kUmaName =
+      "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents";
   base::HistogramTester histogram_tester;
-  IssueOnQuery();
-  OnSuggestionsReturned(queried_field().global_id(),
-                        {Suggestion(SuggestionType::kShowAccountCards)});
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"),
-      BucketsAre(
-          base::Bucket(autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
-                           kButtonAppeared,
-                       1),
-          base::Bucket(autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
-                           kButtonAppearedOnce,
-                       1)));
 
-  OnSuggestionsReturned(queried_field().global_id(),
-                        {Suggestion(SuggestionType::kShowAccountCards)});
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"),
-      BucketsAre(
-          base::Bucket(autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
-                           kButtonAppeared,
-                       2),
-          base::Bucket(autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
-                           kButtonAppearedOnce,
-                       1)));
+  auto show_suggestions = [&]() {
+    OnSuggestionsReturned(queried_field().global_id(),
+                          {Suggestion(SuggestionType::kShowAccountCards)});
+    external_delegate().OnSuggestionsShown();
+  };
+  IssueOnQuery();
+
+  show_suggestions();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kUmaName),
+              BucketsAre(base::Bucket(Event::kButtonAppeared, 1),
+                         base::Bucket(Event::kButtonAppearedOnce, 1)));
+
+  show_suggestions();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kUmaName),
+              BucketsAre(base::Bucket(Event::kButtonAppeared, 2),
+                         base::Bucket(Event::kButtonAppearedOnce, 1)));
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
