@@ -26,6 +26,10 @@ AmbientSigninController::~AmbientSigninController() {
     model_->observers.RemoveObserver(this);
     model_ = nullptr;
   }
+  if (ambient_signin_bubble_view_) {
+    ambient_signin_bubble_view_->NotifyWidgetDestroyed();
+    ambient_signin_bubble_view_ = nullptr;
+  }
 }
 
 void AmbientSigninController::AddAndShowWebAuthnMethods(

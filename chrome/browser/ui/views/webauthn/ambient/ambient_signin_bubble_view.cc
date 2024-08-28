@@ -83,6 +83,7 @@ void AmbientSigninBubbleView::Close() {
 
 void AmbientSigninBubbleView::NotifyWidgetDestroyed() {
   widget_->RemoveObserver(controller_);
+  controller_ = nullptr;
   BubbleDialogDelegateView::OnWidgetDestroying(widget_.get());
 }
 
