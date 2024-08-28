@@ -1187,10 +1187,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter',
         ],
       },
-      'android-15-x64-fyi-rel': {
-        # TODO(crbug.com/343210417) : Remove once fixed.
-        'experiment_percentage': 100,
-      },
       'android-pie-arm64-rel': {
         'ci_only': True,
       },
@@ -4531,10 +4527,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.viz_unittests.filter',
         ],
-      },
-      'android-15-x64-fyi-rel': {
-        # TODO(crbug.com/343210417) : Remove once fixed.
-        'experiment_percentage': 100,
       },
       'android-pie-arm64-rel': {
         'ci_only': True,
