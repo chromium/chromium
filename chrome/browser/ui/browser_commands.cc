@@ -1822,17 +1822,6 @@ void RouteMediaInvokedFromAppMenu(Browser* browser) {
       media_router::MediaRouterDialogActivationLocation::APP_MENU);
 }
 
-void CutCopyPaste(Browser* browser, int command_id) {
-  if (command_id == IDC_CUT) {
-    base::RecordAction(UserMetricsAction("Cut"));
-  } else if (command_id == IDC_COPY) {
-    base::RecordAction(UserMetricsAction("Copy"));
-  } else {
-    base::RecordAction(UserMetricsAction("Paste"));
-  }
-  browser->window()->CutCopyPaste(command_id);
-}
-
 void Find(Browser* browser) {
   base::RecordAction(UserMetricsAction("Find"));
   FindInPage(browser, false, true);

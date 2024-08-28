@@ -244,6 +244,10 @@ views::WebView* TestBrowserWindow::GetContentsWebView() {
   return nullptr;
 }
 
+BrowserView* TestBrowserWindow::AsBrowserView() {
+  return nullptr;
+}
+
 ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
     content::WebContents* contents,
     translate::TranslateStep step,

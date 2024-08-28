@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -767,6 +768,10 @@ Browser::~Browser() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Getters & Setters
+
+BrowserView& Browser::GetBrowserView() {
+  return CHECK_DEREF(window_->AsBrowserView());
+}
 
 base::WeakPtr<Browser> Browser::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();

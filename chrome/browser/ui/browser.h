@@ -64,6 +64,7 @@ class BrowserInstantController;
 class BrowserSyncedWindowDelegate;
 class BrowserLocationBarModelDelegate;
 class BrowserLiveTabContext;
+class BrowserView;
 class BrowserWindow;
 class BrowserWindowFeatures;
 class ExclusiveAccessManager;
@@ -435,6 +436,12 @@ class Browser : public TabStripModelObserver,
   // |window()| will return NULL if called before |CreateBrowserWindow()|
   // is done.
   BrowserWindow* window() const { return window_; }
+
+  // In production code, each instance of Browser will always instantiate an
+  // instance of BrowserView in the constructor. Some tests instantiate a
+  // Browser without a BrowserView: this is an anti-pattern and should be
+  // avoided.
+  BrowserView& GetBrowserView();
   LocationBarModel* location_bar_model() { return location_bar_model_.get(); }
   const LocationBarModel* location_bar_model() const {
     return location_bar_model_.get();

@@ -153,6 +153,7 @@ class TestBrowserWindow : public BrowserWindow {
   bool IsBorderlessModeEnabled() const override;
   void ShowChromeLabs() override {}
   views::WebView* GetContentsWebView() override;
+  BrowserView* AsBrowserView() override;
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
   void ShowUpdateChromeDialog() override {}
@@ -211,7 +212,6 @@ class TestBrowserWindow : public BrowserWindow {
       Browser::DownloadCloseType dialog_type,
       base::OnceCallback<void(bool)> callback) override {}
   void UserChangedTheme(BrowserThemeChangeType theme_change_type) override {}
-  void CutCopyPaste(int command_id) override {}
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;

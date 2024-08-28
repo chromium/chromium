@@ -640,6 +640,25 @@ class TabContainerOverlayView : public views::View {
 
 BEGIN_METADATA(TabContainerOverlayView)
 END_METADATA
+
+#else  // !BUILDFLAG(IS_MAC)
+
+// Calls |method| which is either WebContents::Cut, ::Copy, or ::Paste on
+// the given WebContents, returning true if it consumed the event.
+bool DoCutCopyPasteForWebContents(content::WebContents* contents,
+                                  void (content::WebContents::*method)()) {
+  // It's possible for a non-null WebContents to have a null RWHV if it's
+  // crashed or otherwise been killed.
+  content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();
+  if (!rwhv || !rwhv->HasFocus()) {
+    return false;
+  }
+  // Calling |method| rather than using a fake key event is important since a
+  // fake event might be consumed by the web content.
+  (contents->*method)();
+  return true;
+}
+
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
@@ -2511,6 +2530,10 @@ views::WebView* BrowserView::GetContentsWebView() {
   return contents_web_view_;
 }
 
+BrowserView* BrowserView::AsBrowserView() {
+  return this;
+}
+
 bool BrowserView::AppUsesBorderlessMode() const {
   return browser()->app_controller() &&
          browser()->app_controller()->AppUsesBorderlessMode();
@@ -3358,6 +3381,19 @@ remote_cocoa::mojom::CutCopyPasteCommand CommandFromBrowserCommand(
 }
 }  // namespace
 #endif
+
+void BrowserView::Cut() {
+  base::RecordAction(UserMetricsAction("Cut"));
+  CutCopyPaste(IDC_CUT);
+}
+void BrowserView::Copy() {
+  base::RecordAction(UserMetricsAction("Copy"));
+  CutCopyPaste(IDC_COPY);
+}
+void BrowserView::Paste() {
+  base::RecordAction(UserMetricsAction("Paste"));
+  CutCopyPaste(IDC_PASTE);
+}
 
 // TODO(devint): http://b/issue?id=1117225 Cut, Copy, and Paste are always
 // enabled in the page menu regardless of whether the command will do
@@ -5303,19 +5339,6 @@ user_education::DisplayNewBadge BrowserView::MaybeShowNewBadgeFor(
     return user_education::DisplayNewBadge();
   }
   return service->new_badge_controller()->MaybeShowNewBadge(feature);
-}
-
-bool BrowserView::DoCutCopyPasteForWebContents(WebContents* contents,
-                                               void (WebContents::*method)()) {
-  // It's possible for a non-null WebContents to have a null RWHV if it's
-  // crashed or otherwise been killed.
-  content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();
-  if (!rwhv || !rwhv->HasFocus())
-    return false;
-  // Calling |method| rather than using a fake key event is important since a
-  // fake event might be consumed by the web content.
-  (contents->*method)();
-  return true;
 }
 
 void BrowserView::ActivateAppModalDialog() const {

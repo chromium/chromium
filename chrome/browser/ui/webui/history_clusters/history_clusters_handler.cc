@@ -26,6 +26,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -49,6 +50,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/actions/actions.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -61,6 +63,10 @@
 namespace history_clusters {
 
 namespace {
+
+void InvokeAction(actions::ActionId id, actions::ActionItem* scope) {
+  actions::ActionManager::Get().FindAction(id, scope)->InvokeAction();
+}
 
 class HistoryClustersSidePanelContextMenu
     : public ui::SimpleMenuModel,
@@ -118,11 +124,17 @@ class HistoryClustersSidePanelContextMenu
         break;
       }
       case IDC_CUT:
-      case IDC_COPY:
-      case IDC_PASTE: {
-        chrome::CutCopyPaste(browser_, command_id);
+        InvokeAction(actions::kActionCut,
+                     browser_->GetActions()->root_action_item());
         break;
-      }
+      case IDC_COPY:
+        InvokeAction(actions::kActionCopy,
+                     browser_->GetActions()->root_action_item());
+        break;
+      case IDC_PASTE:
+        InvokeAction(actions::kActionPaste,
+                     browser_->GetActions()->root_action_item());
+        break;
       default:
         NOTREACHED_IN_MIGRATION();
         break;

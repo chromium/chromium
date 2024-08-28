@@ -193,6 +193,10 @@ bool CanOpenFile(Browser* browser) {
   return true;
 }
 
+void InvokeAction(actions::ActionId id, actions::ActionItem* scope) {
+  actions::ActionManager::Get().FindAction(id, scope)->InvokeAction();
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -703,9 +707,16 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
     // Clipboard commands
     case IDC_CUT:
+      InvokeAction(actions::kActionCut,
+                   browser_->GetActions()->root_action_item());
+      break;
     case IDC_COPY:
+      InvokeAction(actions::kActionCopy,
+                   browser_->GetActions()->root_action_item());
+      break;
     case IDC_PASTE:
-      CutCopyPaste(browser_, id);
+      InvokeAction(actions::kActionPaste,
+                   browser_->GetActions()->root_action_item());
       break;
 
     // Find-in-page

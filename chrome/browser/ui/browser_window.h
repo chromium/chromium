@@ -46,6 +46,7 @@
 #endif
 
 class Browser;
+class BrowserView;
 class DownloadBubbleUIController;
 class DownloadShelf;
 class ExclusiveAccessContext;
@@ -525,9 +526,6 @@ class BrowserWindow : public ui::BaseWindow {
   virtual bool HandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) = 0;
 
-  // Clipboard commands applied to the whole browser window.
-  virtual void CutCopyPaste(int command_id) = 0;
-
   // Construct a FindBar implementation for the |browser|.
   virtual std::unique_ptr<FindBar> CreateFindBar() = 0;
 
@@ -707,6 +705,11 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Returns the WebView backing the tab-contents area of the BrowserWindow.
   virtual views::WebView* GetContentsWebView() = 0;
+
+  // In production code BrowserView is the only subclass for BrowserWindow. The
+  // fact that this is not true in some tests is a problem with the tests. See
+  // https://crbug.com/360163254.
+  virtual BrowserView* AsBrowserView() = 0;
 
  protected:
   friend class BrowserCloseManager;
