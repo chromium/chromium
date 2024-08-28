@@ -23,7 +23,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -44,6 +46,8 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
+
+using ::ip_protection::TryGetAuthTokensResult;
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
@@ -125,9 +129,8 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
   // If IP Protection is disabled via user settings then don't attempt to fetch
   // tokens.
   if (!IsIpProtectionEnabled()) {
-    TryGetAuthTokensComplete(
-        std::nullopt, std::move(callback),
-        IpProtectionTryGetAuthTokensResult::kFailedDisabledByUser);
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback),
+                             TryGetAuthTokensResult::kFailedDisabledByUser);
     return;
   }
 
@@ -135,16 +138,14 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
   // try to request tokens.
   if (last_try_get_auth_tokens_backoff_ &&
       *last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
-    TryGetAuthTokensComplete(
-        std::nullopt, std::move(callback),
-        IpProtectionTryGetAuthTokensResult::kFailedNoAccount);
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback),
+                             TryGetAuthTokensResult::kFailedNoAccount);
     return;
   }
 
   if (!CanRequestOAuthToken()) {
-    TryGetAuthTokensComplete(
-        std::nullopt, std::move(callback),
-        IpProtectionTryGetAuthTokensResult::kFailedNoAccount);
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback),
+                             TryGetAuthTokensResult::kFailedNoAccount);
     return;
   }
 
@@ -269,14 +270,14 @@ void IpProtectionConfigProvider::
     TryGetAuthTokensComplete(
         std::nullopt, std::move(callback),
         error.IsTransientError()
-            ? IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenTransient
-            : IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenPersistent);
+            ? TryGetAuthTokensResult::kFailedOAuthTokenTransient
+            : TryGetAuthTokensResult::kFailedOAuthTokenPersistent);
     return;
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
-  base::UmaHistogramTimes("NetworkService.IpProtection.OAuthTokenFetchTime",
-                          current_time - oauth_token_fetch_start_time);
+  ip_protection::Telemetry().OAuthTokenFetchComplete(
+      current_time - oauth_token_fetch_start_time);
   FetchBlindSignedToken(access_token_info, batch_size, quiche_proxy_layer,
                         std::move(callback));
 }
@@ -317,25 +318,26 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     base::TimeTicks bsa_get_tokens_start_time,
     TryGetAuthTokensCallback callback,
     absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens) {
+  using enum TryGetAuthTokensResult;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_) {
     return;
   }
   if (!tokens.ok()) {
     // Apply the canonical mapping from abseil status to HTTP status.
-    IpProtectionTryGetAuthTokensResult result;
+    TryGetAuthTokensResult result;
     switch (tokens.status().code()) {
       case absl::StatusCode::kInvalidArgument:
-        result = IpProtectionTryGetAuthTokensResult::kFailedBSA400;
+        result = kFailedBSA400;
         break;
       case absl::StatusCode::kUnauthenticated:
-        result = IpProtectionTryGetAuthTokensResult::kFailedBSA401;
+        result = kFailedBSA401;
         break;
       case absl::StatusCode::kPermissionDenied:
-        result = IpProtectionTryGetAuthTokensResult::kFailedBSA403;
+        result = kFailedBSA403;
         break;
       default:
-        result = IpProtectionTryGetAuthTokensResult::kFailedBSAOther;
+        result = kFailedBSAOther;
         break;
     }
     VLOG(2) << "IPATP::OnFetchBlindSignedTokenCompleted got an error: "
@@ -346,9 +348,8 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
 
   if (tokens.value().size() == 0) {
     VLOG(2) << "IPATP::OnFetchBlindSignedTokenCompleted called with no tokens";
-    TryGetAuthTokensComplete(
-        std::nullopt, std::move(callback),
-        IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback),
+                             kFailedBSAOther);
     return;
   }
 
@@ -358,9 +359,8 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
         ip_protection::IpProtectionConfigProviderHelper::
             CreateBlindSignedAuthToken(token);
     if (!converted_token.has_value() || converted_token->token.empty()) {
-      TryGetAuthTokensComplete(
-          std::nullopt, std::move(callback),
-          IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
+      TryGetAuthTokensComplete(std::nullopt, std::move(callback),
+                               kFailedBSAOther);
       return;
     } else {
       bsa_tokens.push_back(std::move(converted_token).value());
@@ -368,20 +368,17 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
-  base::UmaHistogramTimes("NetworkService.IpProtection.TokenBatchRequestTime",
-                          current_time - bsa_get_tokens_start_time);
-
   TryGetAuthTokensComplete(std::make_optional(std::move(bsa_tokens)),
-                           std::move(callback),
-                           IpProtectionTryGetAuthTokensResult::kSuccess);
+                           std::move(callback), kSuccess,
+                           current_time - bsa_get_tokens_start_time);
 }
 
 void IpProtectionConfigProvider::TryGetAuthTokensComplete(
     std::optional<std::vector<network::BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
-    IpProtectionTryGetAuthTokensResult result) {
-  base::UmaHistogramEnumeration(
-      "NetworkService.IpProtection.TryGetAuthTokensResult", result);
+    TryGetAuthTokensResult result,
+    std::optional<base::TimeDelta> duration) {
+  ip_protection::Telemetry().TokenBatchFetchComplete(result, duration);
 
   std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
   std::optional<base::Time> try_again_after;
@@ -409,46 +406,47 @@ void IpProtectionConfigProvider::InvalidateNetworkContextTryAgainAfterTime() {
 }
 
 std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
-    IpProtectionTryGetAuthTokensResult result) {
+    TryGetAuthTokensResult result) {
+  using enum TryGetAuthTokensResult;
   std::optional<base::TimeDelta> backoff;
   bool exponential = false;
   switch (result) {
-    case IpProtectionTryGetAuthTokensResult::kSuccess:
+    case kSuccess:
       break;
-    case IpProtectionTryGetAuthTokensResult::kFailedNoAccount:
-    case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenPersistent:
-    case IpProtectionTryGetAuthTokensResult::kFailedDisabledByUser:
+    case kFailedNoAccount:
+    case kFailedOAuthTokenPersistent:
+    case kFailedDisabledByUser:
       backoff = base::TimeDelta::Max();
       break;
-    case IpProtectionTryGetAuthTokensResult::kFailedNotEligible:
+    case kFailedNotEligible:
       // TODO(crbug.com/40267788): When we add a client side account
       // capabilities check, if this capability/eligibility is something that
       // can change and be detected via callbacks to an overridden
       // `IdentityManager::Observer::OnExtendedAccountInfoUpdated()` method,
       // then update this failure so that we wait indefinitely as well (like
       // the cases above).
-    case IpProtectionTryGetAuthTokensResult::kFailedBSA403:
+    case kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
       backoff =
           ip_protection::IpProtectionConfigProviderHelper::kNotEligibleBackoff;
       break;
-    case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenTransient:
-    case IpProtectionTryGetAuthTokensResult::kFailedBSAOther:
+    case kFailedOAuthTokenTransient:
+    case kFailedBSAOther:
       // Transient failure to fetch an OAuth token, or some other error from
       // BSA that is probably transient.
       backoff =
           ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff;
       exponential = true;
       break;
-    case IpProtectionTryGetAuthTokensResult::kFailedBSA400:
-    case IpProtectionTryGetAuthTokensResult::kFailedBSA401:
+    case kFailedBSA400:
+    case kFailedBSA401:
       // Both 400 and 401 suggest a bug, so do not retry aggressively.
       backoff = ip_protection::IpProtectionConfigProviderHelper::kBugBackoff;
       exponential = true;
       break;
-    case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenDeprecated:
-      NOTREACHED();
+    case kFailedOAuthTokenDeprecated:
+      NOTREACHED_NORETURN();
   }
 
   // Note that we calculate the backoff assuming that we've waited for

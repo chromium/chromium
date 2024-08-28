@@ -16,8 +16,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
@@ -40,43 +42,6 @@ class BlindSignAuthInterface;
 enum class ProxyLayer;
 struct BlindSignToken;
 }  // namespace quiche
-
-// The result of a fetch of tokens from the IP Protection auth token server.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep this in sync with
-// IpProtectionTokenBatchRequestResult in enums.xml.
-enum class IpProtectionTryGetAuthTokensResult {
-  // The request was successful and resulted in new tokens.
-  kSuccess = 0,
-  // No primary account is set.
-  kFailedNoAccount = 1,
-  // Chrome determined the primary account is not eligible.
-  kFailedNotEligible = 2,
-  // There was a failure fetching an OAuth token for the primary account.
-  // Deprecated in favor of `kFailedOAuthToken{Transient,Persistent}`.
-  kFailedOAuthTokenDeprecated = 3,
-  // There was a failure in BSA with the given status code.
-  kFailedBSA400 = 4,
-  kFailedBSA401 = 5,
-  kFailedBSA403 = 6,
-
-  // Any other issue calling BSA.
-  kFailedBSAOther = 7,
-
-  // There was a transient failure fetching an OAuth token for the primary
-  // account.
-  kFailedOAuthTokenTransient = 8,
-  // There was a persistent failure fetching an OAuth token for the primary
-  // account.
-  kFailedOAuthTokenPersistent = 9,
-
-  // The attempt to request tokens failed because IP Protection was disabled by
-  // the user.
-  kFailedDisabledByUser = 10,
-
-  kMaxValue = kFailedDisabledByUser,
-};
 
 // Fetches IP protection tokens on demand for the network service.
 //
@@ -178,12 +143,13 @@ class IpProtectionConfigProvider
   void TryGetAuthTokensComplete(
       std::optional<std::vector<network::BlindSignedAuthToken>> bsa_tokens,
       TryGetAuthTokensCallback callback,
-      IpProtectionTryGetAuthTokensResult result);
+      ip_protection::TryGetAuthTokensResult result,
+      std::optional<base::TimeDelta> duration = std::nullopt);
 
   // Calculates the backoff time for the given result, based on
   // `last_try_get_auth_tokens_..` fields, and updates those fields.
   std::optional<base::TimeDelta> CalculateBackoff(
-      IpProtectionTryGetAuthTokensResult result);
+      ip_protection::TryGetAuthTokensResult result);
 
   // Creating a generic callback in order for `RequestOAuthToken()` to work for
   // `TryGetAuthTokens()` and `GetProxyList()`.
@@ -276,8 +242,8 @@ class IpProtectionConfigProvider
   // will be set to `base::TimeDelta::Max()` if no further attempts to get
   // tokens should be made. These will be updated by calls from any receiver
   // (so, from either the main profile or an associated incognito mode profile).
-  IpProtectionTryGetAuthTokensResult last_try_get_auth_tokens_result_ =
-      IpProtectionTryGetAuthTokensResult::kSuccess;
+  ip_protection::TryGetAuthTokensResult last_try_get_auth_tokens_result_ =
+      ip_protection::TryGetAuthTokensResult::kSuccess;
   std::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
 
   // The `mojo::Receiver` objects allowing the network service to call methods

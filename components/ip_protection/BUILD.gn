@@ -9,6 +9,10 @@ import("//third_party/protobuf/proto_library.gni")
 # should be safe to include in most builds.
 source_set("ip_protection") {
   sources = [
+    "common/ip_protection_data_types.h",
+    "common/ip_protection_telemetry.h",
+    "common/ip_protection_telemetry_uma.cc",
+    "common/ip_protection_telemetry_uma.h",
     "common/masked_domain_list_manager.cc",
     "common/masked_domain_list_manager.h",
     "common/url_matcher_with_bypass.cc",
