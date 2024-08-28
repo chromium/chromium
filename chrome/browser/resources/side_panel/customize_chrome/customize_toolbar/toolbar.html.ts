@@ -32,7 +32,7 @@ export function getHtml(this: ToolbarElement) {
   ${
       this.categories_.map(
           (category, categoryIndex) => html`
-    <div class="choose-icons-row category-title">${category.displayName}</div>
+    <h3 class="choose-icons-row category-title">${category.displayName}</h3>
     ${
               this.actions_.map(
                   (action) => action.category === category.id ?

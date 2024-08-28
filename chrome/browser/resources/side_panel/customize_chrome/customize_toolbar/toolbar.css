@@ -38,6 +38,11 @@
   margin: 16px 0;
 }
 
+.category-title {
+  font-size: 12px;
+  font-weight: 500;
+}
+
 .sp-card > :first-child {
   margin-top: 0;
 }
