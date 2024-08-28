@@ -7,7 +7,7 @@
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_omnibox_mutator.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
@@ -49,6 +49,13 @@ const CGFloat kWebContainerTopPadding = 8;
 
 /// Edit view contained in `_omniboxContainer`.
 @property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
+
+/// Whether the back button is available. The back button might be available but
+/// hidden when the omnibox is focused.
+@property(nonatomic, assign) BOOL canGoBack;
+
+/// Whether the omnibox is currently focused.
+@property(nonatomic, assign) BOOL omniboxFocused;
 
 @end
 
@@ -219,7 +226,7 @@ const CGFloat kWebContainerTopPadding = 8;
 }
 
 - (void)keyCommand_close {
-  [self.omniboxMutator defocusOmnibox];
+  [self.toolbarMutator defocusOmnibox];
 }
 
 #pragma mark - LensResultPageConsumer
@@ -271,6 +278,9 @@ const CGFloat kWebContainerTopPadding = 8;
 #pragma mark - LensToolbarConsumer
 
 - (void)setOmniboxFocused:(BOOL)isFocused {
+  _omniboxFocused = isFocused;
+  [self updateBackButtonVisibility];
+
   // Visible when omnibox is focused.
   _cancelButton.hidden = !isFocused;
   _omniboxPopupContainer.hidden = !isFocused;
@@ -279,26 +289,35 @@ const CGFloat kWebContainerTopPadding = 8;
   _omniboxTapTarget.hidden = isFocused;
 }
 
+- (void)setCanGoBack:(BOOL)canGoBack {
+  _canGoBack = canGoBack;
+  [self updateBackButtonVisibility];
+}
+
 #pragma mark - Private
 
 /// Handles back button taps.
 - (void)didTapBackButton:(UIView*)button {
-  // TODO(crbug.com/347239663): Handle back button tap.
+  [self.toolbarMutator goBack];
 }
 
 /// Handles omnibox tap target taps.
 - (void)didTapOmniboxTapTarget:(UIView*)view {
-  [self.omniboxMutator focusOmnibox];
+  [self.toolbarMutator focusOmnibox];
 }
 
 /// Handles omnibox popup container taps, acting like a typing shield.
 - (void)didTapOmniboxPopupContainer:(UIView*)view {
-  [self.omniboxMutator defocusOmnibox];
+  [self.toolbarMutator defocusOmnibox];
 }
 
 /// Handles cancel button taps.
 - (void)didTapCancelButton:(UIView*)button {
-  [self.omniboxMutator defocusOmnibox];
+  [self.toolbarMutator defocusOmnibox];
+}
+
+- (void)updateBackButtonVisibility {
+  _backButton.hidden = self.omniboxFocused || !self.canGoBack;
 }
 
 @end

@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_omnibox_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 
@@ -23,8 +23,8 @@ class WebState;
 /// Main mediator for Lens Overlay.
 /// Manages data flow between Selection, Omnibox and Results.
 @interface LensOverlayMediator : NSObject <ChromeLensOverlayDelegate,
-                                           LensOmniboxMutator,
                                            LensOmniboxClientDelegate,
+                                           LensToolbarMutator,
                                            OmniboxFocusDelegate>
 
 @property(nonatomic, weak) id<LensOverlayResultConsumer> resultConsumer;

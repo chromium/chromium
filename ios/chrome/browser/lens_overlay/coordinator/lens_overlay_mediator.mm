@@ -74,7 +74,7 @@
   [self.resultConsumer loadResultsURL:destinationURL];
 }
 
-#pragma mark LensOmniboxMutator
+#pragma mark LensToolbarMutator
 
 - (void)focusOmnibox {
   [self.omniboxCoordinator focusOmnibox];
@@ -84,6 +84,10 @@
 - (void)defocusOmnibox {
   [self.omniboxCoordinator endEditing];
   [self.toolbarConsumer setOmniboxFocused:NO];
+}
+
+- (void)goBack {
+  // TODO(crbug.com/347239663): Implement goBack.
 }
 
 #pragma mark OmniboxFocusDelegate

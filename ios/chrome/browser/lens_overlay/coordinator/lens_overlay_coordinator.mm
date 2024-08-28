@@ -350,7 +350,7 @@
 
   _mediator.omniboxCoordinator = _omniboxCoordinator;
   _mediator.toolbarConsumer = _resultViewController;
-  _resultViewController.omniboxMutator = _mediator;
+  _resultViewController.toolbarMutator = _mediator;
   _omniboxCoordinator.focusDelegate = _mediator;
 }
 

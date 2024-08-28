@@ -62,7 +62,7 @@ class LensOverlayMediatorTest : public PlatformTest {
 
 /// Tests that the omnibox and toolbar are updated on omnibox focus.
 TEST_F(LensOverlayMediatorTest, FocusOmnibox) {
-  // Focus from LensOmniboxMutator.
+  // Focus from LensToolbarMutator.
   OCMExpect([mock_omnibox_coordinator_ focusOmnibox]);
   OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:YES]);
   [mediator_ focusOmnibox];
@@ -79,7 +79,7 @@ TEST_F(LensOverlayMediatorTest, FocusOmnibox) {
 
 /// Tests that the omnibox and toolbar are updated on omnibox defocus.
 TEST_F(LensOverlayMediatorTest, DefocusOmnibox) {
-  // Defocus from LensOmniboxMutator.
+  // Defocus from LensToolbarMutator.
   OCMExpect([mock_omnibox_coordinator_ endEditing]);
   OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:NO]);
   [mediator_ defocusOmnibox];
