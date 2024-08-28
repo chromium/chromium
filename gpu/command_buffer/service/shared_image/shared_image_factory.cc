@@ -84,15 +84,6 @@ namespace gpu {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Feature enabling ExternalVkImageBacking use on ChromeOS. Serves as reverse
-// killswitch while we roll out disabling of this backing on ChromeOS.
-// TODO(crbug.com/336837285): Remove post-safe rollout.
-BASE_FEATURE(kUseExternalVkImageBackingOnChromeOS,
-             "UseExternalVkImageBackingOnChromeOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
   switch (type) {
     case gfx::EMPTY_BUFFER:
@@ -316,17 +307,13 @@ SharedImageFactory::SharedImageFactory(
         context_state_, workarounds_);
     factories_.push_back(std::move(ozone_factory));
   }
-#if BUILDFLAG(ENABLE_VULKAN)
-  if (gr_context_type_ == GrContextType::kVulkan
-#if BUILDFLAG(IS_CHROMEOS)
-      && base::FeatureList::IsEnabled(kUseExternalVkImageBackingOnChromeOS)
-#endif
-  ) {
+#if BUILDFLAG(ENABLE_VULKAN) && !BUILDFLAG(IS_CHROMEOS)
+  if (gr_context_type_ == GrContextType::kVulkan) {
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageBackingFactory>(context_state_);
     factories_.push_back(std::move(external_vk_image_factory));
   }
-#endif  // BUILDFLAG(ENABLE_VULKAN)
+#endif  // BUILDFLAG(ENABLE_VULKAN) && !BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_APPLE)
