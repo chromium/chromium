@@ -176,6 +176,7 @@ class TargetDeviceBootstrapController
   // Initiates the actual account transfer via a cryptographic handshake between
   // the two devices in conjunction with Google servers.
   void AttemptGoogleAccountTransfer();
+  static void SetGaiaCredentialsResponseForTesting(GaiaCredentials test_creds);
 
   // Called when the flow is aborted due to an error, or cancelled by the user.
   void Cleanup();

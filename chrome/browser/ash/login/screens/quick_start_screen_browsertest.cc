@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -63,6 +64,7 @@ constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
 constexpr char kConfirmAccountDialog[] = "confirmAccountDialog";
+constexpr char kSetupCompleteDialog[] = "setupCompleteDialog";
 constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
 constexpr char kViewDurationHistogram[] = ".ViewDuration";
 constexpr char kReasonHistogram[] = ".Reason";
@@ -106,6 +108,10 @@ constexpr test::UIPath kQuickStartQrCodeCanvas = {
     QuickStartView::kScreenId.name, "qrCodeCanvas"};
 constexpr test::UIPath kConfirmAccountDialogPath = {
     QuickStartView::kScreenId.name, kConfirmAccountDialog};
+constexpr test::UIPath kSetupCompleteDialogPath = {
+    QuickStartView::kScreenId.name, kSetupCompleteDialog};
+constexpr test::UIPath kSetupCompleteNextButton = {
+    QuickStartView::kScreenId.name, "nextButton"};
 constexpr test::UIPath kCancelButtonGaiaTransferDialog = {
     QuickStartView::kScreenId.name, kCancelButton};
 constexpr test::UIPath kQuickStartButtonGaia = {
@@ -150,6 +156,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
   ~QuickStartBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
     network_helper_ = std::make_unique<NetworkStateTestHelper>(
         /*use_default_devices_and_services=*/false);
     OobeBaseTest::SetUpOnMainThread();
@@ -182,6 +189,15 @@ class QuickStartBrowserTest : public OobeBaseTest {
         nullptr);
     mock_bluetooth_adapter_.reset();
     OobeBaseTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  void SetupFakeGaiaCredentialsResponse() {
+    quick_start::TargetDeviceBootstrapController::GaiaCredentials gaia_creds;
+    gaia_creds.auth_code = FakeGaiaMixin::kFakeAuthCode;
+    gaia_creds.email = FakeGaiaMixin::kFakeUserEmail;
+    gaia_creds.gaia_id = FakeGaiaMixin::kFakeAuthCode;
+    quick_start::TargetDeviceBootstrapController::
+        SetGaiaCredentialsResponseForTesting(gaia_creds);
   }
 
   void SetupAndWaitForGaiaScreen() {
@@ -992,6 +1008,32 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, HandleEmptyAccounts) {
 
   // Returns to the Gaia screen
   OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
+}
+
+// Goes through the full flow of QuickStart simulating the non-fallback flow.
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, FullFlow) {
+  SetupFakeGaiaCredentialsResponse();
+
+  SetupAndWaitForGaiaScreen();
+  WaitAndClickOnPath(kQuickStartButtonGaia);
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  EnsureFlowActive();
+
+  SimulatePhoneConnection();
+  SimulateUserVerification();
+
+  SimulateAccountInfoTransfer(/*send_empty_account_info=*/false);
+
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+
+  // "Setup complete" step should become visible.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kSetupCompleteDialogPath)
+      ->Wait();
+
+  // Clicking Next should bring the user to the Consolidated Consent screen.
+  WaitAndClickOnPath(kSetupCompleteNextButton);
+  test::WaitForConsolidatedConsentScreen();
 }
 
 class QuickStartLoginScreenTest : public QuickStartBrowserTest {
