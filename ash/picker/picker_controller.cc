@@ -372,13 +372,13 @@ void PickerController::ToggleWidget(
 }
 
 std::vector<PickerCategory> PickerController::GetAvailableCategories() {
-  return model_ == nullptr ? std::vector<PickerCategory>{}
-                           : model_->GetAvailableCategories();
+  return session_ == nullptr ? std::vector<PickerCategory>{}
+                             : session_->model.GetAvailableCategories();
 }
 
 void PickerController::GetZeroStateSuggestedResults(
     SuggestedResultsCallback callback) {
-  suggestions_controller_->GetSuggestions(*model_, std::move(callback));
+  suggestions_controller_->GetSuggestions(session_->model, std::move(callback));
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,
@@ -399,14 +399,14 @@ void PickerController::StartSearch(std::u16string_view query,
                                    std::optional<PickerCategory> category,
                                    SearchResultsCallback callback) {
   CHECK(search_controller_);
-  CHECK(model_);
+  CHECK(session_);
   search_controller_->StartSearch(
       query, std::move(category),
       {
           .available_categories = GetAvailableCategories(),
-          .caps_lock_state_to_search = !model_->is_caps_lock_enabled(),
+          .caps_lock_state_to_search = !session_->model.is_caps_lock_enabled(),
           .search_case_transforms =
-              model_->GetMode() == PickerModeType::kHasSelection,
+              session_->model.GetMode() == PickerModeType::kHasSelection,
       },
       std::move(callback));
 }
@@ -473,12 +473,12 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
             GetImeKeyboard().SetCapsLockEnabled(data.enabled);
           },
           [&](const PickerCaseTransformResult& data) {
-            if (!model_) {
+            if (!session_) {
               return;
             }
             session_metrics_->SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kFormat);
-            std::u16string_view selected_text = model_->selected_text();
+            std::u16string_view selected_text = session_->model.selected_text();
             InsertResultOnNextFocus(
                 PickerTextResult(TransformText(selected_text, data.type),
                                  PickerTextResult::Source::kCaseTransform));
@@ -512,8 +512,8 @@ PickerSessionMetrics& PickerController::GetSessionMetrics() {
 
 PickerActionType PickerController::GetActionForResult(
     const PickerSearchResult& result) {
-  CHECK(model_);
-  const PickerModeType mode = model_->GetMode();
+  CHECK(session_);
+  const PickerModeType mode = session_->model.GetMode();
   return std::visit(
       base::Overloaded{
           [mode](const PickerTextResult& data) {
@@ -573,8 +573,8 @@ std::vector<PickerSearchResult> PickerController::GetSuggestedEmoji() {
 }
 
 bool PickerController::IsGifsEnabled() {
-  CHECK(model_);
-  return model_->IsGifsEnabled();
+  CHECK(session_);
+  return session_->model.IsGifsEnabled();
 }
 
 PrefService* PickerController::GetPrefs() {
@@ -583,8 +583,8 @@ PrefService* PickerController::GetPrefs() {
 }
 
 PickerModeType PickerController::GetMode() {
-  CHECK(model_);
-  return model_->GetMode();
+  CHECK(session_);
+  return session_->model.GetMode();
 }
 
 void PickerController::OnViewIsDeleting(views::View* view) {
@@ -594,7 +594,7 @@ void PickerController::OnViewIsDeleting(views::View* view) {
   session_metrics_.reset();
   emoji_suggester_.reset();
   emoji_history_model_.reset();
-  model_.reset();
+  session_.reset();
 }
 
 void PickerController::FetchFileThumbnail(const base::FilePath& path,
@@ -602,6 +602,12 @@ void PickerController::FetchFileThumbnail(const base::FilePath& path,
                                           FetchFileThumbnailCallback callback) {
   client_->FetchFileThumbnail(path, size, std::move(callback));
 }
+
+PickerController::Session::Session(PrefService* prefs,
+                                   ui::TextInputClient* focused_client,
+                                   input_method::ImeKeyboard* ime_keyboard,
+                                   PickerModel::EditorStatus editor_status)
+    : model(prefs, focused_client, ime_keyboard, editor_status) {}
 
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
                                   WidgetTriggerSource trigger_source) {
@@ -617,7 +623,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
     return;
   }
 
-  model_ = std::make_unique<PickerModel>(
+  session_ = std::make_unique<Session>(
       GetPrefs(), focused_client, &keyboard,
       show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
                                       : PickerModel::EditorStatus::kEnabled);
@@ -640,7 +646,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
       GetCaretBounds(), GetCursorPoint(), GetFocusedWindowBounds());
   if (trigger_source == WidgetTriggerSource::kFeatureTour &&
-      model_->GetMode() == PickerModeType::kUnfocused) {
+      session_->model.GetMode() == PickerModeType::kUnfocused) {
     widget_ = PickerWidget::CreateCentered(this, anchor_bounds,
                                            trigger_event_timestamp);
   } else {
@@ -678,9 +684,9 @@ void PickerController::InsertResultOnNextFocus(
   }
 
   // Update emoji history in prefs the result is an emoji/symbol/emoticon.
-  CHECK(model_);
+  CHECK(session_);
   if (auto* data = std::get_if<PickerEmojiResult>(&result);
-      data != nullptr && model_->should_do_learning()) {
+      data != nullptr && session_->model.should_do_learning()) {
     emoji_history_model_->UpdateRecentEmoji(
         EmojiResultTypeToCategory(data->type), base::UTF16ToUTF8(data->text));
   }

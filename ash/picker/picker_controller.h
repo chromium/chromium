@@ -14,6 +14,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/model/picker_model.h"
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "ash/picker/picker_caps_lock_bubble_controller.h"
 #include "ash/picker/picker_insert_media_request.h"
@@ -31,6 +32,16 @@
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+class PrefService;
+
+namespace input_method {
+class ImeKeyboard;
+}
+
+namespace ui {
+class TextInputClient;
+}
 
 namespace ash {
 
@@ -150,6 +161,16 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
     kFeatureTour,
   };
 
+  // Active Picker session tied to the lifetime of the PickerWidget.
+  struct Session {
+    PickerModel model;
+
+    Session(PrefService* prefs,
+            ui::TextInputClient* focused_client,
+            input_method::ImeKeyboard* ime_keyboard,
+            PickerModel::EditorStatus editor_status);
+  };
+
   void ShowWidget(base::TimeTicks trigger_event_timestamp,
                   WidgetTriggerSource trigger_source);
   void CloseWidget();
@@ -163,7 +184,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   PickerFeatureTour feature_tour_;
   PickerCapsLockBubbleController caps_lock_bubble_controller_;
-  std::unique_ptr<PickerModel> model_;
+  std::unique_ptr<Session> session_;
   std::unique_ptr<PickerEmojiHistoryModel> emoji_history_model_;
   std::unique_ptr<PickerEmojiSuggester> emoji_suggester_;
   views::UniqueWidgetPtr widget_;
