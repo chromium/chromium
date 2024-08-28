@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_config.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 

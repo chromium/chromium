@@ -16,7 +16,7 @@ specific_include_rules = {
   ],
   "^reading_list_browser_agent.mm": [
     "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
-    "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
+    "+ios/chrome/browser/ntp/shared/metrics/home_metrics.h",
   ],
 
 }

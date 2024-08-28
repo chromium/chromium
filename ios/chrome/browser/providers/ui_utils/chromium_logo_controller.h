@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/ntp/logo_vendor.h"
+#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 
 @interface ChromiumLogoController : NSObject <LogoVendor>
 @end

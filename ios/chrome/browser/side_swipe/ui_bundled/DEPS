@@ -4,7 +4,7 @@ include_rules = [
   "+ios/chrome/browser/ui/fullscreen",
   "+ios/chrome/browser/tabs/ui_bundled/requirements/tab_strip_highlighting.h",
   "+ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h",
-  "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_util.h",
   "+ios/chrome/browser/ui/toolbar/public",
   "+ios/chrome/browser/web/model/page_placeholder_tab_helper.h",
   "+ios/chrome/browser/web/model/web_navigation_util.h",

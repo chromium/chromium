@@ -7,5 +7,5 @@ include_rules = [
   "+ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h",
   "+ios/chrome/browser/overlays/model",
   "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
-  "+ios/chrome/browser/ui/ntp/metrics",
+  "+ios/chrome/browser/ntp/shared/metrics",
 ]

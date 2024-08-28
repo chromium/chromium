@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -30,7 +31,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 
 @implementation FeedAppAgent {
   // Set to YES when the app is foregrounded.

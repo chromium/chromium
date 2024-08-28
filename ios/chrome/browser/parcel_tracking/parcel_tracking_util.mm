@@ -14,6 +14,7 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
@@ -23,7 +24,6 @@
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 
 namespace {
 const CGFloat parcelLimit = 5;
