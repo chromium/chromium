@@ -2609,13 +2609,26 @@ void RenderProcessHostBadMojoMessageWaiter::OnBadMojoMessage(
 class DOMMessageQueue::MessageObserver : public WebContentsObserver {
  public:
   MessageObserver(DOMMessageQueue* queue, WebContents* contents)
-      : WebContentsObserver(contents), queue_(queue) {}
+      : WebContentsObserver(contents),
+        queue_(queue),
+        render_frame_host_(nullptr),
+        watching_frame_(false) {}
+
+  MessageObserver(DOMMessageQueue* queue, RenderFrameHost* render_frame_host)
+      : WebContentsObserver(
+            WebContents::FromRenderFrameHost(render_frame_host)),
+        queue_(queue),
+        render_frame_host_(render_frame_host),
+        watching_frame_(true) {}
+
   ~MessageObserver() override = default;
 
  private:
   void DomOperationResponse(RenderFrameHost* rfh,
                             const std::string& result) override {
-    queue_->OnDomMessageReceived(result);
+    if (!watching_frame_ || render_frame_host_ == rfh) {
+      queue_->OnDomMessageReceived(result);
+    }
   }
 
   void PrimaryMainFrameRenderProcessGone(
@@ -2624,7 +2637,11 @@ class DOMMessageQueue::MessageObserver : public WebContentsObserver {
   }
 
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override {
-    queue_->RenderFrameDeleted(render_frame_host);
+    if (render_frame_host_ != render_frame_host) {
+      return;
+    }
+    render_frame_host_ = nullptr;
+    queue_->RenderFrameDeleted();
   }
 
   void WebContentsDestroyed() override {
@@ -2632,6 +2649,8 @@ class DOMMessageQueue::MessageObserver : public WebContentsObserver {
   }
 
   raw_ptr<DOMMessageQueue> queue_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
+  bool watching_frame_;
 };
 
 DOMMessageQueue::DOMMessageQueue() {
@@ -2649,9 +2668,9 @@ DOMMessageQueue::DOMMessageQueue(WebContents* web_contents) {
   observers_.emplace(std::make_unique<MessageObserver>(this, web_contents));
 }
 
-DOMMessageQueue::DOMMessageQueue(RenderFrameHost* render_frame_host)
-    : DOMMessageQueue(WebContents::FromRenderFrameHost(render_frame_host)) {
-  render_frame_host_ = render_frame_host;
+DOMMessageQueue::DOMMessageQueue(RenderFrameHost* render_frame_host) {
+  observers_.emplace(
+      std::make_unique<MessageObserver>(this, render_frame_host));
 }
 
 DOMMessageQueue::~DOMMessageQueue() = default;
@@ -2672,11 +2691,7 @@ void DOMMessageQueue::PrimaryMainFrameRenderProcessGone(
   }
 }
 
-void DOMMessageQueue::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
-  if (!render_frame_host_)
-    return;
-  if (render_frame_host_ != render_frame_host)
-    return;
+void DOMMessageQueue::RenderFrameDeleted() {
   if (callback_) {
     std::move(callback_).Run();
   }
@@ -2709,7 +2724,6 @@ void DOMMessageQueue::OnBackingWebContentsDestroyed(MessageObserver* observer) {
 void DOMMessageQueue::SetOnMessageAvailableCallback(
     base::OnceClosure callback) {
   CHECK(!callback_);
-  CHECK(!render_frame_host_);  // Not supported for simplicity.
   if (!message_queue_.empty() || renderer_crashed_) {
     std::move(callback).Run();
   } else {

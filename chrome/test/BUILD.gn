@@ -3861,6 +3861,8 @@ if (!is_android) {
         "../browser/controlled_frame/controlled_frame_new_window_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_permission_request_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_wpt_browsertest.cc",
+        "../browser/controlled_frame/scoped_test_driver_proxy.cc",
+        "../browser/controlled_frame/scoped_test_driver_proxy.h",
         "../browser/extensions/alert_apitest.cc",
         "../browser/extensions/all_urls_apitest.cc",
         "../browser/extensions/api/activity_log_private/activity_log_private_apitest.cc",
@@ -4325,6 +4327,7 @@ if (!is_android) {
         "//chrome/test/data/extensions/",
         "//extensions/test/data/",
         "//third_party/blink/web_tests/external/wpt/resources/testharness.js",
+        "//third_party/blink/web_tests/external/wpt/resources/testdriver.js",
         "//third_party/blink/web_tests/http/tests/wasm/resources/large.wasm",
       ]
 

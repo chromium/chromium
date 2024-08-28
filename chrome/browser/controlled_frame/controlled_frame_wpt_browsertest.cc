@@ -11,76 +11,100 @@
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
+#include "chrome/browser/controlled_frame/scoped_test_driver_proxy.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace controlled_frame {
 
 namespace {
-auto kTestFiles = testing::Values("new_window.window.js");
+auto kTestFiles = testing::Values("camera.window.js",
+                                  "geolocation.window.js",
+                                  "new_window.window.js");
 
-constexpr char kTestHarnessJsPath[] =
+constexpr char kTestDirectory[] = "chrome/test/data/controlled_frame";
+constexpr char kTestHarnessPath[] =
     "third_party/blink/web_tests/external/wpt/resources/testharness.js";
+constexpr char kTestDriverPath[] =
+    "third_party/blink/web_tests/external/wpt/resources/testdriver.js";
 
 constexpr char kHtmlWrapperSrc[] = R"(
   <!doctype html>
   <meta charset=utf-8>
   <script src="/resources/testharness.js"></script>
-  <script src="/resources/wpt_adapter.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
   <body>
 )";
 
-constexpr char kWptAdapterSrc[] = R"(
-  const policy = window.trustedTypes.createPolicy('policy', {
-    createScriptURL: url => url,
-  });
-
-  function isFailure(test) {
-    return test.status !== 0;
-  }
-
-  function generateMessage(test) {
-    const status_descriptions = ['PASS', 'FAIL', 'TIMEOUT', 'NOTRUN',
-                                 'PRECONDITION_FAILED'];
-    let msg = `${status_descriptions[test.status]}: ${test.name}`;
-    if (test.message) {
-      msg += `\n  ${test.message}`;
-    }
-    if (test.stack) {
-      msg += `\n${test.stack}`;
-    }
-    return msg;
-  }
-
-  window.results = new Promise((resolve, reject) => {
-    add_completion_callback((tests) => {
-      if (tests.length === 0) {
-        reject('No test results found');
-        return;
-      }
-      const failed_tests = tests.filter(isFailure);
-      if (failed_tests.length === 0) {
-        resolve(tests.map(generateMessage).join('\n'));
-        return;
-      }
-      reject(failed_tests.map(generateMessage).join('\n\n'));
+constexpr char kWptReporterSrc[] = R"(
+  (function() {
+    const policy = window.trustedTypes.createPolicy('policy', {
+      createScriptURL: url => url,
     });
 
-    const params = new URLSearchParams(location.search);
-    if (!params.has('test')) {
-      reject('Missing test parameter in URL query');
-      return;
+    function isFailure(test) {
+      return test.status !== 0;
     }
-    const script = document.createElement('script');
-    script.src = policy.createScriptURL(params.get('test'));
-    document.head.appendChild(script);
-  });
+
+    function generateMessage(test) {
+      const status_descriptions = ['PASS', 'FAIL', 'TIMEOUT', 'NOTRUN',
+                                   'PRECONDITION_FAILED'];
+      let msg = `${status_descriptions[test.status]}: ${test.name}`;
+      if (test.message) {
+        msg += `\n  ${test.message}`;
+      }
+      if (test.stack) {
+        msg += `\n${test.stack}`;
+      }
+      return msg;
+    }
+
+    window.results = new Promise(async (resolve, reject) => {
+      add_completion_callback((tests) => {
+        if (tests.length === 0) {
+          reject('No test results found');
+          return;
+        }
+        const failed_tests = tests.filter(isFailure);
+        if (failed_tests.length === 0) {
+          resolve(tests.map(generateMessage).join('\n'));
+          return;
+        }
+        reject(failed_tests.map(generateMessage).join('\n\n'));
+      });
+
+      const testSrc = new URLSearchParams(location.search).get('test');
+      if (!testSrc) {
+        reject('Missing test parameter in URL query');
+        return;
+      }
+
+      const testBody = await (await fetch(testSrc)).text();
+      const importRegex = /^\/\/ META script=(.*)/gm;
+      const imports = [...testBody.matchAll(importRegex)]
+          .map((match) => match[1]);
+
+      imports.push(testSrc);
+      for (const importSrc of imports) {
+        const script = document.createElement('script');
+        script.src = policy.createScriptURL(importSrc);
+        script.async = false;
+        document.head.appendChild(script);
+      }
+    });
+  })();
 )";
+
 }  // namespace
 
 // These tests wrap WPT infrastructure in a browser test to allow us to run
@@ -99,20 +123,33 @@ class ControlledFrameWptBrowserTest
 //     the list of passed tests if there were no failures, or reject the promise
 //     with error information for failing tests otherwise.
 IN_PROC_BROWSER_TEST_P(ControlledFrameWptBrowserTest, Run) {
+  device::ScopedGeolocationOverrider overrider(/*latitude=*/1, /*longitude=*/2);
+
   base::FilePath test_data_dir;
   ASSERT_TRUE(
       base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
 
+  // Enable all permissions policies by default in the IWA hosting the tests.
+  // There's currently no way within in an individual WPT to declare that a
+  // specific permissions policy is needed, so we have to enable them all. If a
+  // test needs one disabled, it can achieve that through an iframe that
+  // doesn't delegate the feature.
+  web_app::ManifestBuilder manifest;
+  for (auto const& [feature, _] :
+       blink::GetPermissionsPolicyFeatureToNameMap()) {
+    manifest.AddPermissionsPolicyWildcard(feature);
+  }
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
-      web_app::IsolatedWebAppBuilder(
-          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              blink::mojom::PermissionsPolicyFeature::kGeolocation))
-          .AddFolderFromDisk("/", test_data_dir.AppendASCII(
-                                      "chrome/test/data/controlled_frame"))
+      web_app::IsolatedWebAppBuilder(manifest)
+          .AddFolderFromDisk("/", test_data_dir.AppendASCII(kTestDirectory))
           .AddFileFromDisk("/resources/testharness.js",
-                           test_data_dir.AppendASCII(kTestHarnessJsPath))
+                           test_data_dir.AppendASCII(kTestHarnessPath))
+          .AddFileFromDisk("/resources/testdriver.js",
+                           test_data_dir.AppendASCII(kTestDriverPath))
           .AddHtml("/", kHtmlWrapperSrc)
-          .AddJs("/resources/wpt_adapter.js", kWptAdapterSrc)
+          .AddJs("/resources/testharnessreport.js", kWptReporterSrc)
+          .AddJs("/resources/testdriver-vendor.js",
+                 ScopedTestDriverProxy::testdriver_override_script_src())
           .BuildBundle();
 
   app->TrustSigningKey();
@@ -122,6 +159,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameWptBrowserTest, Run) {
   std::string test_params = "?test=" + GetParam() + "&https_origin=" +
                             https_server()->base_url().spec();
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id(), test_params);
+  ScopedTestDriverProxy scoped_test_driver_proxy(app_frame);
 
   content::EvalJsResult results = content::EvalJs(app_frame, "window.results");
   if (!results.value.is_none()) {

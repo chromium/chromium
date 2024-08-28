@@ -5,14 +5,14 @@
 // META script=resources/controlled_frame_helpers.js
 
 promise_setup(async () => {
-  await test_driver.set_permission({ name: "geolocation" }, "granted", window);
+  await test_driver.set_permission({ name: "camera" }, "granted");
 });
 
 promise_test(async (test) => {
   const controlledFrame = await createControlledFrame('/simple.html');
   let permissionRequestHandled = false;
   controlledFrame.addEventListener('permissionrequest', (e) => {
-    if (e.permission === 'geolocation') {
+    if (e.permission === 'media') {
       permissionRequestHandled = true;
       e.request.allow();
     } else {
@@ -21,12 +21,12 @@ promise_test(async (test) => {
   });
 
   const testScript = `(async () => {
-    const position = await new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject));
-    return position.toJSON();
+    const mediaStream =
+        await navigator.mediaDevices.getUserMedia({video: true});
+    return mediaStream.getVideoTracks().length > 0;
   })()`;
-  const position = await executeAsyncScript(controlledFrame, testScript);
+  const hasVideo = await executeAsyncScript(controlledFrame, testScript);
 
   assert_true(permissionRequestHandled);
-  assert_true('coords' in position);
-}, "Geolocation permission");
+  assert_true(hasVideo);
+}, 'Camera permission');

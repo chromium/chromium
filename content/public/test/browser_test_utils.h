@@ -1370,7 +1370,7 @@ class DOMMessageQueue {
 
   void OnDomMessageReceived(const std::string& message);
   void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status);
-  void RenderFrameDeleted(RenderFrameHost* render_frame_host);
+  void RenderFrameDeleted();
 
   void OnWebContentsCreated(WebContents* contents);
   void OnBackingWebContentsDestroyed(MessageObserver* observer);
@@ -1380,7 +1380,6 @@ class DOMMessageQueue {
   base::queue<std::string> message_queue_;
   base::OnceClosure callback_;
   bool renderer_crashed_ = false;
-  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_ = nullptr;
 };
 
 // Used to wait for a new WebContents to be created. Instantiate this object

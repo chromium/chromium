@@ -268,7 +268,8 @@ class BlockedSchemeNavigationBrowserTest
 
   // Adds an iframe to |rfh| pointing to |url|.
   void AddIFrame(RenderFrameHost* rfh, const GURL& url) {
-    content::DOMMessageQueue message_queue(rfh);
+    content::DOMMessageQueue message_queue(
+        WebContents::FromRenderFrameHost(rfh));
     const std::string javascript = base::StringPrintf(
         "f = document.createElement('iframe'); f.src = '%s';"
         "document.body.appendChild(f);",

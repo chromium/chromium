@@ -2,34 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-async function createControlledFrame(path) {
-  const params = new URLSearchParams(location.search);
-  if (!params.has('https_origin')) {
-    throw new Exception('No https_origin query parameter provided');
-  }
-  const url = new URL(path, params.get('https_origin')).toString();
-
-  const cf = document.createElement('controlledframe');
-  await new Promise((resolve, reject) => {
-    cf.addEventListener('loadstop', resolve);
-    cf.addEventListener('loadabort', reject);
-    cf.setAttribute('src', url);
-    document.body.appendChild(cf);
-  });
-  return cf;
-}
-
-async function executeScript(controlledFrame, script) {
-  return new Promise((resolve, reject) => {
-    controlledFrame.executeScript({code: script}, (results) => {
-      if (results.length !== 1) {
-        reject('Expected 1 result from executeScript: ' + script);
-      } else {
-        resolve(results[0]);
-      }
-    });
-  });
-}
+// META script=resources/controlled_frame_helpers.js
 
 promise_test(async (test) => {
   const controlledFrame = await createControlledFrame('/simple.html');
@@ -49,9 +22,9 @@ promise_test(async (test) => {
   const popupControlledFrame = await popupLoadedPromise;
 
   assert_equals(
-      await executeScript(controlledFrame, 'location.pathname'),
+      await executeAsyncScript(controlledFrame, 'location.pathname'),
       '/simple.html');
   assert_equals(
-      await executeScript(popupControlledFrame, 'location.pathname'),
+      await executeAsyncScript(popupControlledFrame, 'location.pathname'),
       '/title2.html');
 }, "New Window event");
