@@ -213,8 +213,9 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
   ContextMenuBrowserTestBase() {
     scoped_feature_list_.InitWithFeatures(
         {media::kContextMenuSaveVideoFrameAs,
-         media::kContextMenuSearchForVideoFrame, features::kLinkCopiedToast,
-         features::kImageCopiedToast},
+         media::kContextMenuSearchForVideoFrame,
+         toast_features::kLinkCopiedToast, toast_features::kImageCopiedToast,
+         toast_features::kToastFramework},
         {});
   }
 

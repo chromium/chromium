@@ -3269,7 +3269,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
       WriteURLToClipboard(params_.unfiltered_link_url);
 #if !BUILDFLAG(IS_ANDROID)
-      if (base::FeatureList::IsEnabled(features::kLinkCopiedToast)) {
+      if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
         GetBrowser()->GetFeatures().toast_controller()->ShowToast(
             ToastParams(ToastId::kLinkCopied));
       }
@@ -3288,7 +3288,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_COPYIMAGE:
       ExecCopyImageAt();
 #if !BUILDFLAG(IS_ANDROID)
-      if (base::FeatureList::IsEnabled(features::kImageCopiedToast)) {
+      if (toast_features::IsEnabled(toast_features::kImageCopiedToast)) {
         GetBrowser()->GetFeatures().toast_controller()->ShowToast(
             ToastParams(ToastId::kImageCopied));
       }
