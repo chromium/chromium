@@ -46,7 +46,6 @@ public class PaymentRequestCanMakePaymentQueryNoCardTest {
                                 "",
                                 "https://example.test",
                                 true,
-                                true,
                                 /* nameOnCard= */ "",
                                 "4111111111111111",
                                 "1111",

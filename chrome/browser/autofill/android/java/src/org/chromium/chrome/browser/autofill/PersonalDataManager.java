@@ -59,7 +59,6 @@ public class PersonalDataManager implements Destroyable {
         private String mGUID;
         private String mOrigin;
         private boolean mIsLocal;
-        private boolean mIsCached;
         private boolean mIsVirtual;
         private String mName;
         private String mNumber;
@@ -88,7 +87,6 @@ public class PersonalDataManager implements Destroyable {
                 String guid,
                 String origin,
                 boolean isLocal,
-                boolean isCached,
                 boolean isVirtual,
                 String name,
                 String number,
@@ -112,7 +110,6 @@ public class PersonalDataManager implements Destroyable {
                     guid,
                     origin,
                     isLocal,
-                    isCached,
                     isVirtual,
                     name,
                     number,
@@ -138,7 +135,6 @@ public class PersonalDataManager implements Destroyable {
                 String guid,
                 String origin,
                 boolean isLocal,
-                boolean isCached,
                 String name,
                 String number,
                 String networkAndLastFourDigits,
@@ -152,7 +148,6 @@ public class PersonalDataManager implements Destroyable {
                     guid,
                     origin,
                     isLocal,
-                    isCached,
                     /* isVirtual= */ false,
                     name,
                     number,
@@ -178,7 +173,6 @@ public class PersonalDataManager implements Destroyable {
                 String guid,
                 String origin,
                 boolean isLocal,
-                boolean isCached,
                 boolean isVirtual,
                 String name,
                 String number,
@@ -201,7 +195,6 @@ public class PersonalDataManager implements Destroyable {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
-            mIsCached = isCached;
             mIsVirtual = isVirtual;
             mName = name;
             mNumber = number;
@@ -228,7 +221,6 @@ public class PersonalDataManager implements Destroyable {
                     /* guid= */ "",
                     /* origin= */ AutofillEditorBase.SETTINGS_ORIGIN,
                     /* isLocal= */ true,
-                    /* isCached= */ false,
                     /* name= */ "",
                     /* number= */ "",
                     /* networkAndLastFourDigits= */ "",
@@ -293,11 +285,6 @@ public class PersonalDataManager implements Destroyable {
         @CalledByNative("CreditCard")
         public boolean getIsLocal() {
             return mIsLocal;
-        }
-
-        @CalledByNative("CreditCard")
-        public boolean getIsCached() {
-            return mIsCached;
         }
 
         @CalledByNative("CreditCard")

@@ -93,13 +93,17 @@ ScopedJavaLocalRef<jobject>
 PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
     JNIEnv* env,
     const CreditCard& card) {
+  // Full server cards are only a temporary state for a credit card used when
+  // re-filling a cached masked server card on a page. They are never offered as
+  // suggestions, and are not expected to be used/created on the Java side.
+  CHECK_NE(card.record_type(), CreditCard::RecordType::kFullServerCard);
+
   const data_util::PaymentRequestData& payment_request_data =
       data_util::GetPaymentRequestData(card.network());
   return Java_CreditCard_create(
       env, ConvertUTF8ToJavaString(env, card.guid()),
       ConvertUTF8ToJavaString(env, card.origin()),
       card.record_type() == CreditCard::RecordType::kLocalCard,
-      card.record_type() == CreditCard::RecordType::kFullServerCard,
       card.record_type() == CreditCard::RecordType::kVirtualCard,
       ConvertUTF16ToJavaString(env, card.GetRawInfo(CREDIT_CARD_NAME_FULL)),
       ConvertUTF16ToJavaString(env, card.GetRawInfo(CREDIT_CARD_NUMBER)),
@@ -166,17 +170,13 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
   if (Java_CreditCard_getIsLocal(env, jcard)) {
     card->set_record_type(CreditCard::RecordType::kLocalCard);
   } else {
-    if (Java_CreditCard_getIsCached(env, jcard)) {
-      card->set_record_type(CreditCard::RecordType::kFullServerCard);
-    } else {
-      // Native copies of virtual credit card objects should not be created.
-      DCHECK(!Java_CreditCard_getIsVirtual(env, jcard));
-      card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
-      card->SetNetworkForMaskedCard(
-          data_util::GetIssuerNetworkForBasicCardIssuerNetwork(
-              ConvertJavaStringToUTF8(
-                  env, Java_CreditCard_getBasicCardIssuerNetwork(env, jcard))));
-    }
+    // Native copies of virtual credit card objects should not be created.
+    DCHECK(!Java_CreditCard_getIsVirtual(env, jcard));
+    card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
+    card->SetNetworkForMaskedCard(
+        data_util::GetIssuerNetworkForBasicCardIssuerNetwork(
+            ConvertJavaStringToUTF8(
+                env, Java_CreditCard_getBasicCardIssuerNetwork(env, jcard))));
   }
   card->set_virtual_card_enrollment_state(
       static_cast<CreditCard::VirtualCardEnrollmentState>(

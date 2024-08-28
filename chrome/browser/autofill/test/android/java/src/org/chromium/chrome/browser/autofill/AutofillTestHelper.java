@@ -386,7 +386,7 @@ public class AutofillTestHelper {
     /** Creates a simple {@link CreditCard}. */
     public static CreditCard createLocalCreditCard(
             String name, String number, String month, String year) {
-        return new CreditCard("", "", true, false, name, number, "", month, year, "", 0, "", "");
+        return new CreditCard("", "", true, name, number, "", month, year, "", 0, "", "");
     }
 
     /** Creates a virtual credit card. */
@@ -403,7 +403,6 @@ public class AutofillTestHelper {
                 /* guid= */ "",
                 /* origin= */ "",
                 /* isLocal= */ false,
-                /* isCached= */ false,
                 /* isVirtual= */ true,
                 /* name= */ name,
                 /* number= */ number,
@@ -439,7 +438,6 @@ public class AutofillTestHelper {
                 /* guid= */ "",
                 /* origin= */ "",
                 /* isLocal= */ isLocal,
-                /* isCached= */ false,
                 /* isVirtual= */ false,
                 /* name= */ name,
                 /* number= */ number,
