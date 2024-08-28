@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 
 namespace webnn {
 
@@ -22,14 +23,19 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
         "Invalid descriptor: The maximum rank of an operand is 8.");
   }
 
+  // Enforce dimension range according to
+  // https://www.w3.org/TR/webnn/#valid-dimension.
+  if (base::ranges::any_of(shape, [](uint32_t dimension) {
+        return !base::CheckedNumeric<int32_t>(dimension).IsValid();
+      })) {
+    return base::unexpected(
+        "Invalid descriptor: All dimensions must be in the range of int32_t.");
+  }
+
   base::CheckedNumeric<size_t> checked_number_of_bytes = std::accumulate(
       shape.begin(), shape.end(),
       base::CheckedNumeric<size_t>(GetBytesPerElement(data_type)),
       std::multiplies());
-
-  // TODO(crbug.com/345271830): Consider performing backend-specific checks
-  // here, such as the requirement that Core ML dimension values must be no
-  // larger than INT_MAX.
 
   size_t number_of_bytes;
   if (!checked_number_of_bytes.AssignIfValid(&number_of_bytes)) {
