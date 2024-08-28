@@ -127,6 +127,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".GoogleSearch" summary="SRP navigations"/>
 </variants>
 
+<variants name="PageLoadType">
+  <variant name="" summary="regular"/>
+  <variant name=".AfterBackForwardCacheRestore" summary="bfcache restoration"/>
+  <variant name=".Prerender" summary="prerendered"/>
+</variants>
+
 <!-- LINT.IfChange(PagePreloadingTriggerType) -->
 
 <variants name="PagePreloadingTriggerType">
@@ -3118,18 +3124,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.InteractiveTiming.NumInteractions{Bfcache}"
+<histogram name="PageLoad.InteractiveTiming.NumInteractions{PageLoadType}"
     units="Count" expires_after="2025-02-02">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
-    The number of user interactions in a page load. Definition of interaction:
+    The number of user interactions in a {PageLoadType} page load. Definition of
+    interaction:
     https://web.dev/better-responsiveness-metric/#group-events-into-interactions
   </summary>
-  <token key="Bfcache">
-    <variant name=""/>
-    <variant name=".AfterBackForwardCacheRestore"/>
-  </token>
+  <token key="PageLoadType" variants="PageLoadType"/>
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.ProcessingTime" units="ms"
@@ -3165,7 +3169,7 @@ chromium-metrics-reviews@google.com.
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
-    The {NormalizedResponsivenessMetric} of a page load {PageLoadType}, in ms.
+    The {NormalizedResponsivenessMetric} of a {PageLoadType} page load, in ms.
     For this metric, we measure the latency of a user interaction by the
     {UserInteractionLatency} within the user interaction.
 
@@ -3177,11 +3181,7 @@ chromium-metrics-reviews@google.com.
     record the INP values which are not able to be recorded in
     UserInteractionLatency.HighPercentile2 for some reasons.
   </summary>
-  <token key="PageLoadType">
-    <variant name=""/>
-    <variant name=".AfterBackForwardCacheRestore"/>
-    <variant name=".Prerender"/>
-  </token>
+  <token key="PageLoadType" variants="PageLoadType"/>
   <token key="NormalizedResponsivenessMetric">
     <variant name="UserInteractionLatency.HighPercentile2"/>
     <variant name="UserInteractionLatencyAtFirstOnHidden.HighPercentile2"/>
