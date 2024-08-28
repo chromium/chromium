@@ -20,6 +20,7 @@
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/float/tablet_mode_float_window_resizer.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_window_resizer.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tile_group/window_splitter.h"
@@ -514,9 +515,14 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
   }
 
   if (window_state->IsPip()) {
-    window_state->CreateDragDetails(point_in_parent, window_component, source);
-    MaybeRecordResizeHandleUsage(window, point_in_parent);
-    return std::make_unique<PipWindowResizer>(window_state);
+    if (Shell::Get()->pip_controller()->CanResizePip()) {
+      window_state->CreateDragDetails(point_in_parent, window_component,
+                                      source);
+      MaybeRecordResizeHandleUsage(window, point_in_parent);
+      return std::make_unique<PipWindowResizer>(window_state);
+    } else {
+      return nullptr;
+    }
   }
 
   if (display::Screen::GetScreen()->InTabletMode()) {

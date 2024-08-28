@@ -4,6 +4,8 @@
 
 #include "ash/wm/pip/pip_double_tap_handler.h"
 
+#include "ash/shell.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -99,6 +101,10 @@ bool PipDoubleTapHandler::ProcessDoubleTapEventImpl(const ui::Event& event,
   }
 
   if (!IsDoubleTap(event)) {
+    return false;
+  }
+
+  if (!Shell::Get()->pip_controller()->CanResizePip()) {
     return false;
   }
 

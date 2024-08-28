@@ -34,6 +34,9 @@ class ASH_EXPORT PipController : public aura::WindowObserver {
   // Remove the target window from this controller.
   void UnsetPipWindow(aura::Window* window);
 
+  // Check if PiP has valid size constraints for resizing.
+  bool CanResizePip();
+
   // Updates the PiP bounds if necessary. This may need to happen when the
   // display work area changes, or if system ui regions like the virtual
   // keyboard position changes.

@@ -160,6 +160,11 @@ class PipWindowResizerTest : public AshTestBase,
     WindowState::Get(window_)->SetStateObject(std::move(test_state));
     Shell::Get()->pip_controller()->SetPipWindow(window_);
 
+    auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+        NonClientFrameViewAsh::Get(window()));
+    custom_frame->SetMaximumSize(gfx::Size(300, 200));
+    custom_frame->SetMinimumSize(gfx::Size(30, 20));
+
     long root_window_index = static_cast<long>(std::get<1>(GetParam()));
     window_->SetProperty(aura::client::kFullscreenTargetDisplayIdKey,
                          root_window_index);
@@ -214,12 +219,6 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // The Pinch-to-Resize feature requires that the maximum and
-  // minimum size are set.
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window()));
-  custom_frame->SetMaximumSize(gfx::Size(300, 200));
-  custom_frame->SetMinimumSize(gfx::Size(30, 20));
   window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));
 
   // Pinch zoom in.

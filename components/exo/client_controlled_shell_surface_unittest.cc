@@ -2021,9 +2021,12 @@ TEST_P(ClientControlledShellSurfaceTest, PipWindowDragDoesNotAnimate) {
   auto shell_surface = exo::test::ShellSurfaceBuilder(kClientBounds.size())
                            .SetWindowState(chromeos::WindowStateType::kPip)
                            .SetGeometry(kClientBounds)
+                           .SetMinimumSize(gfx::Size(10, 10))
+                           .SetMaximumSize(gfx::Size(1000, 1000))
                            .BuildClientControlledShellSurface();
-
+  shell_surface->SetCanMaximize(false);
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  ash::Shell::Get()->pip_controller()->SetPipWindow(window);
   EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->GetTargetBounds());
   EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->bounds());
   ui::ScopedAnimationDurationScaleMode animation_scale_mode(
@@ -2064,7 +2067,10 @@ TEST_P(ClientControlledShellSurfaceTest,
   auto shell_surface = exo::test::ShellSurfaceBuilder({kClientBounds.size()})
                            .SetWindowState(chromeos::WindowStateType::kPip)
                            .SetGeometry(kClientBounds)
+                           .SetMinimumSize(gfx::Size(10, 10))
+                           .SetMaximumSize(gfx::Size(1000, 1000))
                            .BuildClientControlledShellSurface();
+  shell_surface->SetCanMaximize(false);
   auto* surface = shell_surface->root_surface();
 
   // Making an extra commit may set the next bounds change animation type
@@ -2072,6 +2078,7 @@ TEST_P(ClientControlledShellSurfaceTest,
   surface->Commit();
 
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  ash::Shell::Get()->pip_controller()->SetPipWindow(window);
   EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->GetTargetBounds());
   EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->bounds());
   ui::ScopedAnimationDurationScaleMode animation_scale_mode(
@@ -2264,10 +2271,14 @@ TEST_P(ClientControlledShellSurfaceTest,
   auto shell_surface = exo::test::ShellSurfaceBuilder(kBufferSize)
                            .SetWindowState(chromeos::WindowStateType::kPip)
                            .SetGeometry(kOriginalBounds)
+                           .SetMinimumSize(gfx::Size(10, 10))
+                           .SetMaximumSize(gfx::Size(1000, 1000))
                            .BuildClientControlledShellSurface();
+  shell_surface->SetCanMaximize(false);
   auto* surface = shell_surface->root_surface();
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
   ash::WindowState* window_state = ash::WindowState::Get(window);
+  ash::Shell::Get()->pip_controller()->SetPipWindow(window);
   EXPECT_EQ(gfx::Rect(8, 50, 256, 256), window->bounds());
 
   // Ensure that the collision detection logic is not applied during drag move.
