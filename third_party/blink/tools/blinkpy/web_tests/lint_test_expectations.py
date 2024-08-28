@@ -418,6 +418,8 @@ def check_test_lists(host, options):
         for line in test_lists.split('\n'):
             line_number += 1
             line = line.split('#')[0].strip()
+            if line and line[-1] == '*':
+                line = line[:-1]
             if not line:
                 continue
             if line in parsed_lines:

@@ -144,6 +144,11 @@ ci.builder(
                     "--flag-specific=force-renderer-accessibility",
                 ],
             ),
+            "headless_shell_wpt_tests": targets.mixin(
+                args = [
+                    "--flag-specific=force-renderer-accessibility",
+                ],
+            ),
         },
     ),
     gardener_rotations = gardener_rotations.CHROMIUM,
