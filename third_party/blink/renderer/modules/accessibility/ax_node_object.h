@@ -363,10 +363,10 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // cache, it compares the current vs cached generation, updating the cached
   // value and generation if needed.
   struct GenerationalCache : public GarbageCollected<GenerationalCache> {
-    uint64_t generation = 0;
-    std::optional<Member<AXObject>> next_on_line;
-    std::optional<Member<AXObject>> previous_on_line;
     virtual void Trace(Visitor*) const;
+    uint64_t generation = 0;
+    Member<AXObject> next_on_line;
+    Member<AXObject> previous_on_line;
   };
   mutable Member<GenerationalCache> generational_cache_;
   void MaybeResetCache() const;

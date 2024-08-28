@@ -7743,32 +7743,26 @@ void AXNodeObject::MaybeResetCache() const {
   DCHECK(AXObjectCache().IsFrozen());
   if (generation != generational_cache_->generation) {
     generational_cache_->generation = generation;
-    generational_cache_->next_on_line = std::nullopt;
-    generational_cache_->previous_on_line = std::nullopt;
+    generational_cache_->next_on_line = nullptr;
+    generational_cache_->previous_on_line = nullptr;
   } else {
 #if DCHECK_IS_ON()
     // AXObjects cannot be detached while the tree is frozen.
     // These are sanity checks. Limited to DCHECK enabled builds due to
     // potential performance impact with to the sheer volume of calls.
-    if (generational_cache_->next_on_line) {
-      AXObject* next = generational_cache_->next_on_line.value();
-      CHECK(!next || !next->IsDetached());
+    if (AXObject* next = generational_cache_->next_on_line) {
+      CHECK(!next->IsDetached());
     }
-    if (generational_cache_->previous_on_line) {
-      AXObject* previous = generational_cache_->previous_on_line.value();
-      CHECK(!previous || !previous->IsDetached());
+    if (AXObject* previous = generational_cache_->previous_on_line) {
+      CHECK(!previous->IsDetached());
     }
 #endif
   }
 }
 
 void AXNodeObject::GenerationalCache::Trace(Visitor* visitor) const {
-  if (next_on_line) {
-    visitor->Trace(next_on_line.value());
-  }
-  if (previous_on_line) {
-    visitor->Trace(previous_on_line.value());
-  }
+  visitor->Trace(next_on_line);
+  visitor->Trace(previous_on_line);
 }
 
 AXObject* AXNodeObject::SetNextOnLine(AXObject* next_on_line) const {
@@ -7792,7 +7786,7 @@ AXObject* AXNodeObject::NextOnLine() const {
 
   MaybeResetCache();
   if (generational_cache_->next_on_line) {
-    return generational_cache_->next_on_line.value();
+    return generational_cache_->next_on_line;
   }
 
   const LayoutObject* layout_object = GetLayoutObject();
@@ -7906,7 +7900,7 @@ AXObject* AXNodeObject::PreviousOnLine() const {
 
   MaybeResetCache();
   if (generational_cache_->previous_on_line) {
-    return generational_cache_->previous_on_line.value();
+    return generational_cache_->previous_on_line;
   }
 
   const LayoutObject* layout_object = GetLayoutObject();
