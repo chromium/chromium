@@ -877,11 +877,6 @@
         <ph name="TITLE_OF_GROUP">%s<ex>shopping</ex></ph> tab group options
       </message>
 
-      <!-- Cross Device Pane Strings-->
-      <message name="IDS_ACCESSIBILITY_CROSS_DEVICE_TABS" desc="Content description for the button to show the cross device tabs UI.">
-        Tabs from other devices
-      </message>
-
       <!-- Tabs Settings Strings -->
       <message name="IDS_TABS_SETTINGS_TITLE" desc="A title to show in the top toolbar when the Tabs settings page is open.">
         Tabs

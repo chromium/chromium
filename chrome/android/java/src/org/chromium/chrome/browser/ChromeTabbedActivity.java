@@ -167,6 +167,7 @@ import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
+import org.chromium.chrome.browser.recent_tabs.CrossDevicePaneFactory;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackBuilder;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
@@ -938,8 +939,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private Pane createCrossDevicePane() {
-        return TabManagementDelegateProvider.getDelegate()
-                .createCrossDevicePane(this, adaptOnToolbarAlphaChange());
+        return CrossDevicePaneFactory.create(this, adaptOnToolbarAlphaChange());
     }
 
     private void setupCompositorContent() {

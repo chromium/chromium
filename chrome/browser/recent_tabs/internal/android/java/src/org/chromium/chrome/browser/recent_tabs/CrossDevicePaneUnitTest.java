@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.recent_tabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -44,7 +44,7 @@ public class CrossDevicePaneUnitTest {
         ApplicationProvider.getApplicationContext().setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mCrossDevicePane =
-                new CrossDevicePane(
+                new CrossDevicePaneImpl(
                         ApplicationProvider.getApplicationContext(), mOnToolbarAlphaChange);
     }
 

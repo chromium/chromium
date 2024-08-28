@@ -15,6 +15,8 @@ android_library("java") {
   ]
 
   sources = [
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneFactory.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneImpl.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsControllerFactory.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsControllerImpl.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsCoordinator.java",
@@ -39,6 +41,8 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/hub:factory_java",
+    "//chrome/browser/hub:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/recent_tabs:java",
     "//chrome/browser/tab:java",
@@ -60,6 +64,7 @@ android_library("java") {
 android_resources("java_resources") {
   deps = [
     ":java_strings_grd",
+    "//chrome/android:chrome_app_java_resources",
     "//components/browser_ui/widget/android:java_resources",
     "//ui/android:ui_java_resources",
   ]
@@ -100,6 +105,7 @@ robolectric_library("junit") {
   testonly = true
 
   sources = [
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/CrossDevicePaneUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsMediatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsPromoSheetContentUnitTest.java",
@@ -118,6 +124,7 @@ robolectric_library("junit") {
     "//base/test:test_support_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/hub:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/recent_tabs:helper_java",
     "//chrome/browser/recent_tabs:java",
@@ -129,6 +136,7 @@ robolectric_library("junit") {
     "//components/sync_device_info:sync_device_info_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",

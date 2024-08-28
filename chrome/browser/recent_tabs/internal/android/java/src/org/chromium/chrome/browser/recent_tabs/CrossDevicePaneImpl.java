@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.recent_tabs;
 
 import android.content.Context;
 import android.view.ViewGroup;
@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 
 import java.util.function.DoubleConsumer;
@@ -35,7 +34,7 @@ import java.util.function.DoubleConsumer;
  * A {@link Pane} representing tabs from other devices. This feature is being migrated here from the
  * Recent Tabs page and used to exist under the foreign session tabs section.
  */
-public class CrossDevicePane implements Pane {
+public class CrossDevicePaneImpl implements CrossDevicePane {
     private final Context mContext;
     private final DoubleConsumer mOnToolbarAlphaChange;
     private final FrameLayout mRootView;
@@ -50,7 +49,7 @@ public class CrossDevicePane implements Pane {
      * @param context Used to inflate UI.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      */
-    CrossDevicePane(@NonNull Context context, @NonNull DoubleConsumer onToolbarAlphaChange) {
+    CrossDevicePaneImpl(@NonNull Context context, @NonNull DoubleConsumer onToolbarAlphaChange) {
         mContext = context;
         mOnToolbarAlphaChange = onToolbarAlphaChange;
         mReferenceButtonSupplier.set(
