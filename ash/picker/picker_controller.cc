@@ -568,8 +568,8 @@ PickerActionType PickerController::GetActionForResult(
 }
 
 std::vector<PickerSearchResult> PickerController::GetSuggestedEmoji() {
-  CHECK(emoji_suggester_);
-  return emoji_suggester_->GetSuggestedEmoji();
+  CHECK(session_);
+  return session_->emoji_suggester.GetSuggestedEmoji();
 }
 
 bool PickerController::IsGifsEnabled() {
@@ -592,7 +592,6 @@ void PickerController::OnViewIsDeleting(views::View* view) {
 
   feature_usage_metrics_.StopUsage();
   session_metrics_.reset();
-  emoji_suggester_.reset();
   session_.reset();
 }
 
@@ -602,12 +601,15 @@ void PickerController::FetchFileThumbnail(const base::FilePath& path,
   client_->FetchFileThumbnail(path, size, std::move(callback));
 }
 
-PickerController::Session::Session(PrefService* prefs,
-                                   ui::TextInputClient* focused_client,
-                                   input_method::ImeKeyboard* ime_keyboard,
-                                   PickerModel::EditorStatus editor_status)
+PickerController::Session::Session(
+    PrefService* prefs,
+    ui::TextInputClient* focused_client,
+    input_method::ImeKeyboard* ime_keyboard,
+    PickerModel::EditorStatus editor_status,
+    PickerEmojiSuggester::GetNameCallback get_name)
     : model(prefs, focused_client, ime_keyboard, editor_status),
-      emoji_history_model(prefs) {}
+      emoji_history_model(prefs),
+      emoji_suggester(&emoji_history_model, std::move(get_name)) {}
 
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
                                   WidgetTriggerSource trigger_source) {
@@ -626,10 +628,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   session_ = std::make_unique<Session>(
       GetPrefs(), focused_client, &keyboard,
       show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
-                                      : PickerModel::EditorStatus::kEnabled);
-
-  emoji_suggester_ = std::make_unique<PickerEmojiSuggester>(
-      &session_->emoji_history_model,
+                                      : PickerModel::EditorStatus::kEnabled,
       base::BindRepeating(
           [](base::WeakPtr<PickerController> weak_controller,
              std::string_view emoji) -> std::string {
@@ -639,6 +638,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
             return weak_controller->search_controller_->GetEmojiName(emoji);
           },
           weak_ptr_factory_.GetWeakPtr()));
+
   session_metrics_ = std::make_unique<PickerSessionMetrics>(GetPrefs());
   session_metrics_->OnStartSession(GetFocusedTextInputClient());
 

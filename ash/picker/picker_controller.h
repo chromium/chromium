@@ -15,6 +15,7 @@
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_emoji_history_model.h"
+#include "ash/picker/model/picker_emoji_suggester.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "ash/picker/picker_caps_lock_bubble_controller.h"
@@ -48,7 +49,6 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerClient;
-class PickerEmojiSuggester;
 class PickerModel;
 class PickerPasteRequest;
 class PickerSearchController;
@@ -165,11 +165,13 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   struct Session {
     PickerModel model;
     PickerEmojiHistoryModel emoji_history_model;
+    PickerEmojiSuggester emoji_suggester;
 
     Session(PrefService* prefs,
             ui::TextInputClient* focused_client,
             input_method::ImeKeyboard* ime_keyboard,
-            PickerModel::EditorStatus editor_status);
+            PickerModel::EditorStatus editor_status,
+            PickerEmojiSuggester::GetNameCallback get_name);
   };
 
   void ShowWidget(base::TimeTicks trigger_event_timestamp,
@@ -186,7 +188,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerFeatureTour feature_tour_;
   PickerCapsLockBubbleController caps_lock_bubble_controller_;
   std::unique_ptr<Session> session_;
-  std::unique_ptr<PickerEmojiSuggester> emoji_suggester_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
