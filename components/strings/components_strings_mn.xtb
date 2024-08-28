@@ -1452,6 +1452,7 @@
 <translation id="365641980390710834">Өдөр тутмийн хувцас</translation>
 <translation id="3658742229777143148">Засвар хийгдсэн</translation>
 <translation id="3659521826520353662">Администраторын тодорхойлсон аль вебсайтад хэзээ зочилсон болох: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3664479564786885722">Энэ бүтээгдэхүүнийг борлуулдаг бусад дэлгүүрээс худалдан авах бусад сонголтыг хайна уу.</translation>
 <translation id="3664782872746246217">Түлхүүр үг:</translation>
 <translation id="3665100783276035932">Ихэнх сайт тооцоолсны дагуу ажиллах ёстой</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Нэмэлт мэдээлэл авах<ph name="LINK_END1" /></translation>
@@ -1530,6 +1531,7 @@
 <translation id="3793574014653384240">Сүүлийн үед гарсан гэмтлийн тоо болон шалтгаан</translation>
 <translation id="3799805948399000906">Фонтын нэрийг шаардсан</translation>
 <translation id="3801265110651850478">Хөтчийнхөө урсгалаар “Do Not Track” хүсэлтийг илгээх</translation>
+<translation id="3801297763951514916">Та ихэвчлэн зочилдог</translation>
 <translation id="380329542618494757">Нэр</translation>
 <translation id="3803801106042434208">Эдгээр хайлтын систем нь танай бүс нутагт эрэлттэй байна</translation>
 <translation id="3807366285948165054">X тэнхлэгийн дагуу зураг шилжүүлэх</translation>
@@ -1638,8 +1640,8 @@
 <translation id="4025325634010721551">Бодлогыг дахин ачаалсан</translation>
 <translation id="4025338605225449265">Мөнгөн тэмдэгт, гадаад валютын арилжаа</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
-      Таны сайт руу илгээсэн эсвэл тус сайтаас хүлээн авсан мэдээллийг <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />халдагчид харж, өөрчлөх боломжтой<ph name="END_STRONG" />.
-      Та олон нийтийн Wi-Fi сүлжээ ашиглаж байгаа бол <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />энэ сайтад дараа зочлох нь хамгийн аюулгүй байх болно<ph name="END_STRONG" />. Танай гэр эсвэл ажлын Wi-Fi зэрэг итгэмжлэгдсэн сүлжээнээс эрсдэл бага байдаг.
+      <ph name="LIST_ITEM" />Таны сайт руу илгээсэн эсвэл тус сайтаас хүлээн авсан мэдээллийг <ph name="BEGIN_STRONG" />халдагчид харж, өөрчлөх боломжтой<ph name="END_STRONG" />.
+      <ph name="LIST_ITEM" />Та олон нийтийн Wi-Fi сүлжээ ашиглаж байгаа бол <ph name="BEGIN_STRONG" />энэ сайтад дараа зочлох нь хамгийн аюулгүй байх болно<ph name="END_STRONG" />. Танай гэр эсвэл ажлын Wi-Fi зэрэг итгэмжлэгдсэн сүлжээнээс учрах эрсдэл бага байдаг.
     <ph name="END_LIST" />
 
     Та мөн сайтын өмчлөгчтэй холбогдож, HTTPS рүү сайжруулахыг санал болгох боломжтой. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -2366,6 +2368,7 @@
 <translation id="5385857628869214740">Хошигнол</translation>
 <translation id="5385966243497224160">HTTPS бус URL-г урьдчилан үзэх боломжгүй</translation>
 <translation id="5386426401304769735">Энэ сайтын сертификатын хэлхээ нь SHA-1-г ашиглан баталгаажуулсан байна.</translation>
+<translation id="5391010642126249196">Та зочилсон</translation>
 <translation id="539203134595252721">Ширээний теннис</translation>
 <translation id="5392506727170022660">Металл (хагас гялгар)</translation>
 <translation id="5394069166371280357">ТВ-ийн гэр бүлд чиглэсэн шоунууд</translation>
@@ -3702,7 +3705,6 @@
 <translation id="7825558994363763489">Богино долгионы зуухнууд</translation>
 <translation id="782886543891417279">Таны ашиглаж буй Wi-Fi (<ph name="WIFI_NAME" />) сүлжээ таныг нэвтрэх хуудаст орохыг шаардах магадлалтай.</translation>
 <translation id="7831993212387676366">Авах зүйлийн жагсаалт гэж юу вэ?</translation>
-<translation id="7832078172950550575">Та өдөр тутмын хэрэглээний хэлээр "миний ойролцоох пиццаны газар", “гэр бүлд ээлтэй хотын төвийн цэцэрлэгт хүрээлэн" зэрэг хэллэгийг ашиглан хөтчийн түүхээсээ хайх боломжтой. Таны хайлт, хамгийн сайн таарах илэрц болон тэдгээрийн хуудасны контентыг Google рүү илгээдэг бөгөөд энэ онцлогийг сайжруулахын тулд тухайн өгөгдлийг хянагч хүмүүс харж магадгүй. <ph name="BEGIN_LINK" />Түүхийн хайлтын тохиргоогоо удирдах<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Дэлгэцийн зураг авч эхэллээ</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="784404208867107517">Бүлэглэсэн түүх</translation>
@@ -4130,6 +4132,7 @@
 <translation id="865032292777205197">хөдөлгөөн мэдрэгч</translation>
 <translation id="865255447216708819">Ард хэвлэх хальс</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
+<translation id="8660780831677950176">Та энэ үед ихэвчлэн зочилдог</translation>
 <translation id="8662463432865928030">Арилжааны үл хөдлөх хөрөнгүүд</translation>
 <translation id="8663226718884576429">Захиалгын дүн, <ph name="TOTAL_LABEL" />, Дэлгэрэнгүй</translation>
 <translation id="8663909737634214500">Оптик диск</translation>

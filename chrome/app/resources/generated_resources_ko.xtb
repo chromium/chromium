@@ -3522,7 +3522,6 @@
 <translation id="3497560059572256875">기념일 로고 공유</translation>
 <translation id="3497915391670770295">내 기기로 보내기(&amp;D)</translation>
 <translation id="3498138244916757538">마이크 설정을 변경하려면 <ph name="SPECIFIC_NAME" /> 환경을 종료해야 합니다. 계속하려면 <ph name="SPECIFIC_NAME" /> 환경을 종료하세요.</translation>
-<translation id="3499091376302796297">사이트를 탐색하면 사이트의 페이지 콘텐츠가 기기에 암호화된 형식으로 저장됩니다.</translation>
 <translation id="3500417806337761827">공유를 마운트하는 중에 오류가 발생했습니다. 너무 많은 SMB 공유가 이미 마운트되었습니다.</translation>
 <translation id="3500764001796099683">분리형 웹 앱 사용 설정</translation>
 <translation id="350397915809787283">계정이 없는 경우 첫 번째 옵션을 선택하여 계정을 만드세요.</translation>
@@ -3903,6 +3902,7 @@
 <translation id="3760460896538743390">백그라운드 페이지 검사(&amp;B)</translation>
 <translation id="37613671848467444">시크릿 창에서 열기(&amp;I)</translation>
 <translation id="3761556954875533505">사이트에서 파일을 수정하도록 허용하시겠습니까?</translation>
+<translation id="3761560059647741692">가로 모드</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> 관련 작업 더보기, CVC 저장됨</translation>
 <translation id="3763433740586298940">원치 않는 사이트를 차단할 수 있습니다. 또한 30일이 경과한 웹사이트는 목록에서 자동으로 삭제됩니다.</translation>
 <translation id="3763549179847864476">개인 정보 보호 가이드 뒤로 버튼</translation>
@@ -4992,7 +4992,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4562155214028662640">지문 추가</translation>
 <translation id="4562155266774382038">추천 닫기</translation>
 <translation id="4562364000855074606">이 <ph name="DEVICE_TYPE" />에 설치된 앱을 차단합니다. 앱 또는 콘텐츠 다운로드를 제한하려면 Google Play 설정으로 이동하세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">일상적인 단어를 사용하여 방문 기록을 검색하고 방문한 사이트를 찾아보세요.</translation>
 <translation id="4563210852471260509">중국어를 초기 입력 언어로 설정</translation>
 <translation id="4563382028841851106">계정에서 삭제</translation>
 <translation id="4563880231729913339">손가락 3</translation>
@@ -7429,6 +7428,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6351178441572658285">앱 언어</translation>
 <translation id="6354918092619878358">SECG 타원 곡선 secp256r1(또는 ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">기기를 계속 켜두세요.</translation>
+<translation id="6356537493253478650">고요하게</translation>
 <translation id="63566973648609420">암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />해야 합니다.</translation>
 <translation id="6356718524173428713">위로 스크롤하여 페이지 아래로 이동</translation>
 <translation id="6356893102071098867">올바른 계정을 선택했는지 확인</translation>
@@ -8185,6 +8185,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6909422577741440844">이 기기에서 파일을 수신하시겠습니까?</translation>
 <translation id="6910190732484284349">사용자 이름(<ph name="USER_EMAIL" />)의 패스키 삭제</translation>
 <translation id="6910211073230771657">삭제됨</translation>
+<translation id="6910274140210351823">어둡게</translation>
 <translation id="6911734910326569517">메모리 사용량</translation>
 <translation id="6912007319859991306">셀룰러 SIM PIN</translation>
 <translation id="6912380255120084882">다른 기기 사용</translation>

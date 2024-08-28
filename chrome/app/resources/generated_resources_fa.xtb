@@ -2816,7 +2816,7 @@
 <translation id="2970766364519518369">وقتی مخاطبین منتخب در نزدیکی‌تان باشند می‌توانند با شما هم‌رسانی کنند. از شما خواسته می‌شود این درخواست‌ها را تأیید کنید. برای هم‌رسانی بین دستگاه‌هایی که به سیستم <ph name="USER_EMAIL" /> وارد شده‌اند نیازی به تأیید ندارید.</translation>
 <translation id="2970982365449313350">‏‫Chrome با این «حساب Google»</translation>
 <translation id="2972557485845626008">سفت‌افزار</translation>
-<translation id="2972581237482394796">انجام مجدد</translation>
+<translation id="2972581237482394796">ازنو انجام دادن</translation>
 <translation id="2973324205039581528">بی‌صدا کردن سایت</translation>
 <translation id="2975761176769946178">نشانی وب الزامی است</translation>
 <translation id="2976547701881428815">ابزارها و کنش‌ها</translation>
@@ -3517,7 +3517,6 @@
 <translation id="3497560059572256875">‏هم‌رسانی Doodle</translation>
 <translation id="3497915391670770295">ارسال به دستگاه‌های شما</translation>
 <translation id="3498138244916757538">برای اعمال تغییر ایجادشده در تنظیم میکروفون، باید <ph name="SPECIFIC_NAME" /> را خاموش کنید. برای ادامه، <ph name="SPECIFIC_NAME" /> را خاموش کنید.</translation>
-<translation id="3499091376302796297">وقتی سایت‌ها را مرور می‌کنید، محتوای صفحه‌های آن‌ها به‌صورت رمزگذاری‌شده در دستگاه شما ذخیره می‌شود.</translation>
 <translation id="3500417806337761827">‏هنگام نشاندن هم‌رسانی خطایی روی داد. هم‌رسانی‌های SMB زیادی نشانده شده است.</translation>
 <translation id="3500764001796099683">فعال کردن برنامه‌های وب مجزا</translation>
 <translation id="350397915809787283">اگر حساب ندارید، اولین گزینه را برای ایجاد حساب انتخاب کنید.</translation>
@@ -4989,7 +4988,6 @@
 <translation id="4562155214028662640">افزودن اثر انگشت</translation>
 <translation id="4562155266774382038">بستن پیشنهاد</translation>
 <translation id="4562364000855074606">‏برنامه‌های نصب‌شده در این <ph name="DEVICE_TYPE" /> را مسدود می‌کنید. برای محدود کردن بارگیری برنامه‌ها یا محتوا، به «تنظیمات Google Play» بروید. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">بااستفاده زبان عامیانه سابقه مرورتان را جستجو کنید و سایت‌هایی را که بازدید کرده‌اید پیدا کنید.</translation>
 <translation id="4563210852471260509">زبان ورودی اولیه چینی است</translation>
 <translation id="4563382028841851106">برداشتن از حساب</translation>
 <translation id="4563880231729913339">انگشت ۳</translation>
@@ -7686,7 +7684,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> کاربر</translation>
 <translation id="6555432686520421228">همه حساب‌های کاربر حذف شود و دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> شما بازنشانی شود تا جدید شود.</translation>
 <translation id="6555604601707417276">‏نسخه پشتیبان Linux بازیابی شد</translation>
-<translation id="6556866813142980365">انجام مجدد</translation>
+<translation id="6556866813142980365">ازنو انجام دادن</translation>
 <translation id="6556903358015358733">زمینه و کاغذدیواری</translation>
 <translation id="6557290421156335491">میان‌برهای من</translation>
 <translation id="6560061709899140565">نمایش جلسه‌های دیگر پخش محتوا</translation>

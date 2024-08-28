@@ -1530,6 +1530,7 @@
 <translation id="3793574014653384240">최근 발생한 비정상 종료의 횟수 및 원인</translation>
 <translation id="3799805948399000906">글꼴 요청됨</translation>
 <translation id="3801265110651850478">탐색 트래픽과 함께 ‘추적 안함’ 요청 전송</translation>
+<translation id="3801297763951514916">자주 방문함</translation>
 <translation id="380329542618494757">이름</translation>
 <translation id="3803801106042434208">거주 지역에서 인기 있는 검색엔진입니다.</translation>
 <translation id="3807366285948165054">이미지 X 시프트</translation>
@@ -2366,6 +2367,7 @@
 <translation id="5385857628869214740">유머</translation>
 <translation id="5385966243497224160">HTTPS가 아닌 URL은 미리 볼 수 없음</translation>
 <translation id="5386426401304769735">이 사이트의 인증서 체인은 SHA-1을 사용하여 서명된 인증서를 포함합니다.</translation>
+<translation id="5391010642126249196">방문함</translation>
 <translation id="539203134595252721">탁구</translation>
 <translation id="5392506727170022660">금속(반광택)</translation>
 <translation id="5394069166371280357">가족용 TV 프로그램</translation>
@@ -3702,7 +3704,6 @@
 <translation id="7825558994363763489">전자레인지</translation>
 <translation id="782886543891417279">사용 중인 Wi-Fi(<ph name="WIFI_NAME" />)에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="7831993212387676366">쇼핑 목록이 무엇인가요?</translation>
-<translation id="7832078172950550575">일상적인 표현을 사용하면 '주변 피자집' 또는 '도심의 가족 친화 공원'과 같은 문구로 방문 기록을 검색할 수 있습니다. 검색어, 최적 일치 항목, 페이지 콘텐츠가 Google로 전송되며 이 기능을 개선하기 위해 인적 검토자가 이를 확인할 수 있습니다. <ph name="BEGIN_LINK" />검색 기록 설정 관리<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">화면 캡처가 시작되었습니다.</translation>
 <translation id="784137052867620416">쇼핑 통계</translation>
 <translation id="784404208867107517">그룹화된 기록</translation>
@@ -4130,6 +4131,7 @@
 <translation id="865032292777205197">움직임 감지 센서</translation>
 <translation id="865255447216708819">후면 인쇄 필름</translation>
 <translation id="8654126188050905496">55x91mm</translation>
+<translation id="8660780831677950176">이 시간에 자주 방문함</translation>
 <translation id="8662463432865928030">상업용 부동산</translation>
 <translation id="8663226718884576429">주문 요약, <ph name="TOTAL_LABEL" />, 세부정보 더보기</translation>
 <translation id="8663909737634214500">광학 디스크</translation>

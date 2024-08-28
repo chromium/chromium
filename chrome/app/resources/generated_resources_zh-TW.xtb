@@ -3504,7 +3504,6 @@
 <translation id="3497560059572256875">分享 Doodle</translation>
 <translation id="3497915391670770295">傳送到你的裝置(&amp;D)</translation>
 <translation id="3498138244916757538">必須先關閉 <ph name="SPECIFIC_NAME" />，麥克風設定的變更才會生效。請關閉 <ph name="SPECIFIC_NAME" /> 以繼續操作。</translation>
-<translation id="3499091376302796297">瀏覽網站時，網頁內容會以加密形式儲存在裝置上。</translation>
 <translation id="3500417806337761827">掛接檔案共用區時發生錯誤。已掛接過多 SMB 檔案共用區。</translation>
 <translation id="3500764001796099683">啟用隔離網頁應用程式</translation>
 <translation id="350397915809787283">如果沒有帳戶，請選取第一個選項建立帳戶。</translation>
@@ -3885,6 +3884,7 @@
 <translation id="3760460896538743390">檢查背景頁面(&amp;B)</translation>
 <translation id="37613671848467444">在無痕視窗中開啟(&amp;I)</translation>
 <translation id="3761556954875533505">要允許網站編輯檔案嗎？</translation>
+<translation id="3761560059647741692">風景</translation>
 <translation id="3761733456040768239">更多可對「<ph name="CARD_DESCRIPTION" />」執行的操作，信用卡驗證碼已儲存</translation>
 <translation id="3763433740586298940">如果不想讓網站儲存造訪資訊，建議你封鎖這些網站。Chrome 也會自動將 30 天前的網站從清單中刪除。</translation>
 <translation id="3763549179847864476">「隱私權指南」返回按鈕</translation>
@@ -4974,7 +4974,6 @@
 <translation id="4562155214028662640">新增指紋</translation>
 <translation id="4562155266774382038">關閉建議</translation>
 <translation id="4562364000855074606">禁止在這部 <ph name="DEVICE_TYPE" /> 上安裝應用程式。如要限制下載應用程式或內容，請前往 Google Play 設定。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">使用日常慣用語言搜尋瀏覽記錄，找出造訪過的網站。</translation>
 <translation id="4563210852471260509">初始輸入語言為中文</translation>
 <translation id="4563382028841851106">從帳戶中移除</translation>
 <translation id="4563880231729913339">手指 3</translation>
@@ -7405,6 +7404,7 @@
 <translation id="6351178441572658285">應用程式語言</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
 <translation id="635609604405270300">請讓裝置保持開啟</translation>
+<translation id="6356537493253478650">穩重</translation>
 <translation id="63566973648609420">只有知道通關密語的使用者可以讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記自己的通關密語，或是想變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>
 <translation id="6356718524173428713">向上捲動即可將頁面向下移動</translation>
 <translation id="6356893102071098867">請確認所選的帳戶是否正確</translation>
@@ -8123,6 +8123,7 @@
 <translation id="6876155724392614295">自行車</translation>
 <translation id="6876469544038980967">沒有幫助</translation>
 <translation id="6878422606530379992">可使用感應器</translation>
+<translation id="6878862640969460273">橫向</translation>
 <translation id="6880587130513028875">系統已封鎖此網頁的圖片。</translation>
 <translation id="6881845890692344060">系統管理員已登出帳戶，現在一切由你掌控。</translation>
 <translation id="6882210908253838664">如果網站無法運作，你可以暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -8160,6 +8161,7 @@
 <translation id="6909422577741440844">要接收這部裝置所傳送的內容嗎？</translation>
 <translation id="6910190732484284349">刪除使用者名稱為 <ph name="USER_EMAIL" /> 的密碼金鑰</translation>
 <translation id="6910211073230771657">已刪除</translation>
+<translation id="6910274140210351823">深色</translation>
 <translation id="6911734910326569517">記憶體使用量</translation>
 <translation id="6912007319859991306">行動數據 SIM 卡 PIN 碼</translation>
 <translation id="6912380255120084882">試試其他裝置</translation>
@@ -9506,7 +9508,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">要查看瀏覽器元件嗎？請前往</translation>
 <translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
-<translation id="7903481341948453971">使用螢幕鎖定功能填入密碼</translation>
+<translation id="7903481341948453971">填入密碼時使用螢幕鎖定功能驗證</translation>
 <translation id="7903742244674067440">您儲存了這些憑證授權單位的識別憑證</translation>
 <translation id="7903925330883316394">公用程式：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">片假名</translation>

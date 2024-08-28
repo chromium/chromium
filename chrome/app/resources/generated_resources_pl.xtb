@@ -3487,7 +3487,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3497560059572256875">Udostępnij doodla</translation>
 <translation id="3497915391670770295">Wyślij na swoje &amp;urządzenia</translation>
 <translation id="3498138244916757538">Zmiana ustawienia mikrofonu wymaga wyłączenia maszyny wirtualnej <ph name="SPECIFIC_NAME" />. Wyłącz maszynę wirtualną <ph name="SPECIFIC_NAME" />, aby kontynuować.</translation>
-<translation id="3499091376302796297">Gdy przeglądasz strony, ich zawartość jest zapisywana w zaszyfrowanej formie na Twoim urządzeniu.</translation>
 <translation id="3500417806337761827">Błąd podczas podłączania udziału. Podłączono zbyt wiele udziałów SMB.</translation>
 <translation id="3500764001796099683">Włącz izolowane aplikacje internetowe</translation>
 <translation id="350397915809787283">Jeśli nie masz konta, wybierz pierwszą opcję, aby je utworzyć.</translation>
@@ -4959,7 +4958,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4562155214028662640">Dodaj odcisk palca</translation>
 <translation id="4562155266774382038">Odrzuć sugestię</translation>
 <translation id="4562364000855074606">Blokuj aplikacje zainstalowane na tym urządzeniu <ph name="DEVICE_TYPE" />. Aby ograniczyć pobieranie aplikacji lub treści, otwórz Ustawienia Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Używaj zwykłego języka, aby wyszukiwać w historii przeglądania i znajdować odwiedzone witryny.</translation>
 <translation id="4563210852471260509">Początkowy język wprowadzania: chiński</translation>
 <translation id="4563382028841851106">Usuń z konta</translation>
 <translation id="4563880231729913339">Palec 3</translation>
