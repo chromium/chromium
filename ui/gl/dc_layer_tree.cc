@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/dc_layer_tree.h"
 
 #include <d3d11_1.h>
@@ -384,8 +379,8 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     bool is_hdr_output,
     bool& video_processor_recreated) {
   video_processor_recreated = false;
-  auto& video_processor_wrapper = video_processor_wrapper_[static_cast<int>(
-      is_hdr_output ? VideoProcessorType::kHDR : VideoProcessorType::kSDR)];
+  auto& video_processor_wrapper = is_hdr_output ? video_processor_wrapper_hdr_
+                                                : video_processor_wrapper_sdr_;
   if (!video_processor_wrapper.video_device) {
     // This can fail if the D3D device is "Microsoft Basic Display Adapter".
     if (FAILED(d3d11_device_.As(&video_processor_wrapper.video_device))) {
