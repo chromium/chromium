@@ -55,9 +55,6 @@
 -ash/quick_pair/fast_pair_handshake/
 -base/allocator
 -base/third_party
--build/
--build_overrides/
--buildtools/
 -chrome/browser/ash/chromebox_for_meetings/
 -chrome/browser/ash/policy/
 -chrome/browser/component_updater/
@@ -112,12 +109,9 @@
 -components/url_pattern_index/
 -components/webrtc_logging/
 -components/zucchini/
--courgette/
--crypto/
--data/
 -fuchsia_web/
 -google_apis/
--gpu/
+-gpu/ipc/service/
 -ios/
 -ios_internal/
 -media/
@@ -132,7 +126,6 @@
 -services/data_decoder
 -services/shape_detection
 -services/tracing/public/cpp/perfetto/
--sql/
 -testing/iossim/
 -third_party/
 +third_party/blink/
