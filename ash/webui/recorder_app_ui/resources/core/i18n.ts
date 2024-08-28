@@ -17,7 +17,7 @@ function withArgs<Args extends I18nArgType[]>(): Args {
   return forceCast<Args>(null);
 }
 
-const noArgStrings = [
+const noArgStringNames = [
   'exportDialogAudioFormatWebmOption',
   'exportDialogAudioHeader',
   'exportDialogCancelButton',
@@ -117,9 +117,9 @@ const noArgStrings = [
   'transcriptionWaitingSpeechText',
 ] as const;
 
-type NoArgStrings = (typeof noArgStrings)[number];
+export type NoArgStringName = (typeof noArgStringNames)[number];
 
-const withArgsStrings = {
+const withArgsStringNames = {
   // This contains all the other strings that needs argument.
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
@@ -130,10 +130,10 @@ const withArgsStrings = {
   summaryDownloadingProgressDescription: withArgs<[number]>(),
   transcriptionSpeakerLabelLabel: withArgs<[string]>(),
 } satisfies Record<string, I18nArgType[]>;
-type WithArgsStrings = typeof withArgsStrings;
+type WithArgsStringNames = typeof withArgsStringNames;
 
-type I18nType = Record<NoArgStrings, string>&{
-  [k in keyof WithArgsStrings]: (...args: WithArgsStrings[k]) => string;
+type I18nType = Record<NoArgStringName, string>&{
+  [k in keyof WithArgsStringNames]: (...args: WithArgsStringNames[k]) => string;
 };
 
 /**
@@ -157,10 +157,10 @@ export const i18n = forceCast<I18nType>(
         if (typeof name !== 'string') {
           return;
         }
-        if (upcast<readonly string[]>(noArgStrings).includes(name)) {
+        if (upcast<readonly string[]>(noArgStringNames).includes(name)) {
           return usePlatformHandler().getStringF(name);
         }
-        if (Object.hasOwn(withArgsStrings, name)) {
+        if (Object.hasOwn(withArgsStringNames, name)) {
           return (...args: I18nArgType[]) => {
             return usePlatformHandler().getStringF(name, ...args);
           };

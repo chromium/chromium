@@ -7,11 +7,13 @@
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -67,4 +69,17 @@ bool ChromeRecorderAppUIDelegate::CanUseSpeakerLabelForCurrentProfile() {
   // TODO: b/341806818 - Integrate with capabilities.
   return identity_manager != nullptr &&
          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+void ChromeRecorderAppUIDelegate::RecordSpeakerLabelConsent(
+    const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent) {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  const CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+
+  ConsentAuditorFactory::GetForProfile(profile)
+      ->RecordRecorderSpeakerLabelConsent(account_id, consent);
 }

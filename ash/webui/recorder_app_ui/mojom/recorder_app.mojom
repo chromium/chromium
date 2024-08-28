@@ -149,4 +149,14 @@ interface PageHandler {
   // method specifically only query if the current profile has the capabilities
   // needed to use speaker label.
   CanUseSpeakerLabelForCurrentProfile() => (bool supported);
+
+  // Records the consent of speaker label from user.
+  // Since the frontend doesn't have info about resource ID, the given
+  // consent_description_names and consent_confirmation_name corresponds to the
+  // name (camelCase, without the IDS_RECORDER prefix) in the resources.h, and
+  // will be converted back to the corresponding numbered resource IDs.
+  RecordSpeakerLabelConsent(
+      bool consent_given,
+      array<string> consent_description_names,
+      string consent_confirmation_name);
 };

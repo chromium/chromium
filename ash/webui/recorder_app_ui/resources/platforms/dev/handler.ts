@@ -18,6 +18,7 @@ import {html, nothing, styleMap} from 'chrome://resources/mwc/lit/index.js';
 
 import {CraDropdown} from '../../components/cra/cra-dropdown.js';
 import {SAMPLE_RATE} from '../../core/audio_constants.js';
+import {NoArgStringName} from '../../core/i18n.js';
 import {InternalMicInfo} from '../../core/microphone_manager.js';
 import {
   Model,
@@ -489,5 +490,18 @@ export class PlatformHandler extends PlatformHandlerBase {
     // Always use en-US in dev mode, since mock for the main i18n also use en-US
     // translations.
     return 'en-US';
+  }
+
+  override recordSpeakerLabelConsent(
+    consentGiven: boolean,
+    consentDescriptionNames: NoArgStringName[],
+    consentConfirmationName: NoArgStringName,
+  ): void {
+    console.info(
+      'Recorded speaker label consent: ',
+      consentGiven,
+      consentDescriptionNames,
+      consentConfirmationName,
+    );
   }
 }

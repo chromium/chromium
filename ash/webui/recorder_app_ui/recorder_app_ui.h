@@ -138,6 +138,11 @@ class RecorderAppUI
   void CanUseSpeakerLabelForCurrentProfile(
       CanUseSpeakerLabelForCurrentProfileCallback callback) override;
 
+  void RecordSpeakerLabelConsent(
+      bool consent_given,
+      const std::vector<std::string>& consent_description_names,
+      const std::string& consent_confirmation_name) override;
+
   // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;
 

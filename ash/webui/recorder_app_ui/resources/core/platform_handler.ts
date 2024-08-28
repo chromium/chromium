@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {NoArgStringName} from './i18n.js';
 import {InternalMicInfo} from './microphone_manager.js';
 import {ModelLoader, ModelState} from './on_device_model/types.js';
 import {ReadonlySignal, Signal} from './reactive/signal.js';
@@ -108,4 +109,23 @@ export abstract class PlatformHandler {
    * support easier development we still use a signal here.
    */
   abstract readonly canUseSpeakerLabel: ReadonlySignal<boolean>;
+
+  /**
+   * Records a consent for speaker label.
+   *
+   * Note that there's a legal implication to have the logged strings same as
+   * what the user sees, so it should be passed down from close to where the UI
+   * is shown, and shouldn't be simply "hard-coded".
+   *
+   * @param consentGiven Whether the consent is given or not given.
+   * @param consentDescriptionNames The list of "string names" (as in the key of
+   *     the i18n object) in the consent dialog description.
+   * @param consentConfirmationName The "string name" of the consent dialog
+   *     confirm button that the user clicked.
+   */
+  abstract recordSpeakerLabelConsent(
+    consentGiven: boolean,
+    consentDescriptionNames: NoArgStringName[],
+    consentConfirmationName: NoArgStringName,
+  ): void;
 }

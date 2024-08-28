@@ -55,6 +55,7 @@ include_rules = [
   "+chrome/browser/ash/wallpaper_handlers",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/upload_office_to_cloud",
+  "+chrome/browser/consent_auditor/consent_auditor_factory.h",
   "+chrome/browser/devtools",
   "+chrome/browser/error_reporting",
   "+chrome/browser/extensions/component_loader.h",

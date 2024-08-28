@@ -17,6 +17,7 @@
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources_map.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
@@ -89,6 +90,14 @@ void TranslateAudioDeviceId(
     GotSalt(origin, source_id, std::move(callback),
             browser_context->UniqueId());
   }
+}
+
+int GetResourceIdFromStringName(const std::string& name) {
+  auto iter = base::ranges::find(
+      kLocalizedStrings, name,
+      [](const webui::LocalizedString& s) { return s.name; });
+  CHECK(iter != std::end(kLocalizedStrings));
+  return iter->id;
 }
 
 }  // namespace
@@ -568,6 +577,23 @@ void RecorderAppUI::CanUseSpeakerLabelForCurrentProfile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::move(callback).Run(delegate_->CanUseSpeakerLabelForCurrentProfile());
+}
+
+void RecorderAppUI::RecordSpeakerLabelConsent(
+    bool consent_given,
+    const std::vector<std::string>& consent_description_names,
+    const std::string& consent_confirmation_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent consent;
+  for (const auto& name : consent_description_names) {
+    consent.add_description_grd_ids(GetResourceIdFromStringName(name));
+  }
+  consent.set_confirmation_grd_id(
+      GetResourceIdFromStringName(consent_confirmation_name));
+  consent.set_status(consent_given ? sync_pb::UserConsentTypes::GIVEN
+                                   : sync_pb::UserConsentTypes::NOT_GIVEN);
+  delegate_->RecordSpeakerLabelConsent(consent);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(RecorderAppUI)

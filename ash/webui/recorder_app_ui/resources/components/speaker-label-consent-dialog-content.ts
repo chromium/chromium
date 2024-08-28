@@ -4,7 +4,32 @@
 
 import {css, html, LitElement} from 'chrome://resources/mwc/lit/index.js';
 
-import {i18n} from '../core/i18n.js';
+import {i18n, NoArgStringName} from '../core/i18n.js';
+
+// Since all string names need to be reported when recording user consent for
+// speaker label, we declare separate constants here and use it for both the
+// exported array and in the UI, to minimize the chance that those two got out
+// of sync.
+// Note that all of these (and using these as key to i18n) are still type
+// checked with the NoArgStringName, and the consent recording method also only
+// accepts arguments of the NoArgStringName type.
+const DESCRIPTION_PREFIX_NAME: NoArgStringName =
+  'onboardingDialogSpeakerLabelDescriptionPrefix';
+const DESCRIPTION_LIST_ITEM_NAMES: NoArgStringName[] = [
+  'onboardingDialogSpeakerLabelDescriptionListItem1',
+  'onboardingDialogSpeakerLabelDescriptionListItem2',
+  'onboardingDialogSpeakerLabelDescriptionListItem3',
+];
+const DESCRIPTION_SUFFIX_NAME: NoArgStringName =
+  'onboardingDialogSpeakerLabelDescriptionSuffix';
+const LINK_NAME: NoArgStringName = 'onboardingDialogSpeakerLabelLearnMoreLink';
+
+export const DESCRIPTION_NAMES: NoArgStringName[] = [
+  DESCRIPTION_PREFIX_NAME,
+  ...DESCRIPTION_LIST_ITEM_NAMES,
+  DESCRIPTION_SUFFIX_NAME,
+  LINK_NAME,
+];
 
 /**
  * The content of the speaker label consent dialog.
@@ -27,19 +52,20 @@ export class SpeakerLabelConsentDialogContent extends LitElement {
     }
   `;
 
+  // All description in this component MUST be exported in the
+  // `DESCRIPTION_NAMES` for consent auditing purpose.
   override render(): RenderResult {
+    const listItems = DESCRIPTION_LIST_ITEM_NAMES.map(
+      (name) => html`<li>${i18n[name]}</li>`,
+    );
     // TODO: b/336963138 - Add correct link
     return html`
-      ${i18n.onboardingDialogSpeakerLabelDescriptionPrefix}
+      ${i18n[DESCRIPTION_PREFIX_NAME]}
       <ul>
-        <li>${i18n.onboardingDialogSpeakerLabelDescriptionListItem1}</li>
-        <li>${i18n.onboardingDialogSpeakerLabelDescriptionListItem2}</li>
-        <li>${i18n.onboardingDialogSpeakerLabelDescriptionListItem3}</li>
+        ${listItems}
       </ul>
-      ${i18n.onboardingDialogSpeakerLabelDescriptionSuffix}
-      <a href="javascript:;">
-        ${i18n.onboardingDialogSpeakerLabelLearnMoreLink}
-      </a>
+      ${i18n[DESCRIPTION_SUFFIX_NAME]}
+      <a href="javascript:;">${i18n[LINK_NAME]}</a>
     `;
   }
 }

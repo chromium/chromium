@@ -28,6 +28,10 @@ class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
 
   bool CanUseSpeakerLabelForCurrentProfile() override;
 
+  void RecordSpeakerLabelConsent(
+      const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent)
+      override;
+
   media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context) override;
 

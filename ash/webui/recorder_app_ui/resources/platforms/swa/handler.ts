@@ -16,6 +16,7 @@ import {
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
+import {NoArgStringName} from '../../core/i18n.js';
 import {InternalMicInfo} from '../../core/microphone_manager.js';
 import {ModelState} from '../../core/on_device_model/types.js';
 import {
@@ -155,5 +156,17 @@ export class PlatformHandler extends PlatformHandlerBase {
       audio: true,
       systemAudio: 'include',
     });
+  }
+
+  override recordSpeakerLabelConsent(
+    consentGiven: boolean,
+    consentDescriptionNames: NoArgStringName[],
+    consentConfirmationName: NoArgStringName,
+  ): void {
+    this.remote.recordSpeakerLabelConsent(
+      consentGiven,
+      consentDescriptionNames,
+      consentConfirmationName,
+    );
   }
 }

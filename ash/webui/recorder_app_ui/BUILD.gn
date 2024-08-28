@@ -31,6 +31,7 @@ static_library("recorder_app_ui") {
     "//components/soda",
     "//components/soda:constants",
     "//components/soda:utils",
+    "//components/sync/protocol",
     "//content/public/browser",
     "//google_apis",
     "//mojo/public/cpp/bindings",
