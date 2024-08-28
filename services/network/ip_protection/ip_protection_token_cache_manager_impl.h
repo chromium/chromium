@@ -28,19 +28,6 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
     : public IpProtectionTokenCacheManager {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(AuthTokenResultForGeo)
-  enum class AuthTokenResultForGeo {
-    kUnavailableCacheEmpty = 0,
-    kUnavailableButCacheContainsTokens = 1,
-    kAvailableForCurrentGeo = 2,
-    kAvailableForOtherCachedGeo = 3,
-    kMaxValue = kAvailableForOtherCachedGeo,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:IpProtectionGetAuthTokenResultForGeo)
-
   explicit IpProtectionTokenCacheManagerImpl(
       IpProtectionConfigCache* config_cache,
       IpProtectionConfigGetter* config_getter,

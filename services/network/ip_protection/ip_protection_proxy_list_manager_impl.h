@@ -27,15 +27,6 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
     : public IpProtectionProxyListManager {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class ProxyListResult {
-    kFailed = 0,
-    kEmptyList = 1,
-    kPopulatedList = 2,
-    kMaxValue = kPopulatedList,
-  };
-
   explicit IpProtectionProxyListManagerImpl(
       IpProtectionConfigCache* config_cache,
       IpProtectionConfigGetter& config_getter,

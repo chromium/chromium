@@ -109,8 +109,7 @@ bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
   for (const auto& manager : ipp_token_cache_managers_) {
     if (!manager.second->IsAuthTokenAvailable(
             ipp_proxy_list_manager_->CurrentGeo())) {
-      base::UmaHistogramEnumeration(
-          "NetworkService.IpProtection.EmptyTokenCache", manager.first);
+      ip_protection::Telemetry().EmptyTokenCache(manager.first);
       all_caches_have_tokens = false;
     }
   }

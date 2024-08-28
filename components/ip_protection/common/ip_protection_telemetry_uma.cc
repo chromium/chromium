@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -39,6 +40,15 @@ ProxyChainId ChainIdToEnum(int chain_id) {
   return static_cast<ProxyChainId>(chain_id);
 }
 
+std::string ProxyLayerToString(ProxyLayer proxy_layer) {
+  switch (proxy_layer) {
+    case ip_protection::ProxyLayer::kProxyA:
+      return "ProxyA";
+    case ip_protection::ProxyLayer::kProxyB:
+      return "ProxyB";
+  }
+}
+
 }  // namespace
 
 IpProtectionTelemetry& Telemetry() {
@@ -46,9 +56,10 @@ IpProtectionTelemetry& Telemetry() {
   return instance;
 }
 
-void IpProtectionTelemetryUma::OAuthTokenFetchComplete(base::TimeDelta value) {
+void IpProtectionTelemetryUma::OAuthTokenFetchComplete(
+    base::TimeDelta duration) {
   base::UmaHistogramTimes("NetworkService.IpProtection.OAuthTokenFetchTime",
-                          value);
+                          duration);
 }
 
 void IpProtectionTelemetryUma::TokenBatchFetchComplete(
@@ -66,6 +77,97 @@ void IpProtectionTelemetryUma::ProxyChainFallback(int proxy_chain_id) {
   base::UmaHistogramEnumeration(
       "NetworkService.IpProtection.ProxyChainFallback",
       ChainIdToEnum(proxy_chain_id));
+}
+
+void IpProtectionTelemetryUma::EmptyTokenCache(ProxyLayer value) {
+  base::UmaHistogramEnumeration("NetworkService.IpProtection.EmptyTokenCache",
+                                value);
+}
+
+void IpProtectionTelemetryUma::RequestIsEligibleForProtection(
+    ProtectionEligibility value) {
+  base::UmaHistogramEnumeration(
+      "NetworkService.IpProtection.RequestIsEligibleForProtection", value);
+}
+
+void IpProtectionTelemetryUma::ProtectionIsAvailableForRequest(
+    bool are_auth_tokens_available,
+    bool is_proxy_list_available) {
+  base::UmaHistogramBoolean(
+      "NetworkService.IpProtection.AreAuthTokensAvailable",
+      are_auth_tokens_available);
+  base::UmaHistogramBoolean("NetworkService.IpProtection.IsProxyListAvailable",
+                            is_proxy_list_available);
+  base::UmaHistogramBoolean(
+      "NetworkService.IpProtection.ProtectionIsAvailableForRequest",
+      are_auth_tokens_available && is_proxy_list_available);
+}
+
+void IpProtectionTelemetryUma::GetAuthTokenResultForGeo(
+    bool is_token_available,
+    bool enable_token_caching_by_geo,
+    bool is_cache_empty,
+    bool does_requested_geo_match_current) {
+  base::UmaHistogramBoolean("NetworkService.IpProtection.GetAuthTokenResult",
+                            is_token_available);
+
+  // Remaining metric is only recorded when caching for geo is enabled.
+  if (!enable_token_caching_by_geo) {
+    return;
+  }
+
+  AuthTokenResultForGeo result;
+  if (is_token_available) {
+    if (does_requested_geo_match_current) {
+      result = AuthTokenResultForGeo::kAvailableForCurrentGeo;
+    } else {
+      result = AuthTokenResultForGeo::kAvailableForOtherCachedGeo;
+    }
+  } else if (!is_cache_empty) {
+    result = AuthTokenResultForGeo::kUnavailableButCacheContainsTokens;
+  } else {
+    result = AuthTokenResultForGeo::kUnavailableCacheEmpty;
+  }
+  base::UmaHistogramEnumeration(
+      "NetworkService.IpProtection.GetAuthTokenResultForGeo", result);
+}
+
+void IpProtectionTelemetryUma::TokenBatchGenerationComplete(
+    base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(
+      "NetworkService.IpProtection.TokenBatchGenerationTime", duration);
+}
+
+void IpProtectionTelemetryUma::GeoChangeTokenPresence(bool tokens_present) {
+  base::UmaHistogramBoolean(
+      "NetworkService.IpProtection.GeoChangeTokenPresence", tokens_present);
+}
+
+void IpProtectionTelemetryUma::ProxyListRefreshComplete(
+    GetProxyListResult result,
+    std::optional<base::TimeDelta> duration) {
+  base::UmaHistogramEnumeration(
+      "NetworkService.IpProtection.GetProxyListResult", result);
+  if (duration.has_value()) {
+    base::UmaHistogramMediumTimes(
+        "NetworkService.IpProtection.ProxyListRefreshTime", *duration);
+  }
+}
+
+void IpProtectionTelemetryUma::TokenSpendRate(ProxyLayer proxy_layer,
+                                              int value) {
+  base::UmaHistogramCounts1000(
+      base::StrCat({"NetworkService.IpProtection.",
+                    ProxyLayerToString(proxy_layer), ".TokenSpendRate"}),
+      value);
+}
+
+void IpProtectionTelemetryUma::TokenExpirationRate(ProxyLayer proxy_layer,
+                                                   int value) {
+  base::UmaHistogramCounts100000(
+      base::StrCat({"NetworkService.IpProtection.",
+                    ProxyLayerToString(proxy_layer), ".TokenExpirationRate"}),
+      value);
 }
 
 }  // namespace ip_protection

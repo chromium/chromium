@@ -89,12 +89,7 @@ void IpProtectionProxyDelegate::OnResolveProxy(
     // - `is_ip_protection_enabled_` is `false` (in other words, the user has
     //   disabled IP Protection via user settings).
     // - `kIpPrivacyDirectOnly` is `true`.
-    const ProtectionEligibility eligibility =
-        CheckEligibility(url, network_anonymization_key);
-    base::UmaHistogramEnumeration(
-        "NetworkService.IpProtection.RequestIsEligibleForProtection",
-        eligibility);
-    if (eligibility != ProtectionEligibility::kEligible) {
+    if (!CheckEligibility(url, network_anonymization_key)) {
       return;
     }
     result->set_is_mdl_match(true);
@@ -113,9 +108,6 @@ void IpProtectionProxyDelegate::OnResolveProxy(
       return;
     }
     const bool available = CheckAvailability(url, network_anonymization_key);
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection.ProtectionIsAvailableForRequest",
-        available);
     if (!available) {
       return;
     }
@@ -164,10 +156,12 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   return;
 }
 
-IpProtectionProxyDelegate::ProtectionEligibility
-IpProtectionProxyDelegate::CheckEligibility(
+bool IpProtectionProxyDelegate::CheckEligibility(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key) const {
+  ip_protection::ProtectionEligibility eligibility;
+  bool eligible;
+
   auto dvlog = [&](std::string message) {
     std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
@@ -178,14 +172,21 @@ IpProtectionProxyDelegate::CheckEligibility(
   };
   if (!masked_domain_list_manager_->IsPopulated()) {
     dvlog("proxy allow list not populated");
-    return ProtectionEligibility::kUnknown;
-  }
-  if (!masked_domain_list_manager_->Matches(url, network_anonymization_key)) {
+    eligibility = ip_protection::ProtectionEligibility::kUnknown;
+    eligible = false;
+  } else if (!masked_domain_list_manager_->Matches(url,
+                                                   network_anonymization_key)) {
     dvlog("proxy allow list did not match");
-    return ProtectionEligibility::kIneligible;
+    eligibility = ip_protection::ProtectionEligibility::kIneligible;
+    eligible = false;
+  } else {
+    dvlog("proxy allow list matched");
+    eligibility = ip_protection::ProtectionEligibility::kEligible;
+    eligible = true;
   }
-  dvlog("proxy allow list matched");
-  return ProtectionEligibility::kEligible;
+
+  ip_protection::Telemetry().RequestIsEligibleForProtection(eligibility);
+  return eligible;
 }
 
 bool IpProtectionProxyDelegate::CheckAvailability(
@@ -201,13 +202,10 @@ bool IpProtectionProxyDelegate::CheckAvailability(
   };
   const bool auth_tokens_are_available =
       ipp_config_cache_->AreAuthTokensAvailable();
-  base::UmaHistogramBoolean(
-      "NetworkService.IpProtection.AreAuthTokensAvailable",
-      auth_tokens_are_available);
   const bool proxy_list_is_available =
       ipp_config_cache_->IsProxyListAvailable();
-  base::UmaHistogramBoolean("NetworkService.IpProtection.IsProxyListAvailable",
-                            proxy_list_is_available);
+  ip_protection::Telemetry().ProtectionIsAvailableForRequest(
+      auth_tokens_are_available, proxy_list_is_available);
   if (!auth_tokens_are_available) {
     dvlog("no auth token available from cache");
     return false;

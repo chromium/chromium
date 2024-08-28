@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
@@ -515,8 +516,8 @@ TEST_F(IpProtectionProxyListManagerImplTest, GetProxyListFailureRecorded) {
   ipp_proxy_list_->RequestRefreshProxyList();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   histogram_tester_.ExpectUniqueSample(
-      kGetProxyListResultHistogram,
-      IpProtectionProxyListManagerImpl::ProxyListResult::kFailed, 1);
+      kGetProxyListResultHistogram, ip_protection::GetProxyListResult::kFailed,
+      1);
   histogram_tester_.ExpectTotalCount(kProxyListRefreshTimeHistogram, 0);
 }
 
@@ -532,7 +533,7 @@ TEST_F(IpProtectionProxyListManagerImplTest, GotEmptyProxyListRecorded) {
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   histogram_tester_.ExpectUniqueSample(
       kGetProxyListResultHistogram,
-      IpProtectionProxyListManagerImpl::ProxyListResult::kEmptyList, 1);
+      ip_protection::GetProxyListResult::kEmptyList, 1);
   histogram_tester_.ExpectTotalCount(kProxyListRefreshTimeHistogram, 1);
 }
 
@@ -549,7 +550,7 @@ TEST_F(IpProtectionProxyListManagerImplTest, GotPopulatedProxyListRecorded) {
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   histogram_tester_.ExpectUniqueSample(
       kGetProxyListResultHistogram,
-      IpProtectionProxyListManagerImpl::ProxyListResult::kPopulatedList, 1);
+      ip_protection::GetProxyListResult::kPopulatedList, 1);
   histogram_tester_.ExpectTotalCount(kProxyListRefreshTimeHistogram, 1);
 }
 

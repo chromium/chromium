@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
@@ -396,9 +397,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenEmptyForGeo) {
   ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
   histogram_tester_.ExpectUniqueSample(
       kGetAuthTokenResultForGeoHistogram,
-      IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
-          kUnavailableCacheEmpty,
-      1);
+      ip_protection::AuthTokenResultForGeo::kUnavailableCacheEmpty, 1);
 }
 
 // `GetAuthToken()` returns a token on a cache containing unexpired tokens.
@@ -443,9 +442,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenForGeoSuccessful) {
       HistogramState{.success = 1, .failure = 0, .generated = 1});
   histogram_tester_.ExpectUniqueSample(
       kGetAuthTokenResultForGeoHistogram,
-      IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
-          kAvailableForCurrentGeo,
-      1);
+      ip_protection::AuthTokenResultForGeo::kAvailableForCurrentGeo, 1);
 }
 
 // `GetAuthToken()` requested for geo not available while other tokens are
@@ -470,8 +467,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenForUnavailableGeo) {
       HistogramState{.success = 0, .failure = 1, .generated = 1});
   histogram_tester_.ExpectUniqueSample(
       kGetAuthTokenResultForGeoHistogram,
-      IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
-          kUnavailableButCacheContainsTokens,
+      ip_protection::AuthTokenResultForGeo::kUnavailableButCacheContainsTokens,
       1);
 }
 
@@ -1032,9 +1028,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   // geo.
   histogram_tester_.ExpectBucketCount(
       kGetAuthTokenResultForGeoHistogram,
-      IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
-          kAvailableForOtherCachedGeo,
-      1);
+      ip_protection::AuthTokenResultForGeo::kAvailableForOtherCachedGeo, 1);
 }
 
 // Existing state with valid non-expired tokens. `SetCurrentGeo` is called

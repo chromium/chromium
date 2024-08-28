@@ -9,11 +9,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
@@ -21,27 +21,6 @@
 namespace network {
 
 namespace {
-
-IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo
-GetAuthTokenResultForGeo(bool is_token_available,
-                         bool is_cache_empty,
-                         bool does_requested_geo_match_current) {
-  if (is_token_available) {
-    if (does_requested_geo_match_current) {
-      return IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
-          kAvailableForCurrentGeo;
-    }
-    return IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
-        kAvailableForOtherCachedGeo;
-  }
-
-  if (!is_cache_empty) {
-    return IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
-        kUnavailableButCacheContainsTokens;
-  }
-  return IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
-      kUnavailableCacheEmpty;
-}
 
 // Minimum time before actual expiration that a token is considered
 // "expired" and removed. The maximum time is given by the
@@ -173,8 +152,7 @@ void IpProtectionTokenCacheManagerImpl::SetCurrentGeo(
   // Ensuring that a geo change has occurred.
   if (emitted_geo_presence_histogram_before_refill_ && current_geo_id_ != "" &&
       current_geo_id_ != geo_id) {
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection.GeoChangeTokenPresence",
+    ip_protection::Telemetry().GeoChangeTokenPresence(
         cache_by_geo_.contains(geo_id));
   }
 
@@ -324,8 +302,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   bool has_geo_id_changed = geo_id_from_token != current_geo_id_;
   if (enable_token_caching_by_geo_ && has_geo_id_changed &&
       current_geo_id_ != "") {
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection.GeoChangeTokenPresence",
+    ip_protection::Telemetry().GeoChangeTokenPresence(
         cache_by_geo_.contains(geo_id_from_token));
     emitted_geo_presence_histogram_before_refill_ = false;
   }
@@ -366,8 +343,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
     ip_protection_config_cache_->GeoObserved(geo_id_from_token);
   }
 
-  base::UmaHistogramMediumTimes(
-      "NetworkService.IpProtection.TokenBatchGenerationTime",
+  ip_protection::Telemetry().TokenBatchGenerationComplete(
       base::TimeTicks::Now() - attempt_start_time_for_metrics);
 
   if (on_try_get_auth_tokens_completed_for_testing_) {
@@ -401,15 +377,9 @@ IpProtectionTokenCacheManagerImpl::GetAuthToken(const std::string& geo_id) {
     tokens_spent_++;
   }
 
-  if (enable_token_caching_by_geo_) {
-    base::UmaHistogramEnumeration(
-        "NetworkService.IpProtection.GetAuthTokenResultForGeo",
-        GetAuthTokenResultForGeo(result.has_value(), cache_by_geo_.empty(),
-                                 geo_id == current_geo_id_));
-  }
-
-  base::UmaHistogramBoolean("NetworkService.IpProtection.GetAuthTokenResult",
-                            tokens_in_cache > 0);
+  ip_protection::Telemetry().GetAuthTokenResultForGeo(
+      result.has_value(), enable_token_caching_by_geo_, cache_by_geo_.empty(),
+      geo_id == current_geo_id_);
   VLOG(2) << "IPPATC::GetAuthToken with " << tokens_in_cache
           << " tokens available";
   MaybeRefillCache();
@@ -449,28 +419,16 @@ void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
     last_token_rate_measurement_ = now;
 
     auto spend_rate = tokens_spent_ * denominator / interval_ms;
-    std::string proxy_layer = [&] {
-      switch (proxy_layer_) {
-        case ip_protection::ProxyLayer::kProxyA:
-          return "ProxyA";
-        case ip_protection::ProxyLayer::kProxyB:
-          return "ProxyB";
-      }
-    }();
     // A maximum of 1000 would correspond to a spend rate of about 16/min,
     // which is higher than we expect to see.
-    base::UmaHistogramCounts1000(base::StrCat({"NetworkService.IpProtection.",
-                                               proxy_layer, ".TokenSpendRate"}),
-                                 spend_rate);
+    ip_protection::Telemetry().TokenSpendRate(proxy_layer_, spend_rate);
 
     auto expiration_rate = tokens_expired_ * denominator / interval_ms;
     // Entire batches of tokens are likely to expire within a single 5-minute
     // measurement interval. 1024 tokens in 5 minutes is equivalent to 12288
     // tokens per hour, comfortably under 100,000.
-    base::UmaHistogramCounts100000(
-        base::StrCat({"NetworkService.IpProtection.", proxy_layer,
-                      ".TokenExpirationRate"}),
-        expiration_rate);
+    ip_protection::Telemetry().TokenExpirationRate(proxy_layer_,
+                                                   expiration_rate);
   }
 
   last_token_rate_measurement_ = now;

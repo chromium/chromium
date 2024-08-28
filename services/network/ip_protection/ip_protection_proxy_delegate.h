@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -32,13 +33,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
     : public net::ProxyDelegate,
       public mojom::IpProtectionProxyDelegate {
  public:
-  enum class ProtectionEligibility {
-    kUnknown = 0,
-    kIneligible = 1,
-    kEligible = 2,
-    kMaxValue = kEligible,
-  };
-
   // Both masked_domain_list_manager and ipp_config_cache must be
   // non-null. The masked_domain_list_manager (MaskedDomainList) feature
   // must be enabled.
@@ -93,7 +87,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
   friend class IpProtectionProxyDelegateTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionProxyDelegateTest, MergeProxyRules);
 
-  ProtectionEligibility CheckEligibility(
+  bool CheckEligibility(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key) const;
   bool CheckAvailability(
