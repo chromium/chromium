@@ -1311,6 +1311,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
           "runMochaSuite('SpellCheck OfficialBuild')");
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SettingsSiteDetailsTest : public SettingsBrowserTest {
  private:
@@ -1437,6 +1438,7 @@ IN_PROC_BROWSER_TEST_F(
           "AbusiveNotificationsEnabledUnusedSitePermissionsDisabled')");
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 using SettingsTranslatePageTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, TranslateSettings) {
