@@ -119,7 +119,7 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   NetworkStateTestHelper network_state_test_helper_{
-      false /* use_default_devices_and_services */};
+      /*use_default_devices_and_services=*/false};
   std::unique_ptr<NetworkConfigurationHandler> network_config_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>

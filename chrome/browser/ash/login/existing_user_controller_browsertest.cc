@@ -909,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, WrongPassword) {
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
                        WrongPasswordWhileOffline) {
   NetworkStateTestHelper network_state_test_helper(
-      false /*use_default_devices_and_services*/);
+      /*use_default_devices_and_services=*/false);
   network_state_test_helper.ClearServices();
 
   SetUpStubAuthenticatorAndAttemptLoginWithWrongPassword();

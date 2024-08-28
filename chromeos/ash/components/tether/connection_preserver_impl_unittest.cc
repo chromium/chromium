@@ -135,7 +135,7 @@ class ConnectionPreserverImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
 
   const multidevice::RemoteDeviceRefList test_remote_devices_;
   std::vector<std::string> test_remote_device_ids_;
