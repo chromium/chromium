@@ -107,7 +107,7 @@ TARGET_DEVICES = {
             'Speedometer2': 5,
         },
         'speedometer3': {
-            'Speedometer3': 5,
+            'Speedometer3': 8,
         },
     },
     'linux-perf': {

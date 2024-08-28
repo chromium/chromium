@@ -5,7 +5,7 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "end": 42,
+                "end": 66,
                 "abridged": false
             },
             "speedometer2": {
@@ -13,7 +13,7 @@
             },
             "speedometer3": {
                 "abridged": false,
-                "pageset_repeat": 4
+                "pageset_repeat": 16
             }
         },
         "executables": {
@@ -28,8 +28,8 @@
     "1": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 42,
-                "end": 83,
+                "begin": 66,
+                "end": 133,
                 "abridged": false
             },
             "jetstream2": {
@@ -40,15 +40,15 @@
             },
             "speedometer3": {
                 "abridged": false,
-                "pageset_repeat": 4
+                "pageset_repeat": 16
             }
         }
     },
     "2": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 83,
-                "end": 124,
+                "begin": 133,
+                "end": 191,
                 "abridged": false
             },
             "jetstream2": {
@@ -59,15 +59,15 @@
             },
             "speedometer3": {
                 "abridged": false,
-                "pageset_repeat": 4
+                "pageset_repeat": 16
             }
         }
     },
     "3": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 124,
-                "end": 180,
+                "begin": 191,
+                "end": 258,
                 "abridged": false
             },
             "jetstream2": {
@@ -78,15 +78,15 @@
             },
             "speedometer3": {
                 "abridged": false,
-                "pageset_repeat": 4
+                "pageset_repeat": 16
             }
         }
     },
     "4": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 180,
-                "end": 238,
+                "begin": 258,
+                "end": 322,
                 "abridged": false
             },
             "jetstream2": {
@@ -97,41 +97,27 @@
             },
             "speedometer3": {
                 "abridged": false,
-                "pageset_repeat": 4
+                "pageset_repeat": 16
             }
         }
     },
     "5": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 238,
-                "end": 296,
+                "begin": 322,
+                "end": 379,
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false,
+                "pageset_repeat": 16
             }
         }
     },
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 296,
-                "end": 344,
-                "abridged": false
-            }
-        }
-    },
-    "7": {
-        "benchmarks": {
-            "rendering.mobile": {
-                "begin": 344,
-                "end": 392,
-                "abridged": false
-            }
-        }
-    },
-    "8": {
-        "benchmarks": {
-            "rendering.mobile": {
-                "begin": 392,
+                "begin": 379,
                 "abridged": false
             },
             "speedometer2": {
@@ -142,13 +128,13 @@
             },
             "speedometer3": {
                 "abridged": false,
-                "pageset_repeat": 4
+                "pageset_repeat": 16
             },
             "speedometer3-predictable": {
                 "abridged": false
             },
             "system_health.common_mobile": {
-                "end": 18,
+                "end": 13,
                 "abridged": false
             }
         },
@@ -159,29 +145,31 @@
             }
         }
     },
-    "9": {
+    "7": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 18,
+                "begin": 13,
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false,
+                "pageset_repeat": 16
             }
         }
     },
     "extra_infos": {
-        "num_stories": 519,
-        "predicted_min_shard_time": 2406.0,
-        "predicted_min_shard_index": 2,
-        "predicted_max_shard_time": 2720.0,
-        "predicted_max_shard_index": 9,
-        "shard #0": 2431.0,
-        "shard #1": 2435.0,
-        "shard #2": 2406.0,
-        "shard #3": 2427.0,
-        "shard #4": 2429.0,
-        "shard #5": 2408.0,
-        "shard #6": 2454.0,
-        "shard #7": 2435.0,
-        "shard #8": 2431.0,
-        "shard #9": 2720.0
+        "num_stories": 522,
+        "predicted_min_shard_time": 3823.0,
+        "predicted_min_shard_index": 4,
+        "predicted_max_shard_time": 3946.0,
+        "predicted_max_shard_index": 7,
+        "shard #0": 3848.0,
+        "shard #1": 3853.0,
+        "shard #2": 3862.0,
+        "shard #3": 3849.0,
+        "shard #4": 3823.0,
+        "shard #5": 3826.0,
+        "shard #6": 3823.0,
+        "shard #7": 3946.0
     }
 }

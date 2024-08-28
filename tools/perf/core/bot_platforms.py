@@ -623,7 +623,7 @@ _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer2-predictable'),
-    _GetBenchmarkConfig('speedometer3', pageset_repeat=4),
+    _GetBenchmarkConfig('speedometer3', pageset_repeat=16),
     _GetBenchmarkConfig('speedometer3-predictable'),
 ])
 _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
@@ -873,7 +873,7 @@ ANDROID_PIXEL6_PGO = PerfPlatform(
     'android-pixel6-perf-pgo',
     'Android U',
     _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS,
-    10,
+    8,
     'android',
     executables=_ANDROID_PIXEL6_PGO_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_SPEEDOMETER)
