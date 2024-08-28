@@ -18,7 +18,7 @@
 #include "url/url_constants.h"
 
 namespace {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
 // Note: explicitly exclude schemes that may be used to execute Javascript code
 // snippet in the context of the current page on mobile devices.
 constexpr auto kNavigableSchemes = base::MakeFixedFlatSet<std::string_view>(
@@ -106,7 +106,7 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
     match.allowed_to_be_default_match =
         (input.type() == metrics::OmniboxInputType::URL) ||
         !has_default_search_provider;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
     // Disallow non-navigable schemes to be default. This prevents javascript:
     // snippets from being accidentally executed upon paste, refine, edit, etc.
     match.allowed_to_be_default_match &=
