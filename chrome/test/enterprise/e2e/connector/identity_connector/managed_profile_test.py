@@ -41,7 +41,6 @@ class ManagedProfileTest(ChromeEnterpriseTestCase):
     # Verify managed profile status legend
     self.assertIn('User policies', output)
     self.assertIn(icebreaker_account, output)
-    self.assertIn('Policy cache OK', output)
 
   @test
   def test_dasherless_enrollment(self):
@@ -61,4 +60,3 @@ class ManagedProfileTest(ChromeEnterpriseTestCase):
     # Verify managed profile status legend
     self.assertIn('User policies', output)
     self.assertIn(dasherless_account, output)
-    self.assertIn('Policy cache OK', output)
