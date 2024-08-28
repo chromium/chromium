@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "net/base/proxy_chain.h"
 
 namespace ip_protection {
 
@@ -31,6 +32,10 @@ class IpProtectionTelemetry {
   virtual void TokenBatchFetchComplete(
       TryGetAuthTokensResult result,
       std::optional<base::TimeDelta> duration) = 0;
+
+  // Chrome has determined that a proxy chain with the given chain ID has failed
+  // and fallen back to the next chain in the list.
+  virtual void ProxyChainFallback(int proxy_chain_id) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each

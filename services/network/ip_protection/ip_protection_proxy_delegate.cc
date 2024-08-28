@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
@@ -34,28 +35,6 @@ namespace network {
 namespace {
 
 using ip_protection::MaskedDomainListManager;
-
-// An enumeration of the `chain_id` values supplied in the GetProxyInfo RPC
-// response, for use with `UmaHistogramEnumeration`. These values are persisted
-// to logs. Entries should not be renumbered and numeric values should never be
-// reused.
-enum class IpProtectionProxyChainId {
-  kUnknown = 0,
-  kChain1 = 1,
-  kChain2 = 2,
-  kChain3 = 3,
-  kMaxValue = kChain3,
-};
-
-IpProtectionProxyChainId ChainIdToEnum(int chain_id) {
-  static_assert(net::ProxyChain::kMaxIpProtectionChainId ==
-                    static_cast<int>(IpProtectionProxyChainId::kMaxValue),
-                "maximum `chain_id` must match between `net::ProxyChain` and "
-                "`network::IpProtectionProxyChainId`");
-  CHECK(chain_id >= static_cast<int>(IpProtectionProxyChainId::kUnknown) &&
-        chain_id <= static_cast<int>(IpProtectionProxyChainId::kMaxValue));
-  return static_cast<IpProtectionProxyChainId>(chain_id);
-}
 
 }  // namespace
 
@@ -279,9 +258,8 @@ void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
   if (bad_chain.is_for_ip_protection()) {
-    base::UmaHistogramEnumeration(
-        "NetworkService.IpProtection.ProxyChainFallback",
-        ChainIdToEnum(bad_chain.ip_protection_chain_id()));
+    ip_protection::Telemetry().ProxyChainFallback(
+        bad_chain.ip_protection_chain_id());
     ipp_config_cache_->RequestRefreshProxyList();
   }
 }

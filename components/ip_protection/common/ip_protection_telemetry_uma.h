@@ -19,6 +19,8 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
   void OAuthTokenFetchComplete(base::TimeDelta) override;
   void TokenBatchFetchComplete(TryGetAuthTokensResult,
                                std::optional<base::TimeDelta>) override;
+
+  void ProxyChainFallback(int) override;
 };
 
 }  // namespace ip_protection
