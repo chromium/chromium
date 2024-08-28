@@ -111,7 +111,13 @@ void EditorMenuPromoCardView::RequestFocus() {
   dismiss_button_->RequestFocus();
 }
 
-int EditorMenuPromoCardView::GetHeightForWidth(int width) const {
+gfx::Size EditorMenuPromoCardView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (!available_size.width().is_bounded()) {
+    return views::View::CalculatePreferredSize(available_size);
+  }
+
+  int width = available_size.width().value();
   // The default GetHeightForWidth() does not consider the heights of children
   // correctly, thus we need to estimate the height of promo card by ourself.
 
@@ -124,8 +130,8 @@ int EditorMenuPromoCardView::GetHeightForWidth(int width) const {
   //  - top and bottom of the container.
   //  - padding between title and description.
   //  - padding between description and buttons.
-  return kPromoCardVerticalPaddingDip * 4 + height_title + height_description +
-         height_button;
+  return gfx::Size(width, kPromoCardVerticalPaddingDip * 4 + height_title +
+                              height_description + height_button);
 }
 
 void EditorMenuPromoCardView::OnWidgetDestroying(views::Widget* widget) {

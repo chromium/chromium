@@ -131,7 +131,13 @@ void EditorMenuView::RequestFocus() {
   settings_button_->RequestFocus();
 }
 
-int EditorMenuView::GetHeightForWidth(int width) const {
+gfx::Size EditorMenuView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (!available_size.width().is_bounded()) {
+    return PreTargetHandlerView::CalculatePreferredSize(available_size);
+  }
+
+  int width = available_size.width().value();
   // When the width of editor menu view is updated, we will adjust the number of
   // rows chips (see: UpdateChipsContainer). Thus, here we need to pre-compute
   // the expected number of rows here and so we can estimate the height rather
@@ -165,8 +171,9 @@ int EditorMenuView::GetHeightForWidth(int width) const {
   const int textfield_height_with_padding =
       textfield_->height() + kTextfieldContainerInsets.height();
 
-  return title_height_with_padding + chips_height_with_padding +
-         textfield_height_with_padding;
+  return gfx::Size(width, title_height_with_padding +
+                              chips_height_with_padding +
+                              textfield_height_with_padding);
 }
 
 bool EditorMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {

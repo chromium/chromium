@@ -52,7 +52,8 @@ class EditorMenuView : public PreTargetHandlerView {
   // PreTargetHandlerView:
   void AddedToWidget() override;
   void RequestFocus() override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 

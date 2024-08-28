@@ -271,8 +271,9 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
 
 class MockView : public views::View {
  public:
-  int GetHeightForWidth(int width) const override {
-    return kEditorMenuHeightForTestDip;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    return gfx::Size(kEditorMenuMinWidthDip, kEditorMenuHeightForTestDip);
   }
 };
 
