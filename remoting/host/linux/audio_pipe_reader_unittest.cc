@@ -15,6 +15,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/message_loop/message_pump_type.h"
@@ -73,8 +74,7 @@ class AudioPipeReaderTest : public testing::Test,
   }
 
   void WriteAndWait(const std::string& data) {
-    ASSERT_EQ(static_cast<int>(data.size()),
-              output_->WriteAtCurrentPos(data.data(), data.size()));
+    ASSERT_TRUE(output_->WriteAtCurrentPosAndCheck(base::as_byte_span(data)));
     WaitForInput(data.size());
   }
 

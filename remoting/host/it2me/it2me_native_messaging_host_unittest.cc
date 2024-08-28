@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -22,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
@@ -403,10 +405,9 @@ void It2MeNativeMessagingHostTest::WriteMessageToInputPipe(
   std::string message_json;
   base::JSONWriter::Write(message, &message_json);
 
-  uint32_t length = message_json.length();
-  input_write_file_.WriteAtCurrentPos(reinterpret_cast<char*>(&length),
-                                      sizeof(length));
-  input_write_file_.WriteAtCurrentPos(message_json.data(), length);
+  uint32_t length = base::checked_cast<uint32_t>(message_json.length());
+  input_write_file_.WriteAtCurrentPos(base::byte_span_from_ref(length));
+  input_write_file_.WriteAtCurrentPos(base::as_byte_span(message_json));
 }
 
 void It2MeNativeMessagingHostTest::VerifyHelloResponse(int request_id) {
