@@ -215,8 +215,6 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     std::string cohort;
   };
 
-  using InstallerResult = update_client::CrxInstaller::Result;
-
   // Returns the version of the active updater. The version object is invalid
   // if an error (including timeout) occurs.
   virtual void GetVersion(base::OnceCallback<void(const base::Version&)>) = 0;

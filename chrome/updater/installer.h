@@ -46,14 +46,15 @@ struct AppInfo {
   base::FilePath ecp;
 };
 
-using AppInstallerResult = update_client::CrxInstaller::Result;
 using InstallProgressCallback = update_client::CrxInstaller::ProgressCallback;
+
+using InstallerResult = update_client::CrxInstaller::Result;
 
 // Runs an app installer.
 //   The file `server_install_data` contains additional application-specific
 // install configuration parameters extracted either from the update response or
 // the app manifest.
-AppInstallerResult RunApplicationInstaller(
+InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& installer_path,
     const std::string& install_args,

@@ -34,9 +34,6 @@ class PersistedData;
 class PolicyService;
 struct RegistrationRequest;
 
-using AppClientInstallData = base::flat_map<std::string, std::string>;
-using AppInstallDataIndex = base::flat_map<std::string, std::string>;
-
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceImplImpl : public UpdateService {
  public:
@@ -116,8 +113,8 @@ class UpdateServiceImplImpl : public UpdateService {
 
   void OnShouldBlockUpdateForMeteredNetwork(
       const std::vector<std::string>& app_ids,
-      const AppClientInstallData& app_client_install_data,
-      const AppInstallDataIndex& app_install_data_index,
+      const base::flat_map<std::string, std::string>& app_client_install_data,
+      const base::flat_map<std::string, std::string>& app_install_data_index,
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
@@ -126,8 +123,8 @@ class UpdateServiceImplImpl : public UpdateService {
 
   void OnShouldBlockForceInstallForMeteredNetwork(
       const std::vector<std::string>& app_ids,
-      const AppClientInstallData& app_client_install_data,
-      const AppInstallDataIndex& app_install_data_index,
+      const base::flat_map<std::string, std::string>& app_client_install_data,
+      const base::flat_map<std::string, std::string>& app_install_data_index,
       PolicySameVersionUpdate policy_same_version_update,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback,
@@ -153,8 +150,8 @@ void GetComponents(
     scoped_refptr<PolicyService> policy_service,
     crx_file::VerifierFormat verifier_format,
     scoped_refptr<PersistedData> persisted_data,
-    const AppClientInstallData& app_client_install_data,
-    const AppInstallDataIndex& app_install_data_index,
+    const base::flat_map<std::string, std::string>& app_client_install_data,
+    const base::flat_map<std::string, std::string>& app_install_data_index,
     const std::string& install_source,
     UpdateService::Priority priority,
     bool update_blocked,

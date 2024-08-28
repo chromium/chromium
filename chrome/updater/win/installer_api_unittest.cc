@@ -13,7 +13,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
-#include "chrome/updater/win/win_constants.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,7 +64,7 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
 
   {
     InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerResult::kSystemError;
+    installer_outcome.installer_result = InstallerApiResult::kSystemError;
     installer_outcome.installer_error = 1;
     installer_outcome.installer_extracode1 = -2;
     installer_outcome.installer_text = "some text";
@@ -77,7 +76,8 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
   std::optional<InstallerOutcome> installer_outcome =
       GetInstallerOutcome(updater_scope_, kAppId);
   ASSERT_TRUE(installer_outcome);
-  EXPECT_EQ(installer_outcome->installer_result, InstallerResult::kSystemError);
+  EXPECT_EQ(installer_outcome->installer_result,
+            InstallerApiResult::kSystemError);
   EXPECT_EQ(installer_outcome->installer_error, 1);
   EXPECT_EQ(installer_outcome->installer_extracode1, -2);
   EXPECT_STREQ(installer_outcome->installer_text->c_str(), "some text");
@@ -113,7 +113,7 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
   {
     InstallerOutcome installer_outcome_for_deletion;
     installer_outcome_for_deletion.installer_result =
-        InstallerResult::kSystemError;
+        InstallerApiResult::kSystemError;
     installer_outcome_for_deletion.installer_error = 1;
     installer_outcome_for_deletion.installer_extracode1 = -2;
     installer_outcome_for_deletion.installer_text = "some text";
@@ -138,7 +138,7 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
 TEST_P(InstallerAPITest, MakeInstallerResult) {
   {
     InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerResult::kSuccess;
+    installer_outcome.installer_result = InstallerApiResult::kSuccess;
     installer_outcome.installer_error = 1;
     installer_outcome.installer_extracode1 = -2;
     installer_outcome.installer_text = "some text";
@@ -154,7 +154,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
 
   {
     InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerResult::kCustomError;
+    installer_outcome.installer_result = InstallerApiResult::kCustomError;
     installer_outcome.installer_error = 1;
     installer_outcome.installer_extracode1 = -2;
     installer_outcome.installer_text = "some text";
@@ -178,7 +178,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
 
   {
     InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerResult::kMsiError;
+    installer_outcome.installer_result = InstallerApiResult::kMsiError;
     installer_outcome.installer_error = 1;
     installer_outcome.installer_extracode1 = -2;
     installer_outcome.installer_text = "some text";
@@ -202,7 +202,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
 
   {
     InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerResult::kSystemError;
+    installer_outcome.installer_result = InstallerApiResult::kSystemError;
     installer_outcome.installer_error = 1;
     installer_outcome.installer_extracode1 = -2;
     installer_outcome.installer_text = "some text";
@@ -226,7 +226,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
 
   {
     InstallerOutcome installer_outcome;
-    installer_outcome.installer_result = InstallerResult::kExitCode;
+    installer_outcome.installer_result = InstallerApiResult::kExitCode;
     installer_outcome.installer_error = 1;
     installer_outcome.installer_extracode1 = -2;
     installer_outcome.installer_text = "some text";

@@ -150,7 +150,7 @@ std::optional<InstallerOutcome> GetLastInstallerOutcome(
     DWORD val = 0;
     if (key->ReadValueDW(kRegValueLastInstallerResult, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_result =
-          *CheckedCastToEnum<InstallerResult>(val);
+          *CheckedCastToEnum<InstallerApiResult>(val);
     }
     if (key->ReadValueDW(kRegValueLastInstallerError, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_error = val;
@@ -284,7 +284,7 @@ std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
     DWORD val = 0;
     if (key->ReadValueDW(kRegValueInstallerResult, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_result =
-          *CheckedCastToEnum<InstallerResult>(val);
+          *CheckedCastToEnum<InstallerApiResult>(val);
     }
     if (key->ReadValueDW(kRegValueInstallerError, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_error = val;
@@ -396,9 +396,9 @@ Installer::Result MakeInstallerResult(
   } else {
     // Set the installer result based on whether this is a success or an error.
     if (exit_code == 0) {
-      outcome.installer_result = InstallerResult::kSuccess;
+      outcome.installer_result = InstallerApiResult::kSuccess;
     } else {
-      outcome.installer_result = InstallerResult::kExitCode;
+      outcome.installer_result = InstallerApiResult::kExitCode;
       outcome.installer_error = exit_code;
     }
   }
@@ -413,7 +413,7 @@ Installer::Result MakeInstallerResult(
   }
 
   switch (*outcome.installer_result) {
-    case InstallerResult::kSuccess:
+    case InstallerApiResult::kSuccess:
       // This is unconditional success:
       // - use the command line if available, and ignore everything else.
       if (outcome.installer_cmd_line) {
@@ -421,10 +421,10 @@ Installer::Result MakeInstallerResult(
       }
       break;
 
-    case InstallerResult::kCustomError:
-    case InstallerResult::kMsiError:
-    case InstallerResult::kSystemError:
-    case InstallerResult::kExitCode:
+    case InstallerApiResult::kCustomError:
+    case InstallerApiResult::kMsiError:
+    case InstallerApiResult::kSystemError:
+    case InstallerApiResult::kExitCode:
       // These are usually unconditional errors:
       // - use the installer error, or the exit code, or report a generic
       //   error.
@@ -462,7 +462,7 @@ Installer::Result MakeInstallerResult(
 // The installer progress is written by the application installer as a value
 // under the application's client state in the Windows registry and read by
 // polling in a loop, while waiting for the installer to exit.
-AppInstallerResult RunApplicationInstaller(
+InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& app_installer,
     const std::string& arguments,
@@ -472,8 +472,8 @@ AppInstallerResult RunApplicationInstaller(
     InstallProgressCallback progress_callback) {
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {
-    return AppInstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID,
-                              kErrorInvalidFileExtension);
+    return InstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID,
+                           kErrorInvalidFileExtension);
   }
 
   DeleteInstallerOutput(app_info.scope, app_info.app_id);
@@ -511,8 +511,8 @@ AppInstallerResult RunApplicationInstaller(
 
       process = base::LaunchProcess(cmdline, options);
       if (!process.IsValid()) {
-        return AppInstallerResult(GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
-                                  HRESULTFromLastError());
+        return InstallerResult(GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
+                               HRESULTFromLastError());
       }
     }
 
@@ -533,9 +533,9 @@ AppInstallerResult RunApplicationInstaller(
     }
   } while (timer.Elapsed() < timeout && num_tries < kNumAlreadyRunningMaxTries);
 
-  return AppInstallerResult(exit_code == ERROR_INSTALL_ALREADY_RUNNING
-                                ? GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING
-                                : GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
+  return InstallerResult(exit_code == ERROR_INSTALL_ALREADY_RUNNING
+                             ? GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING
+                             : GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
 }
 
 std::string LookupString(const base::FilePath& path,
