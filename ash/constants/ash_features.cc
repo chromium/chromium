@@ -2548,10 +2548,10 @@ BASE_FEATURE(kPickerGrid, "PickerGrid", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPipDoubleTapToResize,
              "PipDoubleTapToResize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the tuck feature for Picture in Picture.
-BASE_FEATURE(kPipTuck, "PipTuck", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPipTuck, "PipTuck", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
