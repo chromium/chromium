@@ -3267,7 +3267,11 @@ void NetworkContext::ExemptUrlFromNetworkRevocationForNonce(
     const base::UnguessableToken& nonce,
     ExemptUrlFromNetworkRevocationForNonceCallback callback) {
   GURL url_without_filename = exempted_url.GetWithoutFilename();
-  network_revocation_exemptions_[nonce].insert(url_without_filename);
+
+  if (url_without_filename.is_valid()) {
+    network_revocation_exemptions_[nonce].insert(url_without_filename);
+  }
+
   std::move(callback).Run();
 }
 
