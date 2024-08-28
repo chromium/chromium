@@ -101,7 +101,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
     /** Closes the currently open dialog if it's open. */
     @CalledByNative
     public void closeDialog() {
-        if (!isShowingDialog()) return;
+        if (mDialogManager == null) return;
 
         mDialogManager.closeDialog();
         mDialogManager = null;
