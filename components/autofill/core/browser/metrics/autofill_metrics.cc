@@ -1446,12 +1446,10 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   size_t num_local_cards = 0;
   size_t num_local_cards_with_nickname = 0;
   size_t num_local_cards_with_invalid_number = 0;
-  size_t num_masked_cards = 0;
-  size_t num_masked_cards_with_nickname = 0;
-  size_t num_unmasked_cards = 0;
+  size_t num_server_cards = 0;
+  size_t num_server_cards_with_nickname = 0;
   size_t num_disused_local_cards = 0;
-  size_t num_disused_masked_cards = 0;
-  size_t num_disused_unmasked_cards = 0;
+  size_t num_disused_server_cards = 0;
 
   // Concatenate the local and server cards into one big collection of raw
   // CreditCard pointers.
@@ -1489,36 +1487,21 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         UMA_HISTOGRAM_COUNTS_1000(
             "Autofill.DaysSinceLastUse.StoredCreditCard.Server",
             days_since_last_use);
-        UMA_HISTOGRAM_COUNTS_1000(
-            "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Masked",
-            days_since_last_use);
-        num_masked_cards += 1;
-        num_disused_masked_cards += disused_delta;
+        num_server_cards += 1;
+        num_disused_server_cards += disused_delta;
         if (card->HasNonEmptyValidNickname())
-          num_masked_cards_with_nickname += 1;
+          num_server_cards_with_nickname += 1;
         break;
       case CreditCard::RecordType::kFullServerCard:
-        UMA_HISTOGRAM_COUNTS_1000(
-            "Autofill.DaysSinceLastUse.StoredCreditCard.Server",
-            days_since_last_use);
-        UMA_HISTOGRAM_COUNTS_1000(
-            "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Unmasked",
-            days_since_last_use);
-        num_unmasked_cards += 1;
-        num_disused_unmasked_cards += disused_delta;
-        break;
       case CreditCard::RecordType::kVirtualCard:
-        // This card type is not persisted in Chrome.
+        // These card types are not persisted in Chrome.
         NOTREACHED_IN_MIGRATION();
         break;
     }
   }
 
   // Calculate some summary info.
-  const size_t num_server_cards = num_masked_cards + num_unmasked_cards;
   const size_t num_cards = num_local_cards + num_server_cards;
-  const size_t num_disused_server_cards =
-      num_disused_masked_cards + num_disused_unmasked_cards;
   const size_t num_disused_cards =
       num_disused_local_cards + num_disused_server_cards;
 
@@ -1533,13 +1516,9 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
       num_local_cards_with_invalid_number);
   UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardCount.Server",
                             num_server_cards);
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardCount.Server.Masked",
-                            num_masked_cards);
   UMA_HISTOGRAM_COUNTS_1000(
-      "Autofill.StoredCreditCardCount.Server.Masked.WithNickname",
-      num_masked_cards_with_nickname);
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardCount.Server.Unmasked",
-                            num_unmasked_cards);
+      "Autofill.StoredCreditCardCount.Server.WithNickname",
+      num_server_cards_with_nickname);
 
   // For card types held by the user, log how many are disused.
   if (num_cards) {
@@ -1553,16 +1532,6 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   if (num_server_cards) {
     UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardDisusedCount.Server",
                               num_disused_server_cards);
-  }
-  if (num_masked_cards) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Autofill.StoredCreditCardDisusedCount.Server.Masked",
-        num_disused_masked_cards);
-  }
-  if (num_unmasked_cards) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Autofill.StoredCreditCardDisusedCount.Server.Unmasked",
-        num_disused_unmasked_cards);
   }
 
   // Log the number of server cards that are enrolled with virtual cards.

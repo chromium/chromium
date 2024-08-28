@@ -1025,12 +1025,11 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
   local_cards.reserve(2);
   server_cards.reserve(10);
 
-  // Create in-use and in-disuse cards of each record type: 1 of each for local,
-  // 2 of each for masked, and 3 of each for unmasked.
+  // Create in-use and in-disuse cards of each record type: 1 of each for local
+  // and 2 of each for masked.
   const std::vector<CreditCard::RecordType> record_types{
       CreditCard::RecordType::kLocalCard,
-      CreditCard::RecordType::kMaskedServerCard,
-      CreditCard::RecordType::kFullServerCard};
+      CreditCard::RecordType::kMaskedServerCard};
   int num_cards_of_type = 0;
   for (auto record_type : record_types) {
     num_cards_of_type += 1;
@@ -1065,19 +1064,11 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount", 1);
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount.Local", 1);
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount.Server", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardCount.Server.Masked", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardCount.Server.Unmasked", 1);
-  histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount", 12, 1);
+  histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount", 6, 1);
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount.Local", 2,
                                      1);
-  histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount.Server",
-                                     10, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardCount.Server.Masked", 4, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardCount.Server.Unmasked", 6, 1);
+  histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount.Server", 4,
+                                     1);
 
   // Validate the disused count metrics.
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardDisusedCount", 1);
@@ -1085,52 +1076,32 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
       "Autofill.StoredCreditCardDisusedCount.Local", 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.StoredCreditCardDisusedCount.Server", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardDisusedCount.Server.Masked", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardDisusedCount.Server.Unmasked", 1);
-  histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardDisusedCount", 6,
+  histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardDisusedCount", 3,
                                      1);
   histogram_tester.ExpectBucketCount(
       "Autofill.StoredCreditCardDisusedCount.Local", 1, 1);
   histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardDisusedCount.Server", 5, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardDisusedCount.Server.Masked", 2, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardDisusedCount.Server.Unmasked", 3, 1);
+      "Autofill.StoredCreditCardDisusedCount.Server", 2, 1);
 
   // Validate the days-since-last-use metrics.
   histogram_tester.ExpectTotalCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard", 12);
+      "Autofill.DaysSinceLastUse.StoredCreditCard", 6);
   histogram_tester.ExpectTotalCount(
       "Autofill.DaysSinceLastUse.StoredCreditCard.Local", 2);
   histogram_tester.ExpectTotalCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard.Server", 10);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Masked", 4);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Unmasked", 6);
+      "Autofill.DaysSinceLastUse.StoredCreditCard.Server", 4);
   histogram_tester.ExpectBucketCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard", 30, 6);
+      "Autofill.DaysSinceLastUse.StoredCreditCard", 30, 3);
   histogram_tester.ExpectBucketCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard", 200, 6);
+      "Autofill.DaysSinceLastUse.StoredCreditCard", 200, 3);
   histogram_tester.ExpectBucketCount(
       "Autofill.DaysSinceLastUse.StoredCreditCard.Local", 30, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.DaysSinceLastUse.StoredCreditCard.Local", 200, 1);
   histogram_tester.ExpectBucketCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard.Server", 30, 5);
+      "Autofill.DaysSinceLastUse.StoredCreditCard.Server", 30, 2);
   histogram_tester.ExpectBucketCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard.Server", 200, 5);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Masked", 30, 2);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Masked", 200, 2);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Unmasked", 30, 3);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Unmasked", 200, 3);
+      "Autofill.DaysSinceLastUse.StoredCreditCard.Server", 200, 2);
   histogram_tester.ExpectBucketCount(
       "Autofill.StoredCreditCardCount.Server.WithCardArtImage", 2, 1);
 }
@@ -1183,9 +1154,7 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
       "Autofill.StoredCreditCardCount.Local.WithNickname", 1);
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount.Server", 1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardCount.Server.Masked", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardCount.Server.Masked.WithNickname", 1);
+      "Autofill.StoredCreditCardCount.Server.WithNickname", 1);
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount", 6, 1);
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount.Local", 2,
                                      1);
@@ -1194,9 +1163,7 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount.Server", 4,
                                      1);
   histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardCount.Server.Masked", 4, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardCount.Server.Masked.WithNickname", 2, 1);
+      "Autofill.StoredCreditCardCount.Server.WithNickname", 2, 1);
 }
 
 // Tests that local cards with invalid card numbers are correctly logged.

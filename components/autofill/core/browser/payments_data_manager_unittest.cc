@@ -1353,19 +1353,11 @@ TEST_F(PaymentsDataManagerTest, LogStoredCreditCardMetrics) {
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount", 1);
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount.Local", 1);
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount.Server", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardCount.Server.Masked", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardCount.Server.Unmasked", 1);
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount", 4, 1);
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount.Local", 2,
                                      1);
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount.Server", 2,
                                      1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardCount.Server.Masked", 2, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardCount.Server.Unmasked", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata", 1);
   histogram_tester.ExpectBucketCount(

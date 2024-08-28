@@ -414,15 +414,7 @@ chromium-metrics-reviews@google.com.
   <owner>jsaul@google.com</owner>
   <suffix name="WithNickname" label="Card with a valid nickname"/>
   <affected-histogram name="Autofill.StoredCreditCardCount.Local"/>
-  <affected-histogram name="Autofill.StoredCreditCardCount.Server.Masked"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillStoredServerCardType" separator=".">
-  <suffix name="Masked" label="Masked cards"/>
-  <suffix name="Unmasked" label="Unmasked cards (locally cached)"/>
-  <affected-histogram name="Autofill.DaysSinceLastUse.StoredCreditCard.Server"/>
   <affected-histogram name="Autofill.StoredCreditCardCount.Server"/>
-  <affected-histogram name="Autofill.StoredCreditCardDisusedCount.Server"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AutofillSyncState" separator=".">
