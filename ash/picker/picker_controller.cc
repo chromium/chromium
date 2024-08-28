@@ -590,7 +590,6 @@ PickerModeType PickerController::GetMode() {
 void PickerController::OnViewIsDeleting(views::View* view) {
   view_observation_.Reset();
 
-  feature_usage_metrics_.StopUsage();
   session_.reset();
 }
 
@@ -611,9 +610,12 @@ PickerController::Session::Session(
       emoji_suggester(&emoji_history_model, std::move(get_name)),
       session_metrics(prefs) {
   session_metrics.OnStartSession(focused_client);
+  feature_usage_metrics.StartUsage();
 }
 
-PickerController::Session::~Session() = default;
+PickerController::Session::~Session() {
+  feature_usage_metrics.StopUsage();
+}
 
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
                                   WidgetTriggerSource trigger_source) {
@@ -655,7 +657,6 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   }
   widget_->Show();
 
-  feature_usage_metrics_.StartUsage();
   view_observation_.Observe(widget_->GetContentsView());
 }
 
