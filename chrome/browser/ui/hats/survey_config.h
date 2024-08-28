@@ -84,6 +84,7 @@ extern const char kHatsSurveyTriggerSafetyHubAndroid[];
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 extern const char kHatsSurveyTriggerPermissionsPrompt[];
+extern const char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[];
 
 extern const char kHatsSurveyTriggerTesting[];
 // The Trigger ID for a test HaTS Next survey which is available for testing

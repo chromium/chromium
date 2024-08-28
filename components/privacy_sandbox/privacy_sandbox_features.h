@@ -258,6 +258,14 @@ BASE_DECLARE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxPrivacyPolicy);
 
+// Enables the `Always on` sentiment survey
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxSentimentSurvey);
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<std::string>
+    kPrivacySandboxSentimentSurveyTriggerId;
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

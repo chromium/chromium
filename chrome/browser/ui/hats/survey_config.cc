@@ -12,13 +12,14 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"  // nogncheck
-#include "components/performance_manager/public/features.h"         // nogncheck
-#include "components/permissions/constants.h"                       // nogncheck
-#include "components/safe_browsing/core/common/features.h"          // nogncheck
+#include "components/performance_manager/public/features.h"  // nogncheck
+#include "components/permissions/constants.h"                // nogncheck
+#include "components/safe_browsing/core/common/features.h"   // nogncheck
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"  // nogncheck
 #else
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -133,6 +134,8 @@ constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
 constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
+constexpr char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[] =
+    "privacy-sandbox-sentiment-survey";
 
 namespace {
 
@@ -176,6 +179,12 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           permissions::kPermissionPromptSurveyUrlKey,
           permissions::kPermissionPromptSurveyPepcPromptPositionKey,
           permissions::kPermissionPromptSurveyInitialPermissionStatusKey});
+
+  // Privacy sandbox always on sentiment survey
+  survey_configs.emplace_back(
+      &privacy_sandbox::kPrivacySandboxSentimentSurvey,
+      kHatsSurveyTriggerPrivacySandboxSentimentSurvey,
+      privacy_sandbox::kPrivacySandboxSentimentSurveyTriggerId.Get());
 
 #if !BUILDFLAG(IS_ANDROID)
   // Dev tools surveys.
