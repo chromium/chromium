@@ -3996,9 +3996,6 @@ extern const char kFilesConflictDialogDescription[];
 extern const char kFilesExtractArchiveName[];
 extern const char kFilesExtractArchiveDescription[];
 
-extern const char kFilesNewDirectoryTreeName[];
-extern const char kFilesNewDirectoryTreeDescription[];
-
 extern const char kFilesLocalImageSearchName[];
 extern const char kFilesLocalImageSearchDescription[];
 

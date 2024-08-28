@@ -6928,11 +6928,6 @@ const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =
     "Enable the simplified archive extraction feature in Files app";
 
-const char kFilesNewDirectoryTreeName[] =
-    "New directory tree implementation in Files app";
-const char kFilesNewDirectoryTreeDescription[] =
-    "Enable the new directory tree implementation in Files app.";
-
 const char kFilesLocalImageSearchName[] = "Search local images by query.";
 const char kFilesLocalImageSearchDescription[] =
     "Enable searching local images by query.";

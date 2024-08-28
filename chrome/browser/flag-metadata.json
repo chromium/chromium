@@ -4729,11 +4729,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "files-new-directory-tree",
-    "owners": [ "wenbojie@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "files-single-partition-format",
     "owners": [ "austinct@chromium.org" ],
     "expiry_milestone": 104
