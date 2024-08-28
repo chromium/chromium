@@ -359,7 +359,7 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     return false;
 
   DCHECK(IsPaintable());
-  FinalizeFrame(FlushReason::kWritePixels);
+  Host()->FlushRecording(FlushReason::kWritePixels);
 
   return Host()->ResourceProvider()->WritePixels(orig_info, pixels, row_bytes,
                                                  x, y);
