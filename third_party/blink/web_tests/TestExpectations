@@ -4074,9 +4074,6 @@ crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-latching.html [ Crash
 crbug.com/874162 [ Debug Mac13-arm64 ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Mac Release ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Crash Failure Pass Timeout ]
 
-# Passes in threaded mode, fails without it. This is a real bug.
-crbug.com/1112183 fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
-
 # Sheriff 2018-09-10
 crbug.com/881207 fast/js/regress/splice-to-remove.html [ Pass Timeout ]
 
