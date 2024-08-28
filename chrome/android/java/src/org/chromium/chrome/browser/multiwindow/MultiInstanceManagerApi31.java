@@ -766,18 +766,28 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     /**
      * Open or launch a given instance.
+     *
      * @param instanceId ID of the instance to open.
      * @param taskId ID of the task the instance resides in.
      */
-    private void openInstance(int instanceId, int taskId) {
+    @VisibleForTesting
+    void openInstance(int instanceId, int taskId) {
         RecordUserAction.record("Android.WindowManager.SelectWindow");
         if (taskId != INVALID_TASK_ID) {
-            // Just bring the task foreground if it is alive. This either completes the opening
-            // of the instance or leads to creating a new activity.
+            // Bring the task to foreground if the activity is alive, this completes the opening
+            // of the instance. Otherwise, create a new activity for the instance and kill the
+            // existing task.
             // TODO: Consider killing the instance and start it again to be able to position it
             //       in the intended window.
-            bringTaskForeground(taskId);
-            return;
+            if (getActivityById(instanceId) != null) {
+                bringTaskForeground(taskId);
+                return;
+            } else {
+                var appTask = AndroidTaskUtils.getAppTaskFromId(mActivity, taskId);
+                if (appTask != null) {
+                    appTask.finishAndRemoveTask();
+                }
+            }
         }
         onMultiInstanceModeStarted();
         // TODO: Pass this flag from UI to control the window to open.
@@ -799,6 +809,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     /**
      * Launch the given intent in an existing ChromeTabbedActivity instance.
+     *
      * @param intent The intent to launch.
      * @param instanceId ID of the instance to launch the intent in.
      */
@@ -843,18 +854,18 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (activity != null) activity.finishAndRemoveTask();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void bringTaskForeground(int taskId) {
         ActivityManager am = (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
         am.moveTaskToFront(taskId, 0);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void setupIntentForReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {
         ReparentingTask.from(tab).setupIntent(mActivity, intent, finalizeCallback);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void beginReparenting(
             Tab tab, Intent intent, Bundle startActivityOptions, Runnable finalizeCallback) {
         ReparentingTask.from(tab).begin(mActivity, intent, startActivityOptions, finalizeCallback);

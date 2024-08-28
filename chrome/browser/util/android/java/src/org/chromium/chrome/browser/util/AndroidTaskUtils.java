@@ -12,9 +12,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
@@ -182,5 +186,28 @@ public class AndroidTaskUtils {
             }
         }
         return matchingInfos;
+    }
+
+    /**
+     * Get the {@link AppTask} for a given taskId.
+     *
+     * @param context The activity context.
+     * @param taskId The id of the task whose AppTask will be returned.
+     * @return The {@link AppTask} for a given taskId if found, {@code null} otherwise.
+     */
+    public static @Nullable AppTask getAppTaskFromId(Context context, int taskId) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (var appTask : am.getAppTasks()) {
+            var taskInfo = appTask.getTaskInfo();
+            if (taskInfo == null) continue;
+            int taskInfoId = taskInfo.id;
+            if (VERSION.SDK_INT >= VERSION_CODES.Q) {
+                taskInfoId = taskInfo.taskId;
+            }
+            if (taskInfoId == taskId) {
+                return appTask;
+            }
+        }
+        return null;
     }
 }
