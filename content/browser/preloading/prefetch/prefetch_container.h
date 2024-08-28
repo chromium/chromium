@@ -233,8 +233,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The status of the current prefetch. Note that |HasPrefetchStatus| will be
   // initially false until |SetPrefetchStatus| is called. |SetPrefetchStatus|
-  // also sets |attempt_| PreloadingHoldbackStatus, PreloadingTriggeringOutcome
-  // and PreloadingFailureReason. It is only safe to call after
+  // also sets |attempt_| PreloadingTriggeringOutcome and
+  // PreloadingFailureReason. It is only safe to call after
   // `OnEligibilityCheckComplete`.
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
