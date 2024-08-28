@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Throw if two output ArrayBufferViews sharing the same ArrayBuffer
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-Harness: the test ran to completion.
-

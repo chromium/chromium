@@ -137,6 +137,7 @@ constexpr char kOpSliceTypeName[] = "slice_by_size";
 constexpr char kOpSoftmaxTypeName[] = "softmax";
 constexpr char kOpSoftplusTypeName[] = "softplus";
 constexpr char kOpSoftsignTypeName[] = "softsign";
+constexpr char kOpSplitTypeName[] = "split";
 constexpr char kOpTanhTypeName[] = "tanh";
 constexpr char kOpTransposeTypeName[] = "transpose";
 constexpr char kOpWhereTypeName[] = "select";
@@ -955,6 +956,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
                           block);
         break;
       }
+      case mojom::Operation::Tag::kSplit: {
+        AddOperationForSplit(*operation->get_split(), block);
+        break;
+      }
       case mojom::Operation::Tag::kTanh: {
         CHECK(context_properties_.data_type_limits.tanh_input.Has(
             MILDataTypeToOperandType(
@@ -978,7 +983,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
-      case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTriangular:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
@@ -2684,6 +2688,39 @@ GraphBuilderCoreml::AddOperationForSoftmax(
       CreateScalarImmediateValue(base::checked_cast<int32_t>(operation.axis)));
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
+}
+
+void GraphBuilderCoreml::AddOperationForSplit(
+    const mojom::Split& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  if (operation.output_operand_ids.size() == 1) {
+    return AddUnaryOperation(kOpIdentityTypeName, operation.input_operand_id,
+                             operation.output_operand_ids[0], block);
+  }
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(context_properties_.data_type_limits.split_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpSplitTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  base::FixedArray<int32_t> split_sizes(operation.output_operand_ids.size());
+  for (size_t i = 0; i < operation.output_operand_ids.size(); ++i) {
+    const uint64_t output_operand_id = operation.output_operand_ids[i];
+    PopulateNamedValueType(output_operand_id, *op->add_outputs());
+    const OperandInfo& output_operand_info = GetOperandInfo(output_operand_id);
+    CHECK_LT(operation.axis, output_operand_info.dimensions.size());
+    split_sizes[i] = output_operand_info.dimensions[operation.axis];
+  }
+  static constexpr char kParamSplitSizes[] = "split_sizes";
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kParamSplitSizes, Create1DTensorImmediateValue<int32_t>(split_sizes)},
+       {kOpParamAxis, CreateScalarImmediateValue(
+                          base::checked_cast<int32_t>(operation.axis))}});
 }
 
 void GraphBuilderCoreml::AddOperationForTranspose(

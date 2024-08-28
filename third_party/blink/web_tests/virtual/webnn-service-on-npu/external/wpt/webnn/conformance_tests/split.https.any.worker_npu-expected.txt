@@ -1,23 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] split float32 1D constant tensor number splits default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 1D tensor number splits default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 2D tensor number splits default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 3D tensor number splits default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 4D tensor number splits default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 5D tensor number splits default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 4D tensor array splits default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 4D tensor number splits options.axis
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 5D tensor array splits=[3, 3] options.axis=2
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
-[FAIL] split float32 5D tensor array splits=[2, 4] options.axis=0
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator split."
+  assert_true: assert_array_approx_equals_ulp: test split float32 actual -64.5 should be close enough to expected -64.52056884765625 by the acceptable 0 ULP distance, but they have 2696 ULP distance expected true got false
 Harness: the test ran to completion.
 
