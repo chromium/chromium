@@ -124,7 +124,7 @@ class CORE_EXPORT CSSSelector {
     kClass,             // Example: .class
     kPseudoClass,       // Example: :nth-child(2)
     kPseudoElement,     // Example: ::first-line
-    kPagePseudoClass,   // ??
+    kPagePseudoClass,   // Example: @page :right
     kAttributeExact,    // Example: E[foo="bar"]
     kAttributeSet,      // Example: E[foo]
     kAttributeHyphen,   // Example: E[foo|="bar"]
