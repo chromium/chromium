@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <text-underline-offset> from [16px] to [200%] at (0.3) should be [calc(120% + 11.2px)]
+  assert_equals: expected "calc ( 120 % + 11.2px ) " but got "calc ( 60 % + 11.2px ) "
+[FAIL] CSS Transitions with transition: all: property <text-underline-offset> from [16px] to [200%] at (0.3) should be [calc(120% + 11.2px)]
+  assert_equals: expected "calc ( 120 % + 11.2px ) " but got "calc ( 60 % + 11.2px ) "
+[FAIL] CSS Animations: property <text-underline-offset> from [16px] to [200%] at (0.3) should be [calc(120% + 11.2px)]
+  assert_equals: expected "calc ( 120 % + 11.2px ) " but got "calc ( 60 % + 11.2px ) "
+[FAIL] Web Animations: property <text-underline-offset> from [16px] to [200%] at (0.3) should be [calc(120% + 11.2px)]
+  assert_equals: expected "calc ( 120 % + 11.2px ) " but got "calc ( 60 % + 11.2px ) "
+[FAIL] CSS Transitions: property <text-underline-offset> from [100%] to [32px] at (0.3) should be [calc(100% + 9.6px)]
+  assert_equals: expected "calc ( 100 % + 9.6px ) " but got "calc ( 70 % + 9.6px ) "
+[FAIL] CSS Transitions: property <text-underline-offset> from [100%] to [32px] at (0.6) should be [calc(100% + 19.2px)]
+  assert_equals: expected "calc ( 100 % + 19.2px ) " but got "calc ( 40 % + 19.2px ) "
+[FAIL] CSS Transitions: property <text-underline-offset> from [100%] to [32px] at (1) should be [calc(100% + 32px)]
+  assert_equals: expected "calc ( 100 % + 32px ) " but got "calc ( 0 % + 32px ) "
+[FAIL] CSS Transitions with transition: all: property <text-underline-offset> from [100%] to [32px] at (0.3) should be [calc(100% + 9.6px)]
+  assert_equals: expected "calc ( 100 % + 9.6px ) " but got "calc ( 70 % + 9.6px ) "
+[FAIL] CSS Transitions with transition: all: property <text-underline-offset> from [100%] to [32px] at (0.6) should be [calc(100% + 19.2px)]
+  assert_equals: expected "calc ( 100 % + 19.2px ) " but got "calc ( 40 % + 19.2px ) "
+[FAIL] CSS Transitions with transition: all: property <text-underline-offset> from [100%] to [32px] at (1) should be [calc(100% + 32px)]
+  assert_equals: expected "calc ( 100 % + 32px ) " but got "calc ( 0 % + 32px ) "
+[FAIL] CSS Animations: property <text-underline-offset> from [100%] to [32px] at (0.3) should be [calc(100% + 9.6px)]
+  assert_equals: expected "calc ( 100 % + 9.6px ) " but got "calc ( 70 % + 9.6px ) "
+[FAIL] CSS Animations: property <text-underline-offset> from [100%] to [32px] at (0.6) should be [calc(100% + 19.2px)]
+  assert_equals: expected "calc ( 100 % + 19.2px ) " but got "calc ( 40 % + 19.2px ) "
+[FAIL] CSS Animations: property <text-underline-offset> from [100%] to [32px] at (1) should be [calc(100% + 32px)]
+  assert_equals: expected "calc ( 100 % + 32px ) " but got "calc ( 0 % + 32px ) "
+[FAIL] Web Animations: property <text-underline-offset> from [100%] to [32px] at (0.3) should be [calc(100% + 9.6px)]
+  assert_equals: expected "calc ( 100 % + 9.6px ) " but got "calc ( 70 % + 9.6px ) "
+[FAIL] Web Animations: property <text-underline-offset> from [100%] to [32px] at (0.6) should be [calc(100% + 19.2px)]
+  assert_equals: expected "calc ( 100 % + 19.2px ) " but got "calc ( 40 % + 19.2px ) "
+[FAIL] Web Animations: property <text-underline-offset> from [100%] to [32px] at (1) should be [calc(100% + 32px)]
+  assert_equals: expected "calc ( 100 % + 32px ) " but got "calc ( 0 % + 32px ) "
+Harness: the test ran to completion.
+

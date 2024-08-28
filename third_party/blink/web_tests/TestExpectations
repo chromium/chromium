@@ -2629,6 +2629,8 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-text-decor/text-underline-offset-calc.html [ Failure ]
+external/wpt/css/css-text-decor/text-underline-offset-percentage.html [ Failure ]
 crbug.com/362622397 [ Win ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-circle-closest-corner.html [ Failure ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-circle-farthest-corner.html [ Failure ]

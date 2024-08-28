@@ -136808,12 +136808,12 @@
          ]
         ],
         "masonry-gap-002.html": [
-         "6dae0a1a7296dd52c48e5b53d8a903aa2ff4d5c4",
+         "2c87c4eeda7fec8fcfa7c0762340ffb68f8841ed",
          [
           null,
           [
            [
-            "/css/css-grid/masonry/tentative/gap/masonry-gap-001-ref.html",
+            "/css/css-grid/masonry/tentative/gap/masonry-gap-002-ref.html",
             "=="
            ]
           ],
@@ -165590,7 +165590,7 @@
       ]
      ],
      "overflow-auto-scrollbar-gutter-intrinsic-003.html": [
-      "ab247d9ca5a7cac660200cb475feb6b69093e520",
+      "6827773543b48ecdc39e46e8239292b9e7885256",
       [
        null,
        [
@@ -165599,7 +165599,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            40
+           ],
+           [
+            0,
+            5
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "overflow-body-propagation-001.html": [
@@ -177661,7 +177677,7 @@
       ]
      ],
      "textarea-scrollbar-width-none.html": [
-      "dcfaf5b6270ee0e0092dc795d33bb01af0b9a695",
+      "76f2b7f63449cd9b87af939a8ed5a3d42be14605",
       [
        null,
        [
@@ -177670,7 +177686,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            150
+           ],
+           [
+            0,
+            10
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "transparent-on-root.html": [
@@ -180396,7 +180428,7 @@
          ]
         ],
         "shape-outside-inset-020.html": [
-         "929882733370e26f0adf10d9b0d5c92b0b050ec4",
+         "a74afb43a1b012e80c5ae72e5a3b4ae0f6db01b6",
          [
           null,
           [
@@ -180412,7 +180444,7 @@
              [
               [
                0,
-               6
+               8
               ],
               [
                0,
@@ -180425,7 +180457,7 @@
          ]
         ],
         "shape-outside-inset-021.html": [
-         "e1d48bff712d860df397739bc4c7849f0e41a70f",
+         "8c0cef244bee99f33d1e6dc144b23155d48e7bd4",
          [
           null,
           [
@@ -180434,11 +180466,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               8
+              ],
+              [
+               0,
+               4
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-inset-022.html": [
-         "5c51dc1a8eeaeb58db38facda6aa7d6ae4499b57",
+         "ff1cbe749f2e9536d72ba6216db5ad1d47b64e45",
          [
           null,
           [
@@ -180447,11 +180495,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               8
+              ],
+              [
+               0,
+               4
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-inset-023.html": [
-         "3a97f8327eb03a87a3e0f667942124c4ba94a8b8",
+         "5b784366940cd6bf41c8f10a14377f39770cc783",
          [
           null,
           [
@@ -180467,7 +180531,7 @@
              [
               [
                0,
-               6
+               8
               ],
               [
                0,
@@ -180480,7 +180544,7 @@
          ]
         ],
         "shape-outside-inset-024.html": [
-         "5de0dad9ebc8ed851eb9df11f6188ed8af093f52",
+         "1f0fc33ed1f5856cc45557ae6ba544fcbddf0384",
          [
           null,
           [
@@ -180496,7 +180560,7 @@
              [
               [
                0,
-               6
+               8
               ],
               [
                0,
@@ -180509,7 +180573,7 @@
          ]
         ],
         "shape-outside-inset-025.html": [
-         "c843e0f7f13244f56143b19c4042790e85e88598",
+         "02ac7eb5e5d2e5247ede1dba9aea78ba8e6c74ad",
          [
           null,
           [
@@ -180518,11 +180582,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               8
+              ],
+              [
+               0,
+               4
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-inset-026.html": [
-         "354ddafaa1db787bc73eb36b4c9bfeabbdd2a5c3",
+         "d2a4eb626944bda9562e4fc2fa087e340583f428",
          [
           null,
           [
@@ -180531,11 +180611,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               8
+              ],
+              [
+               0,
+               4
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-inset-027.html": [
-         "69fb1e78b3e262fff2ce97e7039720c9888688ab",
+         "a667b0622b5904c97d6014aa1365114864363c99",
          [
           null,
           [
@@ -180544,7 +180640,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               8
+              ],
+              [
+               0,
+               2
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-inset-028.html": [
@@ -210611,12 +210723,25 @@
       ]
      ],
      "text-underline-offset-002.html": [
-      "1b21079b34c23b6fa8889529e67c1a35ef264ae2",
+      "e11ce695403499c46e1bcc77cfd5bf6212f34d8a",
       [
        null,
        [
         [
          "/css/css-text-decor/reference/text-underline-offset-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-underline-offset-calc.html": [
+      "c8e3f2b88d584b919f8d54b813f56ca850d1d65c",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-underline-offset-calc-ref.html",
          "=="
         ]
        ],
@@ -210656,6 +210781,19 @@
        [
         [
          "/css/css-text-decor/reference/text-underline-offset-overline-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-underline-offset-percentage.html": [
+      "3e16d949ecbc3ccbb12d9da1a2aa68b94fee2219",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-underline-offset-percentage-ref.html",
          "=="
         ]
        ],
@@ -280053,6 +280191,19 @@
      },
      "replaced-elements": {
       "attributes-for-embedded-content-and-images": {
+       "canvas-dimension-attributes.html": [
+        "536b1cd0c455595372cca3a260f1183e1d221ec5",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-200px-square.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "img-dim.html": [
         "2d636c9417738423141203001302eb344151e295",
         [
@@ -317317,6 +317468,10 @@
        "e1822fa544ec91a113eaa911f69243d767eaf5cc",
        []
       ],
+      "style-query-no-cycle-expected.txt": [
+       "707460938b61f7c361364d6b292f1ab6b6f2e069",
+       []
+      ],
       "support": {
        "cq-testcommon.js": [
         "2eaca1dd091cbf7c3a406fa02c2696d7a9c258e4",
@@ -330870,7 +331025,7 @@
          []
         ],
         "masonry-gap-002-ref.html": [
-         "834a884f7630844d75730d12b4f7871d0911b637",
+         "7c985442fad934ef038abb1e5188395dd4fed978",
          []
         ]
        },
@@ -330894,7 +331049,7 @@
          []
         ],
         "masonry-intrinsic-sizing-cols-003-ref.html": [
-         "d088b132c29e68905337219f97c2c018f5985f40",
+         "9ffea0a5d211c24b65fa811915176b8d861a43e9",
          []
         ],
         "masonry-intrinsic-sizing-cols-004-ref.html": [
@@ -330902,7 +331057,7 @@
          []
         ],
         "masonry-intrinsic-sizing-cols-005-ref.html": [
-         "99d5d05dd4e06eb23e7b6a2dab59e5e2743a2240",
+         "e65661bb56958f7772913f953516c2e28e68eacc",
          []
         ],
         "masonry-intrinsic-sizing-cols-006-ref.html": [
@@ -346494,6 +346649,10 @@
       "text-decoration-thickness-interpolation-expected.txt": [
        "36d500e85bff872ee3ef7cefa5844a4b114f59fd",
        []
+      ],
+      "text-underline-offset-interpolation-expected.txt": [
+       "e70dfd052a92631a8d9fa6178a48cbc8dd88f620",
+       []
       ]
      },
      "invalidation": {
@@ -347232,6 +347391,14 @@
        []
       ]
      },
+     "text-underline-offset-calc-ref.html": [
+      "ae82f4dac6e0a1e3ebef44dfcf5a6cbc5258e59b",
+      []
+     ],
+     "text-underline-offset-percentage-ref.html": [
+      "64ec95905e4c1d0a0198048d12268871d1c5fc60",
+      []
+     ],
      "tools": {
       "generate-text-emphasis-line-height-tests.py": [
        "e2a4457f38e4659534fc35c794d2000e3c61635f",
@@ -393965,14 +394132,6 @@
      "59643ca5ba557acb22f73e0033f61ecbb31b955f",
      []
     ],
-    "pointerevent_pointercapture_in_frame_mouse-expected.txt": [
-     "be6da2668f5106e74c5e86b211b944e125d71cd7",
-     []
-    ],
-    "pointerevent_pointercapture_in_frame_touch-expected.txt": [
-     "e94d02d6b0677b91bbfa65b3204e1ad0277a1bb4",
-     []
-    ],
     "pointerevent_pointermove_after_pointerup_target_removed-expected.txt": [
      "8d5fc176e25f1df475f5460d1b906f120916e253",
      []
@@ -404269,6 +404428,10 @@
       ],
       "SVGGeometryElement.isPointInStroke-01-expected.txt": [
        "277c8347e975a473eb1526d8a2f4c5b8fab0d71a",
+       []
+      ],
+      "SVGGraphicsElement.getBBox-05-expected.txt": [
+       "946a6b96ff37c4eab615aa2f89c10c4d7a8f923b",
        []
       ],
       "SVGLength-px-expected.txt": [
@@ -459050,6 +459213,13 @@
         {}
        ]
       ],
+      "style-query-no-cycle.html": [
+       "5a179d38976637780dffcb23829c7ee386ae6371",
+       [
+        null,
+        {}
+       ]
+      ],
       "style-query-with-unknown-width.html": [
        "52f250c2d0d942db2d1e2e7eeae0b89f593cc744",
        [
@@ -480429,7 +480599,7 @@
        ]
       ],
       "text-underline-offset-interpolation.html": [
-       "5c0e37157c865123033536d2247c207bafac68b2",
+       "6845cac9e11c937fb477a4cb53f9155c970643de",
        [
         null,
         {}
@@ -480674,7 +480844,7 @@
       }
      },
      "text-underline-offset-computed.html": [
-      "26861c1565bcada9d14bb6f045bfcddf39cbdaab",
+      "00494dd051b9cb41d3dac5522ecc1601a3bef52a",
       [
        null,
        {}
@@ -480695,7 +480865,7 @@
       ]
      ],
      "text-underline-offset-valid.html": [
-      "a2323e792592cb0730007a9d3a7a690c6dcff2a2",
+      "ff7e992b093e01bcb5b156ed302cc48dc4ff382e",
       [
        null,
        {}
@@ -485286,6 +485456,13 @@
      },
      "attr-all-types.html": [
       "9418ed0865d1d04b638ea9c6011355295410c955",
+      [
+       null,
+       {}
+      ]
+     ],
+     "attr-container-style-query.html": [
+      "2cc872509c085ec05c9da512b2388dc1e5bafa78",
       [
        null,
        {}
@@ -628896,7 +629073,7 @@
      ]
     ],
     "pointerevent_pointercapture_in_frame.html": [
-     "9c26c4d5a3869bde8e201653f185a6cb023cb779",
+     "14be00968fad173347a0e29e0eb285d1283f12f6",
      [
       "pointerevents/pointerevent_pointercapture_in_frame.html?mouse",
       {
@@ -668724,6 +668901,13 @@
         {}
        ]
       ],
+      "SVGGraphicsElement.getBBox-05.html": [
+       "1d38640d0202ec266613d21fd9c8a480cea697da",
+       [
+        null,
+        {}
+       ]
+      ],
       "SVGGraphicsElement.getScreenCTM.html": [
        "7e5dfc649f89112cb8b4d31352a5b1e8788739fa",
        [
@@ -677929,7 +678113,7 @@
        ]
       ],
       "constructor.any.js": [
-       "51b1070d413586d159ea3d38304a652f3efea947",
+       "1143bab72a26ce15bd7c02c0a84164ccb8a26e5f",
        [
         null,
         {
@@ -684757,7 +684941,7 @@
      ]
     ],
     "audio-decoder.https.any.js": [
-     "666d3a159f16adb593ff3f942b409957f7e0f749",
+     "98ed49897d30461ca7e4f0652a69f6690c9ab043",
      [
       "webcodecs/audio-decoder.https.any.html",
       {
@@ -713296,6 +713480,195 @@
          [
           "title",
           "validation tests for WebNN API gather operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "gatherElements.https.any.js": [
+      "ed8af8da33041ecc8aaa558584b1d12f51709da5",
+      [
+       "webnn/validation_tests/gatherElements.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherElements.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherElements.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherElements.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherElements.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherElements operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gatherElements.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gatherElements operation"
          ],
          [
           "global",
