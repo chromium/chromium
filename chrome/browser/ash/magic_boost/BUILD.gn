@@ -73,7 +73,6 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/input_method",
     "//chromeos/components/magic_boost/public/cpp",
     "//components/sync_preferences:test_support",
     "//testing/gmock",
@@ -91,7 +90,6 @@ source_set("browser_tests") {
   sources = [ "magic_boost_browsertest.cc" ]
 
   deps = [
-    ":magic_boost",
     "//ash",
     "//ash/constants",
     "//base",

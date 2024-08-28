@@ -86,13 +86,11 @@ source_set("browser_tests") {
   sources = [ "mahi_ui_browsertest.cc" ]
 
   deps = [
-    ":mahi",
     ":test_util",
     "//ash",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/ui/views/mahi",
     "//chrome/test:test_support",
     "//chromeos/components/magic_boost/public/cpp",

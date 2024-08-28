@@ -115,10 +115,7 @@ static_library("test_support") {
     "network_portal_detector_test_utils.h",
   ]
 
-  deps = [
-    ":net",
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

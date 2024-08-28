@@ -270,7 +270,6 @@ static_library("login") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/system",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",

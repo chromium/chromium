@@ -236,7 +236,6 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
-    "//chrome/browser/ash/hats",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/profiles:profile",
@@ -307,13 +306,13 @@ if (is_chromeos_device) {
     sources_metadata = [ "terminal_integration_test.yaml" ]
 
     deps = [
-      ":apps",
       "//ash",
       "//ash/constants",
       "//base",
       "//chrome/browser",
       "//chrome/browser/ui",
       "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/web_applications",
       "//chrome/test:ash_integration_test_support",
       "//testing/gmock",
       "//testing/gtest",

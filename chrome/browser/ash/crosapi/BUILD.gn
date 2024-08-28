@@ -694,7 +694,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/cert_provisioning:test_support",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",
-    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/platform_keys:test_support",
     "//chrome/browser/ash/platform_keys/key_permissions:test_support",

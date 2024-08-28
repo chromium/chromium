@@ -129,7 +129,6 @@ static_library("app_restore") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/window_predictor",
-    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/scheduled_task_handler",
   ]

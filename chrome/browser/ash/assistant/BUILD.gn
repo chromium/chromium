@@ -53,7 +53,6 @@ if (is_chromeos_device) {
     sources_metadata = [ "assistant_integration_test.yaml" ]
 
     deps = [
-      ":assistant",
       "//ash",
       "//ash:test_support",
       "//ash/public/cpp",

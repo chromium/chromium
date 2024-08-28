@@ -109,7 +109,6 @@ if (!is_chromeos_device) {
     sources = [ "os_feedback_interactive_uitest.cc" ]
 
     deps = [
-      ":os_feedback",
       "//ash/constants",
       "//base",
       "//base/test:test_support",

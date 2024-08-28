@@ -86,7 +86,6 @@ static_library("scanning") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/drive",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/printing",
   ]

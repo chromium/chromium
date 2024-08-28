@@ -148,7 +148,6 @@ static_library("core") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/rsu",
-    "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
   ]

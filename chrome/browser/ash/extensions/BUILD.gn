@@ -170,7 +170,6 @@ source_set("browser_tests") {
     "//ash",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/accessibility:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",

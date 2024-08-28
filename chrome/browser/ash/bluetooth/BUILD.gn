@@ -85,7 +85,6 @@ if (is_chromeos_device) {
     sources_metadata = [ "bluetooth_integration_test.yaml" ]
 
     deps = [
-      ":bluetooth",
       "//ash",
       "//base",
       "//base/test:test_support",
