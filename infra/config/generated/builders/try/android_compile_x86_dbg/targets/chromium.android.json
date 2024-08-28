@@ -1,0 +1,7 @@
+{
+  "Android x86 Builder (dbg)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}

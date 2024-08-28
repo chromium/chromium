@@ -491,6 +491,8 @@ def _finalize_swarming(swarming):
         d["named_caches"] = [_finalize_named_cache(c) for c in named_caches]
     if d["shards"] == 1:
         d.pop("shards")
+    if d["optional_dimensions"]:
+        d["optional_dimensions"] = {str(k): v for k, v in d["optional_dimensions"].items()}
     return {k: v for k, v in d.items() if v != None}
 
 def _finalize_resultdb(resultdb):

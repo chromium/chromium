@@ -44,7 +44,8 @@
           "builder": "Android ASAN (dbg)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-asan-compile-dbg/targets"
     }
   },
   "$build/reclient": {

@@ -9,6 +9,24 @@
 load("//lib/targets.star", "targets")
 
 targets.bundle(
+    name = "android_10_rel_gtests",
+    targets = [
+        "android_ar_gtests",
+        "android_trichrome_smoke_tests",
+        "vr_android_specific_chromium_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_ar_gtests",
+    targets = [
+        "monochrome_public_test_ar_apk",
+        # Name is vr_*, but actually has AR tests.
+        "vr_android_unittests",
+    ],
+)
+
+targets.bundle(
     name = "android_marshmallow_gtests",
     targets = [
         "android_smoke_tests",
@@ -66,6 +84,49 @@ targets.bundle(
         "chromium_tracing_gtests",
         # No standard tests due to capacity, no Vega tests since it's currently
         # O only.
+    ],
+)
+
+targets.bundle(
+    name = "bfcache_android_gtests",
+    targets = [
+        "bf_cache_android_browsertests",
+        "bfcache_generic_gtests",
+        "webview_instrumentation_test_apk_bfcache_mutations",
+        "webview_cts_tests_bfcache_mutations",
+    ],
+    per_test_modifications = {
+        "bf_cache_android_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "webview_cts_tests_bfcache_mutations": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "webview_instrumentation_test_apk_bfcache_mutations": targets.mixin(
+            swarming = targets.swarming(
+                shards = 12,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "cast_junit_tests",
+    targets = [
+        "cast_base_junit_tests",
+        "cast_shell_junit_tests",
+    ],
+    mixins = [
+        "x86-64",
+        "linux-jammy",
+        "junit-swarming-emulator",
     ],
 )
 

@@ -6,11 +6,6 @@
 {
   'basic_suites': {
 
-    'android_ar_gtests': {
-      'monochrome_public_test_ar_apk': {},
-      'vr_android_unittests': {},
-    },
-
     'android_ci_only_fieldtrial_webview_tests': {
       'webview_trichrome_64_cts_tests_no_field_trial': {
         'test': 'webview_trichrome_64_cts_tests',
@@ -285,18 +280,6 @@
       'wm_unittests': {},
     },
 
-    'bfcache_android_specific_gtests': {
-      'bf_cache_android_browsertests': {
-        'test': 'android_browsertests',
-        'args': [
-          '--disable-features=BackForwardCache',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
     'bfcache_generic_gtests': {
       'bf_cache_content_browsertests': {
         'test': 'content_browsertests',
@@ -345,23 +328,6 @@
             '--verbose',
           ],
         },
-      },
-    },
-
-    'cast_junit_tests': {
-      'cast_base_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-      },
-      'cast_shell_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
       },
     },
 
@@ -5510,19 +5476,6 @@
       },
     },
 
-    'webview_bot_instrumentation_test_apk_bfcache_mutations_gtest': {
-      'webview_instrumentation_test_apk_bfcache_mutations': {
-        'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--use-apk-under-test-flags-file',
-          '--enable-features=WebViewBackForwardCache',
-        ],
-        'swarming': {
-          'shards': 12,
-        },
-      },
-    },
-
     'webview_bot_instrumentation_test_apk_gtest': {
       'webview_instrumentation_test_apk': {
         'args': [
@@ -5562,23 +5515,6 @@
 
     'webview_bot_unittests_gtest': {
       'android_webview_unittests': {},
-    },
-
-    'webview_cts_tests_bfcache_mutations_gtest': {
-      'webview_cts_tests_bfcache_mutations': {
-        'test': 'webview_cts_tests',
-        'mixins': [
-          'webview_cts_archive',
-        ],
-        'args': [
-          '--use-apk-under-test-flags-file',
-          '--enable-features=WebViewBackForwardCache',
-          '--store-tombstones',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
     },
 
     'webview_cts_tests_gtest': {
@@ -5823,12 +5759,6 @@
 
   'compound_suites': {
 
-    'android_10_rel_gtests': [
-      'android_ar_gtests',
-      'android_trichrome_smoke_tests',
-      'vr_android_specific_chromium_tests',
-    ],
-
     'android_12_dbg_emulator_gtests': [
       'android_trichrome_smoke_tests',
     ],
@@ -5885,13 +5815,6 @@
       'webview_64_cts_tests_gtest',
       'webview_instrumentation_test_apk_single_process_mode_gtests',
       'webview_ui_instrumentation_tests',
-    ],
-
-    'bfcache_android_gtests': [
-      'bfcache_android_specific_gtests',
-      'bfcache_generic_gtests',
-      'webview_bot_instrumentation_test_apk_bfcache_mutations_gtest',
-      'webview_cts_tests_bfcache_mutations_gtest',
     ],
 
     'bfcache_linux_gtests': [

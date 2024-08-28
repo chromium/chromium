@@ -33,15 +33,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "android_ar_gtests",
-    tests = {
-        "monochrome_public_test_ar_apk": targets.legacy_test_config(),
-        # Name is vr_*, but actually has AR tests.
-        "vr_android_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "android_emulator_specific_chrome_public_tests",
     tests = {
         "chrome_public_test_apk": targets.legacy_test_config(
@@ -255,18 +246,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Run android_browser_tests with feature BackForwardCache disabled
-targets.legacy_basic_suite(
-    name = "bfcache_android_specific_gtests",
-    tests = {
-        "bf_cache_android_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
 # Run content_browser_tests with BackForwardCache disabled
 targets.legacy_basic_suite(
     name = "bfcache_generic_gtests",
@@ -302,26 +281,6 @@ targets.legacy_basic_suite(
     name = "blink_web_tests_ppapi_isolated_scripts",
     tests = {
         "ppapi_blink_web_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "cast_junit_tests",
-    tests = {
-        "cast_base_junit_tests": targets.legacy_test_config(
-            mixins = [
-                "x86-64",
-                "linux-jammy",
-                "junit-swarming-emulator",
-            ],
-        ),
-        "cast_shell_junit_tests": targets.legacy_test_config(
-            mixins = [
-                "x86-64",
-                "linux-jammy",
-                "junit-swarming-emulator",
-            ],
-        ),
     },
 )
 
@@ -5110,19 +5069,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Run webview_instrumentation_test with feature WebViewBackForwardCache enabled.
-# These tests are for WebView only.
-targets.legacy_basic_suite(
-    name = "webview_bot_instrumentation_test_apk_bfcache_mutations_gtest",
-    tests = {
-        "webview_instrumentation_test_apk_bfcache_mutations": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 12,
-            ),
-        ),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
     tests = {
@@ -5150,22 +5096,6 @@ targets.legacy_basic_suite(
     name = "webview_cts_tests_gtest",
     tests = {
         "webview_cts_tests": targets.legacy_test_config(
-            args = [
-                "--store-tombstones",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-# Run webview_cts_tests with feature WebViewBackForwardCache enabled.
-# These tests are for WebView only.
-targets.legacy_basic_suite(
-    name = "webview_cts_tests_bfcache_mutations_gtest",
-    tests = {
-        "webview_cts_tests_bfcache_mutations": targets.legacy_test_config(
             args = [
                 "--store-tombstones",
             ],

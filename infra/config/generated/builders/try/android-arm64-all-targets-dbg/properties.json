@@ -44,7 +44,8 @@
           "builder": "Android arm64 Builder All Targets (dbg)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-arm64-all-targets-dbg/targets"
     }
   },
   "$build/reclient": {

@@ -283,18 +283,6 @@
       },
     },
   },
-  'bf_cache_content_browsertests': {
-    'modifications': {
-      'android-bfcache-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 15,
-        },
-      }
-    }
-  },
   'blink_platform_unittests': {
     'modifications': {
       'android-pie-arm64-rel': {

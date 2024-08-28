@@ -85,6 +85,11 @@ ci.builder(
             "arm",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     builderless = False,
     cores = None,
     # TODO(crbug.com/40282985): Restore tree-closing and gardener rotation if/when
@@ -351,6 +356,11 @@ ci.builder(
             "webview_google",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     builderless = False,
     cores = None,
     tree_closing = True,
@@ -427,6 +437,11 @@ ci.builder(
             "webview_shell",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|x86",
@@ -465,6 +480,11 @@ ci.builder(
             "remoteexec",
             "x86",
             "webview_shell",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
         ],
     ),
     ssd = True,
@@ -583,6 +603,18 @@ ci.builder(
             "debug_static_builder",
             "remoteexec",
             "arm",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cast_junit_tests",
+        ],
+        additional_compile_targets = [
+            "cast_junit_test_lists",
+            "cast_shell_apk",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
         ],
     ),
     tree_closing = True,
@@ -736,6 +768,29 @@ ci.builder(
             "android_fastbuild",
             "webview_trichrome",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_10_rel_gtests",
+        ],
+        additional_compile_targets = [
+            "check_chrome_static_initializers",
+        ],
+        mixins = [
+            targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "device_os": "QQ1A.191205.008",
+                        "device_os_flavor": "google",
+                    },
+                ),
+            ),
+            "has_native_resultdb_integration",
+            "walleye",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
@@ -936,6 +991,31 @@ ci.builder(
             "webview_monochrome",
             "webview_shell",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "bfcache_android_gtests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "oreo-x86-emulator",
+            "emulator-8-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "bf_cache_content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 15,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",

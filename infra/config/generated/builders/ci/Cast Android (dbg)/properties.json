@@ -50,7 +50,8 @@
           "builder": "android-x64-cast",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Cast Android (dbg)/targets"
     }
   },
   "$build/reclient": {

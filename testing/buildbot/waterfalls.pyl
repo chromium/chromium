@@ -426,68 +426,24 @@
     # The following builders in this group have been migrated to set their
     # targets in the builders' declarations in
     # //infra/config/subprojects/ci/chromium.android.star
+    #   Android ASAN (dbg)
     #   Android WebView O (dbg)
     #   Android WebView P (dbg)
     #   Android arm Builder (dbg)
     #   Android arm64 Builder (dbg)
+    #   Android arm64 Builder All Targets (dbg)
+    #   Android x64 Builder All Targets (dbg)
+    #   Android x86 Builder (dbg)
+    #   Cast Android (dbg)
     #   Oreo Phone Tester
+    #   android-10-arm64-rel
     #   android-arm64-proguard-rel
+    #   android-bfcache-rel
     #   android-pie-arm64-dbg
     'name': 'chromium.android',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Android ASAN (dbg)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'Android arm64 Builder All Targets (dbg)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'Android x64 Builder (dbg)': {},
-      'Android x64 Builder All Targets (dbg)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'Android x86 Builder (dbg)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'Cast Android (dbg)': {
-        'additional_compile_targets': [
-          'cast_junit_test_lists',
-          'cast_shell_apk',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'cast_junit_tests',
-        },
-        'mixins': [
-            'has_native_resultdb_integration',
-        ],
-      },
-      'android-10-arm64-rel': {
-        'swarming': {
-          'dimensions': {
-            'device_os': 'QQ1A.191205.008',
-            'device_os_flavor': 'google',
-          },
-        },
-        'additional_compile_targets': [
-          'check_chrome_static_initializers',
-        ],
-        'test_suites': {
-          'gtest_tests': 'android_10_rel_gtests',
-        },
-        'os_type': 'android',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'walleye',
-        ],
-      },
       'android-11-x86-rel': {
         'mixins': [
           '11-x86-emulator',
@@ -583,19 +539,6 @@
         'test_suites': {
           'gtest_tests': 'android_14_emulator_gtests',
         }
-      },
-      'android-bfcache-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'oreo-x86-emulator',
-          'emulator-8-cores',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'bfcache_android_gtests',
-        },
       },
       'android-cronet-arm-dbg': {
         'additional_compile_targets': [

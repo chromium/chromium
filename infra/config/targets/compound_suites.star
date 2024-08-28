@@ -12,15 +12,6 @@
 load("//lib/targets.star", "targets")
 
 targets.legacy_compound_suite(
-    name = "android_10_rel_gtests",
-    basic_suites = [
-        "android_trichrome_smoke_tests",
-        "android_ar_gtests",
-        "vr_android_specific_chromium_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "android_12_dbg_emulator_gtests",
     basic_suites = [
         "android_trichrome_smoke_tests",
@@ -104,16 +95,6 @@ targets.legacy_compound_suite(
         "webview_64_cts_tests_gtest",
         "webview_instrumentation_test_apk_single_process_mode_gtests",
         "webview_ui_instrumentation_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "bfcache_android_gtests",
-    basic_suites = [
-        "bfcache_android_specific_gtests",
-        "bfcache_generic_gtests",
-        "webview_bot_instrumentation_test_apk_bfcache_mutations_gtest",
-        "webview_cts_tests_bfcache_mutations_gtest",
     ],
 )
 
