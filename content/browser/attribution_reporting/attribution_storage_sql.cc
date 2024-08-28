@@ -922,7 +922,7 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetMatchingSourcesSql));
   statement.BindString(3, source.common_info().reporting_origin().Serialize());
-  statement.BindTime(4, base::Time::Now());
+  statement.BindTime(4, source_time);
 
   for (const auto& destination : registration.destination_set.destinations()) {
     statement.Reset(/*clear_bound_vars=*/false);
