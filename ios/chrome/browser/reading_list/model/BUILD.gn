@@ -151,7 +151,6 @@ source_set("unit_tests") {
     "//components/sync/model",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile/test",

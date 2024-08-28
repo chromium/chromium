@@ -52,7 +52,6 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/features:password_features",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/infobars/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/web/model:web_internal",

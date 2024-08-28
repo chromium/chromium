@@ -34,7 +34,6 @@ source_set("unit_tests") {
     "//components/page_info/core:proto",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/model:unit_tests",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test:test",
   ]

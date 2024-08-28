@@ -42,7 +42,6 @@ source_set("unit_tests") {
   deps = [
     ":test",
     "//base",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

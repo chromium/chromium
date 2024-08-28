@@ -102,7 +102,6 @@ source_set("unit_tests") {
     ":utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/snapshots/model",
     "//ios/web/public/test",

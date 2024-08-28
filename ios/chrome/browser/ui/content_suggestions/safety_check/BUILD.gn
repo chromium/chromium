@@ -99,7 +99,6 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/safety_check/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/ui/content_suggestions:public",

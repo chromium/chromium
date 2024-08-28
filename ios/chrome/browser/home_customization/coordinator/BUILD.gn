@@ -39,7 +39,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/home_customization/ui",
     "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",

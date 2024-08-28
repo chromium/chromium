@@ -85,7 +85,6 @@ source_set("unit_tests") {
     ":tts",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/common",
     "//ios/web/public/test",

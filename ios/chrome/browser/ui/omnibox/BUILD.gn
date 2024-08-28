@@ -331,7 +331,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",

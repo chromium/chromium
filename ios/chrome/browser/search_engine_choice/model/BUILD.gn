@@ -37,7 +37,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/policy/model:test_support",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/search_engine_choice:constants",

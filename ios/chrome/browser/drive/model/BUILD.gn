@@ -183,7 +183,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/drive/model:upload_task",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",

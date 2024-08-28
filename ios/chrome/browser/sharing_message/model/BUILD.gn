@@ -73,7 +73,6 @@ source_set("unit_tests") {
     "//components/sharing_message/ios_push",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/gcm/model/instance_id",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",

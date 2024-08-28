@@ -78,7 +78,6 @@ source_set("unit_tests") {
     ":privacy_guide",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//testing/gtest",

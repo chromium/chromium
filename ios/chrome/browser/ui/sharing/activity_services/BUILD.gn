@@ -70,7 +70,6 @@ source_set("unit_tests") {
     "//components/ui_metrics",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/download/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",

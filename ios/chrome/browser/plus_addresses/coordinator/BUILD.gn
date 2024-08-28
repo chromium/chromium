@@ -43,7 +43,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/plus_addresses/ui:constants",
     "//ios/chrome/browser/plus_addresses/ui:ui",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/url_loading/model",

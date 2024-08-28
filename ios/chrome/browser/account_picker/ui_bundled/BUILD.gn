@@ -68,7 +68,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/fakes",
