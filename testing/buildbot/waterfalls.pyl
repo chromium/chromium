@@ -353,7 +353,7 @@
           'skylab-cft',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_ctp_preuprev_tests_extended',
+          'skylab_tests': 'chromeos_ctp_preuprev_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'betty',
@@ -395,7 +395,7 @@
           'skylab-cft',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_ctp_preuprev_tests_extended',
+          'skylab_tests': 'chromeos_ctp_preuprev_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'volteer',
