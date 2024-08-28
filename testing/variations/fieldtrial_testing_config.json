@@ -10159,7 +10159,6 @@
                         "EnableFingerprintingProtectionFilter"
                     ],
                     "disable_features": [
-                        "FingerprintingProtectionSetting",
                         "FingerprintingProtectionUx"
                     ]
                 }

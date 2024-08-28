@@ -19721,7 +19721,6 @@ from previous Chrome versions.
   <int value="-360453785" label="LeftToRightUrls:disabled"/>
   <int value="-360038744" label="invert-viewport-scroll-order"/>
   <int value="-359886807" label="AppPreloadService:disabled"/>
-  <int value="-359878424" label="AntiFingerprintingSetting:disabled"/>
   <int value="-359452972" label="ProjectorV2:enabled"/>
   <int value="-359331504" label="InputDeviceSettingsSplit:enabled"/>
   <int value="-357464687" label="SharingPreferVapid:enabled"/>
@@ -21303,7 +21302,6 @@ from previous Chrome versions.
   <int value="299792415" label="OmniboxSuggestionTransparencyOptions:enabled"/>
   <int value="300095239" label="FCMInvalidations:enabled"/>
   <int value="300870732" label="ShelfDimming:disabled"/>
-  <int value="301196825" label="AntiFingerprintingSetting:enabled"/>
   <int value="301513718" label="PrivacySandboxSettings4:enabled"/>
   <int value="301536977" label="DetailedLanguageSettings:enabled"/>
   <int value="301630312" label="ForcedColors:disabled"/>
@@ -22661,7 +22659,6 @@ from previous Chrome versions.
   <int value="864024033" label="IsolatePrerendersMustProbeOrigin:enabled"/>
   <int value="865096806" label="CrosMall:disabled"/>
   <int value="865952257" label="CrOSLateBootBluetoothTelephony:disabled"/>
-  <int value="866313743" label="FingerprintingProtectionSetting:enabled"/>
   <int value="866536801" label="PDFViewerUpdate:disabled"/>
   <int value="867061581" label="AllowWindowDragUsingSystemDragDrop:enabled"/>
   <int value="867512869" label="mark-non-secure-as"/>
@@ -22741,7 +22738,6 @@ from previous Chrome versions.
   <int value="900560795"
       label="HttpsFirstModeV2ForTypicallySecureUsers:disabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
-  <int value="900642009" label="FingerprintingProtectionSetting:disabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
   <int value="902442795" label="time-before-discard-in-minutes"/>
   <int value="902649149" label="ArcGhostWindowNewStyle:enabled"/>

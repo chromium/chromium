@@ -158,10 +158,6 @@ BASE_DECLARE_FEATURE(kPrivacySandboxInternalsDevUI);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kRelatedWebsiteSetsDevUI);
 
-// Enables fingerprinting protection setting behavior.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kFingerprintingProtectionSetting);
-
 // Enables fingerprinting protection setting UX.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kFingerprintingProtectionUx);
