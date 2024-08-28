@@ -13,7 +13,6 @@
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
@@ -31,9 +30,6 @@ class SupervisedUserVerificationPage
                   // parent's approvals require re-authentication.
   };
 
-  // The status of the interstitial used for metrics recording purposes.
-  enum class Status { SHOWN, REAUTH_STARTED, REAUTH_COMPLETED };
-
   // Interstitial type, used in tests.
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
@@ -48,7 +44,6 @@ class SupervisedUserVerificationPage
       const GURL& request_url,
       VerificationPurpose verification_purpose,
       supervised_user::ChildAccountService* child_account_service,
-      ukm::SourceId source_id,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
@@ -64,9 +59,6 @@ class SupervisedUserVerificationPage
   security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
       override;
 
-  // Reloads the interstitial page and records metrics if necessary.
-  void OnReauthenticationCompleted();
-
  protected:
   void CommandReceived(const std::string& command) override;
   void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
@@ -75,13 +67,11 @@ class SupervisedUserVerificationPage
 
  private:
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
-  void RecordYouTubeReauthStatusUkm(Status status);
   base::CallbackListSubscription google_auth_state_subscription_;
   const std::string email_to_reauth_;
   const GURL request_url_;
   const VerificationPurpose verification_purpose_;
   raw_ptr<supervised_user::ChildAccountService> child_account_service_;
-  ukm::SourceId source_id_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_VERIFICATION_PAGE_H_

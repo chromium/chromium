@@ -13,9 +13,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/metrics_utils.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using security_interstitials::MetricsHelper;
@@ -31,7 +28,6 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     const GURL& request_url,
     VerificationPurpose verification_purpose,
     supervised_user::ChildAccountService* child_account_service,
-    ukm::SourceId source_id,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
@@ -42,16 +38,15 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
       email_to_reauth_(email_to_reauth),
       request_url_(request_url),
       verification_purpose_(verification_purpose),
-      child_account_service_(child_account_service),
-      source_id_(source_id) {
+      child_account_service_(child_account_service) {
   if (child_account_service_) {
     // Reloads the interstitial to continue navigation once the supervised user
     // is authenticated.
     google_auth_state_subscription_ =
         child_account_service_->ObserveGoogleAuthState(base::BindRepeating(
-            &SupervisedUserVerificationPage::OnReauthenticationCompleted,
-            base::Unretained(this)));
-    RecordYouTubeReauthStatusUkm(Status::SHOWN);
+            &security_interstitials::SecurityInterstitialControllerClient::
+                Reload,
+            base::Unretained(this->controller())));
   }
 }
 
@@ -60,11 +55,6 @@ SupervisedUserVerificationPage::~SupervisedUserVerificationPage() = default;
 security_interstitials::SecurityInterstitialPage::TypeID
 SupervisedUserVerificationPage::GetTypeForTesting() {
   return SupervisedUserVerificationPage::kTypeForTesting;
-}
-
-void SupervisedUserVerificationPage::OnReauthenticationCompleted() {
-  RecordYouTubeReauthStatusUkm(Status::REAUTH_COMPLETED);
-  controller()->Reload();
 }
 
 void SupervisedUserVerificationPage::PopulateInterstitialStrings(
@@ -128,30 +118,6 @@ void SupervisedUserVerificationPage::PopulateStringsForSharedHTML(
   load_time_data.Set("type", "SUPERVISED_USER_VERIFY");
 }
 
-void SupervisedUserVerificationPage::RecordYouTubeReauthStatusUkm(
-    Status status) {
-  if (verification_purpose_ != VerificationPurpose::REAUTH_REQUIRED_SITE) {
-    return;
-  }
-
-  auto builder =
-      ukm::builders::FamilyLinkUser_ReauthenticationInterstitial(source_id_);
-  switch (status) {
-    case Status::SHOWN:
-      builder.SetInterstitialShown(true);
-      break;
-    case Status::REAUTH_STARTED:
-      builder.SetReauthenticationStarted(true);
-      break;
-    case Status::REAUTH_COMPLETED:
-      builder.SetReauthenticationCompleted(true);
-      break;
-    default:
-      NOTREACHED_NORETURN();
-  }
-  builder.Record(ukm::UkmRecorder::Get());
-}
-
 void SupervisedUserVerificationPage::CommandReceived(
     const std::string& command) {
   if (command == "\"pageLoadComplete\"") {
@@ -165,7 +131,6 @@ void SupervisedUserVerificationPage::CommandReceived(
 
   switch (cmd) {
     case security_interstitials::CMD_OPEN_LOGIN:
-      RecordYouTubeReauthStatusUkm(Status::REAUTH_STARTED);
       controller()->OpenUrlInNewForegroundTab(
           signin::GetChromeReauthURL({.email = email_to_reauth_}));
       break;
