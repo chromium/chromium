@@ -14,6 +14,10 @@ namespace toast_features {
 // Base feature
 BASE_DECLARE_FEATURE(kToastFramework);
 
+// The amount of time an ephemeral toast should show before automatically
+// closing.
+extern const base::FeatureParam<base::TimeDelta> kToastTimeout;
+
 // Enables all toast features queried through `toast_features::IsEnabled` which
 // is used for demo mode.
 extern const base::FeatureParam<bool> kToastDemoMode;
