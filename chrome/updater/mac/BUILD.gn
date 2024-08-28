@@ -610,7 +610,6 @@ artifact_zip("updater_zip") {
     "$root_build_dir/Updater Packaging/signing/pkg-dmg",
     "$root_build_dir/Updater Packaging/signing/pkg/postinstall",
     "$root_build_dir/chrome/updater/.install",
-    "$root_build_dir/UpdaterSetup",
     "$root_build_dir/qualification_app",
     "$root_build_dir/${updater_product_full_name}Util",
   ]
@@ -621,7 +620,6 @@ artifact_zip("updater_zip") {
     ":updater_bundle",
     ":updater_bundle_test",
     ":updater_install_script",
-    "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
     "//chrome/updater/test/qualification_app",
     "//chrome/updater/tools:${updater_product_full_name}Util",
