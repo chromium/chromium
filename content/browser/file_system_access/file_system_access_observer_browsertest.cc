@@ -1154,17 +1154,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // Expect one modified event upon closing the writable.
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::SizeIs(1));
-  // TODO(b/350790385): On inotify, coalescing move events are not always
-  // guaranteed, and when it fails to coalesce, it results in "appeared" event
-  // on the new path. In the case of swap file, this unfortunately means it
-  // cannot be converted to "modified". Consider improving coalescing
-  // implementation and/or have `FileSystemAccessWatcherManager` convert
-  // "moved" to "appeard" or "disappeared" instead of `FilePathWatcher` being
-  // responsible for the conversion on inotify-based platforms.
   auto& record_dict = records.GetList().front().GetDict();
-  EXPECT_THAT(
-      *record_dict.FindString("type"),
-      testing::AnyOf(testing::StrEq("modified"), testing::StrEq("appeared")));
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("modified"));
   const auto relative_path_component_matcher = testing::Conditional(
       SupportsReportingModifiedPath(), testing::ElementsAre("file.txt"),
       testing::IsEmpty());
