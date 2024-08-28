@@ -69,15 +69,14 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
             performed_check)>
         sync_callback =
             base::BindOnce(&SafeBrowsingQueryManager::UrlCheckFinished,
-                           weak_factory_.GetWeakPtr(), query,
-                           /*is_async_check=*/false);
+                           weak_factory_.GetWeakPtr(), query, QueryType::kSync);
     base::OnceCallback<void(
         bool proceed, bool show_error_page,
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check)>
         async_callback = base::BindOnce(
             &SafeBrowsingQueryManager::UrlCheckFinished,
-            weak_factory_.GetWeakPtr(), query, /*is_async_check=*/true);
+            weak_factory_.GetWeakPtr(), query, QueryType::kAsync);
 
     std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> sync_checker =
         safe_browsing_service->CreateSyncChecker(request_destination,
@@ -96,9 +95,9 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
         bool proceed, bool show_error_page,
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check)>
-        callback = base::BindOnce(&SafeBrowsingQueryManager::UrlCheckFinished,
-                                  weak_factory_.GetWeakPtr(), query,
-                                  /*is_async_check=*/false);
+        callback =
+            base::BindOnce(&SafeBrowsingQueryManager::UrlCheckFinished,
+                           weak_factory_.GetWeakPtr(), query, QueryType::kSync);
 
     std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker =
         safe_browsing_service->CreateUrlChecker(request_destination, web_state_,
@@ -129,7 +128,7 @@ void SafeBrowsingQueryManager::StoreUnsafeResource(
 
 void SafeBrowsingQueryManager::UrlCheckFinished(
     const Query query,
-    bool is_async_check,
+    const QueryType type,
     bool proceed,
     bool show_error_page,
     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
@@ -162,18 +161,18 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
 
   if (base::FeatureList::IsEnabled(
           safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    if (is_async_check) {
+    if (type == QueryType::kAsync) {
       result.async_check_complete = true;
-    } else {
+    } else if (type == QueryType::kSync) {
       result.sync_check_complete = true;
     }
 
     for (auto& observer : observers_) {
       const QueryData& query_data =
-          QueryData(this, query, result, performed_check);
-      if (is_async_check) {
+          QueryData(this, query, type, result, performed_check);
+      if (type == QueryType::kAsync) {
         observer.SafeBrowsingAsyncQueryFinished(query_data);
-      } else {
+      } else if (type == QueryType::kSync) {
         observer.SafeBrowsingSyncQueryFinished(query_data);
       }
 
@@ -229,10 +228,12 @@ SafeBrowsingQueryManager::Result::~Result() = default;
 SafeBrowsingQueryManager::QueryData::QueryData(
     SafeBrowsingQueryManager* manager,
     const SafeBrowsingQueryManager::Query& query,
+    const QueryType type,
     const SafeBrowsingQueryManager::Result& result,
     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check)
     : manager(manager),
       query(query),
+      type(type),
       result(result),
       performed_check(performed_check) {}
 

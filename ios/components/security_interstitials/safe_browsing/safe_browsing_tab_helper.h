@@ -90,8 +90,7 @@ class SafeBrowsingTabHelper
     // taking into account if the check is a sync or async check.
     void HandlePolicyDecision(
         const SafeBrowsingQueryManager::QueryData& query_data,
-        const web::WebStatePolicyDecider::PolicyDecision& policy_decision,
-        bool is_async_check);
+        const web::WebStatePolicyDecider::PolicyDecision& policy_decision);
 
     // Notifies the policy decider that a new main frame document has been
     // loaded.
@@ -139,38 +138,33 @@ class SafeBrowsingTabHelper
     MainFrameUrlQuery* GetOldestPendingMainFrameQuery(const GURL& url);
 
     // Returns the oldest pending main frame query for `query_data` that has not
-    // yet received a decision taking into account `query_data` and uses
-    // `is_async` to only consider async queries if true and sync queries if
-    // false. If there are no queries for `query_data` or if all relevant
-    // queries have already been decided, returns null.
+    // yet received a decision taking into account `query_data` to distinguish
+    // sync and async queries. If there are no queries for `query_data` or if
+    // all relevant queries have already been decided, returns null.
     MainFrameUrlQuery* GetOldestPendingMainFrameQuery(
-        const SafeBrowsingQueryManager::QueryData& query_data,
-        bool is_async);
+        const SafeBrowsingQueryManager::QueryData& query_data);
 
     // Returns the oldest pending query for the
     // `to_be_committed_redirect_chain_` that has not yet received a decision
-    // taking into account `query_data` and uses `is_async` to distinguish sync
-    // and async queries. If there are no queries for `query_data` or if all
-    // relevant queries have already been decided, returns null.
+    // taking into account `query_data` to distinguish sync and async queries.
+    // If there are no queries for `query_data` or if all relevant queries have
+    // already been decided, returns null.
     MainFrameUrlQuery* GetOldestPendingToBeCommittedQuery(
-        const SafeBrowsingQueryManager::QueryData& query_data,
-        bool is_async);
+        const SafeBrowsingQueryManager::QueryData& query_data);
 
     // Returns the oldest pending query for the `committed_redirect_chain_` that
-    // has not yet received a decision taking into account `query_data` and uses
-    // `is_async` to distinguish sync and async queries. If there are no queries
-    // for `query_data` or if all relevant queries have already been decided,
+    // has not yet received a decision taking into account `query_data` to
+    // distinguish sync and async queries. If there are no queries for
+    // `query_data` or if all relevant queries have already been decided,
     // returns null.
     MainFrameUrlQuery* GetOldestPendingCommittedQuery(
-        const SafeBrowsingQueryManager::QueryData& query_data,
-        bool is_async);
+        const SafeBrowsingQueryManager::QueryData& query_data);
 
-    // Iterates through the `redirect_chain` and uses `query_data` and
-    // `is_async` to return an unanswered sync or async query.
+    // Iterates through the `redirect_chain` and uses `query_data` to return an
+    // unanswered sync or async query.
     MainFrameUrlQuery* GetUnansweredQueryForRedirectChain(
         std::list<MainFrameUrlQuery>& redirect_chain,
-        const SafeBrowsingQueryManager::QueryData& query_data,
-        bool is_async);
+        const SafeBrowsingQueryManager::QueryData& query_data);
 
     // Callback invoked when a main frame query for `url` has finished with
     // `decision` after performing a check of type `performed_check`.
