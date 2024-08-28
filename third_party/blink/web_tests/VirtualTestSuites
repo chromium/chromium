@@ -24,6 +24,33 @@
   "     expire, use `never`. A bug will be filed for removing expired suites. ",
 
   {
+    "prefix": "verify-minimal-resource-request-kill-switch",
+    "platforms": ["Linux"],
+    "bases": [
+      "http/tests/cache",
+      "http/tests/devtools",
+      "http/tests/fetch",
+      "http/tests/inspector-protocol",
+      "http/tests/loading",
+      "http/tests/prefetch",
+      "http/tests/preload",
+      "http/tests/security",
+      "http/tests/streams",
+      "http/tests/xmlhttprequest",
+      "external/wpt/content-security-policy/",
+      "external/wpt/cors",
+      "external/wpt/fetch",
+      "external/wpt/loading",
+      "external/wpt/preload",
+      "external/wpt/streams",
+      "external/wpt/webtransport"],
+    "args": [
+      "--disable-features=MinimimalResourceRequestPrepBeforeCacheLookup"
+    ],
+    "owners": ["sky@google.com"],
+    "expires": "Nov 1, 2024"
+  },
+  {
     "prefix": "pna-permission",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/private-network-access"],
