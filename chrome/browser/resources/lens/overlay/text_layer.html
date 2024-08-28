@@ -12,6 +12,12 @@
     visibility: hidden;
   }
 
+  .background-image {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+  }
+
   .translated-line,
   .word {
     cursor: text;
@@ -64,6 +70,11 @@
 <template id="translateContainer" is="dom-repeat"
   items="[[renderedTranslateLines]]" as="translatedLineData"
   index-as="lineIndex">
+  <template is="dom-if" if="[[translatedLineData.line.backgroundImageData]]">
+    <img class="background-image"
+      style$="[[getBackgroundImageDataStyle(translatedLineData,selectionOverlayRect)]]"
+      src="[[getBlobUrlFromImageData(translatedLineData.line.backgroundImageData)]]">
+  </template>
   <div
     style$="[[getTranslatedLineStyle(translatedLineData,selectionOverlayRect)]]"
     class="translated-line">

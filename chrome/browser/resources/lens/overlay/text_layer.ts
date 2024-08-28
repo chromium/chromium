@@ -5,7 +5,7 @@
 import './strings.m.js';
 
 import {assert} from '//resources/js/assert.js';
-import {skColorToHexColor} from '//resources/js/color_utils.js';
+import {skColorToHexColor, skColorToRgba} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PointF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
@@ -14,6 +14,7 @@ import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import {skColorToRgbaWithCustomAlpha} from './color_utils.js';
 import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import {findWordsInRegion} from './find_words_in_region.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
@@ -25,7 +26,7 @@ import {recordLensOverlayInteraction} from './metrics_utils.js';
 import type {CursorData, DetectedTextContextMenuData, SelectedTextContextMenuData} from './selection_overlay.js';
 import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
-import type {Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from './text.mojom-webui.js';
+import type {BackgroundImageData, Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from './text.mojom-webui.js';
 import {Alignment, WritingDirection} from './text.mojom-webui.js';
 import {getTemplate} from './text_layer.html.js';
 import type {TranslateState} from './translate_button.js';
@@ -33,6 +34,10 @@ import {toPercent} from './values_converter.js';
 
 const MIN_FONT_SIZE = 1;
 const MAX_FONT_SIZE = 100;
+// Highest font size where the opacity of the background should be 100%.
+const FONT_SIZE_OPAQUE_BOUND = 10;
+// Lowest font size where the opacity of the background should be transparent
+const FONT_SIZE_TRANSPARENT_BOUND = 18;
 
 // Rotates the target coordinates to be in relation to the line rotation.
 function rotateCoordinateAroundOrigin(
@@ -149,6 +154,9 @@ export class TextLayerElement extends PolymerElement {
     };
   }
 
+  // The rendering context of the canvas used to measure font size of translated
+  // text.
+  private context: CanvasRenderingContext2D;
   // The words rendered in this layer.
   private renderedWords: Word[];
   // Whether to render the translated text received on the overlay rather than
@@ -200,6 +208,11 @@ export class TextLayerElement extends PolymerElement {
   private selectTextTriggerThreshold: number =
       loadTimeData.getValue('selectTextTriggerThreshold');
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
+
+  override ready() {
+    super.ready();
+    this.context = this.$.textRenderCanvas.getContext('2d')!;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -564,9 +577,9 @@ export class TextLayerElement extends PolymerElement {
     const lineHeight =
         isTopToBottom ? translatedLineWidth : translatedLineHeight;
 
-    const ctx = this.$.textRenderCanvas.getContext('2d');
     this.$.textRenderCanvas.width = lineWidth;
     this.$.textRenderCanvas.height = lineHeight;
+    this.resetCanvasPixelRatioIfNeeded();
 
     // The line translation can contain text that is not actually a part of this
     // particular line. Because of this, we need to loop through the words and
@@ -578,10 +591,6 @@ export class TextLayerElement extends PolymerElement {
       text += getTextSeparator(word);
     }
 
-    if (ctx === null) {
-      return MIN_FONT_SIZE;
-    }
-
     let low = MIN_FONT_SIZE;
     let high = MAX_FONT_SIZE;
     // Use binary search to find optimal font size.
@@ -589,8 +598,8 @@ export class TextLayerElement extends PolymerElement {
       const mid = Math.floor((low + high) / 2);
       // The font families here should cover what is default used by the text in
       // the HTML.
-      ctx.font = `${mid}px Roboto, "Cantarell", Arial, sans-serif`;
-      const textMetrics = ctx.measureText(text);
+      this.context.font = `${mid}px Roboto, "Cantarell", Arial, sans-serif`;
+      const textMetrics = this.context.measureText(text);
 
       // Check if the text fits within the container
       const textHeight = textMetrics.actualBoundingBoxAscent +
@@ -819,22 +828,104 @@ export class TextLayerElement extends PolymerElement {
       return '';
     }
 
+    const lineFontSizePixels = this.calculateFontSizePixels(translatedLineData);
     const styles: string[] = [
       `background-color: ${
-          skColorToHexColor(translatedLine.backgroundPrimaryColor)}`,
+          this.getBackgroundColorForLine(translatedLine, lineFontSizePixels)}`,
       `color: ${skColorToHexColor(translatedLine.textColor)}`,
       `justify-content: ${this.getLineAlignment(translatedLineData.alignment)}`,
-      `font-size: ${this.calculateFontSizePixels(translatedLineData)}px`,
+      `font-size: ${lineFontSizePixels}px`,
       `width: ${toPercent(lineBoundingBox.box.width)}`,
       `height: ${toPercent(lineBoundingBox.box.height)}`,
       `top: ${
           toPercent(lineBoundingBox.box.y - (lineBoundingBox.box.height / 2))}`,
       `left: ${
           toPercent(lineBoundingBox.box.x - (lineBoundingBox.box.width / 2))}`,
+      `text-shadow: ${
+          this.getOutlineStyleForLine(translatedLine, lineFontSizePixels)}`,
       `transform: rotate(${lineBoundingBox.rotation}rad)`,
       `writing-mode: ${this.getWritingModeForLine(translatedLineData)}`,
     ];
     return styles.join(';');
+  }
+
+  private getBackgroundImageDataStyle(translatedLineData: TranslatedLineData):
+      string {
+    const translatedLine = translatedLineData.line;
+    if (!translatedLine.geometry) {
+      return '';
+    }
+
+    const lineBoundingBox = translatedLine.geometry.boundingBox;
+    // TODO(b/330183480): Currently, we are assuming that word
+    // coordinates are normalized. We should still implement
+    // rendering in case this assumption is ever violated.
+    if (lineBoundingBox.coordinateType !==
+        CenterRotatedBox_CoordinateType.kNormalized) {
+      return '';
+    }
+
+    const backgroundImageData = translatedLine.backgroundImageData;
+    if (!backgroundImageData) {
+      return '';
+    }
+
+    // Both background image padding values are relative to the line height.
+    const horizontalPadding =
+        backgroundImageData.horizontalPadding * lineBoundingBox.box.height;
+    const verticalPadding =
+        backgroundImageData.verticalPadding * lineBoundingBox.box.height;
+
+    const styles: string[] = [
+      `width: ${toPercent(lineBoundingBox.box.width + horizontalPadding)}`,
+      `height: ${toPercent(lineBoundingBox.box.height + verticalPadding)}`,
+      `top: ${
+          toPercent(
+              lineBoundingBox.box.y - (lineBoundingBox.box.height / 2) -
+              (0.5 * verticalPadding))}`,
+      `left: ${
+          toPercent(
+              lineBoundingBox.box.x - (lineBoundingBox.box.width / 2) -
+              (0.5 * horizontalPadding))}`,
+    ];
+    return styles.join(';');
+  }
+
+  private getOutlineStyleForLine(line: TranslatedLine, fontSize: number):
+      string {
+    if (!line.backgroundImageData) {
+      return 'none';
+    }
+    const outlineColor = skColorToRgba(line.backgroundPrimaryColor);
+    const outlineWidth = fontSize * 0.02;
+    return `-${outlineWidth}px ${outlineWidth}px 0 ${outlineColor},
+            ${outlineWidth}px ${outlineWidth}px 0 ${outlineColor},
+            ${outlineWidth}px -${outlineWidth}px 0 ${outlineColor},
+            -${outlineWidth}px -${outlineWidth}px 0 ${outlineColor}`;
+  }
+
+  private getBackgroundColorForLine(line: TranslatedLine, fontSize: number):
+      string {
+    // When background image data is present, we only want it to be opaque for
+    // very small text for accessibility reasons.
+    if (line.backgroundImageData && fontSize >= FONT_SIZE_TRANSPARENT_BOUND) {
+      return 'transparent';
+    }
+
+    // If background image data is not present, the background should be opaque.
+    // Below opaque bound, it should be fully opaque.
+    if (!line.backgroundImageData ||
+        (line.backgroundImageData && fontSize <= FONT_SIZE_OPAQUE_BOUND)) {
+      return skColorToRgba(line.backgroundPrimaryColor);
+    }
+
+    // Font sizes between the two values should iversely interpolate over 0-255
+    // for opacity.
+    const opacityRatio = (fontSize - FONT_SIZE_OPAQUE_BOUND) /
+        (FONT_SIZE_TRANSPARENT_BOUND - FONT_SIZE_OPAQUE_BOUND);
+    const clampedOpacity = Math.min(Math.max(opacityRatio, 0), 1);
+    return skColorToRgbaWithCustomAlpha(
+        line.backgroundPrimaryColor, clampedOpacity);
   }
 
   private isTranslatedLineVertical(line: TranslatedLineData): boolean {
@@ -860,6 +951,33 @@ export class TextLayerElement extends PolymerElement {
     }
 
     return 'center';
+  }
+
+  private resetCanvasPixelRatioIfNeeded() {
+    const transform = this.context.getTransform();
+    if (transform.a !== window.devicePixelRatio ||
+        transform.d !== window.devicePixelRatio) {
+      this.context.setTransform(
+          window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+    }
+  }
+
+  private getBlobUrlFromImageData(imageData: BackgroundImageData): string {
+    const imageBytesBuffer = imageData.backgroundImage;
+    assert(imageBytesBuffer.invalidBuffer !== true);
+    let bytes: Uint8Array = new Uint8Array();
+    if (imageBytesBuffer.bytes !== undefined) {
+      bytes = new Uint8Array(imageBytesBuffer.bytes);
+    } else if (imageBytesBuffer.sharedMemory !== undefined) {
+      const {bufferHandle, size} = imageBytesBuffer.sharedMemory;
+      const {buffer} = bufferHandle.mapBuffer(0, size);
+      bytes = new Uint8Array(buffer);
+    } else {
+      return '';
+    }
+    // The image should always be a webp image.
+    const blob = new Blob([bytes], {type: 'image/webp'});
+    return URL.createObjectURL(blob);
   }
 
   /** @return The CSS styles string for the given highlighted line. */
