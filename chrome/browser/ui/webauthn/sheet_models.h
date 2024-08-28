@@ -292,7 +292,6 @@ class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
   bool IsActivityIndicatorVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  bool IsOtherMechanismButtonVisible() const override;
   bool IsManageDevicesButtonVisible() const override;
   void OnManageDevices() override;
 };
@@ -585,7 +584,6 @@ class AuthenticatorCableErrorSheetModel : public AuthenticatorSheetModelBase {
 
  private:
   // AuthenticatorSheetModelBase:
-  bool IsOtherMechanismButtonVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   std::u16string GetCancelButtonLabel() const override;

@@ -660,7 +660,7 @@ AuthenticatorOffTheRecordInterstitialSheetModel::GetCancelButtonLabel() const {
 AuthenticatorPaaskSheetModel::AuthenticatorPaaskSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible) {
+                                  OtherMechanismButtonVisibility::kHidden) {
   vector_illustrations_.emplace(kPasskeyPhoneIcon, kPasskeyPhoneDarkIcon);
 }
 
@@ -695,10 +695,6 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
           base::UTF8ToUTF16(dialog_model()->selected_phone_name.value_or("")));
     }
   }
-}
-
-bool AuthenticatorPaaskSheetModel::IsOtherMechanismButtonVisible() const {
-  return false;
 }
 
 bool AuthenticatorPaaskSheetModel::IsManageDevicesButtonVisible() const {
@@ -1350,10 +1346,6 @@ AuthenticatorCableErrorSheetModel::AuthenticatorCableErrorSheetModel(
 
 AuthenticatorCableErrorSheetModel::~AuthenticatorCableErrorSheetModel() =
     default;
-
-bool AuthenticatorCableErrorSheetModel::IsOtherMechanismButtonVisible() const {
-  return false;
-}
 
 std::u16string AuthenticatorCableErrorSheetModel::GetStepTitle() const {
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_GENERIC_TITLE);
