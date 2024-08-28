@@ -157,8 +157,7 @@ String CanonicalizePort(const String& input,
   int default_port = url::PORT_UNSPECIFIED;
   if (!input.empty()) {
     StringUTF8Adaptor protocol_utf8(protocol);
-    default_port =
-        url::DefaultPortForScheme(protocol_utf8.data(), protocol_utf8.size());
+    default_port = url::DefaultPortForScheme(protocol_utf8.AsStringView());
   }
 
   // Since ports only consist of digits there should be no encoding needed.

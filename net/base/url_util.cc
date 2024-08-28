@@ -269,9 +269,7 @@ std::string GetHostAndOptionalPort(const GURL& url) {
 
 NET_EXPORT std::string GetHostAndOptionalPort(
     const url::SchemeHostPort& scheme_host_port) {
-  int default_port = url::DefaultPortForScheme(
-      scheme_host_port.scheme().data(),
-      static_cast<int>(scheme_host_port.scheme().length()));
+  int default_port = url::DefaultPortForScheme(scheme_host_port.scheme());
   if (default_port != scheme_host_port.port()) {
     return base::StringPrintf("%s:%i", scheme_host_port.host().c_str(),
                               scheme_host_port.port());

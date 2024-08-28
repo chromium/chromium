@@ -291,8 +291,7 @@ std::string SchemeHostPort::SerializeInternal(url::Parsed* parsed) const {
 
   // Omit the port component if the port matches with the default port
   // defined for the scheme, if any.
-  int default_port = DefaultPortForScheme(scheme_.data(),
-                                          static_cast<int>(scheme_.length()));
+  int default_port = DefaultPortForScheme(scheme_);
   if (default_port == PORT_UNSPECIFIED)
     return result;
   if (port_ != default_port) {

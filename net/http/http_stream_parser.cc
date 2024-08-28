@@ -1052,8 +1052,7 @@ int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
     }
 
     std::string_view scheme = url_.scheme_piece();
-    if (url::DefaultPortForScheme(scheme.data(), scheme.length()) !=
-        url_.EffectiveIntPort()) {
+    if (url::DefaultPortForScheme(scheme) != url_.EffectiveIntPort()) {
       // If the port is not the default for the scheme, assume it's not a real
       // HTTP/0.9 response, and fail the request.
 

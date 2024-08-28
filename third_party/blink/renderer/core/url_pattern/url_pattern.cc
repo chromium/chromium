@@ -84,8 +84,7 @@ bool IsProtocolDefaultPort(const String& protocol, const String& port) {
     return false;
 
   StringUTF8Adaptor protocol_utf8(protocol);
-  int default_port =
-      url::DefaultPortForScheme(protocol_utf8.data(), protocol_utf8.size());
+  int default_port = url::DefaultPortForScheme(protocol_utf8.AsStringView());
   return default_port != url::PORT_UNSPECIFIED && default_port == port_number;
 }
 

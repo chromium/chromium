@@ -2786,9 +2786,7 @@ CookieMonster::IsCookieSentToSamePortThatSetIt(
 
   const std::string& destination_scheme = destination.scheme();
   bool destination_port_is_default =
-      url::DefaultPortForScheme(destination_scheme.c_str(),
-                                destination_scheme.length()) ==
-      destination_port;
+      url::DefaultPortForScheme(destination_scheme) == destination_port;
 
   // Since the source port has to be specified if we got to this point, that
   // means this is a newer cookie that therefore has its scheme set as well.
@@ -2800,8 +2798,7 @@ CookieMonster::IsCookieSentToSamePortThatSetIt(
                                // https/http, so it's ok that we use these.
 
   bool source_port_is_default =
-      url::DefaultPortForScheme(source_scheme_string.c_str(),
-                                source_scheme_string.length()) == source_port;
+      url::DefaultPortForScheme(source_scheme_string) == source_port;
 
   if (destination_port_is_default && source_port_is_default)
     return CookieSentToSamePort::kNoButDefault;

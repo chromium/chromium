@@ -53,8 +53,7 @@ SchemefulSite::ObtainASiteResult SchemefulSite::ObtainASite(
   if (!used_registerable_domain)
     registerable_domain = origin.host();
 
-  int port = url::DefaultPortForScheme(origin.scheme().c_str(),
-                                       origin.scheme().length());
+  int port = url::DefaultPortForScheme(origin.scheme());
 
   // Provide a default port of 0 for non-standard schemes.
   if (port == url::PORT_UNSPECIFIED)

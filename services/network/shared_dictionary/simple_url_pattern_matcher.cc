@@ -390,8 +390,7 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   //   processedInit["port"] is its corresponding default port, then set
   //   processedInit["port"] to the empty string.
   if (port) {
-    int default_port =
-        url::DefaultPortForScheme(protocol->data(), protocol->size());
+    int default_port = url::DefaultPortForScheme(*protocol);
     if (default_port != url::PORT_UNSPECIFIED &&
         base::NumberToString(default_port) == *port) {
       port = "";

@@ -104,8 +104,7 @@ bool IsValidPortForScheme(std::string_view scheme, std::string_view port) {
   }
 
   // Only accept non-wildcard ports if the scheme uses ports.
-  if (url::DefaultPortForScheme(scheme.data(), scheme.length()) ==
-      url::PORT_UNSPECIFIED) {
+  if (url::DefaultPortForScheme(scheme) == url::PORT_UNSPECIFIED) {
     return false;
   }
 

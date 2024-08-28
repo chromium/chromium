@@ -34,9 +34,8 @@ std::string GetSiteNameForURL(const GURL& url) {
   // Use the default port for the scheme to ignore any non-standard ports for
   // the scheme from the final string being returned. So,
   // https://www.foo.com:1000/page.html would return just https://foo.com
-  return url::SchemeHostPort(
-             scheme, domain.empty() ? url.host() : domain,
-             url::DefaultPortForScheme(scheme.c_str(), scheme.length()))
+  return url::SchemeHostPort(scheme, domain.empty() ? url.host() : domain,
+                             url::DefaultPortForScheme(scheme))
       .Serialize();
 }
 

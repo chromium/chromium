@@ -2842,8 +2842,7 @@ TEST_P(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
   EXPECT_TRUE(p->GetMatchingProcessIsolatedOrigin(
       isolation_context, isolated_origin_with_port, kOriginRequestsIsolation,
       &lookup_origin));
-  EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme().data(),
-                                      lookup_origin.scheme().length()),
+  EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme()),
             lookup_origin.port());
   EXPECT_EQ(isolated_origin, lookup_origin);
 
@@ -2855,8 +2854,7 @@ TEST_P(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
   EXPECT_TRUE(p->GetMatchingProcessIsolatedOrigin(
       isolation_context, wild_with_port, kOriginRequestsIsolation,
       &lookup_origin));
-  EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme().data(),
-                                      lookup_origin.scheme().length()),
+  EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme()),
             lookup_origin.port());
   EXPECT_EQ(wild_origin, lookup_origin);
 

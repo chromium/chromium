@@ -2680,8 +2680,7 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
         // https://a.b.c.isolated.com must be returned.
         if (isolated_origin_entry.isolate_all_subdomains()) {
           *result = origin;
-          uint16_t default_port = url::DefaultPortForScheme(
-              origin.scheme().data(), origin.scheme().length());
+          uint16_t default_port = url::DefaultPortForScheme(origin.scheme());
 
           if (origin.port() != default_port) {
             *result = url::Origin::Create(GURL(origin.scheme() +

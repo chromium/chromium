@@ -399,8 +399,8 @@ int GURL::IntPort() const {
 int GURL::EffectiveIntPort() const {
   int int_port = IntPort();
   if (int_port == url::PORT_UNSPECIFIED && IsStandard())
-    return url::DefaultPortForScheme(spec_.data() + parsed_.scheme.begin,
-                                     parsed_.scheme.len);
+    return url::DefaultPortForScheme(std::string_view(
+        spec_.data() + parsed_.scheme.begin, parsed_.scheme.len));
   return int_port;
 }
 

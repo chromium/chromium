@@ -5723,15 +5723,10 @@ TEST(CanonicalCookieTest, TestGetAndAdjustPortForTrustworthyUrls) {
   std::string_view ws_scheme(url::kWsScheme);
   std::string_view wss_scheme(url::kWssScheme);
 
-  EXPECT_EQ(url::DefaultPortForScheme(http_scheme.data(), http_scheme.length()),
-            80);
-  EXPECT_EQ(url::DefaultPortForScheme(ws_scheme.data(), ws_scheme.length()),
-            80);
-  EXPECT_EQ(
-      url::DefaultPortForScheme(https_scheme.data(), https_scheme.length()),
-      443);
-  EXPECT_EQ(url::DefaultPortForScheme(wss_scheme.data(), wss_scheme.length()),
-            443);
+  EXPECT_EQ(url::DefaultPortForScheme(http_scheme), 80);
+  EXPECT_EQ(url::DefaultPortForScheme(ws_scheme), 80);
+  EXPECT_EQ(url::DefaultPortForScheme(https_scheme), 443);
+  EXPECT_EQ(url::DefaultPortForScheme(wss_scheme), 443);
 
   const GURL secure_http = GURL("https://example.com");
   const GURL secure_http_custom_port = GURL("https://example.com:123");

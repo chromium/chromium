@@ -93,8 +93,7 @@ bool MediaEngagementPreloadedList::CheckOriginIsPresent(
   std::string location(origin.host());
 
   // Add :<port> if we use a non-default port.
-  if (origin.port() != url::DefaultPortForScheme(origin.scheme().data(),
-                                                 origin.scheme().length())) {
+  if (origin.port() != url::DefaultPortForScheme(origin.scheme())) {
     location.push_back(':');
     std::string port(base::NumberToString(origin.port()));
     location.append(std::move(port));
