@@ -4173,7 +4173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaFoundationRenderer.D3D11CreateDeviceFailed"
-    enum="Hresult" expires_after="2024-10-01">
+    enum="Hresult" expires_after="2025-02-27">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
