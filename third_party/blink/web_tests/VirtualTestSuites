@@ -560,6 +560,7 @@
   },
   {
     "prefix": "speech-with-unified-autoplay",
+    "owners": ["media-dev@chromium.org", "evliu@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/speech-api"],
     "args": ["--autoplay-policy=document-user-activation-required"],
@@ -567,6 +568,7 @@
   },
   {
     "prefix": "unified-autoplay",
+    "owners": ["media-dev@chromium.org", "evliu@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/feature-policy"],
     "args": ["--autoplay-policy=document-user-activation-required"],
