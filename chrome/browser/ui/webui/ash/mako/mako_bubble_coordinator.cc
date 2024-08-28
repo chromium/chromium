@@ -63,6 +63,7 @@ void MakoBubbleCoordinator::LoadEditorUI(
     Profile* profile,
     MakoEditorMode mode,
     bool can_fallback_to_center_position,
+    bool feedback_enabled,
     std::optional<std::string_view> preset_query_id,
     std::optional<std::string_view> freeform_text) {
   if (IsShowingUI()) {
@@ -78,6 +79,8 @@ void MakoBubbleCoordinator::LoadEditorUI(
                                            freeform_text);
   url = net::AppendOrReplaceQueryParameter(url, kOrcaHostLanguageParamKey,
                                            GetSystemLocale());
+  url = net::AppendOrReplaceQueryParameter(url, kOrcaFeedbackEnabledParamKey,
+                                           feedback_enabled ? "true" : "false");
   if (base::FeatureList::IsEnabled(ash::features::kOrcaResizingSupport)) {
     url = net::AppendOrReplaceQueryParameter(url, kOrcaResizingEnabledParamKey,
                                              "true");

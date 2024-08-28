@@ -320,6 +320,20 @@ bool EditorSwitch::IsAllowedForUse() const {
                                             context_->active_country_code());
 }
 
+bool EditorSwitch::IsFeedbackEnabled() const {
+  if (profile_ == nullptr) {
+    return false;
+  }
+
+  // If unmanaged, allow Feedback.
+  if (!profile_->GetPrefs()->IsManagedPreference(prefs::kOrcaFeedbackEnabled)) {
+    return true;
+  }
+
+  // If managed, check the enablement value.
+  return profile_->GetPrefs()->GetBoolean(prefs::kOrcaFeedbackEnabled);
+}
+
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
   if (!IsAllowedForUse()) {
     return EditorOpportunityMode::kNotAllowedForUse;
