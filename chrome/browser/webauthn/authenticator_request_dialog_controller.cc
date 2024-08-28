@@ -1345,8 +1345,6 @@ void AuthenticatorRequestDialogController::OnAccountPreselectedIndex(
 
 void AuthenticatorRequestDialogController::SetSelectedAuthenticatorForTesting(
     AuthenticatorReference test_authenticator) {
-  ephemeral_state_.selected_authenticator_id_ =
-      test_authenticator.authenticator_id;
   ephemeral_state_.saved_authenticators_.AddAuthenticator(
       std::move(test_authenticator));
 }

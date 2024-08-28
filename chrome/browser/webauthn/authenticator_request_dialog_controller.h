@@ -63,10 +63,6 @@ class AuthenticatorRequestDialogController
   // is only resolved after the UI is dismissed.
   bool is_request_complete() const;
 
-  const std::optional<std::string>& selected_authenticator_id() const {
-    return ephemeral_state_.selected_authenticator_id_;
-  }
-
   // Starts the UX flow, by either showing the transport selection screen or
   // the guided flow for them most likely transport.
   //
@@ -378,10 +374,6 @@ class AuthenticatorRequestDialogController
     EphemeralState(EphemeralState&&);
     EphemeralState& operator=(EphemeralState&&);
     ~EphemeralState();
-
-    // Represents the id of the Bluetooth authenticator that the user is trying
-    // to connect to or conduct WebAuthN request to via the WebAuthN UI.
-    std::optional<std::string> selected_authenticator_id_;
 
     // Stores a list of |AuthenticatorReference| values such that a request can
     // be dispatched dispatched after some UI interaction. This is useful for
