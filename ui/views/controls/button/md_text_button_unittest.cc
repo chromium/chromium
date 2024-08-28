@@ -37,7 +37,7 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
     GTEST_SKIP() << "Button colors do not change with widget activation here.";
 
   std::unique_ptr<Widget> widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* button = widget->SetContentsView(
       std::make_unique<MdTextButton>(Button::PressedCallback(), u" "));
   button->SetStyle(ui::ButtonStyle::kProminent);
@@ -65,7 +65,7 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
 
   // Activate another widget to cause the original widget to deactivate.
   std::unique_ptr<Widget> other_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetTest::SimulateNativeActivate(other_widget.get());
   EXPECT_FALSE(widget->IsActive());
   SkBitmap inactive_bitmap = views::test::PaintViewToBitmap(button);

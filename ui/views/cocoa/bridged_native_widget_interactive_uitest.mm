@@ -36,7 +36,7 @@ class BridgedNativeWidgetUITest : public WidgetTest {
     widget_delegate_ = std::make_unique<WidgetDelegate>();
 
     Widget::InitParams init_params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                      Widget::InitParams::TYPE_WINDOW);
     init_params.bounds = gfx::Rect(100, 100, 300, 200);
     init_params.delegate = widget_delegate_.get();

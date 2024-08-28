@@ -270,7 +270,7 @@ class DesktopWindowTreeHostPlatformImplTest
     Widget* toplevel = new Widget;
     delegate_ = std::make_unique<HitTestWidgetDelegate>();
     Widget::InitParams toplevel_params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                      Widget::InitParams::TYPE_WINDOW);
     auto* native_widget = new DesktopNativeWidgetAura(toplevel);
     toplevel_params.native_widget = native_widget;
@@ -449,7 +449,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
     }
   }
   handler->set_platform_window(nullptr);
-  widget.reset();
+  widget->CloseNow();
 }
 
 // Tests that the window is maximized in response to a double click event.
