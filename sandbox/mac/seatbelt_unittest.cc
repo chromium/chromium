@@ -17,6 +17,7 @@
 
 #include <iterator>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/mac_util.h"
@@ -91,8 +92,7 @@ TEST_F(SeatbeltTest, Ftruncate) {
 
   const std::string contents =
       "Wouldn't it be nice to be able to use ftruncate?\n";
-  EXPECT_EQ(static_cast<int>(contents.length()),
-            file.WriteAtCurrentPos(contents.data(), contents.length()));
+  EXPECT_TRUE(file.WriteAtCurrentPosAndCheck(base::as_byte_span(contents)));
   EXPECT_EQ(static_cast<int64_t>(contents.length()), file.GetLength());
 
   base::PlatformFile fd = file.GetPlatformFile();
