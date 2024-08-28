@@ -38,6 +38,19 @@ buildflag_header("buildflags") {
   ]
 }
 
+component("gl_enums") {
+  sources = [
+    "gl_enums.cc",
+    "gl_enums.h",
+    "gl_enums_implementation_autogen.h",
+    "gl_export.h",
+  ]
+
+  defines = [ "GL_IMPLEMENTATION" ]
+
+  public_deps = [ "//third_party/angle:includes" ]
+}
+
 component("gl") {
   output_name = "gl_wrapper"  # Avoid colliding with OS X"s libGL.dylib.
 
@@ -68,10 +81,6 @@ component("gl") {
     "gl_display_manager.h",
     "gl_egl_api_implementation.cc",
     "gl_egl_api_implementation.h",
-    "gl_enums.cc",
-    "gl_enums.h",
-    "gl_enums_implementation_autogen.h",
-    "gl_export.h",
     "gl_features.cc",
     "gl_features.h",
     "gl_fence.cc",
@@ -157,8 +166,8 @@ component("gl") {
     "//ui/gfx/mojom",
   ]
   public_deps = [
+    ":gl_enums",
     "//base",
-    "//third_party/angle:includes",
     "//third_party/mesa_headers",
     "//ui/events/platform",
     "//ui/gfx",

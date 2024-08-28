@@ -4,9 +4,6 @@
 
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 
-#include <GLES2/gl2.h>
-#include <GLES2/gl2extchromium.h>
-
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"

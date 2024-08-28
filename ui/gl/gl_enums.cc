@@ -4,9 +4,10 @@
 
 #include "ui/gl/gl_enums.h"
 
+#include <GLES2/gl2.h>
+
 #include <sstream>
 
-#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_enums_implementation_autogen.h"
 
 namespace gl {
