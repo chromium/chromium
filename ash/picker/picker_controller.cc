@@ -26,6 +26,7 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_asset_fetcher_impl.h"
+#include "ash/picker/picker_caps_lock_bubble_controller.h"
 #include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/picker_paste_request.h"
@@ -97,8 +98,6 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
     base::kSHA1Length);
 
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
-
-constexpr base::TimeDelta kCapsLockStateViewDisplayTime = base::Seconds(3);
 
 // When spoken feedback is enabled, closing the widget after an insert is
 // delayed by this amount.
@@ -262,15 +261,6 @@ GURL GetUrlForNewWindow(PickerNewWindowResult::Type type) {
   }
 }
 
-gfx::NativeView GetParentView() {
-  aura::Window* active_window = window_util::GetActiveWindow();
-  // Use MenuContainer so that it works even with a system modal dialog.
-  return Shell::GetContainer(active_window
-                                 ? active_window->GetRootWindow()
-                                 : Shell::GetRootWindowForNewWindows(),
-                             kShellWindowId_MenuContainer);
-}
-
 ui::EmojiPickerCategory EmojiResultTypeToCategory(
     PickerEmojiResult::Type type) {
   switch (type) {
@@ -286,9 +276,8 @@ ui::EmojiPickerCategory EmojiResultTypeToCategory(
 }  // namespace
 
 PickerController::PickerController()
-    : asset_fetcher_(std::make_unique<PickerAssetFetcherImpl>(this)) {
-  ime_keyboard_observation_.Observe(&GetImeKeyboard());
-}
+    : caps_lock_bubble_controller_(&GetImeKeyboard()),
+      asset_fetcher_(std::make_unique<PickerAssetFetcherImpl>(this)) {}
 
 PickerController::~PickerController() {
   // `widget_` depends on `this`. Destroy the widget synchronously to avoid a
@@ -296,8 +285,6 @@ PickerController::~PickerController() {
   if (widget_) {
     widget_->CloseNow();
   }
-  // Close CapsLock State View if it's open to avoid a dangling pointer.
-  CloseCapsLockStateView();
 }
 
 bool PickerController::IsFeatureEnabled() {
@@ -671,14 +658,6 @@ void PickerController::CloseWidget() {
   widget_->Close();
 }
 
-void PickerController::CloseCapsLockStateView() {
-  caps_lock_state_view_close_timer_.Stop();
-  if (caps_lock_state_view_ != nullptr) {
-    caps_lock_state_view_->Close();
-    caps_lock_state_view_ = nullptr;
-  }
-}
-
 void PickerController::OnFeatureTourLearnMore() {
   OpenLink(GURL("https://support.google.com/chromebook?p=dugong"));
 }
@@ -772,24 +751,5 @@ PickerCapsLockPosition PickerController::GetCapsLockPosition() {
   }
   return PickerCapsLockPosition::kBottom;
 }
-
-// TODO(b/358248370): CapsLock state view is actually not dependent on
-// PickerController, it lives here for legacy reason. We should refactor related
-// code to a separate class.
-void PickerController::OnCapsLockChanged(bool enabled) {
-  CloseCapsLockStateView();
-  if (GetFocusedTextInputClient() == nullptr) {
-    return;
-  }
-  caps_lock_state_view_ =
-      new PickerCapsLockStateView(GetParentView(), enabled, GetCaretBounds());
-  caps_lock_state_view_->Show();
-  caps_lock_state_view_close_timer_.Start(
-      FROM_HERE, kCapsLockStateViewDisplayTime,
-      base::BindOnce(&PickerController::CloseCapsLockStateView,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PickerController::OnLayoutChanging(const std::string& layout_name) {}
 
 }  // namespace ash

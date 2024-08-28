@@ -15,6 +15,7 @@
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
+#include "ash/picker/picker_caps_lock_bubble_controller.h"
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_view_delegate.h"
@@ -26,7 +27,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
-#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/views/view_observer.h"
@@ -35,7 +35,6 @@
 namespace ash {
 
 class PickerAssetFetcher;
-class PickerCapsLockStateView;
 class PickerClient;
 class PickerEmojiHistoryModel;
 class PickerEmojiSuggester;
@@ -47,8 +46,7 @@ class PickerSuggestionsController;
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate,
                                     public views::ViewObserver,
-                                    public PickerAssetFetcherImplDelegate,
-                                    public input_method::ImeKeyboard::Observer {
+                                    public PickerAssetFetcherImplDelegate {
  public:
   PickerController();
   PickerController(const PickerController&) = delete;
@@ -98,11 +96,10 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   // Returns the Picker widget for tests.
   views::Widget* widget_for_testing() { return widget_.get(); }
-  // Returns the CapsLock state view for tests.
-  PickerCapsLockStateView* caps_lock_state_view_for_testing() {
-    return caps_lock_state_view_.get();
-  }
   PickerFeatureTour& feature_tour_for_testing() { return feature_tour_; }
+  PickerCapsLockBubbleController& caps_lock_bubble_controller_for_testing() {
+    return caps_lock_bubble_controller_;
+  }
 
   // PickerViewDelegate:
   std::vector<PickerCategory> GetAvailableCategories() override;
@@ -139,10 +136,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
 
-  // input_method::ImeKeyboard::Observer
-  void OnCapsLockChanged(bool enabled) override;
-  void OnLayoutChanging(const std::string& layout_name) override;
-
   // Disables the feature tour. Only works in tests.
   static void DisableFeatureTourForTesting();
 
@@ -162,7 +155,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void CloseWidget();
   void OnFeatureTourLearnMore();
   void ShowWidgetPostFeatureTour();
-  void CloseCapsLockStateView();
   void InsertResultOnNextFocus(const PickerSearchResult& result);
   void OnInsertCompleted(const PickerRichMedia& media,
                          PickerInsertMediaRequest::Result result);
@@ -171,6 +163,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::optional<PickerWebPasteTarget> GetWebPasteTarget();
 
   PickerFeatureTour feature_tour_;
+  PickerCapsLockBubbleController caps_lock_bubble_controller_;
   std::unique_ptr<PickerModel> model_;
   std::unique_ptr<PickerEmojiHistoryModel> emoji_history_model_;
   std::unique_ptr<PickerEmojiSuggester> emoji_suggester_;
@@ -182,7 +175,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerSearchController> search_controller_;
 
   raw_ptr<PickerClient> client_ = nullptr;
-  raw_ptr<PickerCapsLockStateView> caps_lock_state_view_ = nullptr;
 
   base::OnceCallback<void(std::optional<std::string> preset_query_id,
                           std::optional<std::string> freeform_text)>
@@ -200,13 +192,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
-
-  base::ScopedObservation<input_method::ImeKeyboard,
-                          input_method::ImeKeyboard::Observer>
-      ime_keyboard_observation_{this};
-
-  // Closes CapsLock state view after some time.
-  base::OneShotTimer caps_lock_state_view_close_timer_;
 
   base::WeakPtrFactory<PickerController> weak_ptr_factory_{this};
 };

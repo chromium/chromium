@@ -256,11 +256,15 @@ TEST_F(PickerControllerTest,
   ASSERT_TRUE(ime_keyboard);
 
   EXPECT_FALSE(controller().widget_for_testing());
-  EXPECT_TRUE(controller().caps_lock_state_view_for_testing());
+  EXPECT_TRUE(controller()
+                  .caps_lock_bubble_controller_for_testing()
+                  .bubble_view_for_testing());
   EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
 
   task_environment()->FastForwardBy(base::Seconds(4));
-  EXPECT_FALSE(controller().caps_lock_state_view_for_testing());
+  EXPECT_FALSE(controller()
+                   .caps_lock_bubble_controller_for_testing()
+                   .bubble_view_for_testing());
 }
 
 TEST_F(PickerControllerTest, TogglingWidgetRecordsStartSessionMetrics) {
@@ -285,56 +289,6 @@ TEST_F(PickerControllerTest, TogglingWidgetRecordsStartSessionMetrics) {
                    Eq(expected_event.event_name())),
           Property("metric values", &metrics::structured::Event::metric_values,
                    Eq(std::ref(expected_event.metric_values()))))));
-}
-
-TEST_F(PickerControllerTest,
-       ToggleCapsLockInTextFieldShowsBubbleForAShortTime) {
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-
-  ui::FakeTextInputClient input_field(input_method,
-                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
-  input_method->SetFocusedTextInputClient(&input_field);
-
-  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
-  ime_keyboard->SetCapsLockEnabled(true);
-  ASSERT_TRUE(ime_keyboard);
-
-  EXPECT_FALSE(controller().widget_for_testing());
-  EXPECT_TRUE(controller().caps_lock_state_view_for_testing());
-
-  task_environment()->FastForwardBy(base::Seconds(4));
-  EXPECT_FALSE(controller().caps_lock_state_view_for_testing());
-}
-
-TEST_F(PickerControllerTest,
-       ToggleWidgetTwiceQuicklyInPasswordFieldExtendsBubbleShowTime) {
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-
-  ui::FakeTextInputClient input_field(input_method,
-                                      {.type = ui::TEXT_INPUT_TYPE_PASSWORD});
-  input_method->SetFocusedTextInputClient(&input_field);
-
-  controller().ToggleWidget();
-  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
-  ASSERT_TRUE(ime_keyboard);
-
-  EXPECT_FALSE(controller().widget_for_testing());
-  EXPECT_TRUE(controller().caps_lock_state_view_for_testing());
-  EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
-
-  task_environment()->FastForwardBy(base::Seconds(2));
-  EXPECT_TRUE(controller().caps_lock_state_view_for_testing());
-
-  controller().ToggleWidget();
-
-  EXPECT_FALSE(controller().widget_for_testing());
-  EXPECT_TRUE(controller().caps_lock_state_view_for_testing());
-  EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
-
-  task_environment()->FastForwardBy(base::Seconds(2));
-  EXPECT_TRUE(controller().caps_lock_state_view_for_testing());
 }
 
 TEST_F(PickerControllerTest, ToggleWidgetClosesWidgetIfOpen) {
