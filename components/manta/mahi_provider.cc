@@ -124,6 +124,8 @@ MahiProvider::MahiProvider(
 MahiProvider::~MahiProvider() = default;
 
 void MahiProvider::Summarize(const std::string& input,
+                             const std::string& title,
+                             const std::optional<std::string>& url,
                              MantaGenericCallback done_callback) {
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_SUMMARY);
@@ -131,6 +133,18 @@ void MahiProvider::Summarize(const std::string& input,
   auto* input_data = request.add_input_data();
   input_data->set_tag("model_input");
   input_data->set_text(input);
+
+  if (!title.empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("title");
+    input_data->set_text(title);
+  }
+
+  if (url.has_value() && !url->empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("url");
+    input_data->set_text(url.value());
+  }
 
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
@@ -141,6 +155,8 @@ void MahiProvider::Summarize(const std::string& input,
 }
 
 void MahiProvider::Outline(const std::string& input,
+                           const std::string& title,
+                           const std::optional<std::string>& url,
                            MantaGenericCallback done_callback) {
   std::move(done_callback)
       .Run(base::Value::Dict(),
@@ -148,6 +164,8 @@ void MahiProvider::Outline(const std::string& input,
 }
 
 void MahiProvider::QuestionAndAnswer(const std::string& original_content,
+                                     const std::string& title,
+                                     const std::optional<std::string>& url,
                                      const std::vector<MahiQAPair> QAHistory,
                                      const std::string& question,
                                      MantaGenericCallback done_callback) {
@@ -157,6 +175,18 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
   auto* input_data = request.add_input_data();
   input_data->set_tag("original_content");
   input_data->set_text(original_content);
+
+  if (!title.empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("title");
+    input_data->set_text(title);
+  }
+
+  if (url.has_value() && !url->empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("url");
+    input_data->set_text(url.value());
+  }
 
   input_data = request.add_input_data();
   input_data->set_tag("new_question");

@@ -166,6 +166,11 @@ BASE_FEATURE(kKioskHeartbeatsViaERP,
 
 // Controls enabling / disabling the mahi feature.
 BASE_FEATURE(kMahi, "Mahi", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether mahi sends url when making request to the server.
+BASE_FEATURE(kMahiSendingUrl,
+             "MahiSendingUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls enabling / disabling the sparky feature.
@@ -450,6 +455,15 @@ bool IsMahiEnabled() {
 #else
   return base::FeatureList::IsEnabled(kMahi) ||
          base::FeatureList::IsEnabled(kSparky);
+#endif
+}
+
+// Mahi requests are composed & sent from ash.
+bool IsMahiSendingUrl() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(kMahiSendingUrl);
+#else
+  return false;
 #endif
 }
 
