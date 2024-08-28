@@ -522,7 +522,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             && getArguments()
                                     .getBoolean(PasswordManagerHelper.START_PASSWORDS_EXPORT);
             if (startPasswordsExportFlow) {
-                PasswordManagerHelper.getForProfile(getProfile()).launchExportFlow(getContext());
+                PasswordManagerHelper.getForProfile(getProfile())
+                        .launchExportFlow(getContext(), mModalDialogManagerSupplier);
                 getArguments().putBoolean(PasswordManagerHelper.START_PASSWORDS_EXPORT, false);
             }
         }

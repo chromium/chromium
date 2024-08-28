@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -38,23 +37,26 @@ class PasswordAccessLossExportDialogMediator
 
     private final FragmentActivity mActivity;
     private final Profile mProfile;
-    private final View mDialogView;
+    private final int mDialogViewId;
     private final PasswordAccessLossExportDialogFragment mExportDialogFragment;
     private ExportFlow mExportFlow;
     private PasswordStoreBridge mPasswordStoreBridge;
     private DialogManager mProgressBarManager;
+    private final PasswordAccessLossExportDialogCoordinator.Observer mExportDialogObserver;
 
     public PasswordAccessLossExportDialogMediator(
             FragmentActivity activity,
             Profile profile,
-            View dialogView,
+            int dialogViewId,
             PasswordAccessLossExportDialogFragment exportDialogFragment,
-            PasswordStoreBridge passwordStoreBridge) {
+            PasswordStoreBridge passwordStoreBridge,
+            PasswordAccessLossExportDialogCoordinator.Observer exportDialogObserver) {
         mActivity = activity;
         mProfile = profile;
-        mDialogView = dialogView;
+        mDialogViewId = dialogViewId;
         mExportDialogFragment = exportDialogFragment;
         mPasswordStoreBridge = passwordStoreBridge;
+        mExportDialogObserver = exportDialogObserver;
     }
 
     public void handlePositiveButtonClicked() {
@@ -78,7 +80,7 @@ class PasswordAccessLossExportDialogMediator
 
     @Override
     public int getViewId() {
-        return mDialogView.getId();
+        return mDialogViewId;
     }
 
     @Override
@@ -153,7 +155,7 @@ class PasswordAccessLossExportDialogMediator
         // was executing. In this case the `UseUpmLocalAndSeparateStoresState` preference would have
         // been changed to `kOn`;
         // TODO (crbug.com/354876446): Introduce passwords deleted metrics in a separate CL.
-        if (!shouldDeleteAllPAsswords()) {
+        if (!shouldDeleteAllPasswords()) {
             destroy();
             return;
         }
@@ -170,7 +172,7 @@ class PasswordAccessLossExportDialogMediator
         mPasswordStoreBridge.clearAllPasswordsFromProfileStore();
     }
 
-    private boolean shouldDeleteAllPAsswords() {
+    private boolean shouldDeleteAllPasswords() {
         PrefService prefService = UserPrefs.get(mProfile);
         if (PasswordManagerHelper.getAccessLossWarningType(prefService)
                 == PasswordAccessLossWarningType.NO_GMS_CORE) return true;
@@ -185,6 +187,7 @@ class PasswordAccessLossExportDialogMediator
                     destroy();
                     mPasswordStoreBridge.removeObserver(this);
                     mPasswordStoreBridge.destroy();
+                    mExportDialogObserver.onPasswordsDeletionFinished();
                 });
     }
 

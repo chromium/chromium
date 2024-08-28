@@ -199,6 +199,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogMediator.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogProperties.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportFlowCoordinator.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossImportDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessReauthenticationHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordListObserver.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordManagerHandler.java",
@@ -248,7 +250,9 @@ robolectric_binary("password_manager_junit_tests") {
   testonly = true
 
   sources = [
-    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogTest.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportFlowCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossImportDialogCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakeCredentialManagerLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordManagerBackendSupportHelperTest.java",
@@ -301,6 +305,7 @@ robolectric_binary("password_manager_junit_tests") {
     "//chrome/browser/settings:internal_java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
+    "//chrome/browser/sync/test/android:test_support_java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",

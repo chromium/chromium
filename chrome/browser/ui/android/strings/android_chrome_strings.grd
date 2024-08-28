@@ -978,6 +978,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_ACCESS_LOSS_EXPORT_DIALOG_POSITIVE_BUTTON_TEXT" desc="The text on the button, confirming the user's agreement to export passwords and remove them from Chrome's database.">
         Export and delete
       </message>
+      <message name="IDS_ACCESS_LOSS_IMPORT_DIALOG_TITLE" desc="The title of the dialog instructing the user to import passwords into Google Password Manager.">
+        Next, import the passwords
+      </message>
+      <message name="IDS_ACCESS_LOSS_IMPORT_DIALOG_DESC" desc="The message of the dialog instructing the user to import passwords into Google Password Manager.">
+        Open Google Password Manager and go to settings. Select “Import“ and add the CSV file that contains your exported passwords.
+      </message>
+      <message name="IDS_ACCESS_LOSS_IMPORT_DIALOG_POSITIVE_BUTTON_TEXT" desc="The positive button text in the dialog instructing the user to import passwords into Google Password Manager.">
+        Take me there
+      </message>
       <message name="IDS_ACCESS_LOSS_PREF_DESC" desc="The subtitle of the Google Password Manager item in Chrome main settings. Displayed only if the UPM is not functioning properly.">
         Some passwords will stop working soon
       </message>

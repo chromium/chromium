@@ -36,7 +36,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
             new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
 
     @Mock private Callback<Context> mLaunchGmsCoreUpdate;
-    @Mock private Callback<Context> mLaunchExportFlow;
+    @Mock private Runnable mLaunchExportFlow;
 
     @Before
     public void setUp() {
@@ -102,7 +102,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
         Assert.assertNotNull(mDialogModel);
 
         mModalDialogManager.clickPositiveButton();
-        verify(mLaunchExportFlow).onResult(any());
+        verify(mLaunchExportFlow).run();
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
     }
 
@@ -118,7 +118,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
         Assert.assertNotNull(mDialogModel);
 
         mModalDialogManager.clickPositiveButton();
-        verify(mLaunchExportFlow).onResult(any());
+        verify(mLaunchExportFlow).run();
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
     }
 }

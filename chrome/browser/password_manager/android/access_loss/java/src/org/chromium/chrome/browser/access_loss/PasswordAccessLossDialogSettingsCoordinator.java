@@ -18,6 +18,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Shows the warning to the user explaining why they are not able to access Google Password Manager.
+ * This warning is displayed when user tries to access Google Password Manager in 3 cases: 1) They
+ * don't have GMS Core installed. 2) They have an outdated GMS Core. 3) The local passwords
+ * migration to GMS Core failed. The user is then proposed to either update GMS Core (if it's a
+ * valid option) or to run the passwords export flow.
  */
 public class PasswordAccessLossDialogSettingsCoordinator
         implements ModalDialogProperties.Controller {
@@ -25,14 +29,14 @@ public class PasswordAccessLossDialogSettingsCoordinator
     private ModalDialogManager mModalDialogManager;
     private @PasswordAccessLossWarningType int mWarningType;
     private Callback<Context> mLaunchGmsUpdate;
-    private Callback<Context> mLaunchExportFlow;
+    private Runnable mLaunchExportFlow;
 
     public void showPasswordAccessLossDialog(
             Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @PasswordAccessLossWarningType int warningType,
             Callback<Context> launchGmsUpdate,
-            Callback<Context> launchExportFlow) {
+            Runnable launchExportFlow) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mWarningType = warningType;
@@ -144,7 +148,7 @@ public class PasswordAccessLossDialogSettingsCoordinator
         switch (mWarningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
             case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
-                mLaunchExportFlow.onResult(mContext);
+                mLaunchExportFlow.run();
                 break;
             case PasswordAccessLossWarningType.NO_UPM:
             case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:

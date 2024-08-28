@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.password_manager.settings.PasswordAcce
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -20,15 +19,23 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * Coordinates the export flow. Ties the export flow, the dialog fragment and its content view
- * together.
+ * Shows the dialog offering the user to export their passwords. If they accept, it runs the export
+ * flow, namely: 1) Serializes user passwords and saves them to the file on disk. 2) Removes all
+ * password from the profile store (it the previous step was successful).
  */
 public class PasswordAccessLossExportDialogCoordinator {
+    public interface Observer {
+        void onPasswordsDeletionFinished();
+    }
+
     private final FragmentActivity mActivity;
     private final PasswordAccessLossExportDialogFragment mFragment;
     private final PasswordAccessLossExportDialogMediator mMediator;
 
-    public PasswordAccessLossExportDialogCoordinator(FragmentActivity activity, Profile profile) {
+    public PasswordAccessLossExportDialogCoordinator(
+            FragmentActivity activity,
+            Profile profile,
+            PasswordAccessLossExportDialogCoordinator.Observer exportDialogObserver) {
         mActivity = activity;
         View dialogView =
                 LayoutInflater.from(mActivity)
@@ -36,19 +43,12 @@ public class PasswordAccessLossExportDialogCoordinator {
         mFragment = new PasswordAccessLossExportDialogFragment();
         mMediator =
                 new PasswordAccessLossExportDialogMediator(
-                        activity, profile, dialogView, mFragment, new PasswordStoreBridge(profile));
-        initialize(dialogView);
-    }
-
-    @VisibleForTesting
-    PasswordAccessLossExportDialogCoordinator(
-            FragmentActivity activity,
-            PasswordAccessLossExportDialogFragment fragment,
-            PasswordAccessLossExportDialogMediator mediator,
-            View dialogView) {
-        mActivity = activity;
-        mFragment = fragment;
-        mMediator = mediator;
+                        activity,
+                        profile,
+                        dialogView.getId(),
+                        mFragment,
+                        new PasswordStoreBridge(profile),
+                        exportDialogObserver);
         initialize(dialogView);
     }
 
@@ -73,5 +73,9 @@ public class PasswordAccessLossExportDialogCoordinator {
 
     public void showExportDialog() {
         mFragment.show(mActivity.getSupportFragmentManager(), null);
+    }
+
+    public PasswordAccessLossExportDialogMediator getMediatorForTesting() {
+        return mMediator;
     }
 }

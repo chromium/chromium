@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,8 +21,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -32,7 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.password_manager.FakePasswordManagerHandler;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridgeJni;
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,18 +68,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/** Tests for {@link PasswordAccessLossExportDialogFragment} */
+/** Tests for {@link PasswordAccessLossExportDialogCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
-public class PasswordAccessLossExportDialogTest {
+public class PasswordAccessLossExportDialogCoordinatorTest {
     private static final Uri TEMP_EXPORT_FILE_URI = Uri.parse("tmp/fake/test/path/file.ext");
     private static final Uri SAVED_EXPORT_FILE_URI = Uri.parse("fake/test/path/file.ext");
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
     private PasswordAccessLossExportDialogCoordinator mCoordinator;
-    private PasswordAccessLossExportDialogMediator mMediator;
-    private PasswordAccessLossExportDialogFragment mFragment;
     private FragmentActivity mActivity;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
@@ -86,17 +86,19 @@ public class PasswordAccessLossExportDialogTest {
     @Mock private FileProviderUtil mFileProviderUtil;
     @Mock private InputStream mInputStream;
     @Mock private OutputStream mOutputStream;
-    @Mock private PasswordStoreBridge mPasswordStoreBridge;
+    @Mock private PasswordStoreBridge.Natives mPasswordStoreBridgeJniMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+    @Mock private PasswordAccessLossExportDialogCoordinator.Observer mPasswordsDeletionFinished;
     private FakePasswordManagerHandler mPasswordManagerHandler;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        mJniMocker.mock(PasswordStoreBridgeJni.TEST_HOOKS, mPasswordStoreBridgeJniMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         mActivity =
                 Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class)
@@ -104,21 +106,15 @@ public class PasswordAccessLossExportDialogTest {
                         .start()
                         .resume()
                         .get();
-        View dialogView =
-                LayoutInflater.from(mActivity)
-                        .inflate(R.layout.password_access_loss_export_dialog_view, null);
-        mFragment = new PasswordAccessLossExportDialogFragment();
-        mMediator =
-                new PasswordAccessLossExportDialogMediator(
-                        mActivity, mProfile, dialogView, mFragment, mPasswordStoreBridge);
         mCoordinator =
                 new PasswordAccessLossExportDialogCoordinator(
-                        mActivity, mFragment, mMediator, dialogView);
+                        mActivity, mProfile, mPasswordsDeletionFinished);
     }
 
     private void setUpPasswordManagerHandler() {
         // Fakes password manager provider needed for passwords serialization.
-        mPasswordManagerHandler = new FakePasswordManagerHandler(mMediator);
+        mPasswordManagerHandler =
+                new FakePasswordManagerHandler(mCoordinator.getMediatorForTesting());
         PasswordManagerHandlerProvider provider =
                 PasswordManagerHandlerProvider.getForProfile(mProfile);
         provider.setPasswordManagerHandlerForTest(mPasswordManagerHandler);
@@ -127,11 +123,11 @@ public class PasswordAccessLossExportDialogTest {
     private void setUpPasswordStoreBridge() {
         doAnswer(
                         invocation -> {
-                            mMediator.onSavedPasswordsChanged(0);
+                            mCoordinator.getMediatorForTesting().onSavedPasswordsChanged(0);
                             return null;
                         })
-                .when(mPasswordStoreBridge)
-                .clearAllPasswordsFromProfileStore();
+                .when(mPasswordStoreBridgeJniMock)
+                .clearAllPasswordsFromProfileStore(anyLong());
     }
 
     private void setUpReauthenticationManager() {
@@ -155,10 +151,15 @@ public class PasswordAccessLossExportDialogTest {
     private void setUpAccessLossWarningType(@PasswordAccessLossWarningType int type) {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(any()))
                 .thenReturn(type);
+        if (type == PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED) {
+            when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+            when(mPrefService.getInteger(Pref.PASSWORDS_USE_UPM_LOCAL_AND_SEPARATE_STORES))
+                    .thenReturn(/* UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending */ 1);
+        }
     }
 
     @Test
-    public void testDialogStrings() {
+    public void testExportDialogStrings() {
         mCoordinator.showExportDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -182,7 +183,7 @@ public class PasswordAccessLossExportDialogTest {
     @EnableFeatures(
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
-    public void testPositiveButtonClick() throws IOException {
+    public void testExportFlow() throws IOException {
         mCoordinator.showExportDialog();
         setUpPasswordManagerHandler();
         setUpPasswordStoreBridge();
@@ -206,7 +207,7 @@ public class PasswordAccessLossExportDialogTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
         // Simulates the `onResume` call after re-authentication.
-        mFragment.onResume();
+        mCoordinator.getMediatorForTesting().onResume();
         Robolectric.flushForegroundThreadScheduler();
 
         ShadowActivity shadowActivity = shadowOf(mActivity);
@@ -228,7 +229,7 @@ public class PasswordAccessLossExportDialogTest {
         // Verify that writing to the exported file was called.
         verify(mInputStream, times(2)).read(any(byte[].class));
         verify(mOutputStream).write(any(byte[].class), anyInt(), anyInt());
-        verify(mPasswordStoreBridge).clearAllPasswordsFromProfileStore();
+        verify(mPasswordStoreBridgeJniMock).clearAllPasswordsFromProfileStore(anyLong());
     }
 
     @Test
@@ -254,7 +255,7 @@ public class PasswordAccessLossExportDialogTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
         // Simulates the `onResume` call after re-authentication.
-        mFragment.onResume();
+        mCoordinator.getMediatorForTesting().onResume();
         Robolectric.flushForegroundThreadScheduler();
 
         // Dialog is expected to be dismissed now.
@@ -269,26 +270,22 @@ public class PasswordAccessLossExportDialogTest {
         // This test checks the edge case, when the export dialog was displayed, but the migration
         // succeeded in while it was showing.
         setUpAccessLossWarningType(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
-        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getInteger(Pref.PASSWORDS_USE_UPM_LOCAL_AND_SEPARATE_STORES))
                 .thenReturn(/* UseUpmLocalAndSeparateStoresState::kOn */ 2);
-        // setUpPasswordStoreBridge();
-        // setUpSyncService();
-        // setUpUpm();
         // Notification that the export flow succeeded should trigger passwords deletion.
-        mMediator.onExportFlowSucceeded();
+        mCoordinator.getMediatorForTesting().onExportFlowSucceeded();
         Robolectric.flushForegroundThreadScheduler();
 
         // Password deletion should not be triggered in this case (because it would remove passwords
         // from GMS Core).
-        verify(mPasswordStoreBridge, times(0)).clearAllPasswordsFromProfileStore();
+        verify(mPasswordStoreBridgeJniMock, times(0)).clearAllPasswordsFromProfileStore(anyLong());
     }
 
     @Test
     @EnableFeatures(
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
-    public void testNegativeButtonClick() {
+    public void testExportDialogNegativeButtonClick() {
         mCoordinator.showExportDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 

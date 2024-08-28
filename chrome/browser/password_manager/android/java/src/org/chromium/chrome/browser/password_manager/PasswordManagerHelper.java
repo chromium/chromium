@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
-import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportDialogCoordinator;
+import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportFlowCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -175,10 +175,10 @@ public class PasswordManagerHelper {
         if (warningType != PasswordAccessLossWarningType.NONE) {
             // Always start export flow from Chrome main settings. If this is already being called
             // from main settings, then launch export flow right away.
-            Callback<Context> startExportFlow =
+            Runnable startExportFlow =
                     referrer == ManagePasswordsReferrer.CHROME_SETTINGS
-                            ? this::launchExportFlow
-                            : PasswordManagerHelper::showMainSettingsAndStartExport;
+                            ? () -> launchExportFlow(context, modalDialogManagerSupplier)
+                            : () -> showMainSettingsAndStartExport(context);
             new PasswordAccessLossDialogSettingsCoordinator()
                     .showPasswordAccessLossDialog(
                             context,
@@ -464,15 +464,17 @@ public class PasswordManagerHelper {
         }
     }
 
-    public void launchExportFlow(Context context) {
+    public void launchExportFlow(
+            Context context, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
         assert activity != null : "Context is expected to be a fragment activity";
 
-        new PasswordAccessLossExportDialogCoordinator(activity, mProfile).showExportDialog();
+        new PasswordAccessLossExportFlowCoordinator(activity, mProfile, modalDialogManagerSupplier)
+                .startExportFlow();
     }
 
     @VisibleForTesting
-    void launchTheCredentialManager(
+    public void launchTheCredentialManager(
             @ManagePasswordsReferrer int referrer,
             SyncService syncService,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
