@@ -92,6 +92,8 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
+  void SetIsInitializedForTesting(bool initialized) override;
+
   void AddSavedTabGroupModelObserver(
       SavedTabGroupModelObserver* saved_tab_group_model_observer);
   void RemoveSavedTabGroupModelObserver(

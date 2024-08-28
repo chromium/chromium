@@ -652,19 +652,17 @@ bool TabGroupEditorBubbleView::ShouldShowSavedFooter() const {
 void TabGroupEditorBubbleView::OnSaveTogglePressed() {
   // TODO(crbug.com/356886508): When V2 launches remove this function as it will
   // no longer be used.
-  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser_->profile());
-  CHECK(saved_tab_group_service);
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+  CHECK(tab_group_service);
 
   if (save_group_toggle_->GetIsOn()) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupSaved"));
 
-    saved_tab_group_service->SaveGroup(
-        group_,
-        /*is_pinned=*/tab_groups::SavedTabGroupUtils::ShouldAutoPinNewTabGroups(
-            browser_->profile()));
+    tab_groups::SavedTabGroup group =
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group_);
+    tab_group_service->AddGroup(std::move(group));
 
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
         kTabGroupSavedCustomEventId, save_group_toggle_);
@@ -679,8 +677,7 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
   } else {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
-    saved_tab_group_service->UnsaveGroup(
-        group_, tab_groups::ClosingSource::kDeletedByUser);
+    tab_group_service->RemoveGroup(group_);
   }
 
   save_group_toggle_->GetViewAccessibility().SetName(

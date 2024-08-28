@@ -93,7 +93,7 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Saves a restored group. This can be called prior to the saved tab
   // group model is loaded. These groups are saved when the model is loaded.
-  void SaveRestoredGroup(const tab_groups::TabGroupId& group_id);
+  void SaveRestoredGroup(SavedTabGroup group);
 
   void UpdateAttributions(
       const LocalTabGroupID& group_id,
@@ -222,7 +222,7 @@ class SavedTabGroupKeyedService : public KeyedService,
       restored_groups_to_connect_on_load_;
 
   // Keeps track of the groups to save on model load.
-  std::vector<tab_groups::TabGroupId> restored_groups_to_save_on_load_;
+  std::vector<SavedTabGroup> restored_groups_to_save_on_load_;
 };
 
 }  // namespace tab_groups

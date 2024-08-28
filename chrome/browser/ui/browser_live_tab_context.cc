@@ -243,18 +243,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       // Save the group if it was not saved.
       if (!tab_group_service->GetGroup(group_id.value()).has_value() &&
           tab_groups::IsTabGroupsSaveV2Enabled()) {
-        tab_groups::SavedTabGroup saved_tab_group(
-            tab.group_visual_data->title(), tab.group_visual_data->color(), {},
-            std::nullopt, std::nullopt, tab.group.value());
-        saved_tab_group.AddTabLocally(
-            tab_groups::SavedTabGroupUtils::
-                CreateSavedTabGroupTabFromWebContents(
-                    web_contents, saved_tab_group.saved_guid()));
-
-        const base::Uuid saved_group_guid = saved_tab_group.saved_guid();
-        tab_group_service->AddGroup(std::move(saved_tab_group));
-        tab_group_service->ConnectLocalTabGroup(saved_group_guid,
-                                                tab.group.value());
+        tab_group_service->AddGroup(
+            tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+                tab.group.value()));
       }
     }
   } else {

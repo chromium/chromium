@@ -43,11 +43,11 @@ TabGroupSyncServiceProxy::TabGroupSyncServiceProxy(
 TabGroupSyncServiceProxy::~TabGroupSyncServiceProxy() = default;
 
 void TabGroupSyncServiceProxy::AddGroup(SavedTabGroup group) {
-  service_->model()->Add(std::move(group));
+  service_->SaveRestoredGroup(std::move(group));
 }
 
 void TabGroupSyncServiceProxy::RemoveGroup(const LocalTabGroupID& local_id) {
-  service_->model()->Remove(local_id);
+  service_->UnsaveGroup(local_id, ClosingSource::kDeletedByUser);
 }
 
 void TabGroupSyncServiceProxy::RemoveGroup(const base::Uuid& sync_id) {
@@ -262,6 +262,10 @@ TabGroupSyncServiceProxy::CreateScopedLocalObserverPauser() {
 void TabGroupSyncServiceProxy::AddObserver(Observer* observer) {}
 
 void TabGroupSyncServiceProxy::RemoveObserver(Observer* observer) {}
+
+void TabGroupSyncServiceProxy::SetIsInitializedForTesting(bool initialized) {
+  service_->model()->LoadStoredEntries({}, {});
+}
 
 void TabGroupSyncServiceProxy::AddSavedTabGroupModelObserver(
 

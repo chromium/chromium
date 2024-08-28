@@ -137,108 +137,96 @@ class TabGroupSyncServiceProxyUnitTest
 
 // Verify we can add a group to both services correctly.
 TEST_P(TabGroupSyncServiceProxyUnitTest, AddGroup) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0, 1, 2});
 
   const std::optional<SavedTabGroup> retrieved_group =
-      service()->GetGroup(kGroupId);
-  EXPECT_TRUE(retrieved_group.has_value());
+      service()->GetGroup(local_id);
+  ASSERT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(local_id, retrieved_group->local_group_id());
-  EXPECT_EQ(kGroupId, retrieved_group->saved_guid());
   EXPECT_EQ(3u, retrieved_group->saved_tabs().size());
-  EXPECT_TRUE(retrieved_group->ContainsTab(kFirstTabId));
-  EXPECT_TRUE(retrieved_group->ContainsTab(kSecondTabId));
-  EXPECT_TRUE(retrieved_group->ContainsTab(kThirdTabId));
 }
 
 // Verify we can remove a group from the services using the local id correctly.
 TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveGroupUsingLocalId) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
 
+  const base::Uuid sync_id = retrieved_group->saved_guid();
   service()->RemoveGroup(local_id);
   EXPECT_FALSE(service()->GetGroup(local_id).has_value());
-  EXPECT_FALSE(service()->GetGroup(kGroupId).has_value());
+  EXPECT_FALSE(service()->GetGroup(sync_id).has_value());
 }
 
 // Verify we can remove a group from the services using the sync id correctly.
 TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveGroupUsingSyncId) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
 
-  service()->RemoveGroup(kGroupId);
+  const base::Uuid sync_id = retrieved_group->saved_guid();
+  service()->RemoveGroup(sync_id);
   EXPECT_FALSE(service()->GetGroup(local_id).has_value());
-  EXPECT_FALSE(service()->GetGroup(kGroupId).has_value());
+  EXPECT_FALSE(service()->GetGroup(sync_id).has_value());
 }
 
 // Verify we can update a groups visual data  from the services correctly.
 TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateVisualData) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
-  EXPECT_EQ(kGroupTitle, retrieved_group->title());
-  EXPECT_EQ(kGroupColor, retrieved_group->color());
 
   const std::u16string new_title = u"New Title";
   const TabGroupColorId new_color = TabGroupColorId::kCyan;
   TabGroupVisualData new_visual_data(new_title, new_color);
   service()->UpdateVisualData(local_id, &new_visual_data);
 
-  retrieved_group = service()->GetGroup(kGroupId);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(new_title, retrieved_group->title());
   EXPECT_EQ(new_color, retrieved_group->color());
 }
 
 TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionPinnedState) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  TabGroupId local_id = browser->tab_strip_model()->AddToNewGroup({0});
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
-
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  // Ensure the group was saved.
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
 
   const bool pinned_state = retrieved_group->is_pinned();
   service()->UpdateGroupPosition(retrieved_group->saved_guid(), !pinned_state,
                                  std::nullopt);
-  retrieved_group = service()->GetGroup(kGroupId);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_NE(retrieved_group->is_pinned(), pinned_state);
 
   service()->UpdateGroupPosition(retrieved_group->saved_guid(), pinned_state,
                                  std::nullopt);
-  retrieved_group = service()->GetGroup(kGroupId);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_EQ(retrieved_group->is_pinned(), pinned_state);
 }
 
@@ -256,25 +244,18 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionIndex) {
     return std::distance(groups.begin(), it);
   };
 
-  LocalTabGroupID local_id_1 = tab_groups::TabGroupId::GenerateNew();
-  LocalTabGroupID local_id_2 = tab_groups::TabGroupId::GenerateNew();
-  LocalTabGroupID local_id_3 = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  TabGroupId local_id_1 = browser->tab_strip_model()->AddToNewGroup({0});
+  TabGroupId local_id_2 = browser->tab_strip_model()->AddToNewGroup({1});
+  TabGroupId local_id_3 = browser->tab_strip_model()->AddToNewGroup({2});
 
-  SavedTabGroup group_1(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id_1);
-  SavedTabGroup group_2(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      base::Uuid::GenerateRandomV4(), local_id_2);
-  SavedTabGroup group_3(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      base::Uuid::GenerateRandomV4(), local_id_3);
-  service()->AddGroup(std::move(group_1));
-  service()->AddGroup(std::move(group_2));
-  service()->AddGroup(std::move(group_3));
+  // Ensure the group was saved.
+  std::optional<SavedTabGroup> retrieved_group =
+      service()->GetGroup(local_id_1);
+  const base::Uuid& sync_id = retrieved_group->saved_guid();
 
   std::vector<SavedTabGroup> all_groups = service()->GetAllGroups();
   ASSERT_EQ(3u, all_groups.size());
@@ -282,17 +263,17 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionIndex) {
   EXPECT_EQ(1, get_index(local_id_2));
   EXPECT_EQ(2, get_index(local_id_1));
 
-  service()->UpdateGroupPosition(kGroupId, std::nullopt, 0);
+  service()->UpdateGroupPosition(sync_id, std::nullopt, 0);
   EXPECT_EQ(0, get_index(local_id_1));
   EXPECT_EQ(1, get_index(local_id_3));
   EXPECT_EQ(2, get_index(local_id_2));
 
-  service()->UpdateGroupPosition(kGroupId, std::nullopt, 1);
+  service()->UpdateGroupPosition(sync_id, std::nullopt, 1);
   EXPECT_EQ(0, get_index(local_id_3));
   EXPECT_EQ(1, get_index(local_id_1));
   EXPECT_EQ(2, get_index(local_id_2));
 
-  service()->UpdateGroupPosition(kGroupId, std::nullopt, 2);
+  service()->UpdateGroupPosition(sync_id, std::nullopt, 2);
   EXPECT_EQ(0, get_index(local_id_3));
   EXPECT_EQ(1, get_index(local_id_2));
   EXPECT_EQ(2, get_index(local_id_1));
@@ -300,20 +281,19 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionIndex) {
 
 // Verifies that we add tabs to a group at the correct position.
 TEST_P(TabGroupSyncServiceProxyUnitTest, AddTab) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(kGroupTitle, kGroupColor, {FirstTab(kGroupId)}, 0,
-                      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
-  EXPECT_TRUE(retrieved_group->ContainsTab(kFirstTabId));
 
-  SavedTabGroupTab second_tab = SecondTab(kGroupId);
-  SavedTabGroupTab third_tab = ThirdTab(kGroupId);
-
+  const base::Uuid sync_id = retrieved_group->saved_guid();
+  SavedTabGroupTab second_tab = SecondTab(sync_id);
+  SavedTabGroupTab third_tab = ThirdTab(sync_id);
   service()->AddTab(local_id, kSecondTabToken, second_tab.title(),
                     second_tab.url(), 0);
   service()->AddTab(local_id, kThirdTabToken, third_tab.title(),
@@ -322,29 +302,32 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, AddTab) {
   retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(3u, retrieved_group->saved_tabs().size());
-  EXPECT_TRUE(retrieved_group->ContainsTab(kFirstTabToken));
   EXPECT_TRUE(retrieved_group->ContainsTab(kSecondTabToken));
   EXPECT_TRUE(retrieved_group->ContainsTab(kThirdTabToken));
 
   // Get the order of tabs.
   const std::vector<SavedTabGroupTab> tabs = retrieved_group->saved_tabs();
   EXPECT_EQ(kSecondTabToken, tabs[0].local_tab_id());
-  EXPECT_EQ(kFirstTabToken, tabs[1].local_tab_id());
   EXPECT_EQ(kThirdTabToken, tabs[2].local_tab_id());
 }
 
 // Verifies that we can update the title and url of a tab in a  saved group.
 TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateTab) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(kGroupTitle, kGroupColor, {FirstTab(kGroupId)}, 0,
-                      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
-  EXPECT_TRUE(retrieved_group->ContainsTab(kFirstTabId));
+  EXPECT_TRUE(retrieved_group->saved_tabs()[0].local_tab_id().has_value());
+
+  const LocalTabID tab_id =
+      retrieved_group->saved_tabs()[0].local_tab_id().value();
+  const base::Uuid sync_tab_id =
+      retrieved_group->saved_tabs()[0].saved_tab_guid();
 
   const std::u16string new_title = u"This is the new title";
   GURL new_url = GURL("https://not_first_tab.com");
@@ -352,12 +335,12 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateTab) {
   SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetTitle(new_title);
   tab_builder.SetURL(new_url);
-  service()->UpdateTab(local_id, kFirstTabToken, std::move(tab_builder));
-  retrieved_group = service()->GetGroup(kGroupId);
+  service()->UpdateTab(local_id, tab_id, std::move(tab_builder));
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
-  EXPECT_TRUE(retrieved_group->ContainsTab(kFirstTabId));
+  EXPECT_TRUE(retrieved_group->ContainsTab(sync_tab_id));
 
-  const SavedTabGroupTab* retrieved_tab = retrieved_group->GetTab(kFirstTabId);
+  const SavedTabGroupTab* retrieved_tab = retrieved_group->GetTab(sync_tab_id);
   EXPECT_EQ(new_title, retrieved_tab->title());
   EXPECT_EQ(new_url, retrieved_tab->url());
 }
@@ -365,116 +348,134 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateTab) {
 // Verifies that we can remove a tab in a group and that after removing all of
 // the tabs, the group is deleted.
 TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveTab) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0, 1, 2});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
+  EXPECT_EQ(3u, retrieved_group->saved_tabs().size());
+
+  const LocalTabID tab_1_id =
+      retrieved_group->saved_tabs()[0].local_tab_id().value();
+  const LocalTabID tab_2_id =
+      retrieved_group->saved_tabs()[1].local_tab_id().value();
+  const LocalTabID tab_3_id =
+      retrieved_group->saved_tabs()[2].local_tab_id().value();
 
   // Remove the first tab: [ Tab 1, Tab 2, Tab 3 ] -> [ Tab 2, Tab 3]
-  service()->RemoveTab(local_id, kFirstTabToken);
+  service()->RemoveTab(local_id, tab_1_id);
 
-  retrieved_group = service()->GetGroup(kGroupId);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(2u, retrieved_group->saved_tabs().size());
-  EXPECT_FALSE(retrieved_group->ContainsTab(kFirstTabToken));
-  EXPECT_TRUE(retrieved_group->ContainsTab(kSecondTabToken));
-  EXPECT_TRUE(retrieved_group->ContainsTab(kThirdTabToken));
+  EXPECT_FALSE(retrieved_group->ContainsTab(tab_1_id));
+  EXPECT_TRUE(retrieved_group->ContainsTab(tab_2_id));
+  EXPECT_TRUE(retrieved_group->ContainsTab(tab_3_id));
 
   // Remove the third tab: [ Tab 2, Tab 3 ] -> [ Tab 2 ]
-  service()->RemoveTab(local_id, kThirdTabToken);
+  service()->RemoveTab(local_id, tab_3_id);
 
-  retrieved_group = service()->GetGroup(kGroupId);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
-  EXPECT_FALSE(retrieved_group->ContainsTab(kFirstTabToken));
-  EXPECT_TRUE(retrieved_group->ContainsTab(kSecondTabToken));
-  EXPECT_FALSE(retrieved_group->ContainsTab(kThirdTabToken));
+  EXPECT_FALSE(retrieved_group->ContainsTab(tab_1_id));
+  EXPECT_TRUE(retrieved_group->ContainsTab(tab_2_id));
+  EXPECT_FALSE(retrieved_group->ContainsTab(tab_3_id));
 
   // Remove the second tab. This should delete the group.
-  service()->RemoveTab(local_id, kSecondTabToken);
+  const base::Uuid sync_id = retrieved_group->saved_guid();
+  service()->RemoveTab(local_id, tab_2_id);
 
-  retrieved_group = service()->GetGroup(kGroupId);
+  retrieved_group = service()->GetGroup(sync_id);
   EXPECT_FALSE(retrieved_group.has_value());
 }
 
 // Verifies that we can move the tabs in a saved group correctly.
 TEST_P(TabGroupSyncServiceProxyUnitTest, MoveTab) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0, 1, 2});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
+  EXPECT_EQ(3u, retrieved_group->saved_tabs().size());
+
+  const LocalTabID tab_1_id =
+      retrieved_group->saved_tabs()[0].local_tab_id().value();
+  const LocalTabID tab_2_id =
+      retrieved_group->saved_tabs()[1].local_tab_id().value();
+  const LocalTabID tab_3_id =
+      retrieved_group->saved_tabs()[2].local_tab_id().value();
 
   // Move tab 3 to the front: [ Tab 1, Tab 2, Tab 3 ] -> [ Tab 3, Tab 1, Tab 2]
-  service()->MoveTab(local_id, kThirdTabToken, 0);
-  retrieved_group = service()->GetGroup(kGroupId);
+  service()->MoveTab(local_id, tab_3_id, 0);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
 
   std::vector<SavedTabGroupTab> tabs = retrieved_group->saved_tabs();
-  EXPECT_EQ(kThirdTabToken, tabs[0].local_tab_id());
-  EXPECT_EQ(kFirstTabToken, tabs[1].local_tab_id());
-  EXPECT_EQ(kSecondTabToken, tabs[2].local_tab_id());
+  EXPECT_EQ(tab_3_id, tabs[0].local_tab_id());
+  EXPECT_EQ(tab_1_id, tabs[1].local_tab_id());
+  EXPECT_EQ(tab_2_id, tabs[2].local_tab_id());
 
   // Move tab 2 to the middle: [ Tab 3, Tab 1, Tab 2 ] -> [ Tab 3, Tab 2, Tab 1]
-  service()->MoveTab(local_id, kSecondTabToken, 1);
-  retrieved_group = service()->GetGroup(kGroupId);
+  service()->MoveTab(local_id, tab_2_id, 1);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
 
   tabs = retrieved_group->saved_tabs();
-  EXPECT_EQ(kThirdTabToken, tabs[0].local_tab_id());
-  EXPECT_EQ(kSecondTabToken, tabs[1].local_tab_id());
-  EXPECT_EQ(kFirstTabToken, tabs[2].local_tab_id());
+  EXPECT_EQ(tab_3_id, tabs[0].local_tab_id());
+  EXPECT_EQ(tab_2_id, tabs[1].local_tab_id());
+  EXPECT_EQ(tab_1_id, tabs[2].local_tab_id());
 
   // Move tab 1 to the front: [ Tab 3, Tab 2, Tab 1 ] -> [ Tab 1, Tab 3, Tab 2]
-  service()->MoveTab(local_id, kFirstTabToken, 0);
-  retrieved_group = service()->GetGroup(kGroupId);
+  service()->MoveTab(local_id, tab_1_id, 0);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
 
   tabs = retrieved_group->saved_tabs();
-  EXPECT_EQ(kFirstTabToken, tabs[0].local_tab_id());
-  EXPECT_EQ(kThirdTabToken, tabs[1].local_tab_id());
-  EXPECT_EQ(kSecondTabToken, tabs[2].local_tab_id());
+  EXPECT_EQ(tab_1_id, tabs[0].local_tab_id());
+  EXPECT_EQ(tab_3_id, tabs[1].local_tab_id());
+  EXPECT_EQ(tab_2_id, tabs[2].local_tab_id());
 
   // Move tab 3 to the end: [ Tab 1, Tab 3, Tab 2 ] -> [ Tab 1, Tab 2, Tab 3]
-  service()->MoveTab(local_id, kThirdTabToken, 2);
-  retrieved_group = service()->GetGroup(kGroupId);
+  service()->MoveTab(local_id, tab_3_id, 2);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
 
   tabs = retrieved_group->saved_tabs();
-  EXPECT_EQ(kFirstTabToken, tabs[0].local_tab_id());
-  EXPECT_EQ(kSecondTabToken, tabs[1].local_tab_id());
-  EXPECT_EQ(kThirdTabToken, tabs[2].local_tab_id());
+  EXPECT_EQ(tab_1_id, tabs[0].local_tab_id());
+  EXPECT_EQ(tab_2_id, tabs[1].local_tab_id());
+  EXPECT_EQ(tab_3_id, tabs[2].local_tab_id());
 }
 
 // Verifies that we can update the local tab group mapping of a saved group
 // after it is added to the service.
 TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateLocalTabGroupMapping) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
+  EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
+
+  const base::Uuid sync_id = retrieved_group->saved_guid();
 
   tab_groups::TabGroupId new_local_id = tab_groups::TabGroupId::GenerateNew();
-  service()->UpdateLocalTabGroupMapping(kGroupId, new_local_id);
+  service()->UpdateLocalTabGroupMapping(sync_id, new_local_id);
 
-  retrieved_group = service()->GetGroup(kGroupId);
+  retrieved_group = service()->GetGroup(sync_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(new_local_id, retrieved_group->local_group_id());
 }
@@ -482,20 +483,20 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateLocalTabGroupMapping) {
 // Verifies that we can remove the local tab group mapping of a saved group
 // after it is added to the service.
 TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveLocalTabGroupMapping) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
+  EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
 
+  const base::Uuid sync_id = retrieved_group->saved_guid();
   service()->RemoveLocalTabGroupMapping(local_id);
 
-  retrieved_group = service()->GetGroup(kGroupId);
+  retrieved_group = service()->GetGroup(sync_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(std::nullopt, retrieved_group->local_group_id());
 }
@@ -503,24 +504,28 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveLocalTabGroupMapping) {
 // Verifies that we can update the local tab id mapping for a tab in a saved
 // group after it is added to the service.
 TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateLocalTabId) {
-  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
 
-  SavedTabGroup group(
-      kGroupTitle, kGroupColor,
-      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
-      kGroupId, local_id);
-  service()->AddGroup(std::move(group));
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0});
 
-  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
+  EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
+
+  const LocalTabID tab_1_id =
+      retrieved_group->saved_tabs()[0].local_tab_id().value();
+  const base::Uuid tab_1_guid =
+      retrieved_group->saved_tabs()[0].saved_tab_guid();
 
   LocalTabID new_local_tab_id = base::Token::CreateRandom();
-  service()->UpdateLocalTabId(local_id, kFirstTabId, new_local_tab_id);
+  service()->UpdateLocalTabId(local_id, tab_1_guid, new_local_tab_id);
 
-  retrieved_group = service()->GetGroup(kGroupId);
+  retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_TRUE(retrieved_group->ContainsTab(new_local_tab_id));
-  EXPECT_FALSE(retrieved_group->ContainsTab(kFirstTabToken));
+  EXPECT_FALSE(retrieved_group->ContainsTab(tab_1_id));
 }
 
 // Verifies that when a new tab group is created in the browser it is saved by

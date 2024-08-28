@@ -493,6 +493,32 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
   return contentses;
 }
 
+SavedTabGroup SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+    const tab_groups::LocalTabGroupID& local_id) {
+  Browser* browser = GetBrowserWithTabGroupId(local_id);
+  CHECK(browser);
+
+  const TabGroup* local_group =
+      browser->tab_strip_model()->group_model()->GetTabGroup(local_id);
+  tab_groups::SavedTabGroup saved_tab_group(
+      local_group->visual_data()->title(), local_group->visual_data()->color(),
+      {}, std::nullopt, std::nullopt, local_id);
+  saved_tab_group.SetPinned(
+      tab_groups::SavedTabGroupUtils::ShouldAutoPinNewTabGroups(
+          browser->profile()));
+
+  const std::vector<content::WebContents*>& web_contentses =
+      tab_groups::SavedTabGroupUtils::GetWebContentsesInGroup(local_id);
+  for (content::WebContents* web_contents : web_contentses) {
+    tab_groups::SavedTabGroupTab saved_tab_group_tab =
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
+            web_contents, saved_tab_group.saved_guid());
+    saved_tab_group.AddTabLocally(std::move(saved_tab_group_tab));
+  }
+
+  return saved_tab_group;
+}
+
 std::unordered_set<std::string> SavedTabGroupUtils::GetURLsInSavedTabGroup(
     Profile* profile,
     const base::Uuid& saved_id) {

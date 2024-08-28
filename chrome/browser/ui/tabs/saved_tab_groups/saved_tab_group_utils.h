@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/types.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/dialog_model.h"
@@ -91,6 +92,10 @@ class SavedTabGroupUtils {
   static SavedTabGroupTab CreateSavedTabGroupTabFromWebContents(
       content::WebContents* contents,
       base::Uuid saved_tab_group_id);
+
+  // Creates a SavedTabGroup group for the provided local tab group.
+  static SavedTabGroup CreateSavedTabGroupFromLocalId(
+      const tab_groups::LocalTabGroupID& local_id);
 
   static content::NavigationHandle* OpenTabInBrowser(
       const GURL& url,

@@ -55,6 +55,10 @@ void SavedTabGroupModelListener::OnTabGroupAdded(
     return;
   }
 
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    return;
+  }
+
   if (local_tab_group_listeners_.contains(group_id)) {
     return;
   }
@@ -74,6 +78,10 @@ void SavedTabGroupModelListener::OnTabGroupAdded(
 void SavedTabGroupModelListener::OnTabGroupWillBeRemoved(
     const tab_groups::TabGroupId& group_id) {
   if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    return;
+  }
+
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
     return;
   }
 
