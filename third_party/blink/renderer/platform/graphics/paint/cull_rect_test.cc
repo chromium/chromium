@@ -785,8 +785,8 @@ TEST_P(CullRectTest, CompositedTranslationUnderClip) {
   CullRect cull_rect1(gfx::Rect(0, 0, 300, 500));
   EXPECT_TRUE(ApplyPaintProperties(cull_rect1, root, root, state1));
   // The result in NonCompositedTransformUnderClip expanded by 2000 (scaled by
-  // minimum of 1/2 and 1/4).
-  EXPECT_EQ(gfx::Rect(-955, -955, 2100, 2075), cull_rect1.Rect());
+  // minimum of 1/2 and 1/4), and clamped by minimum 2 * 512.
+  EXPECT_EQ(gfx::Rect(-979, -979, 2148, 2123), cull_rect1.Rect());
 
   CullRect cull_rect2(gfx::Rect(0, 0, 300, 500));
   CullRect old_cull_rect = cull_rect1;
@@ -805,7 +805,7 @@ TEST_P(CullRectTest, CompositedTranslationUnderClip) {
 
   CullRect cull_rect4 = CullRect::Infinite();
   EXPECT_TRUE(ApplyPaintProperties(cull_rect4, root, root, state1));
-  EXPECT_EQ(gfx::Rect(-955, -955, 2150, 2100), cull_rect4.Rect());
+  EXPECT_EQ(gfx::Rect(-979, -979, 2198, 2148), cull_rect4.Rect());
 
   CullRect cull_rect5;
   EXPECT_TRUE(ApplyPaintProperties(cull_rect4, root, root, state1));

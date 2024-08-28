@@ -1839,6 +1839,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kCullRectPixelDistanceToExpand;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kCullRectExpansionDPRCoef;
+// If this is enabled, a non-root scroller with an area below a threshold will
+// use a minimal cull rect expansion instead of the above expansion.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kSmallScrollersUseMinCullRect;
 
 // Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
 // RFC 9111.

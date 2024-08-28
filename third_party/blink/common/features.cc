@@ -2766,6 +2766,11 @@ const base::FeatureParam<int>
     kCullRectPixelDistanceToExpand(&kExpandCompositedCullRect, "pixels", 4000);
 const base::FeatureParam<double>
     kCullRectExpansionDPRCoef(&kExpandCompositedCullRect, "dpr_coef", 0);
+const base::FeatureParam<bool> kSmallScrollersUseMinCullRect(
+    &kExpandCompositedCullRect,
+    "small_scroller_opt",
+    false);
+
 BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
              "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
              base::FEATURE_ENABLED_BY_DEFAULT);

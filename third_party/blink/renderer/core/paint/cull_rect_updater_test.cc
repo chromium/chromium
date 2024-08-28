@@ -135,7 +135,7 @@ TEST_P(CullRectUpdaterTest, ScaledCullRectUnderCompositedScroller) {
 
   // The expansion is calculated based on 4000 / max(scaleX, scaleY).
   EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
-                ? gfx::Rect(0, 0, 1200, 1300)
+                ? gfx::Rect(0, 0, 1224, 1324)
                 : gfx::Rect(0, 0, 2200, 2300),
             GetCullRect("target").Rect());
 }
