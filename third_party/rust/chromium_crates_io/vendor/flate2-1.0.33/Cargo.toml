@@ -11,8 +11,9 @@
 
 [package]
 edition = "2018"
+rust-version = "1.56.1"
 name = "flate2"
-version = "1.0.31"
+version = "1.0.33"
 authors = [
     "Alex Crichton <alex@alexcrichton.com>",
     "Josh Triplett <josh@joshtriplett.org>",
@@ -172,7 +173,7 @@ optional = true
 version = "1.2.0"
 
 [dependencies.libz-ng-sys]
-version = "1.1.8"
+version = "1.1.16"
 optional = true
 
 [dependencies.libz-rs-sys]
@@ -185,12 +186,12 @@ optional = true
 default-features = false
 
 [dependencies.libz-sys]
-version = "1.1.8"
+version = "1.1.20"
 optional = true
 default-features = false
 
 [dependencies.miniz_oxide]
-version = "0.7.1"
+version = "0.8.0"
 features = ["with-alloc"]
 optional = true
 default-features = false
@@ -237,6 +238,6 @@ zlib-rs = [
 ]
 
 [target.'cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))'.dependencies.miniz_oxide]
-version = "0.7.1"
+version = "0.8.0"
 features = ["with-alloc"]
 default-features = false

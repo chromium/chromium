@@ -76,6 +76,20 @@ Note that some additional, internal notes about an older version of this crate
 can be found at go/image-crate-chromium-security-review.
 '''
 
+[[audits.adler2]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0"
+notes = '''
+This audit has been reviewed in https://crrev.com/c/5811890
+
+The crate is fairly easy to read thanks to its small size and rich comments.
+
+I've grepped for `-i cipher`, `-i crypto`, `\bfs\b`, `\bnet\b`, and
+`\bunsafe\b`.  There were no hits (except for a comment in `README.md`
+and `lib.rs` pointing out "Zero `unsafe`").
+'''
+
 [[audits.aho-corasick]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -885,12 +899,32 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.30 -> 1.0.31"
 notes = """
+WARNING: This certification is a result of a **partial** audit.  The
+`any_zlib` code has **not** been audited.  See the audit of 1.0.30 for
+more details.
+
 Only benign changes:
 
 * Comment-only changes in `.rs` files
 * Also changing dependency version in `Cargo.toml`, but this is for `any_zlib`
   feature which is not used in Chromium (i.e. this is a *partial* audit - see
   the previous audit notes for 1.0.30)
+"""
+
+[[audits.flate2]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.31 -> 1.0.33"
+notes = """
+WARNING: This certification is a result of a **partial** audit.  The
+`any_zlib` code has **not** been audited.  See the audit of 1.0.30 for
+more details.
+
+This delta audit has been reviewed in https://crrev.com/c/5811890
+The delta can be seen at https://diff.rs/flate2/1.0.31/1.0.33
+The delta bumps up `miniz_oxide` dependency to `0.8.0`
+The delta also contains some changes to `src/ffi/c.rs` which is *NOT* used by Chromium
+and therefore hasn't been covered by this partial audit.
 """
 
 [[audits.font-types]]
@@ -1099,6 +1133,22 @@ the crate meets the `ub-risk-0` criteria.
 
 Note that some additional, internal notes about an older version of this crate
 can be found at go/image-crate-chromium-security-review.
+'''
+
+[[audits.miniz_oxide]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.7.4 -> 0.8.0"
+notes = '''
+This delta audit has been reviewed in https://crrev.com/c/5811890
+
+The delta can be inspected at https://diff.rs/miniz_oxide/0.7.4/0.8.0
+and is fairly small (changes related to `const fn` and to `adler2`
+switch).
+
+I've grepped for `-i cipher`, `-i crypto`, `\bfs\b`, `\bnet\b`, and
+`\bunsafe\b`.  There were no hits (except for comments in `core.rs`
+and in `Readme.md`).
 '''
 
 [[audits.nom]]

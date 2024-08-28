@@ -41,6 +41,9 @@ ub-risk-2 = "ub-risk-2"
 ub-risk-3 = "ub-risk-3"
 ub-risk-4 = "ub-risk-4"
 
+[policy."adler2:2.0.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."adler:1.0.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -113,7 +116,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."fend-core:1.5.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."flate2:1.0.31"]
+[policy."flate2:1.0.33"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."font-types:0.6.0"]
@@ -156,6 +159,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = []
 
 [policy."miniz_oxide:0.7.4"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."miniz_oxide:0.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."nom:7.1.3"]
