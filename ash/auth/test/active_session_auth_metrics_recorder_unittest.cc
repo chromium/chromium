@@ -30,6 +30,8 @@ constexpr char kNumberOfPinAttemptHistogram[] =
     "Ash.Auth.ActiveSessionAuthPinAttempt";
 constexpr char kNumberOfPasswordAttemptHistogram[] =
     "Ash.Auth.ActiveSessionAuthPasswordAttempt";
+constexpr char kNumberOfFingerprintAttemptHistogram[] =
+    "Ash.Auth.ActiveSessionAuthFingerprintAttempt";
 
 class ActiveSessionAuthMetricsRecorderTest : public AshTestBase {
  public:
@@ -228,6 +230,38 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest, ActiveSessionAuthPinAttemptTest) {
   metrics_recorder_.RecordAuthSucceeded(AuthInputType::kPin);
   metrics_recorder_.RecordClose();
   histogram_tester_->ExpectBucketCount(kNumberOfPinAttemptHistogram, 2, 1);
+}
+
+// Verifies that histogram records the fingerprint authentication attempt
+// counter.
+TEST_F(ActiveSessionAuthMetricsRecorderTest,
+       ActiveSessionAuthFingerprintAttemptTest) {
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
+
+  metrics_recorder_.RecordAuthFailed(AuthInputType::kFingerprint);
+
+  metrics_recorder_.RecordAuthSucceeded(AuthInputType::kFingerprint);
+  metrics_recorder_.RecordClose();
+  histogram_tester_->ExpectBucketCount(kNumberOfFingerprintAttemptHistogram, 2,
+                                       1);
+}
+
+// Verifies that histogram records the fingerprint and authentication attempt
+// counter.
+TEST_F(ActiveSessionAuthMetricsRecorderTest,
+       ActiveSessionAuthFingerprintAndPinAttemptTest) {
+  metrics_recorder_.RecordShow(AuthRequest::Reason::kPasswordManager);
+
+  metrics_recorder_.RecordAuthFailed(AuthInputType::kFingerprint);
+
+  // Pin auhtentication started but concurrently the fingerprint succeeded
+  metrics_recorder_.RecordAuthStarted(AuthInputType::kPin);
+  metrics_recorder_.RecordAuthSucceeded(AuthInputType::kFingerprint);
+  metrics_recorder_.RecordClose();
+
+  histogram_tester_->ExpectBucketCount(kNumberOfPinAttemptHistogram, 1, 1);
+  histogram_tester_->ExpectBucketCount(kNumberOfFingerprintAttemptHistogram, 2,
+                                       1);
 }
 
 }  // namespace ash

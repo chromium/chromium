@@ -41,6 +41,7 @@ class ASH_EXPORT ActiveSessionAuthMetricsRecorder {
 
   int pin_attempt_counter_ = 0;
   int password_attempt_counter_ = 0;
+  int fingerprint_attempt_counter_ = 0;
   bool auth_succeeded_ = false;
 };
 

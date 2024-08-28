@@ -225,6 +225,9 @@ void AuthContainerView::AddPinStatusView() {
 void AuthContainerView::AddFingerprintView() {
   CHECK_EQ(fingerprint_view_, nullptr);
   fingerprint_view_ = AddChildView(std::make_unique<FingerprintView>());
+  if (available_auth_factors_.Has(AuthInputType::kFingerprint)) {
+    SetFingerprintState(FingerprintState::AVAILABLE_DEFAULT);
+  }
 }
 
 gfx::Size AuthContainerView::CalculatePreferredSize(

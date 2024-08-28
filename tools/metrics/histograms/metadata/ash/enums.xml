@@ -218,6 +218,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
 <enum name="AuthInputType">
   <int value="0" label="Password"/>
   <int value="1" label="PIN"/>
+  <int value="2" label="Fingerprint"/>
 </enum>
 
 <enum name="AuthMethod">
