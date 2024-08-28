@@ -682,6 +682,10 @@ void Service::AddAshSessionObserver() {
 void Service::UpdateListeningState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!assistant_manager_service_) {
+    return;
+  }
+
   bool should_listen =
       !locked_ &&
       !AssistantState::Get()->locked_full_screen_enabled().value_or(false) &&
