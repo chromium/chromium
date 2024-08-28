@@ -707,7 +707,6 @@ crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functiona
 ## Metal Apple Silicon ##
 
 
-crbug.com/327026292 [ angle-metal apple-angle-metal-renderer:-apple-m2 graphite-enabled passthrough sonoma ] conformance2/glsl3/float-parsing.html [ Failure ]
 
 
 ## Metal Graphite ##
