@@ -826,6 +826,13 @@ OperationConnectivity GetOperationConnectivity(const Operation* operation) {
       output_ids = {gather->output_operand_id};
       break;
     }
+    case Operation::Tag::kGatherElements: {
+      const auto& gather_elements = operation->get_gather_elements();
+      input_ids = {gather_elements->input_operand_id,
+                   gather_elements->indices_operand_id};
+      output_ids = {gather_elements->output_operand_id};
+      break;
+    }
     case Operation::Tag::kGelu: {
       const auto& gelu = operation->get_gelu();
       input_ids = {gelu->input_operand_id};

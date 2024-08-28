@@ -166,6 +166,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_indices;
   }
+  static webnn::SupportedDataTypes gather_elements_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.gather_elements_input;
+  }
+  static webnn::SupportedDataTypes gather_elements_indices(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.gather_elements_indices;
+  }
   static webnn::SupportedDataTypes gelu_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gelu_input;
@@ -350,6 +358,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadExpandInput(&out->expand_input) &&
            data.ReadGatherInput(&out->gather_input) &&
            data.ReadGatherIndices(&out->gather_indices) &&
+           data.ReadGatherElementsInput(&out->gather_elements_input) &&
+           data.ReadGatherElementsIndices(&out->gather_elements_indices) &&
            data.ReadGeluInput(&out->gelu_input) &&
            data.ReadGemmInput(&out->gemm_input) &&
            data.ReadHardSigmoidInput(&out->hard_sigmoid_input) &&

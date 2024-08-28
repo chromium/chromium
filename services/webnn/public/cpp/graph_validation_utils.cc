@@ -1266,6 +1266,63 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
   return OperandDescriptor::Create(input.data_type(), output_shape);
 }
 
+base::expected<OperandDescriptor, std::string>
+ValidateGatherElementsAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const OperandDescriptor& indices,
+    const uint32_t axis,
+    std::string_view label) {
+  if (input.Rank() == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The input should not be a scalar."));
+  }
+
+  if (input.Rank() <= axis) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The axis must be in the range [0, N-1] where N is the rank of input "
+        "tensor."));
+  }
+
+  if (!context_properties.data_type_limits.gather_elements_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.gather_elements_input)));
+  }
+
+  static constexpr char kIndicesParam[] = "indices";
+  if (!context_properties.data_type_limits.gather_elements_indices.Has(
+          indices.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedArgumentTypeError(
+            kIndicesParam, indices.data_type(),
+            context_properties.data_type_limits.gather_elements_indices)));
+  }
+
+  if (input.Rank() != indices.Rank()) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The input and indices tensor must have the same rank."));
+  }
+
+  for (uint32_t i = 0; i < input.Rank(); ++i) {
+    if (i == axis) {
+      continue;
+    }
+    if (input.shape()[i] != indices.shape()[i]) {
+      return base::unexpected(
+          ErrorWithLabel(label,
+                         "Except on the axis dimension, the input and indices "
+                         "tensor must have the same dimension size."));
+    }
+  }
+
+  return OperandDescriptor::Create(input.data_type(), indices.shape());
+}
+
 GemmAttributes::GemmAttributes() = default;
 GemmAttributes::~GemmAttributes() = default;
 

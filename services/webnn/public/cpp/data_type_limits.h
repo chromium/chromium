@@ -51,6 +51,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes expand_input,
                  SupportedDataTypes gather_input,
                  SupportedDataTypes gather_indices,
+                 SupportedDataTypes gather_elements_input,
+                 SupportedDataTypes gather_elements_indices,
                  SupportedDataTypes gelu_input,
                  SupportedDataTypes gemm_input,
                  SupportedDataTypes hard_sigmoid_input,
@@ -136,6 +138,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes expand_input;
   SupportedDataTypes gather_input;
   SupportedDataTypes gather_indices;
+  SupportedDataTypes gather_elements_input;
+  SupportedDataTypes gather_elements_indices;
   SupportedDataTypes gelu_input;
   SupportedDataTypes gemm_input;
   SupportedDataTypes hard_sigmoid_input;
@@ -212,6 +216,10 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.tan_input == rhs.tan_input &&
          lhs.elu_input == rhs.elu_input &&
          lhs.expand_input == rhs.expand_input &&
+         lhs.gather_input == rhs.gather_input &&
+         lhs.gather_indices == rhs.gather_indices &&
+         lhs.gather_elements_input == rhs.gather_elements_input &&
+         lhs.gather_elements_indices == rhs.gather_elements_indices &&
          lhs.gelu_input == rhs.gelu_input &&
          lhs.gemm_input == rhs.gemm_input &&
          lhs.hard_sigmoid_input == rhs.hard_sigmoid_input &&

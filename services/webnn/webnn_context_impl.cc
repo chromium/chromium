@@ -179,6 +179,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gather_indices.RetainAll(
       DataTypeConstraint::kGatherIndicesSupportedDataTypes);
+  backend_context_properties.data_type_limits.gather_elements_indices.RetainAll(
+      DataTypeConstraint::kGatherIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.gelu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gemm_input.RetainAll(

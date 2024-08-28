@@ -244,6 +244,19 @@ void GraphInfoBuilder::BuildGather(uint64_t input_operand_id,
       mojom::Operation::NewGather(std::move(gather)));
 }
 
+void GraphInfoBuilder::BuildGatherElements(uint64_t input_operand_id,
+                                           uint64_t indices_operand_id,
+                                           uint64_t output_operand_id,
+                                           uint32_t axis) {
+  auto gather_elements = mojom::GatherElements::New();
+  gather_elements->input_operand_id = input_operand_id;
+  gather_elements->output_operand_id = output_operand_id;
+  gather_elements->indices_operand_id = indices_operand_id;
+  gather_elements->axis = axis;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewGatherElements(std::move(gather_elements)));
+}
+
 void GraphInfoBuilder::BuildGelu(uint64_t input_operand_id,
                                  uint64_t output_operand_id) {
   mojom::GeluPtr gelu =
@@ -482,6 +495,9 @@ ContextProperties GetContextPropertiesForTesting() {
                          /*expand_input=*/SupportedDataTypes::All(),
                          /*gather_input=*/SupportedDataTypes::All(),
                          /*gather_indices=*/
+                         SupportedDataTypes::All(),
+                         /*gather_elements_input=*/SupportedDataTypes::All(),
+                         /*gather_elements_indices=*/
                          SupportedDataTypes::All(),
                          /*gelu_input=*/SupportedDataTypes::All(),
                          /*gemm_input=*/SupportedDataTypes::All(),

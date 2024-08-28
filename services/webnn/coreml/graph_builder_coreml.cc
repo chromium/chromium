@@ -677,6 +677,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*gather_input=*/kFloat16To32Int8To32AndUint8,
        /*gather_indices=*/
        kGatherIndicesSupportedDataTypes,
+       // GatherElements is not implemented.
+       /*gather_elements_input=*/{},
+       /*gather_elements_indices=*/{},
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
        /*gemm_input=*/DataTypeConstraint::kFloat16To32,
        /*hard_sigmoid_input=*/DataTypeConstraint::kFloat16To32,
@@ -968,6 +971,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForWhere(*operation->get_where(), block));
         break;
       }
+      case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:

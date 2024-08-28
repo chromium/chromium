@@ -121,6 +121,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits elu;
   MLSingleInputSupportLimits expand;
   MLGatherSupportLimits gather;
+  MLGatherSupportLimits gatherElements;
   MLSingleInputSupportLimits gelu;
   MLGemmSupportLimits gemm;
   MLSingleInputSupportLimits hardSigmoid;

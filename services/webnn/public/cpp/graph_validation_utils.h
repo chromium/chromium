@@ -501,6 +501,17 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                  const uint32_t axis,
                                  std::string_view label);
 
+// Validate and infer output information of gatherElements operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gatherElements
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateGatherElementsAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        const OperandDescriptor& indices,
+        const uint32_t axis,
+        std::string_view label);
+
 // Validate gemm operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(

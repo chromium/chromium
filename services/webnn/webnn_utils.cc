@@ -86,6 +86,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kExpand;
     case mojom::Operation::Tag::kGather:
       return ops::kGather;
+    case mojom::Operation::Tag::kGatherElements:
+      return ops::kGatherElements;
     case mojom::Operation::Tag::kGelu:
       return ops::kGelu;
     case mojom::Operation::Tag::kGemm:
@@ -147,7 +149,6 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
     case mojom::Operation::Tag::kWhere:
       return ops::kWhere;
   }
-  NOTREACHED();
 }
 
 std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
@@ -157,7 +158,6 @@ std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
     case mojom::ArgMinMax::Kind::kMax:
       return ops::kArgMax;
   }
-  NOTREACHED();
 }
 
 std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {

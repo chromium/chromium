@@ -1438,6 +1438,30 @@ MLOperand* MLGraphBuilder::gather(const MLOperand* input,
   return output;
 }
 
+MLOperand* MLGraphBuilder::gatherElements(const MLOperand* input,
+                                          const MLOperand* indices,
+                                          const MLGatherOptions* options,
+                                          ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+
+  HeapVector<Member<const MLOperand>> inputs = {input, indices};
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateGatherElementsAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(),
+          indices->Descriptor(), options->axis(), options->label().Utf8()));
+
+  auto* gather_elements = MakeGarbageCollected<MLOperator>(
+      this, webnn::mojom::blink::Operation::Tag::kGatherElements, options);
+  MLOperand* output = MLOperand::CreateOutput(
+      this, std::move(output_descriptor), gather_elements);
+
+  gather_elements->Connect(std::move(inputs), {output});
+  return output;
+}
+
 MLOperand* MLGraphBuilder::gelu(const MLOperand* input,
                                 const MLOperatorOptions* options,
                                 ExceptionState& exception_state) {

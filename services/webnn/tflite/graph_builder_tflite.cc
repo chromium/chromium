@@ -323,7 +323,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
   static constexpr SupportedDataTypes kFloat32AndInt8To64AndUint8{
       OperandDataType::kFloat32, OperandDataType::kInt64,
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
-  static constexpr SupportedDataTypes kFloat16AndInts8To32AndInt64{
+  static constexpr SupportedDataTypes kFloat32AndInts8To32AndInt64{
       OperandDataType::kFloat32, OperandDataType::kInt8,
       OperandDataType::kUint8,   OperandDataType::kInt32,
       OperandDataType::kUint32,  OperandDataType::kInt64};
@@ -332,12 +332,6 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
       OperandDataType::kInt8,    OperandDataType::kUint8,
       OperandDataType::kInt32,   OperandDataType::kUint32,
       OperandDataType::kInt64};
-  static constexpr SupportedDataTypes kEluSupportedDataTypes{
-      OperandDataType::kFloat32, OperandDataType::kInt8};
-  static constexpr SupportedDataTypes kSliceSupportedDataTypes{
-      OperandDataType::kFloat32, OperandDataType::kInt64,
-      OperandDataType::kInt32,   OperandDataType::kUint32,
-      OperandDataType::kInt8,    OperandDataType::kUint8};
 
   return ContextProperties(
       InputOperandLayout::kNhwc, Resample2DAxes::kChannelsLast,
@@ -376,10 +370,13 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*sin_input=*/kFloat32,
        /*sqrt_input=*/kFloat32,
        /*tan_input=*/kFloat32,
-       /*elu_input=*/kEluSupportedDataTypes,
-       /*expand_input=*/kFloat16AndInts8To32AndInt64,
+       /*elu_input=*/kFloat32AndInt8,
+       /*expand_input=*/kFloat32AndInts8To32AndInt64,
        /*gather_input=*/kFloat32AndInt8To64AndUint8,
        /*gather_indices=*/DataTypeConstraint::kGatherIndicesSupportedDataTypes,
+       // GatherElements is not implemented.
+       /*gather_elements_input=*/{},
+       /*gather_elements_indices=*/{},
        /*gelu_input=*/kFloat32,
        /*gemm_input=*/kFloat32,
        /*hard_sigmoid_input=*/kFloat32,
@@ -412,7 +409,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*resample2d_input=*/kFloat32,
        /*reshape_input=*/SupportedDataTypes::All(),
        /*sigmoid_input=*/kFloat32,
-       /*slice_input=*/kSliceSupportedDataTypes,
+       /*slice_input=*/kFloat32AndInts8To32AndInt64,
        /*softmax_input=*/kFloat32,
        /*softplus_input=*/kFloat32,
        /*softsign_input=*/kFloat32,
@@ -634,6 +631,8 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kWhere:
       operator_offset = SerializeWhere(*op.get_where());
       break;
+    case mojom::Operation::Tag::kGatherElements:
+      return base::unexpected(NotSupportedOperatorError(op));
   }
   operators_.emplace_back(operator_offset);
 
