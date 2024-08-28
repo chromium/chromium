@@ -23,6 +23,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/test/test_data_directory.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/client/audio/audio_player.h"
 #include "remoting/client/chromoting_client.h"
@@ -313,7 +314,8 @@ class ProtocolPerfTest
         desktop_environment_factory_.get(), std::move(session_manager),
         transport_context, host_thread_.task_runner(),
         encode_thread_.task_runner(),
-        DesktopEnvironmentOptions::CreateDefault());
+        DesktopEnvironmentOptions::CreateDefault(),
+        &local_session_policies_provider_);
 
     base::FilePath certs_dir(net::GetTestCertsDirectory());
 
@@ -410,6 +412,7 @@ class ProtocolPerfTest
   scoped_refptr<protocol::InputEventTimestampsSource> event_timestamp_source_;
 
   FakeCursorShapeStub cursor_shape_stub_;
+  LocalSessionPoliciesProvider local_session_policies_provider_;
 
   std::unique_ptr<protocol::CandidateSessionConfig> protocol_config_;
 

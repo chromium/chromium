@@ -91,17 +91,7 @@ bool mojo::StructTraits<remoting::mojom::DesktopEnvironmentOptionsDataView,
   out_options->set_enable_user_interface(data_view.enable_user_interface());
   out_options->set_enable_notifications(data_view.enable_notifications());
   out_options->set_terminate_upon_input(data_view.terminate_upon_input());
-  out_options->set_enable_file_transfer(data_view.enable_file_transfer());
-  out_options->set_enable_remote_open_url(data_view.enable_remote_open_url());
   out_options->set_enable_remote_webauthn(data_view.enable_remote_webauthn());
-
-  std::optional<uint32_t> clipboard_size;
-  if (!data_view.ReadClipboardSize(&clipboard_size)) {
-    return false;
-  }
-  if (clipboard_size.has_value()) {
-    out_options->set_clipboard_size(std::move(clipboard_size));
-  }
 
   if (!data_view.ReadDesktopCaptureOptions(
           out_options->desktop_capture_options())) {

@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/codec/video_encoder_verbatim.h"
 #include "remoting/host/desktop_environment.h"
@@ -65,6 +66,7 @@ using protocol::test::EqualsMouseMoveEvent;
 using testing::_;
 using testing::AtLeast;
 using testing::Eq;
+using testing::Not;
 using testing::ReturnRef;
 using testing::StrictMock;
 
@@ -223,6 +225,8 @@ class ClientSessionTest : public testing::Test {
   std::vector<protocol::MouseEvent> mouse_events_;
   std::vector<protocol::ClipboardEvent> clipboard_events_;
 
+  LocalSessionPoliciesProvider local_session_policies_provider_;
+
   // ClientSession instance under test.
   std::unique_ptr<ClientSession> client_session_;
 
@@ -249,6 +253,8 @@ void ClientSessionTest::SetUp() {
       std::make_unique<FakeDesktopEnvironmentFactory>(
           task_environment_.GetMainThreadTaskRunner());
   desktop_environment_options_ = DesktopEnvironmentOptions::CreateDefault();
+
+  local_session_policies_provider_.set_local_policies(kInitialLocalPolicies);
 
   // Suppress spammy "uninteresting call" logs.
   EXPECT_CALL(client_stub_, SetCursorShape(_)).Times(testing::AnyNumber());
@@ -283,7 +289,7 @@ void ClientSessionTest::CreateClientSession(
   client_session_ = std::make_unique<ClientSession>(
       &session_event_handler_, std::move(connection),
       desktop_environment_factory_.get(), desktop_environment_options_, nullptr,
-      extensions_, kInitialLocalPolicies);
+      extensions_, &local_session_policies_provider_);
 }
 
 void ClientSessionTest::CreateClientSession() {
@@ -480,7 +486,7 @@ TEST_F(ClientSessionTest,
   ConnectClientSession();
 
   EXPECT_TRUE(connection_->is_connected());
-  client_session_->OnLocalPoliciesChanged(kInitialLocalPolicies);
+  local_session_policies_provider_.set_local_policies(kInitialLocalPolicies);
   EXPECT_TRUE(connection_->is_connected());
 }
 
@@ -490,7 +496,7 @@ TEST_F(ClientSessionTest,
   ConnectClientSession();
 
   EXPECT_TRUE(connection_->is_connected());
-  client_session_->OnLocalPoliciesChanged(
+  local_session_policies_provider_.set_local_policies(
       {.maximum_session_duration = base::Hours(23)});
   EXPECT_FALSE(connection_->is_connected());
 }
@@ -507,6 +513,40 @@ TEST_F(ClientSessionTest, DisconnectsAfterMaxSessionDurationIsReached) {
       *kInitialLocalPolicies.maximum_session_duration + base::Minutes(1));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(connection_->is_connected());
+}
+
+TEST_F(ClientSessionTest,
+       EffectivePoliciesImplicitlyAllowFileTransfer_HasCapability) {
+  local_session_policies_provider_.set_local_policies({});
+  EXPECT_CALL(
+      client_stub_,
+      SetCapabilities(IncludesCapabilities(protocol::kFileTransferCapability)));
+
+  CreateClientSession();
+  ConnectClientSession();
+}
+
+TEST_F(ClientSessionTest,
+       EffectivePoliciesExplicitlyAllowFileTransfer_HasCapability) {
+  local_session_policies_provider_.set_local_policies(
+      {.allow_file_transfer = true});
+  EXPECT_CALL(
+      client_stub_,
+      SetCapabilities(IncludesCapabilities(protocol::kFileTransferCapability)));
+
+  CreateClientSession();
+  ConnectClientSession();
+}
+
+TEST_F(ClientSessionTest,
+       EffectivePoliciesDisallowFileTransfer_DoesNotHaveCapability) {
+  local_session_policies_provider_.set_local_policies(
+      {.allow_file_transfer = false});
+  EXPECT_CALL(client_stub_, SetCapabilities(Not(IncludesCapabilities(
+                                protocol::kFileTransferCapability))));
+
+  CreateClientSession();
+  ConnectClientSession();
 }
 
 TEST_F(ClientSessionTest, MultiMonMouseMove) {

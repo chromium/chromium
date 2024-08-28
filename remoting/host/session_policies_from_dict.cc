@@ -4,6 +4,8 @@
 
 #include "remoting/host/session_policies_from_dict.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -43,9 +45,18 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
   std::optional<bool> allow_firewall_traversal =
       dict.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
 
+  std::optional<int> clipboard_size_bytes_value =
+      dict.FindInt(policy::key::kRemoteAccessHostClipboardSizeBytes);
+  std::optional<size_t> clipboard_size_bytes;
+  // The default policy dict sets RemoteAccessHostClipboardSizeBytes
+  // to -1, so we need to treat negative values as unset values.
+  if (clipboard_size_bytes_value.has_value() &&
+      *clipboard_size_bytes_value >= 0) {
+    clipboard_size_bytes = *clipboard_size_bytes_value;
+  }
+
   return SessionPolicies{
-      .clipboard_size_bytes =
-          dict.FindInt(policy::key::kRemoteAccessHostClipboardSizeBytes),
+      .clipboard_size_bytes = clipboard_size_bytes,
       .allow_stun_connections = allow_firewall_traversal,
       // Relayed connection is not allowed if RemoteAccessHostFirewallTraversal
       // is false. See:

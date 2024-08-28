@@ -25,7 +25,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/session_policies.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/fake_desktop_environment.h"
@@ -95,7 +95,8 @@ class ChromotingHostTest : public testing::Test {
         protocol::TransportContext::ForTests(protocol::TransportRole::SERVER),
         task_runner_,  // Audio
         task_runner_,
-        DesktopEnvironmentOptions::CreateDefault());  // Video encode
+        DesktopEnvironmentOptions::CreateDefault(),  // Video encode
+        &local_session_policies_provider_);
     host_->status_monitor()->AddStatusObserver(&host_status_observer_);
 
     owner_email_ = "host@domain";
@@ -153,7 +154,7 @@ class ChromotingHostTest : public testing::Test {
         host_.get(), std::move(connection), desktop_environment_factory_.get(),
         DesktopEnvironmentOptions::CreateDefault(), nullptr,
         std::vector<raw_ptr<HostExtension, VectorExperimental>>(),
-        SessionPolicies());
+        &local_session_policies_provider_);
     ClientSession* client_ptr = client.get();
 
     connection_ptr->set_host_stub(client.get());
@@ -298,6 +299,7 @@ class ChromotingHostTest : public testing::Test {
   MockConnectionToClientEventHandler handler_;
   std::unique_ptr<FakeDesktopEnvironmentFactory> desktop_environment_factory_;
   MockHostStatusObserver host_status_observer_;
+  LocalSessionPoliciesProvider local_session_policies_provider_;
   std::unique_ptr<ChromotingHost> host_;
   raw_ptr<protocol::MockSessionManager> session_manager_;
   std::string owner_email_;
@@ -399,49 +401,6 @@ TEST_F(ChromotingHostTest, IncomingSessionAccepted) {
       protocol::SessionManager::DECLINE;
   host_->OnIncomingSession(session_unowned1_.release(), &response);
   EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
-
-  EXPECT_CALL(*session, Close(_))
-      .WillOnce(InvokeWithoutArgs(
-          this, &ChromotingHostTest::NotifyConnectionClosed1));
-  ShutdownHost();
-}
-
-TEST_F(ChromotingHostTest, SetSessionPolicies_UpdatesNewClientsPolicies) {
-  SessionPolicies policies = {.maximum_session_duration = base::Hours(10)};
-  StartHost();
-
-  host_->SetLocalSessionPolicies(policies);
-  MockSession* session = session_unowned1_.get();
-  protocol::SessionManager::IncomingSessionResponse response;
-  host_->OnIncomingSession(session_unowned1_.release(), &response);
-
-  EXPECT_EQ(host_->client_sessions_for_tests().size(), 1u);
-  const SessionPolicies& effective_policies =
-      host_->client_sessions_for_tests()[0]->effective_policies_for_tests();
-  EXPECT_EQ(effective_policies, policies);
-
-  EXPECT_CALL(*session, Close(_))
-      .WillOnce(InvokeWithoutArgs(
-          this, &ChromotingHostTest::NotifyConnectionClosed1));
-  ShutdownHost();
-}
-
-TEST_F(ChromotingHostTest, SetSessionPolicies_UpdatesExistingClientsPolicies) {
-  SessionPolicies old_policies = {.maximum_session_duration = base::Hours(10)};
-  SessionPolicies new_policies = {.maximum_session_duration = base::Hours(23)};
-  StartHost();
-
-  host_->SetLocalSessionPolicies(old_policies);
-  MockSession* session = session_unowned1_.get();
-  protocol::SessionManager::IncomingSessionResponse response;
-  host_->OnIncomingSession(session_unowned1_.release(), &response);
-  host_->SetLocalSessionPolicies(new_policies);
-
-  EXPECT_EQ(host_->client_sessions_for_tests().size(), 1u);
-  const SessionPolicies& effective_policies =
-      host_->client_sessions_for_tests()[0]->effective_policies_for_tests();
-  EXPECT_NE(effective_policies, old_policies);
-  EXPECT_EQ(effective_policies, new_policies);
 
   EXPECT_CALL(*session, Close(_))
       .WillOnce(InvokeWithoutArgs(

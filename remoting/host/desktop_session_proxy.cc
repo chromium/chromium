@@ -165,16 +165,6 @@ std::string DesktopSessionProxy::GetCapabilities() const {
     result += protocol::kTouchEventsCapability;
   }
 
-  if (options_.enable_file_transfer()) {
-    result += " ";
-    result += protocol::kFileTransferCapability;
-  }
-
-  if (options_.enable_remote_open_url() && IsRemoteOpenUrlSupported()) {
-    result += " ";
-    result += protocol::kRemoteOpenUrlCapability;
-  }
-
   if (options_.enable_remote_webauthn()) {
     result += " ";
     result += protocol::kRemoteWebAuthnCapability;

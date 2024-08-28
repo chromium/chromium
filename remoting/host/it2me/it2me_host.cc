@@ -21,6 +21,7 @@
 #include "components/webrtc/thread_wrapper.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -360,22 +361,15 @@ void It2MeHost::ConnectOnNetworkThread(
         chrome_os_enterprise_params_->terminate_upon_input);
     options.set_enable_curtaining(
         chrome_os_enterprise_params_->curtain_local_user_session);
-    options.set_enable_file_transfer(
-        chrome_os_enterprise_params_->allow_file_transfer &&
-        enterprise_file_transfer_allowed_);
   }
 #endif
-
-  if (max_clipboard_size_.has_value()) {
-    options.set_clipboard_size(max_clipboard_size_.value());
-  }
 
   // Create the host.
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, host_context_->audio_task_runner(),
-      host_context_->video_encode_task_runner(), options);
-  host_->SetLocalSessionPolicies(local_session_policies_);
+      host_context_->video_encode_task_runner(), options,
+      &local_session_policies_provider_);
   host_->status_monitor()->AddStatusObserver(this);
   host_status_logger_ = std::make_unique<HostStatusLogger>(
       host_->status_monitor(), log_to_server_.get());
@@ -475,16 +469,6 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   remote_support_connections_allowed_ =
       policies.FindBool(GetRemoteSupportPolicyKey()).value_or(true);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  enterprise_file_transfer_allowed_ =
-      policies
-          .FindBool(policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer)
-          .value_or(false);
-
-  HOST_LOG << "RemoteAccessHostEnterpriseFileTransfer capability is enabled: "
-           << enterprise_file_transfer_allowed_;
-#endif
-
   std::optional<bool> nat_policy_value =
       policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
   if (!nat_policy_value.has_value()) {
@@ -523,14 +507,6 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
       policies.FindString(policy::key::kRemoteAccessHostUdpPortRange);
   if (port_range_string) {
     UpdateHostUdpPortRangePolicy(*port_range_string);
-  }
-
-  std::optional<int> max_clipboard_size =
-      policies.FindInt(policy::key::kRemoteAccessHostClipboardSizeBytes);
-  if (max_clipboard_size.has_value()) {
-    if (max_clipboard_size.value() >= 0) {
-      max_clipboard_size_ = max_clipboard_size.value();
-    }
   }
 
   UpdateSessionPolicies(policies);
@@ -616,21 +592,34 @@ void It2MeHost::UpdateSessionPolicies(
     LOG(FATAL) << "Failed to parse local session policies.";
   }
 
-  local_session_policies_ = *local_session_policies;
+  // These are currently disallowed for IT2ME connections by default.
+  // TODO: yuweih - Figure out what should be done when we add SessionAuthz
+  // policies support for IT2ME. Given the current logic, these features can be
+  // enabled by SessionAuthz policies, which is not possible by local Chrome
+  // policies.
+  local_session_policies->allow_file_transfer = false;
+  local_session_policies->allow_uri_forwarding = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
   if (chrome_os_enterprise_params_.has_value()) {
-    local_session_policies_.curtain_required =
+    local_session_policies->curtain_required =
         chrome_os_enterprise_params_->curtain_local_user_session;
-    local_session_policies_.allow_file_transfer =
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    bool enterprise_file_transfer_allowed =
+        platform_policies
+            .FindBool(policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer)
+            .value_or(false);
+#else
+    bool enterprise_file_transfer_allowed = false;
+#endif
+    local_session_policies->allow_file_transfer =
         chrome_os_enterprise_params_->allow_file_transfer &&
-        enterprise_file_transfer_allowed_;
+        enterprise_file_transfer_allowed;
   }
 #endif
 
-  if (host_) {
-    host_->SetLocalSessionPolicies(local_session_policies_);
-  }
+  local_session_policies_provider_.set_local_policies(*local_session_policies);
 }
 
 void It2MeHost::SetState(It2MeHostState state, ErrorCode error_code) {

@@ -55,6 +55,7 @@
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/is_google_email.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
@@ -354,11 +355,8 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnCurtainPolicyUpdate(const base::Value::Dict& policies);
   bool OnPairingPolicyUpdate(const base::Value::Dict& policies);
   bool OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies);
-  bool OnFileTransferPolicyUpdate(const base::Value::Dict& policies);
   bool OnEnableUserInterfacePolicyUpdate(const base::Value::Dict& policies);
   bool OnAllowRemoteAccessConnections(const base::Value::Dict& policies);
-  bool OnMaxClipboardSizePolicyUpdate(const base::Value::Dict& policies);
-  bool OnUrlForwardingPolicyUpdate(const base::Value::Dict& policies);
   bool OnAllowPinAuthenticationUpdate(const base::Value::Dict& policies);
 
   void InitializeSignaling();
@@ -423,7 +421,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string service_account_email_;
   base::Value::Dict config_;
   std::string host_owner_;
-  std::optional<size_t> max_clipboard_size_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -439,7 +436,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::optional<bool> allow_pin_auth_;
   bool is_corp_user_ = false;
   bool require_session_authorization_ = false;
-  SessionPolicies local_session_policies_;
+  LocalSessionPoliciesProvider local_session_policies_provider_;
 
   DesktopEnvironmentOptions desktop_environment_options_;
   bool security_key_auth_policy_enabled_ = false;
@@ -1267,7 +1264,7 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
     OnPolicyError();
     return;
   }
-  local_session_policies_ = *local_session_policies;
+  local_session_policies_provider_.set_local_policies(*local_session_policies);
 
   bool restart_required = false;
   restart_required |= OnClientDomainListPolicyUpdate(policies);
@@ -1280,11 +1277,8 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
   restart_required |= OnUdpPortPolicyUpdate(policies);
   restart_required |= OnPairingPolicyUpdate(policies);
   restart_required |= OnGnubbyAuthPolicyUpdate(policies);
-  restart_required |= OnFileTransferPolicyUpdate(policies);
   restart_required |= OnEnableUserInterfacePolicyUpdate(policies);
   restart_required |= OnAllowRemoteAccessConnections(policies);
-  restart_required |= OnMaxClipboardSizePolicyUpdate(policies);
-  restart_required |= OnUrlForwardingPolicyUpdate(policies);
   restart_required |= OnAllowPinAuthenticationUpdate(policies);
 
   policy_state_ = POLICY_LOADED;
@@ -1295,8 +1289,6 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
   } else if (state_ == HOST_STARTED) {
     if (restart_required) {
       RestartHost(kHostOfflineReasonPolicyChangeRequiresRestart);
-    } else {
-      host_->SetLocalSessionPolicies(local_session_policies_);
     }
   }
 }
@@ -1597,56 +1589,6 @@ bool HostProcess::OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies) {
   return true;
 }
 
-bool HostProcess::OnFileTransferPolicyUpdate(
-    const base::Value::Dict& policies) {
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<bool> file_transfer_enabled =
-      policies.FindBool(policy::key::kRemoteAccessHostAllowFileTransfer);
-  if (!file_transfer_enabled.has_value()) {
-    return false;
-  }
-
-  desktop_environment_options_.set_enable_file_transfer(
-      file_transfer_enabled.value());
-
-  if (file_transfer_enabled.value()) {
-    HOST_LOG << "Policy enables file transfer.";
-  } else {
-    HOST_LOG << "Policy disables file transfer.";
-  }
-
-  // Restart required.
-  return true;
-}
-
-bool HostProcess::OnUrlForwardingPolicyUpdate(
-    const base::Value::Dict& policies) {
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<bool> url_forwarding_enabled =
-      policies.FindBool(policy::key::kRemoteAccessHostAllowUrlForwarding);
-  if (!url_forwarding_enabled.has_value()) {
-    return false;
-  }
-
-  // Always enable remote open URL when the platform supports it and the policy
-  // does not disable it. There is an additional IsRemoteOpenUrlSupported()
-  // check which ensures the capability won't be advertised if the machine is
-  // not properly configured.
-  desktop_environment_options_.set_enable_remote_open_url(
-      url_forwarding_enabled.value());
-
-  if (url_forwarding_enabled.value()) {
-    HOST_LOG << "Policy allows URL forwarding.";
-  } else {
-    HOST_LOG << "Policy disallows URL forwarding.";
-  }
-
-  // Restart required.
-  return true;
-}
-
 bool HostProcess::OnAllowPinAuthenticationUpdate(
     const base::Value::Dict& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
@@ -1693,29 +1635,6 @@ bool HostProcess::OnEnableUserInterfacePolicyUpdate(
     HOST_LOG << "Policy enables user interface for non-curtained sessions.";
   } else {
     HOST_LOG << "Policy disables user interface for non-curtained sessions.";
-  }
-
-  // Restart required.
-  return true;
-}
-
-bool HostProcess::OnMaxClipboardSizePolicyUpdate(
-    const base::Value::Dict& policies) {
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<int> max_clipboard_size =
-      policies.FindInt(policy::key::kRemoteAccessHostClipboardSizeBytes);
-  if (!max_clipboard_size) {
-    return false;
-  }
-
-  if (*max_clipboard_size >= 0) {
-    max_clipboard_size_ = *max_clipboard_size;
-    HOST_LOG << "Policy sets maximum clipboard size to "
-             << max_clipboard_size_.value() << " bytes.";
-  } else {
-    max_clipboard_size_.reset();
-    HOST_LOG << "Policy does not set a maximum clipboard size.";
   }
 
   // Restart required.
@@ -1887,20 +1806,11 @@ void HostProcess::StartHost() {
   desktop_environment_options_.set_enable_remote_webauthn(is_corp_user_);
 #endif
 
-  if (max_clipboard_size_.has_value()) {
-    desktop_environment_options_.set_clipboard_size(
-        max_clipboard_size_.value());
-  } else if (desktop_environment_options_.clipboard_size().has_value()) {
-    // If we've transitioned from having a policy value to no value then make
-    // sure the value stored in desktop_environment_options has been cleared.
-    desktop_environment_options_.set_clipboard_size(std::optional<size_t>());
-  }
-
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, context_->audio_task_runner(),
-      context_->video_encode_task_runner(), desktop_environment_options_);
-  host_->SetLocalSessionPolicies(local_session_policies_);
+      context_->video_encode_task_runner(), desktop_environment_options_,
+      &local_session_policies_provider_);
 
   if (security_key_auth_policy_enabled_ && security_key_extension_supported_) {
     host_->AddExtension(

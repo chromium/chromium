@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/port_range.h"
-#include "remoting/base/session_policies.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
@@ -238,6 +238,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<HostStatusLogger> host_status_logger_;
   std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<HostEventLogger> host_event_logger_;
+  LocalSessionPoliciesProvider local_session_policies_provider_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<HostEventReporter> host_event_reporter_;
   HostEventReporterFactory host_event_reporter_factory_;
@@ -271,19 +272,11 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // The host port range policy setting.
   PortRange udp_port_range_;
 
-  // Stores the clipboard size policy value.
-  std::optional<size_t> max_clipboard_size_;
-
   // Stores the remote support connections allowed policy value.
   bool remote_support_connections_allowed_ = true;
 
-  // Stores whether enterprise file transfer is allowed by policy.
-  bool enterprise_file_transfer_allowed_ = false;
-
   // Tracks the JID of the remote user when in a connecting state.
   std::string connecting_jid_;
-
-  SessionPolicies local_session_policies_;
 
   base::WeakPtrFactory<It2MeHost> weak_factory_{this};
 };

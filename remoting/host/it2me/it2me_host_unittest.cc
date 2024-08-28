@@ -25,6 +25,7 @@
 #include "components/policy/policy_constants.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromoting_host.h"
@@ -235,6 +236,10 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   static base::Value MakeList(std::initializer_list<std::string_view> values);
 
   ChromotingHost* GetHost() { return it2me_host_->host_.get(); }
+
+  const SessionPolicies& get_local_session_policies() const {
+    return it2me_host_->local_session_policies_provider_.get_local_policies();
+  }
 
   // Configuration values used by StartHost();
   std::optional<ChromeOsEnterpriseParams> enterprise_params_;
@@ -872,6 +877,18 @@ TEST_F(It2MeHostTest, AllowSupportHostConnectionsPolicyDisabled) {
   ASSERT_EQ(ErrorCode::DISALLOWED_BY_POLICY, last_error_code_);
 }
 
+TEST_F(It2MeHostTest, FileTransferDisallowedByDefault) {
+  StartHost();
+
+  EXPECT_FALSE(*get_local_session_policies().allow_file_transfer);
+}
+
+TEST_F(It2MeHostTest, UriForwardingDisallowedByDefault) {
+  StartHost();
+
+  EXPECT_FALSE(*get_local_session_policies().allow_uri_forwarding);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(It2MeHostTest, ConnectRespectsSuppressDialogsParameter) {
   StartHost(ChromeOsEnterpriseParams{.suppress_user_dialogs = true});
@@ -918,7 +935,7 @@ TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyEnabled) {
 
   StartHost(ChromeOsEnterpriseParams{.allow_file_transfer = true});
 
-  EXPECT_TRUE(GetHost()->desktop_environment_options().enable_file_transfer());
+  EXPECT_TRUE(*get_local_session_policies().allow_file_transfer);
 }
 
 TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyDisabled) {
@@ -927,7 +944,7 @@ TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyDisabled) {
 
   StartHost(ChromeOsEnterpriseParams{.allow_file_transfer = true});
 
-  EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());
+  EXPECT_FALSE(*get_local_session_policies().allow_file_transfer);
 }
 
 TEST_F(It2MeHostTest,
@@ -937,7 +954,7 @@ TEST_F(It2MeHostTest,
 
   StartHost(/*enterprise_params=*/std::nullopt);
 
-  EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());
+  EXPECT_FALSE(*get_local_session_policies().allow_file_transfer);
 }
 
 TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyNotSet) {
@@ -945,13 +962,13 @@ TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyNotSet) {
 
   StartHost(ChromeOsEnterpriseParams{.allow_file_transfer = true});
 
-  EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());
+  EXPECT_FALSE(*get_local_session_policies().allow_file_transfer);
 }
 
 TEST_F(It2MeHostTest, EnableFileTransferDefaultsToFalse) {
   StartHost(/*enterprise_params=*/std::nullopt);
 
-  EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());
+  EXPECT_FALSE(*get_local_session_policies().allow_file_transfer);
 }
 
 TEST_F(It2MeHostTest,

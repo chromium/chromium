@@ -258,19 +258,8 @@ struct DesktopEnvironmentOptions {
   // True if the session should be terminated when local input is detected.
   bool terminate_upon_input;
 
-  // True if this host has file transfer enabled.
-  bool enable_file_transfer;
-
-  // True if this host has the remote open URL feature enabled.
-  bool enable_remote_open_url;
-
   // True if this host has the remote WebAuthn feature enabled.
   bool enable_remote_webauthn;
-
-  // If set, this value is used to constrain the amount of data that can be
-  // transferred using ClipboardEvents. A value of 0 will effectively disable
-  // clipboard sharing.
-  UInt32? clipboard_size;
 
   // The DesktopCaptureOptions to initialize DesktopCapturer.
   DesktopCaptureOptions desktop_capture_options;

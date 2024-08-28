@@ -190,34 +190,5 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(It2MeDesktopEnvironmentTest,
-       ShouldHaveFileTransferCapabilitiesWhenEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnableCrdFileTransferForKiosk);
-  DesktopEnvironmentOptions options(default_options());
-  std::string expected_capabilities(" ");
-  expected_capabilities += protocol::kFileTransferCapability;
-
-  options.set_enable_file_transfer(true);
-  auto desktop_environment = Create(options);
-
-  EXPECT_THAT(desktop_environment->GetCapabilities(),
-              testing::HasSubstr(expected_capabilities));
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ShouldNotHaveFileTransferCapabilitiesWhenDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnableCrdFileTransferForKiosk);
-  DesktopEnvironmentOptions options(default_options());
-
-  options.set_enable_file_transfer(false);
-  auto desktop_environment = Create(options);
-
-  EXPECT_THAT(desktop_environment->GetCapabilities(), testing::HasSubstr(""));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace
 }  // namespace remoting

@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/it2me_desktop_environment.h"
 #include "remoting/protocol/fake_connection_to_client.h"
@@ -48,6 +49,7 @@ class It2MeStandaloneHost {
   std::unique_ptr<ChromotingHostContext> context_;
   scoped_refptr<AutoThreadTaskRunner> main_task_runner_;
   It2MeDesktopEnvironmentFactory factory_;
+  LocalSessionPoliciesProvider local_session_policies_provider_;
   protocol::FakeConnectionToClient connection_;
   std::string session_jid_;
   std::unique_ptr<protocol::SessionConfig> config_;
