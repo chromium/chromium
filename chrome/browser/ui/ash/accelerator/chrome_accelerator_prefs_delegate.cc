@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/chrome_accelerator_prefs_delegate.h"
+#include "chrome/browser/ui/ash/accelerator/chrome_accelerator_prefs_delegate.h"
 
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

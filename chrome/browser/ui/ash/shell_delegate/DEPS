@@ -24,6 +24,7 @@ include_rules = [
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/profiles",
   "+chrome/browser/sessions",
+  "+chrome/browser/ui/ash/accelerator",
   "+chrome/browser/ui/ash/accessibility",
   "+chrome/browser/ui/ash/back_gesture",
   "+chrome/browser/ui/ash/boca",

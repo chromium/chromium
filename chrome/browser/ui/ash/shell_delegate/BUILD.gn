@@ -30,6 +30,7 @@ static_library("shell_delegate") {
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/accelerator",
     "//chrome/browser/ui/ash/accessibility",
     "//chrome/browser/ui/ash/back_gesture",
     "//chrome/browser/ui/ash/boca",
