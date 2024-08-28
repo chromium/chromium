@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/vpn_list_forwarder.h"
+#include "chrome/browser/ash/net/vpn_list_forwarder.h"
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/check_op.h"

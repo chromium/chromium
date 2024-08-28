@@ -42,6 +42,8 @@ static_library("net") {
     "secure_dns_manager.h",
     "system_proxy_manager.cc",
     "system_proxy_manager.h",
+    "vpn_list_forwarder.cc",
+    "vpn_list_forwarder.h",
     "xdr_manager.cc",
     "xdr_manager.h",
   ]
@@ -53,6 +55,7 @@ static_library("net") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/net/dns_over_https",
     "//chrome/browser/ash/notifications",
@@ -95,6 +98,7 @@ static_library("net") {
     "//content/public/browser",
     "//crypto",
     "//dbus",
+    "//extensions/browser",
     "//mojo/public/cpp/bindings",
     "//services/network/public/mojom",
   ]

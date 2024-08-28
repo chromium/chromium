@@ -40,6 +40,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/mahi/media_app",
+    "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/display",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/profiles",
