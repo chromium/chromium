@@ -23,7 +23,7 @@ namespace enterprise_reporting {
 class BrowserReportGeneratorIOSTest : public PlatformTest {
  public:
   BrowserReportGeneratorIOSTest() : generator_(&delegate_factory_) {
-    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
         TestChromeBrowserState::Builder());
   }
   BrowserReportGeneratorIOSTest(const BrowserReportGeneratorIOSTest&) = delete;
@@ -65,7 +65,7 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
  private:
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
 
   ReportingDelegateFactoryIOS delegate_factory_;

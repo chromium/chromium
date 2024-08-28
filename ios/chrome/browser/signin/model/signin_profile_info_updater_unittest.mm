@@ -63,7 +63,7 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
 
   signin::IdentityTestEnvironment identity_test_env_;
   SigninErrorController signin_error_controller_;

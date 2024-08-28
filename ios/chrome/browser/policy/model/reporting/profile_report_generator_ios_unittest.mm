@@ -50,7 +50,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
         std::make_unique<BrowserStatePolicyConnectorMock>(
             CreateMockPolicyService(), &schema_registry_));
     browser_state_ =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -128,7 +128,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
 
   policy::SchemaRegistry schema_registry_;

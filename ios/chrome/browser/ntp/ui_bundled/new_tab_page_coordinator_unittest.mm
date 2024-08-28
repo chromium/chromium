@@ -175,7 +175,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         IOSChromeSafetyCheckManagerFactory::GetInstance(),
         IOSChromeSafetyCheckManagerFactory::GetDefaultFactory());
 
-    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
         std::move(test_cbs_builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -370,7 +370,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
   raw_ptr<web::WebState> web_state_;
   id toolbar_delegate_;

@@ -37,7 +37,7 @@ class NotificationsOptInMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
+        profile_manager_.AddBrowserStateWithBuilder(
             CreateBrowserStateBuilder());
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -86,7 +86,7 @@ class NotificationsOptInMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
   NotificationsOptInMediator* mediator_;

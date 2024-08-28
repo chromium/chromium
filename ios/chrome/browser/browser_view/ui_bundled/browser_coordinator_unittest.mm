@@ -114,7 +114,7 @@ class BrowserCoordinatorTest : public PlatformTest {
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<commerce::MockShoppingService>();
             }));
-    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
         std::move(test_cbs_builder));
 
     browser_ = std::make_unique<TestBrowser>(GetBrowserState(), scene_state_);
@@ -206,7 +206,7 @@ class BrowserCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
   UIViewController* base_view_controller_;
   std::unique_ptr<TestBrowser> browser_;

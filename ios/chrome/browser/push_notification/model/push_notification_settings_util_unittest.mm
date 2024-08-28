@@ -37,7 +37,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
  public:
   PushNotificationSettingsUtilTest() {
     TestChromeBrowserState* test_chrome_browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
+        profile_manager_.AddBrowserStateWithBuilder(
             TestChromeBrowserState::Builder());
 
     const std::string browser_state_name =
@@ -45,7 +45,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
     pref_service_ = test_chrome_browser_state->GetPrefs();
 
     manager_ = [[PushNotificationAccountContextManager alloc]
-        initWithProfileManager:&browser_state_manager_];
+        initWithProfileManager:&profile_manager_];
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
     // TODO(b/318863934): Remove flag when enabled by default.
     feature_list_.InitWithFeatures(
@@ -99,7 +99,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
   raw_ptr<PrefService> pref_service_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   FakeSystemIdentity* fake_id_;
   PushNotificationAccountContextManager* manager_;
   base::test::ScopedFeatureList feature_list_;

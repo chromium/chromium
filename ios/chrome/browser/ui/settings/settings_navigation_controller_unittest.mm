@@ -57,7 +57,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
-    chrome_browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+    chrome_browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
         std::move(test_cbs_builder));
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
@@ -103,7 +103,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   id mockDelegate_;

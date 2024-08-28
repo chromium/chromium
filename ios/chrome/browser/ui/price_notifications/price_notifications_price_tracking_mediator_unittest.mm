@@ -130,7 +130,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
               return commerce::MockShoppingService::Build();
             }));
     TestChromeBrowserState* test_chrome_browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     browser_list_ =
         BrowserListFactory::GetForBrowserState(test_chrome_browser_state);
@@ -185,7 +185,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   std::unique_ptr<Browser> browser_;
   PriceNotificationsPriceTrackingMediator* mediator_;
   std::unique_ptr<web::FakeWebState> web_state_;

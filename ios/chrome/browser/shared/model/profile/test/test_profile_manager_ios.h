@@ -15,9 +15,6 @@
 #include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 
-class TestProfileManagerIOS;
-using TestChromeBrowserStateManager = TestProfileManagerIOS;
-
 // ProfileManagerIOS implementation for tests.
 //
 // Register itself with the TestApplicationContext on creation. Requires

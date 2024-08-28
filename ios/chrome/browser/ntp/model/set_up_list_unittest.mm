@@ -52,7 +52,7 @@ class SetUpListTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     browser_state_ =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
     prefs_ = GetBrowserState()->GetPrefs();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),
@@ -96,7 +96,7 @@ class SetUpListTest : public PlatformTest {
     auth_service_->GrantSyncConsent(
         identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
-    browser_state_manager_.GetProfileAttributesStorage()
+    profile_manager_.GetProfileAttributesStorage()
         ->UpdateAttributesForProfileWithName(
             browser_state_->GetBrowserStateName(),
             base::BindOnce(
@@ -182,7 +182,7 @@ class SetUpListTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<AuthenticationService> auth_service_;

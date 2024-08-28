@@ -49,7 +49,7 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
                 web::BrowserState, password_manager::TestPasswordStore>));
 
     ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     pref_service_ = browser_state->GetPrefs();
 
@@ -82,7 +82,7 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   id mock_app_state_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;

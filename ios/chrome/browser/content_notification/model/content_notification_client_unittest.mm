@@ -37,7 +37,7 @@ class ContentNotificationClientTest : public PlatformTest {
  protected:
   ContentNotificationClientTest() {
     ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
+        profile_manager_.AddBrowserStateWithBuilder(
             TestChromeBrowserState::Builder());
     BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
     mock_scene_state_ = OCMClassMock([SceneState class]);
@@ -82,7 +82,7 @@ class ContentNotificationClientTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<ContentNotificationClient> client_;

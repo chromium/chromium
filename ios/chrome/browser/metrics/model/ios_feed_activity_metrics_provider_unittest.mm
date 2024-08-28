@@ -29,7 +29,7 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
 
   void AddBrowserState(const std::string& name, FeedActivityBucket bucket) {
     TestChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
+        profile_manager_.AddBrowserStateWithBuilder(
             std::move(TestChromeBrowserState::Builder().SetName(name)));
 
     browser_state->GetPrefs()->SetInteger(kActivityBucketKey,
@@ -39,7 +39,7 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
  private:
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   base::HistogramTester histogram_tester_;
 };
 

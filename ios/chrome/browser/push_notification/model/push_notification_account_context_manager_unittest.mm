@@ -73,11 +73,11 @@ void AddTestCasesToManagerAndValidate(
 class PushNotificationAccountContextManagerTest : public PlatformTest {
  public:
   PushNotificationAccountContextManagerTest() {
-    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+    browser_state_ = profile_manager_.AddBrowserStateWithBuilder(
         TestChromeBrowserState::Builder());
 
     manager_ = [[PushNotificationAccountContextManager alloc]
-        initWithProfileManager:&browser_state_manager_];
+        initWithProfileManager:&profile_manager_];
   }
 
   ProfileAttributesStorageIOS* profile_attributes_storage() const {
@@ -93,7 +93,7 @@ class PushNotificationAccountContextManagerTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
   PushNotificationAccountContextManager* manager_;
 };

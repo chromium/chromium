@@ -116,16 +116,16 @@ class IncognitoSessionTrackerTest : public PlatformTest {
 
   // Adds a new ChromeBrowserState with the given name.
   void AddBrowserStateWithName(const char* name) {
-    browser_state_manager_.AddBrowserStateWithBuilder(
+    profile_manager_.AddBrowserStateWithBuilder(
         std::move(TestChromeBrowserState::Builder().SetName(name)));
   }
 
-  ProfileManagerIOS* profile_manager() { return &browser_state_manager_; }
+  ProfileManagerIOS* profile_manager() { return &profile_manager_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
 };
 
 // Tests that `HasIncognitoSessionTabs()` value changes when off-the-record

@@ -53,7 +53,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -129,7 +129,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   LensOverlayCoordinator* coordinator_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;

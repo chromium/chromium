@@ -72,7 +72,7 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
 
     ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -97,7 +97,7 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   base::HistogramTester histogram_tester_;
   id mock_push_notification_util_ = nil;
 };

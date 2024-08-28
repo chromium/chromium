@@ -34,7 +34,7 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
  public:
   IOSChromeMetricsServiceClientTest()
       : enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
-    browser_state_manager_.AddBrowserStateWithBuilder(
+    profile_manager_.AddBrowserStateWithBuilder(
         TestChromeBrowserState::Builder());
   }
 
@@ -56,7 +56,7 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   metrics::TestEnabledStateProvider enabled_state_provider_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;

@@ -161,7 +161,7 @@ class SettingsTableViewControllerTest
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
     chrome_browser_state_ =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     // Prepare mocks for PushNotificationClient dependency
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
@@ -283,7 +283,7 @@ class SettingsTableViewControllerTest
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   ScopedVariationsService scoped_variations_service_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
 
   FakeSystemIdentity* fake_identity_ = nullptr;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;

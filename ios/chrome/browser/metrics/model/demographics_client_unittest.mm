@@ -21,14 +21,14 @@ namespace metrics {
 class DemographicsClientTest : public PlatformTest {
  public:
   DemographicsClientTest() {
-    browser_state_manager_.AddBrowserStateWithBuilder(
+    profile_manager_.AddBrowserStateWithBuilder(
         TestChromeBrowserState::Builder());
   }
 
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
 };
 
 TEST_F(DemographicsClientTest, GetNetworkTime) {
