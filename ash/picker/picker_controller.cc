@@ -445,17 +445,17 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
           [](const PickerEmojiResult& data) { NOTREACHED(); },
           [](const PickerClipboardResult& data) { NOTREACHED(); },
           [&](const PickerBrowsingHistoryResult& data) {
-            session_metrics_->SetOutcome(
+            session_->session_metrics.SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kOpenLink);
             OpenLink(data.url);
           },
           [&](const PickerLocalFileResult& data) {
-            session_metrics_->SetOutcome(
+            session_->session_metrics.SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kOpenFile);
             OpenFile(data.file_path);
           },
           [&](const PickerDriveFileResult& data) {
-            session_metrics_->SetOutcome(
+            session_->session_metrics.SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kOpenLink);
             OpenLink(data.url);
           },
@@ -463,12 +463,12 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
           [](const PickerSearchRequestResult& data) { NOTREACHED(); },
           [](const PickerEditorResult& data) { NOTREACHED(); },
           [&](const PickerNewWindowResult& data) {
-            session_metrics_->SetOutcome(
+            session_->session_metrics.SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kCreate);
             OpenLink(GetUrlForNewWindow(data.type));
           },
           [&](const PickerCapsLockResult& data) {
-            session_metrics_->SetOutcome(
+            session_->session_metrics.SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kFormat);
             GetImeKeyboard().SetCapsLockEnabled(data.enabled);
           },
@@ -476,7 +476,7 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
             if (!session_) {
               return;
             }
-            session_metrics_->SetOutcome(
+            session_->session_metrics.SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kFormat);
             std::u16string_view selected_text = session_->model.selected_text();
             InsertResultOnNextFocus(
@@ -507,7 +507,7 @@ PickerAssetFetcher* PickerController::GetAssetFetcher() {
 }
 
 PickerSessionMetrics& PickerController::GetSessionMetrics() {
-  return *session_metrics_;
+  return session_->session_metrics;
 }
 
 PickerActionType PickerController::GetActionForResult(
@@ -591,7 +591,6 @@ void PickerController::OnViewIsDeleting(views::View* view) {
   view_observation_.Reset();
 
   feature_usage_metrics_.StopUsage();
-  session_metrics_.reset();
   session_.reset();
 }
 
@@ -609,7 +608,12 @@ PickerController::Session::Session(
     PickerEmojiSuggester::GetNameCallback get_name)
     : model(prefs, focused_client, ime_keyboard, editor_status),
       emoji_history_model(prefs),
-      emoji_suggester(&emoji_history_model, std::move(get_name)) {}
+      emoji_suggester(&emoji_history_model, std::move(get_name)),
+      session_metrics(prefs) {
+  session_metrics.OnStartSession(focused_client);
+}
+
+PickerController::Session::~Session() = default;
 
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
                                   WidgetTriggerSource trigger_source) {
@@ -639,9 +643,6 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
           },
           weak_ptr_factory_.GetWeakPtr()));
 
-  session_metrics_ = std::make_unique<PickerSessionMetrics>(GetPrefs());
-  session_metrics_->OnStartSession(GetFocusedTextInputClient());
-
   const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
       GetCaretBounds(), GetCursorPoint(), GetFocusedWindowBounds());
   if (trigger_source == WidgetTriggerSource::kFeatureTour &&
@@ -663,7 +664,7 @@ void PickerController::CloseWidget() {
     return;
   }
 
-  session_metrics_->SetOutcome(
+  session_->session_metrics.SetOutcome(
       PickerSessionMetrics::SessionOutcome::kAbandoned);
   widget_->Close();
 }
@@ -722,7 +723,7 @@ void PickerController::InsertResultOnNextFocus(
       },
       GetInsertionContentForResult(result));
 
-  session_metrics_->SetOutcome(
+  session_->session_metrics.SetOutcome(
       PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
 }
 

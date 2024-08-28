@@ -166,12 +166,14 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
     PickerModel model;
     PickerEmojiHistoryModel emoji_history_model;
     PickerEmojiSuggester emoji_suggester;
+    PickerSessionMetrics session_metrics;
 
     Session(PrefService* prefs,
             ui::TextInputClient* focused_client,
             input_method::ImeKeyboard* ime_keyboard,
             PickerModel::EditorStatus editor_status,
             PickerEmojiSuggester::GetNameCallback get_name);
+    ~Session();
   };
 
   void ShowWidget(base::TimeTicks trigger_event_timestamp,
@@ -204,9 +206,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // Periodically records usage metrics based on the Standard Feature Usage
   // Logging (SFUL) framework.
   PickerFeatureUsageMetrics feature_usage_metrics_;
-
-  // Records metrics related to a session.
-  std::unique_ptr<PickerSessionMetrics> session_metrics_;
 
   // Timer used to delay closing the Widget for accessibility.
   base::OneShotTimer close_widget_delay_timer_;
