@@ -16,6 +16,7 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "url/origin.h"
 
 namespace plus_addresses {
 
@@ -67,9 +68,13 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
       !is_confirmed.has_value()) {
     return std::nullopt;
   }
+  GURL url = GURL(facet_str);
   affiliations::FacetURI facet =
       affiliations::FacetURI::FromPotentiallyInvalidSpec(facet_str);
-  if (!facet.is_valid()) {
+  // An exception is made for `http` domains as these are considered invalid by
+  // the `FacetURI` class.
+  if (!facet.is_valid() &&
+      (!url.is_valid() || !url.SchemeIs(url::kHttpScheme))) {
     return std::nullopt;
   }
   return PlusProfile(std::move(profile_id), std::move(facet),
