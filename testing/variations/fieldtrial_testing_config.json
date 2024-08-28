@@ -20156,6 +20156,29 @@
             ]
         }
     ],
+    "SafeBrowsingHashDatabaseOffsetMap": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled1024",
+                    "params": {
+                        "HashDatabaseOffsetMapBytesPerOffset": "1024"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingHashDatabaseOffsetMap"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingHashPrefixRealTimeLookups": [
         {
             "platforms": [
