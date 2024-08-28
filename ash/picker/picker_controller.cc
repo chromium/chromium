@@ -607,17 +607,20 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
                                   WidgetTriggerSource trigger_source) {
   show_editor_callback_ = client_->CacheEditorContext();
 
-  model_ = std::make_unique<PickerModel>(
-      GetPrefs(), GetFocusedTextInputClient(), &GetImeKeyboard(),
-      show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
-                                      : PickerModel::EditorStatus::kEnabled);
+  ui::TextInputClient* focused_client = GetFocusedTextInputClient();
+  input_method::ImeKeyboard& keyboard = GetImeKeyboard();
 
-  if (model_->GetMode() == PickerModeType::kPassword) {
-    bool should_enable = !model_->is_caps_lock_enabled();
-    GetImeKeyboard().SetCapsLockEnabled(should_enable);
-    model_.reset();
+  if (focused_client &&
+      focused_client->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    bool should_enable = !keyboard.IsCapsLockEnabled();
+    keyboard.SetCapsLockEnabled(should_enable);
     return;
   }
+
+  model_ = std::make_unique<PickerModel>(
+      GetPrefs(), focused_client, &keyboard,
+      show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
+                                      : PickerModel::EditorStatus::kEnabled);
 
   emoji_history_model_ = std::make_unique<PickerEmojiHistoryModel>(GetPrefs());
   emoji_suggester_ = std::make_unique<PickerEmojiSuggester>(
