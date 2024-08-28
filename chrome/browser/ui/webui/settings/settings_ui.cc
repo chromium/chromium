@@ -627,6 +627,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("showHistorySearchControl",
                           optimization_guide_feature_visible[4]);
 
+  html_source->AddBoolean(
+      "enableAiSettingsPageRefresh",
+      base::FeatureList::IsEnabled(features::kAiSettingsPageRefresh));
+
   TryShowHatsSurveyWithTimeout();
 }
 
