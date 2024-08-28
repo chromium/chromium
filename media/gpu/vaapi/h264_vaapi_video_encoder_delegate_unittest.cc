@@ -12,8 +12,11 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_bitrate_allocation.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,18 +29,28 @@ using ::testing::Return;
 namespace media {
 namespace {
 
+constexpr gfx::Size kDefaultVisibleSize = gfx::Size(1280, 720);
+constexpr VideoEncodeAccelerator::Config::ContentType kDefaultContentType =
+    VideoEncodeAccelerator::Config::ContentType::kCamera;
+// Limit max delay for intra frame with HRD buffer size (500ms-1s for camera
+// video, 1s-10s for desktop sharing).
+constexpr base::TimeDelta kHRDBufferDelayCamera = base::Milliseconds(1000);
+constexpr base::TimeDelta kHRDBufferDelayDisplay = base::Milliseconds(3000);
+constexpr uint8_t kMinQP = 1;
+constexpr uint8_t kScreenMinQP = 10;
+constexpr uint8_t kMaxQP = 42;
+
 VaapiVideoEncoderDelegate::Config kDefaultVEADelegateConfig{
     .max_num_ref_frames = 4,
 };
 
 VideoEncodeAccelerator::Config DefaultVEAConfig() {
   VideoEncodeAccelerator::Config vea_config(
-      PIXEL_FORMAT_I420, gfx::Size(1280, 720), H264PROFILE_BASELINE,
+      PIXEL_FORMAT_I420, kDefaultVisibleSize, H264PROFILE_BASELINE,
       /* = maximum bitrate in bits per second for level 3.1 */
       Bitrate::ConstantBitrate(14000000u),
       VideoEncodeAccelerator::kDefaultFramerate,
-      VideoEncodeAccelerator::Config::StorageType::kShmem,
-      VideoEncodeAccelerator::Config::ContentType::kCamera);
+      VideoEncodeAccelerator::Config::StorageType::kShmem, kDefaultContentType);
 
   return vea_config;
 }
@@ -74,6 +87,62 @@ MATCHER_P(MatchVABufferDescriptorForPackedHeader, va_packed_header_type, "") {
 
 MATCHER(MatchVABufferDescriptorForPackedHeaderData, "") {
   return arg.type == VAEncPackedHeaderDataBufferType && arg.data != nullptr;
+}
+
+MATCHER_P5(MatchRtcConfigWithRates,
+           bitrate_allocation,
+           framerate,
+           visible_size,
+           num_temporal_layers,
+           content_type,
+           "") {
+  uint32_t bitrate_sum = 0;
+  for (size_t tid = 0; tid < num_temporal_layers; ++tid) {
+    bitrate_sum += bitrate_allocation.GetBitrateBps(0u, tid);
+    const auto layer_setting = arg.layer_settings[tid];
+    if (layer_setting.avg_bitrate != bitrate_sum) {
+      return false;
+    }
+    if (bitrate_allocation.GetMode() == Bitrate::Mode::kConstant) {
+      if (layer_setting.peak_bitrate != bitrate_sum) {
+        return false;
+      }
+    } else {
+      if (layer_setting.peak_bitrate !=
+          static_cast<uint32_t>(bitrate_sum * 3 / 2)) {
+        return false;
+      }
+    }
+    base::TimeDelta buffer_delay;
+    if (content_type == VideoEncodeAccelerator::Config::ContentType::kDisplay) {
+      buffer_delay = kHRDBufferDelayDisplay;
+      if (layer_setting.min_qp != kScreenMinQP) {
+        return false;
+      }
+    } else {
+      buffer_delay = kHRDBufferDelayCamera;
+      if (layer_setting.min_qp != kMinQP) {
+        return false;
+      }
+    }
+    if (layer_setting.max_qp != kMaxQP) {
+      return false;
+    }
+    base::CheckedNumeric<size_t> buffer_size(layer_setting.avg_bitrate);
+    buffer_size *= buffer_delay.InMilliseconds();
+    buffer_size /= base::Time::kMillisecondsPerSecond / 8;
+    if (layer_setting.hrd_buffer_size != buffer_size.ValueOrDie()) {
+      return false;
+    }
+    auto layer_framerate =
+        static_cast<float>(framerate / (1u << (num_temporal_layers - tid - 1)));
+    if (layer_setting.frame_rate != layer_framerate) {
+      return false;
+    }
+  }
+  return arg.frame_size == visible_size && arg.frame_rate_max == framerate &&
+         arg.num_temporal_layers == num_temporal_layers &&
+         arg.content_type == content_type;
 }
 
 void ValidateTemporalLayerStructure(uint8_t num_temporal_layers,
@@ -136,6 +205,18 @@ class MockVaapiWrapper : public VaapiWrapper {
   ~MockVaapiWrapper() override = default;
 };
 
+class MockH264RateControl : public H264RateControlWrapper {
+ public:
+  MockH264RateControl() = default;
+  ~MockH264RateControl() override = default;
+
+  MOCK_METHOD1(UpdateRateControl, void(const H264RateControlConfigRTC&));
+  MOCK_METHOD1(ComputeQP,
+               H264RateCtrlRTC::FrameDropDecision(const H264FrameParamsRTC&));
+  MOCK_CONST_METHOD0(GetQP, int());
+  MOCK_METHOD2(PostEncodeUpdate, void(uint64_t, const H264FrameParamsRTC&));
+};
+
 }  // namespace
 
 class H264VaapiVideoEncoderDelegateTest
@@ -149,10 +230,12 @@ class H264VaapiVideoEncoderDelegateTest
   MOCK_METHOD0(OnError, void());
 
   bool InitializeEncoder(uint8_t num_temporal_layers);
+  void InitializeSWBitrateController();
   void EncodeFrame(bool force_keyframe);
 
  protected:
   std::unique_ptr<H264VaapiVideoEncoderDelegate> encoder_;
+  raw_ptr<MockH264RateControl> mock_rate_ctrl_ = nullptr;
 
  private:
   std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob> CreateEncodeJob(
@@ -206,6 +289,12 @@ bool H264VaapiVideoEncoderDelegateTest::InitializeEncoder(
   sl.max_qp = 30;
   sl.num_of_temporal_layers = num_temporal_layers;
   return encoder_->Initialize(vea_config, kDefaultVEADelegateConfig);
+}
+
+void H264VaapiVideoEncoderDelegateTest::InitializeSWBitrateController() {
+  auto rate_ctrl = std::make_unique<MockH264RateControl>();
+  mock_rate_ctrl_ = rate_ctrl.get();
+  encoder_->set_rate_ctrl_for_testing(std::move(rate_ctrl));
 }
 
 void H264VaapiVideoEncoderDelegateTest::EncodeFrame(bool force_keyframe) {
@@ -336,6 +425,25 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, VariableBitrate_Initialize) {
 
   ASSERT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(H264VaapiVideoEncoderDelegateTest, InitializeWithSWBitrateController) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      media::kVaapiH264SWBitrateController);
+  InitializeSWBitrateController();
+  auto vea_config = DefaultVEAConfig();
+  constexpr size_t kSupportedNumTemporalLayersByController = 1;
+  auto initial_bitrate_allocation =
+      AllocateBitrateForDefaultEncoding(vea_config);
+
+  EXPECT_CALL(
+      *mock_rate_ctrl_,
+      UpdateRateControl(MatchRtcConfigWithRates(
+          initial_bitrate_allocation, vea_config.framerate, kDefaultVisibleSize,
+          kSupportedNumTemporalLayersByController, kDefaultContentType)));
+  EXPECT_TRUE(InitializeEncoder(kSupportedNumTemporalLayersByController));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {
   const uint8_t num_temporal_layers = GetParam();

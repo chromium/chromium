@@ -227,6 +227,7 @@ class MockVaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   MOCK_METHOD2(GetMetadata, BitstreamBufferMetadata(const EncodeJob&, size_t));
   MOCK_METHOD1(PrepareEncodeJob, PrepareEncodeJobResult(EncodeJob&));
   MOCK_METHOD2(UpdateRates, bool(const VideoBitrateAllocation&, uint32_t));
+  MOCK_METHOD1(BitrateControlUpdate, void(const BitstreamBufferMetadata&));
 };
 
 class MockVP9VaapiVideoEncoderDelegate : public VP9VaapiVideoEncoderDelegate {

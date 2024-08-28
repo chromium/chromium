@@ -814,6 +814,11 @@ BASE_FEATURE(kGlobalVaapiLock,
 BASE_FEATURE(kVaapiH264TemporalLayerHWEncoding,
              "VaapiH264TemporalLayerEncoding",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enable software bitrate controller for H264 temporal layer encoding with HW
+// encoder on ChromeOS.
+BASE_FEATURE(kVaapiH264SWBitrateController,
+             "VaapiH264SWBitrateController",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable VP8 temporal layer encoding with HW encoder on ChromeOS.
 BASE_FEATURE(kVaapiVp8TemporalLayerHWEncoding,
              "VaapiVp8TemporalLayerEncoding",

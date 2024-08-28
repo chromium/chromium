@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
@@ -193,7 +194,106 @@ scoped_refptr<H264Picture> GetH264Picture(
   return base::WrapRefCounted(
       reinterpret_cast<H264Picture*>(job.picture().get()));
 }
+
+std::optional<H264RateControlConfigRTC> CreateRateControlConfig(
+    const gfx::Size encode_size,
+    const H264VaapiVideoEncoderDelegate::EncodeParams& encode_params,
+    const VideoBitrateAllocation& bitrate_allocation,
+    const size_t& num_temporal_layers) {
+  // Limit max delay for intra frame with HRD buffer size (500ms-1s for camera
+  // video, 1s-10s for desktop sharing).
+  constexpr base::TimeDelta kHRDBufferDelayCamera = base::Milliseconds(1000);
+  constexpr base::TimeDelta kHRDBufferDelayDisplay = base::Milliseconds(3000);
+  H264RateControlConfigRTC rc_cfg{};
+  // Coded width and heght.
+  rc_cfg.frame_size = encode_size;
+  // Maximum GOP duration in milliseconds. It is set to maximum value.
+  rc_cfg.gop_max_duration = base::TimeDelta::Max();
+
+  // Source frame rate.
+  rc_cfg.frame_rate_max = static_cast<float>(encode_params.framerate);
+  // Number of temopral layers.
+  rc_cfg.num_temporal_layers = num_temporal_layers;
+  // Type of the video content (camera or display).
+  rc_cfg.content_type = encode_params.content_type;
+  rc_cfg.fixed_delta_qp = false;
+  rc_cfg.ease_hrd_reduction = true;
+
+  // Fill temporal layers variables.
+  uint32_t bitrate_sum = 0;
+  for (size_t tid = 0; tid < num_temporal_layers; ++tid) {
+    bitrate_sum += bitrate_allocation.GetBitrateBps(0u, tid);
+    auto& layer_setting = rc_cfg.layer_settings.emplace_back();
+    layer_setting.avg_bitrate = bitrate_sum;
+    if (bitrate_allocation.GetMode() == Bitrate::Mode::kConstant) {
+      layer_setting.peak_bitrate = bitrate_sum;
+    } else {
+      layer_setting.peak_bitrate = bitrate_sum * 3 / 2;
+    }
+    base::TimeDelta buffer_delay;
+    if (rc_cfg.content_type ==
+        VideoEncodeAccelerator::Config::ContentType::kDisplay) {
+      buffer_delay = kHRDBufferDelayDisplay;
+      layer_setting.min_qp = kScreenMinQP;
+    } else {
+      buffer_delay = kHRDBufferDelayCamera;
+      layer_setting.min_qp = kMinQP;
+    }
+    layer_setting.max_qp = encode_params.max_qp;
+
+    base::CheckedNumeric<size_t> buffer_size(layer_setting.avg_bitrate);
+    buffer_size *= buffer_delay.InMilliseconds();
+    buffer_size /= base::Time::kMillisecondsPerSecond / 8;
+    if (!buffer_size.AssignIfValid(&layer_setting.hrd_buffer_size)) {
+      DVLOGF(1) << "Invalid size for HRD buffer";
+      return std::nullopt;
+    }
+    layer_setting.frame_rate = static_cast<float>(
+        encode_params.framerate / (1u << (num_temporal_layers - tid - 1)));
+  }
+  return std::make_optional<H264RateControlConfigRTC>(rc_cfg);
+}
 }  // namespace
+
+std::unique_ptr<H264RateControlWrapper> H264RateControlWrapper::Create(
+    const H264RateControlConfigRTC& config) {
+  auto impl = H264RateCtrlRTC::Create(config);
+  if (!impl) {
+    DLOG(ERROR) << "Failed creating video H264RateCtrlRTC";
+    return nullptr;
+  }
+  return base::WrapUnique(new H264RateControlWrapper(std::move(impl)));
+}
+
+H264RateControlWrapper::H264RateControlWrapper() = default;
+
+H264RateControlWrapper::H264RateControlWrapper(
+    std::unique_ptr<H264RateCtrlRTC> impl)
+    : impl_(std::move(impl)) {}
+
+H264RateControlWrapper::~H264RateControlWrapper() = default;
+
+void H264RateControlWrapper::UpdateRateControl(
+    const H264RateControlConfigRTC& config) {
+  DCHECK(impl_);
+  impl_->UpdateRateControl(config);
+}
+
+H264RateCtrlRTC::FrameDropDecision H264RateControlWrapper::ComputeQP(
+    const H264FrameParamsRTC& frame_params) {
+  DCHECK(impl_);
+  return impl_->ComputeQP(frame_params);
+}
+
+int H264RateControlWrapper::GetQP() const {
+  return impl_->GetQP();
+}
+
+void H264RateControlWrapper::PostEncodeUpdate(
+    uint64_t encoded_frame_size,
+    const H264FrameParamsRTC& frame_params) {
+  impl_->PostEncodeUpdate(encoded_frame_size, frame_params);
+}
 
 H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
     : framerate(0),
@@ -211,6 +311,11 @@ H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
     : VaapiVideoEncoderDelegate(std::move(vaapi_wrapper), error_cb) {}
 
 H264VaapiVideoEncoderDelegate::~H264VaapiVideoEncoderDelegate() = default;
+
+void H264VaapiVideoEncoderDelegate::set_rate_ctrl_for_testing(
+    std::unique_ptr<H264RateControlWrapper> rate_ctrl) {
+  rate_ctrl_ = std::move(rate_ctrl);
+}
 
 bool H264VaapiVideoEncoderDelegate::Initialize(
     const VideoEncodeAccelerator::Config& config,
@@ -328,6 +433,37 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   // not the default (constant bitrate).
   curr_params_.bitrate_allocation =
       VideoBitrateAllocation(config.bitrate.mode());
+
+  auto initial_bitrate_allocation = AllocateBitrateForDefaultEncoding(config);
+
+  curr_params_.content_type = config.content_type;
+  curr_params_.framerate = framerate;
+
+  const bool is_sw_bitrate_controller_enabled =
+#if BUILDFLAG(IS_CHROMEOS)
+      base::FeatureList::IsEnabled(kVaapiH264SWBitrateController);
+#else
+      false;
+#endif
+  // TODO(b/362266573): Use the software bitrate controller for L1T2.
+  if (num_temporal_layers_ == 1 && is_sw_bitrate_controller_enabled) {
+    if (!rate_ctrl_) {
+      auto rc_config = CreateRateControlConfig(visible_size_, curr_params_,
+                                               initial_bitrate_allocation,
+                                               num_temporal_layers_);
+      if (!rc_config) {
+        DVLOGF(1) << "Failed creating rate control config";
+        return false;
+      }
+      rate_ctrl_ = H264RateControlWrapper::Create(*rc_config);
+    }
+    if (!rate_ctrl_) {
+      return false;
+    }
+  } else {
+    CHECK(!rate_ctrl_);
+  }
+
   return UpdateRates(AllocateBitrateForDefaultEncoding(config), framerate);
 }
 
@@ -487,6 +623,16 @@ bool H264VaapiVideoEncoderDelegate::UpdateRates(
   // changes must be affected for encoding. UpdateSPS()+SubmitFrameParameters()
   // shall apply them to an encoder properly.
   encoding_parameters_changed_ = previous_encoding_parameters_changed;
+
+  if (rate_ctrl_) {
+    auto rc_config = CreateRateControlConfig(
+        visible_size_, curr_params_, bitrate_allocation, num_temporal_layers_);
+    if (!rc_config) {
+      DVLOGF(1) << "Failed creating rate control config";
+      return false;
+    }
+    rate_ctrl_->UpdateRateControl(*rc_config);
+  }
   return true;
 }
 
@@ -942,6 +1088,33 @@ bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
         &packed_pps_param},
        {VAEncPackedHeaderDataBufferType, packed_pps.BytesInBuffer(),
         packed_pps.data()}});
+}
+
+void H264VaapiVideoEncoderDelegate::BitrateControlUpdate(
+    const BitstreamBufferMetadata& metadata) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!rate_ctrl_) {
+    return;
+  }
+
+  H264FrameParamsRTC frame_params{};
+  if (metadata.h264) {
+    frame_params.temporal_layer_id =
+        static_cast<int>(metadata.h264->temporal_idx);
+  } else {
+    frame_params.temporal_layer_id = 0;
+  }
+  frame_params.keyframe = metadata.key_frame;
+  frame_params.timestamp = metadata.timestamp;
+
+  DVLOGF(4) << "temporal_idx="
+            << (metadata.h264 ? metadata.h264->temporal_idx : 0)
+            << ", encoded chunk size=" << metadata.payload_size_bytes
+            << ", timestamp=" << metadata.timestamp
+            << ", keyframe=" << metadata.key_frame;
+
+  CHECK_NE(metadata.payload_size_bytes, 0u);
+  rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes, frame_params);
 }
 
 }  // namespace media
