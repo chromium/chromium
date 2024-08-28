@@ -55,6 +55,10 @@
   [self.selectionViewController didMoveToParentViewController:self];
 }
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+  return UIInterfaceOrientationMaskPortrait;
+}
+
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
