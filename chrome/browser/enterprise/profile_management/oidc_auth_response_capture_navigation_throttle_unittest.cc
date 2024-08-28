@@ -102,6 +102,14 @@ class OidcAuthResponseCaptureNavigationThrottleTest
           enable_generic_oidc()}});
   }
 
+  OidcAuthResponseCaptureNavigationThrottleTest(bool enable_oidc_interception,
+                                                bool enable_generic_oidc) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kOidcAuthProfileManagement, enable_oidc_interception},
+         {features::kEnableGenericOidcAuthProfileManagement,
+          enable_generic_oidc}});
+  }
+
   ~OidcAuthResponseCaptureNavigationThrottleTest() override = default;
 
   void SetUp() override {
@@ -593,5 +601,54 @@ INSTANTIATE_TEST_SUITE_P(
     OidcAuthResponseCaptureNavigationThrottleTest,
     testing::Combine(/*enable_oidc_interception=*/testing::Bool(),
                      /*enable_generic_oidc=*/testing::Bool()));
+
+// Test class dedicated to test if MaybeCreateThrottleFor creates throttle on
+// correct set of URLs.
+class OidcAuthNavigationThrottleCreationTest
+    : public OidcAuthResponseCaptureNavigationThrottleTest {
+ public:
+  OidcAuthNavigationThrottleCreationTest()
+      : OidcAuthResponseCaptureNavigationThrottleTest(
+            /*enable_oidc_interception=*/true,
+            /*enable_generic_oidc=*/false) {}
+
+  ~OidcAuthNavigationThrottleCreationTest() override = default;
+
+  void TestThrottleCreation(std::string url_string,
+                            bool expect_throttle_created) {
+    content::MockNavigationHandle navigation_handle(GURL(url_string),
+                                                    main_frame());
+    auto throttle =
+        OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
+            &navigation_handle);
+
+    ASSERT_EQ(throttle != nullptr, expect_throttle_created);
+  }
+};
+
+TEST_F(OidcAuthNavigationThrottleCreationTest, MsftThrottleCreated) {
+  TestThrottleCreation(
+      "https://login.microsoftonline.com/some-tenant-id/reprocess",
+      /*expect_throttle_created=*/true);
+  TestThrottleCreation("https://login.microsoftonline.com/common/reprocess",
+                       /*expect_throttle_created=*/true);
+  TestThrottleCreation("https://login.microsoftonline.com/some-tenant-id/login",
+                       /*expect_throttle_created=*/true);
+  TestThrottleCreation("https://login.microsoftonline.com/common/login",
+                       /*expect_throttle_created=*/true);
+  TestThrottleCreation(
+      "https://login.microsoftonline.com/common/reprocess?ctx=random-value",
+      /*expect_throttle_created=*/true);
+  TestThrottleCreation("https://login.microsoftonline.com/kmsi",
+                       /*expect_throttle_created=*/true);
+}
+
+TEST_F(OidcAuthNavigationThrottleCreationTest, MsftThrottleNotCreated) {
+  TestThrottleCreation(
+      "https://mismatchhost.microsoftonline.com/common/reprocess",
+      /*expect_throttle_created=*/false);
+  TestThrottleCreation("https://login.microsoftonline.com/common/somethingelse",
+                       /*expect_throttle_created=*/false);
+}
 
 }  // namespace profile_management
