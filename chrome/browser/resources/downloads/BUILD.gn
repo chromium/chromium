@@ -21,7 +21,6 @@ build_webui("build") {
     "bypass_warning_confirmation_interstitial.ts",
     "item.ts",
     "manager.ts",
-    "toolbar.ts",
   ]
 
   non_web_component_files = [
@@ -30,13 +29,19 @@ build_webui("build") {
     "downloads.ts",
     "icon_loader.ts",
     "search_service.ts",
+    "toolbar.html.ts",
+    "toolbar.ts",
   ]
+
+  css_files = [ "toolbar.css" ]
 
   icons_html_files = [ "icons.html" ]
 
   if (is_chrome_branded) {
     icons_html_files += [ "internal/icons.html" ]
   }
+
+  html_to_wrapper_template = "detect"
 
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/downloads:mojo_bindings_ts__generator" ]
@@ -47,6 +52,7 @@ build_webui("build") {
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

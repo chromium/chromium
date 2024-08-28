@@ -5,6 +5,7 @@
 import type {CrToastManagerElement, DownloadsToolbarElement} from 'chrome://downloads/downloads.js';
 import {SearchService} from 'chrome://downloads/downloads.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createDownload} from './test_support.js';
 
@@ -40,13 +41,15 @@ suite('toolbar tests', function() {
     assertFalse(toolbar.spinnerActive);
   });
 
-  test('clear all shown/hidden', () => {
-    const clearAll =
-        toolbar.shadowRoot!.querySelector<HTMLButtonElement>('#clear-all')!;
+  test('clear all shown/hidden', async () => {
+    const clearAll = toolbar.$.clearAll;
     assertTrue(clearAll.hidden);
     toolbar.hasClearableDownloads = true;
+    await microtasksFinished();
     assertFalse(clearAll.hidden);
+
     toolbar.$.toolbar.getSearchField().setValue('test');
+    await microtasksFinished();
     assertTrue(clearAll.hidden);
   });
 
@@ -54,7 +57,7 @@ suite('toolbar tests', function() {
     assertFalse(toastManager.isToastOpen);
     assertFalse(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.shadowRoot!.querySelector<HTMLButtonElement>('#clear-all')!.click();
+    toolbar.$.clearAll.click();
     assertTrue(toastManager.isToastOpen);
     assertTrue(toastManager.slottedHidden);
   });
@@ -67,7 +70,7 @@ suite('toolbar tests', function() {
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.shadowRoot!.querySelector<HTMLButtonElement>('#clear-all')!.click();
+    toolbar.$.clearAll.click();
     assertTrue(toastManager.isToastOpen);
     assertTrue(toastManager.slottedHidden);
   });
@@ -81,7 +84,7 @@ suite('toolbar tests', function() {
     toastManager.show('', /* hideSlotted= */ true);
     assertTrue(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.shadowRoot!.querySelector<HTMLButtonElement>('#clear-all')!.click();
+    toolbar.$.clearAll.click();
     assertTrue(toastManager.isToastOpen);
     assertFalse(toastManager.slottedHidden);
   });

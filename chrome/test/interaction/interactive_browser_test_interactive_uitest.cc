@@ -426,8 +426,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        SendAcceleratorToWebContents) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kClearAllClickEvent);
-  const DeepQuery kClearAllDownloadsButton = {
-      "downloads-manager", "downloads-toolbar", "#clear-all"};
+  const DeepQuery kClearAllDownloadsButton = {"downloads-manager",
+                                              "downloads-toolbar", "#clearAll"};
   const ui::Accelerator kClickWebButtonAccelerator(ui::KeyboardCode::VKEY_SPACE,
                                                    ui::EF_NONE);
   StateChange clear_all_downloads_click;
