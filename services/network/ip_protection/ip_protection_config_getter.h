@@ -9,8 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/proxy_chain.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 
 namespace network {
 // Interface used by the network service to get the IP Protection configuration
@@ -19,9 +19,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigGetter {
  public:
   virtual ~IpProtectionConfigGetter() = default;
 
-  using TryGetAuthTokensCallback =
-      base::OnceCallback<void(std::optional<std::vector<BlindSignedAuthToken>>,
-                              std::optional<::base::Time>)>;
+  using TryGetAuthTokensCallback = base::OnceCallback<void(
+      std::optional<std::vector<ip_protection::BlindSignedAuthToken>>,
+      std::optional<::base::Time>)>;
 
   // Try to get a batch of IP Protection tokens.
   //
@@ -38,12 +38,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigGetter {
   // base::SequencedTaskRunnerHandle::Get() at the time of construction of
   // this object).
   virtual void TryGetAuthTokens(uint32_t batch_size,
-                                IpProtectionProxyLayer proxy_layer,
+                                ip_protection::ProxyLayer proxy_layer,
                                 TryGetAuthTokensCallback callback) = 0;
 
   using GetProxyListCallback =
       base::OnceCallback<void(std::optional<std::vector<::net::ProxyChain>>,
-                              std::optional<GeoHint> geo_hint)>;
+                              std::optional<ip_protection::GeoHint> geo_hint)>;
 
   // Get the list of IP Protection proxy chains.
   //

@@ -16,9 +16,9 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_config_getter.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 
 namespace network {
@@ -44,15 +44,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
   explicit IpProtectionTokenCacheManagerImpl(
       IpProtectionConfigCache* config_cache,
       IpProtectionConfigGetter* config_getter,
-      IpProtectionProxyLayer proxy_layer,
+      ip_protection::ProxyLayer proxy_layer,
       bool disable_cache_management_for_testing = false);
   ~IpProtectionTokenCacheManagerImpl() override;
 
   // IpProtectionTokenCacheManager implementation.
   bool IsAuthTokenAvailable() override;
   bool IsAuthTokenAvailable(const std::string& geo_id) override;
-  std::optional<BlindSignedAuthToken> GetAuthToken() override;
-  std::optional<BlindSignedAuthToken> GetAuthToken(
+  std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken() override;
+  std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken(
       const std::string& geo_id) override;
   std::string CurrentGeo() const override;
   void SetCurrentGeo(const std::string& geo_id) override;
@@ -94,9 +94,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
   bool fetching_auth_tokens_for_testing() { return fetching_auth_tokens_; }
 
  private:
-  void OnGotAuthTokens(base::TimeTicks attempt_start_time_for_metrics,
-                       std::optional<std::vector<BlindSignedAuthToken>> tokens,
-                       std::optional<base::Time> try_again_after);
+  void OnGotAuthTokens(
+      base::TimeTicks attempt_start_time_for_metrics,
+      std::optional<std::vector<ip_protection::BlindSignedAuthToken>> tokens,
+      std::optional<base::Time> try_again_after);
   void RemoveExpiredTokens();
   void MeasureTokenRates();
   void MaybeRefillCache();
@@ -124,13 +125,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
 
   // Map for caches of tokens keyed by geo id. For each geo entry, tokens are
   // sorted by their expiration time.
-  std::map<std::string, std::deque<BlindSignedAuthToken>> cache_by_geo_;
+  std::map<std::string, std::deque<ip_protection::BlindSignedAuthToken>>
+      cache_by_geo_;
 
   // Source of proxy list, when needed.
   raw_ptr<IpProtectionConfigGetter> config_getter_;
 
   // The proxy layer which the cache of tokens will be used for.
-  IpProtectionProxyLayer proxy_layer_;
+  ip_protection::ProxyLayer proxy_layer_;
 
   // Pointer to the `IpProtectionConfigCache` that holds the proxy list and
   // tokens. Required to observe geo changes from retrieved tokens.

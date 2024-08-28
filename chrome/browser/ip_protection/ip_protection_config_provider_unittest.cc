@@ -38,6 +38,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
+using ::ip_protection::BlindSignedAuthToken;
+using ::ip_protection::GeoHint;
+
 namespace {
 
 constexpr char kTryGetAuthTokensResultHistogram[] =
@@ -233,7 +236,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
 
   // Expect that the TryGetAuthTokens call returned the given tokens.
   void ExpectTryGetAuthTokensResult(
-      std::vector<network::BlindSignedAuthToken> bsa_tokens) {
+      std::vector<BlindSignedAuthToken> bsa_tokens) {
     EXPECT_EQ(std::get<0>(tokens_future_.Get()), bsa_tokens);
   }
 
@@ -259,12 +262,12 @@ class IpProtectionConfigProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::TestFuture<
-      const std::optional<std::vector<network::BlindSignedAuthToken>>&,
+      const std::optional<std::vector<BlindSignedAuthToken>>&,
       std::optional<base::Time>>
       tokens_future_;
 
   base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
-                         const std::optional<network::GeoHint>&>
+                         const std::optional<GeoHint>&>
       proxy_list_future_;
 
   // Test environment for IdentityManager. This must come after the
@@ -275,7 +278,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
   base::Time expiration_time_;
 
   // A convenient geo hint for fake tokens.
-  network::GeoHint geo_hint_;
+  GeoHint geo_hint_;
 
   base::HistogramTester histogram_tester_;
 
@@ -308,7 +311,7 @@ TEST_F(IpProtectionConfigProviderTest, Success) {
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   EXPECT_EQ(bsa_->num_tokens(), 2);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
-  std::vector<network::BlindSignedAuthToken> expected;
+  std::vector<BlindSignedAuthToken> expected;
   expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_)
@@ -373,7 +376,7 @@ TEST_F(IpProtectionConfigProviderTest, MalformedTokens) {
 
 TEST_F(IpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  network::GeoHint geo_hint_country;
+  GeoHint geo_hint_country;
   geo_hint_country.country_code = "US";
   bsa_->set_tokens(
       {ip_protection::IpProtectionConfigProviderHelper::
@@ -389,7 +392,7 @@ TEST_F(IpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   EXPECT_EQ(bsa_->num_tokens(), 2);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
-  std::vector<network::BlindSignedAuthToken> expected;
+  std::vector<BlindSignedAuthToken> expected;
   expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_country)
@@ -408,7 +411,7 @@ TEST_F(IpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
 
 TEST_F(IpProtectionConfigProviderTest, TokenHasMissingGeoHint) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  network::GeoHint geo_hint;
+  GeoHint geo_hint;
   bsa_->set_tokens({ip_protection::IpProtectionConfigProviderHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint)});
@@ -524,7 +527,7 @@ TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   EXPECT_EQ(bsa_->num_tokens(), 2);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
-  std::vector<network::BlindSignedAuthToken> expected;
+  std::vector<BlindSignedAuthToken> expected;
   expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_)
@@ -642,7 +645,7 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 
   base::test::TestFuture<
-      const std::optional<std::vector<network::BlindSignedAuthToken>>&,
+      const std::optional<std::vector<BlindSignedAuthToken>>&,
       std::optional<base::Time>>
       tokens_future;
   getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB,
@@ -664,9 +667,8 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
                             tokens_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now());
-  const std::optional<std::vector<network::BlindSignedAuthToken>>& tokens =
-      tokens_future
-          .Get<std::optional<std::vector<network::BlindSignedAuthToken>>>();
+  const std::optional<std::vector<BlindSignedAuthToken>>& tokens =
+      tokens_future.Get<std::optional<std::vector<BlindSignedAuthToken>>>();
   ASSERT_TRUE(tokens);
 }
 
@@ -807,7 +809,7 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
 
   auto call_get_proxy_list = [this](bool expect_success) {
     base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
-                           const std::optional<network::GeoHint>&>
+                           const std::optional<GeoHint>&>
         future;
     this->getter_->GetProxyList(future.GetCallback());
     ASSERT_TRUE(future.Wait());
@@ -909,7 +911,7 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
 
 // Do a basic check of the token formats.
 TEST_F(IpProtectionConfigProviderTest, TokenFormat) {
-  network::BlindSignedAuthToken result =
+  BlindSignedAuthToken result =
       ip_protection::IpProtectionConfigProviderHelper::
           CreateMockBlindSignedAuthTokenForTesting("single-use-1",
                                                    expiration_time_, geo_hint_)

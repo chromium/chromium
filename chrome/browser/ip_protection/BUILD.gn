@@ -89,6 +89,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/test:test_support",
+    "//components/ip_protection:ip_protection",
     "//components/privacy_sandbox:features",
     "//components/signin/public/identity_manager:identity_manager",
     "//components/signin/public/identity_manager:test_support",

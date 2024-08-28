@@ -13,9 +13,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/features.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 
 namespace network {
@@ -62,10 +62,12 @@ constexpr char kDefaultGeo[] = "EARTH";
 
 }  // namespace
 
+using ::ip_protection::BlindSignedAuthToken;
+
 IpProtectionTokenCacheManagerImpl::IpProtectionTokenCacheManagerImpl(
     IpProtectionConfigCache* config_cache,
     IpProtectionConfigGetter* config_getter,
-    IpProtectionProxyLayer proxy_layer,
+    ip_protection::ProxyLayer proxy_layer,
     bool disable_cache_management_for_testing)
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(
@@ -449,9 +451,9 @@ void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
     auto spend_rate = tokens_spent_ * denominator / interval_ms;
     std::string proxy_layer = [&] {
       switch (proxy_layer_) {
-        case IpProtectionProxyLayer::kProxyA:
+        case ip_protection::ProxyLayer::kProxyA:
           return "ProxyA";
-        case IpProtectionProxyLayer::kProxyB:
+        case ip_protection::ProxyLayer::kProxyB:
           return "ProxyB";
       }
     }();

@@ -28,6 +28,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_thread.h"
@@ -193,9 +194,9 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     return;
   }
 
-  std::vector<network::BlindSignedAuthToken> bsa_tokens;
+  std::vector<ip_protection::BlindSignedAuthToken> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
-    std::optional<network::BlindSignedAuthToken> converted_token =
+    std::optional<ip_protection::BlindSignedAuthToken> converted_token =
         ip_protection::IpProtectionConfigProviderHelper::
             CreateBlindSignedAuthToken(token);
     if (!converted_token.has_value() || converted_token->token.empty()) {
@@ -221,7 +222,7 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
 }
 
 void AwIpProtectionConfigProvider::TryGetAuthTokensComplete(
-    std::optional<std::vector<network::BlindSignedAuthToken>> bsa_tokens,
+    std::optional<std::vector<ip_protection::BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
     AwIpProtectionTryGetAuthTokensResult result) {
   if (result == AwIpProtectionTryGetAuthTokensResult::kSuccess) {

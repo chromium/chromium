@@ -15,12 +15,12 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_config_getter.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 
@@ -39,7 +39,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
 
   // IpProtectionConfigCache implementation.
   bool AreAuthTokensAvailable() override;
-  std::optional<BlindSignedAuthToken> GetAuthToken(size_t chain_index) override;
+  std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken(
+      size_t chain_index) override;
   void InvalidateTryAgainAfterTime() override;
   bool IsProxyListAvailable() override;
   void QuicProxiesFailed() override;
@@ -47,11 +48,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   void RequestRefreshProxyList() override;
   void GeoObserved(const std::string& geo_id) override;
   void SetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer proxy_layer,
+      ip_protection::ProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override;
   IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer proxy_layer) override;
+      ip_protection::ProxyLayer proxy_layer) override;
   void SetIpProtectionProxyListManagerForTesting(
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
       override;
@@ -70,7 +71,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager_;
 
   // Proxy layer managers for cache of blind-signed auth tokens.
-  std::map<IpProtectionProxyLayer,
+  std::map<ip_protection::ProxyLayer,
            std::unique_ptr<IpProtectionTokenCacheManager>>
       ipp_token_cache_managers_;
 

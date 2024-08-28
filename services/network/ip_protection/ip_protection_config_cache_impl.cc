@@ -11,12 +11,12 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
@@ -81,13 +81,13 @@ IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
         std::make_unique<IpProtectionProxyListManagerImpl>(this,
                                                            *config_getter_);
 
-    ipp_token_cache_managers_[IpProtectionProxyLayer::kProxyA] =
+    ipp_token_cache_managers_[ip_protection::ProxyLayer::kProxyA] =
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
-            this, config_getter_.get(), IpProtectionProxyLayer::kProxyA);
+            this, config_getter_.get(), ip_protection::ProxyLayer::kProxyA);
 
-    ipp_token_cache_managers_[IpProtectionProxyLayer::kProxyB] =
+    ipp_token_cache_managers_[ip_protection::ProxyLayer::kProxyB] =
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
-            this, config_getter_.get(), IpProtectionProxyLayer::kProxyB);
+            this, config_getter_.get(), ip_protection::ProxyLayer::kProxyB);
   }
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
@@ -117,17 +117,17 @@ bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
   return all_caches_have_tokens;
 }
 
-std::optional<BlindSignedAuthToken> IpProtectionConfigCacheImpl::GetAuthToken(
-    size_t chain_index) {
-  std::optional<BlindSignedAuthToken> result;
+std::optional<ip_protection::BlindSignedAuthToken>
+IpProtectionConfigCacheImpl::GetAuthToken(size_t chain_index) {
+  std::optional<ip_protection::BlindSignedAuthToken> result;
 
   // If the proxy list is empty, there cannot be any matching tokens.
   if (!IsProxyListAvailable() || ipp_token_cache_managers_.empty()) {
     return result;
   }
 
-  auto proxy_layer = chain_index == 0 ? IpProtectionProxyLayer::kProxyA
-                                      : IpProtectionProxyLayer::kProxyB;
+  auto proxy_layer = chain_index == 0 ? ip_protection::ProxyLayer::kProxyA
+                                      : ip_protection::ProxyLayer::kProxyB;
   if (ipp_token_cache_managers_.count(proxy_layer) > 0) {
     result = ipp_token_cache_managers_[proxy_layer]->GetAuthToken(
         ipp_proxy_list_manager_->CurrentGeo());
@@ -142,14 +142,14 @@ void IpProtectionConfigCacheImpl::InvalidateTryAgainAfterTime() {
 }
 
 void IpProtectionConfigCacheImpl::SetIpProtectionTokenCacheManagerForTesting(
-    IpProtectionProxyLayer proxy_layer,
+    ip_protection::ProxyLayer proxy_layer,
     std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager) {
   ipp_token_cache_managers_[proxy_layer] = std::move(ipp_token_cache_manager);
 }
 
 IpProtectionTokenCacheManager*
 IpProtectionConfigCacheImpl::GetIpProtectionTokenCacheManagerForTesting(
-    IpProtectionProxyLayer proxy_layer) {
+    ip_protection::ProxyLayer proxy_layer) {
   return ipp_token_cache_managers_[proxy_layer].get();
 }
 

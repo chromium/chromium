@@ -353,9 +353,9 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     return;
   }
 
-  std::vector<network::BlindSignedAuthToken> bsa_tokens;
+  std::vector<ip_protection::BlindSignedAuthToken> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
-    std::optional<network::BlindSignedAuthToken> converted_token =
+    std::optional<ip_protection::BlindSignedAuthToken> converted_token =
         ip_protection::IpProtectionConfigProviderHelper::
             CreateBlindSignedAuthToken(token);
     if (!converted_token.has_value() || converted_token->token.empty()) {
@@ -374,7 +374,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
 }
 
 void IpProtectionConfigProvider::TryGetAuthTokensComplete(
-    std::optional<std::vector<network::BlindSignedAuthToken>> bsa_tokens,
+    std::optional<std::vector<ip_protection::BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
     TryGetAuthTokensResult result,
     std::optional<base::TimeDelta> duration) {

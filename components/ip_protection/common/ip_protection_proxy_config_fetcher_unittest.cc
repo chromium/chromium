@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,11 +84,11 @@ class IpProtectionProxyConfigFetcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IpProtectionProxyConfigFetcher> fetcher_;
   base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
-                         const std::optional<network::GeoHint>&>
+                         const std::optional<ip_protection::GeoHint>&>
       proxy_list_future_;
 
   // A convenient geo hint for fake tokens.
-  network::GeoHint geo_hint_;
+  ip_protection::GeoHint geo_hint_;
 };
 
 TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyChains) {
@@ -279,7 +280,7 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
                                                           2)};
 
   // Country level geo only.
-  network::GeoHint exp_geo_hint;
+  ip_protection::GeoHint exp_geo_hint;
   exp_geo_hint.country_code = "US";
 
   // Extract tuple elements for individual comparison.

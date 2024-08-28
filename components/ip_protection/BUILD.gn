@@ -58,6 +58,7 @@ source_set("browser") {
 
   deps = [
     ":get_proxy_config_proto",
+    ":ip_protection",
     "//base",
     "//build:branding_buildflags",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",

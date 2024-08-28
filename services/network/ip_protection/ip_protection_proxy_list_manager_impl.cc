@@ -10,10 +10,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 
 namespace network {
@@ -126,7 +126,7 @@ void IpProtectionProxyListManagerImpl::RefreshProxyList() {
 void IpProtectionProxyListManagerImpl::OnGotProxyList(
     const base::TimeTicks refresh_start_time_for_metrics,
     const std::optional<std::vector<net::ProxyChain>> proxy_list,
-    const std::optional<GeoHint> geo_hint) {
+    const std::optional<ip_protection::GeoHint> geo_hint) {
   fetching_proxy_list_ = false;
 
   base::UmaHistogramEnumeration(

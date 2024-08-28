@@ -10,24 +10,27 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 
 namespace network {
-// GeoId is a string representation of a GeoHint. A GeoId is constructed by
-// concatenating values of the GeoHint in order of increasing granularity.
-// If a finer granularity is missing, a trailing commas is not appended.
-// Ex. GeoHint{"US", "US-CA", "MOUNTAIN VIEW"} => "US,US-CA,MOUNTAIN VIEW".
+// GeoId is a string representation of a ip_protection::GeoHint. A GeoId is
+// constructed by concatenating values of the ip_protection::GeoHint in order of
+// increasing granularity. If a finer granularity is missing, a trailing commas
+// is not appended.
+// Ex. GeoHint{"US", "US-CA", "MOUNTAIN VIEW"} => "US,US-CA,MOUNTAIN VIEW"
 // Ex. GeoHint{"US"} => "US"
 
-// Returns a formatted version of the GeoHint. In the case
+// Returns a formatted version of the ip_protection::GeoHint. In the case
 // of a nullptr or empty `GeoHintPtr`, an empty string will be returned.
 COMPONENT_EXPORT(NETWORK_SERVICE)
-std::string GetGeoIdFromGeoHint(std::optional<GeoHint> geo_hint);
+std::string GetGeoIdFromGeoHint(std::optional<ip_protection::GeoHint> geo_hint);
 
-// Constructs a GeoHint from a GeoId string. The function requires a
-// correctly formatted GeoId string. It DOES NOT handle invalid formats.
+// Constructs a ip_protection::GeoHint from a GeoId string. The function
+// requires a correctly formatted GeoId string. It DOES NOT handle invalid
+// formats.
 COMPONENT_EXPORT(NETWORK_SERVICE)
-std::optional<GeoHint> GetGeoHintFromGeoIdForTesting(const std::string& geo_id);
+std::optional<ip_protection::GeoHint> GetGeoHintFromGeoIdForTesting(
+    const std::string& geo_id);
 
 }  // namespace network
 

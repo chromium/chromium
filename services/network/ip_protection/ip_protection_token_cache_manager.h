@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_config_getter.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 
 namespace network {
 
@@ -39,14 +39,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManager {
   // Returns `nullopt` if no token is available, whether for a transient or
   // permanent reason. This method may return `nullopt` even if
   // `IsAuthTokenAvailable()` recently returned `true`.
-  virtual std::optional<BlindSignedAuthToken> GetAuthToken() = 0;
+  virtual std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken() = 0;
 
   // Get a token, if one is available.
   //
   // Returns `nullopt` if no token is available, whether for a transient or
   // permanent reason. This method may return `nullopt` even if
   // `IsAuthTokenAvailable()` recently returned `true`.
-  virtual std::optional<BlindSignedAuthToken> GetAuthToken(
+  virtual std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken(
       const std::string& geo_id) = 0;
 
   // Invalidate any previous instruction that token requests should not be made

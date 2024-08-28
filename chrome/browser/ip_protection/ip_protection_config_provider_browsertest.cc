@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -39,6 +40,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #endif
+
+using ::ip_protection::BlindSignedAuthToken;
+using ::ip_protection::GeoHint;
 
 namespace {
 class ScopedIpProtectionFeatureList {
@@ -62,7 +66,7 @@ class IpProtectionConfigGetterInterceptor
   IpProtectionConfigGetterInterceptor(IpProtectionConfigProvider* getter,
                                       std::string token,
                                       base::Time expiration,
-                                      network::GeoHint geo_hint,
+                                      GeoHint geo_hint,
                                       bool should_intercept = true)
       : getter_(getter),
         receiver_id_(getter_->receiver_id_for_testing()),
@@ -89,9 +93,9 @@ class IpProtectionConfigGetterInterceptor
                         network::mojom::IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     if (should_intercept_) {
-      std::vector<network::BlindSignedAuthToken> tokens;
+      std::vector<BlindSignedAuthToken> tokens;
       for (uint32_t i = 0; i < batch_size; i++) {
-        network::BlindSignedAuthToken token = {
+        BlindSignedAuthToken token = {
             .token = token_, .expiration = expiration_, .geo_hint = geo_hint_};
         tokens.push_back(std::move(token));
       }
@@ -106,7 +110,7 @@ class IpProtectionConfigGetterInterceptor
 
   base::Time expiration() const { return expiration_; }
 
-  network::GeoHint geo_hint() const { return geo_hint_; }
+  GeoHint geo_hint() const { return geo_hint_; }
 
   void EnableInterception() { should_intercept_ = true; }
   void DisableInterception() { should_intercept_ = false; }
@@ -120,7 +124,7 @@ class IpProtectionConfigGetterInterceptor
   mojo::ReceiverId receiver_id_;
   std::string token_;
   base::Time expiration_;
-  network::GeoHint geo_hint_;
+  GeoHint geo_hint_;
   bool should_intercept_;
 };
 
@@ -148,7 +152,7 @@ class IpProtectionConfigProviderBrowserTest : public PlatformBrowserTest {
 
     std::string token = "best_token_ever";
     base::Time expiration = base::Time::Now() + base::Seconds(12345);
-    network::GeoHint geo_hint = {
+    GeoHint geo_hint = {
         .country_code = "US", .iso_region = "US-AL", .city_name = "ALABASTER"};
     main_profile_auth_token_getter_interceptor_ =
         std::make_unique<IpProtectionConfigGetterInterceptor>(
@@ -224,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
 
   std::string token = "best_token_ever";
   base::Time expiration = base::Time::Now() + base::Seconds(12345);
-  network::GeoHint geo_hint = {
+  GeoHint geo_hint = {
       .country_code = "US", .iso_region = "US-AL", .city_name = "ALABASTER"};
   ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
   auto auth_token_getter_interceptor_ =
@@ -234,14 +238,14 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   // To test that the Network Service can successfully request tokens, use the
   // test method on NetworkContext that will have it request tokens and then
   // send back the first token that it receives.
-  base::test::TestFuture<const std::optional<network::BlindSignedAuthToken>&,
+  base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
                          std::optional<base::Time>>
       future;
   auto* ipp_proxy_delegate = getter->last_remote_for_testing();
   ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
-  const std::optional<network::BlindSignedAuthToken>& result =
-      future.Get<std::optional<network::BlindSignedAuthToken>>();
+  const std::optional<BlindSignedAuthToken>& result =
+      future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(result);
   EXPECT_EQ(result->token, token);
   // Expiration is "fuzzed" backward in time, so expect less-than.
@@ -264,8 +268,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   ASSERT_NE(incognito_ipp_proxy_delegate, ipp_proxy_delegate);
   incognito_ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
-  const std::optional<network::BlindSignedAuthToken>& incognito_result =
-      future.Get<std::optional<network::BlindSignedAuthToken>>();
+  const std::optional<BlindSignedAuthToken>& incognito_result =
+      future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(incognito_result);
   EXPECT_EQ(incognito_result->token, token);
   EXPECT_LT(incognito_result->expiration, expiration);
@@ -274,8 +278,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   future.Clear();
   ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
-  const std::optional<network::BlindSignedAuthToken>& second_attempt_result =
-      future.Get<std::optional<network::BlindSignedAuthToken>>();
+  const std::optional<BlindSignedAuthToken>& second_attempt_result =
+      future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(second_attempt_result);
   EXPECT_EQ(second_attempt_result->token, token);
   EXPECT_LT(second_attempt_result->expiration, expiration);
@@ -395,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderIdentityBrowserTest,
   // Request tokens from both contexts and ensure that the "don't retry"
   // cooldown time is returned. The provider should do this itself, so the
   // interceptors won't be used for this part.
-  base::test::TestFuture<const std::optional<network::BlindSignedAuthToken>&,
+  base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
                          std::optional<base::Time>>
       future;
   main_profile_ipp_proxy_delegate_->VerifyIpProtectionConfigGetterForTesting(
@@ -453,9 +457,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderIdentityBrowserTest,
   future.Clear();
   main_profile_ipp_proxy_delegate_->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
-  const std::optional<network::BlindSignedAuthToken>&
-      main_profile_third_attempt_result =
-          future.Get<std::optional<network::BlindSignedAuthToken>>();
+  const std::optional<BlindSignedAuthToken>& main_profile_third_attempt_result =
+      future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(main_profile_third_attempt_result);
   EXPECT_EQ(main_profile_third_attempt_result->token,
             main_profile_auth_token_getter_interceptor_->token());
@@ -465,9 +468,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderIdentityBrowserTest,
   future.Clear();
   incognito_profile_ipp_proxy_delegate_
       ->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
-  const std::optional<network::BlindSignedAuthToken>&
+  const std::optional<BlindSignedAuthToken>&
       incognito_profile_third_attempt_result =
-          future.Get<std::optional<network::BlindSignedAuthToken>>();
+          future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(incognito_profile_third_attempt_result);
   EXPECT_EQ(incognito_profile_third_attempt_result->token,
             incognito_profile_auth_token_getter_interceptor_->token());
@@ -516,10 +519,10 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderUserSettingBrowserTest,
 
   // Request tokens from both contexts and ensure that the "don't retry"
   // cooldown time is returned.
-  base::test::TestFuture<const std::optional<network::BlindSignedAuthToken>&,
+  base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
                          std::optional<base::Time>>
       main_profile_verification_future;
-  base::test::TestFuture<const std::optional<network::BlindSignedAuthToken>&,
+  base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
                          std::optional<base::Time>>
       incognito_profile_verification_future;
 
@@ -568,14 +571,14 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderUserSettingBrowserTest,
       ->VerifyIpProtectionConfigGetterForTesting(
           incognito_profile_verification_future.GetCallback());
 
-  const std::optional<network::BlindSignedAuthToken>&
+  const std::optional<BlindSignedAuthToken>&
       main_profile_second_attempt_result =
           main_profile_verification_future
-              .Get<std::optional<network::BlindSignedAuthToken>>();
-  const std::optional<network::BlindSignedAuthToken>&
+              .Get<std::optional<BlindSignedAuthToken>>();
+  const std::optional<BlindSignedAuthToken>&
       incognito_profile_second_attempt_result =
           incognito_profile_verification_future
-              .Get<std::optional<network::BlindSignedAuthToken>>();
+              .Get<std::optional<BlindSignedAuthToken>>();
 
   ASSERT_TRUE(main_profile_second_attempt_result);
   ASSERT_TRUE(incognito_profile_second_attempt_result);

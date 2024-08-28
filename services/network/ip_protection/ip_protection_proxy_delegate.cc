@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
@@ -22,7 +23,6 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
@@ -294,7 +294,7 @@ net::Error IpProtectionProxyDelegate::OnBeforeTunnelRequest(
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
   };
   if (proxy_chain.is_for_ip_protection()) {
-    std::optional<BlindSignedAuthToken> token =
+    std::optional<ip_protection::BlindSignedAuthToken> token =
         ipp_config_cache_->GetAuthToken(chain_index);
     if (token) {
       vlog("adding auth token");
@@ -336,7 +336,7 @@ void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
       static_cast<IpProtectionTokenCacheManagerImpl*>(
           ipp_config_cache_
               ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  IpProtectionProxyLayer::kProxyA));
+                  ip_protection::ProxyLayer::kProxyA));
   CHECK(ipp_token_cache_manager_impl);
 
   // If active cache management is enabled (the default), disable it and do a
@@ -418,7 +418,7 @@ void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
       static_cast<IpProtectionTokenCacheManagerImpl*>(
           ipp_config_cache_
               ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  IpProtectionProxyLayer::kProxyA));
+                  ip_protection::ProxyLayer::kProxyA));
   auto* ipp_proxy_list_manager_impl =
       static_cast<IpProtectionProxyListManagerImpl*>(
           ipp_config_cache_
@@ -430,7 +430,7 @@ void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
               net::ProxyServer::SCHEME_HTTPS, "proxy-a", std::nullopt)})},
       network::GetGeoHintFromGeoIdForTesting(
           ipp_token_cache_manager_impl->CurrentGeo()));
-  std::optional<BlindSignedAuthToken> result =
+  std::optional<ip_protection::BlindSignedAuthToken> result =
       ipp_config_cache_->GetAuthToken(0);  // kProxyA.
   if (result.has_value()) {
     std::move(callback).Run(std::move(result.value()), std::nullopt);

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -33,9 +34,8 @@ class IpProtectionConfigProviderHelper {
   virtual ~IpProtectionConfigProviderHelper() = default;
 
   // Creates a blind-signed auth token by converting token fetched using the
-  // `quiche::BlindSignAuth` library to a
-  // `network::BlindSignedAuthToken`.
-  static std::optional<network::BlindSignedAuthToken>
+  // `quiche::BlindSignAuth` library to a `ip_protection::BlindSignedAuthToken`.
+  static std::optional<ip_protection::BlindSignedAuthToken>
   CreateBlindSignedAuthToken(const quiche::BlindSignToken& bsa_token);
 
   // Creates a `quiche::BlindSignToken()` in the format that the BSA library
@@ -43,17 +43,18 @@ class IpProtectionConfigProviderHelper {
   static quiche::BlindSignToken CreateBlindSignTokenForTesting(
       std::string token_value,
       base::Time expiration,
-      const network::GeoHint& geo_hint);
+      const ip_protection::GeoHint& geo_hint);
 
   static privacy::ppn::PrivacyPassTokenData CreatePrivacyPassTokenForTesting(
       std::string token_value);
 
   // Converts a mock token value and expiration time into the struct that will
   // be passed to the network service.
-  static std::optional<network::BlindSignedAuthToken>
-  CreateMockBlindSignedAuthTokenForTesting(std::string token_value,
-                                           base::Time expiration,
-                                           const network::GeoHint& geo_hint);
+  static std::optional<ip_protection::BlindSignedAuthToken>
+  CreateMockBlindSignedAuthTokenForTesting(
+      std::string token_value,
+      base::Time expiration,
+      const ip_protection::GeoHint& geo_hint);
 
   // Service types used for GetProxyConfigRequest.
   static constexpr char kChromeIpBlinding[] = "chromeipblinding";

@@ -75,7 +75,7 @@ void IpProtectionProxyConfigFetcher::OnGetProxyConfigCompleted(
 
   std::vector<net::ProxyChain> proxy_list =
       GetProxyListFromProxyConfigResponse(response.value());
-  std::optional<network::GeoHint> geo_hint =
+  std::optional<ip_protection::GeoHint> geo_hint =
       GetGeoHintFromProxyConfigResponse(response.value());
   std::move(callback).Run(std::move(proxy_list), std::move(geo_hint));
 }
@@ -155,14 +155,14 @@ IpProtectionProxyConfigFetcher::GetProxyListFromProxyConfigResponse(
   return proxy_list;
 }
 
-std::optional<network::GeoHint>
+std::optional<ip_protection::GeoHint>
 IpProtectionProxyConfigFetcher::GetGeoHintFromProxyConfigResponse(
     ip_protection::GetProxyConfigResponse& response) {
   if (!response.has_geo_hint()) {
     return std::nullopt;  // No GeoHint available in the response.
   }
 
-  return std::make_optional<network::GeoHint>(
+  return std::make_optional<ip_protection::GeoHint>(
       {.country_code = response.geo_hint().country_code(),
        .iso_region = response.geo_hint().iso_region(),
        .city_name = response.geo_hint().city_name()});

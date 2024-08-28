@@ -8,11 +8,12 @@
 #include <optional>
 #include <string>
 
-#include "services/network/ip_protection/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 
 namespace network {
 
-std::string GetGeoIdFromGeoHint(const std::optional<GeoHint> geo_hint) {
+std::string GetGeoIdFromGeoHint(
+    const std::optional<ip_protection::GeoHint> geo_hint) {
   if (!geo_hint.has_value()) {
     return "";  // If nullopt, return empty string.
   }
@@ -28,12 +29,13 @@ std::string GetGeoIdFromGeoHint(const std::optional<GeoHint> geo_hint) {
   return geo_id;
 }
 
-std::optional<GeoHint> GetGeoHintFromGeoIdForTesting(
+// TODO(crbug.com/40176497): IN-TEST does not work for multi-line declarations.
+std::optional<ip_protection::GeoHint> GetGeoHintFromGeoIdForTesting(  // IN-TEST
     const std::string& geo_id) {
   if (geo_id.empty()) {
     return std::nullopt;  // Return nullopt if the geo_id is empty.
   }
-  GeoHint geo_hint;
+  ip_protection::GeoHint geo_hint;
   std::stringstream geo_id_stream(geo_id);
   std::string segment;
 

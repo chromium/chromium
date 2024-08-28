@@ -16,9 +16,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -72,7 +72,7 @@ class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
   bool IsAvailable() override { return true; }
 
   void TryGetAuthTokens(uint32_t batch_size,
-                        IpProtectionProxyLayer proxy_layer,
+                        ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     NOTREACHED();
   }
@@ -99,17 +99,17 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
 
   // Dummy implementations for functions not tested in this file.
   bool AreAuthTokensAvailable() override { return false; }
-  std::optional<BlindSignedAuthToken> GetAuthToken(
+  std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {
     return std::nullopt;
   }
   void InvalidateTryAgainAfterTime() override {}
   void SetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer proxy_layer,
+      ip_protection::ProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override {}
   IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer proxy_layer) override {
+      ip_protection::ProxyLayer proxy_layer) override {
     return nullptr;
   }
   void SetIpProtectionProxyListManagerForTesting(

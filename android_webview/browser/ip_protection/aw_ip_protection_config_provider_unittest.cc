@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "components/ip_protection/android/blind_sign_message_android_impl.h"
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
 #include "content/public/browser/browser_thread.h"
@@ -93,7 +94,7 @@ class AwIpProtectionConfigProviderTest : public testing::Test {
 
   // Expect that the TryGetAuthTokens call returned the given tokens.
   void ExpectTryGetAuthTokensResult(
-      std::vector<network::BlindSignedAuthToken> bsa_tokens) {
+      std::vector<ip_protection::BlindSignedAuthToken> bsa_tokens) {
     EXPECT_EQ(std::get<0>(tokens_future_.Get()), bsa_tokens);
     // Clear future so it can be reused and accept new tokens.
     tokens_future_.Clear();
@@ -113,20 +114,20 @@ class AwIpProtectionConfigProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::TestFuture<
-      const std::optional<std::vector<network::BlindSignedAuthToken>>&,
+      const std::optional<std::vector<ip_protection::BlindSignedAuthToken>>&,
       std::optional<base::Time>>
       tokens_future_;
 
  protected:
   base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
-                         const std::optional<network::GeoHint>&>
+                         const std::optional<ip_protection::GeoHint>&>
       proxy_list_future_;
 
   // A convenient expiration time for fake tokens, in the future.
   base::Time expiration_time_;
 
   // A convenient geo hint for fake tokens.
-  network::GeoHint geo_hint_;
+  ip_protection::GeoHint geo_hint_;
 
   base::HistogramTester histogram_tester_;
 
@@ -158,7 +159,7 @@ TEST_F(AwIpProtectionConfigProviderTest, Success) {
   EXPECT_EQ(bsa_->num_tokens(), 2);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
 
-  std::vector<network::BlindSignedAuthToken> expected;
+  std::vector<ip_protection::BlindSignedAuthToken> expected;
   expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_)
@@ -227,7 +228,7 @@ TEST_F(AwIpProtectionConfigProviderTest, MalformedTokens) {
 TEST_F(AwIpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kEnableIpProtectionProxy);
-  network::GeoHint geo_hint_country;
+  ip_protection::GeoHint geo_hint_country;
   geo_hint_country.country_code = "US";
   bsa_->set_tokens(
       {ip_protection::IpProtectionConfigProviderHelper::
@@ -244,7 +245,7 @@ TEST_F(AwIpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
   EXPECT_EQ(bsa_->num_tokens(), 2);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
 
-  std::vector<network::BlindSignedAuthToken> expected;
+  std::vector<ip_protection::BlindSignedAuthToken> expected;
   expected.push_back(ip_protection::IpProtectionConfigProviderHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_country)
@@ -265,7 +266,7 @@ TEST_F(AwIpProtectionConfigProviderTest, TokenGeoHintContainsOnlyCountry) {
 TEST_F(AwIpProtectionConfigProviderTest, TokenHasMissingGeoHint) {
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kEnableIpProtectionProxy);
-  network::GeoHint geo_hint;
+  ip_protection::GeoHint geo_hint;
   bsa_->set_tokens({ip_protection::IpProtectionConfigProviderHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint)});

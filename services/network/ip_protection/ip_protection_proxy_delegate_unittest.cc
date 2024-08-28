@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -29,7 +30,6 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/ip_protection/ip_protection_config_cache_impl.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "services/network/public/cpp/features.h"
@@ -65,14 +65,15 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
       std::move(on_invalidate_try_again_after_time_).Run();
     }
   }
-  std::optional<BlindSignedAuthToken> GetAuthToken(
+  std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {
     return std::move(auth_token_);
   }
 
   // Set the auth token that will be returned from the next call to
   // `GetAuthToken()`.
-  void SetNextAuthToken(std::optional<BlindSignedAuthToken> auth_token) {
+  void SetNextAuthToken(
+      std::optional<ip_protection::BlindSignedAuthToken> auth_token) {
     auth_token_ = std::move(auth_token);
   }
 
@@ -83,12 +84,12 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   }
 
   IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer proxy_layer) override {
+      ip_protection::ProxyLayer proxy_layer) override {
     NOTREACHED();
   }
 
   void SetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer proxy_layer,
+      ip_protection::ProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override {
     NOTREACHED();
@@ -140,7 +141,7 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   }
 
  private:
-  std::optional<BlindSignedAuthToken> auth_token_;
+  std::optional<ip_protection::BlindSignedAuthToken> auth_token_;
   std::optional<std::vector<net::ProxyChain>> proxy_list_;
   std::vector<net::ProxyChain> proxy_chain_list_;
   base::OnceClosure on_force_refresh_proxy_list_;
@@ -233,8 +234,8 @@ class IpProtectionProxyDelegateTest : public testing::Test {
     return net::ProxyChain::ForIpProtection(servers, chain_id);
   }
 
-  BlindSignedAuthToken MakeAuthToken(std::string content) {
-    BlindSignedAuthToken token;
+  ip_protection::BlindSignedAuthToken MakeAuthToken(std::string content) {
+    ip_protection::BlindSignedAuthToken token;
     token.token = std::move(content);
     return token;
   }

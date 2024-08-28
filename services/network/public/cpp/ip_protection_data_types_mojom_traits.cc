@@ -8,18 +8,17 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
-bool StructTraits<network::mojom::GeoHintDataView, network::GeoHint>::Read(
-    network::mojom::GeoHintDataView data,
-    network::GeoHint* out) {
+bool StructTraits<network::mojom::GeoHintDataView, ip_protection::GeoHint>::
+    Read(network::mojom::GeoHintDataView data, ip_protection::GeoHint* out) {
   return data.ReadCountryCode(&out->country_code) &&
          data.ReadIsoRegion(&out->iso_region) &&
          data.ReadCityName(&out->city_name);
 }
 
 bool StructTraits<network::mojom::BlindSignedAuthTokenDataView,
-                  network::BlindSignedAuthToken>::
+                  ip_protection::BlindSignedAuthToken>::
     Read(network::mojom::BlindSignedAuthTokenDataView data,
-         network::BlindSignedAuthToken* out) {
+         ip_protection::BlindSignedAuthToken* out) {
   return data.ReadToken(&out->token) && data.ReadExpiration(&out->expiration) &&
          data.ReadGeoHint(&out->geo_hint);
 }
