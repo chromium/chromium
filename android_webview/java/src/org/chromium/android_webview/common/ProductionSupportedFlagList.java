@@ -773,6 +773,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8SingleThreadedGCInBackgroundNoIncrementalMarking"),
         Flag.baseFeature("V8SingleThreadedGCInBackgroundParallelPause"),
         Flag.baseFeature("V8UpdateLimitAfterLoading"),
+        Flag.baseFeature("V8IncrementalMarkingStartUserVisible"),
         Flag.baseFeature("WebAssemblyMoreAggressiveCodeCaching"),
         Flag.baseFeature("WebAssemblyTurboshaft"),
         Flag.baseFeature("WebAssemblyTurboshaftInstructionSelection"),
