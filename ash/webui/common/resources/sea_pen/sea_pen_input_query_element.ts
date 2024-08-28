@@ -110,12 +110,20 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private shouldShowSuggestions_: boolean;
   private innerContainerOriginalHeight_: number;
   private resizeObserver_: ResizeObserver;
+  private sampleSelectedListener_: (e: SeaPenSampleSelectedEvent) => void;
+  private deleteRecentImageListener_: EventListener;
 
   static get observers() {
     return [
       'updateShouldShowSuggestions_(textValue_, thumbnailsLoading_)',
       'updateSearchButton_(thumbnails_, seaPenQuery_)',
     ];
+  }
+
+  constructor() {
+    super();
+    this.sampleSelectedListener_ = this.onSampleSelected_.bind(this);
+    this.deleteRecentImageListener_ = this.focusInput_.bind(this);
   }
 
   override connectedCallback() {
@@ -129,13 +137,11 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         'seaPenQuery_', state => state.currentSeaPenQuery);
     this.updateFromStore();
 
-    // TODO(b/360434347): Fix event listener leak.
     document.body.addEventListener(
-        SeaPenSampleSelectedEvent.EVENT_NAME,
-        this.onSampleSelected_.bind(this));
-    // TODO(b/360434347): Fix event listener leak.
+        SeaPenSampleSelectedEvent.EVENT_NAME, this.sampleSelectedListener_);
     document.body.addEventListener(
-        SeaPenRecentImageDeleteEvent.EVENT_NAME, this.focusInput_.bind(this));
+        SeaPenRecentImageDeleteEvent.EVENT_NAME,
+        this.deleteRecentImageListener_);
 
     this.focusInput_();
 
@@ -159,7 +165,10 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.resizeObserver_.disconnect();
 
     document.body.removeEventListener(
-        SeaPenSampleSelectedEvent.EVENT_NAME, this.onSampleSelected_);
+        SeaPenSampleSelectedEvent.EVENT_NAME, this.sampleSelectedListener_);
+    document.body.removeEventListener(
+        SeaPenRecentImageDeleteEvent.EVENT_NAME,
+        this.deleteRecentImageListener_);
   }
 
   private onSampleSelected_(e: SeaPenSampleSelectedEvent) {
