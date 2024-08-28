@@ -105,4 +105,13 @@ public class TestDataSharingService implements DataSharingService {
                 new DataSharingService.GroupDataOrFailureOutcome(
                         null, PeopleGroupActionFailure.PERSISTENT_FAILURE));
     }
+
+    @Override
+    public void getSharedEntitiesPreview(
+            GroupToken groupToken, Callback<SharedDataPreviewOrFailureOutcome> callback) {
+        Callback.runNullSafe(
+                callback,
+                new DataSharingService.SharedDataPreviewOrFailureOutcome(
+                        null, PeopleGroupActionFailure.PERSISTENT_FAILURE));
+    }
 }

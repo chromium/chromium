@@ -116,6 +116,14 @@ public class DataSharingServiceImpl implements DataSharingService {
         DataSharingServiceImplJni.get().ensureGroupVisibility(mNativePtr, groupId, callback);
     }
 
+    @Override
+    public void getSharedEntitiesPreview(
+            GroupToken groupToken, Callback<SharedDataPreviewOrFailureOutcome> callback) {
+        DataSharingServiceImplJni.get()
+                .getSharedEntitiesPreview(
+                        mNativePtr, groupToken.groupId, groupToken.accessToken, callback);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -173,5 +181,11 @@ public class DataSharingServiceImpl implements DataSharingService {
                 long nativeDataSharingServiceAndroid,
                 String groupId,
                 Callback<GroupDataOrFailureOutcome> callback);
+
+        void getSharedEntitiesPreview(
+                long nativeDataSharingServiceAndroid,
+                String groupId,
+                String accessToken,
+                Callback<SharedDataPreviewOrFailureOutcome> callback);
     }
 }

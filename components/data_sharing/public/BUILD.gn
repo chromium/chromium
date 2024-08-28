@@ -46,6 +46,8 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
+      "android/java/src/org/chromium/components/data_sharing/SharedDataPreview.java",
+      "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
       "android/java/src/org/chromium/components/data_sharing/configs/AvatarConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/GroupMemberConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/MemberPickerConfig.java",
@@ -54,6 +56,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//components/data_sharing/public/protocol:proto_java",
+      "//components/sync/protocol:protocol_java",
       "//net/android:net_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -78,6 +81,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
+      "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
     ]
   }
 }

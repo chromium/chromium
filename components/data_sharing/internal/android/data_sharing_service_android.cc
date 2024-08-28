@@ -62,6 +62,15 @@ void RunPeopleGroupActionOutcomeCallback(
   RunObjectCallbackAndroid(j_callback, j_result);
 }
 
+void RunSharedDataPreviewOrFailureOutcomeCallback(
+    const JavaRef<jobject>& j_callback,
+    const DataSharingService::SharedDataPreviewOrFailureOutcome& result) {
+  ScopedJavaLocalRef<jobject> j_result =
+      DataSharingConversionBridge::CreateSharedDataPreviewOrFailureOutcome(
+          AttachCurrentThread(), result);
+  RunObjectCallbackAndroid(j_callback, j_result);
+}
+
 }  // namespace
 
 // Native counterpart of Java ObserverBridge. Observes the native service and
@@ -279,6 +288,18 @@ void DataSharingServiceAndroid::EnsureGroupVisibility(
   data_sharing_service_->EnsureGroupVisibility(
       GroupId(ConvertJavaStringToUTF8(env, group_id)),
       base::BindOnce(&RunGroupDataOrFailureOutcomeCallback,
+                     ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
+void DataSharingServiceAndroid::GetSharedEntitiesPreview(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& group_id,
+    const JavaParamRef<jstring>& access_token,
+    const JavaParamRef<jobject>& j_callback) {
+  data_sharing_service_->GetSharedEntitiesPreview(
+      GroupToken(GroupId(ConvertJavaStringToUTF8(env, group_id)),
+                 ConvertJavaStringToUTF8(env, access_token)),
+      base::BindOnce(&RunSharedDataPreviewOrFailureOutcomeCallback,
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
