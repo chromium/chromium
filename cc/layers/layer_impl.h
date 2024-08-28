@@ -258,11 +258,6 @@ class CC_EXPORT LayerImpl {
   // initial scroll
   gfx::Vector2dF ScrollBy(const gfx::Vector2dF& scroll);
 
-  // Called during a commit or activation, after the property trees are pushed.
-  // It detects changes of scrollable status and scroll container size in the
-  // scroll property, and invalidate scrollbar geometries etc. for the changes.
-  void UpdateScrollable();
-
   // Some properties on the LayerImpl are rarely set, and so are bundled
   // under a single unique_ptr.
   struct CC_EXPORT RareProperties {
@@ -471,9 +466,6 @@ class CC_EXPORT LayerImpl {
 
   ElementListType GetElementTypeForAnimation() const;
 
-  void set_needs_show_scrollbars(bool yes) { needs_show_scrollbars_ = yes; }
-  bool needs_show_scrollbars() { return needs_show_scrollbars_; }
-
   void set_raster_even_if_not_drawn(bool yes) {
     raster_even_if_not_drawn_ = yes;
   }
@@ -536,18 +528,6 @@ class CC_EXPORT LayerImpl {
 
   gfx::Vector2dF offset_to_transform_parent_;
 
-  // These fields are copies of |container_bounds|, |bounds| and |scrollable|
-  // fields in the associated ScrollNode, and are updated in UpdateScrollable().
-  // The copy is for change detection only.
-  // TODO(wangxianzhu): Actually we only need scroll_container_bounds_ in
-  // pre-CompositeAfterPaint where the scroll node is associated with the
-  // scrolling contents layer, and only need scroll_contents_bounds_ in
-  // CompositeAfterPaint where the scroll node is associated with the scroll
-  // container layer. Remove scroll_container_bounds_ when we launch CAP.
-  gfx::Size scroll_container_bounds_;
-  gfx::Size scroll_contents_bounds_;
-  bool scrollable_ : 1 = false;
-
   // Tracks if drawing-related properties have changed since last redraw.
   // TODO(wutao): We want to distinquish the sources of change so that we can
   // reuse the cache of render pass. For example, we can reuse the cache when
@@ -609,12 +589,6 @@ class CC_EXPORT LayerImpl {
   mutable std::unique_ptr<Region> all_touch_action_regions_;
 
   bool needs_push_properties_ : 1 = false;
-
-  // The needs_show_scrollbars_ bit tracks a pending request to show the overlay
-  // scrollbars. It's set by UpdateScrollable() on the scroll layer (not the
-  // scrollbar layers) and consumed by LayerTreeImpl::PushPropertiesTo() and
-  // LayerTreeImpl::HandleScrollbarShowRequests().
-  bool needs_show_scrollbars_ : 1 = false;
 
   // This is set for layers that have a property because of which they are not
   // drawn (singular transforms), but they can become visible soon (the property

@@ -83,26 +83,6 @@ bool ScrollbarLayerImplBase::SetCurrentPos(float current_pos) {
   return true;
 }
 
-float ScrollbarLayerImplBase::current_pos() const {
-  DCHECK(!layer_tree_impl()->ScrollbarGeometriesNeedUpdate());
-  return current_pos_;
-}
-
-float ScrollbarLayerImplBase::clip_layer_length() const {
-  DCHECK(!layer_tree_impl()->ScrollbarGeometriesNeedUpdate());
-  return clip_layer_length_;
-}
-
-float ScrollbarLayerImplBase::scroll_layer_length() const {
-  DCHECK(!layer_tree_impl()->ScrollbarGeometriesNeedUpdate());
-  return scroll_layer_length_;
-}
-
-float ScrollbarLayerImplBase::vertical_adjust() const {
-  DCHECK(!layer_tree_impl()->ScrollbarGeometriesNeedUpdate());
-  return vertical_adjust_;
-}
-
 bool ScrollbarLayerImplBase::CanScrollOrientation() const {
   PropertyTrees* property_trees = layer_tree_impl()->property_trees();
   const auto* scroll_node =
@@ -122,12 +102,6 @@ bool ScrollbarLayerImplBase::CanScrollOrientation() const {
     if (!scroll_node->user_scrollable_vertical)
       return false;
   }
-
-  // Ensure the clip_layer_length and scroll_layer_length values are up-to-date.
-  // TODO(pdr): Instead of using the clip and scroll layer lengths which require
-  // an update, refactor to use the scroll tree (ScrollTree::MaxScrollOffset
-  // as in LayerTreeHostImpl::TryScroll).
-  layer_tree_impl()->UpdateScrollbarGeometries();
 
   // Ensure clip_layer_length is smaller than scroll_layer_length, not including
   // small deltas due to floating point error.
@@ -150,6 +124,9 @@ void ScrollbarLayerImplBase::SetClipLayerLength(float clip_layer_length) {
   clip_layer_length_ = clip_layer_length;
   property_changed_for_other_reasons_ = true;
   NoteLayerPropertyChanged();
+  if (GetScrollbarAnimator() == LayerTreeSettings::AURA_OVERLAY) {
+    layer_tree_impl()->RequestShowScrollbars(scroll_element_id_);
+  }
 }
 
 void ScrollbarLayerImplBase::SetScrollLayerLength(float scroll_layer_length) {
@@ -158,7 +135,11 @@ void ScrollbarLayerImplBase::SetScrollLayerLength(float scroll_layer_length) {
   scroll_layer_length_ = scroll_layer_length;
   property_changed_for_other_reasons_ = true;
   NoteLayerPropertyChanged();
-  return;
+  if (GetScrollbarAnimator() == LayerTreeSettings::AURA_OVERLAY &&
+      // We don't show fluent scrollbars when the contents change size.
+      !IsFluentOverlayScrollbarEnabled()) {
+    layer_tree_impl()->RequestShowScrollbars(scroll_element_id_);
+  }
 }
 
 void ScrollbarLayerImplBase::SetThumbThicknessScaleFactor(float factor) {

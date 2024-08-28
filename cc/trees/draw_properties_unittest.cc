@@ -68,7 +68,7 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
             ->scroll_tree_mutable()
             .SetScrollOffsetDeltaForTesting(layer_impl->element_id(), delta))
       layer_impl->layer_tree_impl()->DidUpdateScrollOffset(
-          layer_impl->element_id());
+          layer_impl->element_id(), /*pushed_from_main_or_pending_tree=*/false);
   }
 
   static float MaximumAnimationToScreenScale(LayerImpl* layer_impl) {

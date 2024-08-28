@@ -32,10 +32,10 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   void SetScrollLayerLength(float scroll_layer_length);
   void SetVerticalAdjust(float vertical_adjust);
 
-  float current_pos() const;
-  float clip_layer_length() const;
-  float scroll_layer_length() const;
-  float vertical_adjust() const;
+  float current_pos() const { return current_pos_; }
+  float clip_layer_length() const { return clip_layer_length_; }
+  float scroll_layer_length() const { return scroll_layer_length_; }
+  float vertical_adjust() const { return vertical_adjust_; }
 
   bool is_overlay_scrollbar() const { return is_overlay_scrollbar_; }
   void set_is_overlay_scrollbar(bool is_overlay) {

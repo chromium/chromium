@@ -100,52 +100,29 @@ void FakeLayerTreeHost::CreateFakeLayerTreeHostImpl() {
 
 LayerImpl* FakeLayerTreeHost::CommitToActiveTree() {
   CHECK(host_impl_->CommitsToActiveTree());
-  // TODO(pdr): Update the LayerTreeImpl lifecycle states here so lifecycle
-  // violations can be caught.
-  // When doing a full commit, we would call
-  // layer_tree_host_->ActivateCommitState() and the second argument would come
-  // from layer_tree_host_->active_commit_state(); we use pending_commit_state()
-  // just to keep the test code simple.
-  host_impl_->BeginCommit(pending_commit_state()->source_frame_number,
-                          pending_commit_state()->trace_id);
-  TreeSynchronizer::SynchronizeTrees(
-      *pending_commit_state(), thread_unsafe_commit_state(), active_tree());
-  active_tree()->SetPropertyTrees(*property_trees());
-  TreeSynchronizer::PushLayerProperties(
-      *pending_commit_state(), thread_unsafe_commit_state(), active_tree());
-  mutator_host()->PushPropertiesTo(host_impl_->mutator_host(),
-                                   *property_trees());
-
-  active_tree()
-      ->property_trees()
-      ->scroll_tree_mutable()
-      .PushScrollUpdatesFromMainThread(
-          *property_trees(), active_tree(),
-          GetSettings().commit_fractional_scroll_deltas);
-
+  CommitToTree(active_tree());
+  // This is part of LayerTreeHostImpl::CommitComplete(), but unit tests don't
+  // expect this function to do other things, e.g. animation updates.
+  active_tree()->HandleScrollbarShowRequests();
   return active_tree()->root_layer();
 }
 
 LayerImpl* FakeLayerTreeHost::CommitToPendingTree() {
   CHECK(!host_impl_->CommitsToActiveTree());
-  // pending_commit_state() is used here because this is a phony commit that
-  // doesn't actually call WillCommit() or ActivateCommitState().
-  pending_tree()->set_source_frame_number(SourceFrameNumber());
-  TreeSynchronizer::SynchronizeTrees(
-      *pending_commit_state(), thread_unsafe_commit_state(), pending_tree());
-  pending_tree()->SetPropertyTrees(*property_trees());
-  TreeSynchronizer::PushLayerProperties(
-      *pending_commit_state(), thread_unsafe_commit_state(), pending_tree());
-  mutator_host()->PushPropertiesTo(host_impl_->mutator_host(),
-                                   *property_trees());
+  return CommitToTree(pending_tree());
+}
 
-  pending_tree()
-      ->property_trees()
-      ->scroll_tree_mutable()
-      .PushScrollUpdatesFromMainThread(
-          *property_trees(), pending_tree(),
-          GetSettings().commit_fractional_scroll_deltas);
-  return pending_tree()->root_layer();
+LayerImpl* FakeLayerTreeHost::CommitToTree(LayerTreeImpl* tree) {
+  // pending_commit_state() is used in this function because this is a phony
+  // commit that doesn't actually call WillCommit() or ActivateCommitState().
+  tree->set_source_frame_number(SourceFrameNumber());
+  PropertyTreesChangeState change_state;
+  property_trees()->GetChangeState(change_state);
+  std::swap(change_state, pending_commit_state()->property_trees_change_state);
+  host_impl_->FinishCommit(*pending_commit_state(),
+                           thread_unsafe_commit_state());
+  std::swap(change_state, pending_commit_state()->property_trees_change_state);
+  return tree->root_layer();
 }
 
 }  // namespace cc

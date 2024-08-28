@@ -261,7 +261,6 @@ base::expected<void, std::string> AddOrUpdateLayer(
   layer->SetClipTreeIndex(wire.clip_tree_index);
   layer->SetEffectTreeIndex(wire.effect_tree_index);
   layer->SetScrollTreeIndex(wire.scroll_tree_index);
-  layer->UpdateScrollable();
   return base::ok();
 }
 

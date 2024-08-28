@@ -506,7 +506,6 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, ScrollOffsetSynchronization) {
       static_cast<PaintedScrollbarLayerImpl*>(
           layer_impl_tree_root->layer_tree_impl()->LayerById(
               scrollbar_layer->id()));
-  layer_impl_tree_root->layer_tree_impl()->UpdateScrollbarGeometries();
 
   EXPECT_EQ(10.f, cc_scrollbar_layer->current_pos());
   EXPECT_EQ(30, cc_scrollbar_layer->scroll_layer_length() -
@@ -520,7 +519,6 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, ScrollOffsetSynchronization) {
 
   layer_tree_host_->UpdateLayers();
   layer_impl_tree_root = layer_tree_host_->CommitToActiveTree();
-  layer_impl_tree_root->layer_tree_impl()->UpdateScrollbarGeometries();
 
   EXPECT_EQ(100.f, cc_scrollbar_layer->current_pos());
   EXPECT_EQ(300, cc_scrollbar_layer->scroll_layer_length() -
@@ -529,7 +527,6 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, ScrollOffsetSynchronization) {
   LayerImpl* scroll_layer_impl =
       layer_impl_tree_root->layer_tree_impl()->LayerById(scroll_layer->id());
   scroll_layer_impl->ScrollBy(gfx::Vector2d(12, 34));
-  layer_impl_tree_root->layer_tree_impl()->UpdateScrollbarGeometries();
 
   EXPECT_EQ(112.f, cc_scrollbar_layer->current_pos());
   EXPECT_EQ(300, cc_scrollbar_layer->scroll_layer_length() -
@@ -540,7 +537,6 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, ScrollOffsetSynchronization) {
   do {                                                                         \
     scrollbar_layer->Update();                                                 \
     root_layer_impl = layer_tree_host_->CommitToActiveTree();                  \
-    root_layer_impl->layer_tree_impl()->UpdateScrollbarGeometries();           \
     scrollbar_layer_impl = static_cast<decltype(scrollbar_layer_impl)>(        \
         root_layer_impl->layer_tree_impl()->LayerById(scrollbar_layer->id())); \
   } while (false)
@@ -890,14 +886,12 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, LayerDrivenSolidColorDrawQuads) {
   auto* scrollbar_layer_impl = static_cast<ScrollbarLayerImplBase*>(
       scroll_layer_impl->layer_tree_impl()->LayerById(child2->id()));
 
+  scrollbar_layer_impl->SetBounds(gfx::Size(kTrackLength, kThumbThickness));
   scroll_layer_impl->ScrollBy(gfx::Vector2dF(4.f, 0.f));
 
-  scrollbar_layer_impl->SetBounds(gfx::Size(kTrackLength, kThumbThickness));
-  scrollbar_layer_impl->SetCurrentPos(4.f);
-
-  DCHECK(layer_tree_host_->active_tree()->ScrollbarGeometriesNeedUpdate());
-  layer_tree_host_->active_tree()->UpdateScrollbarGeometries();
-
+  EXPECT_EQ(4.f, scrollbar_layer_impl->current_pos());
+  EXPECT_EQ(10, scrollbar_layer_impl->scroll_layer_length());
+  EXPECT_EQ(2, scrollbar_layer_impl->clip_layer_length());
   {
     auto render_pass = viz::CompositorRenderPass::Create();
 
@@ -1058,8 +1052,7 @@ TEST_F(ScrollbarLayerTest, SubPixelCanScrollOrientation) {
   CreateScrollNode(scroll_layer, gfx::Size(980, 980));
   CopyProperties(scroll_layer, scrollbar_layer);
 
-  DCHECK(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
+  impl.host_impl()->active_tree()->UpdateAllScrollbarGeometriesForTesting();
   impl.CalcDrawProps(viewport_size);
 
   // Fake clip layer length to scrollbar to mock rounding error.
@@ -1073,96 +1066,6 @@ TEST_F(ScrollbarLayerTest, SubPixelCanScrollOrientation) {
   impl.CalcDrawProps(viewport_size);
 
   EXPECT_TRUE(scrollbar_layer->CanScrollOrientation());
-}
-
-TEST_F(ScrollbarLayerTest, LayerChangesAffectingScrollbarGeometries) {
-  LayerTreeImplTestBase impl;
-  SetupViewport(impl.root_layer(), gfx::Size(), gfx::Size(900, 900));
-
-  auto* scroll_layer = impl.OuterViewportScrollLayer();
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->user_scrollable_horizontal);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->user_scrollable_vertical);
-
-  const int kTrackStart = 0;
-  const int kThumbThickness = 10;
-  const bool kIsLeftSideVerticalScrollbar = false;
-  SolidColorScrollbarLayerImpl* scrollbar_layer =
-      impl.AddLayerInActiveTree<SolidColorScrollbarLayerImpl>(
-          ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
-          kIsLeftSideVerticalScrollbar);
-  scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
-  EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
-
-  GetScrollNode(scroll_layer)->container_bounds = gfx::Size(900, 900);
-  scroll_layer->SetBounds(gfx::Size(900, 900));
-  scroll_layer->UpdateScrollable();
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->user_scrollable_horizontal);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->user_scrollable_vertical);
-  // If the scroll layer is not scrollable, the bounds and the container bounds
-  // do not affect scrollbar geometries.
-  EXPECT_FALSE(
-      impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-
-  // Changing scrollable to true should require an update.
-  GetScrollNode(scroll_layer)->user_scrollable_horizontal = true;
-  scroll_layer->UpdateScrollable();
-  EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
-
-  scroll_layer->SetBounds(gfx::Size(980, 980));
-  // Changes to the bounds should also require an update.
-  EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
-
-  // Changes to the container bounds should require an update.
-  GetScrollNode(scroll_layer)->container_bounds = gfx::Size(500, 500);
-  scroll_layer->UpdateScrollable();
-  EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
-
-  // Not changing the current value should not require an update.
-  scroll_layer->SetBounds(gfx::Size(980, 980));
-  EXPECT_FALSE(
-      impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  scroll_layer->UpdateScrollable();
-  EXPECT_FALSE(
-      impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-
-  // Changing scrollable to false should require an update.
-  GetScrollNode(scroll_layer)->user_scrollable_horizontal = false;
-  scroll_layer->UpdateScrollable();
-  EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
-}
-
-TEST_F(ScrollbarLayerTest, UpdateScrollbarGeometriesScrollNodeOnContainer) {
-  LayerTreeImplTestBase impl;
-
-  LayerImpl* scroll_layer = impl.AddLayerInActiveTree<LayerImpl>();
-  scroll_layer->SetElementId(LayerIdToElementIdForTesting(scroll_layer->id()));
-  scroll_layer->SetBounds(gfx::Size(100, 100));
-
-  CopyProperties(impl.root_layer(), scroll_layer);
-  CreateTransformNode(scroll_layer);
-  // In CompositeAfterPaint, the scroll node is associated with the scroll
-  // container layer. Its |container_bounds| is the same as the bounds of the
-  // layer, and its |bounds| is the bounds of the scrolling contents.
-  CreateScrollNode(scroll_layer, gfx::Size(100, 100)).bounds =
-      gfx::Size(1000, 1000);
-
-  EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
-
-  GetScrollNode(scroll_layer)->bounds = gfx::Size(1000, 2000);
-  scroll_layer->UpdateScrollable();
-  EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
-
-  scroll_layer->UpdateScrollable();
-  EXPECT_FALSE(
-      impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
-  impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
 }
 
 TEST_P(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {

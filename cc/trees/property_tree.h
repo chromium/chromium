@@ -722,9 +722,11 @@ struct PropertyTreesCachedData {
   ~PropertyTreesCachedData();
 };
 
-struct PropertyTreesChangeState {
+struct CC_EXPORT PropertyTreesChangeState {
   PropertyTreesChangeState();
   ~PropertyTreesChangeState();
+  PropertyTreesChangeState(PropertyTreesChangeState&&);
+  PropertyTreesChangeState& operator=(PropertyTreesChangeState&&);
   bool changed = false;
   bool needs_rebuild = false;
   bool full_tree_damaged = false;

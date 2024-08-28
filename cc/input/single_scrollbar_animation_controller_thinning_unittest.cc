@@ -86,6 +86,7 @@ class SingleScrollbarAnimationControllerThinningTest
     scrollbar_layer_->SetOffsetToTransformParent(gfx::Vector2dF(90, 0));
     CreateEffectNode(scrollbar_layer_).has_potential_opacity_animation = true;
 
+    host_impl()->active_tree()->UpdateAllScrollbarGeometriesForTesting();
     UpdateActiveTreeDrawProperties();
 
     scrollbar_controller_ = SingleScrollbarAnimationControllerThinning::Create(

@@ -204,8 +204,9 @@ TEST_F(LayerImplTest, VerifyNeedsUpdateDrawProperties) {
 
   VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(layer->ScrollBy(arbitrary_vector2d));
   VERIFY_NO_NEEDS_UPDATE_DRAW_PROPERTIES(layer->ScrollBy(gfx::Vector2d()));
-  VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(
-      layer->layer_tree_impl()->DidUpdateScrollOffset(layer->element_id()));
+  VERIFY_NO_NEEDS_UPDATE_DRAW_PROPERTIES(
+      layer->layer_tree_impl()->DidUpdateScrollOffset(
+          layer->element_id(), /*pushed_from_main_or_pending_tree=*/false));
   layer->layer_tree_impl()
       ->property_trees()
       ->scroll_tree_mutable()
