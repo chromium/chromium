@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -104,9 +103,7 @@ import java.util.stream.Collectors;
         manifest = Config.NONE,
         shadows = {
             ChromeBackupAgentTest.BackupManagerShadow.class,
-            ChromeBackupAgentTest.UmaSessionStatsShadow.class
         })
-@EnableFeatures(SigninFeatures.UPDATE_METRICS_SERVICES_STATE_IN_RESTORE)
 @LooperMode(LooperMode.Mode.INSTRUMENTATION_TEST)
 public class ChromeBackupAgentTest {
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
@@ -128,15 +125,6 @@ public class ChromeBackupAgentTest {
         public void dataChanged() {
             sDataChangedCalls++;
         }
-    }
-
-    /** Shadow to allow call to update metrics services states during the restore flow. */
-    @Implements(UmaSessionStats.class)
-    public static class UmaSessionStatsShadow {
-
-        // TODO(crbug.com/40075135): Test that this method is called during restoration.
-        @Implementation
-        public static void updateMetricsServiceState() {}
     }
 
     @Rule public JniMocker mocker = new JniMocker();
