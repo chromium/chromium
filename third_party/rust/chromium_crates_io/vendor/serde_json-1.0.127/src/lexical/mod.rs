@@ -28,10 +28,10 @@ pub(crate) mod rounding;
 mod shift;
 mod small_powers;
 
-#[cfg(limb_width_32)]
+#[cfg(fast_arithmetic = "32")]
 mod large_powers32;
 
-#[cfg(limb_width_64)]
+#[cfg(fast_arithmetic = "64")]
 mod large_powers64;
 
 // API

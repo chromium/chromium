@@ -1091,15 +1091,15 @@ fn test_parse_string() {
         ),
         (
             &[b'"', b'\\', b'u', 250, 48, 51, 48, b'"'],
-            "invalid escape at line 1 column 4",
+            "invalid escape at line 1 column 7",
         ),
         (
             &[b'"', b'\\', b'u', 48, 250, 51, 48, b'"'],
-            "invalid escape at line 1 column 5",
+            "invalid escape at line 1 column 7",
         ),
         (
             &[b'"', b'\\', b'u', 48, 48, 250, 48, b'"'],
-            "invalid escape at line 1 column 6",
+            "invalid escape at line 1 column 7",
         ),
         (
             &[b'"', b'\\', b'u', 48, 48, 51, 250, b'"'],
@@ -1707,7 +1707,7 @@ fn test_byte_buf_de() {
 }
 
 #[test]
-fn test_byte_buf_de_lone_surrogate() {
+fn test_byte_buf_de_invalid_surrogates() {
     let bytes = ByteBuf::from(vec![237, 160, 188]);
     let v: ByteBuf = from_str(r#""\ud83c""#).unwrap();
     assert_eq!(v, bytes);
@@ -1720,23 +1720,54 @@ fn test_byte_buf_de_lone_surrogate() {
     let v: ByteBuf = from_str(r#""\ud83c ""#).unwrap();
     assert_eq!(v, bytes);
 
-    let bytes = ByteBuf::from(vec![237, 176, 129]);
-    let v: ByteBuf = from_str(r#""\udc01""#).unwrap();
-    assert_eq!(v, bytes);
-
     let res = from_str::<ByteBuf>(r#""\ud83c\!""#);
     assert!(res.is_err());
 
     let res = from_str::<ByteBuf>(r#""\ud83c\u""#);
     assert!(res.is_err());
 
-    let res = from_str::<ByteBuf>(r#""\ud83c\ud83c""#);
-    assert!(res.is_err());
+    // lone trailing surrogate
+    let bytes = ByteBuf::from(vec![237, 176, 129]);
+    let v: ByteBuf = from_str(r#""\udc01""#).unwrap();
+    assert_eq!(v, bytes);
+
+    // leading surrogate followed by other leading surrogate
+    let bytes = ByteBuf::from(vec![237, 160, 188, 237, 160, 188]);
+    let v: ByteBuf = from_str(r#""\ud83c\ud83c""#).unwrap();
+    assert_eq!(v, bytes);
+
+    // leading surrogate followed by "a" (U+0061) in \u encoding
+    let bytes = ByteBuf::from(vec![237, 160, 188, 97]);
+    let v: ByteBuf = from_str(r#""\ud83c\u0061""#).unwrap();
+    assert_eq!(v, bytes);
+
+    // leading surrogate followed by U+0080
+    let bytes = ByteBuf::from(vec![237, 160, 188, 194, 128]);
+    let v: ByteBuf = from_str(r#""\ud83c\u0080""#).unwrap();
+    assert_eq!(v, bytes);
+
+    // leading surrogate followed by U+FFFF
+    let bytes = ByteBuf::from(vec![237, 160, 188, 239, 191, 191]);
+    let v: ByteBuf = from_str(r#""\ud83c\uffff""#).unwrap();
+    assert_eq!(v, bytes);
+}
+
+#[test]
+fn test_byte_buf_de_surrogate_pair() {
+    // leading surrogate followed by trailing surrogate
+    let bytes = ByteBuf::from(vec![240, 159, 128, 128]);
+    let v: ByteBuf = from_str(r#""\ud83c\udc00""#).unwrap();
+    assert_eq!(v, bytes);
+
+    // leading surrogate followed by a surrogate pair
+    let bytes = ByteBuf::from(vec![237, 160, 188, 240, 159, 128, 128]);
+    let v: ByteBuf = from_str(r#""\ud83c\ud83c\udc00""#).unwrap();
+    assert_eq!(v, bytes);
 }
 
 #[cfg(feature = "raw_value")]
 #[test]
-fn test_raw_de_lone_surrogate() {
+fn test_raw_de_invalid_surrogates() {
     use serde_json::value::RawValue;
 
     assert!(from_str::<Box<RawValue>>(r#""\ud83c""#).is_ok());
@@ -1746,6 +1777,17 @@ fn test_raw_de_lone_surrogate() {
     assert!(from_str::<Box<RawValue>>(r#""\udc01\!""#).is_err());
     assert!(from_str::<Box<RawValue>>(r#""\udc01\u""#).is_err());
     assert!(from_str::<Box<RawValue>>(r#""\ud83c\ud83c""#).is_ok());
+    assert!(from_str::<Box<RawValue>>(r#""\ud83c\u0061""#).is_ok());
+    assert!(from_str::<Box<RawValue>>(r#""\ud83c\u0080""#).is_ok());
+    assert!(from_str::<Box<RawValue>>(r#""\ud83c\uffff""#).is_ok());
+}
+
+#[cfg(feature = "raw_value")]
+#[test]
+fn test_raw_de_surrogate_pair() {
+    use serde_json::value::RawValue;
+
+    assert!(from_str::<Box<RawValue>>(r#""\ud83c\udc00""#).is_ok());
 }
 
 #[test]

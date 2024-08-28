@@ -37,29 +37,29 @@ use core::{cmp, iter, mem};
 //      sparc64 (`UMUL` only supported double-word arguments).
 
 // 32-BIT LIMB
-#[cfg(limb_width_32)]
+#[cfg(fast_arithmetic = "32")]
 pub type Limb = u32;
 
-#[cfg(limb_width_32)]
+#[cfg(fast_arithmetic = "32")]
 pub const POW5_LIMB: &[Limb] = &POW5_32;
 
-#[cfg(limb_width_32)]
+#[cfg(fast_arithmetic = "32")]
 pub const POW10_LIMB: &[Limb] = &POW10_32;
 
-#[cfg(limb_width_32)]
+#[cfg(fast_arithmetic = "32")]
 type Wide = u64;
 
 // 64-BIT LIMB
-#[cfg(limb_width_64)]
+#[cfg(fast_arithmetic = "64")]
 pub type Limb = u64;
 
-#[cfg(limb_width_64)]
+#[cfg(fast_arithmetic = "64")]
 pub const POW5_LIMB: &[Limb] = &POW5_64;
 
-#[cfg(limb_width_64)]
+#[cfg(fast_arithmetic = "64")]
 pub const POW10_LIMB: &[Limb] = &POW10_64;
 
-#[cfg(limb_width_64)]
+#[cfg(fast_arithmetic = "64")]
 type Wide = u128;
 
 /// Cast to limb type.
@@ -79,14 +79,14 @@ fn as_wide<T: Integer>(t: T) -> Wide {
 
 /// Split u64 into limbs, in little-endian order.
 #[inline]
-#[cfg(limb_width_32)]
+#[cfg(fast_arithmetic = "32")]
 fn split_u64(x: u64) -> [Limb; 2] {
     [as_limb(x), as_limb(x >> 32)]
 }
 
 /// Split u64 into limbs, in little-endian order.
 #[inline]
-#[cfg(limb_width_64)]
+#[cfg(fast_arithmetic = "64")]
 fn split_u64(x: u64) -> [Limb; 1] {
     [as_limb(x)]
 }

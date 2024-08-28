@@ -80,17 +80,33 @@ jobs:
       - run: cargo check --locked
 
   miri:
-    name: Miri
+    name: Miri (${{matrix.name}})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: 64-bit little endian
+            target: x86_64-unknown-linux-gnu
+          - name: 64-bit big endian
+            target: powerpc64-unknown-linux-gnu
+          - name: 32-bit little endian
+            target: i686-unknown-linux-gnu
+          - name: 32-bit big endian
+            target: mips-unknown-linux-gnu
     env:
       MIRIFLAGS: -Zmiri-strict-provenance
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@miri
+      - run: sudo apt-get install gcc-powerpc-linux-gnu
+        if: matrix.target == 'powerpc64-unknown-linux-gnu'
+      - run: sudo apt-get install gcc-mips-linux-gnu
+        if: matrix.target == 'mips-unknown-linux-gnu'
       - run: cargo miri setup
-      - run: cargo miri test
-      - run: cargo miri test --features preserve_order,float_roundtrip,arbitrary_precision,raw_value
+      - run: cargo miri test --target ${{matrix.target}}
+      - run: cargo miri test --target ${{matrix.target}} --features preserve_order,float_roundtrip,arbitrary_precision,raw_value
 
   clippy:
     name: Clippy
