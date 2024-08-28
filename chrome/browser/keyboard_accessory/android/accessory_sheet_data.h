@@ -161,6 +161,38 @@ class UserInfo final {
 std::ostream& operator<<(std::ostream& out, const AccessorySheetField& field);
 std::ostream& operator<<(std::ostream& out, const UserInfo& user_info);
 
+class UserInfoSection final {
+ public:
+  explicit UserInfoSection(std::u16string title);
+
+  UserInfoSection(const UserInfoSection&);
+  UserInfoSection& operator=(const UserInfoSection&);
+  UserInfoSection(UserInfoSection&&);
+  UserInfoSection& operator=(UserInfoSection&&);
+
+  ~UserInfoSection();
+
+  const std::u16string& title() const { return title_; }
+
+  void add_user_info(UserInfo user_info) {
+    user_info_list_.emplace_back(std::move(user_info));
+  }
+
+  const std::vector<UserInfo>& user_info_list() const {
+    return user_info_list_;
+  }
+
+  std::vector<UserInfo>& mutable_user_info_list() { return user_info_list_; }
+
+  bool operator==(const UserInfoSection&) const = default;
+
+ private:
+  std::u16string title_;
+  std::vector<UserInfo> user_info_list_;
+};
+
+std::ostream& operator<<(std::ostream& os, const UserInfoSection& field);
+
 class PlusAddressSection final {
  public:
   PlusAddressSection(std::string origin, std::u16string plus_address);
@@ -322,9 +354,10 @@ class AccessorySheetData final {
  public:
   class Builder;
 
-  AccessorySheetData(AccessoryTabType sheet_type, std::u16string title);
   AccessorySheetData(AccessoryTabType sheet_type,
-                     std::u16string title,
+                     std::u16string user_info_title);
+  AccessorySheetData(AccessoryTabType sheet_type,
+                     std::u16string user_info_title,
                      std::u16string warning);
 
   AccessorySheetData(const AccessorySheetData&);
@@ -334,7 +367,9 @@ class AccessorySheetData final {
 
   ~AccessorySheetData();
 
-  const std::u16string& title() const { return title_; }
+  const std::u16string& user_info_title() const {
+    return user_info_section_.title();
+  }
   AccessoryTabType get_sheet_type() const { return sheet_type_; }
 
   const std::u16string& warning() const { return warning_; }
@@ -348,7 +383,7 @@ class AccessorySheetData final {
   }
 
   void add_user_info(UserInfo user_info) {
-    user_info_list_.emplace_back(std::move(user_info));
+    user_info_section_.add_user_info(std::move(user_info));
   }
 
   void add_plus_address_section(PlusAddressSection plus_address_section) {
@@ -359,8 +394,12 @@ class AccessorySheetData final {
     passkey_section_list_.emplace_back(std::move(passkey_section));
   }
 
+  const UserInfoSection& user_info_section() const {
+    return user_info_section_;
+  }
+
   const std::vector<UserInfo>& user_info_list() const {
-    return user_info_list_;
+    return user_info_section_.user_info_list();
   }
 
   const std::vector<PlusAddressSection>& plus_address_section_list() const {
@@ -371,7 +410,9 @@ class AccessorySheetData final {
     return passkey_section_list_;
   }
 
-  std::vector<UserInfo>& mutable_user_info_list() { return user_info_list_; }
+  std::vector<UserInfo>& mutable_user_info_list() {
+    return user_info_section_.mutable_user_info_list();
+  }
 
   void add_promo_code_info(PromoCodeInfo promo_code_info) {
     promo_code_info_list_.emplace_back(std::move(promo_code_info));
@@ -401,12 +442,11 @@ class AccessorySheetData final {
 
  private:
   AccessoryTabType sheet_type_;
-  std::u16string title_;
   std::u16string warning_;
   std::optional<OptionToggle> option_toggle_;
   std::vector<PlusAddressSection> plus_address_section_list_;
   std::vector<PasskeySection> passkey_section_list_;
-  std::vector<UserInfo> user_info_list_;
+  UserInfoSection user_info_section_;
   std::vector<PromoCodeInfo> promo_code_info_list_;
   std::vector<IbanInfo> iban_info_list_;
   std::vector<FooterCommand> footer_commands_;
@@ -418,7 +458,7 @@ std::ostream& operator<<(std::ostream& out, const AccessorySheetData& data);
 //
 // Example that creates a AccessorySheetData object with two UserInfo objects;
 // the former has two fields, whereas the latter has three fields:
-//   AccessorySheetData data = AccessorySheetData::Builder(title)
+//   AccessorySheetData data = AccessorySheetData::Builder(user_info_title)
 //       .AddUserInfo()
 //           .AppendField(...)
 //           .AppendField(...)
@@ -429,7 +469,7 @@ std::ostream& operator<<(std::ostream& out, const AccessorySheetData& data);
 //       .Build();
 class AccessorySheetData::Builder final {
  public:
-  Builder(AccessoryTabType type, std::u16string title);
+  Builder(AccessoryTabType type, std::u16string user_info_title);
   ~Builder();
 
   // Adds a warning string to the accessory sheet.
@@ -524,7 +564,7 @@ class AccessorySheetData::Builder final {
   // This class returns the constructed AccessorySheetData object. Since this
   // would render the builder unusable, it's required to destroy the object
   // afterwards. So if you hold the class in a variable, invoke like this:
-  //   AccessorySheetData::Builder b(title);
+  //   AccessorySheetData::Builder b(user_info_title);
   //   std::move(b).Build();
   AccessorySheetData&& Build() &&;
 

@@ -334,6 +334,28 @@ public class KeyboardAccessoryData {
         }
     }
 
+    /**
+     * Represents a list of Profiles, or a Credit Cards, or the credentials for a website (username
+     * + password), to be shown on the manual fallback UI. Contains a possibly empty title for the
+     * user info section.
+     */
+    public static final class UserInfoSection {
+        private final String mTitle;
+        private final List<UserInfo> mUserInfoList = new ArrayList();
+
+        public UserInfoSection(String title) {
+            mTitle = title;
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+        public List<UserInfo> getUserInfoList() {
+            return mUserInfoList;
+        }
+    }
+
     /** Represents a Promo Code Offer to be shown on the manual fallback UI. */
     public static final class PromoCodeInfo {
         private UserInfoField mPromoCode;
@@ -408,12 +430,11 @@ public class KeyboardAccessoryData {
      * correspond to passwords, credit cards, IBANs, or profiles data. Created natively.
      */
     public static final class AccessorySheetData {
-        private final String mTitle;
         private final String mWarning;
         private final @AccessoryTabType int mSheetType;
         private OptionToggle mToggle;
         private final List<PlusAddressSection> mPlusAddressSection = new ArrayList<>();
-        private final List<UserInfo> mUserInfoList = new ArrayList<>();
+        private final UserInfoSection mUserInfoSection;
         private final List<PasskeySection> mPasskeySectionList = new ArrayList<>();
         private final List<PromoCodeInfo> mPromoCodeInfoList = new ArrayList<>();
         private final List<IbanInfo> mIbanInfoList = new ArrayList<>();
@@ -422,12 +443,13 @@ public class KeyboardAccessoryData {
         /**
          * Creates the AccessorySheetData object.
          *
-         * @param title The title of accessory sheet tab.
+         * @param userInfoTitle The user info title of accessory sheet tab.
          * @param warning An optional warning to be displayed the beginning of the sheet.
          */
-        public AccessorySheetData(@AccessoryTabType int sheetType, String title, String warning) {
+        public AccessorySheetData(
+                @AccessoryTabType int sheetType, String userInfoTitle, String warning) {
             mSheetType = sheetType;
-            mTitle = title;
+            mUserInfoSection = new UserInfoSection(userInfoTitle);
             mWarning = warning;
             mToggle = null;
         }
@@ -444,11 +466,6 @@ public class KeyboardAccessoryData {
             return mToggle;
         }
 
-        /** Returns the title of the accessory sheet. This text is also used for accessibility. */
-        public String getTitle() {
-            return mTitle;
-        }
-
         /**
          * Returns a warning to be displayed at the beginning of the sheet. Empty string otherwise.
          */
@@ -456,9 +473,17 @@ public class KeyboardAccessoryData {
             return mWarning;
         }
 
+        /**
+         * Returns the possible empty title for the user info section to be shown on the accessory
+         * sheet
+         */
+        public String getUserInfoTitle() {
+            return mUserInfoSection.getTitle();
+        }
+
         /** Returns the list of {@link UserInfo} to be shown on the accessory sheet. */
         public List<UserInfo> getUserInfoList() {
-            return mUserInfoList;
+            return mUserInfoSection.getUserInfoList();
         }
 
         public List<PlusAddressSection> getPlusAddressSectionList() {

@@ -134,6 +134,28 @@ std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
   return os << "]";
 }
 
+UserInfoSection::UserInfoSection(std::u16string title)
+    : title_(std::move(title)) {}
+
+UserInfoSection::UserInfoSection(const UserInfoSection&) = default;
+
+UserInfoSection& UserInfoSection::operator=(const UserInfoSection&) = default;
+
+UserInfoSection::UserInfoSection(UserInfoSection&&) = default;
+
+UserInfoSection& UserInfoSection::operator=(UserInfoSection&&) = default;
+
+UserInfoSection::~UserInfoSection() = default;
+
+std::ostream& operator<<(std::ostream& os, const UserInfoSection& section) {
+  os << "with title: \"" << section.title() << "\" and user info list: [";
+  for (const UserInfo& user_info : section.user_info_list()) {
+    os << user_info << ", ";
+  }
+  os << "]";
+  return os;
+}
+
 PlusAddressSection::PlusAddressSection(std::string origin,
                                        std::u16string plus_address)
     : origin_(std::move(origin)),
@@ -295,15 +317,17 @@ std::ostream& operator<<(std::ostream& os, const AccessoryTabType& type) {
 }
 
 AccessorySheetData::AccessorySheetData(AccessoryTabType sheet_type,
-                                       std::u16string title)
-    : AccessorySheetData(sheet_type, std::move(title), std::u16string()) {}
+                                       std::u16string user_info_title)
+    : AccessorySheetData(sheet_type,
+                         std::move(user_info_title),
+                         std::u16string()) {}
 
 AccessorySheetData::AccessorySheetData(AccessoryTabType sheet_type,
-                                       std::u16string title,
+                                       std::u16string user_info_title,
                                        std::u16string warning)
     : sheet_type_(sheet_type),
-      title_(std::move(title)),
-      warning_(std::move(warning)) {}
+      warning_(std::move(warning)),
+      user_info_section_(std::move(user_info_title)) {}
 
 AccessorySheetData::AccessorySheetData(const AccessorySheetData&) = default;
 
@@ -318,7 +342,7 @@ AccessorySheetData& AccessorySheetData::operator=(AccessorySheetData&&) =
 AccessorySheetData::~AccessorySheetData() = default;
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
-  os << data.get_sheet_type() << " with title: \"" << data.title();
+  os << data.get_sheet_type();
   if (data.option_toggle().has_value()) {
     os << "\", with option toggle: \"" << data.option_toggle().value();
   } else {
@@ -329,11 +353,8 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
   for (const PasskeySection& passkey_section : data.passkey_section_list()) {
     os << passkey_section << ", ";
   }
-  os << "], and user info list: [";
-  for (const UserInfo& user_info : data.user_info_list()) {
-    os << user_info << ", ";
-  }
-  os << "], and promo code info list: [";
+  os << "], and user info section " << data.user_info_section();
+  os << ", and promo code info list: [";
   for (const PromoCodeInfo& promo_code_info : data.promo_code_info_list()) {
     os << promo_code_info << ", ";
   }
@@ -354,8 +375,8 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
 }
 
 AccessorySheetData::Builder::Builder(AccessoryTabType type,
-                                     std::u16string title)
-    : accessory_sheet_data_(type, std::move(title)) {}
+                                     std::u16string user_info_title)
+    : accessory_sheet_data_(type, std::move(user_info_title)) {}
 
 AccessorySheetData::Builder::~Builder() = default;
 

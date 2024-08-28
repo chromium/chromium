@@ -126,9 +126,9 @@ class ManualFillingComponentBridge {
     @CalledByNative
     private static AccessorySheetData createAccessorySheetData(
             @AccessoryTabType int type,
-            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String userInfoTitle,
             @JniType("std::u16string") String warning) {
-        return new AccessorySheetData(type, title, warning);
+        return new AccessorySheetData(type, userInfoTitle, warning);
     }
 
     @CalledByNative

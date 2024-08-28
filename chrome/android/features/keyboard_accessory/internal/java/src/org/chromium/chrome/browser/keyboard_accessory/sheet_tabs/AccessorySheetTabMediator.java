@@ -113,8 +113,9 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         for (PromoCodeInfo promoCodeInfo : accessorySheetData.getPromoCodeInfoList()) {
             items.add(new AccessorySheetDataPiece(promoCodeInfo, Type.PROMO_CODE_INFO));
         }
-        if (shouldShowTitle(accessorySheetData.getUserInfoList())) {
-            items.add(new AccessorySheetDataPiece(accessorySheetData.getTitle(), Type.TITLE));
+        if (!accessorySheetData.getUserInfoTitle().isEmpty()) {
+            items.add(
+                    new AccessorySheetDataPiece(accessorySheetData.getUserInfoTitle(), Type.TITLE));
         }
         if (!accessorySheetData.getWarning().isEmpty()) {
             items.add(new AccessorySheetDataPiece(accessorySheetData.getWarning(), Type.WARNING));
@@ -205,9 +206,5 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         assert false
                 : "Recording type for toggle of type " + toggle.getActionType() + "is not known.";
         return AccessoryToggleType.COUNT;
-    }
-
-    private boolean shouldShowTitle(List<UserInfo> userInfoList) {
-        return userInfoList.isEmpty();
     }
 }

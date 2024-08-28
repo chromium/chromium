@@ -140,7 +140,7 @@ public class CreditCardAccessorySheetControllerTest {
     public void testSplitsTabDataToList() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "Payments", "");
+                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "", "");
         testData.getUserInfoList().add(new UserInfo("", false));
         testData.getUserInfoList()
                 .get(0)
@@ -182,19 +182,6 @@ public class CreditCardAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.size(), is(1));
         assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
         assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("Payments")));
-
-        // As soon UserInfo is available, discard the title.
-        testData.getUserInfoList().add(new UserInfo("", false));
-        testData.getUserInfoList()
-                .get(0)
-                .addField(new UserInfoField("Todd", "Todd", "", false, field -> {}));
-        testData.getUserInfoList()
-                .get(0)
-                .addField(new UserInfoField("**** 9219", "**** 9219", "", true, field -> {}));
-        testProvider.notifyObservers(testData);
-
-        assertThat(mSheetDataPieces.size(), is(1));
-        assertThat(getType(mSheetDataPieces.get(0)), is(CREDIT_CARD_INFO));
     }
 
     @Test

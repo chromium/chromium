@@ -139,7 +139,7 @@ public class AddressAccessorySheetControllerTest {
     public void testSplitsTabDataToList() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.ADDRESSES, "Addresses for this site", "");
+                new AccessorySheetData(AccessoryTabType.ADDRESSES, "", "");
         testData.getPlusAddressSectionList()
                 .add(
                         new PlusAddressSection(
@@ -182,18 +182,5 @@ public class AddressAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.size(), is(1));
         assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
         assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("No addresses")));
-
-        // As soon UserInfo is available, discard the title.
-        testData.getUserInfoList().add(new UserInfo("", false));
-        testData.getUserInfoList()
-                .get(0)
-                .addField(new UserInfoField("Name", "Name", "", false, null));
-        testData.getUserInfoList()
-                .get(0)
-                .addField(new UserInfoField("Address", "Address for Name", "", true, field -> {}));
-        testProvider.notifyObservers(testData);
-
-        assertThat(mSheetDataPieces.size(), is(1));
-        assertThat(getType(mSheetDataPieces.get(0)), is(ADDRESS_INFO));
     }
 }
