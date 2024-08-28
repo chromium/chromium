@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -122,6 +122,9 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    // Depends on `reporter_` so must be cleared before it is destroyed.
+    interceptor_ = nullptr;
+
     // Break the IPC connection if reporter still around.
     reporter_.reset();
 
@@ -164,7 +167,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   // VideoDecodeStatsRecorder. The interceptor serves as a mock recorder to
   // verify reporter/recorder interactions.
   mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder>
-  SetupRecordInterceptor(RecordInterceptor** interceptor_ptr) {
+  SetupRecordInterceptor(raw_ptr<RecordInterceptor>* interceptor_ptr) {
     // Capture a the interceptor pointer for verifying recorder calls. Lifetime
     // will be managed by the |recorder_remote|.
     auto interceptor = std::make_unique<RecordInterceptor>();
@@ -363,8 +366,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   // Points to the interceptor that acts as a VideoDecodeStatsRecorder. The
   // object is owned by mojo::Remote<VideoDecodeStatsRecorder>, which is itself
   // owned by |reporter_|.
-  // RAW_PTR_EXCLUSION: #addr-of
-  RAW_PTR_EXCLUSION RecordInterceptor* interceptor_ = nullptr;
+  raw_ptr<RecordInterceptor> interceptor_ = nullptr;
 
   // The VideoDecodeStatsReporter being tested.
   std::unique_ptr<VideoDecodeStatsReporter> reporter_;
