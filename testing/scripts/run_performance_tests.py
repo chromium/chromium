@@ -662,6 +662,12 @@ def copy_map_file_to_out_dir(map_file, isolated_out_dir):
                   os.path.join(isolated_out_dir, 'benchmarks_shard_map.json'))
 
 
+def fetch_binary_path(dependency_name, os_name='linux', arch='x86_64'):
+  if binary_manager.NeedsInit():
+    binary_manager.InitDependencyManager(None)
+  return binary_manager.FetchPath(dependency_name, os_name=os_name, arch=arch)
+
+
 class CrossbenchTest(object):
   """This class is for running Crossbench tests.
 
@@ -690,7 +696,6 @@ class CrossbenchTest(object):
   BENCHMARK_FILESERVERS = {'speedometer_3.0': 'third_party/speedometer/v3.0'}
 
   def __init__(self, options, isolated_out_dir):
-    binary_manager.InitDependencyManager(None)
     self.options = options
     self.isolated_out_dir = isolated_out_dir
     browser_arg = self._get_browser_arg(options.passthrough_args)
@@ -741,8 +746,7 @@ class CrossbenchTest(object):
       # TODO: Use update_wpr library when it supports Crossbench archive files.
       wpr_name = 'crossbench_android_speedometer_3.0_000.wprgo'
     archive = str(PAGE_SETS_DATA / wpr_name)
-    if not (wpr_go := binary_manager.FetchPath(
-        'wpr_go', os_name='linux', arch='x86_64')):
+    if (wpr_go := fetch_binary_path('wpr_go')) is None:
       raise ValueError(f'wpr_go not found: {wpr_go}')
     if wpr_arg:
       # Replacing --wpr with --network.
@@ -1156,6 +1160,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
     benchmarks = shard_configuration['crossbench']
     # Overwriting the "run_benchmark" with the Crossbench tool.
     options.executable = str(CROSSBENCH_TOOL)
+    original_passthrough_args = options.passthrough_args
     for benchmark, benchmark_config in benchmarks.items():
       display_name = benchmark_config.get('display_name', benchmark)
       print(f'\n### {display_name} ###')
@@ -1168,6 +1173,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       overall_return_code = return_code or overall_return_code
       test_results_files.append(
           OutputFilePaths(isolated_out_dir, display_name).test_results)
+      options.passthrough_args = original_passthrough_args
 
   return overall_return_code
 
