@@ -80,7 +80,7 @@ constexpr char kStorageAccessScript[] = R"(
       });
     }
 
-    function accessCache() {
+    function accessCacheStorage() {
       return caches.open("cache")
       .then((cache) => cache.put("/foo", new Response("bar")))
       .then(() => true)

@@ -24,6 +24,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

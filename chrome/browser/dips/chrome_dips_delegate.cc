@@ -19,6 +19,7 @@
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "content/public/browser/browser_context.h"

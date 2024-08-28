@@ -11,8 +11,9 @@
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
-#include "components/content_settings/browser/page_specific_content_settings.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "url/gurl.h"
@@ -29,14 +30,6 @@ class BrowserContext;
 // confused with SiteDataAccessType, which can also represent no access or both
 // read+write.
 using CookieOperation = network::mojom::CookieAccessDetails::Type;
-inline CookieOperation ToCookieOperation(content_settings::AccessType type) {
-  switch (type) {
-    case content_settings::AccessType::kRead:
-    case content_settings::AccessType::kWrite:
-    case content_settings::AccessType::kUnknown:
-      return CookieOperation::kChange;
-  }
-}
 
 // The filename for the DIPS database.
 const base::FilePath::CharType kDIPSFilename[] = FILE_PATH_LITERAL("DIPS");

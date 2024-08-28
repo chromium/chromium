@@ -129,9 +129,7 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
 DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
 
 RedirectChainDetector::RedirectChainDetector(content::WebContents* web_contents)
-    : content_settings::PageSpecificContentSettings::SiteDataObserver(
-          web_contents),
-      content::WebContentsObserver(web_contents),
+    : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<RedirectChainDetector>(*web_contents),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
@@ -575,6 +573,8 @@ void DIPSWebContentsObserver::IncrementPageSpecificBounceCount(
     return;
   }
 
+  // TODO: crbug.com/343631048 - move this out of DIPSWebContentsObserver into a
+  // DIPSService::Observer.
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
       web_contents()->GetPrimaryPage());
   pscs->IncrementStatefulBounceCount();
@@ -679,27 +679,17 @@ void DIPSBounceDetector::DidStartNavigation(
               .has_value());
 }
 
-void RedirectChainDetector::OnSiteDataAccessed(
-    const content_settings::AccessDetails& access_details) {
-  // NOTE: The current implementation is only acting on all site data types
-  // collapsed under `content_settings::SiteDataType::kStorage` with the
-  // exception of WebLocks (not monitored by the
-  // `content_settings::PageSpecificContentSettings`) as it's not persistent.
-  if (access_details.site_data_type !=
-      content_settings::SiteDataType::kStorage) {
+void RedirectChainDetector::NotifyStorageAccessed(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::StorageTypeAccessed storage_type,
+    bool blocked) {
+  if (!render_frame_host->GetPage().IsPrimary() || blocked) {
     return;
   }
 
-  if (!access_details.is_from_primary_page ||
-      access_details.blocked_by_policy) {
-    return;
-  }
-
-  detector_.OnClientSiteDataAccessed(
-      access_details.url, ToCookieOperation(access_details.access_type));
+  detector_.OnClientSiteDataAccessed(render_frame_host->GetLastCommittedURL(),
+                                     CookieOperation::kChange);
 }
-
-void RedirectChainDetector::OnStatefulBounceDetected() {}
 
 void RedirectChainDetector::PrimaryPageChanged(content::Page& page) {
   PrimaryPageMarker::CreateForPage(page);

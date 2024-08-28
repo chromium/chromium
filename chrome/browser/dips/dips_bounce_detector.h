@@ -21,7 +21,6 @@
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/dedicated_worker_service.h"
@@ -344,8 +343,7 @@ class DelayedChainHandler {
 // Detects chains of server- and client redirects, and notifies observers.
 // TODO: crbug.com/324573485 - move to separate file.
 class RedirectChainDetector
-    : public content_settings::PageSpecificContentSettings::SiteDataObserver,
-      public content::WebContentsObserver,
+    : public content::WebContentsObserver,
       public content::WebContentsUserData<RedirectChainDetector>,
       public DIPSBounceDetectorDelegate {
  public:
@@ -411,6 +409,9 @@ class RedirectChainDetector
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override;
+  void NotifyStorageAccessed(content::RenderFrameHost* render_frame_host,
+                             blink::mojom::StorageTypeAccessed storage_type,
+                             bool blocked) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void FrameReceivedUserActivation(
@@ -419,12 +420,6 @@ class RedirectChainDetector
       content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   // End WebContentsObserver overrides:
-
-  // Start SiteDataObserver overrides:
-  void OnSiteDataAccessed(
-      const content_settings::AccessDetails& access_details) override;
-  void OnStatefulBounceDetected() override;
-  // End SiteDataObserver overrides.
 
   void NotifyOnRedirectChainEnded(std::vector<DIPSRedirectInfoPtr> redirects,
                                   DIPSRedirectChainInfoPtr chain);
