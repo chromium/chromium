@@ -451,6 +451,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (sResumedInstance == this) sResumedInstance = null;
     }
 
+    @Override
+    protected void onDestroy() {
+        mScrim.destroy();
+        super.onDestroy();
+    }
+
     /**
      * Returns the fragment showing as this activity's main content, typically a {@link
      * PreferenceFragmentCompat}. This does not include dialogs or other {@link Fragment}s shown on
