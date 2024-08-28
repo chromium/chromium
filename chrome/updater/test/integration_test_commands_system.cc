@@ -115,7 +115,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                             const std::string& child_window_text_to_find,
                             const bool always_launch_cmd,
                             const bool verify_app_logo_loaded,
-                            const bool expect_success) const override {
+                            const bool expect_success,
+                            const bool wait_for_the_installer) const override {
     RunCommand(
         "install_updater_and_app",
         {
@@ -127,6 +128,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
             Param("verify_app_logo_loaded",
                   BoolToString(verify_app_logo_loaded)),
             Param("expect_success", BoolToString(expect_success)),
+            Param("wait_for_the_installer",
+                  BoolToString(wait_for_the_installer)),
         });
   }
 

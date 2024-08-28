@@ -28,6 +28,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -250,10 +251,12 @@ class IntegrationTest : public ::testing::Test {
                             const std::string& child_window_text_to_find = {},
                             const bool always_launch_cmd = false,
                             const bool verify_app_logo_loaded = false,
-                            const bool expect_success = true) {
+                            const bool expect_success = true,
+                            const bool wait_for_the_installer = true) {
     test_commands_->InstallUpdaterAndApp(
         app_id, is_silent_install, tag, child_window_text_to_find,
-        always_launch_cmd, verify_app_logo_loaded, expect_success);
+        always_launch_cmd, verify_app_logo_loaded, expect_success,
+        wait_for_the_installer);
   }
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
@@ -2652,7 +2655,7 @@ class IntegrationTestUserInSystem : public IntegrationTest {
     user_test_commands_->InstallUpdaterAndApp(
         app_id, is_silent_install, tag, child_window_text_to_find,
         always_launch_cmd, verify_app_logo_loaded,
-        /*expect_success=*/true);
+        /*expect_success=*/true, /*wait_for_the_installer=*/true);
   }
 
   scoped_refptr<IntegrationTestCommands> user_test_commands_ =
@@ -3933,6 +3936,42 @@ TEST_F(IntegrationTest, OfflineInstallOemMode) {
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
                                             /*is_silent_install=*/false));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, ExpectErrorUIWhenGetSetupLockFails) {
+  ScopedServer test_update_server(test_commands_);
+  const std::string kAppId("googletest");
+  const base::Version v1("1");
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_update_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
+
+  // The test runs the installer twice. One installer succeeds, and the other
+  // installer times out on the setup lock.
+  for (int i = 0; i <= 1; ++i) {
+    ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+        kAppId, /*is_silent_install=*/false, "usagestats=1",
+        /*child_window_text_to_find=*/{},
+        /*always_launch_cmd=*/false,
+        /*verify_app_logo_loaded=*/false,
+        /*expect_success=*/true,
+        /*wait_for_the_installer=*/false));
+    base::PlatformThread::Sleep(base::Seconds(1));
+  }
+
+  // Dismiss the setup lock error dialog, and then the success dialog.
+  for (const auto message_id : {IDS_UNABLE_TO_GET_SETUP_LOCK_BASE,
+                                IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE}) {
+    ASSERT_NO_FATAL_FAILURE(
+        CloseInstallCompleteDialog(GetLocalizedString(message_id)));
+  }
+
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_update_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

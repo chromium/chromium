@@ -483,7 +483,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& child_window_text_to_find,
                           const bool always_launch_cmd,
                           const bool verify_app_logo_loaded,
-                          const bool expect_success) {
+                          const bool expect_success,
+                          const bool wait_for_the_installer) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
@@ -501,10 +502,13 @@ void InstallUpdaterAndApp(UpdaterScope scope,
 
   if (child_window_text_to_find.empty()) {
     int exit_code = -1;
-    Run(scope, command_line, &exit_code);
-    ASSERT_EQ(expect_success, exit_code == 0);
+    Run(scope, command_line, wait_for_the_installer ? &exit_code : nullptr);
+    if (wait_for_the_installer) {
+      ASSERT_EQ(expect_success, exit_code == 0);
+    }
   } else {
 #if BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(wait_for_the_installer);
     Run(scope, command_line, nullptr);
     CloseInstallCompleteDialog(base::ASCIIToWide(child_window_text_to_find),
                                verify_app_logo_loaded);

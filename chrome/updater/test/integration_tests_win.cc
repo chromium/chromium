@@ -1845,6 +1845,7 @@ void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find,
       GetLocalizedStringF(IDS_INSTALLER_DISPLAY_NAME_BASE,
                           GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE));
   bool found = false;
+  base::Process process;
   ASSERT_TRUE(WaitFor(
       [&] {
         if (!found) {
@@ -1864,24 +1865,30 @@ void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find,
                                           child_window_text_to_find)) {
                         return false;
                       }
+                      const HWND parent_hwnd = ::GetParent(hwnd);
                       if (verify_app_logo_loaded &&
-                          !::SendDlgItemMessage(::GetParent(hwnd),
-                                                IDC_APP_BITMAP, STM_GETIMAGE,
-                                                IMAGE_BITMAP, 0)) {
+                          !::SendDlgItemMessage(parent_hwnd, IDC_APP_BITMAP,
+                                                STM_GETIMAGE, IMAGE_BITMAP,
+                                                0)) {
                         return false;
                       }
                       found = true;
-                      ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
+                      DWORD pid = 0;
+                      EXPECT_TRUE(
+                          ::GetWindowThreadProcessId(parent_hwnd, &pid));
+                      process = base::Process::Open(pid);
+                      EXPECT_TRUE(process.IsValid());
+                      ::PostMessage(parent_hwnd, WM_CLOSE, 0, 0);
                       return found;
                     }));
                 return found;
               }));
         }
-        return found && !IsUpdaterRunning();
+        return found && !process.IsRunning();
       },
       [&] {
         VLOG(0) << "Still waiting, `found`: " << found
-                << ": `!IsUpdaterRunning()`: " << !IsUpdaterRunning();
+                << ": `process.IsRunning()`: " << process.IsRunning();
       }));
 }
 
