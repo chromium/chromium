@@ -108,6 +108,16 @@ StructuredMetricsService::~StructuredMetricsService() {
       recorder_->event_storage()->HasEvents()) {
     Flush(metrics::MetricsLogsEventManager::CreateReason::kServiceShutdown);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Because of construction order of the recorder and service, the delegate
+  // must be unset here to avoid dangling pointers.
+  if (base::FeatureList::IsEnabled(kEventStorageManager)) {
+    StorageManager* storage_manager =
+        static_cast<StorageManager*>(recorder_->event_storage());
+    storage_manager->unset_delegate(this);
+  }
+#endif
 }
 
 void StructuredMetricsService::EnableRecording() {

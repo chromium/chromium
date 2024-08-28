@@ -63,6 +63,12 @@ class StorageManager : public EventStorage<StructuredEventProto> {
     delegate_ = delegate;
   }
 
+  void unset_delegate(StorageDelegate* delegate) {
+    if (delegate_ == delegate) {
+      delegate_ = nullptr;
+    }
+  }
+
  protected:
   void NotifyOnFlushed(const FlushedKey& key);
 
