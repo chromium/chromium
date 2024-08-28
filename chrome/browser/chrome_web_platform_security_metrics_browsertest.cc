@@ -1836,11 +1836,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     CheckCounter(test.property_access_from_other_page, 0);
     const auto& entries =
         test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(
-        entries.size(),
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage
-            ? 2u
-            : 1u);
+    ASSERT_EQ(entries.size(), 1u);
     const auto& entry = entries.back();
     test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
                                          (int)test.access_type);
@@ -2123,11 +2119,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     CheckCounter(test.property_access_from_other_page, 1);
     const auto& entries =
         test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(
-        entries.size(),
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage
-            ? 2u
-            : 1u);
+    ASSERT_EQ(entries.size(), 1u);
     const auto& entry = entries.back();
     test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
                                          (int)test.access_type);
@@ -2261,11 +2253,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     CheckCounter(test.property_access_from_other_page, 1);
     const auto& entries =
         test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(
-        entries.size(),
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage
-            ? 2u
-            : 1u);
+    ASSERT_EQ(entries.size(), 1u);
     const auto& entry = entries.back();
     test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
                                          (int)test.access_type);

@@ -294,10 +294,6 @@ void DOMWindow::postMessage(v8::Isolate* isolate,
                             const String& target_origin,
                             HeapVector<ScriptValue>& transfer,
                             ExceptionState& exception_state) {
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessPostMessage,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPagePostMessage,
-      mojom::blink::WindowProxyAccessType::kPostMessage);
   WindowPostMessageOptions* options = WindowPostMessageOptions::Create();
   options->setTargetOrigin(target_origin);
   if (!transfer.empty())
