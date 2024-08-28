@@ -235,6 +235,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/policy/core/common:common_constants",
     "//components/prefs:test_support",
+    "//components/saved_tab_groups:fake_tab_group_sync_service",
     "//components/saved_tab_groups:model",
     "//components/saved_tab_groups:test_support",
     "//components/sync_preferences:test_support",
@@ -275,6 +276,7 @@ source_set("eg2_tests") {
     "tab_groups_egtest.mm",
   ]
   deps = [
+    ":eg_test_support+eg2",
     ":tab_groups_constant",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
@@ -288,6 +290,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_constants",
     "//ios/chrome/browser/ui/tab_switcher/test:utils",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
     "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test/http_server",
@@ -295,4 +298,37 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "tab_group_sync_earl_grey_app_interface.h",
+    "tab_group_sync_earl_grey_app_interface.mm",
+  ]
+  visibility = [
+    "//ios/chrome/test/earl_grey:eg_app_support+eg2",
+    "//ios/chrome/test/earl_grey:hooks",
+  ]
+  deps = [
+    "//components/saved_tab_groups:fake_tab_group_sync_service",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "tab_group_sync_earl_grey.h",
+    "tab_group_sync_earl_grey.mm",
+    "tab_group_sync_earl_grey_app_interface.h",
+    "tab_group_sync_earl_grey_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }

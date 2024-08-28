@@ -9,6 +9,8 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
+#import "components/saved_tab_groups/fake_tab_group_sync_service.h"
+#import "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -16,6 +18,11 @@
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -152,6 +159,35 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
     return nullptr;
   }
   return std::make_unique<FakeTrustedVaultClientBackend>();
+}
+
+std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
+    ChromeBrowserState* browser_state) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  if (!IsTabGroupSyncEnabled() ||
+      !command_line->HasSwitch(test_switches::kEnableFakeTabGroupSyncService)) {
+    return nullptr;
+  }
+  auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
+
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state);
+
+  std::unique_ptr<tab_groups::TabGroupLocalUpdateObserver>
+      local_update_observer =
+          std::make_unique<tab_groups::TabGroupLocalUpdateObserver>(
+              browser_list, sync_service.get());
+
+  std::unique_ptr<tab_groups::IOSTabGroupSyncDelegate> delegate =
+      std::make_unique<tab_groups::IOSTabGroupSyncDelegate>(
+          browser_list, sync_service.get(), std::move(local_update_observer));
+
+  sync_service->SetCoordinator(
+      std::make_unique<tab_groups::TabGroupSyncCoordinatorImpl>(
+          std::move(delegate), sync_service.get()));
+
+  return sync_service;
 }
 
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>

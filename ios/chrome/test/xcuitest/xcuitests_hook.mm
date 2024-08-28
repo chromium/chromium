@@ -75,6 +75,11 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
   return nullptr;
 }
 
+std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
+    ChromeBrowserState* browser_state) {
+  return nullptr;
+}
+
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService() {
   return nullptr;

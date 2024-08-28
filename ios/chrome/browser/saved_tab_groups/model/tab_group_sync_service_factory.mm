@@ -9,6 +9,7 @@
 
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/saved_tab_groups/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/sync_data_type_configuration.h"
 #import "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
@@ -17,6 +18,7 @@
 #import "components/sync/model/client_tag_based_data_type_processor.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -86,6 +88,13 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
           ->GetDeviceInfoTracker();
   auto metrics_logger =
       std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker);
+
+  // Give the opportunity for the test hook to override the factory from
+  // the provider (allowing EG tests to use a fake TabGroupSyncService).
+  if (auto sync_service =
+          tests_hook::CreateTabGroupSyncService(browser_state)) {
+    return sync_service;
+  }
 
   std::unique_ptr<TabGroupSyncServiceImpl> sync_service =
       std::make_unique<TabGroupSyncServiceImpl>(

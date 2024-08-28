@@ -7,6 +7,7 @@
 
 #include "base/observer_list.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 
@@ -72,13 +73,24 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
+  void SetCoordinator(std::unique_ptr<TabGroupSyncCoordinator> coordinator);
+
+  // For testing.
+  void PrepareFakeSavedTabGroups();
+  void ClearGroups();
+
  private:
   // Helpers.
   std::optional<int> GetIndexOf(const base::Uuid& guid);
   std::optional<int> GetIndexOf(const LocalTabGroupID& local_id);
 
+  void NotifyObserversOfTabGroupUpdated(SavedTabGroup& group);
+
   base::ObserverList<TabGroupSyncService::Observer> observers_;
   std::vector<SavedTabGroup> groups_;
+  // The UI coordinator to apply changes between local tab groups and the
+  // TabGroupSyncService.
+  std::unique_ptr<TabGroupSyncCoordinator> coordinator_;
 };
 
 }  // namespace tab_groups

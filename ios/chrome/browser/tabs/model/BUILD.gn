@@ -201,6 +201,7 @@ source_set("unit_tests") {
     ":tabs_internal",
     "//base",
     "//base/test:test_support",
+    "//components/saved_tab_groups:fake_tab_group_sync_service",
     "//components/saved_tab_groups:model",
     "//components/saved_tab_groups:test_support",
     "//components/strings",

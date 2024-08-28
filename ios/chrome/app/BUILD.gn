@@ -150,6 +150,7 @@ source_set("unit_tests") {
 source_set("tests_hook") {
   # This target is intentionally not test-only, as the main app depends on it.
   sources = [ "tests_hook.h" ]
+  deps = [ "//ios/chrome/browser/shared/model/profile" ]
 }
 
 source_set("tests_fake_hook") {
