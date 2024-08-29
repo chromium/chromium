@@ -149,8 +149,8 @@ source_set("unit_tests") {
   deps = [
     ":public",
     "//base/test:test_support",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
-    "//components/password_manager/core/browser/password_store:password_store_impl",
     "//components/password_manager/core/common:common",
     "//components/prefs:prefs",
     "//components/prefs:test_support",

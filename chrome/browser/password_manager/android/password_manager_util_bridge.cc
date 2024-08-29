@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/prefs/android/pref_service_android.h"
 #include "components/sync/android/sync_service_android_bridge.h"
 

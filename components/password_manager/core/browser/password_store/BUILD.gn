@@ -88,8 +88,6 @@ source_set("password_store_impl") {
       "android_backend_error.h",
       "password_data_type_controller_delegate_android.cc",
       "password_data_type_controller_delegate_android.h",
-      "split_stores_and_local_upm.cc",
-      "split_stores_and_local_upm.h",
     ]
     deps += [
       "//components/sync/base",
@@ -158,10 +156,7 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [
-      "password_store_backend_metrics_recorder_unittest.cc",
-      "split_stores_and_local_upm_unittest.cc",
-    ]
+    sources += [ "password_store_backend_metrics_recorder_unittest.cc" ]
   }
   if (is_ios) {
     sources += [ "login_database_ios_unittest.cc" ]

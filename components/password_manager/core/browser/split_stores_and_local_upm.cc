@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 
 #include "base/android/build_info.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/buildflag.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -67,14 +68,7 @@ bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
 
   // GMSCore supports account storage only, thus update is required if password
   // syncing is disabled.
-  // TODO(crbug.com/345791498): Re-arrange build targets so
-  // password_manager::sync_util::HasChosenToSyncPasswords() can be called here
-  // without causing a cyclic dependency.
-  bool has_chosen_to_sync_passwords =
-      sync_service && sync_service->GetDisableReasons().empty() &&
-      sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPasswords);
-  if (!has_chosen_to_sync_passwords) {
+  if (!sync_util::HasChosenToSyncPasswords(sync_service)) {
     return true;
   }
 

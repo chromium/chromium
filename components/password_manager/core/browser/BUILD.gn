@@ -216,8 +216,13 @@ static_library("browser") {
       "password_credential_filler.h",
       "password_credential_filler_impl.cc",
       "password_credential_filler_impl.h",
+      "split_stores_and_local_upm.cc",
+      "split_stores_and_local_upm.h",
     ]
-    deps += [ "//components/webauthn/android" ]
+    deps += [
+      ":password_manager_buildflags",
+      "//components/webauthn/android",
+    ]
   }
 
   if (!is_android) {
@@ -488,7 +493,10 @@ source_set("unit_tests") {
     "votes_uploader_unittest.cc",
   ]
   if (is_android) {
-    sources += [ "password_credential_filler_impl_unittest.cc" ]
+    sources += [
+      "password_credential_filler_impl_unittest.cc",
+      "split_stores_and_local_upm_unittest.cc",
+    ]
   } else {
     sources += [ "os_crypt_async_migrator_unittest.cc" ]
   }
@@ -561,7 +569,10 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    deps += [ "//components/webauthn/android" ]
+    deps += [
+      ":password_manager_buildflags",
+      "//components/webauthn/android",
+    ]
   }
 }
 
