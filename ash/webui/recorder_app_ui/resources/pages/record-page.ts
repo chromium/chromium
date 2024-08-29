@@ -477,7 +477,7 @@ export class RecordPage extends ReactiveLitElement {
       title: this.recordingTitle,
       durationMs: Math.round(session.progress.value.length * 1000),
       recordedAt: Date.now(),
-      powers: session.progress.value.powers,
+      powers: session.progress.value.powers.array,
       transcription: session.progress.value.transcription,
     };
     const id = await this.recordingDataManager.createRecording(

@@ -18,6 +18,7 @@ import {
   assertNotReached,
 } from './utils/assert.js';
 import {AsyncJobInfo, AsyncJobQueue} from './utils/async_job_queue.js';
+import {InteriorMutableArray} from './utils/interior_mutable_array.js';
 import {Unsubscribe} from './utils/observer_list.js';
 import {clamp} from './utils/utils.js';
 
@@ -38,7 +39,7 @@ interface RecordingProgress {
   // All samples of the power. To conserve space while saving metadata with
   // JSON and since this is used for visualization only, the value will be
   // integer in range [0, 255], scaled from the original value of [0, 1].
-  powers: number[];
+  powers: InteriorMutableArray<number>;
   // Transcription of the ongoing recording. null if transcription is never
   // enabled throughout the recording.
   transcription: Transcription|null;
@@ -87,7 +88,7 @@ export class RecordingSession {
 
   private readonly sodaEnableQueue = new AsyncJobQueue('keepLatest');
 
-  private readonly powers = signal<number[]>([]);
+  private readonly powers = signal(new InteriorMutableArray<number>([]));
 
   private readonly transcription = signal<Transcription|null>(null);
 
@@ -148,9 +149,7 @@ export class RecordingSession {
           0,
           POWER_SCALE_FACTOR - 1,
         );
-        // TODO(pihsun): This still copies the whole array and can be optimized
-        // further.
-        this.powers.value = [...this.powers.value, scaledPower];
+        this.powers.value = this.powers.value.push(scaledPower);
         this.currentSodaSession?.session.addAudio(samples);
         this.processedSamples += samples.length;
       },

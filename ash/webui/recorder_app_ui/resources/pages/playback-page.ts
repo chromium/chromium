@@ -58,6 +58,7 @@ import {
   assertInstanceof,
 } from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
+import {InteriorMutableArray} from '../core/utils/interior_mutable_array.js';
 
 /**
  * Mapping from playback speed to icon names.
@@ -550,7 +551,7 @@ export class PlaybackPage extends ReactiveLitElement {
     return html`
       <div>${recordingLength}</div>
       <audio-waveform
-        .values=${this.powers.value}
+        .values=${new InteriorMutableArray(this.powers.value)}
         .currentTime=${this.currentTime.value}
         .transcription=${this.transcription.value}
       >

@@ -26,6 +26,7 @@ import {
   assertExists,
   assertInstanceof,
 } from '../core/utils/assert.js';
+import {InteriorMutableArray} from '../core/utils/interior_mutable_array.js';
 
 import {
   getNumSpeakerClass,
@@ -265,7 +266,7 @@ export class AudioWaveform extends ReactiveLitElement {
   };
 
   // Values to be shown as bars. Should be in range [0, POWER_SCALE_FACTOR - 1].
-  values: number[] = [];
+  values = new InteriorMutableArray<number>([]);
 
   currentTime: number|null = null;
 
@@ -599,7 +600,7 @@ export class AudioWaveform extends ReactiveLitElement {
       (i) => {
         const ret: RenderResult[] = [];
 
-        const val = assertExists(this.values[i]);
+        const val = assertExists(this.values.array[i]);
         const rect = this.getBarLocation(
           i,
           val,

@@ -30,6 +30,7 @@ core_files = [
   "utils/datetime.ts",
   "utils/draft.ts",
   "utils/event_handler.ts",
+  "utils/interior_mutable_array.ts",
   "utils/iterable_weak_set.ts",
   "utils/local_storage.ts",
   "utils/observer_list.ts",
