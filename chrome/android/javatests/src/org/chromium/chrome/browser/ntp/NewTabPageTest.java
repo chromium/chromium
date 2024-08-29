@@ -125,7 +125,6 @@ import java.util.concurrent.TimeUnit;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "disable-features=IPH_FeedHeaderMenu"
 })
-@DisableFeatures({ChromeFeatureList.QUERY_TILES})
 public class NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
 

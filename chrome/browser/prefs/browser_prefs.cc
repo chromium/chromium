@@ -267,7 +267,6 @@
 #include "components/feed/core/v2/ios_shared_prefs.h"       // nogncheck
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
-#include "components/query_tiles/tile_service_prefs.h"
 #include "components/webapps/browser/android/install_prompt_prefs.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/cart/cart_service.h"
@@ -1056,6 +1055,12 @@ constexpr char kDeviceDMTokenV1[] = "device_dm_token";
 constexpr char kDeviceDMTokenV2[] = "device_dm_token_v2";
 #endif
 
+// Deprecated 08/2024
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kBackoffEntryKey[] = "query_tiles.backoff_entry_key";
+constexpr char kFirstScheduleTimeKey[] = "query_tiles.first_schedule_time_key";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1466,6 +1471,12 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 08/2024.
   registry->RegisterBooleanPref(kSafeBrowsingEsbOptInWithFriendlierSettings,
                                 false);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 08/2024
+  registry->RegisterListPref(kBackoffEntryKey);
+  registry->RegisterTimePref(kFirstScheduleTimeKey, base::Time());
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -1961,7 +1972,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   PartnerBookmarksShim::RegisterProfilePrefs(registry);
   permissions::GeolocationPermissionContextAndroid::RegisterProfilePrefs(
       registry);
-  query_tiles::RegisterPrefs(registry);
   readaloud::RegisterProfilePrefs(registry);
   RecentTabsPagePrefs::RegisterProfilePrefs(registry);
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
@@ -2767,6 +2777,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // enabled for an year.
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(profile_prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Added 08/2024.
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kBackoffEntryKey);
+  profile_prefs->ClearPref(kFirstScheduleTimeKey);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

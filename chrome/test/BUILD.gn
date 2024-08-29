@@ -6770,7 +6770,6 @@ test("unit_tests") {
     "//components/proxy_config",
     "//components/qr_code_generator:bitmap_generator",
     "//components/query_parser",
-    "//components/query_tiles:unit_tests",
     "//components/reading_list/core",
     "//components/reading_list/core:test_support",
     "//components/reading_list/features:flags",

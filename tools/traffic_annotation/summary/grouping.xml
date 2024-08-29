@@ -18,8 +18,6 @@ after discussions on the right group.
     <sender name="Android Unsorted">
       <annotation id="android_device_manager_socket"/>
       <annotation id="android_web_socket"/>
-      <annotation id="query_tiles_fetcher"/>
-      <annotation id="query_tiles_image_loader"/>
       <annotation id="cached_image_fetcher"/>
       <annotation id="chrome_variations_android"/>
       <annotation id="customtabs_parallel_request"/>

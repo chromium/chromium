@@ -4676,55 +4676,6 @@ const char kPaymentLinkDetectionName[] = "Enable payment link detection";
 const char kPaymentLinkDetectionDescription[] =
     "Enables payment link detection in the DOM.";
 
-const char kQueryTilesName[] = "Show query tiles";
-const char kQueryTilesDescription[] = "Shows query tiles in Chrome";
-const char kQueryTilesNTPName[] = "Show query tiles in NTP";
-const char kQueryTilesNTPDescription[] = "Shows query tiles in NTP";
-const char kQueryTilesOnStartName[] = "Query tiles on start";
-const char kQueryTilesOnStartDescription[] =
-    "Show query tiles on start surface";
-const char kQueryTilesSingleTierName[] = "Show only one level of query tiles";
-const char kQueryTilesSingleTierDescription[] =
-    "Show only one level of query tiles";
-const char kQueryTilesEnableQueryEditingName[] =
-    "Query Tiles - Enable query edit mode";
-const char kQueryTilesEnableQueryEditingDescription[] =
-    "When a query tile is tapped, the query text will be shown in the omnibox "
-    "and user will have a chance to edit the text before submitting";
-const char kQueryTilesEnableTrendingName[] =
-    "Query Tiles - Enable trending queries";
-const char kQueryTilesEnableTrendingDescription[] =
-    "Allow tiles of trending queries to show up in front of curated tiles";
-const char kQueryTilesDisableCountryOverrideName[] =
-    "Disable tre default country list for query tiles.";
-const char kQueryTilesDisableCountryOverrideDescription[] =
-    "Disable the default country list for query tiles. It is still "
-    "possible to show query tiles through server experiments.";
-const char kQueryTilesCountryCode[] = "Country code for getting tiles";
-const char kQueryTilesCountryCodeDescription[] =
-    "When query tiles are enabled, this value determines tiles for which "
-    "country should be displayed.";
-const char kQueryTilesCountryCodeUS[] = "US";
-const char kQueryTilesCountryCodeIndia[] = "IN";
-const char kQueryTilesCountryCodeBrazil[] = "BR";
-const char kQueryTilesCountryCodeNigeria[] = "NG";
-const char kQueryTilesCountryCodeIndonesia[] = "ID";
-const char kQueryTilesInstantFetchName[] = "Query tile instant fetch";
-const char kQueryTilesInstantFetchDescription[] =
-    "Immediately schedule background task to fetch query tiles";
-const char kQueryTilesRankTilesName[] = "Query Tiles - rank tiles on server";
-const char kQueryTilesRankTilesDescription[] =
-    "Rank tiles on server based on client context";
-const char kQueryTilesSegmentationName[] =
-    "Query Tiles - use segmentation rules";
-const char kQueryTilesSegmentationDescription[] =
-    "enable segmentation rules to decide whether to show query tiles";
-const char kQueryTilesSwapTrendingName[] =
-    "Query Tiles - Swap trending queries";
-const char kQueryTilesSwapTrendingDescription[] =
-    "Swap trending queries if user didn't click on them after several "
-    "impressions";
-
 const char kReadAloudName[] = "Read Aloud";
 const char kReadAloudDescription[] = "Controls the Read Aloud feature";
 

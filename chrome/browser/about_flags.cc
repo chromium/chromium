@@ -147,7 +147,6 @@
 #include "components/permissions/features.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/query_tiles/switches.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/saved_tab_groups/features.h"
@@ -849,22 +848,6 @@ const FeatureEntry::FeatureVariation kArcVmMemorySizeVariations[] = {
      std::size(kArcVmMemorySizeShift_800), nullptr},
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kShowSingleRowMVTiles[] = {
-    {"most_visited_max_rows_normal_screen", "1"},
-    {"most_visited_max_rows_small_screen", "1"},
-    {"small_screen_height_threshold_dp", "700"}};
-const FeatureEntry::FeatureParam kShowTwoRowsMVTiles[] = {
-    {"most_visited_max_rows_normal_screen", "2"},
-    {"most_visited_max_rows_small_screen", "2"},
-    {"small_screen_height_threshold_dp", "700"}};
-const FeatureEntry::FeatureVariation kQueryTilesVariations[] = {
-    {"(show single row of MV tiles)", kShowSingleRowMVTiles,
-     std::size(kShowSingleRowMVTiles), nullptr},
-    {"(show two rows of MV tiles)", kShowTwoRowsMVTiles,
-     std::size(kShowTwoRowsMVTiles), nullptr}};
-#endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -2679,21 +2662,6 @@ const FeatureEntry::Choice kWebOtpBackendChoices[] = {
     {flag_descriptions::kWebOtpBackendAuto, switches::kWebOtpBackend,
      switches::kWebOtpBackendAuto},
 };
-
-const FeatureEntry::Choice kQueryTilesCountryChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flag_descriptions::kQueryTilesCountryCodeUS,
-     query_tiles::switches::kQueryTilesCountryCode, "US"},
-    {flag_descriptions::kQueryTilesCountryCodeIndia,
-     query_tiles::switches::kQueryTilesCountryCode, "IN"},
-    {flag_descriptions::kQueryTilesCountryCodeBrazil,
-     query_tiles::switches::kQueryTilesCountryCode, "BR"},
-    {flag_descriptions::kQueryTilesCountryCodeNigeria,
-     query_tiles::switches::kQueryTilesCountryCode, "NG"},
-    {flag_descriptions::kQueryTilesCountryCodeIndonesia,
-     query_tiles::switches::kQueryTilesCountryCode, "ID"},
-};
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // The choices for --enable-download-warning-improvements. This really should
@@ -5515,44 +5483,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotificationPermissionRationaleBottomSheetDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNotificationPermissionBottomSheet)},
-    {"query-tiles", flag_descriptions::kQueryTilesName,
-     flag_descriptions::kQueryTilesDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(query_tiles::features::kQueryTiles,
-                                    kQueryTilesVariations,
-                                    "QueryTilesVariations")},
-    {"query-tiles-single-tier", flag_descriptions::kQueryTilesSingleTierName,
-     flag_descriptions::kQueryTilesSingleTierDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesSingleTier)},
-    {"query-tiles-enable-query-editing",
-     flag_descriptions::kQueryTilesEnableQueryEditingName,
-     flag_descriptions::kQueryTilesEnableQueryEditingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(query_tiles::features::kQueryTilesEnableQueryEditing)},
-    {"query-tiles-enable-trending",
-     flag_descriptions::kQueryTilesEnableTrendingName,
-     flag_descriptions::kQueryTilesEnableTrendingDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesEnableTrending)},
-    {"query-tiles-country-code", flag_descriptions::kQueryTilesCountryCode,
-     flag_descriptions::kQueryTilesCountryCodeDescription, kOsAndroid,
-     MULTI_VALUE_TYPE(kQueryTilesCountryChoices)},
-    {"query-tiles-disable-country-override",
-     flag_descriptions::kQueryTilesDisableCountryOverrideName,
-     flag_descriptions::kQueryTilesDisableCountryOverrideDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         query_tiles::features::kQueryTilesDisableCountryOverride)},
-    {"query-tiles-instant-fetch",
-     flag_descriptions::kQueryTilesInstantFetchName,
-     flag_descriptions::kQueryTilesInstantFetchDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(
-         query_tiles::switches::kQueryTilesInstantBackgroundTask)},
-    {"query-tiles-rank-tiles", flag_descriptions::kQueryTilesRankTilesName,
-     flag_descriptions::kQueryTilesRankTilesDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesRankTiles)},
-    {"query-tiles-swap-trending",
-     flag_descriptions::kQueryTilesSwapTrendingName,
-     flag_descriptions::kQueryTilesSwapTrendingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         query_tiles::features::kQueryTilesRemoveTrendingTilesAfterInactivity)},
     {"reengagement-notification",
      flag_descriptions::kReengagementNotificationName,
      flag_descriptions::kReengagementNotificationDescription, kOsAndroid,

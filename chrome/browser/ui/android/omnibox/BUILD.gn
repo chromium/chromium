@@ -210,7 +210,6 @@ android_library("java") {
     "//components/page_info/android:java",
     "//components/permissions/android:java",
     "//components/prefs/android:java",
-    "//components/query_tiles:java",
     "//components/search_engines/android:java",
     "//components/security_state/core:security_state_enums_java",
     "//components/signin/public/android:java",

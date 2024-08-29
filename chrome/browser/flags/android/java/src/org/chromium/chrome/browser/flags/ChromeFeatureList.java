@@ -411,8 +411,6 @@ public abstract class ChromeFeatureList {
     public static final String PWA_UPDATE_DIALOG_FOR_ICON = "PwaUpdateDialogForIcon";
     public static final String PWA_RESTORE_UI = "PwaRestoreUi";
     public static final String PWA_RESTORE_UI_AT_STARTUP = "PwaRestoreUiAtStartup";
-    public static final String QUERY_TILES = "QueryTiles";
-    public static final String QUERY_TILES_IN_ZPS_ON_NTP = "OmniboxQueryTilesInZPSOnNTP";
     public static final String QUICK_DELETE_FOR_ANDROID = "QuickDeleteForAndroid";
     public static final String QUICK_DELETE_ANDROID_FOLLOWUP = "QuickDeleteAndroidFollowup";
     public static final String QUICK_DELETE_ANDROID_SURVEY = "QuickDeleteAndroidSurvey";
@@ -658,7 +656,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(POST_GET_MEMORY_PRESSURE_TO_BACKGROUND, false);
     public static final CachedFlag sPrefetchBrowserInitiatedTriggers =
             newCachedFlag(PREFETCH_BROWSER_INITIATED_TRIGGERS, false);
-    public static final CachedFlag sQueryTiles = newCachedFlag(QUERY_TILES, false);
     public static final CachedFlag sRedirectExplicitCTAIntentsToExistingActivity =
             newCachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
     public static final CachedFlag sSafetyHubMagicStack =
@@ -783,7 +780,6 @@ public abstract class ChromeFeatureList {
                     sPaintPreviewDemo,
                     sPostGetMyMemoryStateToBackground,
                     sPrefetchBrowserInitiatedTriggers,
-                    sQueryTiles,
                     sRedirectExplicitCTAIntentsToExistingActivity,
                     sSafetyHubMagicStack,
                     sSearchEngineChoice,
