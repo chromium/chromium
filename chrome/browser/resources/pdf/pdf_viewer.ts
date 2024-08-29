@@ -869,6 +869,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.viewport.setSmoothScrolling(
             (data as unknown as {smoothScrolling: boolean}).smoothScrolling);
         return;
+      case 'startedFindInPage':
+        record(UserAction.FIND_IN_PAGE);
+        return;
       case 'touchSelectionOccurred':
         this.sendScriptingMessage({
           type: 'touchSelectionOccurred',

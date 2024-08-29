@@ -211,8 +211,10 @@ export enum UserAction {
   COPY = 70,
   PASTE_FIRST = 71,
   PASTE = 72,
+  FIND_IN_PAGE_FIRST = 73,
+  FIND_IN_PAGE = 74,
 
-  NUMBER_OF_ACTIONS = 73,
+  NUMBER_OF_ACTIONS = 75,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {

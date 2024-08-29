@@ -763,6 +763,16 @@ blink::WebURL PdfViewWebPlugin::LinkAtPosition(
 bool PdfViewWebPlugin::StartFind(const blink::WebString& search_text,
                                  bool case_sensitive,
                                  int identifier) {
+  if (find_identifier_ == -1) {
+    // Only go through this code path when `find_identifier_` is -1. i.e. The
+    // first time the user performs find-in-page, or after a StopFind() call.
+    // Since StartFind() gets called every time the user changes `search_text`,
+    // if this conditional did not exist, then SendStartedFindInPage() would
+    // get called too many times compared to the "Find" action in
+    // tools/metrics/actions/actions.xml.
+    SendStartedFindInPage();
+  }
+
   ResetRecentlySentFindUpdate();
   find_identifier_ = identifier;
   engine_->StartFind(search_text.Utf16(), case_sensitive);
@@ -2298,6 +2308,12 @@ void PdfViewWebPlugin::SendExecutedEditCommand(std::string_view edit_command) {
   base::Value::Dict message;
   message.Set("type", "executedEditCommand");
   message.Set("editCommand", edit_command);
+  client_->PostMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::SendStartedFindInPage() {
+  base::Value::Dict message;
+  message.Set("type", "startedFindInPage");
   client_->PostMessage(std::move(message));
 }
 

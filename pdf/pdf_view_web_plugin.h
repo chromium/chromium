@@ -602,6 +602,9 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // Notifies the frontend that `edit_command` got executed.
   void SendExecutedEditCommand(std::string_view edit_command);
 
+  // Notifies the frontend that find-in-page started.
+  void SendStartedFindInPage();
+
   // Sends document metadata data to the frontend.
   void SendMetadata();
 
