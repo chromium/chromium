@@ -42,8 +42,7 @@ void ContentNotificationClient::HandleNotificationInteraction(
   // object.
   NSDictionary<NSString*, id>* payload = [unprocessedPayload copy];
   ContentNotificationService* contentNotificationService =
-      ContentNotificationServiceFactory::GetForBrowserState(
-          GetLastUsedBrowserState());
+      ContentNotificationServiceFactory::GetForBrowserState(GetAnyProfile());
   ContentNotificationNAUConfiguration* config =
       [[ContentNotificationNAUConfiguration alloc] init];
   config.notification = response.notification;
@@ -55,7 +54,7 @@ void ContentNotificationClient::HandleNotificationInteraction(
         NotificationActionType::kNotificationActionTypeFeedbackClicked);
     NSDictionary<NSString*, NSString*>* feedbackPayload =
         contentNotificationService->GetFeedbackPayload(payload);
-    loadFeedbackWithPayloadAndClientId(feedbackPayload,
+    LoadFeedbackWithPayloadAndClientId(feedbackPayload,
                                        PushNotificationClientId::kContent);
   } else if ([response.actionIdentifier
                  isEqualToString:UNNotificationDefaultActionIdentifier]) {
@@ -71,7 +70,7 @@ void ContentNotificationClient::HandleNotificationInteraction(
     }
     base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
                               true);
-    loadUrlInNewTab(url);
+    LoadUrlInNewTab(url);
   } else if ([response.actionIdentifier
                  isEqualToString:UNNotificationDismissActionIdentifier]) {
     base::UmaHistogramBoolean("ContentNotifications.DismissAction", true);

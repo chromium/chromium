@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 
 #import "base/base64.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
-#import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -77,7 +78,7 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
       notification_response.notification.request.content.userInfo;
   DCHECK(user_info);
   HandleNotificationInteraction(notification_response.actionIdentifier,
-                                user_info);
+                                user_info, base::DoNothing());
 }
 
 UIBackgroundFetchResult
@@ -86,8 +87,7 @@ CommercePushNotificationClient::HandleNotificationReception(
   base::RecordAction(base::UserMetricsAction(
       "Commerce.PriceTracking.PushNotification.Received"));
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
-          GetLastUsedBrowserState());
+      OptimizationGuideServiceFactory::GetForBrowserState(GetAnyProfile());
   std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
       hint_notification_payload = ParseHintNotificationPayload(
           [notification objectForKey:kSerializedPayloadKey]);
@@ -121,24 +121,23 @@ CommercePushNotificationClient::RegisterActionableNotifications() {
 
 commerce::ShoppingService*
 CommercePushNotificationClient::GetShoppingService() {
-  return commerce::ShoppingServiceFactory::GetForBrowserState(
-      GetLastUsedBrowserState());
+  return commerce::ShoppingServiceFactory::GetForBrowserState(GetAnyProfile());
 }
 
 bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {
-  return ios::BookmarkModelFactory::GetForBrowserState(
-      GetLastUsedBrowserState());
+  return ios::BookmarkModelFactory::GetForBrowserState(GetAnyProfile());
 }
 
 void CommercePushNotificationClient::HandleNotificationInteraction(
     NSString* action_identifier,
     NSDictionary* user_info,
-    base::RunLoop* on_complete_for_testing) {
+    base::OnceClosure completion) {
   std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
       hint_notification_payload =
           CommercePushNotificationClient::ParseHintNotificationPayload(
               [user_info objectForKey:kSerializedPayloadKey]);
   if (!hint_notification_payload) {
+    std::move(completion).Run();
     return;
   }
 
@@ -146,6 +145,7 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
   if (!hint_notification_payload->has_payload() ||
       !price_drop_notification.ParseFromString(
           hint_notification_payload->payload().value())) {
+    std::move(completion).Run();
     return;
   }
 
@@ -161,7 +161,7 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
       base::RecordAction(base::UserMetricsAction(
           "Commerce.PriceTracking.PushNotification.NotificationTapped"));
     }
-    loadUrlInNewTab(GURL(price_drop_notification.destination_url()));
+    LoadUrlInNewTab(GURL(price_drop_notification.destination_url()));
   } else if ([action_identifier isEqualToString:kUntrackPriceIdentifier]) {
     base::RecordAction(base::UserMetricsAction(
         "Commerce.PriceTracking.PushNotification.UnTrackProductTapped"));
@@ -172,19 +172,14 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
     base::UmaHistogramBoolean("Commerce.PriceTracking.Untrack.BookmarkFound",
                               bookmark != nil);
     if (!bookmark) {
-      if (on_complete_for_testing) {
-        on_complete_for_testing->Quit();
-      }
+      std::move(completion).Run();
       return;
     }
     commerce::SetPriceTrackingStateForBookmark(
         GetShoppingService(), GetBookmarkModel(), bookmark, false,
-        base::BindOnce(^(bool success) {
-          if (on_complete_for_testing) {
-            on_complete_for_testing->Quit();
-          }
+        base::BindOnce([](bool success) {
           base::UmaHistogramBoolean("Commerce.PriceTracking.Untrack.Success",
                                     success);
-        }));
+        }).Then(std::move(completion)));
   }
 }

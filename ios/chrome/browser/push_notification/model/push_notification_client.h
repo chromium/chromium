@@ -62,19 +62,18 @@ class PushNotificationClient {
   PushNotificationClientId GetClientId();
 
   // Loads a url in a new tab once an active browser is ready.
-  void loadUrlInNewTab(const GURL& url);
+  // TODO(crbug.com/41497027): This API should includes an identifier of the
+  // Profile that should be used to open the URL which should come from the
+  // notification (maybe by including the gaia id of the associated profile).
+  void LoadUrlInNewTab(const GURL& url);
 
   // Loads the feedback view controller once an active browser is ready.
-  void loadFeedbackWithPayloadAndClientId(
+  // TODO(crbug.com/41497027): This API should includes an identifier of the
+  // Profile that should be used to open the URL which should come from the
+  // notification (maybe by including the gaia id of the associated profile).
+  void LoadFeedbackWithPayloadAndClientId(
       NSDictionary<NSString*, NSString*>* data,
       PushNotificationClientId clientId);
-
-  // Allows tests to set the last used ChromeBrowserState returned in
-  // GetLastUsedBrowserState().
-  void SetLastUsedChromeBrowserStateForTesting(
-      ChromeBrowserState* chrome_browser_state) {
-    last_used_browser_state_for_testing_ = chrome_browser_state;
-  }
 
  protected:
   // The unique string that is used to associate incoming push notifications to
@@ -83,7 +82,13 @@ class PushNotificationClient {
   // push notification server.
   PushNotificationClientId client_id_;
 
-  ChromeBrowserState* GetLastUsedBrowserState();
+  // Returns an arbitrary profile amongst the currently loaded profile. This
+  // means that this API is not safe when there are multiple profiles. Instead
+  // the push notification system should be re-designed to not depend on this
+  // method (either create specific manager per-profile, or include in the
+  // notification an identifier for the profile, e.g. gaia id).
+  // TODO(crbug.com/41497027): This API should be redesigned.
+  ChromeBrowserState* GetAnyProfile();
 
   // Returns the first active browser found with scene level
   // SceneActivationLevelForegroundActive.
@@ -92,6 +97,7 @@ class PushNotificationClient {
  private:
   friend class ::CommercePushNotificationClientTest;
   std::vector<GURL> urls_delayed_for_loading_;
+
   // Stores whether or not the feedback view controller should be shown when a
   // Browser is ready.
   bool feedback_presentation_delayed_ = false;
@@ -101,12 +107,9 @@ class PushNotificationClient {
 
   // Stores the feedback payload to be sent with the notification feedback.
   NSDictionary<NSString*, NSString*>* feedback_data_ = nil;
-  // Allows tests to override the last used ChromeBrowserState returned in
-  // GetLastUsedBrowserState().
-  raw_ptr<ChromeBrowserState> last_used_browser_state_for_testing_ = nullptr;
 
   // Loads a url in a new tab for a given browser.
-  void loadUrlInNewTab(const GURL& url, Browser* browser);
+  void LoadUrlInNewTab(const GURL& url, Browser* browser);
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_H_

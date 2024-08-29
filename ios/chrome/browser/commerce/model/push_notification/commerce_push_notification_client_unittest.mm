@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 
 #import "base/base64.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -35,8 +37,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -171,7 +175,8 @@ class CommercePushNotificationClientTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(builder).Build();
+    chrome_browser_state_ =
+        profile_manager_.AddBrowserStateWithBuilder(std::move(builder));
     browser_list_ =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];
@@ -187,8 +192,6 @@ class CommercePushNotificationClientTest : public PlatformTest {
     browser_list_->AddBrowser(browser_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
-    commerce_push_notification_client_.SetLastUsedChromeBrowserStateForTesting(
-        chrome_browser_state_.get());
     bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
         chrome_browser_state_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
@@ -213,12 +216,11 @@ class CommercePushNotificationClientTest : public PlatformTest {
 
   Browser* GetBackgroundBrowser() { return background_browser_.get(); }
 
-  void HandleNotificationInteraction(
-      NSString* action_identifier,
-      NSDictionary* user_info,
-      base::RunLoop* on_complete_for_testing = nil) {
+  void HandleNotificationInteraction(NSString* action_identifier,
+                                     NSDictionary* user_info,
+                                     base::OnceClosure completion) {
     commerce_push_notification_client_.HandleNotificationInteraction(
-        action_identifier, user_info, on_complete_for_testing);
+        action_identifier, user_info, std::move(completion));
   }
 
   std::vector<GURL>& GetUrlsDelayedForLoading() {
@@ -234,18 +236,14 @@ class CommercePushNotificationClientTest : public PlatformTest {
         .GetSceneLevelForegroundActiveBrowser();
   }
 
-  void SetLastUsedChromeBrowserStateForTesting(
-      CommercePushNotificationClient& push_notification_client) {
-    push_notification_client.SetLastUsedChromeBrowserStateForTesting(
-        chrome_browser_state_.get());
-  }
-
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
   CommercePushNotificationClient commerce_push_notification_client_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> background_browser_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  raw_ptr<TestChromeBrowserState> chrome_browser_state_;
   raw_ptr<BrowserList> browser_list_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
@@ -321,7 +319,6 @@ TEST_F(CommercePushNotificationClientTest, TestHintKeyRemovedUponNotification) {
   };
 
   CommercePushNotificationClient push_notification_client;
-  SetLastUsedChromeBrowserStateForTesting(push_notification_client);
 
   EXPECT_CALL(mock_delegate,
               RemoveFetchedEntriesByHintKeys(
@@ -334,7 +331,8 @@ TEST_F(CommercePushNotificationClientTest, TestNotificationInteraction) {
   NSDictionary* user_info = SerializeOptGuideCommercePayload();
 
   // Simulate user clicking 'visit site'.
-  HandleNotificationInteraction(kVisitSiteActionId, user_info);
+  HandleNotificationInteraction(kVisitSiteActionId, user_info,
+                                base::DoNothing());
 
   // Check PriceDropNotification Destination URL loaded.
   FakeUrlLoadingBrowserAgent* url_loader =
@@ -368,7 +366,8 @@ TEST_F(CommercePushNotificationClientTest, TestUntrackPrice) {
   EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(1);
 
   // Simulate user clicking 'visit site'.
-  HandleNotificationInteraction(kUntrackPriceActionId, user_info, &run_loop);
+  HandleNotificationInteraction(kUntrackPriceActionId, user_info,
+                                run_loop.QuitClosure());
   run_loop.Run();
   histogram_tester.ExpectBucketCount(kBookmarkFoundHistogramName,
                                      /*sample=*/true, /*expected_count=*/1);
@@ -386,7 +385,8 @@ TEST_F(CommercePushNotificationClientTest, TestNoBookmarkFound) {
   EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(0);
 
   // Simulate user clicking 'visit site'.
-  HandleNotificationInteraction(kUntrackPriceActionId, user_info, &run_loop);
+  HandleNotificationInteraction(kUntrackPriceActionId, user_info,
+                                run_loop.QuitClosure());
   run_loop.Run();
   histogram_tester.ExpectBucketCount(kBookmarkFoundHistogramName,
                                      /*sample=*/false, /*expected_count=*/1);
@@ -403,7 +403,8 @@ TEST_F(CommercePushNotificationClientTest, TestUntrackPriceFailed) {
   EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(1);
 
   // Simulate user clicking 'visit site'.
-  HandleNotificationInteraction(kUntrackPriceActionId, user_info, &run_loop);
+  HandleNotificationInteraction(kUntrackPriceActionId, user_info,
+                                run_loop.QuitClosure());
   run_loop.Run();
   histogram_tester.ExpectBucketCount(kUntrackSuccessHistogramName,
                                      /*sample=*/false, /*expected_count=*/1);
@@ -416,7 +417,8 @@ TEST_F(CommercePushNotificationClientTest, TestBrowserInitialization) {
   NSDictionary* user_info = SerializeOptGuideCommercePayload();
 
   // Simulate user clicking 'visit site'.
-  HandleNotificationInteraction(kVisitSiteActionId, user_info);
+  HandleNotificationInteraction(kVisitSiteActionId, user_info,
+                                base::DoNothing());
   EXPECT_EQ(1u, GetUrlsDelayedForLoading().size());
   CommercePushNotificationClient* commerce_push_notification_client =
       GetCommercePushNotificationClient();
