@@ -80,7 +80,7 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   // Assumes that the `store_` is initialized.
   const CookieSpecificsEntries& CookieSpecificsInStore() const;
   bool IsInitialDataReadFinishedForTest() const;
-  void SetOnCommitCallbackForTest(base::RepeatingClosure callback);
+  void SetOnStoreCommitCallbackForTest(base::RepeatingClosure callback);
 
  private:
   using StoreWithCache =
@@ -98,7 +98,7 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   // creation.
   bool is_initial_data_read_finished_ = false;
 
-  base::RepeatingClosure on_commit_callback_for_test_;
+  base::RepeatingClosure on_store_commit_callback_for_test_;
 
   // Reads and writes data from/to disk, maintains an in-memory copy of the
   // data.

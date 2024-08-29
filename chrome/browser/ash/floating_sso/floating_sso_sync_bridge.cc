@@ -216,9 +216,9 @@ bool FloatingSsoSyncBridge::IsInitialDataReadFinishedForTest() const {
   return is_initial_data_read_finished_;
 }
 
-void FloatingSsoSyncBridge::SetOnCommitCallbackForTest(
+void FloatingSsoSyncBridge::SetOnStoreCommitCallbackForTest(
     base::RepeatingClosure callback) {
-  on_commit_callback_for_test_ = std::move(callback);
+  on_store_commit_callback_for_test_ = std::move(callback);
 }
 
 void FloatingSsoSyncBridge::OnStoreCreated(
@@ -258,8 +258,8 @@ void FloatingSsoSyncBridge::ProcessQueuedCookies() {
 
 void FloatingSsoSyncBridge::OnStoreCommit(
     const std::optional<syncer::ModelError>& error) {
-  if (on_commit_callback_for_test_) {
-    on_commit_callback_for_test_.Run();
+  if (on_store_commit_callback_for_test_) {
+    on_store_commit_callback_for_test_.Run();
   }
   if (error) {
     change_processor()->ReportError(*error);

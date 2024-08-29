@@ -419,7 +419,7 @@ TEST(FloatingSsoSyncBridgeInitialization, EventsWhileStoreIsLoading) {
           1, /*creation_time=*/base::Time::Now());
   // Used for waiting for the two store commits to be finalized.
   base::test::TestFuture<void> commit_future;
-  bridge->SetOnCommitCallbackForTest(base::BarrierClosure(
+  bridge->SetOnStoreCommitCallbackForTest(base::BarrierClosure(
       /*num_callbacks=*/2, commit_future.GetRepeatingCallback()));
   bridge->AddOrUpdateCookie(add_specifics);
 

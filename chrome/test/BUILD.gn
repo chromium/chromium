@@ -12089,6 +12089,7 @@ if (!is_android) {
       sources += [
         "//chrome/browser/sync/test/integration/single_client_app_list_sync_test.cc",
         "//chrome/browser/sync/test/integration/single_client_arc_package_sync_test.cc",
+        "//chrome/browser/sync/test/integration/single_client_cookies_sync_test.cc",
         "//chrome/browser/sync/test/integration/single_client_os_preferences_sync_test.cc",
         "//chrome/browser/sync/test/integration/single_client_printers_sync_test.cc",
         "//chrome/browser/sync/test/integration/single_client_wifi_configuration_sync_test.cc",
@@ -12106,6 +12107,8 @@ if (!is_android) {
         "//chrome/browser/ash/app_list/test:test_support",
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:browser_util",
+        "//chrome/browser/ash/floating_sso",
+        "//chrome/browser/ash/floating_sso:test_support",
         "//chrome/browser/ash/printing",
         "//chrome/browser/ash/sync",
         "//chrome/browser/ash/system_web_apps/test_support",

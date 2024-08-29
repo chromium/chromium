@@ -218,8 +218,9 @@ class FloatingSsoTest : public policy::PolicyTest {
                                  const std::string& cookie_line) {
     // Used for waiting for the store commit to be finalized.
     base::test::TestFuture<void> commit_future;
-    floating_sso_service().GetBridgeForTesting()->SetOnCommitCallbackForTest(
-        commit_future.GetRepeatingCallback());
+    floating_sso_service()
+        .GetBridgeForTesting()
+        ->SetOnStoreCommitCallbackForTest(commit_future.GetRepeatingCallback());
 
     // Used for waiting for the cookie change event (INSERTED) to be dispatched.
     base::test::TestFuture<const net::CookieChangeInfo&> cookie_change_future;
@@ -239,8 +240,9 @@ class FloatingSsoTest : public policy::PolicyTest {
       const std::string& cookie_name) {
     // Used for waiting for the store commit to be finalized.
     base::test::TestFuture<void> commit_future;
-    floating_sso_service().GetBridgeForTesting()->SetOnCommitCallbackForTest(
-        commit_future.GetRepeatingCallback());
+    floating_sso_service()
+        .GetBridgeForTesting()
+        ->SetOnStoreCommitCallbackForTest(commit_future.GetRepeatingCallback());
 
     // Used for waiting for the cookie change event (EXPLICIT) to be dispatched.
     base::test::TestFuture<const net::CookieChangeInfo&> cookie_change_future;
@@ -262,8 +264,9 @@ class FloatingSsoTest : public policy::PolicyTest {
       const std::string& cookie_name) {
     // Used for waiting for the two store commits to be finalized.
     base::test::TestFuture<void> commit_future;
-    floating_sso_service().GetBridgeForTesting()->SetOnCommitCallbackForTest(
-        base::BarrierClosure(
+    floating_sso_service()
+        .GetBridgeForTesting()
+        ->SetOnStoreCommitCallbackForTest(base::BarrierClosure(
             /*num_callbacks=*/2, commit_future.GetRepeatingCallback()));
 
     // Used for waiting for the cookie change events (OVERWRITE, INSERTED) to be
@@ -397,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FloatingSsoStopsListeningAndResumes) {
 
   // We fetch and commit both cookies again, so we need to wait for 2 commits.
   base::test::TestFuture<void> commit_future;
-  floating_sso_service().GetBridgeForTesting()->SetOnCommitCallbackForTest(
+  floating_sso_service().GetBridgeForTesting()->SetOnStoreCommitCallbackForTest(
       base::BarrierClosure(
           /*num_callbacks=*/2, commit_future.GetRepeatingCallback()));
 
