@@ -107,6 +107,7 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   bool is_visible_ = false;
   bool is_active_ = false;
   bool is_always_on_top_ = false;
+  bool was_active_before_minimize_ = false;
 
   enum class WindowState {
     kNormal,
