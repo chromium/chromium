@@ -604,6 +604,14 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Restart now
       </message>
       <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        Relaunch Chrome to apply the setting
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        Your tabs will reopen after relaunching.
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
       <message translateable="false" name="IDS_AUTOFILL_OPTIONS_UNDO_TOGGLE_CHANGE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
         Undo setting change
       </message>

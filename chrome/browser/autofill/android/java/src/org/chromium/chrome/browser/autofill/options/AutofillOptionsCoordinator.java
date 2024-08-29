@@ -122,6 +122,12 @@ public class AutofillOptionsCoordinator {
     private PropertyModel buildRestartConfirmationDialog() {
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(
+                        ModalDialogProperties.TITLE,
+                        getString(R.string.autofill_options_restart_prompt_title))
+                .with(
+                        ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                        getString(R.string.autofill_options_restart_prompt_text))
+                .with(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         getString(R.string.autofill_options_confirm_restart))
                 .with(
