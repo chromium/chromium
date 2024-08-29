@@ -12,7 +12,7 @@
 #import "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 
 // static

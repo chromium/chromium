@@ -10,7 +10,7 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
 instance_id::InstanceIDProfileService*

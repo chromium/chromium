@@ -8,7 +8,7 @@
 #include <string>
 
 #import "base/values.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/webui/web_ui_ios_controller.h"
 
 namespace web {

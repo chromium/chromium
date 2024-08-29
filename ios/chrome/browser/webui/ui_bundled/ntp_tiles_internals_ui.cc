@@ -16,7 +16,7 @@
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h"
 #include "ios/chrome/browser/ntp_tiles/model/ios_popular_sites_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web/public/webui/web_ui_ios.h"

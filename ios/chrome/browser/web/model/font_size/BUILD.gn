@@ -21,6 +21,7 @@ source_set("font_size") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/web/model:feature_flags",
     "//ios/components/ui_util",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",

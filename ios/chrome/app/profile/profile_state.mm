@@ -10,7 +10,7 @@
 #import "base/types/cxx23_to_underlying.h"
 #import "ios/chrome/app/profile/profile_state_agent.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // A sub-class of CRBProtocolObservers that declares it conforms to the
 // ProfileStateObserver protocol to please the compiler as it can't see

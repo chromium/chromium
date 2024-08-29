@@ -14,7 +14,7 @@
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/ios/browser/language_detection_model_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
 
 // static

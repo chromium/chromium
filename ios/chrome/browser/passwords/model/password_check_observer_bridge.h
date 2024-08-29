@@ -10,7 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // Objective-C protocol mirroring IOSChromePasswordCheckManager::Observer.
 @protocol PasswordCheckObserver <NSObject>

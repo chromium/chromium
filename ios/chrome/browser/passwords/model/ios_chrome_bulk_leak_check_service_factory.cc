@@ -14,7 +14,7 @@
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 #include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #include "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "components/local_state/local_state_utils.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web/public/webui/url_data_source_ios.h"

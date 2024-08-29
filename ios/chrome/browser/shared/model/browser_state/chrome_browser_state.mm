@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-
 #import <memory>
 #import <utility>
 
@@ -12,6 +10,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/variations/net/variations_http_headers.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/thread/web_thread.h"

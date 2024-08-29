@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace metrics {
 

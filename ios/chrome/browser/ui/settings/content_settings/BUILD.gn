@@ -122,6 +122,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
   ]
 }

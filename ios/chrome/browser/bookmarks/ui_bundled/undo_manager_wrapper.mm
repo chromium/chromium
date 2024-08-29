@@ -9,8 +9,8 @@
 #import "components/undo/bookmark_undo_service.h"
 #import "components/undo/undo_manager.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/undo_manager_bridge_observer.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @interface UndoManagerWrapper () <UndoManagerBridgeObserver> {
   std::unique_ptr<bookmarks::UndoManagerBridge> _bridge;

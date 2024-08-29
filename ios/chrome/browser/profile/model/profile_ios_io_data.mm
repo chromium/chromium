@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/profile/model/profile_ios_io_data.h"
+
 #import <stddef.h>
 
 #import <string>
@@ -35,9 +37,8 @@
 #import "ios/chrome/browser/net/model/ios_chrome_http_user_agent_settings.h"
 #import "ios/chrome/browser/net/model/ios_chrome_network_delegate.h"
 #import "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
-#import "ios/chrome/browser/profile/model/profile_ios_io_data.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/public/browsing_data/system_cookie_store_util.h"

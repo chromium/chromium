@@ -36,6 +36,7 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -134,6 +135,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test/app:test_support",
   ]

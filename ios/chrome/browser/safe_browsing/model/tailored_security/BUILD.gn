@@ -43,6 +43,7 @@ source_set("infobar_delegates") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/web/public",
   ]

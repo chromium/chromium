@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/profile/model/off_the_record_profile_ios_io_data.h"
+
 #import <UIKit/UIKit.h>
 
 #import <utility>
@@ -16,9 +18,8 @@
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/net/model/ios_chrome_network_delegate.h"
 #import "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
-#import "ios/chrome/browser/profile/model/off_the_record_profile_ios_io_data.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/public/thread/web_task_traits.h"

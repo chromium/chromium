@@ -48,6 +48,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/update_client/model",
     "//ios/chrome/common",
     "//ios/components/security_interstitials/safe_browsing",

@@ -105,6 +105,7 @@ source_set("eg_app_support+eg2") {
     "//components/language/core/browser",
     "//components/translate/core/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/test/app:test_support",
   ]

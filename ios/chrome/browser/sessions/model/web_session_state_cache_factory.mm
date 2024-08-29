@@ -10,12 +10,12 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
+#import "ios/chrome/browser/sessions/model/web_session_state_cache_web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
-#import "ios/chrome/browser/sessions/model/web_session_state_cache_web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 // C++ wrapper around WebSessionStateCache, owning the WebSessionStateCache and

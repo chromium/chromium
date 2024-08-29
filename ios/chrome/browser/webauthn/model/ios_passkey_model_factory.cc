@@ -13,7 +13,7 @@
 #include "components/webauthn/core/browser/passkey_sync_bridge.h"
 #include "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #include "ios/web/public/browser_state.h"
 

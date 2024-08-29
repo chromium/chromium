@@ -42,5 +42,6 @@ source_set("test_support") {
     "//components/optimization_guide/core",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }

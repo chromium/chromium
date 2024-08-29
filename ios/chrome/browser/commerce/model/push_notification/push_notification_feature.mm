@@ -12,7 +12,7 @@
 #import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 bool IsPriceTrackingEnabled(ChromeBrowserState* browser_state) {
   if (!IsPriceNotificationsEnabled()) {

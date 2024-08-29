@@ -10,7 +10,7 @@
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 @implementation PlusAddressAppInterface

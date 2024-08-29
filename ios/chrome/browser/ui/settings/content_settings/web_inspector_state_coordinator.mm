@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_mediator.h"
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_table_view_controller.h"

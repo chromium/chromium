@@ -9,7 +9,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 #include "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/signin/model/ios_chrome_signin_client.h"
 
 // static

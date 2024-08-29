@@ -12,6 +12,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
     "//services/network/public/cpp",
   ]
   public_deps = [

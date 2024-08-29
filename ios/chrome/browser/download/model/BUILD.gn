@@ -57,6 +57,7 @@ source_set("model") {
     "//ios/chrome/browser/overlays/model/public/common/confirmation:util",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",

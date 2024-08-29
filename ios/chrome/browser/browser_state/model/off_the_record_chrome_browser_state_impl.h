@@ -9,7 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "ios/chrome/browser/profile/model/off_the_record_profile_ios_io_data.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace sync_preferences {
 class PrefServiceSyncable;

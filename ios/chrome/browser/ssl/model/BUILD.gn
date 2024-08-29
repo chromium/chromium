@@ -28,6 +28,7 @@ source_set("model") {
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/tabs/model",

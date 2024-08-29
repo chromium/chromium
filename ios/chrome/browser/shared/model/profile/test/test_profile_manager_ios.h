@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/observer_list.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

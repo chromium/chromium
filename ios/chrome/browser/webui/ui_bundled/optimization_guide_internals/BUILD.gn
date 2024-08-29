@@ -16,6 +16,7 @@ source_set("optimization_guide_internals") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
     "//ios/web/public/webui",
   ]

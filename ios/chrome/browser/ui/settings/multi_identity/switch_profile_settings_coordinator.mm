@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_view_controller.h"
 

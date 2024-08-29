@@ -9,7 +9,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 

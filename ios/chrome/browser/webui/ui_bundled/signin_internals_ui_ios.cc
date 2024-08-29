@@ -11,7 +11,7 @@
 #include "components/grit/dev_ui_components_resources.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #include "ios/chrome/browser/signin/model/identity_manager_factory.h"
