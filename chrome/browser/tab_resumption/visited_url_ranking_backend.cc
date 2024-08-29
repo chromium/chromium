@@ -21,6 +21,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -126,17 +127,28 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
       return;
     }
 
-    PassResults(std::move(aggregates));
+    ranking_service_->DecorateURLVisitAggregates(
+        {}, std::move(aggregates),
+        base::BindOnce(&FetchAndRankFlow::PassResults,
+                       base::RetainedRef(this)));
   }
 
   // Translates results to Java objects and passes results to |j_callback_|.
-  void PassResults(std::vector<URLVisitAggregate> aggregates) {
+  void PassResults(visited_url_ranking::ResultStatus status,
+                   std::vector<URLVisitAggregate> aggregates) {
     for (const URLVisitAggregate& aggregate : aggregates) {
       // TODO(crbug.com/337858147): Choose representative member. For now, just
       // take the first one.
       if (aggregate.fetcher_data_map.empty()) {
         continue;
       }
+      auto decoration =
+          !aggregate.decorations.empty()
+              ? base::android::ConvertUTF16ToJavaString(
+                    env_,
+                    visited_url_ranking::GetMostRelevantDecoration(aggregate)
+                        .GetDisplayString())
+              : nullptr;
       const auto& fetcher_entry = *aggregate.fetcher_data_map.begin();
       std::visit(
           visited_url_ranking::URLVisitVariantHelper{
@@ -162,7 +174,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
                     aggregate.request_id.is_null()
                         ? -1LL
                         : aggregate.request_id.GetUnsafeValue(),
-                    nullptr, nullptr, !is_local_tab, j_suggestions_);
+                    nullptr, decoration, !is_local_tab, j_suggestions_);
               },
               [&](const URLVisitAggregate::HistoryData& history_data) {
                 bool need_match_local_tab =
@@ -190,9 +202,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
                         ? base::android::ConvertUTF8ToJavaString(
                               env_, *history_data.last_app_id)
                         : nullptr,
-                    // TODO(b/358399176): Plumb the "reason" to show the Tab
-                    // to Java.
-                    nullptr, need_match_local_tab, j_suggestions_);
+                    decoration, need_match_local_tab, j_suggestions_);
               }},
           fetcher_entry.second);
     }
