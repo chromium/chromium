@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -35,6 +36,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.ParseURLResult;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.ParseURLStatus;
@@ -78,9 +80,9 @@ public class DataSharingTabManagerUnitTest {
     public void setUp() {
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        ObservableSupplier<Profile> profileSupplier = new ObservableSupplierImpl<Profile>(mProfile);
+        ObservableSupplier<Profile> profileSupplier = new ObservableSupplierImpl<>(mProfile);
         Supplier<BottomSheetController> bottomSheetControllerSupplier =
-                new ObservableSupplierImpl<BottomSheetController>(mBottomSheetController);
+                new ObservableSupplierImpl<>(mBottomSheetController);
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mDataSharingTabSwitcherDelegate,
@@ -106,6 +108,13 @@ public class DataSharingTabManagerUnitTest {
         mActivity = activity;
     }
 
+    private void mockSuccessfulParseDataSharingURL() {
+        GroupToken groupToken = new GroupToken(GROUP_ID, ACCESS_TOKEN);
+        ParseURLResult result =
+                new DataSharingService.ParseURLResult(groupToken, ParseURLStatus.SUCCESS);
+        when(mDataSharingService.parseDataSharingURL(any())).thenReturn(result);
+    }
+
     @Test
     public void testInvalidURL() {
         doReturn(new DataSharingService.ParseURLResult(null, ParseURLStatus.UNKNOWN))
@@ -116,32 +125,24 @@ public class DataSharingTabManagerUnitTest {
 
     @Test
     public void testInviteFlowWithExistingTabGroup() {
-        doReturn(
-                        new DataSharingService.ParseURLResult(
-                                new GroupToken(GROUP_ID, "accessToken"), ParseURLStatus.SUCCESS))
-                .when(mDataSharingService)
-                .parseDataSharingURL(any());
+        mockSuccessfulParseDataSharingURL();
 
         String[] tabId = new String[] {GROUP_ID};
         doReturn(tabId).when(mTabGroupSyncService).getAllGroupIds();
 
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(GROUP_ID);
 
-        mDataSharingTabManager.initiateJoinFlow(null);
+        mDataSharingTabManager.initiateJoinFlow(/* dataSharingURL= */ null);
         verify(mDataSharingTabSwitcherDelegate).openTabGroupWithTabId(TAB_ID);
     }
 
     @Test
     public void testInviteFlowWithNewTabGroup() {
-        doReturn(
-                        new DataSharingService.ParseURLResult(
-                                new GroupToken(GROUP_ID, ACCESS_TOKEN), ParseURLStatus.SUCCESS))
-                .when(mDataSharingService)
-                .parseDataSharingURL(any());
+        mockSuccessfulParseDataSharingURL();
 
         doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
 
-        mDataSharingTabManager.initiateJoinFlow(null);
+        mDataSharingTabManager.initiateJoinFlow(/* dataSharingURL= */ null);
         verify(mTabGroupSyncService).addObserver(any());
         verify(mDataSharingService).addMember(eq(GROUP_ID), eq(ACCESS_TOKEN), any());
     }
@@ -160,5 +161,19 @@ public class DataSharingTabManagerUnitTest {
                         /* tokenSecret= */ any(),
                         /* config= */ any());
         mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.SWIPE);
+    }
+
+    @Test
+    public void testDestroy() {
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        mockSuccessfulParseDataSharingURL();
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
+        mDataSharingTabManager.initiateJoinFlow(/* dataSharingURL= */ null);
+        // Need to get an observer to verify destroy removes it.
+        verify(mTabGroupSyncService).addObserver(any());
+
+        mDataSharingTabManager.destroy();
+        verify(mTabGroupSyncService).removeObserver(any());
     }
 }

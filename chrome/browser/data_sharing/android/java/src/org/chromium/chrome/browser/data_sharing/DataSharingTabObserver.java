@@ -15,13 +15,13 @@ import java.lang.ref.WeakReference;
 
 /** This class is responsible for observing tab activities for data sharing services. */
 class DataSharingTabObserver implements TabGroupSyncService.Observer {
-    private String mDataSharingGroupId;
-    private WeakReference<DataSharingTabManager> mDataSharingTabManager;
+    private final String mDataSharingGroupId;
+    private final WeakReference<DataSharingTabManager> mDataSharingTabManager;
 
     public DataSharingTabObserver(
             String dataSharingGroupId, DataSharingTabManager dataSharingTabManager) {
         mDataSharingGroupId = dataSharingGroupId;
-        mDataSharingTabManager = new WeakReference<DataSharingTabManager>(dataSharingTabManager);
+        mDataSharingTabManager = new WeakReference<>(dataSharingTabManager);
     }
 
     @Override

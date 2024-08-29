@@ -53,7 +53,7 @@ public class DataSharingTabManager {
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
-    private List<DataSharingTabObserver> mTabGroupObserversList;
+    private final List<DataSharingTabObserver> mTabGroupObserversList;
     private Callback<Profile> mProfileObserver;
 
     /**
@@ -62,7 +62,7 @@ public class DataSharingTabManager {
      * @param tabSwitcherDelegate The delegate used to communicate with the tab switcher.
      * @param profileSupplier The supplier of the currently applicable profile.
      * @param bottomSheetControllerSupplier The supplier of bottom sheet state controller.
-     * @param shareDelegateSupplier The supplier of dhare delegate.
+     * @param shareDelegateSupplier The supplier of share delegate.
      * @param windowAndroid The window base class that has the minimum functionality.
      */
     public DataSharingTabManager(
@@ -76,10 +76,17 @@ public class DataSharingTabManager {
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mWindowAndroid = windowAndroid;
-        mTabGroupObserversList = new ArrayList<DataSharingTabObserver>();
+        mTabGroupObserversList = new ArrayList<>();
         assert mProfileSupplier != null;
         assert mBottomSheetControllerSupplier != null;
         assert mShareDelegateSupplier != null;
+    }
+
+    /** Cleans up any outstanding resources. */
+    public void destroy() {
+        for (DataSharingTabObserver observer : new ArrayList<>(mTabGroupObserversList)) {
+            deleteObserver(observer);
+        }
     }
 
     /**
@@ -120,7 +127,7 @@ public class DataSharingTabManager {
         }
 
         GroupToken groupToken = parseResult.groupToken;
-        // Verify that tabgroup does not already exist.
+        // Verify the tab group does not already exist.
         SavedTabGroup existingGroup =
                 getTabGroupForCollabId(groupToken.groupId, tabGroupSyncService);
         if (existingGroup != null) {
@@ -133,7 +140,6 @@ public class DataSharingTabManager {
         // TODO(b/354003616): Show loading dialog while waiting for tab.
 
         DataSharingTabObserver observer = new DataSharingTabObserver(groupToken.groupId, this);
-
         mTabGroupObserversList.add(observer);
         tabGroupSyncService.addObserver(observer);
 
@@ -230,7 +236,7 @@ public class DataSharingTabManager {
 
         Callback<DataSharingService.GroupDataOrFailureOutcome> createGroupCallback =
                 (result) -> {
-                    // TODO: SDK delegeta should run results on UI thread.
+                    // TODO: SDK delegate should run results on UI thread.
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {

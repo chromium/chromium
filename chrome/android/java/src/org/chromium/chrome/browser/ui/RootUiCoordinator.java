@@ -694,6 +694,10 @@ public class RootUiCoordinator
             mAppMenuCoordinator.destroy();
         }
 
+        if (mDataSharingTabManager != null) {
+            mDataSharingTabManager.destroy();
+        }
+
         if (mTopUiThemeColorProvider != null) {
             mTopUiThemeColorProvider.destroy();
             mTopUiThemeColorProvider = null;
