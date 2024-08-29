@@ -6,7 +6,5 @@
 
 #import <Foundation/Foundation.h>
 
-NSString* const kWhatsNewUsageEntryKey = @"userHasInteractedWithWhatsNew";
-
 NSString* const kWhatsNewM116UsageEntryKey =
     @"userHasInteractedWithWhatsNewM116";

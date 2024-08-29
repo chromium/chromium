@@ -1249,4 +1249,7 @@ void MigrateObsoleteUserDefault() {
       removeObjectForKey:@"MostRecentTimestampBlueDotPromoShownInOverflowMenu"];
   [defaults
       removeObjectForKey:@"MostRecentTimestampBlueDotPromoShownInSettingsMenu"];
+
+  // Added 08/2024.
+  [defaults removeObjectForKey:@"userHasInteractedWithWhatsNew"];
 }
