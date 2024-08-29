@@ -204,14 +204,9 @@ SyncTest::SyncTest(TestType test_type)
         {switches::kSyncFilterOutInactiveDevicesForSingleClient,
          {{switches::kSyncActiveDeviceMargin.name, "-2d"}}});
   }
-  std::vector<base::test::FeatureRef> disabled_features;
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/329426609): Re-enable the feature after fixing the flakes.
-  disabled_features.push_back(switches::kSeedAccountsRevamp);
-#endif
-  if (!enabled_features.empty() || !disabled_features.empty()) {
+  if (!enabled_features.empty()) {
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+                                                /*disabled_features=*/{});
   }
 
 #if !BUILDFLAG(IS_ANDROID)
