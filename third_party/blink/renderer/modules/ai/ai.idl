@@ -16,7 +16,7 @@ enum AICapabilityAvailability {
 ]
 interface AI {
   [
-    // TODO: Add Measure
+    Measure,
     RuntimeEnabled=AIPromptAPI
   ]
   readonly attribute AIAssistantFactory assistant;

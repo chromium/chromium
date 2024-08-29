@@ -10777,17 +10777,17 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4976" label="LinkRelPayment"/>
   <int value="4977" label="V8GPUAdapter_RequestAdapterInfo_Method"/>
   <int value="4978" label="OBSOLETE_V8ModelGenericSession_Destroy_Method"/>
-  <int value="4979" label="V8AITextSession_Execute_Method"/>
-  <int value="4980" label="V8AITextSession_ExecuteStreaming_Method"/>
-  <int value="4981" label="V8AI_CanCreateGenericSession_Method"/>
-  <int value="4982" label="V8AI_CreateGenericSession_Method"/>
-  <int value="4983" label="V8AI_DefaultGenericSessionOptions_Method"/>
-  <int value="4984" label="V8AITextSession_Prompt_Method"/>
-  <int value="4985" label="V8AITextSession_PromptStreaming_Method"/>
-  <int value="4986" label="V8AI_CanCreateTextSession_Method"/>
-  <int value="4987" label="V8AI_CreateTextSession_Method"/>
+  <int value="4979" label="OBSOLETE_V8AITextSession_Execute_Method"/>
+  <int value="4980" label="OBSOLETE_V8AITextSession_ExecuteStreaming_Method"/>
+  <int value="4981" label="OBSOLETE_V8AI_CanCreateGenericSession_Method"/>
+  <int value="4982" label="OBSOLETE_V8AI_CreateGenericSession_Method"/>
+  <int value="4983" label="OBSOLETE_V8AI_DefaultGenericSessionOptions_Method"/>
+  <int value="4984" label="OBSOLETE_V8AITextSession_Prompt_Method"/>
+  <int value="4985" label="OBSOLETE_V8AITextSession_PromptStreaming_Method"/>
+  <int value="4986" label="OBSOLETE_V8AI_CanCreateTextSession_Method"/>
+  <int value="4987" label="OBSOLETE_V8AI_CreateTextSession_Method"/>
   <int value="4988" label="OBSOLETE_V8AI_DefaultTextSessionOptions_Method"/>
-  <int value="4989" label="V8AITextSession_Destroy_Method"/>
+  <int value="4989" label="OBSOLETE_V8AITextSession_Destroy_Method"/>
   <int value="4990" label="ImportMapIntegrity"/>
   <int value="4991" label="SelectElementAppearanceNone"/>
   <int value="4992" label="RubyPositionAlternate"/>
@@ -10838,13 +10838,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5035" label="WebGPUSubgroupsFeatures"/>
   <int value="5036" label="AudioContextOnError"/>
   <int value="5037" label="NoVarySearchPrerender"/>
-  <int value="5038" label="V8AITextSession_Clone_Method"/>
+  <int value="5038" label="OBSOLETE_V8AITextSession_Clone_Method"/>
   <int value="5039" label="GamepadHapticActuatorType"/>
   <int value="5040" label="SelectionDirection"/>
   <int value="5041" label="SelectionGetComposedRanges"/>
   <int value="5042" label="EyeDropperOpen"/>
   <int value="5043" label="FlexNewColumnWrapIntrinsicSize"/>
-  <int value="5044" label="V8AI_TextModelInfo_Method"/>
+  <int value="5044" label="OBSOLETE_V8AI_TextModelInfo_Method"/>
   <int value="5045" label="EventTimingSimulatedClickWithNoKeyboardInteraction"/>
   <int value="5046" label="ViewTransitionGroupNesting"/>
   <int value="5047" label="V8LanguageDetector_Detect_Method"/>
@@ -10881,6 +10881,25 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5077" label="V8AISummarizer_Type_AttributeGetter"/>
   <int value="5078" label="V8AISummarizer_Format_AttributeGetter"/>
   <int value="5079" label="V8AISummarizer_Length_AttributeGetter"/>
+  <int value="5080"
+      label="V8AIAssistantCapabilities_Available_AttributeGetter"/>
+  <int value="5081"
+      label="V8AIAssistantCapabilities_DefaultTopK_AttributeGetter"/>
+  <int value="5082" label="V8AIAssistantCapabilities_MaxTopK_AttributeGetter"/>
+  <int value="5083"
+      label="V8AIAssistantCapabilities_DefaultTemperature_AttributeGetter"/>
+  <int value="5084" label="V8AIAssistantFactory_Capabilities_Method"/>
+  <int value="5085" label="V8AIAssistantFactory_Create_Method"/>
+  <int value="5086" label="V8AI_Assistant_AttributeGetter"/>
+  <int value="5087" label="V8AIAssistant_MaxTokens_AttributeGetter"/>
+  <int value="5088" label="V8AIAssistant_TokensSoFar_AttributeGetter"/>
+  <int value="5089" label="V8AIAssistant_TokensLeft_AttributeGetter"/>
+  <int value="5090" label="V8AIAssistant_TopK_AttributeGetter"/>
+  <int value="5091" label="V8AIAssistant_Temperature_AttributeGetter"/>
+  <int value="5092" label="V8AIAssistant_Clone_Method"/>
+  <int value="5093" label="V8AIAssistant_Destroy_Method"/>
+  <int value="5094" label="V8AIAssistant_Prompt_Method"/>
+  <int value="5095" label="V8AIAssistant_PromptStreaming_Method"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

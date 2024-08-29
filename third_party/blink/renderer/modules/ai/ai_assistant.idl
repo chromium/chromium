@@ -10,35 +10,40 @@
 ]
 interface AIAssistant {
   [
-    // TODO: add Measure,
+    Measure,
     CallWith=ScriptState,
     RaisesException,
     RuntimeEnabled=AIPromptAPI
   ]
   Promise<DOMString> prompt(DOMString input);
   [
-    // TODO: add Measure,
+    Measure,
     CallWith=ScriptState,
     RaisesException,
     RuntimeEnabled=AIPromptAPI
   ]
   ReadableStream promptStreaming(DOMString input);
 
+  [Measure]
   readonly attribute unsigned long long maxTokens;
+  [Measure]
   readonly attribute unsigned long long tokensSoFar;
+  [Measure]
   readonly attribute unsigned long long tokensLeft;
 
+  [Measure]
   readonly attribute unsigned long topK;
+  [Measure]
   readonly attribute float temperature;
 
   [
-    // TODO: add Measure,
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AIAssistant> clone();
   [
-    // TODO: add Measure,
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]
