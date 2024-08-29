@@ -403,35 +403,24 @@ void AIManagerKeyedService::CreateSummarizer(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
     blink::mojom::AISummarizerOptionsPtr options,
     const std::optional<std::string>& shared_context) {
-  mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
-      std::move(client));
-  CHECK(browser_context_);
-  OptimizationGuideKeyedService* service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_.get()));
-  if (!service) {
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AISummarizer>());
-    return;
-  }
-  optimization_guide::SessionConfigParams config_params =
-      optimization_guide::SessionConfigParams{.disable_server_fallback = true};
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session = service->StartSession(
-          optimization_guide::ModelBasedCapabilityKey::kSummarize,
-          config_params);
-
-  if (!session) {
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AISummarizer>());
-    return;
-  }
-
-  mojo::PendingRemote<blink::mojom::AISummarizer> remote_summarzier;
-  auto summarizer = std::make_unique<AISummarizer>(
-      std::move(session), *options, shared_context,
-      remote_summarzier.InitWithNewPipeAndPassReceiver());
-  AIContextBoundObjectSet::GetFromContext(receivers_.current_context())
-      ->AddContextBoundObject(std::move(summarizer));
-  client_remote->OnResult(std::move(remote_summarzier));
+  CreateContextBoundObjectTask<AISummarizer, blink::mojom::AISummarizer,
+                               blink::mojom::AIManagerCreateSummarizerClient>::
+      Start(*browser_context_,
+            optimization_guide::ModelBasedCapabilityKey::kSummarize,
+            receivers_.current_context(),
+            base::BindOnce(
+                [](blink::mojom::AISummarizerOptionsPtr options,
+                   const std::optional<std::string> shared_context,
+                   std::unique_ptr<optimization_guide::
+                                       OptimizationGuideModelExecutor::Session>
+                       session,
+                   mojo::PendingReceiver<blink::mojom::AISummarizer> receiver) {
+                  return std::make_unique<AISummarizer>(
+                      std::move(session), *options, shared_context,
+                      std::move(receiver));
+                },
+                std::move(options), shared_context),
+            std::move(client));
 }
 
 void AIManagerKeyedService::GetTextModelInfo(
