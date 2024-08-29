@@ -1693,12 +1693,13 @@ public class CustomTabsConnection {
 
     /**
      * Notifies the application that the user has selected to open the page in their browser.
+     *
      * @param session Session identifier.
      * @param webContents the WebContents of the tab being taken out of CCT.
      * @return true if success. To protect Chrome exceptions in the client application are swallowed
      *     and false is returned.
      */
-    boolean notifyOpenInBrowser(CustomTabsSessionToken session, WebContents webContents) {
+    public boolean notifyOpenInBrowser(CustomTabsSessionToken session, WebContents webContents) {
         // Reset the client data header for the WebContents since it's not a CCT tab anymore.
         if (webContents != null) CustomTabsConnectionJni.get().setClientDataHeader(webContents, "");
         return safeExtraCallback(

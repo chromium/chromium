@@ -178,6 +178,21 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     static final String EXTRA_AUTO_TRANSLATE_LANGUAGE =
             "androidx.browser.customtabs.extra.AUTO_TRANSLATE_LANGUAGE";
 
+    public static final String EXTRA_OPEN_IN_BROWSER_STATE =
+            "androidx.browser.customtabs.extra.OPEN_IN_BROWSER_STATE";
+
+    @IntDef({
+        CustomTabsButtonState.BUTTON_STATE_OFF,
+        CustomTabsButtonState.BUTTON_STATE_ON,
+        CustomTabsButtonState.BUTTON_STATE_DEFAULT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CustomTabsButtonState {
+        int BUTTON_STATE_OFF = CustomTabsIntent.SHARE_STATE_OFF;
+        int BUTTON_STATE_ON = CustomTabsIntent.SHARE_STATE_ON;
+        int BUTTON_STATE_DEFAULT = CustomTabsIntent.SHARE_STATE_DEFAULT;
+    }
+
     /**
      * Parameter that, if true, indicates that the {@link EXTRA_AUTO_TRANSLATE_LANGUAGE} should be
      * automatically allowed from any first party package name.
@@ -567,6 +582,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         List<Bundle> menuItems =
                 IntentUtils.getParcelableArrayListExtra(intent, CustomTabsIntent.EXTRA_MENU_ITEMS);
+
+        addOpenInBrowserOption(intent, context);
         updateExtraMenuItems(menuItems);
         // Disable CCT share options for automotive. See b/300292495.
         if (ShareUtils.enableShareForAutomotive(true)) {
@@ -873,19 +890,23 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * <p>Shows share options according to the following rules:
      *
      * <ul>
-     *   <li>If {@link CustomTabsIntent#SHARE_STATE_ON} or
-     *   {@link CustomTabsIntent#SHARE_STATE_DEFAULT}, add to the top toolbar if empty, otherwise
-     *   add to the overflow menu if it is not customized.
+     *   <li>If {@link CustomTabsIntent#SHARE_STATE_ON} or {@link
+     *       CustomTabsIntent#SHARE_STATE_DEFAULT}, add to the top toolbar if empty, otherwise add
+     *       to the overflow menu if it is not customized.
      *   <li>If {@link CustomTabsIntent#SHARE_STATE_OFF}, add to the overflow menu depending on
-     *   {@link CustomTabsIntent#EXTRA_DEFAULT_SHARE_MENU_ITEM}.
+     *       {@link CustomTabsIntent#EXTRA_DEFAULT_SHARE_MENU_ITEM}.
      * </ul>
      */
     private void addShareOption(Intent intent, Context context) {
+        boolean usingInteractiveOmnibox =
+                CustomTabsConnection.getInstance().shouldEnableOmniboxForIntent(this);
         int shareState =
                 IntentUtils.safeGetIntExtra(
                         intent,
                         CustomTabsIntent.EXTRA_SHARE_STATE,
-                        CustomTabsIntent.SHARE_STATE_DEFAULT);
+                        usingInteractiveOmnibox
+                                ? CustomTabsIntent.SHARE_STATE_OFF
+                                : CustomTabsIntent.SHARE_STATE_DEFAULT);
         if (shareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
             if (mToolbarButtons.isEmpty()) {
                 mToolbarButtons.add(
@@ -908,6 +929,31 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                             intent,
                             CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM,
                             mIsOpenedByChrome && mUiType == CustomTabsUiType.DEFAULT);
+        }
+    }
+
+    private void addOpenInBrowserOption(Intent intent, Context context) {
+        boolean usingInteractiveOmnibox =
+                CustomTabsConnection.getInstance().shouldEnableOmniboxForIntent(this);
+        int openInBrowserState =
+                IntentUtils.safeGetIntExtra(
+                        intent,
+                        EXTRA_OPEN_IN_BROWSER_STATE,
+                        usingInteractiveOmnibox
+                                ? CustomTabsButtonState.BUTTON_STATE_DEFAULT
+                                : CustomTabsButtonState.BUTTON_STATE_OFF);
+
+        if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_DEFAULT
+                && isInteractiveOmniboxAllowed()) {
+            openInBrowserState = CustomTabsButtonState.BUTTON_STATE_ON;
+        }
+
+        if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_ON) {
+            if (mToolbarButtons.isEmpty()) {
+                mToolbarButtons.add(
+                        CustomButtonParamsImpl.createOpenInBrowserButton(
+                                context, getColorProvider().getToolbarColor()));
+            }
         }
     }
 
