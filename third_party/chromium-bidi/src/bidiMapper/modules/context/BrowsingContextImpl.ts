@@ -80,10 +80,12 @@ export class BrowsingContextImpl {
   readonly #logger?: LoggerFn;
   // Keeps track of the previously set viewport.
   #previousViewport: {width: number; height: number} = {width: 0, height: 0};
+
   // The URL of the navigation that is currently in progress. A workaround of the CDP
   // lacking URL for the pending navigation events, e.g. `Page.frameStartedLoading`.
-  // Set on `Page.navigate`, `Page.reload` commands and on deprecated CDP event
-  // `Page.frameScheduledNavigation`.
+  // Set on `Page.navigate`, `Page.reload` commands, on `Page.frameRequestedNavigation` or
+  // on a deprecated `Page.frameScheduledNavigation` event. The latest is required as the
+  // `Page.frameRequestedNavigation` event is not emitted for same-document navigations.
   #pendingNavigationUrl: string | undefined;
   #virtualNavigationId: string = uuidv4();
 
@@ -450,6 +452,13 @@ export class BrowsingContextImpl {
 
     // TODO: don't use deprecated `Page.frameScheduledNavigation` event.
     this.#cdpTarget.cdpClient.on('Page.frameScheduledNavigation', (params) => {
+      if (this.id !== params.frameId) {
+        return;
+      }
+      this.#pendingNavigationUrl = params.url;
+    });
+
+    this.#cdpTarget.cdpClient.on('Page.frameRequestedNavigation', (params) => {
       if (this.id !== params.frameId) {
         return;
       }
