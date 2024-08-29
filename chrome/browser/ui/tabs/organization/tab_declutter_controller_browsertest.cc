@@ -7,6 +7,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/mock_timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source.h"
@@ -72,7 +75,7 @@ class TabDeclutterControllerBrowserTest : public InProcessBrowserTest {
         ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
 
     tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
-        browser()->tab_strip_model(), browser()->profile());
+        browser()->tab_strip_model());
   }
 
   void TearDownOnMainThread() override {
@@ -98,6 +101,12 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   FakeTabDeclutterObserver fake_observer;
   tab_declutter_controller_->AddObserver(&fake_observer);
 
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
+
+  tab_declutter_controller_->SetTimerForTesting(task_runner->GetMockTickClock(),
+                                                task_runner);
+
   // Add 4 out of date tabs.
   browser()->tab_strip_model()->AppendWebContents(
       CreateWebContents(base::Time::Now() - base::Days(8)), false);
@@ -112,12 +121,13 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   browser()->tab_strip_model()->SetTabPinned(1, true);
   browser()->tab_strip_model()->AddToNewGroup(std::vector<int>{2});
 
-  // Tabs at index 3 and 4 should only potentially decluttered.
-  tab_declutter_controller_->ProcessStaleTabs();
+  task_runner->FastForwardBy(
+      tab_declutter_controller_->timer_interval_minutes());
 
   EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 1);
 
+  // Tabs at index 3 and 4 are stale tabs.
   std::vector<tabs::TabModel*> expected_stale_tabs;
   expected_stale_tabs.push_back(browser()->tab_strip_model()->GetTabAtIndex(3));
   expected_stale_tabs.push_back(browser()->tab_strip_model()->GetTabAtIndex(4));

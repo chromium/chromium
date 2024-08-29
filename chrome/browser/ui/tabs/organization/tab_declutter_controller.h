@@ -4,14 +4,13 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DECLUTTER_CONTROLLER_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DECLUTTER_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
-
-namespace content {
-class BrowserContext;
-}
 
 class TabStripModel;
 
@@ -21,8 +20,7 @@ namespace tabs {
 // browser.
 class TabDeclutterController {
  public:
-  TabDeclutterController(TabStripModel* tab_strip_model,
-                         content::BrowserContext* browser_context);
+  explicit TabDeclutterController(TabStripModel* tab_strip_model);
   TabDeclutterController(const TabDeclutterController&) = delete;
   TabDeclutterController& operator=(const TabDeclutterController& other) =
       delete;
@@ -42,16 +40,23 @@ class TabDeclutterController {
     return stale_tab_threshold_duration_;
   }
 
-  // TODO(b/362310942): Make this method private after adding a timer.
-  void ProcessStaleTabs();
+  base::TimeDelta timer_interval_minutes() const {
+    return timer_interval_minutes_;
+  }
+
+  void SetTimerForTesting(const base::TickClock* tick_clock,
+                          scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
+  void StartTimer();
   bool DeclutterNudgeCriteriaMet();
+  void ProcessStaleTabs();
 
   base::TimeDelta stale_tab_threshold_duration_;
+  base::TimeDelta timer_interval_minutes_;
+  std::unique_ptr<base::RepeatingTimer> declutter_timer_;
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
-  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace tabs

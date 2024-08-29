@@ -111,7 +111,11 @@ TabSearchContainer::TabSearchContainer(
 
   browser_ = tab_strip_controller->GetBrowser();
 
-  tab_declutter_observation_.Observe(tab_declutter_controller_);
+  // `tab_declutter_controller_` will be null for some profile types and if
+  // feature is not enabled.
+  if (tab_declutter_controller_) {
+    tab_declutter_observation_.Observe(tab_declutter_controller_);
+  }
 
   expansion_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
   opacity_animation_.SetTweenType(gfx::Tween::Type::LINEAR);

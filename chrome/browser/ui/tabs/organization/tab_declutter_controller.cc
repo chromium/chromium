@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -19,16 +20,25 @@ namespace tabs {
 namespace {
 // TODO(b/362269642): Make this constant finch configurable.
 constexpr int kStaleThresholdDurationDays = 7;
+constexpr int kTimerIntervalMinutes = 10;
 }  // namespace
 
-TabDeclutterController::TabDeclutterController(
-    TabStripModel* tab_strip_model,
-    content::BrowserContext* browser_context)
+TabDeclutterController::TabDeclutterController(TabStripModel* tab_strip_model)
     : stale_tab_threshold_duration_(base::Days(kStaleThresholdDurationDays)),
-      tab_strip_model_(tab_strip_model),
-      browser_context_(browser_context) {}
+      timer_interval_minutes_(base::Minutes(kTimerIntervalMinutes)),
+      declutter_timer_(std::make_unique<base::RepeatingTimer>()),
+      tab_strip_model_(tab_strip_model) {
+  StartTimer();
+}
 
 TabDeclutterController::~TabDeclutterController() {}
+
+void TabDeclutterController::StartTimer() {
+  declutter_timer_->Start(
+      FROM_HERE, timer_interval_minutes_,
+      base::BindRepeating(&TabDeclutterController::ProcessStaleTabs,
+                          base::Unretained(this)));
+}
 
 void TabDeclutterController::ProcessStaleTabs() {
   CHECK(features::IsTabstripDeclutterEnabled());
@@ -71,6 +81,15 @@ void TabDeclutterController::ProcessStaleTabs() {
 bool TabDeclutterController::DeclutterNudgeCriteriaMet() {
   // TODO(shibalik): Implement whether the declutter nudge can be shown.
   return true;
+}
+
+void TabDeclutterController::SetTimerForTesting(
+    const base::TickClock* tick_clock,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  declutter_timer_->Stop();
+  declutter_timer_ = std::make_unique<base::RepeatingTimer>(tick_clock);
+  declutter_timer_->SetTaskRunner(task_runner);
+  StartTimer();
 }
 
 }  // namespace tabs

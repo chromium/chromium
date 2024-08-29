@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -86,8 +87,12 @@ void BrowserWindowFeatures::Init(Browser* browser) {
               browser->session_id());
     }
 
-    tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
-        browser->tab_strip_model(), browser->profile());
+    if (features::IsTabstripDeclutterEnabled() &&
+        browser->profile()->IsRegularProfile()) {
+      tab_declutter_controller_ =
+          std::make_unique<tabs::TabDeclutterController>(
+              browser->tab_strip_model());
+    }
   }
 
   // The LensOverlayEntryPointController is constructed for all browser types

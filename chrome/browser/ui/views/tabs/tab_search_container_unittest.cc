@@ -38,15 +38,16 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
-    scoped_feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kTabstripDeclutter}, {});
 
     tab_strip_controller_ =
         std::make_unique<FakeBaseTabStripControllerWithProfile>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &tab_strip_model_delegate_, tab_strip_controller_->GetProfile());
 
-    tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
-        tab_strip_model_.get(), tab_strip_controller_->GetProfile());
+    tab_declutter_controller_ =
+        std::make_unique<tabs::TabDeclutterController>(tab_strip_model_.get());
 
     locked_expansion_view_ = std::make_unique<views::View>();
     container_before_tab_strip_ = std::make_unique<TabSearchContainer>(
