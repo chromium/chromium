@@ -291,6 +291,13 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
   auto overlay_window =
       base::WrapUnique(new VideoOverlayWindowViews(controller));
 
+  // The 2024 updated controls use dark mode colors.
+  if (base::FeatureList::IsEnabled(
+          media::kVideoPictureInPictureControlsUpdate2024)) {
+    overlay_window->SetColorModeOverride(
+        ui::ColorProviderKey::ColorMode::kDark);
+  }
+
   overlay_window->CalculateAndUpdateWindowBounds();
   overlay_window->SetUpViews();
 
@@ -1160,6 +1167,11 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     back_to_tab_label_button_->SetWindowSize(GetBounds().size());
   }
 
+  if (base::FeatureList::IsEnabled(
+          media::kVideoPictureInPictureControlsUpdate2024)) {
+    play_pause_controls_view_->SetWindowSize(GetBounds().size());
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   UpdateResizeHandleBounds(quadrant);
 #endif
@@ -1180,8 +1192,11 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     visible_controls_views.push_back(previous_track_controls_view_);
   if (show_previous_slide_button_)
     visible_controls_views.push_back(previous_slide_controls_view_);
-  if (show_play_pause_button_)
+  if (show_play_pause_button_ &&
+      !base::FeatureList::IsEnabled(
+          media::kVideoPictureInPictureControlsUpdate2024)) {
     visible_controls_views.push_back(play_pause_controls_view_);
+  }
   if (show_next_track_button_)
     visible_controls_views.push_back(next_track_controls_view_);
   if (show_next_slide_button_)
