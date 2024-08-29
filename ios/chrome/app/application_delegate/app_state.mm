@@ -291,9 +291,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
     return;
   }
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
         ->OnApplicationWillEnterBackground();
   }
@@ -372,9 +371,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   }
 
   _applicationInBackground = NO;
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+  for (ChromeBrowserState* chromeBrowserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     AuthenticationServiceFactory::GetForBrowserState(chromeBrowserState)
         ->OnApplicationWillEnterForeground();
 
@@ -400,7 +398,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
                              connectedScenes:self.connectedScenes];
   [memoryHelper resetForegroundMemoryWarningCount];
 
-  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+  for (ChromeBrowserState* chromeBrowserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForBrowserState(
             chromeBrowserState);
@@ -494,9 +493,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   [self.startupInformation setIsColdStart:NO];
 
   // Record session metrics.
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     SessionMetrics::FromBrowserState(browserState)
         ->RecordAndClearSessionMetrics(
             MetricsToRecordFlags::kActivatedTabCount);

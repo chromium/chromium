@@ -109,7 +109,7 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
 
   // Report the enabled client IDs for each loaded BrowserState.
   for (ChromeBrowserState* browser_state :
-       GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates()) {
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     const std::string gaia_id = GetSignedInGaiaId(browser_state);
     for (const auto& info : kPushNotificationReportInfos) {
       RecordHistogramForPushNotificationReportInfo(info, gaia_id);

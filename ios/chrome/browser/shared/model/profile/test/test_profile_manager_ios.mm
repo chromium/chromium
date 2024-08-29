@@ -58,13 +58,12 @@ ChromeBrowserState* TestProfileManagerIOS::GetProfileWithName(
   return iterator != browser_states_.end() ? iterator->second.get() : nullptr;
 }
 
-std::vector<ChromeBrowserState*>
-TestProfileManagerIOS::GetLoadedBrowserStates() {
-  std::vector<ChromeBrowserState*> result;
-  for (auto& browser_state : browser_states_) {
-    result.push_back(browser_states_[browser_state.first].get());
+std::vector<ChromeBrowserState*> TestProfileManagerIOS::GetLoadedProfiles() {
+  std::vector<ChromeBrowserState*> loaded_profiles;
+  for (auto& [name, browser_state] : browser_states_) {
+    loaded_profiles.push_back(browser_state.get());
   }
-  return result;
+  return loaded_profiles;
 }
 
 bool TestProfileManagerIOS::LoadBrowserStateAsync(

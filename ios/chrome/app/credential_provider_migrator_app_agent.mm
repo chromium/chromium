@@ -37,14 +37,14 @@
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
   NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
+  const std::vector<ChromeBrowserState*> loadedProfiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
   if (!self.migratingTracker) {
     self.migratingTracker =
-        [NSMutableSet setWithCapacity:loadedBrowserStates.size()];
+        [NSMutableSet setWithCapacity:loadedProfiles.size()];
   }
 
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState : loadedProfiles) {
     NSString* browserStatePathString =
         [NSString stringWithCString:browserState->GetStatePath()
                                         .BaseName()

@@ -46,7 +46,7 @@ void IOSFeedActivityMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // Log the activity bucket of all loaded BrowserStates.
   for (ChromeBrowserState* browser_state :
-       GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates()) {
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     base::UmaHistogramEnumeration(
         kAllFeedsActivityBucketsByProviderHistogram,
         FeedActivityBucketForBrowserState(browser_state));

@@ -17,10 +17,10 @@ namespace translate {
 
 void TranslateRankerMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (auto* state : browser_states) {
-    TranslateRanker* ranker = TranslateRankerFactory::GetForBrowserState(state);
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    TranslateRanker* ranker =
+        TranslateRankerFactory::GetForBrowserState(browser_state);
     DCHECK(ranker);
     UpdateLoggingState();
     std::vector<metrics::TranslateEventProto> translate_events;
@@ -33,10 +33,10 @@ void TranslateRankerMetricsProvider::ProvideCurrentSessionData(
 }
 
 void TranslateRankerMetricsProvider::UpdateLoggingState() {
-  std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (auto* state : browser_states) {
-    TranslateRanker* ranker = TranslateRankerFactory::GetForBrowserState(state);
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    TranslateRanker* ranker =
+        TranslateRankerFactory::GetForBrowserState(browser_state);
     DCHECK(ranker);
     ranker->EnableLogging(logging_enabled_);
   }

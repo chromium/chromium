@@ -21,10 +21,9 @@ IOSFamilyLinkUserMetricsProvider::IOSFamilyLinkUserMetricsProvider() = default;
 IOSFamilyLinkUserMetricsProvider::~IOSFamilyLinkUserMetricsProvider() = default;
 
 bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
-  std::vector<ChromeBrowserState*> browser_state_list =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
   std::vector<supervised_user::FamilyLinkUserLogRecord> records;
-  for (ChromeBrowserState* browser_state : browser_state_list) {
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForBrowserState(browser_state);
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(

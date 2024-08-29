@@ -38,15 +38,15 @@ class ProfileManagerIOS {
   // the very specific purpose of finding which of the several available browser
   // states was used last. Do *not* use it as a singleton getter to fetch "the"
   // browser state. Always assume there could be multiple browser states and
-  // use GetLoadedBrowserStates() instead.
+  // use GetLoadedProfiles() instead.
   virtual ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() = 0;
 
   // Returns the Profile known by `name` or nullptr if there is no loaded
   // Profiles with that `name`.
   virtual ChromeBrowserState* GetProfileWithName(std::string_view name) = 0;
 
-  // Returns the list of loaded ChromeBrowserStates. The order is arbitrary.
-  virtual std::vector<ChromeBrowserState*> GetLoadedBrowserStates() = 0;
+  // Returns the list of loaded Profiles. The order is arbitrary.
+  virtual std::vector<ChromeBrowserState*> GetLoadedProfiles() = 0;
 
   // Asynchronously loads a ChromeBrowserState known by `name` if it exists. The
   // `created_callback` will be called with the ChromeBrowserState when it has

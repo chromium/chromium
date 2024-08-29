@@ -35,7 +35,7 @@ std::vector<BrowserReportGenerator::ReportedProfileData>
 BrowserReportGeneratorIOS::GetReportedProfiles() {
   std::vector<BrowserReportGenerator::ReportedProfileData> reportedProfileData;
   for (const auto* browser_state :
-       GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates()) {
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     // ProfileManager should not return off-the-record BrowserStates.
     CHECK(!browser_state->IsOffTheRecord());
     reportedProfileData.push_back({

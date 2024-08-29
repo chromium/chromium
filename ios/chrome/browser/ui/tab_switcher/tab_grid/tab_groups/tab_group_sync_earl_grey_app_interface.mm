@@ -16,9 +16,8 @@ namespace {
 // Returns the first regular (= non-incognito) browser from the loaded browser
 // states.
 ChromeBrowserState* GetRegularBrowser() {
-  std::vector<ChromeBrowserState*> loaded_browser_states =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browser_state : loaded_browser_states) {
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     if (!browser_state->IsOffTheRecord()) {
       return browser_state;
     }

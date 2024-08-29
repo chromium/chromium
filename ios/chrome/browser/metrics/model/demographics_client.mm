@@ -73,16 +73,16 @@ ChromeBrowserState* DemographicsClient::GetCachedBrowserState() {
     return cached_browser_state;
   }
 
-  std::vector<ChromeBrowserState*> loaded_browser_states =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
+  const std::vector<ChromeBrowserState*> loaded_profiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
   // Even if there is only one Profile on disk, it may have not been loaded yet.
-  if (loaded_browser_states.empty()) {
+  if (loaded_profiles.empty()) {
     return nullptr;
   }
 
-  CHECK_EQ(loaded_browser_states.size(), 1u);
-  ChromeBrowserState* cached_browser_state = loaded_browser_states.back();
+  CHECK_EQ(loaded_profiles.size(), 1u);
+  ChromeBrowserState* cached_browser_state = loaded_profiles.back();
   chrome_browser_state_ = cached_browser_state->AsWeakPtr();
   return cached_browser_state;
 }

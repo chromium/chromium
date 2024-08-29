@@ -119,7 +119,7 @@ void PushNotificationClient::LoadFeedbackWithPayloadAndClientId(
 
 ChromeBrowserState* PushNotificationClient::GetAnyProfile() {
   std::vector<ChromeBrowserState*> loaded_profiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
   if (loaded_profiles.empty()) {
     return nullptr;

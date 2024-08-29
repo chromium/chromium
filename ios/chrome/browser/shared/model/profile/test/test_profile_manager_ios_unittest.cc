@@ -12,20 +12,20 @@
 
 using TestProfileManagerIOSTest = PlatformTest;
 
-// Tests that the list of loaded browser states is empty after construction.
+// Tests that the list of loaded profiles is empty after construction.
 TEST_F(TestProfileManagerIOSTest, Constructor) {
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
-  EXPECT_EQ(0U, profile_manager.GetLoadedBrowserStates().size());
+  EXPECT_EQ(0U, profile_manager.GetLoadedProfiles().size());
 }
 
-// Tests that the list of loaded browser states has one element after calling
+// Tests that the list of loaded profiles has one element after calling
 // AddBrowserStateWithBuilder(...).
 TEST_F(TestProfileManagerIOSTest, AddBrowserStateWithBuilder) {
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
   profile_manager.AddBrowserStateWithBuilder(TestChromeBrowserState::Builder());
-  EXPECT_EQ(1U, profile_manager.GetLoadedBrowserStates().size());
+  EXPECT_EQ(1U, profile_manager.GetLoadedProfiles().size());
 }

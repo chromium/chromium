@@ -250,18 +250,17 @@ ChromeBrowserState* ProfileManagerIOSImpl::GetProfileWithName(
   return nullptr;
 }
 
-std::vector<ChromeBrowserState*>
-ProfileManagerIOSImpl::GetLoadedBrowserStates() {
+std::vector<ChromeBrowserState*> ProfileManagerIOSImpl::GetLoadedProfiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<ChromeBrowserState*> loaded_browser_states;
+  std::vector<ChromeBrowserState*> loaded_profiles;
   for (const auto& pair : browser_states_) {
     const BrowserStateInfo& info = pair.second;
     if (info.is_loaded()) {
       DCHECK(info.browser_state());
-      loaded_browser_states.push_back(info.browser_state());
+      loaded_profiles.push_back(info.browser_state());
     }
   }
-  return loaded_browser_states;
+  return loaded_profiles;
 }
 
 bool ProfileManagerIOSImpl::LoadBrowserStateAsync(

@@ -504,10 +504,10 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // Start recording field trial info.
   [[PreviousSessionInfo sharedInstance] beginRecordingFieldTrials];
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  CHECK(!loadedBrowserStates.empty());
-  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+  const std::vector<ChromeBrowserState*> loadedProfiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+  CHECK(!loadedProfiles.empty());
+  for (ChromeBrowserState* chromeBrowserState : loadedProfiles) {
     [self initializeBrowserState:chromeBrowserState];
   }
 
@@ -592,18 +592,18 @@ SEQUENCE_CHECKER(_sequenceChecker);
           ? SessionRestorationServiceFactory::kOptimized
           : SessionRestorationServiceFactory::kLegacy;
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
+  const std::vector<ChromeBrowserState*> loadedProfiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
   // `completion` should be called only once all BrowserStates have been
   // migrated.
-  base::RepeatingClosure closure = base::BarrierClosure(
-      loadedBrowserStates.size(), base::BindOnce(completion));
+  base::RepeatingClosure closure =
+      base::BarrierClosure(loadedProfiles.size(), base::BindOnce(completion));
 
   // MigrateSessionStorageFormat is synchronous if the storage is already in
   // the requested format, so this is safe to call and won't block the app
   // startup.
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState : loadedProfiles) {
     SessionRestorationServiceFactory::GetInstance()
         ->MigrateSessionStorageFormat(browserState, requested_format, closure);
   }
@@ -633,9 +633,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+  for (ChromeBrowserState* chromeBrowserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForBrowserState(
             chromeBrowserState);
@@ -681,9 +680,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [self scheduleLowPriorityStartupTasks];
 
   // Run after UI created to avoid trying to update UI before it is available.
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
         ->OnApplicationWillEnterForeground();
   }
@@ -976,9 +974,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
       expectedCount += 1;
     }
 
-    std::vector<ChromeBrowserState*> loadedBrowserStates =
-        GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-    for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    const std::vector<ChromeBrowserState*> loadedProfiles =
+        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+    for (ChromeBrowserState* browserState : loadedProfiles) {
       expectedCount += 1;
       if (browserState->HasOffTheRecordChromeBrowserState()) {
         expectedCount += 1;
@@ -993,7 +991,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
                                dispatch_semaphore_signal(semaphore);
                              }));
 
-    for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    for (ChromeBrowserState* browserState : loadedProfiles) {
       SessionRestorationServiceFactory::GetForBrowserState(browserState)
           ->InvokeClosureWhenBackgroundProcessingDone(closure);
 
@@ -1100,10 +1098,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
     [self onPreferenceChanged:metrics::prefs::kMetricsReportingEnabled];
   }
 
-  // Track changes to default search engine for all laoded browserStates.
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  // Track changes to default search engine for all loaded browserStates.
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     TemplateURLService* service =
         ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
     _extensionSearchEngineDataUpdaters.push_back(
@@ -1166,9 +1163,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [self scheduleCrashReportUpload];
 
   // ClearSessionCookies() is not synchronous.
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     if (cookie_util::ShouldClearSessionCookies(browserState->GetPrefs())) {
       cookie_util::ClearSessionCookies(
           browserState->GetOriginalChromeBrowserState());
@@ -1216,9 +1212,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)createMailtoHandlerServices {
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     MailtoHandlerServiceFactory::GetForBrowserState(browserState);
   }
 }
@@ -1331,9 +1326,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   if (GetApplicationContext()->WasLastShutdownClean()) {
     // Delay the cleanup of the unreferenced files to not impact startup
     // performance.
-    std::vector<ChromeBrowserState*> loadedBrowserStates =
-        GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-    for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    for (ChromeBrowserState* browserState :
+         GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
       ExternalFileRemoverFactory::GetForBrowserState(browserState)
           ->RemoveAfterDelay(base::Seconds(kExternalFilesCleanupDelaySeconds),
                              base::OnceClosure());
@@ -1410,9 +1404,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   if (!base::FeatureList::IsEnabled(kLogApplicationStorageSizeMetrics)) {
     return;
   }
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     PrefService* prefService = browserState->GetPrefs();
     const base::Time lastLogged =
         prefService->GetTime(prefs::kLastApplicationStorageMetricsLogTime);
@@ -1470,9 +1463,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
 #pragma mark - Helper methods.
 
 - (void)cleanupSessionStateCache {
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     SessionRestorationServiceFactory::GetForBrowserState(browserState)
         ->PurgeUnassociatedData(base::DoNothing());
   }
@@ -1481,9 +1473,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
 - (void)cleanupSnapshots {
   // TODO(crbug.com/40144759): Browsers for disconnected scenes are not in the
   // BrowserList, so this may not reach all folders.
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     BrowserList* browserList =
         BrowserListFactory::GetForBrowserState(browserState);
     for (Browser* browser :
@@ -1529,10 +1520,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // completed.
   base::ConcurrentClosures concurrent;
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     SessionRestorationServiceFactory::GetForBrowserState(browserState)
         ->DeleteDataForDiscardedSessions(identifiers,
                                          concurrent.CreateClosure());
@@ -1571,9 +1560,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 - (void)performFaviconsCleanup {
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     syncer::SyncService* syncService =
         SyncServiceFactory::GetForBrowserState(browserState);
     // Only use the fallback to the Google server when fetching favicons for

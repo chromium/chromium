@@ -434,11 +434,9 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
     base::debug::DumpWithoutCrashing();
   }
 
-  std::vector<ChromeBrowserState*> loaded_browser_states =
-      GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates();
-
   int open_tabs_count = 0;
-  for (ChromeBrowserState* browser_state : loaded_browser_states) {
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     // Iterate through regular Browser and OTR Browser to find the corresponding
     // tab.
     BrowserList* browser_list =

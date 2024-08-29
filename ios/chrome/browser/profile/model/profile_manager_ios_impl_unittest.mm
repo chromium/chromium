@@ -139,11 +139,11 @@ class ProfileManagerIOSImplTest : public PlatformTest {
 
   ProfileManagerIOSImpl& profile_manager() { return profile_manager_; }
 
-  // Returns the name of the loaded ChromeBrowserStates.
-  std::set<std::string> GetLoadedBrowserStateNames() {
+  // Returns the name of the loaded Profiles.
+  std::set<std::string> GetLoadedProfileNames() {
     std::set<std::string> browser_state_names;
     for (ChromeBrowserState* browser_state :
-         profile_manager_.GetLoadedBrowserStates()) {
+         profile_manager_.GetLoadedProfiles()) {
       CHECK(browser_state);
 
       // The name of the ChromeBrowserState is the basename of its StatePath.
@@ -169,12 +169,12 @@ class ProfileManagerIOSImplTest : public PlatformTest {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
-// Tests that GetLoadedBrowserStates() returns an empty list before the
+// Tests that GetLoadedProfiles() returns an empty list before the
 // BrowserStates are loaded, and then a list containing at least one
 // BrowserState, and the last used BrowserState is loaded.
 TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates) {
   // There should be no BrowserState loaded yet.
-  EXPECT_EQ(GetLoadedBrowserStateNames(), (std::set<std::string>{}));
+  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
 
   // Register an observer and check that it is correctly notified that
   // a ChromeBrowserState is created and then fully loaded.
@@ -199,7 +199,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates) {
   ASSERT_TRUE(browser_state);
   EXPECT_EQ(browser_state->GetBrowserStateName(),
             kIOSChromeInitialBrowserState);
-  EXPECT_EQ(GetLoadedBrowserStateNames(),
+  EXPECT_EQ(GetLoadedProfileNames(),
             (std::set<std::string>{kIOSChromeInitialBrowserState}));
 }
 
@@ -218,7 +218,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates_IncoherentPrefs_1) {
   ASSERT_NE(kProfileName2, kIOSChromeInitialBrowserState);
 
   // There should be no BrowserState loaded yet.
-  EXPECT_EQ(GetLoadedBrowserStateNames(), (std::set<std::string>{}));
+  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
 
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   local_state->SetString(prefs::kLastUsedProfile, kProfileName1);
@@ -235,7 +235,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates_IncoherentPrefs_1) {
 
   ASSERT_TRUE(browser_state);
   EXPECT_EQ(browser_state->GetBrowserStateName(), kProfileName1);
-  EXPECT_EQ(GetLoadedBrowserStateNames(),
+  EXPECT_EQ(GetLoadedProfileNames(),
             (std::set<std::string>{kProfileName1, kProfileName2}));
 }
 
@@ -253,7 +253,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates_IncoherentPrefs_2) {
   ASSERT_NE(kProfileName2, kIOSChromeInitialBrowserState);
 
   // There should be no BrowserState loaded yet.
-  EXPECT_EQ(GetLoadedBrowserStateNames(), (std::set<std::string>{}));
+  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
 
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   local_state->SetString(prefs::kLastUsedProfile, kProfileName1);
@@ -268,8 +268,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates_IncoherentPrefs_2) {
 
   ASSERT_TRUE(browser_state);
   EXPECT_EQ(browser_state->GetBrowserStateName(), kProfileName1);
-  EXPECT_EQ(GetLoadedBrowserStateNames(),
-            (std::set<std::string>{kProfileName1}));
+  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{kProfileName1}));
 }
 
 // Tests that LoadBrowserStates() always loads the "last used BrowserState"
@@ -287,7 +286,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates_IncoherentPrefs_3) {
   ASSERT_NE(kProfileName2, kIOSChromeInitialBrowserState);
 
   // There should be no BrowserState loaded yet.
-  EXPECT_EQ(GetLoadedBrowserStateNames(), (std::set<std::string>{}));
+  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
 
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   local_state->SetString(prefs::kLastUsedProfile, std::string());
@@ -306,7 +305,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadBrowserStates_IncoherentPrefs_3) {
   EXPECT_EQ(browser_state->GetBrowserStateName(),
             kIOSChromeInitialBrowserState);
   EXPECT_EQ(
-      GetLoadedBrowserStateNames(),
+      GetLoadedProfileNames(),
       (std::set<std::string>{kProfileName2, kIOSChromeInitialBrowserState}));
 }
 

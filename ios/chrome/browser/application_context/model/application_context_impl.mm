@@ -591,10 +591,8 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
   // prefs (taking care not to create the objects if they have not been created
   // yet).
   if (profile_manager_) {
-    std::vector<ChromeBrowserState*> loaded_browser_states =
-        profile_manager_->GetLoadedBrowserStates();
-
-    for (ChromeBrowserState* browser_state : loaded_browser_states) {
+    for (ChromeBrowserState* browser_state :
+         profile_manager_->GetLoadedProfiles()) {
       switch (app_state) {
         case AppState::kForeground:
           // Nothing extra to do when entering foreground.
