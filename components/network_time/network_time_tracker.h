@@ -15,6 +15,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -94,6 +96,12 @@ class NetworkTimeTracker {
     FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
   };
 
+  class NetworkTimeObserver : public base::CheckedObserver {
+   public:
+    virtual void OnNetworkTimeChanged(
+        const TimeTracker::TimeTrackerState state) = 0;
+  };
+
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Constructor.  Arguments may be stubbed out for tests. |url_loader_factory|
@@ -156,6 +164,12 @@ class NetworkTimeTracker {
   // Blocks until the the next time query completes.
   void WaitForFetch();
 
+  void AddObserver(NetworkTimeObserver* obs);
+
+  void RemoveObserver(NetworkTimeObserver* obs);
+
+  bool GetTrackerState(TimeTracker::TimeTrackerState* state) const;
+
   void SetMaxResponseSizeForTesting(size_t limit);
 
   void SetPublicKeyForTesting(std::string_view key);
@@ -194,6 +208,8 @@ class NetworkTimeTracker {
   // unconditionally every once in a long while, just to be on the safe side.
   bool ShouldIssueTimeQuery();
 
+  void NotifyObservers();
+
   // State variables for internally-managed secure time service queries.
   GURL server_url_;
   size_t max_response_size_;
@@ -231,6 +247,8 @@ class NetworkTimeTracker {
   std::optional<FetchBehavior> fetch_behavior_;
 
   std::optional<TimeTracker> tracker_;
+
+  base::ObserverList<NetworkTimeObserver> observers_;
 };
 
 }  // namespace network_time

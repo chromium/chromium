@@ -50,7 +50,21 @@ struct MockedResponse {
 
 class NetworkTimeTrackerTest : public ::testing::Test {
  public:
-  ~NetworkTimeTrackerTest() override {}
+  class NetworkTimeTestObserver
+      : public NetworkTimeTracker::NetworkTimeObserver {
+   public:
+    NetworkTimeTestObserver() = default;
+    ~NetworkTimeTestObserver() override = default;
+
+    void OnNetworkTimeChanged(TimeTracker::TimeTrackerState state) override {
+      times_called_++;
+      last_state_ = state;
+    }
+    int times_called_ = 0;
+    TimeTracker::TimeTrackerState last_state_;
+  };
+
+  ~NetworkTimeTrackerTest() override = default;
 
   NetworkTimeTrackerTest()
       : task_environment_(
@@ -728,6 +742,24 @@ TEST_F(NetworkTimeTrackerTest, CustomFetchBehaviorTest) {
   Reset(NetworkTimeTracker::FetchBehavior::FETCHES_IN_BACKGROUND_ONLY);
   EXPECT_EQ(NetworkTimeTracker::FetchBehavior::FETCHES_IN_BACKGROUND_ONLY,
             tracker_->GetFetchBehavior());
+}
+
+TEST_F(NetworkTimeTrackerTest, ObserverTest) {
+  NetworkTimeTestObserver observer;
+  base::Time now = clock_->Now();
+  base::TimeTicks now_ticks = tick_clock_->NowTicks();
+  base::Time in_network_time = now;
+  tracker_->AddObserver(&observer);
+  UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
+                    now_ticks);
+  base::TimeDelta expected_offset = latency_ / 2;
+
+  EXPECT_EQ(observer.times_called_, 1);
+  EXPECT_EQ(observer.last_state_.known_time, in_network_time - latency_ / 2);
+  EXPECT_EQ(observer.last_state_.system_time, now - expected_offset);
+  EXPECT_EQ(observer.last_state_.system_ticks, now_ticks - expected_offset);
+  EXPECT_EQ(observer.last_state_.uncertainty,
+            resolution_ + latency_ + adjustment_);
 }
 
 }  // namespace network_time

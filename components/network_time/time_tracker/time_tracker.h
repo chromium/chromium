@@ -14,6 +14,12 @@ namespace network_time {
 // it was created.
 class TimeTracker {
  public:
+  struct TimeTrackerState {
+    base::Time system_time;
+    base::TimeTicks system_ticks;
+    base::Time known_time;
+    base::TimeDelta uncertainty;
+  };
   TimeTracker(const base::Time& system_time,
               const base::TimeTicks& system_ticks,
               const base::Time& time,
@@ -30,11 +36,10 @@ class TimeTracker {
                base::Time* time,
                base::TimeDelta* uncertainty) const;
 
+  TimeTrackerState GetStateAtCreation() const { return state_; }
+
  private:
-  base::Time system_time_at_creation_;
-  base::TimeTicks system_ticks_at_creation_;
-  base::Time known_time_at_creation_;
-  base::TimeDelta uncertainty_at_creation_;
+  TimeTrackerState state_;
 };
 
 }  // namespace network_time

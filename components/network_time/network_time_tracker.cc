@@ -29,6 +29,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/client_update_protocol/ecdsa.h"
 #include "components/network_time/network_time_pref_names.h"
+#include "components/network_time/time_tracker/time_tracker.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/load_flags.h"
@@ -276,6 +277,8 @@ void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,
       network_time_at_last_measurement.InMillisecondsFSinceUnixEpoch());
   pref_service_->Set(prefs::kNetworkTimeMapping,
                      base::Value(std::move(time_mapping)));
+
+  NotifyObservers();
 }
 
 bool NetworkTimeTracker::AreTimeFetchesEnabled() const {
@@ -311,6 +314,25 @@ void NetworkTimeTracker::WaitForFetch() {
   base::RunLoop run_loop;
   fetch_completion_callbacks_.push_back(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+void NetworkTimeTracker::AddObserver(NetworkTimeObserver* obs) {
+  observers_.AddObserver(obs);
+}
+
+void NetworkTimeTracker::RemoveObserver(NetworkTimeObserver* obs) {
+  observers_.RemoveObserver(obs);
+}
+
+bool NetworkTimeTracker::GetTrackerState(
+    TimeTracker::TimeTrackerState* state) const {
+  base::Time unused;
+  auto res = GetNetworkTime(&unused, nullptr);
+  if (res != NETWORK_TIME_AVAILABLE) {
+    return false;
+  }
+  *state = tracker_->GetStateAtCreation();
+  return true;
 }
 
 void NetworkTimeTracker::WaitForFetchForTesting(uint32_t nonce) {
@@ -582,6 +604,19 @@ bool NetworkTimeTracker::ShouldIssueTimeQuery() {
   }
 
   return base::RandDouble() < probability;
+}
+
+void NetworkTimeTracker::NotifyObservers() {
+  // Don't notify if the current state is not NETWORK_TIME_AVAILABLE.
+  base::Time unused;
+  auto res = GetNetworkTime(&unused, nullptr);
+  if (res != NETWORK_TIME_AVAILABLE) {
+    return;
+  }
+  TimeTracker::TimeTrackerState state = tracker_->GetStateAtCreation();
+  for (NetworkTimeObserver& obs : observers_) {
+    obs.OnNetworkTimeChanged(state);
+  }
 }
 
 }  // namespace network_time

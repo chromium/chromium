@@ -626,6 +626,12 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       base::BindRepeating(
           &SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled,
           base::Unretained(this)));
+
+  if (base::FeatureList::IsEnabled(features::kCertVerificationNetworkTime)) {
+    cert_verifier_time_updater_ =
+        std::make_unique<CertVerifierServiceTimeUpdater>(
+            g_browser_process->network_time_tracker());
+  }
 }
 
 SystemNetworkContextManager::~SystemNetworkContextManager() {

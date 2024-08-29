@@ -16,17 +16,14 @@ TimeTracker::TimeTracker(const base::Time& system_time,
                          const base::TimeTicks& system_ticks,
                          const base::Time& time,
                          const base::TimeDelta& uncertainty)
-    : system_time_at_creation_(system_time),
-      system_ticks_at_creation_(system_ticks),
-      known_time_at_creation_(time),
-      uncertainty_at_creation_(uncertainty) {}
+    : state_{system_time, system_ticks, time, uncertainty} {}
 
 bool TimeTracker::GetTime(const base::Time& system_time,
                           const base::TimeTicks& system_ticks,
                           base::Time* time,
                           base::TimeDelta* uncertainty) const {
-  base::TimeDelta tick_delta = system_ticks - system_ticks_at_creation_;
-  base::TimeDelta time_delta = system_time - system_time_at_creation_;
+  base::TimeDelta tick_delta = system_ticks - state_.system_ticks;
+  base::TimeDelta time_delta = system_time - state_.system_time;
   if (time_delta.InMilliseconds() < 0) {
     DVLOG(1) << "Time unavailable due to wall clock running backward";
     return false;
@@ -37,9 +34,9 @@ bool TimeTracker::GetTime(const base::Time& system_time,
     DVLOG(1) << "Time unavailable due to clocks diverging";
     return false;
   }
-  *time = known_time_at_creation_ + tick_delta;
+  *time = state_.known_time + tick_delta;
   if (uncertainty) {
-    *uncertainty = uncertainty_at_creation_ + divergence;
+    *uncertainty = state_.uncertainty + divergence;
   }
   return true;
 }

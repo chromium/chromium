@@ -56,6 +56,15 @@ BASE_FEATURE(kCertificateTransparencyAskBeforeEnabling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// Enables using network time for certificate verification. If enabled, network
+// time will be used to verify certificate validity, however certificates that
+// fail to validate with network time will fall back to the system time.
+// This has no effect if the network_time::kNetworkTimeServiceQuerying flag is
+// disabled, or the BrowserNetworkTimeQueriesEnabled policy is set to false.
+BASE_FEATURE(kCertVerificationNetworkTime,
+             "CertVerificationNetworkTime",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using the ClosedTabCache to instantly restore recently closed tabs
 // using the "Reopen Closed Tab" button.
 BASE_FEATURE(kClosedTabCache,
