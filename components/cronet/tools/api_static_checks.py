@@ -82,6 +82,27 @@ ALLOWED_EXCEPTIONS = [
     # getMessage() is an java.lang.Exception member, and so cannot be removed.
     'org.chromium.net.impl.NetworkExceptionImpl/getMessage -> '
     'org/chromium/net/NetworkException/getMessage:()Ljava/lang/String;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/CronetEngine/newUrlRequestBuilder:(Ljava/lang/String;Lorg/chromium/net/UrlRequest$Callback;Ljava/util/concurrent/Executor;)Lorg/chromium/net/UrlRequest$Builder;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/setUploadDataProvider:(Lorg/chromium/net/UploadDataProvider;Ljava/util/concurrent/Executor;)Lorg/chromium/net/ExperimentalUrlRequest$Builder;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/UploadDataProvider/getLength:()J',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/addHeader:(Ljava/lang/String;Ljava/lang/String;)Lorg/chromium/net/ExperimentalUrlRequest$Builder;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/disableCache:()Lorg/chromium/net/ExperimentalUrlRequest$Builder;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/setHttpMethod:(Ljava/lang/String;)Lorg/chromium/net/ExperimentalUrlRequest$Builder;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/setTrafficStatsTag:(I)Lorg/chromium/net/ExperimentalUrlRequest$Builder;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/setTrafficStatsUid:(I)Lorg/chromium/net/ExperimentalUrlRequest$Builder;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/ExperimentalUrlRequest$Builder/build:()Lorg/chromium/net/ExperimentalUrlRequest;',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getStreamingModeContentLength -> org/chromium/net/UrlRequest/start:()V',
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getAllHeadersAsList -> org/chromium/net/UrlResponseInfo/getAllHeadersAsList:()Ljava/util/List;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getSentByteCount:()Ljava/lang/Long;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getReceivedByteCount:()Ljava/lang/Long;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestStart:()Ljava/util/Date;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getResponseStart:()Ljava/util/Date;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getResponseStart:()Ljava/util/Date;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestStart:()Ljava/util/Date;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestStart:()Ljava/util/Date;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestEnd:()Ljava/util/Date;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestEnd:()Ljava/util/Date;',
+    'org.chromium.net.impl.CronetBidirectionalStream/buildCronetTrafficInfo -> org/chromium/net/RequestFinishedInfo$Metrics/getRequestStart:()Ljava/util/Date;',
 ]
 
 JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
@@ -97,6 +118,7 @@ def find_api_calls(dump, api_classes, bad_calls):
 
   for i, line in enumerate(dump):
     try:
+      # TODO: b/362910692 - the source method looks wrong in some cases. Investigate.
       if CLASS_RE.match(line):
         caller_class = CLASS_RE.match(line).group(2)
       if METHOD_RE.match(line):
@@ -166,11 +188,9 @@ def check_api_calls(opts):
       continue
     # Dump classes
     dump_file = os.path.join(temp_dir, 'dump.txt')
-    javap_cmd = '%s -c %s > %s' % (
-        JAVAP_PATH,
-        ' '.join(os.path.join(dirpath, f) for f in filenames).replace('$',
-                                                                      '\\$'),
-        dump_file)
+    javap_cmd = '%s -private -c %s > %s' % (JAVAP_PATH, ' '.join(
+        os.path.join(dirpath, f)
+        for f in filenames).replace('$', '\\$'), dump_file)
     if os.system(javap_cmd):
       print('ERROR: javap failed on ' + ' '.join(filenames))
       return False
