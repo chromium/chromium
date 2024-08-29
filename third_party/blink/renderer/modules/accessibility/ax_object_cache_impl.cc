@@ -2316,19 +2316,7 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfElement(
 
 void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   // aria-hidden markup requires an element.
-  Element& element = *obj.GetElement();
-
-  element.AddConsoleMessage(
-      mojom::blink::ConsoleMessageSource::kRendering,
-      mojom::blink::ConsoleMessageLevel::kError,
-      String::Format(
-          "Blocked aria-hidden on a <%s> element because the element that just "
-          "received focus must not be hidden from assistive technology users. "
-          "Avoid using aria-hidden on a focused element or its ancestor. "
-          "Consider using the inert attribute instead, which will also prevent "
-          "focus. For more details, see the aria-hidden section of the "
-          "WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.",
-          element.TagQName().ToString().Ascii().c_str()));
+  Element& focused_element = *obj.GetElement();
 
   // Traverse all the way to the root in case there are multiple
   // ancestors with aria-hidden. Any aria-hidden="true" on any ancestor will
@@ -2346,6 +2334,23 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   // been marked as bad and will be ignored.
   CHECK(bad_aria_hidden_ancestor)
       << "An aria-hidden node did not have an aria-hidden ancestor.";
+
+  if (bad_aria_hidden_ancestor->GetElement()) {
+    bad_aria_hidden_ancestor->GetElement()->AddConsoleMessage(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kError,
+        String::Format(
+            "Blocked aria-hidden on an element because its descendant retained "
+            "focus. The focus must not be hidden from assistive technology "
+            "users. Avoid using aria-hidden on a focused element or its "
+            "ancestor. Consider using the inert attribute instead, which will "
+            "also prevent focus. For more details, see the aria-hidden section "
+            "of the WAI-ARIA specification at "
+            "https://w3c.github.io/aria/#aria-hidden.\n"
+            "Element with focus: %s\nAncestor with aria-hidden: ",
+            focused_element.TagQName().ToString().Ascii().c_str()));
+  }
+
   Node* bad_aria_hidden_ancestor_node = bad_aria_hidden_ancestor->GetNode();
   AXObject* ancestor_to_rebuild = bad_aria_hidden_ancestor->ParentObject();
   while (ancestor_to_rebuild) {
