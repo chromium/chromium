@@ -130,10 +130,6 @@ void VideoFrameImpl::SetColorSpace(cdm::ColorSpace color_space) {
   color_space_ = color_space;
 }
 
-cdm::ColorSpace VideoFrameImpl::ColorSpace() const {
-  return color_space_;
-}
-
 media::VideoColorSpace VideoFrameImpl::MediaColorSpace() const {
   return media::VideoColorSpace(
       color_space_.primary_id, color_space_.transfer_id, color_space_.matrix_id,
