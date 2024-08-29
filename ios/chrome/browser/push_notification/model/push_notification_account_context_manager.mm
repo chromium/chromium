@@ -175,7 +175,7 @@ struct PermissionsPref {
   for (size_t i = 0; i < numberOfProfiles; i++) {
     ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
     if (gaiaID == attr.GetGaiaId()) {
-      return _profileManager->GetBrowserStateByName(attr.GetProfileName());
+      return _profileManager->GetProfileWithName(attr.GetProfileName());
     }
   }
 

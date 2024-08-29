@@ -84,11 +84,10 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       continue;
     }
 
-    PrefService* pref_service =
-        GetApplicationContext()
-            ->GetProfileManager()
-            ->GetBrowserStateByName(attr.GetProfileName())
-            ->GetPrefs();
+    PrefService* pref_service = GetApplicationContext()
+                                    ->GetProfileManager()
+                                    ->GetProfileWithName(attr.GetProfileName())
+                                    ->GetPrefs();
 
     NSMutableDictionary<NSString*, NSNumber*>* preference_map =
         [[NSMutableDictionary alloc] init];

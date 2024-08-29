@@ -27,7 +27,7 @@ bool ProfileReportGeneratorIOS::Init(const base::FilePath& path) {
   // a ChromeBrowserState can be derived from its path.
   const std::string name = path.BaseName().AsUTF8Unsafe();
   browser_state_ =
-      GetApplicationContext()->GetProfileManager()->GetBrowserStateByName(name);
+      GetApplicationContext()->GetProfileManager()->GetProfileWithName(name);
 
   if (!browser_state_) {
     return false;

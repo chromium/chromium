@@ -206,7 +206,7 @@ TEST_F(
          /*is_opted_in_to_parental_supervision=*/false);
   // Profile with supervision set by policy
   AddTestBrowserState(kProfileName1);
-  SignIn(profile_manager()->GetBrowserStateByName(kProfileName1), kTestEmail1,
+  SignIn(profile_manager()->GetProfileWithName(kProfileName1), kTestEmail1,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
 
@@ -232,13 +232,13 @@ TEST_F(
 
   // Profile with supervision set by user
   AddTestBrowserState(kProfileName1);
-  SignIn(profile_manager()->GetBrowserStateByName(kProfileName1), kTestEmail1,
+  SignIn(profile_manager()->GetProfileWithName(kProfileName1), kTestEmail1,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/false);
 
   // Profile with supervision set by policy
   AddTestBrowserState(kProfileName2);
-  SignIn(profile_manager()->GetBrowserStateByName(kProfileName2), kTestEmail2,
+  SignIn(profile_manager()->GetProfileWithName(kProfileName2), kTestEmail2,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
 
@@ -315,19 +315,19 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
        ProfilesWithMixedSupervisedUsersLoggedAsMixedFilter) {
   // Profile with supervision set by user
   AddTestBrowserState(kProfileName1);
-  SignIn(profile_manager()->GetBrowserStateByName(kProfileName1), kTestEmail1,
+  SignIn(profile_manager()->GetProfileWithName(kProfileName1), kTestEmail1,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/false);
   AllowUnsafeSitesForSupervisedUser(
-      profile_manager()->GetBrowserStateByName(kProfileName1));
+      profile_manager()->GetProfileWithName(kProfileName1));
 
   // Profile with supervision set by policy
   AddTestBrowserState(kProfileName2);
-  SignIn(profile_manager()->GetBrowserStateByName(kProfileName2), kTestEmail2,
+  SignIn(profile_manager()->GetProfileWithName(kProfileName2), kTestEmail2,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
   RestrictAllSitesForSupervisedUser(
-      profile_manager()->GetBrowserStateByName(kProfileName2));
+      profile_manager()->GetProfileWithName(kProfileName2));
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();

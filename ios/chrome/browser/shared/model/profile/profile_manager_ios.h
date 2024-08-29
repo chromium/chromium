@@ -41,9 +41,9 @@ class ProfileManagerIOS {
   // use GetLoadedBrowserStates() instead.
   virtual ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() = 0;
 
-  // Returns the ChromeBrowserState known by `name` or nullptr if there is
-  // no loaded ChromeBrowserState with that `name`.
-  virtual ChromeBrowserState* GetBrowserStateByName(std::string_view name) = 0;
+  // Returns the Profile known by `name` or nullptr if there is no loaded
+  // Profiles with that `name`.
+  virtual ChromeBrowserState* GetProfileWithName(std::string_view name) = 0;
 
   // Returns the list of loaded ChromeBrowserStates. The order is arbitrary.
   virtual std::vector<ChromeBrowserState*> GetLoadedBrowserStates() = 0;

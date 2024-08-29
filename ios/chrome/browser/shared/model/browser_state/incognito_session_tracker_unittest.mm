@@ -145,7 +145,7 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
 
   // Install a regular Browser for kProfile1 ...
   ScopedBrowser scoped_browser_for_profile1(std::make_unique<TestBrowser>(
-      profile_manager()->GetBrowserStateByName(kProfile1)));
+      profile_manager()->GetProfileWithName(kProfile1)));
 
   // ... and insert a few tabs. Then check that HasIncognitoSessionTabs()
   // still returns false and the callbacks must not have been notified.
@@ -158,7 +158,7 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   // Install a new off-the-record Browser for kProfile1 ...
   ScopedBrowser otr_scoped_browser_for_profile1(
       std::make_unique<TestBrowser>(profile_manager()
-                                        ->GetBrowserStateByName(kProfile1)
+                                        ->GetProfileWithName(kProfile1)
                                         ->GetOffTheRecordChromeBrowserState()));
 
   // ... and HasIncognitoSessionTabs() should still return false and the
@@ -210,7 +210,7 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   // Install a new off-the-record Browser for kProfile2 ...
   ScopedBrowser otr_scoped_browser_for_profile2(
       std::make_unique<TestBrowser>(profile_manager()
-                                        ->GetBrowserStateByName(kProfile2)
+                                        ->GetProfileWithName(kProfile2)
                                         ->GetOffTheRecordChromeBrowserState()));
 
   // ... and create a few tabs and check that this change the value of
@@ -231,13 +231,13 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
     ScopedBrowser otr_scoped_browser_for_profile3_1(
         std::make_unique<TestBrowser>(
             profile_manager()
-                ->GetBrowserStateByName(kProfile3)
+                ->GetProfileWithName(kProfile3)
                 ->GetOffTheRecordChromeBrowserState()));
 
     ScopedBrowser otr_scoped_browser_for_profile3_2(
         std::make_unique<TestBrowser>(
             profile_manager()
-                ->GetBrowserStateByName(kProfile3)
+                ->GetProfileWithName(kProfile3)
                 ->GetOffTheRecordChromeBrowserState()));
 
     InsertNewTab(otr_scoped_browser_for_profile3_1.get());

@@ -49,10 +49,10 @@ void TestProfileManagerIOS::LoadBrowserStates() {}
 
 ChromeBrowserState*
 TestProfileManagerIOS::GetLastUsedBrowserStateDeprecatedDoNotUse() {
-  return GetBrowserStateByName(last_used_browser_state_name_);
+  return GetProfileWithName(last_used_browser_state_name_);
 }
 
-ChromeBrowserState* TestProfileManagerIOS::GetBrowserStateByName(
+ChromeBrowserState* TestProfileManagerIOS::GetProfileWithName(
     std::string_view name) {
   auto iterator = browser_states_.find(name);
   return iterator != browser_states_.end() ? iterator->second.get() : nullptr;
@@ -100,15 +100,15 @@ bool TestProfileManagerIOS::CreateBrowserStateAsync(
 ChromeBrowserState* TestProfileManagerIOS::LoadBrowserState(
     std::string_view name) {
   // TestChromeBrowserState cannot create nor load a ChromeBrowserState,
-  // so the implementation is equivalent to GetBrowserStateByName(...).
-  return GetBrowserStateByName(name);
+  // so the implementation is equivalent to GetProfileWithName(...).
+  return GetProfileWithName(name);
 }
 
 ChromeBrowserState* TestProfileManagerIOS::CreateBrowserState(
     std::string_view name) {
   // TestChromeBrowserState cannot create nor load a ChromeBrowserState,
-  // so the implementation is equivalent to GetBrowserStateByName(...).
-  return GetBrowserStateByName(name);
+  // so the implementation is equivalent to GetProfileWithName(...).
+  return GetProfileWithName(name);
 }
 
 ProfileAttributesStorageIOS*

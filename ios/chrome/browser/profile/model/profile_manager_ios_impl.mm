@@ -229,12 +229,12 @@ ChromeBrowserState*
 ProfileManagerIOSImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ChromeBrowserState* browser_state =
-      GetBrowserStateByName(GetLastUsedBrowserStateName());
+      GetProfileWithName(GetLastUsedBrowserStateName());
   CHECK(browser_state);
   return browser_state;
 }
 
-ChromeBrowserState* ProfileManagerIOSImpl::GetBrowserStateByName(
+ChromeBrowserState* ProfileManagerIOSImpl::GetProfileWithName(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the browser state is already loaded, just return it.
