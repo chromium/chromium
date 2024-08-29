@@ -49034,6 +49034,19 @@
         {}
        ]
       ],
+      "max-height-applies-to-018.html": [
+       "a4aa75876043e1905b15df966ee63eb6c398d01d",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "max-height-percentage-001.xht": [
        "5ac6f609e9c68384771a207119363215ad8149ca",
        [
@@ -50198,6 +50211,19 @@
         [
          [
           "/css/CSS2/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "max-width-applies-to-018.html": [
+       "f934a87fd2c12ccb8d57d08b4eef6ae2aa49aca4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
           "=="
          ]
         ],
@@ -124149,6 +124175,19 @@
        {}
       ]
      ],
+     "percentage-max-height-005.html": [
+      "3ca28b3ec1ecc6a204fb1177e1452ec4ce7a5c1c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "percentage-padding-002.html": [
       "9eaaff013ef26f557f5f883fea76b81b6031769f",
       [
@@ -124182,6 +124221,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "percentage-padding-005.html": [
+      "928286a590407bd5607fe4797b19be3b4ecb14d8",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -454033,7 +454085,7 @@
       ]
      ],
      "anchor-size-001.html": [
-      "50620da257cdb0a9d2b1446bd07c055c60ae3198",
+      "4beab33f057367ea227575869868f10bedad24e0",
       [
        null,
        {}
@@ -454054,14 +454106,14 @@
       ]
      ],
      "anchor-size-parse-invalid.html": [
-      "d13f21a585937ae9de8ca85339f297256f923e0c",
+      "54e5f443bb0ebc66e68e5e8e8c02764556d46328",
       [
        null,
        {}
       ]
      ],
      "anchor-size-parse-valid.html": [
-      "d31e399cd48e45b8e36fe11f4287110e3c1c80ae",
+      "cf13df3dd691730354280eef23f72495f6ecea8c",
       [
        null,
        {}
@@ -457793,7 +457845,7 @@
        ]
       ],
       "supports-import-parsing.html": [
-       "64cf930e6cdc60469d04997d0590597edcf8b565",
+       "438583b3ae95836fa5ed02ef78284017f5a41534",
        [
         null,
         {}
@@ -470385,7 +470437,7 @@
       ]
      ],
      "nested-declarations-matching.html": [
-      "b6c0fe7a75dfe228556ab44642654bf1af500f26",
+      "0868be3884050fefcbc097e91718221faf4ea22d",
       [
        null,
        {}
@@ -763453,7 +763505,7 @@
         ]
        ],
        "key_events.py": [
-        "a1cd9cea8e438407e5c050bc234e1d02592360f9",
+        "c8201da7496b68eea5d535538a1c46165fc30de4",
         [
          null,
          {
