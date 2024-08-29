@@ -70,7 +70,7 @@ TEST_F(EventLoggerTest, TransmitsEvents) {
         captured_request = std::move(request);
         proto::LogResponse response;
         response.set_next_request_wait_millis(
-            kMinLogTransmissionCooldown.InMilliseconds());
+            GetGlobalConstants()->EventLoggerMinTimeout().InMilliseconds());
         std::move(callback).Run(network::CreateURLResponseHead(net::HTTP_OK),
                                 response.SerializeAsString());
       });
@@ -179,7 +179,7 @@ TEST_F(EventLoggerTest, RespectsMinimumCooldown) {
   ASSERT_FALSE(captured_request);
 
   // The passage of time triggers the uploading of queued logs.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_TRUE(captured_request);
 
@@ -202,7 +202,7 @@ TEST_F(EventLoggerTest, RespectsRequestedCooldown) {
         proto::LogResponse response;
         // Respond with a cooldown greater than the hardcoded minimum.
         response.set_next_request_wait_millis(
-            kMinLogTransmissionCooldown.InMilliseconds() * 2);
+            GetGlobalConstants()->EventLoggerMinTimeout().InMilliseconds() * 2);
         std::move(callback).Run(network::CreateURLResponseHead(net::HTTP_OK),
                                 response.SerializeAsString());
       });
@@ -233,11 +233,11 @@ TEST_F(EventLoggerTest, RespectsRequestedCooldown) {
   ASSERT_FALSE(captured_request);
 
   // Logs should not be sent using the default cooldown.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_FALSE(captured_request);
 
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_TRUE(captured_request);
 
@@ -285,7 +285,7 @@ TEST_F(EventLoggerTest, RequestsBatchedAcrossLoggers) {
       EnterpriseCompanionStatus::Success());
 
   // The passage of time triggers the uploading of queued logs.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_TRUE(captured_request);
 
@@ -326,7 +326,7 @@ TEST_F(EventLoggerTest, FlushedLogsClearedOnHTTP2XX) {
   captured_request = std::nullopt;
 
   // The flushed logs should not be retransmitted.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_FALSE(captured_request);
 }
@@ -361,7 +361,7 @@ TEST_F(EventLoggerTest, FlushedLogsClearedOnHTTP4XX) {
   captured_request = std::nullopt;
 
   // The flushed logs should not be retransmitted.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_FALSE(captured_request);
 }
@@ -396,7 +396,7 @@ TEST_F(EventLoggerTest, FlushedLogsRetainedOnHTTP5XX) {
   captured_request = std::nullopt;
 
   // The flushed logs should be retransmitted.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_TRUE(captured_request);
 

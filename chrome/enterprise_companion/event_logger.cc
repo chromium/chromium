@@ -303,8 +303,11 @@ class EventLoggerManagerImpl : public EventLoggerManager {
       events_.clear();
     }
 
+    const base::TimeDelta min_timeout =
+        GetGlobalConstants()->EventLoggerMinTimeout();
+
     if (!response_info) {
-      SetCooldown(kMinLogTransmissionCooldown);
+      SetCooldown(min_timeout);
       return;
     }
 
@@ -314,13 +317,12 @@ class EventLoggerManagerImpl : public EventLoggerManager {
       if (response_info->mime_type != "text/plain") {
         LOG(ERROR) << "Log response: " << *response_body;
       }
-      SetCooldown(kMinLogTransmissionCooldown);
+      SetCooldown(min_timeout);
       return;
     }
 
-    SetCooldown(
-        std::max(base::Milliseconds(response.next_request_wait_millis()),
-                 kMinLogTransmissionCooldown));
+    SetCooldown(std::max(
+        base::Milliseconds(response.next_request_wait_millis()), min_timeout));
   }
 
   void SetCooldown(const base::TimeDelta& cooldown) {

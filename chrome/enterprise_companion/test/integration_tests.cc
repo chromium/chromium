@@ -162,6 +162,7 @@ class IntegrationTests : public ::testing::Test {
         test_server_.device_management_realtime_reporting_url().spec());
     overrides.Set(kDMServerUrlKey, dm_test_server_.GetServiceURL().spec());
     overrides.Set(kEventLoggingUrlKey, test_server_.event_logging_url().spec());
+    overrides.Set(kEventLoggerMinTimeoutSecKey, 0);
 
     std::optional<base::FilePath> overrides_json_path = GetOverridesFilePath();
     ASSERT_TRUE(overrides_json_path);
@@ -171,11 +172,6 @@ class IntegrationTests : public ::testing::Test {
   }
 
   void StoreEnrollmentToken(const std::string& enrollment_token) {
-    // TODO(crbug.com/362526168): Remove this assertion once the
-    // application supports reloading the token from storage.
-    ASSERT_FALSE(server_process_.IsValid())
-        << "The enrollment token cannot be written to reliably once the "
-           "server process has launched.";
     scoped_refptr<device_management_storage::DMStorage> dm_storage =
         device_management_storage::GetDefaultDMStorage();
     ASSERT_TRUE(dm_storage);
@@ -407,6 +403,42 @@ TEST_F(IntegrationTests, UnknownDMTokenInvalidated) {
       device_management_storage::GetDefaultDMStorage();
   ASSERT_TRUE(dm_storage);
   EXPECT_FALSE(dm_storage->IsValidDMToken());
+}
+
+// The application should reload the enrollment token from storage on every
+// registration attempt.
+TEST_F(IntegrationTests, ReloadsTokens) {
+  SetDefaultPolicyFetchResponses();
+  ASSERT_TRUE(Install());
+  LaunchApp();
+  WaitForServerStart();
+
+  // Attempt a registration with the invalid enrollment token, it should fail.
+  StoreEnrollmentToken(policy::kInvalidEnrollmentToken);
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID)}})},
+      CreateLogResponse());
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().EqualsDeviceManagementStatus(
+      policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID));
+
+  // Change the enrollment token externally and attempt enrollment again, it
+  // should succeed.
+  StoreEnrollmentToken(kFakeEnrollmentToken);
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::Success()},
+           {proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+
+  ExpectDefaultPolicyValuesPersisted();
 }
 
 }  // namespace enterprise_companion

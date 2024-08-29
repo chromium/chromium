@@ -15,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
@@ -33,6 +34,8 @@ const char kDMEncryptedReportingUrlKey[] = "dm_encrypted_reporting_url";
 const char kDMRealtimeReportingUrlKey[] = "dm_realtime_reporting_url";
 const char kDMServerUrlKey[] = "dm_server_url";
 const char kEventLoggingUrlKey[] = "event_logging_url";
+extern const char kEventLoggerMinTimeoutSecKey[] =
+    "event-logger-min-timeout-sec";
 #if BUILDFLAG(IS_WIN)
 const char kNamedPipeSecurityDescriptorKey[] = "named-pipe-security-descriptor";
 #endif
@@ -67,6 +70,10 @@ class GlobalConstantsImpl : public GlobalConstants {
     return enterprise_companion_event_logging_url_;
   }
 
+  base::TimeDelta EventLoggerMinTimeout() const override {
+    return event_logger_min_timeout_;
+  }
+
 #if BUILDFLAG(IS_WIN)
   std::wstring NamedPipeSecurityDescriptor() const override {
     return named_pipe_security_descriptor_;
@@ -82,6 +89,7 @@ class GlobalConstantsImpl : public GlobalConstants {
   GURL device_management_server_url_ = GURL(DEVICE_MANAGEMENT_SERVER_URL);
   GURL enterprise_companion_event_logging_url_ =
       GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL);
+  base::TimeDelta event_logger_min_timeout_ = base::Minutes(15);
 
 #if BUILDFLAG(IS_WIN)
   // By default allow access from the local system account only.
@@ -123,6 +131,8 @@ class GlobalConstantsImpl : public GlobalConstants {
     ApplyOverride(overrides, kDMServerUrlKey, device_management_server_url_);
     ApplyOverride(overrides, kEventLoggingUrlKey,
                   enterprise_companion_event_logging_url_);
+    ApplyOverride(overrides, kEventLoggerMinTimeoutSecKey,
+                  event_logger_min_timeout_);
 
 #if BUILDFLAG(IS_WIN)
     ApplyOverride(overrides, kNamedPipeSecurityDescriptorKey,
@@ -136,6 +146,15 @@ class GlobalConstantsImpl : public GlobalConstants {
     const std::string* str = overrides.FindString(key);
     if (str) {
       value = GURL(*str);
+    }
+  }
+
+  void ApplyOverride(const base::Value::Dict& overrides,
+                     const std::string& key,
+                     base::TimeDelta& value) {
+    std::optional<int> override_val = overrides.FindInt(key);
+    if (override_val) {
+      value = base::Seconds(*override_val);
     }
   }
 

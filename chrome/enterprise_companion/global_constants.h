@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -21,12 +22,15 @@ class GURL;
 
 namespace enterprise_companion {
 
-// JSON keys for defining overrides. All values are expected to be strings.
+// JSON keys for defining overrides. All values are expected to be strings
+// unless otherwise noted.
 extern const char kCrashUploadUrlKey[];
 extern const char kDMEncryptedReportingUrlKey[];
 extern const char kDMRealtimeReportingUrlKey[];
 extern const char kDMServerUrlKey[];
 extern const char kEventLoggingUrlKey[];
+// The minimum timeout for the event logger's transmissions in integer seconds.
+extern const char kEventLoggerMinTimeoutSecKey[];
 #if BUILDFLAG(IS_WIN)
 extern const char kNamedPipeSecurityDescriptorKey[];
 #endif
@@ -43,6 +47,7 @@ class GlobalConstants {
   virtual GURL DeviceManagementRealtimeReportingURL() const = 0;
   virtual GURL DeviceManagementServerURL() const = 0;
   virtual GURL EnterpriseCompanionEventLoggingURL() const = 0;
+  virtual base::TimeDelta EventLoggerMinTimeout() const = 0;
 #if BUILDFLAG(IS_WIN)
   // The security descriptor to be applied to the server's named pipe for Mojo
   // connections.

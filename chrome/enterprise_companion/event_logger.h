@@ -35,10 +35,6 @@ class URLResponseHead;
 
 namespace enterprise_companion {
 
-// The shortest duration to wait between making remote log requests.
-inline constexpr base::TimeDelta kMinLogTransmissionCooldown =
-    base::Minutes(15);
-
 extern const char kLoggingCookieName[];
 extern const char kLoggingCookieDefaultValue[];
 
