@@ -17,15 +17,19 @@ class TabOrganizationButton : public TabStripControlButton {
   TabOrganizationButton(TabStripController* tab_strip_controller,
                         PressedCallback pressed_callback,
                         PressedCallback close_pressed_callback,
+                        const std::u16string& label_text,
+                        const std::u16string& tooltip_text,
+                        const std::u16string& accessibility_name,
+                        const ui::ElementIdentifier& element_identifier,
                         Edge flat_edge);
+
   TabOrganizationButton(const TabOrganizationButton&) = delete;
   TabOrganizationButton& operator=(const TabOrganizationButton&) = delete;
   ~TabOrganizationButton() override;
 
   void SetOpacity(float opacity);
-
   void SetWidthFactor(float factor);
-  float width_factor_for_testing() { return width_factor_; }
+  float width_factor_for_testing() const { return width_factor_; }
 
   // TabStripControlButton:
   gfx::Size CalculatePreferredSize(

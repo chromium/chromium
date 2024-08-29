@@ -32,21 +32,24 @@ TabOrganizationButton::TabOrganizationButton(
     TabStripController* tab_strip_controller,
     PressedCallback pressed_callback,
     PressedCallback close_pressed_callback,
+    const std::u16string& label_text,
+    const std::u16string& tooltip_text,
+    const std::u16string& accessibility_name,
+    const ui::ElementIdentifier& element_identifier,
     Edge flat_edge)
     : TabStripControlButton(tab_strip_controller,
                             std::move(pressed_callback),
-                            l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
+                            label_text,
                             flat_edge) {
   auto* const layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
 
-  SetProperty(views::kElementIdentifierKey, kTabOrganizationButtonElementId);
+  SetProperty(views::kElementIdentifierKey, element_identifier);
 
-  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
+  SetTooltipText(tooltip_text);
+  GetViewAccessibility().SetName(accessibility_name);
   SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
   label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
 
@@ -99,8 +102,7 @@ int TabOrganizationButton::GetFlatCornerRadius() const {
   return kTabOrganizeFlatCornerRadius;
 }
 
-void TabOrganizationButton::SetCloseButton(
-    views::LabelButton::PressedCallback pressed_callback) {
+void TabOrganizationButton::SetCloseButton(PressedCallback pressed_callback) {
   auto close_button =
       std::make_unique<views::LabelButton>(std::move(pressed_callback));
   close_button->SetTooltipText(

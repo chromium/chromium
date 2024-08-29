@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/layout/flex_layout.h"
@@ -95,8 +98,13 @@ TabSearchContainer::TabSearchContainer(
                               base::Unretained(this)),
           base::BindRepeating(&TabSearchContainer::OnOrganizeButtonDismissed,
                               base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
+          l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE),
+          l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE),
+          kTabOrganizationButtonElementId,
           GetFlatEdge(false, before_tab_strip)),
       index);
+
   tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                         views::LayoutAlignment::kCenter);
   const int space_between_buttons = 2;
