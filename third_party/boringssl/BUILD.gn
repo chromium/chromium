@@ -43,9 +43,9 @@ config("no_asm_config") {
   defines = [ "OPENSSL_NO_ASM" ]
 }
 
-# TODO(crbug.com/1496373): having the headers in all_sources is hacky and should
-# be fixed. It is caused by issues with the fuzzer target.
-all_sources = crypto_sources + ssl_sources + pki_sources + pki_internal_headers
+# TODO(crbug.com/42290535): Move Chromium's use of libpki to the public API and
+# unexport pki_internal_headers.
+all_sources = crypto_sources + ssl_sources + pki_sources
 all_headers = crypto_headers + ssl_headers + pki_headers + pki_internal_headers
 
 if (enable_rust) {
@@ -279,6 +279,8 @@ if (build_with_chromium) {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
     sources = all_sources
+    public = all_headers
+    friend = [ ":*" ]
     deps = [ "//third_party/boringssl/src/third_party/fiat:fiat_license" ]
 
     # Mark boringssl_asm as a public dependency so the OPENSSL_NO_ASM
@@ -347,6 +349,8 @@ if (build_with_chromium) {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
     sources = all_sources
+    public = all_headers
+    friend = [ ":*" ]
     deps = [ "//third_party/boringssl/src/third_party/fiat:fiat_license" ]
 
     # Mark boringssl_asm as a public dependency so the OPENSSL_NO_ASM
