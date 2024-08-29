@@ -18,6 +18,12 @@ UNNotificationContent* NotificationForPasswordCheckState(
     PasswordSafetyCheckState state,
     password_manager::InsecurePasswordCounts insecure_password_counts);
 
+// Returns a notification request for the most critical Update Chrome issue
+// found using `state`. Returns `nil` if no notification request can be
+// created.
+UNNotificationRequest* UpdateChromeNotificationRequest(
+    UpdateChromeSafetyCheckState state);
+
 // Returns notification content for the most critical Update Chrome issue found
 // using `state`. Returns `nil` if no notification content can be created, i.e.,
 // no issue is found.

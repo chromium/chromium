@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -39,6 +40,21 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+namespace {
+
+// Returns app upgrade details for an outdated application.
+UpgradeRecommendedDetails OutdatedAppDetails() {
+  UpgradeRecommendedDetails details;
+
+  details.is_up_to_date = false;
+  details.next_version = "9999.9999.9999.9999";
+  details.upgrade_url = GURL("http://orgForName.org");
+
+  return details;
+}
+
+}  // namespace
 
 class SafetyCheckNotificationClientTest : public PlatformTest {
  public:
@@ -181,6 +197,32 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesSafeBrowsingNotification) {
 
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(kSafetyCheckSafeBrowsingNotificationID);
+
+  base::RunLoop run_loop;
+
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that a Update Chrome notification is correctly scheduled when the user
+// has an available app update.
+TEST_F(SafetyCheckNotificationClientTest, SchedulesUpdateChromeNotification) {
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(kSafetyCheckUpdateChromeNotificationID);
+
+  // Simulate an available app update.
+  //
+  // Note: We need `task_environment_.RunUntilIdle()` because
+  // `IOSChromeSafetyCheckManager`'s internals aren't exposed, and we must
+  // ensure all pending tasks complete before proceeding.
+  safety_check_manager_->StartOmahaCheckForTesting();
+  task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
+  safety_check_manager_->HandleOmahaResponse(OutdatedAppDetails());
+  task_environment_.RunUntilIdle();
 
   base::RunLoop run_loop;
 

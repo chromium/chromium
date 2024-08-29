@@ -51,43 +51,59 @@ class SafetyCheckNotificationClient
       IOSChromeSafetyCheckManager* safety_check_manager) override;
 
  private:
-  // Callback type used with `GetPendingRequest()`.
-  using GetPendingRequestCallback =
-      base::OnceCallback<void(UNNotificationRequest*)>;
+  // Callback type used with `GetPendingRequests()`.
+  using GetPendingRequestsCallback =
+      base::OnceCallback<void(NSArray<UNNotificationRequest*>*)>;
 
-  // Calls `completion` with a pending request matching `notification_id` if
-  // there is one, or `nil` if there isn't one.
-  void GetPendingRequest(NSString* notification_id,
-                         GetPendingRequestCallback completion);
+  // Calls `completion` with all pending requests matching `identifiers`.
+  void GetPendingRequests(NSArray<NSString*>* identifiers,
+                          GetPendingRequestsCallback completion);
 
   // Returns true if the user has enabled Safety Check notifications, either in
   // the Notifications Settings UI or through an opt-in prompt (e.g., Magic
   // Stack, Safety Check page, Password Checkup page).
   bool IsPermitted();
 
-  // Called when the notification request matching `notification_id` is cleared
-  // from the pending notification requests schedule.
-  void OnNotificationCleared(NSString* notification_id,
-                             UNNotificationRequest* request);
+  // Called when notifications matching `identifiers` are cleared from the
+  // pending notification requests schedule.
+  void OnNotificationsCleared(NSArray<NSString*>* identifiers,
+                              NSArray<UNNotificationRequest*>* requests);
 
-  // Clears any previously scheduled notification(s) that match
-  // `notification_id`. Runs `completion` at the end, once all async operations
-  // have completed.
-  void ClearNotification(NSString* notification_id,
-                         base::OnceClosure completion);
+  // Clears any previously scheduled notifications matching `identifiers`. Runs
+  // `completion` at the end, once all async operations have completed.
+  void ClearNotifications(NSArray<NSString*>* identifiers,
+                          base::OnceClosure completion);
 
-  // Schedules a new Safe Browsing notification reflecting `state`, if
-  // permitted. Runs `completion` at the end, once all async operations have
-  // completed.
-  void ScheduleSafeBrowsingNotification(SafeBrowsingSafetyCheckState state,
-                                        base::OnceClosure completion);
-
-  // Clears any existing Safe Browsing notification and schedules a new one
-  // reflecting the latest `state`, if permitted. Runs `completion`
-  // at the end, once all async operations have completed.
-  void ClearAndRescheduleSafeBrowsingNotification(
-      SafeBrowsingSafetyCheckState state,
+  // Schedules new Safety Check notifications reflecting `update_chrome_state`,
+  // `password_state`, and `safe_browsing_state`, if permitted. Runs
+  // `completion` at the end, once all async operations have completed.
+  void ScheduleSafetyCheckNotifications(
+      UpdateChromeSafetyCheckState update_chrome_state,
+      PasswordSafetyCheckState password_state,
+      SafeBrowsingSafetyCheckState safe_browsing_state,
       base::OnceClosure completion);
+
+  // Clears any existing Safety Check notifications and schedules new ones
+  // reflecting the latest `update_chrome_state`, `password_state`, and
+  // `safe_browsing_state`, if permitted. Runs `completion` at the end, once all
+  // async operations have completed.
+  void ClearAndRescheduleSafetyCheckNotifications(
+      UpdateChromeSafetyCheckState update_chrome_state,
+      PasswordSafetyCheckState password_state,
+      SafeBrowsingSafetyCheckState safe_browsing_state,
+      base::OnceClosure completion);
+
+  // Current state of the Update Chrome check.
+  UpdateChromeSafetyCheckState update_chrome_check_state_ =
+      UpdateChromeSafetyCheckState::kDefault;
+
+  // Current state of the Password check.
+  PasswordSafetyCheckState password_check_state_ =
+      PasswordSafetyCheckState::kDefault;
+
+  // Current state of the Safe Browsing check.
+  SafeBrowsingSafetyCheckState safe_browsing_check_state_ =
+      SafeBrowsingSafetyCheckState::kDefault;
 
   // Validates asynchronous `PushNotificationClient` events are evaluated on the
   // same sequence that `SafetyCheckNotificationClient` was created on.

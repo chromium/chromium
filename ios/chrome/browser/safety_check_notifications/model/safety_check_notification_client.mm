@@ -22,18 +22,20 @@
 
 namespace {
 
-// Returns the first notification from `requests` whose identifier matches
-// `identifier`.
-UNNotificationRequest* NotificationWithIdentifier(
-    NSString* identifier,
+// Returns all notifications from `requests` matching `identifiers`, if any.
+NSArray<UNNotificationRequest*>* NotificationsWithIdentifiers(
+    NSSet<NSString*>* identifiers,
     NSArray<UNNotificationRequest*>* requests) {
+  NSMutableArray<UNNotificationRequest*>* matching_requests =
+      [NSMutableArray array];
+
   for (UNNotificationRequest* request in requests) {
-    if ([request.identifier isEqualToString:identifier]) {
-      return request;
+    if ([identifiers containsObject:request.identifier]) {
+      [matching_requests addObject:request];
     }
   }
 
-  return nil;
+  return matching_requests;
 }
 
 }  // namespace
@@ -86,8 +88,8 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/362479882): Exit if user shouldn't receive a new Safe
-  // Browsing notification (e.g., notifications disabled, recent notification
+  // TODO(crbug.com/362479882): Exit if the user shouldn't receive a new Safety
+  // Check notification (e.g., notifications disabled, recent notification
   // already shown).
   if (!IsPermitted()) {
     std::move(completion).Run();
@@ -112,9 +114,15 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
 
     safety_check_manager->AddObserver(this);
 
-    ClearAndRescheduleSafeBrowsingNotification(
-        safety_check_manager->GetSafeBrowsingCheckState(),
-        std::move(completion));
+    update_chrome_check_state_ =
+        safety_check_manager->GetUpdateChromeCheckState();
+    password_check_state_ = safety_check_manager->GetPasswordCheckState();
+    safe_browsing_check_state_ =
+        safety_check_manager->GetSafeBrowsingCheckState();
+
+    ClearAndRescheduleSafetyCheckNotifications(
+        update_chrome_check_state_, password_check_state_,
+        safe_browsing_check_state_, std::move(completion));
 
     return;
   }
@@ -144,15 +152,29 @@ void SafetyCheckNotificationClient::SafeBrowsingCheckStateChanged(
     return;
   }
 
-  ClearAndRescheduleSafeBrowsingNotification(state, base::DoNothing());
+  safe_browsing_check_state_ = state;
+
+  ClearAndRescheduleSafetyCheckNotifications(
+      update_chrome_check_state_, password_check_state_,
+      safe_browsing_check_state_, base::DoNothing());
 }
 
 void SafetyCheckNotificationClient::UpdateChromeCheckStateChanged(
     UpdateChromeSafetyCheckState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/362487375): Re-schedule Safety Check notifications when the
-  // Update Chrome state changes.
+  // Avoid modifying notifications while the Update Chrome check is running.
+  // Wait for a meaningful state change that influences whether Update Chrome
+  // notifications should be removed or scheduled.
+  if (state == UpdateChromeSafetyCheckState::kRunning) {
+    return;
+  }
+
+  update_chrome_check_state_ = state;
+
+  ClearAndRescheduleSafetyCheckNotifications(
+      update_chrome_check_state_, password_check_state_,
+      safe_browsing_check_state_, base::DoNothing());
 }
 
 void SafetyCheckNotificationClient::RunningStateChanged(
@@ -168,13 +190,14 @@ void SafetyCheckNotificationClient::ManagerWillShutdown(
   safety_check_manager->RemoveObserver(this);
 }
 
-void SafetyCheckNotificationClient::GetPendingRequest(
-    NSString* notification_id,
-    GetPendingRequestCallback completion) {
+void SafetyCheckNotificationClient::GetPendingRequests(
+    NSArray<NSString*>* identifiers,
+    GetPendingRequestsCallback completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto callback = base::CallbackToBlock(base::BindPostTask(
-      task_runner_, base::BindOnce(&NotificationWithIdentifier, notification_id)
+      task_runner_, base::BindOnce(&NotificationsWithIdentifiers,
+                                   [NSSet setWithArray:identifiers])
                         .Then(std::move(completion))));
 
   [UNUserNotificationCenter.currentNotificationCenter
@@ -195,40 +218,42 @@ bool SafetyCheckNotificationClient::IsPermitted() {
       .value_or(false);
 }
 
-void SafetyCheckNotificationClient::OnNotificationCleared(
-    NSString* notification_id,
-    UNNotificationRequest* request) {
+void SafetyCheckNotificationClient::OnNotificationsCleared(
+    NSArray<NSString*>* identifiers,
+    NSArray<UNNotificationRequest*>* requests) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!request) {
+  if (![requests count]) {
     // TODO(crbug.com/362481419): Add logging to track the state of the
     // notification (requested, triggered, etc.).
     return;
   }
 
   [UNUserNotificationCenter.currentNotificationCenter
-      removePendingNotificationRequestsWithIdentifiers:@[ notification_id ]];
+      removePendingNotificationRequestsWithIdentifiers:identifiers];
 }
 
-void SafetyCheckNotificationClient::ClearNotification(
-    NSString* notification_id,
+void SafetyCheckNotificationClient::ClearNotifications(
+    NSArray<NSString*>* identifiers,
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GetPendingRequest(
-      notification_id,
-      base::BindOnce(&SafetyCheckNotificationClient::OnNotificationCleared,
-                     weak_ptr_factory_.GetWeakPtr(), notification_id)
+  GetPendingRequests(
+      identifiers,
+      base::BindOnce(&SafetyCheckNotificationClient::OnNotificationsCleared,
+                     weak_ptr_factory_.GetWeakPtr(), identifiers)
           .Then(std::move(completion)));
 }
 
-void SafetyCheckNotificationClient::ScheduleSafeBrowsingNotification(
-    SafeBrowsingSafetyCheckState state,
+void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
+    UpdateChromeSafetyCheckState update_chrome_state,
+    PasswordSafetyCheckState password_state,
+    SafeBrowsingSafetyCheckState safe_browsing_state,
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/362479882): Exit if user shouldn't receive a new Safe
-  // Browsing notification (e.g., notifications disabled, recent notification
+  // TODO(crbug.com/362479882): Exit if the user shouldn't receive a new Safety
+  // Check notification (e.g., notifications disabled, recent notification
   // already shown).
   if (!IsPermitted()) {
     std::move(completion).Run();
@@ -236,10 +261,13 @@ void SafetyCheckNotificationClient::ScheduleSafeBrowsingNotification(
   }
 
   // TODO(crbug.com/362481419): Add completion handler to log metrics and
-  // actions when the Safe Browsing notification is requested.
+  // actions when Safety Check notifications are requested.
+
+  // TODO(crbug.com/362479882): Use experimental arm to determine if single or
+  // multiple notifications are allowed.
 
   UNNotificationRequest* safe_browsing_notification =
-      SafeBrowsingNotificationRequest(state);
+      SafeBrowsingNotificationRequest(safe_browsing_state);
 
   if (safe_browsing_notification) {
     [UNUserNotificationCenter.currentNotificationCenter
@@ -247,17 +275,32 @@ void SafetyCheckNotificationClient::ScheduleSafeBrowsingNotification(
          withCompletionHandler:nil];
   }
 
+  UNNotificationRequest* update_chrome_notification =
+      UpdateChromeNotificationRequest(update_chrome_state);
+
+  if (update_chrome_notification) {
+    [UNUserNotificationCenter.currentNotificationCenter
+        addNotificationRequest:update_chrome_notification
+         withCompletionHandler:nil];
+  }
+
   std::move(completion).Run();
 }
 
-void SafetyCheckNotificationClient::ClearAndRescheduleSafeBrowsingNotification(
-    SafeBrowsingSafetyCheckState state,
+void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
+    UpdateChromeSafetyCheckState update_chrome_state,
+    PasswordSafetyCheckState password_state,
+    SafeBrowsingSafetyCheckState safe_browsing_state,
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ClearNotification(
-      kSafetyCheckSafeBrowsingNotificationID,
+  ClearNotifications(
+      @[
+        kSafetyCheckSafeBrowsingNotificationID,
+        kSafetyCheckUpdateChromeNotificationID
+      ],
       base::BindOnce(
-          &SafetyCheckNotificationClient::ScheduleSafeBrowsingNotification,
-          weak_ptr_factory_.GetWeakPtr(), state, std::move(completion)));
+          &SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications,
+          weak_ptr_factory_.GetWeakPtr(), update_chrome_state, password_state,
+          safe_browsing_state, std::move(completion)));
 }

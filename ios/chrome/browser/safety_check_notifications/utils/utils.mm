@@ -141,6 +141,27 @@ UNNotificationContent* NotificationForPasswordCheckState(
   return nil;
 }
 
+UNNotificationRequest* UpdateChromeNotificationRequest(
+    UpdateChromeSafetyCheckState state) {
+  UNNotificationContent* content = NotificationForUpdateChromeCheckState(state);
+
+  if (!content) {
+    return nil;
+  }
+
+  // TODO(crbug.com/362475364): Enable Update Chrome notification trigger
+  // to be configurable via Finch to allow for better testing and
+  // experimentation.
+  return [UNNotificationRequest
+      requestWithIdentifier:kSafetyCheckUpdateChromeNotificationID
+                    content:content
+                    trigger:[UNTimeIntervalNotificationTrigger
+                                triggerWithTimeInterval:
+                                    kSafetyCheckNotificationDefaultDelay
+                                        .InSecondsF()
+                                                repeats:NO]];
+}
+
 UNNotificationContent* NotificationForUpdateChromeCheckState(
     UpdateChromeSafetyCheckState state) {
   if (state == UpdateChromeSafetyCheckState::kOutOfDate) {

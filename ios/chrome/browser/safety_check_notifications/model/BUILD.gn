@@ -24,6 +24,7 @@ source_set("notification_client") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/ui/content_suggestions/safety_check",
   ]
   frameworks = [
     "UserNotifications.framework",
@@ -50,6 +51,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",
     "//ios/web/public/",
