@@ -132,6 +132,7 @@ source_set("impl") {
       "//chrome/app/vector_icons",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
+      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/common",
       "//components/autofill/core/common:credit_card_number_validation",
       "//components/commerce/core:feature_list",

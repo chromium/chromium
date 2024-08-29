@@ -57,6 +57,7 @@ source_set("app_service") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:app_icon_resources",
     "//chrome/browser/sync",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
     "//components/app_constants",

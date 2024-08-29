@@ -16,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"

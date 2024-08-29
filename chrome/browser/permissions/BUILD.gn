@@ -64,6 +64,7 @@ source_set("permissions") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
+    "//chrome/browser/ui:browser_navigator_params_headers",
   ]
 
   deps = [

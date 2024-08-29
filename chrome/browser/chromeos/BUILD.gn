@@ -133,6 +133,7 @@ source_set("chromeos") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

@@ -428,6 +428,7 @@ static_library("crosapi") {
     "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/task_manager:impl",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash/arc",
     "//chrome/browser/ui/ash/assistant",
