@@ -700,6 +700,8 @@ class CrossbenchTest(object):
   BENCHMARK_FILESERVERS = {'speedometer_3.0': 'third_party/speedometer/v3.0'}
 
   def __init__(self, options, isolated_out_dir):
+    if binary_manager.NeedsInit():
+      binary_manager.InitDependencyManager(None)
     self.options = options
     self.isolated_out_dir = isolated_out_dir
     browser_arg = self._get_browser_arg(options.passthrough_args)
