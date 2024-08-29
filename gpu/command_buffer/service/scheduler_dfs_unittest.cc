@@ -14,6 +14,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -185,13 +186,11 @@ class SchedulerDfsTaskRunOrderTest : public SchedulerDfsTest {
     SequenceId sequence_id = scheduler()->CreateSequenceForTesting(priority);
     CommandBufferId command_buffer_id =
         CommandBufferId::FromUnsafeValue(sequence_key);
-    scoped_refptr<SyncPointClientState> release_state =
-        sync_point_manager()->CreateSyncPointClientState(
-            kNamespaceId, command_buffer_id, sequence_id);
+    scheduler()->CreateSyncPointClientState(sequence_id, kNamespaceId,
+                                            command_buffer_id);
 
-    sequence_info_.emplace(
-        sequence_key,
-        SequenceInfo(sequence_id, command_buffer_id, release_state));
+    sequence_info_.emplace(sequence_key,
+                           SequenceInfo(sequence_id, command_buffer_id));
   }
 
   void CreateExternalSequence(int sequence_key) {
@@ -209,11 +208,12 @@ class SchedulerDfsTaskRunOrderTest : public SchedulerDfsTest {
     auto info_it = sequence_info_.find(sequence_key);
     ASSERT_TRUE(info_it != sequence_info_.end());
 
-    info_it->second.release_state->Destroy();
-    if (info_it->second.order_data)
+    if (info_it->second.order_data) {
+      info_it->second.release_state->Destroy();
       info_it->second.order_data->Destroy();
-    else
+    } else {
       scheduler()->DestroySequence(info_it->second.sequence_id);
+    }
 
     sequence_info_.erase(info_it);
   }
@@ -228,15 +228,26 @@ class SchedulerDfsTaskRunOrderTest : public SchedulerDfsTest {
         SyncToken(kNamespaceId, info_it->second.command_buffer_id, release));
   }
 
-  static void RunExternalTask(base::OnceClosure task,
-                              scoped_refptr<SyncPointOrderData> order_data,
-                              uint32_t order_num) {
-    order_data->BeginProcessingOrderNumber(order_num);
-    std::move(task).Run();
-    order_data->FinishProcessingOrderNumber(order_num);
+  TaskCallback GetTaskCallback(int sequence_key, int release_sync) {
+    const int task_id = num_tasks_scheduled_++;
+
+    if (release_sync >= 0) {
+      CreateSyncToken(sequence_key, release_sync);
+    }
+
+    auto info_it = sequence_info_.find(sequence_key);
+    CHECK(info_it != sequence_info_.end());
+
+    return base::BindLambdaForTesting(
+        [this, task_id](FenceSyncReleaseDelegate* release_delegate) {
+          if (release_delegate) {
+            release_delegate->Release();
+          }
+          tasks_executed_.push_back(task_id);
+        });
   }
 
-  base::OnceClosure GetTaskClosure(int sequence_key, int release_sync) {
+  base::OnceClosure GetExternalTaskClosure(int sequence_key, int release_sync) {
     const int task_id = num_tasks_scheduled_++;
 
     uint64_t release = 0;
@@ -247,27 +258,23 @@ class SchedulerDfsTaskRunOrderTest : public SchedulerDfsTest {
 
     auto info_it = sequence_info_.find(sequence_key);
     CHECK(info_it != sequence_info_.end());
-
-    auto closure = GetClosure([this, task_id, sequence_key, release] {
-      if (release) {
-        auto info_it = sequence_info_.find(sequence_key);
-        ASSERT_TRUE(info_it != sequence_info_.end());
-        info_it->second.release_state->ReleaseFenceSync(release);
-      }
-      this->tasks_executed_.push_back(task_id);
-    });
+    CHECK(info_it->second.external());
 
     // Simulate external sequence, when tasks are run outside of this
     // gpu::Scheduler
-    if (info_it->second.external()) {
-      auto order_data = info_it->second.order_data;
-      uint32_t order_num = order_data->GenerateUnprocessedOrderNumber();
+    auto order_data = info_it->second.order_data;
+    uint32_t order_num = order_data->GenerateUnprocessedOrderNumber();
 
-      return base::BindOnce(RunExternalTask, std::move(closure), order_data,
-                            order_num);
-    } else {
-      return closure;
-    }
+    return GetClosure([this, task_id, sequence_key, release, order_num] {
+      auto info_it = sequence_info_.find(sequence_key);
+      ASSERT_TRUE(info_it != sequence_info_.end());
+      info_it->second.order_data->BeginProcessingOrderNumber(order_num);
+      if (release) {
+        info_it->second.release_state->ReleaseFenceSync(release);
+      }
+      this->tasks_executed_.push_back(task_id);
+      info_it->second.order_data->FinishProcessingOrderNumber(order_num);
+    });
   }
 
   void ScheduleTask(int sequence_key, int wait_sync, int release_sync) {
@@ -277,7 +284,7 @@ class SchedulerDfsTaskRunOrderTest : public SchedulerDfsTest {
   void ScheduleTask(int sequence_key,
                     const std::vector<int>& wait_syncs,
                     int release_sync) {
-    auto closure = GetTaskClosure(sequence_key, release_sync);
+    auto task_callback = GetTaskCallback(sequence_key, release_sync);
 
     auto info_it = sequence_info_.find(sequence_key);
     ASSERT_TRUE(info_it != sequence_info_.end());
@@ -297,7 +304,7 @@ class SchedulerDfsTaskRunOrderTest : public SchedulerDfsTest {
     }
 
     scheduler()->ScheduleTask(Scheduler::Task(
-        info_it->second.sequence_id, std::move(closure), waits, release));
+        info_it->second.sequence_id, std::move(task_callback), waits, release));
   }
 
   const std::vector<int>& tasks_executed() { return tasks_executed_; }
@@ -316,12 +323,8 @@ class SchedulerDfsTaskRunOrderTest : public SchedulerDfsTest {
   int num_tasks_scheduled_ = 0;
 
   struct SequenceInfo {
-    SequenceInfo(SequenceId sequence_id,
-                 CommandBufferId command_buffer_id,
-                 scoped_refptr<SyncPointClientState> release_state)
-        : sequence_id(sequence_id),
-          command_buffer_id(command_buffer_id),
-          release_state(release_state) {}
+    SequenceInfo(SequenceId sequence_id, CommandBufferId command_buffer_id)
+        : sequence_id(sequence_id), command_buffer_id(command_buffer_id) {}
 
     SequenceInfo(scoped_refptr<SyncPointOrderData> order_data,
                  CommandBufferId command_buffer_id,
@@ -335,7 +338,7 @@ class SchedulerDfsTaskRunOrderTest : public SchedulerDfsTest {
 
     SequenceId sequence_id;
     CommandBufferId command_buffer_id;
-    // |order_data| is only set for external sequences.
+    // `order_data` and `release_state` are only set for external sequences.
     scoped_refptr<SyncPointOrderData> order_data;
     scoped_refptr<SyncPointClientState> release_state;
   };
@@ -396,7 +399,7 @@ TEST_P(SchedulerDfsTaskRunOrderTest, SequenceWaitsForFenceExternal) {
   CreateExternalSequence(1);
 
   // Create task 0 on seq 1 that will release 0, but don't post it.
-  auto external_task = GetTaskClosure(1, 0);
+  auto external_task = GetExternalTaskClosure(1, 0);
 
   ScheduleTask(0, 0, -1);  // task 1: seq 0, wait 0, no release
 
@@ -582,28 +585,25 @@ TEST_P(SchedulerDfsTest, ShouldNotYieldWhenNoTasksToRun) {
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
   CommandBufferNamespace namespace_id = CommandBufferNamespace::GPU_IO;
   CommandBufferId command_buffer_id = CommandBufferId::FromUnsafeValue(1);
-  scoped_refptr<SyncPointClientState> release_state =
-      sync_point_manager()->CreateSyncPointClientState(
-          namespace_id, command_buffer_id, sequence_id1);
+  scheduler()->CreateSyncPointClientState(sequence_id1, namespace_id,
+                                          command_buffer_id);
+
   SyncToken sync_token(namespace_id, command_buffer_id, 1);
 
-  scheduler()->ScheduleTask(
-      Scheduler::Task(sequence_id1, GetClosure([&] {
-                        EXPECT_FALSE(scheduler()->ShouldYield(sequence_id1));
-                        release_state->ReleaseFenceSync(1);
-                      }),
-                      std::vector<SyncToken>()));
+  scheduler()->ScheduleTask(Scheduler::Task(
+      sequence_id1,
+      GetClosure([&] { EXPECT_FALSE(scheduler()->ShouldYield(sequence_id1)); }),
+      std::vector<SyncToken>(), sync_token));
 
   // Schedule a task on another sequence that depends on the above task.
   // ShouldYield should return false because the sequence below isn't runnable
-  // (until ReleaseFenceSync is called).
+  // until the above task completes.
   SequenceId sequence_id2 =
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
   scheduler()->ScheduleTask(
       Scheduler::Task(sequence_id2, GetClosure([] {}), {sync_token}));
   RunAllPendingTasks();
 
-  release_state->Destroy();
   scheduler()->DestroySequence(sequence_id1);
   scheduler()->DestroySequence(sequence_id2);
 }
@@ -613,24 +613,24 @@ TEST_P(SchedulerDfsTest, ReleaseSequenceShouldYield) {
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kLow);
   CommandBufferNamespace namespace_id = CommandBufferNamespace::GPU_IO;
   CommandBufferId command_buffer_id = CommandBufferId::FromUnsafeValue(1);
-  scoped_refptr<SyncPointClientState> release_state =
-      sync_point_manager()->CreateSyncPointClientState(
-          namespace_id, command_buffer_id, sequence_id1);
+  scheduler()->CreateSyncPointClientState(sequence_id1, namespace_id,
+                                          command_buffer_id);
 
-  uint64_t release = 1;
+  SyncToken sync_token(namespace_id, command_buffer_id, 1);
   int count = 0;
   int ran1 = 0;
-  scheduler()->ScheduleTask(
-      Scheduler::Task(sequence_id1, GetClosure([&] {
-                        EXPECT_FALSE(scheduler()->ShouldYield(sequence_id1));
-                        release_state->ReleaseFenceSync(release);
-                        EXPECT_TRUE(scheduler()->ShouldYield(sequence_id1));
-                        ran1 = ++count;
-                      }),
-                      std::vector<SyncToken>()));
+  scheduler()->ScheduleTask(Scheduler::Task(
+      sequence_id1,
+      base::BindLambdaForTesting(
+          [&](FenceSyncReleaseDelegate* release_delegate) {
+            EXPECT_FALSE(scheduler()->ShouldYield(sequence_id1));
+            release_delegate->Release();
+            EXPECT_TRUE(scheduler()->ShouldYield(sequence_id1));
+            ran1 = ++count;
+          }),
+      std::vector<SyncToken>(), sync_token));
 
   int ran2 = 0;
-  SyncToken sync_token(namespace_id, command_buffer_id, release);
   SequenceId sequence_id2 =
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kHigh);
   scheduler()->ScheduleTask(Scheduler::Task(
@@ -642,7 +642,6 @@ TEST_P(SchedulerDfsTest, ReleaseSequenceShouldYield) {
   EXPECT_EQ(ran2, 2);
   EXPECT_TRUE(sync_point_manager()->IsSyncTokenReleased(sync_token));
 
-  release_state->Destroy();
   scheduler()->DestroySequence(sequence_id1);
   scheduler()->DestroySequence(sequence_id2);
 }
@@ -655,43 +654,33 @@ TEST_P(SchedulerDfsTest, ShouldYieldIsValidWhenSequenceReleaseIsPending) {
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kHigh);
   CommandBufferNamespace namespace_id = CommandBufferNamespace::GPU_IO;
   CommandBufferId command_buffer_id1 = CommandBufferId::FromUnsafeValue(1);
-  scoped_refptr<SyncPointClientState> release_state1 =
-      sync_point_manager()->CreateSyncPointClientState(
-          namespace_id, command_buffer_id1, sequence_id1);
+  scheduler()->CreateSyncPointClientState(sequence_id1, namespace_id,
+                                          command_buffer_id1);
 
   SequenceId sequence_id2 =
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
   CommandBufferId command_buffer_id2 = CommandBufferId::FromUnsafeValue(2);
-  scoped_refptr<SyncPointClientState> release_state2 =
-      sync_point_manager()->CreateSyncPointClientState(
-          namespace_id, command_buffer_id2, sequence_id2);
+  scheduler()->CreateSyncPointClientState(sequence_id2, namespace_id,
+                                          command_buffer_id2);
 
   SyncToken sync_token1(namespace_id, command_buffer_id1, 1);
   SyncToken sync_token2(namespace_id, command_buffer_id2, 2);
 
   // Job 1.1 doesn't depend on anything.
-  scheduler()->ScheduleTask(
-      Scheduler::Task(sequence_id1, GetClosure([&] {
-                        EXPECT_FALSE(scheduler()->ShouldYield(sequence_id1));
-                        release_state1->ReleaseFenceSync(1);
-                      }),
-                      {}));
+  scheduler()->ScheduleTask(Scheduler::Task(
+      sequence_id1,
+      GetClosure([&] { EXPECT_FALSE(scheduler()->ShouldYield(sequence_id1)); }),
+      {}, sync_token1));
 
   // Job 2.1 depends on Job 1.1.
-  scheduler()->ScheduleTask(Scheduler::Task(sequence_id2, GetClosure([&] {
-                                              release_state2->ReleaseFenceSync(
-                                                  sync_token2.release_count());
-                                            }),
-                                            {sync_token1}));
+  scheduler()->ScheduleTask(Scheduler::Task(sequence_id2, GetClosure([&] {}),
+                                            {sync_token1}, sync_token2));
 
   // Job 1.2 depends on Job 2.1.
   scheduler()->ScheduleTask(
       Scheduler::Task(sequence_id1, GetClosure([&] {}), {sync_token2}));
 
   RunAllPendingTasks();
-
-  release_state1->Destroy();
-  release_state2->Destroy();
 
   scheduler()->DestroySequence(sequence_id1);
   scheduler()->DestroySequence(sequence_id2);
@@ -841,9 +830,9 @@ TEST_P(SchedulerDfsTest, StreamPriorities) {
   SyncToken sync_token2(namespace_id, command_buffer_id2, 1);
 
   // Make sure that waiting for fences does not change sequence priorities.
-  seq2->AddTask(/*closure=*/{}, {sync_token1}, /*release=*/{},
+  seq2->AddTask(base::OnceClosure(), {sync_token1}, /*release=*/{},
                 /*report_callback=*/{});
-  seq3->AddTask(/*closure=*/{}, {sync_token2}, /*release=*/{},
+  seq3->AddTask(base::OnceClosure(), {sync_token2}, /*release=*/{},
                 /*report_callback=*/{});
   EXPECT_EQ(SchedulingPriority::kLow, seq1->current_priority());
   EXPECT_EQ(SchedulingPriority::kNormal, seq2->current_priority());

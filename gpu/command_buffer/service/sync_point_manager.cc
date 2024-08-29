@@ -293,10 +293,9 @@ void SyncPointClientState::ReleaseFenceSync(uint64_t release) {
   DCHECK(!destroyed_.IsSet())
       << "Attempting to release fence on destroyed client state.";
 
-  bool updated = EnsureFenceSyncReleased(release);
-  // Suppress unused variable error in release builds.
-  (void)updated;
-  DLOG_IF(ERROR, !updated) << "Client submitted fence releases out of order.";
+  [[maybe_unused]] bool updated = EnsureFenceSyncReleased(release);
+  DLOG_IF(ERROR, !updated)
+      << "Client attempted to release a fence sync that has been released.";
 }
 
 bool SyncPointClientState::EnsureFenceSyncReleased(uint64_t release) {

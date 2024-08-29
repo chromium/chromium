@@ -54,6 +54,11 @@ class GPU_EXPORT SchedulerDfs {
   // could be destroyed outside of GPU thread.
   void DestroySequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock());
 
+  void CreateSyncPointClientState(SequenceId sequence_id,
+                                  CommandBufferNamespace namespace_id,
+                                  CommandBufferId command_buffer_id)
+      LOCKS_EXCLUDED(lock());
+
   // Enables the sequence so that its tasks may be scheduled.
   void EnableSequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock());
 
@@ -69,16 +74,18 @@ class GPU_EXPORT SchedulerDfs {
   void SetSequencePriority(SequenceId sequence_id, SchedulingPriority priority)
       LOCKS_EXCLUDED(lock());
 
-  // Schedules task (closure) to run on the sequence. The task is blocked until
-  // the sync token fences are released or determined to be invalid. Tasks are
-  // run in the order in which they are submitted.
+  // Schedules task to run on the sequence. The task is blocked until the sync
+  // token fences are released or determined to be invalid. Tasks are run in the
+  // order in which they are submitted.
   void ScheduleTask(Scheduler::Task task) LOCKS_EXCLUDED(lock());
 
   void ScheduleTasks(std::vector<Scheduler::Task> tasks) LOCKS_EXCLUDED(lock());
 
-  // Continue running task on the sequence with the closure. This must be called
-  // while running a previously scheduled task.
-  void ContinueTask(SequenceId sequence_id, base::OnceClosure closure)
+  // Continue running task on the sequence with the callback. This must be
+  // called while running a previously scheduled task.
+  void ContinueTask(SequenceId sequence_id, TaskCallback task_callback)
+      LOCKS_EXCLUDED(lock());
+  void ContinueTask(SequenceId sequence_id, base::OnceClosure task_closure)
       LOCKS_EXCLUDED(lock());
 
   // If the sequence should yield so that a higher priority sequence may run.
@@ -165,23 +172,27 @@ class GPU_EXPORT SchedulerDfs {
     // Update cached scheduling priority while running.
     void UpdateRunningPriority() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
-    uint32_t AddTask(base::OnceClosure closure,
+    using TaskGraph::Sequence::AddTask;
+
+    uint32_t AddTask(base::OnceClosure task_closure,
                      std::vector<SyncToken> wait_fences,
                      const SyncToken& release,
                      TaskGraph::ReportingCallback report_callback) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Returns the next order number and closure. Sets running state to RUNNING.
-    uint32_t BeginTask(base::OnceClosure* closure) override
+    uint32_t BeginTask(base::OnceClosure* task_closure) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Called after running the closure returned by BeginTask. Sets running
     // state to SCHEDULED.
     void FinishTask() override EXCLUSIVE_LOCKS_REQUIRED(lock());
 
+    using TaskGraph::Sequence::ContinueTask;
+
     // Continue running the current task with the given closure. Must be called
     // in between |BeginTask| and |FinishTask|.
-    void ContinueTask(base::OnceClosure closure) override
+    void ContinueTask(base::OnceClosure task_closure) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     SchedulingPriority current_priority() const

@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -165,13 +166,11 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
     SequenceId sequence_id = scheduler()->CreateSequenceForTesting(priority);
     CommandBufferId command_buffer_id =
         CommandBufferId::FromUnsafeValue(sequence_key);
-    scoped_refptr<SyncPointClientState> release_state =
-        sync_point_manager()->CreateSyncPointClientState(
-            kNamespaceId, command_buffer_id, sequence_id);
+    scheduler()->CreateSyncPointClientState(sequence_id, kNamespaceId,
+                                            command_buffer_id);
 
     sequence_info_.emplace(std::make_pair(
-        sequence_key,
-        SequenceInfo(sequence_id, command_buffer_id, release_state)));
+        sequence_key, SequenceInfo(sequence_id, command_buffer_id)));
   }
 
   void CreateExternalSequence(int sequence_key) {
@@ -189,11 +188,12 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
     auto info_it = sequence_info_.find(sequence_key);
     ASSERT_TRUE(info_it != sequence_info_.end());
 
-    info_it->second.release_state->Destroy();
-    if (info_it->second.order_data)
+    if (info_it->second.order_data) {
+      info_it->second.release_state->Destroy();
       info_it->second.order_data->Destroy();
-    else
+    } else {
       scheduler()->DestroySequence(info_it->second.sequence_id);
+    }
 
     sequence_info_.erase(info_it);
   }
@@ -208,15 +208,26 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
         SyncToken(kNamespaceId, info_it->second.command_buffer_id, release)));
   }
 
-  static void RunExternalTask(base::OnceClosure task,
-                              scoped_refptr<SyncPointOrderData> order_data,
-                              uint32_t order_num) {
-    order_data->BeginProcessingOrderNumber(order_num);
-    std::move(task).Run();
-    order_data->FinishProcessingOrderNumber(order_num);
+  TaskCallback GetTaskCallback(int sequence_key, int release_sync) {
+    const int task_id = num_tasks_scheduled_++;
+
+    if (release_sync >= 0) {
+      CreateSyncToken(sequence_key, release_sync);
+    }
+
+    auto info_it = sequence_info_.find(sequence_key);
+    CHECK(info_it != sequence_info_.end());
+
+    return base::BindLambdaForTesting(
+        [this, task_id](FenceSyncReleaseDelegate* release_delegate) {
+          if (release_delegate) {
+            release_delegate->Release();
+          }
+          this->tasks_executed_.push_back(task_id);
+        });
   }
 
-  base::OnceClosure GetTaskClosure(int sequence_key, int release_sync) {
+  base::OnceClosure GetExternalTaskClosure(int sequence_key, int release_sync) {
     const int task_id = num_tasks_scheduled_++;
 
     uint64_t release = 0;
@@ -227,31 +238,27 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
 
     auto info_it = sequence_info_.find(sequence_key);
     CHECK(info_it != sequence_info_.end());
-
-    auto closure = GetClosure([this, task_id, sequence_key, release] {
-      if (release) {
-        auto info_it = sequence_info_.find(sequence_key);
-        ASSERT_TRUE(info_it != sequence_info_.end());
-        info_it->second.release_state->ReleaseFenceSync(release);
-      }
-      this->tasks_executed_.push_back(task_id);
-    });
+    CHECK(info_it->second.external());
 
     // Simulate external sequence, when tasks are run outside of this
     // gpu::Scheduler
-    if (info_it->second.external()) {
-      auto order_data = info_it->second.order_data;
-      uint32_t order_num = order_data->GenerateUnprocessedOrderNumber();
+    auto order_data = info_it->second.order_data;
+    uint32_t order_num = order_data->GenerateUnprocessedOrderNumber();
 
-      return base::BindOnce(RunExternalTask, std::move(closure), order_data,
-                            order_num);
-    } else {
-      return closure;
-    }
+    return GetClosure([this, task_id, sequence_key, release, order_num] {
+      auto info_it = sequence_info_.find(sequence_key);
+      ASSERT_TRUE(info_it != sequence_info_.end());
+      info_it->second.order_data->BeginProcessingOrderNumber(order_num);
+      if (release) {
+        info_it->second.release_state->ReleaseFenceSync(release);
+      }
+      this->tasks_executed_.push_back(task_id);
+      info_it->second.order_data->FinishProcessingOrderNumber(order_num);
+    });
   }
 
   void ScheduleTask(int sequence_key, int wait_sync, int release_sync) {
-    auto closure = GetTaskClosure(sequence_key, release_sync);
+    auto task_callback = GetTaskCallback(sequence_key, release_sync);
 
     auto info_it = sequence_info_.find(sequence_key);
     ASSERT_TRUE(info_it != sequence_info_.end());
@@ -263,8 +270,13 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
       wait.push_back(sync_tokens_[wait_sync]);
     }
 
-    scheduler()->ScheduleTask(
-        Scheduler::Task(info_it->second.sequence_id, std::move(closure), wait));
+    SyncToken release;
+    if (release_sync >= 0) {
+      release = sync_tokens_[release_sync];
+    }
+
+    scheduler()->ScheduleTask(Scheduler::Task(
+        info_it->second.sequence_id, std::move(task_callback), wait, release));
   }
 
   const std::vector<int>& tasks_executed() { return tasks_executed_; }
@@ -283,12 +295,8 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
   int num_tasks_scheduled_ = 0;
 
   struct SequenceInfo {
-    SequenceInfo(SequenceId sequence_id,
-                 CommandBufferId command_buffer_id,
-                 scoped_refptr<SyncPointClientState> release_state)
-        : sequence_id(sequence_id),
-          command_buffer_id(command_buffer_id),
-          release_state(release_state) {}
+    SequenceInfo(SequenceId sequence_id, CommandBufferId command_buffer_id)
+        : sequence_id(sequence_id), command_buffer_id(command_buffer_id) {}
 
     SequenceInfo(scoped_refptr<SyncPointOrderData> order_data,
                  CommandBufferId command_buffer_id,
@@ -302,7 +310,7 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
 
     SequenceId sequence_id;
     CommandBufferId command_buffer_id;
-    // |order_data| is only set for external sequences.
+    // `order_data` and `release_state` are only set for external sequences.
     scoped_refptr<SyncPointOrderData> order_data;
     scoped_refptr<SyncPointClientState> release_state;
   };
@@ -363,7 +371,7 @@ TEST_F(SchedulerTaskRunOrderTest, SequenceWaitsForFenceExternal) {
   CreateExternalSequence(1);
 
   // Create task 0 on seq 1 that will release 0, but don't post it.
-  auto external_task = GetTaskClosure(1, 0);
+  auto external_task = GetExternalTaskClosure(1, 0);
 
   ScheduleTask(0, 0, -1);  // task 1: seq 0, wait 0, no release
 
@@ -494,24 +502,24 @@ TEST_F(SchedulerTest, ReleaseSequenceShouldYield) {
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kLow);
   CommandBufferNamespace namespace_id = CommandBufferNamespace::GPU_IO;
   CommandBufferId command_buffer_id = CommandBufferId::FromUnsafeValue(1);
-  scoped_refptr<SyncPointClientState> release_state =
-      sync_point_manager()->CreateSyncPointClientState(
-          namespace_id, command_buffer_id, sequence_id1);
+  scheduler()->CreateSyncPointClientState(sequence_id1, namespace_id,
+                                          command_buffer_id);
 
-  uint64_t release = 1;
+  SyncToken sync_token(namespace_id, command_buffer_id, 1);
   static int count = 0;
   int ran1 = 0;
-  scheduler()->ScheduleTask(
-      Scheduler::Task(sequence_id1, GetClosure([&] {
-                        EXPECT_FALSE(scheduler()->ShouldYield(sequence_id1));
-                        release_state->ReleaseFenceSync(release);
-                        EXPECT_TRUE(scheduler()->ShouldYield(sequence_id1));
-                        ran1 = ++count;
-                      }),
-                      std::vector<SyncToken>()));
+  scheduler()->ScheduleTask(Scheduler::Task(
+      sequence_id1,
+      base::BindLambdaForTesting(
+          [&](FenceSyncReleaseDelegate* release_delegate) {
+            EXPECT_FALSE(scheduler()->ShouldYield(sequence_id1));
+            release_delegate->Release();
+            EXPECT_TRUE(scheduler()->ShouldYield(sequence_id1));
+            ran1 = ++count;
+          }),
+      std::vector<SyncToken>(), sync_token));
 
   int ran2 = 0;
-  SyncToken sync_token(namespace_id, command_buffer_id, release);
   SequenceId sequence_id2 =
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kHigh);
   scheduler()->ScheduleTask(Scheduler::Task(
@@ -523,7 +531,6 @@ TEST_F(SchedulerTest, ReleaseSequenceShouldYield) {
   EXPECT_EQ(ran2, 2);
   EXPECT_TRUE(sync_point_manager()->IsSyncTokenReleased(sync_token));
 
-  release_state->Destroy();
   scheduler()->DestroySequence(sequence_id1);
   scheduler()->DestroySequence(sequence_id2);
 }

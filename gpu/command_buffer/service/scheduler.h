@@ -45,16 +45,26 @@ class GPU_EXPORT Scheduler {
 
  public:
   struct GPU_EXPORT Task {
+    // Use the signature with TaskCallback if the task needs to determine when
+    // to release fence sync during task execution. Please also see comments of
+    // TaskCallback.
+    // Use the signatures with base::OnceClosure if the task doesn't release
+    // fence sync, or the release can be done automatically after task
+    // execution.
     Task(SequenceId sequence_id,
-         base::OnceClosure closure,
+         TaskCallback task_callback,
          std::vector<SyncToken> sync_token_fences,
          const SyncToken& release,
          ReportingCallback report_callback = ReportingCallback());
 
-    // TODO(b/324276400): Remove this constructor after converting callsites to
-    // explicitly specify `release`.
     Task(SequenceId sequence_id,
-         base::OnceClosure closure,
+         base::OnceClosure task_closure,
+         std::vector<SyncToken> sync_token_fences,
+         const SyncToken& release,
+         ReportingCallback report_callback = ReportingCallback());
+
+    Task(SequenceId sequence_id,
+         base::OnceClosure task_closure,
          std::vector<SyncToken> sync_token_fences,
          ReportingCallback report_callback = ReportingCallback());
 
@@ -63,11 +73,14 @@ class GPU_EXPORT Scheduler {
     Task& operator=(Task&& other);
 
     SequenceId sequence_id;
-    base::OnceClosure closure;
+
+    // Only one of the two is used.
+    TaskCallback task_callback;
+    base::OnceClosure task_closure;
+
     std::vector<SyncToken> sync_token_fences;
 
     // The release that is expected to be reached after execution of this task.
-    // Used when graph-based sync point validation is enabled.
     SyncToken release;
 
     ReportingCallback report_callback;
@@ -108,6 +121,11 @@ class GPU_EXPORT Scheduler {
   // could be destroyed outside of GPU thread.
   void DestroySequence(SequenceId sequence_id);
 
+  // Creates a SyncPointClientState object associated with the sequence.
+  void CreateSyncPointClientState(SequenceId sequence_id,
+                                  CommandBufferNamespace namespace_id,
+                                  CommandBufferId command_buffer_id);
+
   // Enables the sequence so that its tasks may be scheduled.
   void EnableSequence(SequenceId sequence_id);
 
@@ -123,16 +141,17 @@ class GPU_EXPORT Scheduler {
   void ResetPriorityForClientWait(SequenceId sequence_id,
                                   CommandBufferId command_buffer_id);
 
-  // Schedules task (closure) to run on the sequence. The task is blocked until
-  // the sync token fences are released or determined to be invalid. Tasks are
-  // run in the order in which they are submitted.
+  // Schedules task to run on the sequence. The task is blocked until the sync
+  // token fences are released or determined to be invalid. Tasks are run in the
+  // order in which they are submitted.
   void ScheduleTask(Scheduler::Task task);
 
   void ScheduleTasks(std::vector<Scheduler::Task> tasks);
 
-  // Continue running task on the sequence with the closure. This must be called
-  // while running a previously scheduled task.
-  void ContinueTask(SequenceId sequence_id, base::OnceClosure closure);
+  // Continue running task on the sequence with the callback. This must be
+  // called while running a previously scheduled task.
+  void ContinueTask(SequenceId sequence_id, TaskCallback task_callback);
+  void ContinueTask(SequenceId sequence_id, base::OnceClosure task_closure);
 
   // If the sequence should yield so that a higher priority sequence may run.
   bool ShouldYield(SequenceId sequence_id);
@@ -229,19 +248,24 @@ class GPU_EXPORT Scheduler {
     base::TimeDelta FrontTaskSchedulingDelay();
 
     // Returns the next order number and closure. Sets running state to RUNNING.
-    uint32_t BeginTask(base::OnceClosure* closure);
+    uint32_t BeginTask(base::OnceClosure* task_closure);
 
     // Called after running the closure returned by BeginTask. Sets running
     // state to IDLE.
     void FinishTask();
 
     // Enqueues a task in the sequence and returns the generated order number.
-    uint32_t ScheduleTask(base::OnceClosure closure,
+    uint32_t ScheduleTask(TaskCallback task_callback,
+                          const SyncToken& release,
+                          ReportingCallback report_callback);
+    uint32_t ScheduleTask(base::OnceClosure task_closure,
+                          const SyncToken& release,
                           ReportingCallback report_callback);
 
     // Continue running the current task with the given closure. Must be called
     // in between |BeginTask| and |FinishTask|.
-    void ContinueTask(base::OnceClosure closure);
+    void ContinueTask(TaskCallback task_callback);
+    void ContinueTask(base::OnceClosure task_closure);
 
     // Sets the first dependency added time on the last task if it wasn't
     // already set, no-op otherwise.
@@ -261,7 +285,14 @@ class GPU_EXPORT Scheduler {
 
     void RemoveClientWait(CommandBufferId command_buffer_id);
 
+    void CreateSyncPointClientState(CommandBufferNamespace namespace_id,
+                                    CommandBufferId command_buffer_id);
+
     SchedulingPriority current_priority() const { return current_priority_; }
+
+    const SyncToken& current_task_release() const {
+      return current_task_release_;
+    }
 
    private:
     friend class Scheduler;
@@ -293,14 +324,18 @@ class GPU_EXPORT Scheduler {
 
     struct Task {
       Task(Task&& other);
-      Task(base::OnceClosure closure,
+      Task(base::OnceClosure task_closure,
            uint32_t order_num,
+           const SyncToken& release,
            ReportingCallback report_callback);
       ~Task();
       Task& operator=(Task&& other);
 
-      base::OnceClosure closure;
+      // Always store tasks as closures. TaskCallbacks are bound with argument
+      // and wrap as closures.
+      base::OnceClosure task_closure;
       uint32_t order_num;
+      SyncToken release;
 
       ReportingCallback report_callback;
       // Note: this time is only correct once the last fence has been removed,
@@ -343,6 +378,8 @@ class GPU_EXPORT Scheduler {
     // Re-compute current priority.
     void UpdateSchedulingPriority();
 
+    base::OnceClosure CreateTaskClosure(TaskCallback task_callback);
+
     // If the sequence is enabled. Sequences are disabled/enabled based on when
     // the command buffer is descheduled/scheduled.
     bool enabled_ = true;
@@ -361,6 +398,12 @@ class GPU_EXPORT Scheduler {
     SchedulingPriority current_priority_;
 
     scoped_refptr<SyncPointOrderData> order_data_;
+    std::vector<scoped_refptr<SyncPointClientState>> sync_point_states_;
+
+    // While processing a task, the task is removed from `tasks_`. This field is
+    // used to preserve `release` of the task. So that it can be used if the
+    // task is later continued.
+    SyncToken current_task_release_;
 
     // Deque of tasks. Tasks are inserted at the back with increasing order
     // number generated from SyncPointOrderData. If a running task needs to be
@@ -378,6 +421,10 @@ class GPU_EXPORT Scheduler {
                                  1] = {};
 
     base::flat_set<CommandBufferId> client_waits_;
+
+    // Not supposed to be accessed from multiple thread simultaneously. It is
+    // updated by BeginTask() and called by user task callback.
+    FenceSyncReleaseDelegate release_delegate_;
   };
 
   void AddWaitingPriority(SequenceId sequence_id, SchedulingPriority priority);

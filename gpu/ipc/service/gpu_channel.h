@@ -46,6 +46,7 @@ class WaitableEvent;
 
 namespace gpu {
 class DCOMPTexture;
+class FenceSyncReleaseDelegate;
 class GpuChannelManager;
 class GpuChannelMessageFilter;
 class GpuMemoryBufferFactory;
@@ -150,11 +151,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   // Executes a DeferredRequest that was previously received and has now been
   // scheduled by the scheduler.
-  // `release_count` is the sync point release count that is expected to be
-  // reached after execution of this request. 0 means this request doesn't
-  // release.
   void ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params,
-                              uint64_t release_count);
+                              FenceSyncReleaseDelegate* release_delegate);
   void GetGpuMemoryBufferHandleInfo(
       const gpu::Mailbox& mailbox,
       mojom::GpuChannel::GetGpuMemoryBufferHandleInfoCallback callback);

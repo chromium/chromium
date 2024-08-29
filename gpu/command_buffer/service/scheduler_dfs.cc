@@ -127,19 +127,19 @@ void SchedulerDfs::Sequence::UpdateRunningPriority() {
   scheduling_state_.priority = current_priority();
 }
 
-void SchedulerDfs::Sequence::ContinueTask(base::OnceClosure closure) {
+void SchedulerDfs::Sequence::ContinueTask(base::OnceClosure task_closure) {
   DCHECK_EQ(running_state_, RUNNING);
-  TaskGraph::Sequence::ContinueTask(std::move(closure));
+  TaskGraph::Sequence::ContinueTask(std::move(task_closure));
 }
 
 uint32_t SchedulerDfs::Sequence::AddTask(
-    base::OnceClosure closure,
+    base::OnceClosure task_closure,
     std::vector<SyncToken> wait_fences,
     const SyncToken& release,
     TaskGraph::ReportingCallback report_callback) {
-  uint32_t order_num =
-      TaskGraph::Sequence::AddTask(std::move(closure), std::move(wait_fences),
-                                   release, std::move(report_callback));
+  uint32_t order_num = TaskGraph::Sequence::AddTask(
+      std::move(task_closure), std::move(wait_fences), release,
+      std::move(report_callback));
 
   TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "SchedulerDfs::ScheduleTask",
                          GetTaskFlowId(sequence_id_.value(), order_num),
@@ -147,12 +147,12 @@ uint32_t SchedulerDfs::Sequence::AddTask(
   return order_num;
 }
 
-uint32_t SchedulerDfs::Sequence::BeginTask(base::OnceClosure* closure) {
+uint32_t SchedulerDfs::Sequence::BeginTask(base::OnceClosure* task_closure) {
   DCHECK_EQ(running_state_, SCHEDULED);
 
   running_state_ = RUNNING;
 
-  return TaskGraph::Sequence::BeginTask(closure);
+  return TaskGraph::Sequence::BeginTask(task_closure);
 }
 
 void SchedulerDfs::Sequence::FinishTask() {
@@ -209,6 +209,14 @@ void SchedulerDfs::DestroySequence(SequenceId sequence_id) {
   }
 
   task_graph_->DestroySequence(sequence_id);
+}
+
+void SchedulerDfs::CreateSyncPointClientState(
+    SequenceId sequence_id,
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
+  task_graph_->CreateSyncPointClientState(sequence_id, namespace_id,
+                                          command_buffer_id);
 }
 
 SchedulerDfs::Sequence* SchedulerDfs::GetSequence(SequenceId sequence_id) {
@@ -268,19 +276,35 @@ void SchedulerDfs::ScheduleTaskHelper(Task task) {
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
 
-  sequence->AddTask(std::move(task.closure), std::move(task.sync_token_fences),
-                    task.release, std::move(task.report_callback));
+  if (task.task_callback) {
+    sequence->AddTask(std::move(task.task_callback),
+                      std::move(task.sync_token_fences), task.release,
+                      std::move(task.report_callback));
+  } else {
+    sequence->AddTask(std::move(task.task_closure),
+                      std::move(task.sync_token_fences), task.release,
+                      std::move(task.report_callback));
+  }
 
   TryScheduleSequence(sequence);
 }
 
 void SchedulerDfs::ContinueTask(SequenceId sequence_id,
-                                base::OnceClosure closure) {
+                                TaskCallback task_callback) {
   base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
   DCHECK(sequence->task_runner()->BelongsToCurrentThread());
-  sequence->ContinueTask(std::move(closure));
+  sequence->ContinueTask(std::move(task_callback));
+}
+
+void SchedulerDfs::ContinueTask(SequenceId sequence_id,
+                                base::OnceClosure task_closure) {
+  base::AutoLock auto_lock(lock());
+  Sequence* sequence = GetSequence(sequence_id);
+  DCHECK(sequence);
+  DCHECK(sequence->task_runner()->BelongsToCurrentThread());
+  sequence->ContinueTask(std::move(task_closure));
 }
 
 bool SchedulerDfs::ShouldYield(SequenceId sequence_id) {
@@ -574,8 +598,8 @@ void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
         base::Seconds(30), 100);
   }
 
-  base::OnceClosure closure;
-  uint32_t order_num = sequence->BeginTask(&closure);
+  base::OnceClosure task_closure;
+  uint32_t order_num = sequence->BeginTask(&task_closure);
   SyncToken release = sequence->current_task_release();
 
   TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "SchedulerDfs::RunNextTask",
@@ -595,19 +619,14 @@ void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
     base::AutoUnlock auto_unlock(lock());
     order_data->BeginProcessingOrderNumber(order_num);
 
-    std::move(closure).Run();
+    std::move(task_closure).Run();
 
     if (order_data->IsProcessingOrderNumber()) {
-      order_data->FinishProcessingOrderNumber(order_num);
-
-      if (graph_validation_enabled() && release.HasData()) {
-        bool updated =
-            task_graph_->sync_point_manager()->EnsureFenceSyncReleased(release);
-        LOG_IF(ERROR, updated)
-            << "Task of sequence " << sequence_id
-            << " didn't release fence sync up to " << release.ToDebugString()
-            << " as expected. Enforced release.";
+      if (release.HasData()) {
+        task_graph_->sync_point_manager()->EnsureFenceSyncReleased(release);
       }
+
+      order_data->FinishProcessingOrderNumber(order_num);
     }
   }
 
