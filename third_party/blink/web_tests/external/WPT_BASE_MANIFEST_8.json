@@ -24163,7 +24163,7 @@
        ]
       ],
       "scroll-timeline-default-iframe-print.html": [
-       "d732ca141a3e62d666d1a6a0a7214071f1d9409e",
+       "0e0d42b0084fc3f482a4ff84464785c7a9e130e5",
        [
         null,
         [
@@ -24178,12 +24178,12 @@
            null,
            [
             [
-             25,
-             25
+             0,
+             70
             ],
             [
-             100,
-             100
+             0,
+             380
             ]
            ]
           ]
@@ -265933,6 +265933,19 @@
        {}
       ]
      ],
+     "offset-path-string-003.html": [
+      "4db0a18710c03d35df3f6ed39b57dde521762121",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-string-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "offset-path-url-001.html": [
       "0c7ac4f1019b3bad85f565c2851ef8ed7c187860",
       [
@@ -407682,7 +407695,7 @@
      []
     ],
     "README.md": [
-     "0a1324a1ac46c77aacfbec1691192f728c7bcd6e",
+     "39b829b158f4782440789ef0ca89781113c838f7",
      []
     ],
     "WEB_FEATURES.yml": [
@@ -407703,6 +407716,26 @@
     ],
     "audio-encoder-config.https.any.worker-expected.txt": [
      "d9a80b8a4a8e65aed2ce13ba9f666e657f274352",
+     []
+    ],
+    "audioDecoder-codec-specific.https.any_pcm_f32-expected.txt": [
+     "0aa83d1b0ca5fbe42c10ff1148f1eb8988b428c7",
+     []
+    ],
+    "audioDecoder-codec-specific.https.any_pcm_s16-expected.txt": [
+     "2380e74abe8af7bc308723aa43ca3289477478cd",
+     []
+    ],
+    "audioDecoder-codec-specific.https.any_pcm_s24-expected.txt": [
+     "7fe6747c3ee21f2bc6085f47200b0e838a94b7fa",
+     []
+    ],
+    "audioDecoder-codec-specific.https.any_pcm_s32-expected.txt": [
+     "fe4e5430ce379b8f9a265b05fd4d8244828966ce",
+     []
+    ],
+    "audioDecoder-codec-specific.https.any_pcm_u8-expected.txt": [
+     "141d485febff01c84079bb0dd59df850898a5579",
      []
     ],
     "av1.mp4": [
@@ -407825,12 +407858,32 @@
      "da9a22759c3f78cefb42bd7db7df2cc48eb2d3a7",
      []
     ],
-    "sfx-mulaw.wav": [
-     "ba9d6bdf1b2091d3a0faadf12b5693ebdd7ef27e",
-     []
-    ],
     "sfx-opus.ogg": [
      "01a9b862cea835d43c29a4d741eb721f9bcf7038",
+     []
+    ],
+    "sfx-pcm-f32.wav": [
+     "d1c0fa2bd9354c81eebabd3a43db66cef2df8307",
+     []
+    ],
+    "sfx-pcm-s16.wav": [
+     "34b6d982d2c8354d58902c189e5f625e77f49a29",
+     []
+    ],
+    "sfx-pcm-s24.wav": [
+     "8a19b8c047c93a7325a89d438d6d072a87d0ef10",
+     []
+    ],
+    "sfx-pcm-s32.wav": [
+     "85b33faff14014d2206c2401df9de76065e9a560",
+     []
+    ],
+    "sfx-pcm-u8.wav": [
+     "45dffc7db1af761e273b965d394872884f501561",
+     []
+    ],
+    "sfx-ulaw.wav": [
+     "ba9d6bdf1b2091d3a0faadf12b5693ebdd7ef27e",
      []
     ],
     "sfx.adts": [
@@ -453595,7 +453648,7 @@
       ]
      ],
      "anchor-parse-valid.html": [
-      "f3069649dd50d0a67a8a4ecd42f905e186f99cb5",
+      "a51d50b6bfcbb5d2f7d52ec966202056d32b7f7d",
       [
        null,
        {}
@@ -454008,7 +454061,7 @@
       ]
      ],
      "anchor-size-parse-valid.html": [
-      "32b308f056b1eef2414e52bfb716a2455f7e84e6",
+      "d31e399cd48e45b8e36fe11f4287110e3c1c80ae",
       [
        null,
        {}
@@ -684988,7 +685041,7 @@
      ]
     ],
     "audioDecoder-codec-specific.https.any.js": [
-     "92513be087011445b306a802f288c7aae8cd7a35",
+     "f032b0fe59a5e977fd9db8d958734e7a3481b2e7",
      [
       "webcodecs/audioDecoder-codec-specific.https.any.html?adts_aac",
       {
@@ -685023,7 +685076,27 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
@@ -685062,7 +685135,27 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
@@ -685101,7 +685194,27 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
@@ -685140,7 +685253,27 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
@@ -685179,13 +685312,33 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
      ],
      [
-      "webcodecs/audioDecoder-codec-specific.https.any.html?pcm_mulaw",
+      "webcodecs/audioDecoder-codec-specific.https.any.html?pcm_f32",
       {
        "script_metadata": [
         [
@@ -685218,7 +685371,322 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.html?pcm_s16",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.html?pcm_s24",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.html?pcm_s32",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.html?pcm_u8",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.html?pcm_ulaw",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
@@ -685257,7 +685725,27 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
@@ -685296,7 +685784,27 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
@@ -685335,7 +685843,27 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
@@ -685374,7 +685902,27 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
@@ -685413,13 +685961,33 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
      ],
      [
-      "webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_mulaw",
+      "webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_f32",
       {
        "script_metadata": [
         [
@@ -685452,7 +686020,322 @@
         ],
         [
          "variant",
-         "?pcm_mulaw"
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s16",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s24",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s32",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_u8",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_ulaw",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "variant",
+         "?adts_aac"
+        ],
+        [
+         "variant",
+         "?mp4_aac"
+        ],
+        [
+         "variant",
+         "?mp3"
+        ],
+        [
+         "variant",
+         "?opus"
+        ],
+        [
+         "variant",
+         "?pcm_alaw"
+        ],
+        [
+         "variant",
+         "?pcm_ulaw"
+        ],
+        [
+         "variant",
+         "?pcm_u8"
+        ],
+        [
+         "variant",
+         "?pcm_s16"
+        ],
+        [
+         "variant",
+         "?pcm_s24"
+        ],
+        [
+         "variant",
+         "?pcm_s32"
+        ],
+        [
+         "variant",
+         "?pcm_f32"
         ]
        ]
       }
