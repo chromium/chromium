@@ -743,6 +743,19 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_google_dagger_hilt_core_java") {
+    jar_path = "cipd/libs/com_google_dagger_hilt_core/hilt-core-2.52.jar"
+    output_name = "com_google_dagger_hilt_core"
+    supports_android = true
+    enable_bytecode_checks = false
+    deps = [
+      ":com_google_code_findbugs_jsr305_java",
+      ":javax_inject_javax_inject_java",
+      "//third_party/android_deps:dagger_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_iid_java") {
       aar_path =

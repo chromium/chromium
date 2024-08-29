@@ -3476,6 +3476,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/android_deps/cipd/libs/com_google_dagger_hilt_core': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_deps/libs/com_google_dagger_hilt_core',
+              'version': 'version:2@2.52.cr1',
+          },
+      ],
+      'condition': 'checkout_android and non_git_source',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/android_deps/cipd/libs/com_google_errorprone_error_prone_annotations': {
       'packages': [
           {

@@ -61,6 +61,7 @@
     "libs/com_google_code_findbugs_jsr305",
     "libs/com_google_code_gson_gson",
     "libs/com_google_dagger_dagger",
+    "libs/com_google_dagger_hilt_core",
     "libs/com_google_errorprone_error_prone_annotations",
     "libs/com_google_firebase_firebase_annotations",
     "libs/com_google_firebase_firebase_common",
