@@ -4071,13 +4071,6 @@ crbug.com/862643 http/tests/serviceworker/navigation_preload/use-counter.html [ 
 # Sheriff 2018-08-20
 crbug.com/862589 virtual/threaded/fast/idle-callback/long_idle_periods.html [ Pass Timeout ]
 
-# fast/events/middleClickAutoscroll-* are failing on Mac
-crbug.com/874162 [ Mac Release ] fast/events/middleClickAutoscroll-drag.html [ Crash Failure Pass Timeout ]
-crbug.com/874162 [ Mac Release ] fast/events/middleClickAutoscroll-event-fired.html [ Crash Failure Pass Timeout ]
-crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-latching.html [ Crash Failure Pass Timeout ]
-crbug.com/874162 [ Debug Mac13-arm64 ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Crash Failure Pass Timeout ]
-crbug.com/874162 [ Mac Release ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Crash Failure Pass Timeout ]
-
 # Sheriff 2018-09-10
 crbug.com/881207 fast/js/regress/splice-to-remove.html [ Pass Timeout ]
 
