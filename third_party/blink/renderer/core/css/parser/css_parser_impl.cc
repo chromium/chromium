@@ -2167,14 +2167,15 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
     return nullptr;
   }
 
+  // Consume the actual block.
+  CSSParserTokenStream::BlockGuard guard(stream);
+
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kLayerBlock, prelude_offset_start);
     observer_->EndRuleHeader(prelude_offset_end);
     observer_->StartRuleBody(stream.Offset());
   }
 
-  // Consume the actual block.
-  CSSParserTokenStream::BlockGuard guard(stream);
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
       stream,

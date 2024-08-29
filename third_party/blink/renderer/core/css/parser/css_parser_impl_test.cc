@@ -586,12 +586,11 @@ TEST(CSSParserImplTest, ObserveNestedLayer) {
   CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
                                              test_css_parser_observer);
 
-  // TODO(andruud): These offsets look wrong.
   EXPECT_EQ(test_css_parser_observer.rule_type_,
             StyleRule::RuleType::kLayerBlock);
   EXPECT_EQ(test_css_parser_observer.rule_header_start_, 49u);
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 53u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 53u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 54u);
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 82u);
 }
 
