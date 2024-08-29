@@ -30,7 +30,6 @@ import {BrowserProxy} from './browser_proxy.js';
 import type {DownloadsDangerousDownloadInterstitialElement as DangerousInterstitialElement} from './dangerous_download_interstitial.js';
 import type {MojomData} from './data.js';
 import type {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
-import {State} from './downloads.mojom-webui.js';
 import {getTemplate} from './manager.html.js';
 import {SearchService} from './search_service.js';
 import type {DownloadsToolbarElement} from './toolbar.js';
@@ -393,10 +392,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.hasDownloads_ = this.items_.length > 0;
     this.$.toolbar.hasClearableDownloads =
         loadTimeData.getBoolean('allowDeletingHistory') &&
-        this.items_.some(
-            ({state}) => state !== State.kDangerous &&
-                state !== State.kInsecure && state !== State.kInProgress &&
-                state !== State.kPaused);
+        this.items_.length > 0;
 
     if (this.inSearchMode_) {
       this.announcerDebouncer_ = Debouncer.debounce(

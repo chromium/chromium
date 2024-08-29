@@ -134,24 +134,17 @@ suite('manager tests', function() {
   test('toolbar hasClearableDownloads set correctly', async () => {
     const clearable = createDownload();
     callbackRouterRemote.insertItems(0, [clearable]);
-    const checkNotClearable = async (state: State) => {
+    const checkClearable = async (state: State) => {
       const download = createDownload({state: state});
-      callbackRouterRemote.updateItem(0, clearable);
-      await callbackRouterRemote.$.flushForTesting();
-      assertTrue(manager.$.toolbar.hasClearableDownloads);
       callbackRouterRemote.updateItem(0, download);
       await callbackRouterRemote.$.flushForTesting();
-      assertFalse(manager.$.toolbar.hasClearableDownloads);
+      assertTrue(manager.$.toolbar.hasClearableDownloads);
     };
-    await checkNotClearable(State.kDangerous);
-    await checkNotClearable(State.kInProgress);
-    await checkNotClearable(State.kPaused);
+    await checkClearable(State.kDangerous);
+    await checkClearable(State.kInProgress);
+    await checkClearable(State.kPaused);
+    await checkClearable(State.kComplete);
 
-    callbackRouterRemote.updateItem(0, clearable);
-    callbackRouterRemote.insertItems(
-        1, [createDownload({state: State.kDangerous})]);
-    await callbackRouterRemote.$.flushForTesting();
-    assertTrue(manager.$.toolbar.hasClearableDownloads);
     callbackRouterRemote.removeItem(0);
     await callbackRouterRemote.$.flushForTesting();
     assertFalse(manager.$.toolbar.hasClearableDownloads);
