@@ -152,8 +152,7 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
       U16_IS_TRAIL(text_[index + 1]))
     character = U16_GET_SUPPLEMENTARY(character, text_[index + 1]);
   if (!Character::IsCJKIdeographOrSymbol(character)) {
-    if (!RuntimeEnabledFeatures::TextAlignJustifyBidiIsolateEnabled() ||
-        !Character::IsDefaultIgnorable(character)) {
+    if (!Character::IsDefaultIgnorable(character)) {
       is_after_expansion_ = false;
     }
     return spacing;
