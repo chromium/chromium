@@ -269,8 +269,8 @@ CICP values.
 Generated with `avifgainmaputil` and test images from the libavif repository:
 
 ```
-$ avifgainmaputil combine  ../tests/data/colors_text_sdr_srgb.avif \
-  ../tests/data/colors_text_wcg_hdr_rec2020.avif \
+$ avifgainmaputil combine  libavif/tests/data/colors_text_sdr_srgb.avif \
+  libavif/tests/data/colors_text_wcg_hdr_rec2020.avif \
   gainmap-sdr-srgb-to-hdr-wcg-rec2020.avif -q 90 --qgain-map 90
 ```
 
