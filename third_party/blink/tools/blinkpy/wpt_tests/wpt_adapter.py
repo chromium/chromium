@@ -331,6 +331,7 @@ class WPTAdapter:
         # work correctly.
         runner_options.repeat = self.options.iterations
         runner_options.fully_parallel = self.options.fully_parallel
+        runner_options.leak_check = self.options.enable_leak_detection
 
         if self.options.run_wpt_internal:
             runner_options.config = self.finder.path_from_web_tests(

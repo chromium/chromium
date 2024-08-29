@@ -685,7 +685,7 @@ class WPTResultsProcessor:
         result.pid = (extra or {}).get('browser_pid', 0)
         result.update_from_test(status, message)
         artifacts, image_diff_stats = self._extract_artifacts(
-            result, message, extra)
+            result, message, extra or {})
         result.artifacts = artifacts.artifacts
         result.image_diff_stats = image_diff_stats
         if result.unexpected:
@@ -1008,7 +1008,7 @@ class WPTResultsProcessor:
         artifacts.CreateArtifact(artifact_id, log_subpath, contents.encode())
 
     def _extract_artifacts(self, result: WPTResult, message: Optional[str],
-                           extra) -> Tuple[Artifacts, str]:
+                           extra: Dict[str, Any]) -> Tuple[Artifacts, str]:
         # Ensure `artifacts_base_dir` (i.e., `layout-test-results`) is prepended
         # to `full_results_jsonp.js` paths so that `results.html` can correctly
         # fetch artifacts.
@@ -1024,7 +1024,7 @@ class WPTResultsProcessor:
         if self.reset_results or result.actual == ResultType.Failure:
             if result.can_have_subtests:
                 self._write_text_results(result, artifacts)
-            screenshots = (extra or {}).get('reftest_screenshots') or []
+            screenshots = extra.get('reftest_screenshots') or []
             if screenshots:
                 # Remove the relation operator `==` or `!=` between the
                 # screenshot objects.
@@ -1035,6 +1035,11 @@ class WPTResultsProcessor:
         if message:
             self._write_log(result.name, artifacts, 'crash_log',
                             test_failures.FILENAME_SUFFIX_CRASH_LOG, message)
+
+        if leak_counters := extra.get('leak_counters'):
+            leak_log = json.dumps(leak_counters, separators=(',', ':'))
+            self._write_log(result.name, artifacts, 'leak_log',
+                            test_failures.FILENAME_SUFFIX_LEAK_LOG, leak_log)
 
         # If the browser process isn't restarted, it's possible for that process
         # to continue producing stdio that will be dumped into the log for the
