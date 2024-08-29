@@ -2625,12 +2625,12 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win11-arm64 ] external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Skip Timeout ]
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_f32 [ Timeout ]
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s16 [ Timeout ]
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s24 [ Timeout ]
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s32 [ Timeout ]
-external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_u8 [ Timeout ]
+crbug.com/362784015 [ Win11-arm64 ] external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Skip Timeout ]
+crbug.com/362784014 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_f32 [ Timeout ]
+crbug.com/362784014 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s16 [ Timeout ]
+crbug.com/362784014 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s24 [ Timeout ]
+crbug.com/362784014 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_s32 [ Timeout ]
+crbug.com/362784014 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_u8 [ Timeout ]
 crbug.com/362784002 external/wpt/css/css-text-decor/text-underline-offset-calc.html [ Failure ]
 crbug.com/362784002 external/wpt/css/css-text-decor/text-underline-offset-percentage.html [ Failure ]
 crbug.com/362622397 [ Win ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
