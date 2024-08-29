@@ -18,8 +18,9 @@ java_annotation_processor("dagger_processor") {
   if (defined(dagger_annotation_processor_target)) {
     deps = [ dagger_annotation_processor_target ]
   } else {
-    deps =
-        [ "//third_party/android_deps:com_google_dagger_dagger_compiler_java" ]
+    deps = [
+      "//third_party/android_build_tools/dagger_compiler:dagger_compiler_java",
+    ]
   }
 }
 
@@ -206,52 +207,8 @@ java_prebuilt("com_google_code_gson_gson_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-if (!defined(dagger_java_target)) {
-  java_prebuilt("com_google_dagger_dagger_java") {
-    jar_path = "cipd/libs/com_google_dagger_dagger/dagger-2.30.jar"
-    output_name = "com_google_dagger_dagger"
-    supports_android = true
-    enable_bytecode_checks = false
-
-    # Target is swapped out when internal code is enabled.
-    # Please depend on //third_party/android_deps:dagger_java instead.
-    visibility = [ "//third_party/android_deps:*" ]
-    deps = [ ":javax_inject_javax_inject_java" ]
-  }
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-if (!defined(dagger_annotation_processor_target)) {
-  java_prebuilt("com_google_dagger_dagger_compiler_java") {
-    jar_path =
-        "cipd/libs/com_google_dagger_dagger_compiler/dagger-compiler-2.30.jar"
-    output_name = "com_google_dagger_dagger_compiler"
-    enable_bytecode_checks = false
-
-    # Target is swapped out when internal code is enabled.
-    # Please depend on //third_party/android_deps:dagger_processor instead.
-    visibility = [ "//third_party/android_deps:*" ]
-    deps = [
-      ":com_google_code_findbugs_jsr305_java",
-      ":com_google_dagger_dagger_producers_java",
-      ":com_google_dagger_dagger_spi_java",
-      ":com_google_googlejavaformat_google_java_format_java",
-      ":com_google_guava_guava_java",
-      ":com_squareup_javapoet_java",
-      ":javax_annotation_jsr250_api_java",
-      ":javax_inject_javax_inject_java",
-      ":net_ltgt_gradle_incap_incap_java",
-      ":org_checkerframework_checker_compat_qual_java",
-      ":org_jetbrains_kotlinx_kotlinx_metadata_jvm_java",
-      "//third_party/android_deps:dagger_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
-  }
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
-  jar_path = "cipd/libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.23.0.jar"
+  jar_path = "cipd/libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.30.0.jar"
   output_name = "com_google_errorprone_error_prone_annotations"
   supports_android = true
   enable_bytecode_checks = false
@@ -288,30 +245,6 @@ java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
 java_prebuilt("com_squareup_javapoet_java") {
   jar_path = "cipd/libs/com_squareup_javapoet/javapoet-1.13.0.jar"
   output_name = "com_squareup_javapoet"
-  enable_bytecode_checks = false
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("javax_annotation_jsr250_api_java") {
-  jar_path = "cipd/libs/javax_annotation_jsr250_api/jsr250-api-1.0.jar"
-  output_name = "javax_annotation_jsr250_api"
-  supports_android = true
-  enable_bytecode_checks = false
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("javax_inject_javax_inject_java") {
-  jar_path = "cipd/libs/javax_inject_javax_inject/javax.inject-1.jar"
-  output_name = "javax_inject_javax_inject"
-  supports_android = true
-  enable_bytecode_checks = false
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("org_checkerframework_checker_compat_qual_java") {
-  jar_path = "cipd/libs/org_checkerframework_checker_compat_qual/checker-compat-qual-2.5.5.jar"
-  output_name = "org_checkerframework_checker_compat_qual"
-  supports_android = true
   enable_bytecode_checks = false
 }
 
@@ -363,85 +296,6 @@ java_prebuilt("org_ow2_asm_asm_util_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-if (!defined(dagger_annotation_processor_target)) {
-  java_prebuilt("com_google_dagger_dagger_producers_java") {
-    jar_path =
-        "cipd/libs/com_google_dagger_dagger_producers/dagger-producers-2.30.jar"
-    output_name = "com_google_dagger_dagger_producers"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":com_google_guava_guava_java",
-      ":javax_inject_javax_inject_java",
-      ":org_checkerframework_checker_compat_qual_java",
-      "//third_party/android_deps:dagger_java",
-    ]
-  }
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-if (!defined(dagger_annotation_processor_target)) {
-  java_prebuilt("com_google_dagger_dagger_spi_java") {
-    jar_path = "cipd/libs/com_google_dagger_dagger_spi/dagger-spi-2.30.jar"
-    output_name = "com_google_dagger_dagger_spi"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":com_google_code_findbugs_jsr305_java",
-      ":com_google_dagger_dagger_producers_java",
-      ":com_google_guava_guava_java",
-      ":com_squareup_javapoet_java",
-      ":javax_inject_javax_inject_java",
-      "//third_party/android_deps:dagger_java",
-    ]
-  }
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_errorprone_javac_shaded_java") {
-  jar_path = "cipd/libs/com_google_errorprone_javac_shaded/javac-shaded-9-dev-r4023-3.jar"
-  output_name = "com_google_errorprone_javac_shaded"
-  enable_bytecode_checks = false
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_googlejavaformat_google_java_format_java") {
-  jar_path = "cipd/libs/com_google_googlejavaformat_google_java_format/google-java-format-1.5.jar"
-  output_name = "com_google_googlejavaformat_google_java_format"
-  enable_bytecode_checks = false
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
-  deps = [
-    ":com_google_errorprone_javac_shaded_java",
-    ":com_google_guava_guava_java",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_guava_failureaccess_java") {
   jar_path = "cipd/libs/com_google_guava_failureaccess/failureaccess-1.0.1.jar"
   output_name = "com_google_guava_failureaccess"
@@ -450,35 +304,6 @@ java_prebuilt("com_google_guava_failureaccess_java") {
 
   # Please depend on //third_party/android_deps:guava_android_java instead.
   visibility = [ "//third_party/android_deps:*" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("net_ltgt_gradle_incap_incap_java") {
-  jar_path = "cipd/libs/net_ltgt_gradle_incap_incap/incap-0.2.jar"
-  output_name = "net_ltgt_gradle_incap_incap"
-  enable_bytecode_checks = false
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("org_jetbrains_kotlinx_kotlinx_metadata_jvm_java") {
-  jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_metadata_jvm/kotlinx-metadata-jvm-0.1.0.jar"
-  output_name = "org_jetbrains_kotlinx_kotlinx_metadata_jvm"
-  enable_bytecode_checks = false
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
-  deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -900,6 +725,24 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (!defined(dagger_java_target)) {
+    java_prebuilt("com_google_dagger_dagger_java") {
+      jar_path = "cipd/libs/com_google_dagger_dagger/dagger-2.52.jar"
+      output_name = "com_google_dagger_dagger"
+      supports_android = true
+      enable_bytecode_checks = false
+
+      # Target is swapped out when internal code is enabled.
+      # Please depend on //third_party/android_deps:dagger_java instead.
+      visibility = [ "//third_party/android_deps:*" ]
+      deps = [
+        ":jakarta_inject_jakarta_inject_api_java",
+        ":javax_inject_javax_inject_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_iid_java") {
       aar_path =
@@ -1133,6 +976,22 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("javax_annotation_jsr250_api_java") {
+    jar_path = "cipd/libs/javax_annotation_jsr250_api/jsr250-api-1.0.jar"
+    output_name = "javax_annotation_jsr250_api"
+    supports_android = true
+    enable_bytecode_checks = false
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("javax_inject_javax_inject_java") {
+    jar_path = "cipd/libs/javax_inject_javax_inject/javax.inject-1.jar"
+    output_name = "javax_inject_javax_inject"
+    supports_android = true
+    enable_bytecode_checks = false
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_bytebuddy_byte_buddy_java") {
     jar_path = "cipd/libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.12.jar"
     output_name = "net_bytebuddy_byte_buddy"
@@ -1151,6 +1010,14 @@ if (!limit_android_deps) {
     supports_android = true
     enable_bytecode_checks = false
     testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_checkerframework_checker_compat_qual_java") {
+    jar_path = "cipd/libs/org_checkerframework_checker_compat_qual/checker-compat-qual-2.5.5.jar"
+    output_name = "org_checkerframework_checker_compat_qual"
+    supports_android = true
+    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2164,6 +2031,21 @@ if (!limit_android_deps) {
   java_prebuilt("io_perfmark_perfmark_api_java") {
     jar_path = "cipd/libs/io_perfmark_perfmark_api/perfmark-api-0.25.0.jar"
     output_name = "io_perfmark_perfmark_api"
+    supports_android = true
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("jakarta_inject_jakarta_inject_api_java") {
+    jar_path = "cipd/libs/jakarta_inject_jakarta_inject_api/jakarta.inject-api-2.0.1.jar"
+    output_name = "jakarta_inject_jakarta_inject_api"
     supports_android = true
     enable_bytecode_checks = false
 

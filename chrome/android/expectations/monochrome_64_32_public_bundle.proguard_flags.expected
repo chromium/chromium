@@ -1021,6 +1021,14 @@
   final org.chromium.base.ThreadUtils$ThreadChecker * return _NONNULL_;
 }
 
+# File: ../../third_party/android_deps/cipd/libs/com_google_dagger_dagger/dagger-2.52.jar:META-INF/com.android.tools/r8/r8.pro
+-identifiernamestring @dagger.internal.IdentifierNameString class ** {
+    static java.lang.String *;
+}
+-keepclassmembers,includedescriptorclasses,allowobfuscation,allowshrinking class * {
+   @dagger.internal.KeepFieldType <fields>;
+}
+
 # File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.4.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
 # Allow R8 to optimize away the FastServiceLoader.
 # Together with ServiceLoader optimization in R8
