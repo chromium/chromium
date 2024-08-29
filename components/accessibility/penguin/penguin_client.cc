@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
+#include "components/accessibility/penguin_jni_headers/PenguinClient_jni.h"
 #endif
 
 namespace penguin {
