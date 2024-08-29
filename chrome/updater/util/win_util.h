@@ -157,14 +157,6 @@ class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
 // NO_ERROR to E_FAIL.
 HRESULT HRESULTFromLastError();
 
-// Checks whether a process is running with the image |executable|. Returns true
-// if a process is found.
-bool IsProcessRunning(const wchar_t* executable);
-
-// Waits until every running instance of |executable| is stopped.
-// Returns true if every running processes are stopped.
-bool WaitForProcessesStopped(const wchar_t* executable);
-
 struct NamedObjectAttributes {
   NamedObjectAttributes(const std::wstring& name, const CSecurityDesc& sd);
   NamedObjectAttributes(const NamedObjectAttributes& other) = delete;

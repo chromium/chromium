@@ -278,10 +278,12 @@ bool WaitForUpdaterExit() {
       [] { VLOG(0) << "Still waiting for updater to exit..."; });
 }
 
-void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
+base::FilePath GetRealUpdaterLowerVersionPath() {
   base::FilePath exe_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-  base::FilePath old_updater_path = exe_path.Append("old_updater");
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath old_updater_path =
+      exe_path.Append(FILE_PATH_LITERAL("old_updater"));
+
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
   old_updater_path = old_updater_path.Append("chromium_mac_arm64");
@@ -294,15 +296,10 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("cipd");
 #endif
-  base::CommandLine command_line(
-      old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
-          .Append("Contents")
-          .Append("MacOS")
-          .Append(PRODUCT_FULLNAME_STRING "_test"));
-  command_line.AppendSwitch(kInstallSwitch);
-  int exit_code = -1;
-  Run(scope, command_line, &exit_code);
-  ASSERT_EQ(exit_code, 0);
+  return old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
+      .Append("Contents")
+      .Append("MacOS")
+      .Append(PRODUCT_FULLNAME_STRING "_test");
 }
 
 void SetupFakeLegacyUpdater(UpdaterScope scope) {

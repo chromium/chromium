@@ -365,12 +365,6 @@ void CheckInstallation(UpdaterScope scope,
              FILE_PATH_LITERAL(","));
 }
 
-// Returns true if any updater process is found running in any session in the
-// system, regardless of its path.
-bool IsUpdaterRunning() {
-  return test::IsProcessRunning(GetExecutableRelativePath().value());
-}
-
 void SleepFor(const base::TimeDelta& interval) {
   VLOG(2) << "Sleeping " << interval.InSecondsF() << " seconds...";
   base::PlatformThread::Sleep(interval);
@@ -894,11 +888,16 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
 // Waits for all updater processes to end, including the server process holding
 // the prefs lock.
 bool WaitForUpdaterExit() {
+  VersionProcessFilter filter;
   return WaitFor(
-      [] { return !IsUpdaterRunning(); },
-      [] {
+      [&] {
+        return !test::IsProcessRunning(GetExecutableRelativePath().value(),
+                                       &filter);
+      },
+      [&] {
         VLOG(0) << "Still waiting for updater to exit. "
-                << test::PrintProcesses(GetExecutableRelativePath().value());
+                << test::PrintProcesses(GetExecutableRelativePath().value(),
+                                        &filter);
       });
 }
 
@@ -1619,11 +1618,12 @@ void InvokeTestServiceFunction(const std::string& function_name,
   EXPECT_EQ(RunVPythonCommand(command), 0);
 }
 
-void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
+base::FilePath GetRealUpdaterLowerVersionPath() {
   base::FilePath exe_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
       exe_path.Append(FILE_PATH_LITERAL("old_updater"));
+
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
   old_updater_path =
@@ -1651,13 +1651,7 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append(FILE_PATH_LITERAL("cipd"));
 #endif
-
-  base::CommandLine command_line(
-      old_updater_path.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe")));
-  command_line.AppendSwitch(kInstallSwitch);
-  int exit_code = -1;
-  Run(scope, command_line, &exit_code);
-  ASSERT_EQ(exit_code, 0);
+  return old_updater_path.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe"));
 }
 
 void RunUninstallCmdLine(UpdaterScope scope) {

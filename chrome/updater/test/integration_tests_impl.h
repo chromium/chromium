@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/process/process_iterator.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/server.h"
@@ -99,6 +100,20 @@ base::FilePath GetSetupExecutablePath();
 // Returns the non-duplicate, unique names for processes which may be running
 // during unit tests.
 std::set<base::FilePath::StringType> GetTestProcessNames();
+
+#if BUILDFLAG(IS_WIN)
+// Filters to processes that match the current and older updater versions.
+class VersionProcessFilter : public base::ProcessFilter {
+ public:
+  VersionProcessFilter();
+
+  bool Includes(const base::ProcessEntry& entry) const override;
+
+ private:
+  const base::Version this_version_;
+  const base::Version older_version_;
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 // Ensures test processes are not running after the function is called.
 void CleanProcesses();
@@ -254,6 +269,9 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 
 // Sets up a fake updater on the system at a version lower than the test.
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
+
+// Gets the file path for the real updater lower version.
+base::FilePath GetRealUpdaterLowerVersionPath();
 
 // Sets up a real updater on the system at a version lower than the test. The
 // exact version of the updater is not defined.
