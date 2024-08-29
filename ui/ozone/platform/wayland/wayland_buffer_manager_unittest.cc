@@ -36,7 +36,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
@@ -297,8 +296,7 @@ class WaylandBufferManagerTest : public WaylandTest {
     auto new_window = WaylandWindow::Create(&delegate_, connection_.get(),
                                             std::move(properties));
     EXPECT_TRUE(new_window);
-
-    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+    WaylandTestBase::SyncDisplay();
 
     EXPECT_NE(new_window->GetWidget(), gfx::kNullAcceleratedWidget);
     return new_window;
@@ -1596,7 +1594,7 @@ TEST_P(WaylandBufferManagerTest,
   // very first configure ack to be done in the subsequent OnSequencePoint()
   // call.
   window->SetRestoredBoundsInDIP(kRestoredBounds);
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 
   window->Show(false);
 

@@ -12,7 +12,6 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 #include "ui/ozone/common/features.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
@@ -20,6 +19,7 @@
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
+#include "ui/ozone/platform/wayland/test/wayland_connection_test_api.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -81,7 +81,7 @@ void WaylandTestBase::SetUp() {
   window_->Show(false);
 
   // Wait for the client to flush all pending requests from initialization.
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  SyncDisplay();
 
   // The surface must be activated before buffers are attached.
   ActivateSurface(window_->root_surface()->get_surface_id());
@@ -97,7 +97,7 @@ void WaylandTestBase::SetUp() {
 
 void WaylandTestBase::TearDown() {
   if (initialized_) {
-    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+    SyncDisplay();
   }
 }
 
@@ -124,14 +124,13 @@ void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure,
     task_environment_.RunUntilIdle();
   } else {
     // Sync with the display to ensure client's requests are processed.
-    WaylandConnectionTestApi test_api(connection_.get());
-    test_api.SyncDisplay();
+    SyncDisplay();
 
     server_.RunAndWait(std::move(closure));
 
     // Sync with the display to ensure server's events are received and
     // processed
-    test_api.SyncDisplay();
+    SyncDisplay();
   }
 }
 
@@ -246,7 +245,7 @@ void WaylandTestBase::WaitForAllDisplaysReady() {
   loop.Run();
 
   // Secondly, make sure all events after 'done' are processed.
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  SyncDisplay();
 }
 
 std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(
@@ -264,6 +263,10 @@ std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(
   if (window)
     window->Show(false);
   return window;
+}
+
+void WaylandTestBase::SyncDisplay() {
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 }
 
 WaylandTest::WaylandTest() : WaylandTestBase(GetParam()) {}
