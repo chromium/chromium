@@ -616,7 +616,7 @@ void MaybeRegisterChromeFeaturePromos(
               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN_REMINDER)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleIcon(&vector_icons::kCelebrationIcon)
-          .SetReshowPolicy(base::Days(14), /*max_show_count=*/std::nullopt)));
+          .SetReshowPolicy(base::Days(14), /*max_show_count=*/6)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // kIPHCookieControlsFeature:
