@@ -319,30 +319,31 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
 
 TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   // Populate the address tables.
+  ASSERT_EQ(static_cast<int>(AutofillProfile::RecordType::kLocalOrSyncable), 0);
   ASSERT_TRUE(db_.GetSQLConnection()->Execute(
-      "INSERT INTO local_addresses (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000000', 11);"
-      "INSERT INTO local_addresses_type_tokens (guid, type, value) "
+      "INSERT INTO addresses (guid, record_type, date_modified) "
+      "VALUES('00000000-0000-0000-0000-000000000000', 0, 11);"
+      "INSERT INTO address_type_tokens (guid, type, value) "
       "VALUES('00000000-0000-0000-0000-000000000000', 3, 'first name0');"
-      "INSERT INTO local_addresses (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000001', 21);"
-      "INSERT INTO local_addresses_type_tokens (guid, type, value) "
+      "INSERT INTO addresses (guid, record_type, date_modified) "
+      "VALUES('00000000-0000-0000-0000-000000000001', 0, 21);"
+      "INSERT INTO address_type_tokens (guid, type, value) "
       "VALUES('00000000-0000-0000-0000-000000000001', 3, 'first name1');"
-      "INSERT INTO local_addresses (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000002', 31);"
-      "INSERT INTO local_addresses_type_tokens (guid, type, value) "
+      "INSERT INTO addresses (guid, record_type, date_modified) "
+      "VALUES('00000000-0000-0000-0000-000000000002', 0, 31);"
+      "INSERT INTO address_type_tokens (guid, type, value) "
       "VALUES('00000000-0000-0000-0000-000000000002', 3, 'first name2');"
-      "INSERT INTO local_addresses (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000003', 41);"
-      "INSERT INTO local_addresses_type_tokens (guid, type, value) "
+      "INSERT INTO addresses (guid, record_type, date_modified) "
+      "VALUES('00000000-0000-0000-0000-000000000003', 0, 41);"
+      "INSERT INTO address_type_tokens (guid, type, value) "
       "VALUES('00000000-0000-0000-0000-000000000003', 3, 'first name3');"
-      "INSERT INTO local_addresses (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000004', 51);"
-      "INSERT INTO local_addresses_type_tokens (guid, type, value) "
+      "INSERT INTO addresses (guid, record_type, date_modified) "
+      "VALUES('00000000-0000-0000-0000-000000000004', 0, 51);"
+      "INSERT INTO address_type_tokens (guid, type, value) "
       "VALUES('00000000-0000-0000-0000-000000000004', 3, 'first name4');"
-      "INSERT INTO local_addresses (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000005', 61);"
-      "INSERT INTO local_addresses_type_tokens (guid, type, value) "
+      "INSERT INTO addresses (guid, record_type, date_modified) "
+      "VALUES('00000000-0000-0000-0000-000000000005', 0, 61);"
+      "INSERT INTO address_type_tokens (guid, type, value) "
       "VALUES('00000000-0000-0000-0000-000000000005', 3, 'first name5');"));
 
   // Remove all entries modified in the bounded time range [17,41).
@@ -358,7 +359,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   // Make sure that only the expected profiles are still present.
   sql::Statement s_autofill_profiles_bounded(
       db_.GetSQLConnection()->GetUniqueStatement(
-          "SELECT date_modified FROM local_addresses ORDER BY guid"));
+          "SELECT date_modified FROM addresses ORDER BY guid"));
   ASSERT_TRUE(s_autofill_profiles_bounded.is_valid());
   ASSERT_TRUE(s_autofill_profiles_bounded.Step());
   EXPECT_EQ(11, s_autofill_profiles_bounded.ColumnInt64(0));
@@ -373,7 +374,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   // Make sure that only the expected profile names are still present.
   sql::Statement s_autofill_profile_names_bounded(
       db_.GetSQLConnection()->GetUniqueStatement(
-          "SELECT value FROM local_addresses_type_tokens ORDER BY guid"));
+          "SELECT value FROM address_type_tokens ORDER BY guid"));
   ASSERT_TRUE(s_autofill_profile_names_bounded.is_valid());
   ASSERT_TRUE(s_autofill_profile_names_bounded.Step());
   EXPECT_EQ("first name0", s_autofill_profile_names_bounded.ColumnString(0));
@@ -395,7 +396,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   // Make sure that only the expected profiles are still present.
   sql::Statement s_autofill_profiles_unbounded(
       db_.GetSQLConnection()->GetUniqueStatement(
-          "SELECT date_modified FROM local_addresses ORDER BY guid"));
+          "SELECT date_modified FROM addresses ORDER BY guid"));
   ASSERT_TRUE(s_autofill_profiles_unbounded.is_valid());
   ASSERT_TRUE(s_autofill_profiles_unbounded.Step());
   EXPECT_EQ(11, s_autofill_profiles_unbounded.ColumnInt64(0));
@@ -406,7 +407,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   // Make sure that only the expected profile names are still present.
   sql::Statement s_autofill_profile_names_unbounded(
       db_.GetSQLConnection()->GetUniqueStatement(
-          "SELECT value FROM local_addresses_type_tokens ORDER BY guid"));
+          "SELECT value FROM address_type_tokens ORDER BY guid"));
   ASSERT_TRUE(s_autofill_profile_names_unbounded.is_valid());
   ASSERT_TRUE(s_autofill_profile_names_unbounded.Step());
   EXPECT_EQ("first name0", s_autofill_profile_names_unbounded.ColumnString(0));
@@ -425,14 +426,14 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   // Make sure there are no profiles remaining.
   sql::Statement s_autofill_profiles_empty(
       db_.GetSQLConnection()->GetUniqueStatement(
-          "SELECT date_modified FROM local_addresses"));
+          "SELECT date_modified FROM addresses"));
   ASSERT_TRUE(s_autofill_profiles_empty.is_valid());
   EXPECT_FALSE(s_autofill_profiles_empty.Step());
 
   // Make sure there are no profile names remaining.
   sql::Statement s_autofill_profile_names_empty(
       db_.GetSQLConnection()->GetUniqueStatement(
-          "SELECT value FROM local_addresses_type_tokens"));
+          "SELECT value FROM address_type_tokens"));
   ASSERT_TRUE(s_autofill_profile_names_empty.is_valid());
   EXPECT_FALSE(s_autofill_profile_names_empty.Step());
 }

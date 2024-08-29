@@ -8,13 +8,16 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
@@ -27,9 +30,9 @@ namespace autofill {
 
 namespace {
 
-constexpr std::string_view kContactInfoTable = "contact_info";
-constexpr std::string_view kLocalAddressesTable = "local_addresses";
+constexpr std::string_view kAddressesTable = "addresses";
 constexpr std::string_view kGuid = "guid";
+constexpr std::string_view kRecordType = "record_type";
 constexpr std::string_view kUseCount = "use_count";
 constexpr std::string_view kUseDate = "use_date";
 constexpr std::string_view kUseDate2 = "use_date2";
@@ -40,15 +43,21 @@ constexpr std::string_view kLabel = "label";
 constexpr std::string_view kInitialCreatorId = "initial_creator_id";
 constexpr std::string_view kLastModifierId = "last_modifier_id";
 
-constexpr std::string_view kContactInfoTypeTokensTable =
-    "contact_info_type_tokens";
-constexpr std::string_view kLocalAddressesTypeTokensTable =
-    "local_addresses_type_tokens";
+constexpr std::string_view kAddressTypeTokensTable = "address_type_tokens";
 // kGuid = "guid"
 constexpr std::string_view kType = "type";
 constexpr std::string_view kValue = "value";
 constexpr std::string_view kVerificationStatus = "verification_status";
 constexpr std::string_view kObservations = "observations";
+
+// Before the `kAddressesTable` and `kAddressTypeTokensTable` tables, local and
+// account addresses were stored separately.
+constexpr std::string_view kContactInfoTable = "contact_info";
+constexpr std::string_view kLocalAddressesTable = "local_addresses";
+constexpr std::string_view kContactInfoTypeTokensTable =
+    "contact_info_type_tokens";
+constexpr std::string_view kLocalAddressesTypeTokensTable =
+    "local_addresses_type_tokens";
 
 // Historically, a different schema was used and addresses were stored in a set
 // of tables named autofill_profiles*. These tables are no longer used in
@@ -316,12 +325,11 @@ time_t GetEndTime(base::Time end) {
   return end.ToTimeT();
 }
 
-// Local and account profiles are stored in different tables with the same
-// layout. One table contains profile-level metadata, while another table
-// contains the values for every relevant FieldType. The following two
-// functions are used to map from a profile's `record_type` to the correct
-// table.
-std::string_view GetProfileMetadataTable(
+// In an older version of the schema, local and account addresses were stored in
+// different tables with the same layout. This function was used to get the
+// correct table based on the record type. It shouldn't be used anymore, except
+// in migration logic.
+std::string_view GetLegacyProfileMetadataTable(
     AutofillProfile::RecordType record_type) {
   switch (record_type) {
     case AutofillProfile::RecordType::kLocalOrSyncable:
@@ -333,7 +341,7 @@ std::string_view GetProfileMetadataTable(
   }
   NOTREACHED();
 }
-std::string_view GetProfileTypeTokensTable(
+std::string_view GetLegacyProfileTypeTokensTable(
     AutofillProfile::RecordType record_type) {
   switch (record_type) {
     case AutofillProfile::RecordType::kLocalOrSyncable:
@@ -346,15 +354,15 @@ std::string_view GetProfileTypeTokensTable(
   NOTREACHED();
 }
 
-// Insert the `profile`'s metadata into `GetProfileMetadataTable()`, returning
-// true if the write succeeded.
+// Insert the `profile`'s metadata into `kAddressesTable`, returning true if the
+// write succeeded.
 bool AddProfileMetadataToTable(sql::Database* db,
                                const AutofillProfile& profile) {
   sql::Statement s;
-  InsertBuilder(
-      db, s, GetProfileMetadataTable(profile.record_type()),
-      {kGuid, kUseCount, kUseDate, kUseDate2, kUseDate3, kDateModified,
-       kLanguageCode, kLabel, kInitialCreatorId, kLastModifierId});
+  InsertBuilder(db, s, kAddressesTable,
+                {kGuid, kRecordType, kUseCount, kUseDate, kUseDate2, kUseDate3,
+                 kDateModified, kLanguageCode, kLabel, kInitialCreatorId,
+                 kLastModifierId});
   auto bind_optional_time = [&s](int index, std::optional<base::Time> time) {
     if (time) {
       s.BindInt64(index, time->ToTimeT());
@@ -364,6 +372,7 @@ bool AddProfileMetadataToTable(sql::Database* db,
   };
   int index = 0;
   s.BindString(index++, profile.guid());
+  s.BindInt(index++, static_cast<int>(profile.record_type()));
   s.BindInt64(index++, profile.use_count());
   s.BindInt64(index++, profile.use_date().ToTimeT());
   if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
@@ -381,8 +390,8 @@ bool AddProfileMetadataToTable(sql::Database* db,
   return s.Run();
 }
 
-// Insert the `profile`'s values into `GetProfileTypeTokensTable()`, returning
-// true if the write succeeded.
+// Insert the `profile`'s values into `kAddressTypeTokensTable`, returning true
+// if the write succeeded.
 bool AddProfileTypeTokensToTable(sql::Database* db,
                                  const AutofillProfile& profile) {
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
@@ -391,7 +400,7 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
       continue;
     }
     sql::Statement s;
-    InsertBuilder(db, s, GetProfileTypeTokensTable(profile.record_type()),
+    InsertBuilder(db, s, kAddressTypeTokensTable,
                   {kGuid, kType, kValue, kVerificationStatus, kObservations});
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
@@ -417,7 +426,7 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
 bool AddAutofillProfileToTableVersion113(sql::Database* db,
                                          const AutofillProfile& profile) {
   sql::Statement s;
-  InsertBuilder(db, s, GetProfileMetadataTable(profile.record_type()),
+  InsertBuilder(db, s, GetLegacyProfileMetadataTable(profile.record_type()),
                 {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
                  kLabel, kInitialCreatorId, kLastModifierId});
   int index = 0;
@@ -436,7 +445,7 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
   // future versions. Due to the flexible layout of the type tokens table, this
   // is not a problem.
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
-    InsertBuilder(db, s, GetProfileTypeTokensTable(profile.record_type()),
+    InsertBuilder(db, s, GetLegacyProfileTypeTokensTable(profile.record_type()),
                   {kGuid, kType, kValue, kVerificationStatus});
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
@@ -449,20 +458,19 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
   return true;
 }
 
-// Constructs a profile based on the data in
-// `GetProfileTypeTokensTable(record_type)` for the given `guid`. Since the data
-// model of the profile depends on the country, the implementation first
-// collects all `FieldTypeData` and only then constructs the profile based on
-// the country code found.
-// The returned profile's metadata isn't populated, since it is stored in a
-// different table (see `ReadProfileMetadata()` below).
-// If reading from the table fails, nullopt is returned.
+// Constructs a profile based on the data in `kAddressTypeTokensTable` for the
+// given `guid`. Since the data model of the profile depends on the country, the
+// implementation first collects all `FieldTypeData` and only then constructs
+// the profile based on the country code found. The returned profile's metadata
+// isn't populated, since it is stored in a different table (see
+// `ReadProfileMetadata()` below). If reading from the table fails, nullopt is
+// returned.
 std::optional<AutofillProfile> GetProfileFromTypeTokensTable(
     sql::Database* db,
     const std::string& guid,
     AutofillProfile::RecordType record_type) {
   sql::Statement s;
-  if (!SelectByGuid(db, s, GetProfileTypeTokensTable(record_type),
+  if (!SelectByGuid(db, s, kAddressTypeTokensTable,
                     {kType, kValue, kVerificationStatus, kObservations},
                     guid)) {
     return std::nullopt;
@@ -488,10 +496,9 @@ std::optional<AutofillProfile> GetProfileFromTypeTokensTable(
       // This is possible in two cases:
       // - The database was tampered with by external means.
       // - The type corresponding to `s.ColumnInt(0)` was deprecated. In this
-      //   case, due to the structure of
-      //   `GetProfileTypeTokensTable(record_type)`, it is not necessary to
-      //   add database migration logic or drop a column. Instead, during the
-      //   next update, the data will be dropped.
+      //   case, due to the structure of `kAddressTypeTokensTable` , it is not
+      //   necessary to add database migration logic or drop a column. Instead,
+      //   during the next update, the data will be dropped.
       continue;
     }
 
@@ -521,12 +528,12 @@ std::optional<AutofillProfile> GetProfileFromTypeTokensTable(
 }
 
 // Reads all metadata (usage information, etc) of the profile from
-// `GetProfileMetadataTable()` and writes it to the `profile`.
+// `kAddressesTable` and writes it to the `profile`.
 // If reading from the table fails, false is returned and the profile is left
 // untouched.
 bool ReadProfileMetadata(sql::Database* db, AutofillProfile& profile) {
   sql::Statement s;
-  if (!SelectByGuid(db, s, GetProfileMetadataTable(profile.record_type()),
+  if (!SelectByGuid(db, s, kAddressesTable,
                     {kUseCount, kUseDate, kUseDate2, kUseDate3, kDateModified,
                      kLanguageCode, kLabel, kInitialCreatorId, kLastModifierId},
                     profile.guid())) {
@@ -571,12 +578,7 @@ WebDatabaseTable::TypeKey AddressAutofillTable::GetTypeKey() const {
 }
 
 bool AddressAutofillTable::CreateTablesIfNecessary() {
-  return InitProfileMetadataTable(AutofillProfile::RecordType::kAccount) &&
-         InitProfileTypeTokensTable(AutofillProfile::RecordType::kAccount) &&
-         InitProfileMetadataTable(
-             AutofillProfile::RecordType::kLocalOrSyncable) &&
-         InitProfileTypeTokensTable(
-             AutofillProfile::RecordType::kLocalOrSyncable);
+  return InitAddressesTable() && InitAddressTypeTokensTable();
 }
 
 bool AddressAutofillTable::MigrateToVersion(int version,
@@ -634,6 +636,9 @@ bool AddressAutofillTable::MigrateToVersion(int version,
     case 132:
       *update_compatible_version = false;
       return MigrateToVersion132AddAdditionalLastUseDateColumns();
+    case 134:
+      *update_compatible_version = true;
+      return MigrateToVersion134UnifyLocalAndAccountAddressStorage();
   }
   return true;
 }
@@ -656,7 +661,7 @@ bool AddressAutofillTable::UpdateAutofillProfile(
 
   // Implementing an update as remove + add has multiple advantages:
   // - Prevents outdated (FieldType, value) pairs from remaining in the
-  //   `GetProfileTypeTokensTable(profile)`, in case field types are removed.
+  //   `kAddressTypeTokensTable`, in case field types are removed.
   // - Simpler code.
   // The possible downside is performance. This is not an issue, as updates
   // happen rarely and asynchronously.
@@ -675,19 +680,28 @@ bool AddressAutofillTable::RemoveAutofillProfile(
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
-         DeleteWhereColumnEq(db_, GetProfileMetadataTable(record_type), kGuid,
-                             guid) &&
-         DeleteWhereColumnEq(db_, GetProfileTypeTokensTable(record_type), kGuid,
-                             guid) &&
+         DeleteWhereColumnEq(db_, kAddressesTable, kGuid, guid) &&
+         DeleteWhereColumnEq(db_, kAddressTypeTokensTable, kGuid, guid) &&
          transaction.Commit();
 }
 
 bool AddressAutofillTable::RemoveAllAutofillProfiles(
     AutofillProfile::RecordType record_type) {
   sql::Transaction transaction(db_);
+  std::vector<AutofillProfile> profiles;
+  // TODO(crbug.com/40100455): Since the `kAddressTypeTokensTable` doesn't have
+  // a `kRecordType` column, it's non-trivial to remove the correct entries from
+  // that table. For simplicity, the current implementation fetches all profiles
+  // to remove and removes them manually. Rewrite to a DELETE SQL query.
+  if (!GetAutofillProfiles(record_type, profiles)) {
+    return false;
+  }
   return transaction.Begin() &&
-         Delete(db_, GetProfileMetadataTable(record_type)) &&
-         Delete(db_, GetProfileTypeTokensTable(record_type)) &&
+         std::ranges::all_of(profiles,
+                             [&](const AutofillProfile& p) {
+                               return RemoveAutofillProfile(p.guid(),
+                                                            p.record_type());
+                             }) &&
          transaction.Commit();
 }
 
@@ -709,7 +723,9 @@ bool AddressAutofillTable::GetAutofillProfiles(
   profiles.clear();
 
   sql::Statement s;
-  SelectBuilder(db_, s, GetProfileMetadataTable(record_type), {kGuid});
+  SelectBuilder(db_, s, kAddressesTable, {kGuid},
+                base::StrCat({"WHERE ", kRecordType, " = ?"}));
+  s.BindInt(0, static_cast<int>(record_type));
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
     std::optional<AutofillProfile> profile =
@@ -793,15 +809,15 @@ bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
     std::vector<AutofillProfile>& profiles) {
   DCHECK(delete_end.is_null() || delete_begin < delete_end);
 
-  time_t delete_begin_t = delete_begin.ToTimeT();
-  time_t delete_end_t = GetEndTime(delete_end);
-
   // Remember Autofill profiles in the time range.
   sql::Statement s_profiles_get;
-  SelectBetween(
-      db_, s_profiles_get,
-      GetProfileMetadataTable(AutofillProfile::RecordType::kLocalOrSyncable),
-      {kGuid}, kDateModified, delete_begin_t, delete_end_t);
+  SelectBuilder(db_, s_profiles_get, kAddressesTable, {kGuid},
+                base::StrCat({"WHERE ", kRecordType, " = ? AND ", kDateModified,
+                              " >= ? AND ", kDateModified, " < ?"}));
+  s_profiles_get.BindInt(
+      0, static_cast<int>(AutofillProfile::RecordType::kLocalOrSyncable));
+  s_profiles_get.BindInt64(1, delete_begin.ToTimeT());
+  s_profiles_get.BindInt64(2, GetEndTime(delete_end));
 
   profiles.clear();
   while (s_profiles_get.Step()) {
@@ -1056,7 +1072,7 @@ bool AddressAutofillTable::MigrateToVersion121DropServerAddressTables() {
 bool AddressAutofillTable::
     MigrateToVersion132AddAdditionalLastUseDateColumns() {
   auto migrate_table = [&](AutofillProfile::RecordType record_type) {
-    std::string_view table = GetProfileMetadataTable(record_type);
+    std::string_view table = GetLegacyProfileMetadataTable(record_type);
     return AddColumn(db_, table, kUseDate2, "INTEGER") &&
            AddColumn(db_, table, kUseDate3, "INTEGER");
   };
@@ -1064,6 +1080,59 @@ bool AddressAutofillTable::
   return transaction.Begin() &&
          migrate_table(AutofillProfile::RecordType::kLocalOrSyncable) &&
          migrate_table(AutofillProfile::RecordType::kAccount) &&
+         transaction.Commit();
+}
+
+bool AddressAutofillTable::
+    MigrateToVersion134UnifyLocalAndAccountAddressStorage() {
+  // In version 133, local and account profiles were stored in two separate sets
+  // of tables with the same structure (named `GetLegacyProfileMetadataTable()`
+  // and `GetLegacyProfileTypeTokensTable()`). This migration logic merges the
+  // two tables into `kAddressesTable` and `kAddressTypeTokensTable`. In order
+  // to be able to distinguish profiles, a `kRecordType` column is added to the
+  // metadata table. The migration logic works by:
+  // - Adding a `kRecordType` column to the existing metadata tables and setting
+  //   a value for the existing rows.
+  // - Renaming the account address tables to the new names.
+  // - Bulk inserting local addresses into the (renamed) new tables.
+  // - Dropping the local address tables.
+  sql::Transaction transaction(db_);
+  // Adds a `kRecordType` column to `GetLegacyProfileMetadataTable(record_type)`
+  // and sets a value for existing rows.
+  auto migrate_metadata_table = [&](AutofillProfile::RecordType record_type) {
+    std::string_view table = GetLegacyProfileMetadataTable(record_type);
+    if (!AddColumn(db_, table, kRecordType, "INTEGER")) {
+      return false;
+    }
+    sql::Statement update_stmt;
+    UpdateBuilder(db_, update_stmt, table, {kRecordType});
+    update_stmt.BindInt(0, static_cast<int>(record_type));
+    return update_stmt.Run();
+  };
+  // Bulk inserts the data from `from` into `to` and drops `from`.
+  auto merge_into = [&](std::string_view from, std::string_view to) {
+    return db_->Execute(
+               base::StrCat({"INSERT INTO ", to, " SELECT * FROM ", from})) &&
+           DropTableIfExists(db_, from);
+  };
+  return transaction.Begin() &&
+         migrate_metadata_table(AutofillProfile::RecordType::kAccount) &&
+         migrate_metadata_table(
+             AutofillProfile::RecordType::kLocalOrSyncable) &&
+         RenameTable(db_,
+                     GetLegacyProfileMetadataTable(
+                         AutofillProfile::RecordType::kAccount),
+                     kAddressesTable) &&
+         RenameTable(db_,
+                     GetLegacyProfileTypeTokensTable(
+                         AutofillProfile::RecordType::kAccount),
+                     kAddressTypeTokensTable) &&
+         merge_into(GetLegacyProfileMetadataTable(
+                        AutofillProfile::RecordType::kLocalOrSyncable),
+                    kAddressesTable) &&
+         merge_into(GetLegacyProfileTypeTokensTable(
+                        AutofillProfile::RecordType::kLocalOrSyncable),
+                    kAddressTypeTokensTable) &&
          transaction.Commit();
 }
 
@@ -1103,9 +1172,8 @@ bool AddressAutofillTable::InitLegacyProfileAddressesTable() {
        {kFloorStatus, "INTEGER DEFAULT 0"}});
 }
 
-bool AddressAutofillTable::InitProfileMetadataTable(
-    AutofillProfile::RecordType record_type) {
-  return CreateTableIfNotExists(db_, GetProfileMetadataTable(record_type),
+bool AddressAutofillTable::InitAddressesTable() {
+  return CreateTableIfNotExists(db_, kAddressesTable,
                                 {{kGuid, "VARCHAR PRIMARY KEY"},
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -1117,12 +1185,12 @@ bool AddressAutofillTable::InitProfileMetadataTable(
                                  // The second and third last use date are null
                                  // if the profile wasn't used often enough.
                                  {kUseDate2, "INTEGER"},
-                                 {kUseDate3, "INTEGER"}});
+                                 {kUseDate3, "INTEGER"},
+                                 {kRecordType, "INTEGER"}});
 }
 
-bool AddressAutofillTable::InitProfileTypeTokensTable(
-    AutofillProfile::RecordType record_type) {
-  return CreateTableIfNotExists(db_, GetProfileTypeTokensTable(record_type),
+bool AddressAutofillTable::InitAddressTypeTokensTable() {
+  return CreateTableIfNotExists(db_, kAddressTypeTokensTable,
                                 {{kGuid, "VARCHAR"},
                                  {kType, "INTEGER"},
                                  {kValue, "VARCHAR"},
