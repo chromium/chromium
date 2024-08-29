@@ -35,6 +35,7 @@ inline constexpr char kGivenNameBase[] = "given_name";
 
 inline constexpr char kTermsOfServiceUrl[] = "https://terms-of-service.com";
 inline constexpr char kPrivacyPolicyUrl[] = "https://privacy-policy.com";
+inline constexpr char kIdpBrandIconUrl[] = "https://idp-brand-icon.com";
 inline constexpr char kRpBrandIconUrl[] = "https://rp-brand-icon.com";
 
 // A base class for FedCM account selection view unit tests.
@@ -79,7 +80,9 @@ class AccountSelectionViewTestBase {
           login_states = {},
       const std::vector<std::optional<base::Time>>& last_used_timestamps = {});
   content::ClientMetadata CreateTestClientMetadata(
-      const std::string& terms_of_service_url);
+      const std::string& terms_of_service_url = kTermsOfServiceUrl,
+      const std::string& privacy_policy_url = kPrivacyPolicyUrl,
+      const std::string& rp_brand_icon_url = kRpBrandIconUrl);
 
   std::vector<std::string> GetChildClassNames(views::View* parent);
   views::View* GetViewWithClassName(views::View* parent,

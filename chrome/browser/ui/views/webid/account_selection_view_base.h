@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_BASE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
@@ -71,6 +73,9 @@ inline constexpr int kRightMargin = 40;
 inline constexpr int kTopMargin = 16;
 // The size of the icon of the identity provider in the modal.
 inline constexpr int kModalIdpIconSize = 32;
+// The size of the icons when they are combined i.e. IDP icon + arrow icon + RP
+// icon is shown at the same time in the modal.
+inline constexpr int kModalCombinedIconSize = 20;
 // The size of avatars in the modal dialog.
 inline constexpr int kModalAvatarSize = 36;
 // The size of the horizontal padding for most elements in the modal.
@@ -90,7 +95,8 @@ class BrandIconImageView : public views::ImageView {
       base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
       int image_size,
       bool should_circle_crop,
-      std::optional<SkColor> background_color = std::nullopt);
+      std::optional<SkColor> background_color = std::nullopt,
+      base::RepeatingClosure on_image_set = base::DoNothing());
   BrandIconImageView(const BrandIconImageView&) = delete;
   BrandIconImageView& operator=(const BrandIconImageView&) = delete;
   ~BrandIconImageView() override;
@@ -121,6 +127,7 @@ class BrandIconImageView : public views::ImageView {
   // should be the background color of the dialog.
   std::optional<SkColor> background_color_;
   gfx::ImageSkia cropped_idp_image_;
+  base::RepeatingClosure on_image_set_;
 
   base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
 };
@@ -287,11 +294,9 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
       const content::IdentityProviderData& idp_display_data);
 
   // Sets the brand views::ImageView visibility and image. Initiates the
-  // download of the brand icon if necessary. If `show_placeholder` is true, a
-  // globe icon will be shown if the icon cannot be fetched.
+  // download of the brand icon if necessary.
   void ConfigureBrandImageView(BrandIconImageView* image_view,
-                               const GURL& brand_icon_url,
-                               bool show_placeholder);
+                               const GURL& brand_icon_url);
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
