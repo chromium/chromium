@@ -98,8 +98,8 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseLostMedia, true);
   registry->RegisterBooleanPref(prefs::kBirchUseWeather, true);
   registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
-  registry->RegisterBooleanPref(prefs::kBirchUseCoral,
-                                false); /*this is an opt-in feature*/
+  // TODO(yulunwu): Change this to false once there is a way to opt-in.
+  registry->RegisterBooleanPref(prefs::kBirchUseCoral, true);
   // NOTE: If you add a pref here, also update birch_browsertest.cc and
   // birch_model_unittest.cc which have code that disables all prefs.
 }

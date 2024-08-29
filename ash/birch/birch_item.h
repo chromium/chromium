@@ -498,9 +498,10 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
+  void LoadIcon(LoadIconCallback callback) const override;
   void PerformAddonAction() override;
   BirchAddonType GetAddonType() const override;
-  void LoadIcon(LoadIconCallback callback) const override;
+  std::u16string GetAddonAccessibleName() const override;
 
  private:
   // TODO(yulunwu):Add coral data to `BirchCoralItem`

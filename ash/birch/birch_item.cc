@@ -20,7 +20,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "base/i18n/time_formatting.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1014,9 +1017,10 @@ BirchItemType BirchCoralItem::GetType() const {
 }
 
 std::string BirchCoralItem::ToString() const {
-  std::stringstream ss;
-  ss << "coral_item: <METADATA>";
-  return ss.str();
+  auto root = base::Value::Dict().Set(
+      "Coral item",
+      base::Value::Dict().Set("Title", title()).Set("Subtitle", subtitle()));
+  return base::WriteJson(root).value_or(std::string());
 }
 
 void BirchCoralItem::PerformAction() {
@@ -1025,17 +1029,22 @@ void BirchCoralItem::PerformAction() {
   // Open related app(s) in its last used window state.
 }
 
+void BirchCoralItem::LoadIcon(LoadIconCallback callback) const {
+  // TODO(yulunwu) load icons for first four birch restore items.
+}
+
 void BirchCoralItem::PerformAddonAction() {
-  // TODO(sammiequon) show feedback menu and coral items in scrollable view.
+  auto* overview_session = OverviewController::Get()->overview_session();
+  CHECK(overview_session);
+  overview_session->ToggleTabAppSelectionMenu();
 }
 
 BirchAddonType BirchCoralItem::GetAddonType() const {
-  // TODO(zxdan) maybe add a new add-on type
   return BirchAddonType::kButton;
 }
 
-void BirchCoralItem::LoadIcon(LoadIconCallback callback) const {
-  // TODO(yulunwu) load icons for first four birch restore items.
+std::u16string BirchCoralItem::GetAddonAccessibleName() const {
+  return u"Show";
 }
 
 ////////////////////////////////////////////////////////////////////////////////

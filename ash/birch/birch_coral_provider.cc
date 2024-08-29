@@ -6,9 +6,12 @@
 
 #include "ash/birch/birch_model.h"
 #include "ash/public/cpp/coral_util.h"
+#include "ash/birch/birch_item.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "ash/shell.h"
+#include "base/command_line.h"
 
 namespace {
 bool HasValidClusterCount(size_t num_clusters) {
@@ -42,6 +45,13 @@ void BirchCoralProvider::OnTabItemUpdated(TabClusterUIItem* tab_item) {
 void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
 
 void BirchCoralProvider::RequestBirchDataFetch() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceBirchFakeCoral)) {
+    Shell::Get()->birch_model()->SetCoralItems(
+        {BirchCoralItem(u"CoralTitle", u"CoralText")});
+    return;
+  }
+
   // TODO(yulunwu) make appropriate data request, send data to backend.
   if (HasValidPostLoginData()) {
     HandlePostLoginDataRequest();

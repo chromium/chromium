@@ -333,6 +333,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   void UpdateFrameThrottling();
 
+  // TODO(http://b/361326120): Temporary function to create or destroy
+  // `tab_app_selection_widget_`.
+  void ToggleTabAppSelectionMenu();
+
   // DesksController::Observer:
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
@@ -548,6 +552,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // The controller to manage the birch bars.
   std::unique_ptr<BirchBarController> birch_bar_controller_;
+
+  // TODO(http://b/361326120): This is not the right object to own this widget.
+  std::unique_ptr<views::Widget> tab_app_selection_widget_;
 
   // Boolean to indicate whether chromeVox is enabled or not.
   bool chromevox_enabled_;

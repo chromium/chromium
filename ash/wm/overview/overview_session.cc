@@ -29,6 +29,9 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/birch_bar_view.h"
+#include "ash/wm/overview/birch/birch_chip_button_base.h"
+#include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -1285,6 +1288,47 @@ void OverviewSession::UpdateFrameThrottling() {
   }
   Shell::Get()->frame_throttling_controller()->StartThrottling(
       windows_to_throttle);
+}
+
+void OverviewSession::ToggleTabAppSelectionMenu() {
+  if (tab_app_selection_widget_) {
+    tab_app_selection_widget_.reset();
+    return;
+  }
+
+  gfx::Rect chip_bounds;
+  auto* bar_view = views::AsViewClass<BirchBarView>(
+      grid_list_.front()->birch_bar_widget()->GetContentsView());
+  auto it =
+      base::ranges::find_if(bar_view->chips(), [](BirchChipButtonBase* button) {
+        return button->GetItem()->GetType() == BirchItemType::kCoral;
+      });
+  if (it != bar_view->chips().end()) {
+    chip_bounds = (*it)->GetBoundsInScreen();
+  }
+
+  if (chip_bounds.IsEmpty()) {
+    return;
+  }
+
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_MENU);
+  params.accept_events = true;
+  params.name = "TabAppSelectionMenu";
+  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  params.init_properties_container.SetProperty(kOverviewUiKey, true);
+
+  tab_app_selection_widget_ =
+      std::make_unique<views::Widget>(std::move(params));
+  auto* contents_view = tab_app_selection_widget_->SetContentsView(
+      std::make_unique<TabAppSelectionView>());
+  tab_app_selection_widget_->Show();
+
+  const int preferred_height = contents_view->GetPreferredSize().height();
+  chip_bounds.set_y(chip_bounds.y() - preferred_height);
+  chip_bounds.set_height(preferred_height);
+  tab_app_selection_widget_->SetBounds(chip_bounds);
 }
 
 void OverviewSession::OnDeskActivationChanged(const Desk* activated,
