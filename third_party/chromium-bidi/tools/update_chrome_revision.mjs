@@ -58,6 +58,7 @@ async function updateDevToolsProtocolVersion(revision) {
 }
 
 const {version, revision} = await getVersionAndRevisionForCanary();
+console.log(`Chrome Canary version is: ${version} (${revision})`);
 await updateDevToolsProtocolVersion(revision);
 
 const browserVersion = `chrome@${version}`;
