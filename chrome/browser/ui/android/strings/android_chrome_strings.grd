@@ -1601,6 +1601,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_PRIVACY_GUIDE_PRIVACY_SANDBOX_DESCRIPTION" desc="Description for the Privacy Sandbox item on the final page of the privacy guide">
         Chrome gives you more control over the ads you see and limits what sites can learn about you when they show you personalized ads.
       </message>
+      <message name="IDS_PRIVACY_GUIDE_PRIVACY_SANDBOX_DESCRIPTION_AD_TOPICS" desc="Description for the Privacy Sandbox item on the final page of the privacy guide - This text is used when the ad topics card is added.">
+        Manage your ad topics and other settings to limit what sites can learn about you to show you personalized ads
+      </message>
       <message name="IDS_PRIVACY_GUIDE_WEB_APP_ACTIVITY_HEADING" desc="Title for the Web and App Activity item on the final page of the privacy guide">
         Web &amp; App Activity
       </message>
