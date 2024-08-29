@@ -567,6 +567,36 @@ TrustedSignalsKVv2RequestHelperBuilder::TrustedSignalsKVv2RequestHelperBuilder(
       trusted_signals_url_(std::move(trusted_signals_url)),
       experiment_group_id_(experiment_group_id) {}
 
+std::unique_ptr<TrustedSignalsKVv2RequestHelper>
+TrustedSignalsKVv2RequestHelperBuilder::Build(
+    mojom::TrustedSignalsPublicKeyPtr public_key) {
+  cbor::Value::MapValue request_map_value;
+  AddPostRequestConstants(request_map_value);
+
+  cbor::Value::ArrayValue partition_array;
+
+  for (const auto& group_pair : compression_groups()) {
+    int compression_group_id = group_pair.first;
+    const CompressionGroup& partition_map = group_pair.second;
+
+    for (const auto& partition_pair : partition_map) {
+      const Partition& partition = partition_pair.second;
+      cbor::Value::MapValue partition_cbor_map = BuildMapForPartition(
+          partition, partition.partition_id, compression_group_id);
+      partition_array.emplace_back(partition_cbor_map);
+    }
+  }
+
+  request_map_value.try_emplace(cbor::Value("partitions"),
+                                cbor::Value(std::move(partition_array)));
+  quiche::ObliviousHttpRequest request =
+      CreateOHttpRequest(std::move(public_key), std::move(request_map_value));
+
+  std::string encrypted_request = request.EncapsulateAndSerialize();
+  return std::make_unique<TrustedSignalsKVv2RequestHelper>(
+      std::move(encrypted_request), std::move(request).ReleaseContext());
+}
+
 TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition() = default;
 
 TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
@@ -586,6 +616,22 @@ TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
   }
   additional_params.Set(trusted_bidding_signals_slot_size_param.first,
                         trusted_bidding_signals_slot_size_param.second);
+}
+
+TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
+    int partition_id,
+    const std::string& render_url,
+    const std::set<std::string>& ad_component_render_urls,
+    const std::string& hostname,
+    const std::optional<int>& experiment_group_id)
+    : partition_id(partition_id),
+      render_urls({render_url}),
+      ad_component_render_urls(ad_component_render_urls) {
+  additional_params.Set("hostname", hostname);
+  if (experiment_group_id.has_value()) {
+    additional_params.Set("experimentGroupId",
+                          base::NumberToString(experiment_group_id.value()));
+  }
 }
 
 TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(Partition&&) =
@@ -624,26 +670,21 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::
 
 TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex
 TrustedBiddingSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
-    base::optional_ref<const std::string> interest_group_name,
-    base::optional_ref<const std::set<std::string>> bidding_keys,
-    base::optional_ref<const url::Origin> interest_group_join_origin,
-    std::optional<blink::mojom::InterestGroup::ExecutionMode> execution_mode) {
-  DCHECK(interest_group_name.has_value());
-  DCHECK(bidding_keys.has_value());
-  DCHECK(interest_group_join_origin.has_value());
-  DCHECK(execution_mode.has_value());
-
+    const std::string& interest_group_name,
+    const std::set<std::string>& bidding_keys,
+    const url::Origin& interest_group_join_origin,
+    const blink::mojom::InterestGroup::ExecutionMode execution_mode) {
   int partition_id;
   int compression_group_id;
 
   // Find or create a compression group.
   auto join_origin_compression_id_it =
-      join_origin_compression_id_map().find(interest_group_join_origin.value());
+      join_origin_compression_id_map().find(interest_group_join_origin);
   CompressionGroup* compression_group_ptr;
   if (join_origin_compression_id_it == join_origin_compression_id_map().end()) {
     // Create a new compression group keyed by joining origin.
     compression_group_id = next_compression_group_id();
-    join_origin_compression_id_map().emplace(interest_group_join_origin.value(),
+    join_origin_compression_id_map().emplace(interest_group_join_origin,
                                              compression_group_id);
     compression_group_ptr =
         &compression_groups().try_emplace(compression_group_id).first->second;
@@ -677,53 +718,21 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
 
   // Find or create partition.
   if (partition_it == compression_group_ptr->end()) {
-    Partition new_partition(partition_id, interest_group_name.value(),
-                            bidding_keys.value(), hostname(),
-                            experiment_group_id(),
-                            trusted_bidding_signals_slot_size_param_);
+    Partition new_partition(partition_id, interest_group_name, bidding_keys,
+                            hostname(), experiment_group_id(),
+                            trusted_bidding_signals_slot_size_param());
     compression_group_ptr->emplace(partition_id, std::move(new_partition));
   } else {
     // We only reuse the group-by-origin partition.
     DCHECK_EQ(0, partition_id);
     DCHECK_EQ(blink::InterestGroup::ExecutionMode::kGroupedByOriginMode,
-              execution_mode.value());
-    partition_it->second.interest_group_names.insert(
-        interest_group_name.value());
-    partition_it->second.bidding_signals_keys.insert(bidding_keys->begin(),
-                                                     bidding_keys->end());
+              execution_mode);
+    partition_it->second.interest_group_names.insert(interest_group_name);
+    partition_it->second.bidding_signals_keys.insert(bidding_keys.begin(),
+                                                     bidding_keys.end());
   }
 
   return IsolationIndex(compression_group_id, partition_id);
-}
-
-std::unique_ptr<TrustedSignalsKVv2RequestHelper>
-TrustedBiddingSignalsKVv2RequestHelperBuilder::Build(
-    mojom::TrustedSignalsPublicKeyPtr public_key) {
-  cbor::Value::MapValue request_map_value;
-  AddPostRequestConstants(request_map_value);
-
-  cbor::Value::ArrayValue partition_array;
-
-  for (const auto& group_pair : compression_groups()) {
-    int compression_group_id = group_pair.first;
-    const CompressionGroup& partition_map = group_pair.second;
-
-    for (const auto& partition_pair : partition_map) {
-      const Partition& partition = partition_pair.second;
-      cbor::Value::MapValue partition_cbor_map = BuildMapForPartition(
-          partition, partition.partition_id, compression_group_id);
-      partition_array.emplace_back(partition_cbor_map);
-    }
-  }
-
-  request_map_value.try_emplace(cbor::Value("partitions"),
-                                cbor::Value(std::move(partition_array)));
-  quiche::ObliviousHttpRequest request =
-      CreateOHttpRequest(std::move(public_key), std::move(request_map_value));
-
-  std::string encrypted_request = request.EncapsulateAndSerialize();
-  return std::make_unique<TrustedSignalsKVv2RequestHelper>(
-      std::move(encrypted_request), std::move(request).ReleaseContext());
 }
 
 cbor::Value::MapValue
@@ -754,6 +763,88 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
   arguments.emplace_back(
       MakeArgument("interestGroupNames", partition.interest_group_names));
   arguments.emplace_back(MakeArgument("keys", partition.bidding_signals_keys));
+
+  partition_cbor_map.try_emplace(cbor::Value("arguments"),
+                                 cbor::Value(std::move(arguments)));
+  return partition_cbor_map;
+}
+
+TrustedScoringSignalsKVv2RequestHelperBuilder::
+    TrustedScoringSignalsKVv2RequestHelperBuilder(
+        const std::string& hostname,
+        const GURL& trusted_signals_url,
+        std::optional<int> experiment_group_id)
+    : TrustedSignalsKVv2RequestHelperBuilder(hostname,
+                                             trusted_signals_url,
+                                             experiment_group_id) {}
+
+TrustedScoringSignalsKVv2RequestHelperBuilder::
+    ~TrustedScoringSignalsKVv2RequestHelperBuilder() = default;
+
+TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex
+TrustedScoringSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
+    const GURL& render_url,
+    const std::set<std::string>& ad_component_render_urls,
+    const url::Origin& owner_origin,
+    const url::Origin& interest_group_join_origin) {
+  int partition_id;
+  int compression_group_id;
+
+  // Find or create a compression group.
+  CompressionGroupMapKey map_key(owner_origin, interest_group_join_origin);
+
+  auto compression_group_it = compression_group_map.find(map_key);
+  CompressionGroup* compression_group_ptr;
+  if (compression_group_it == compression_group_map.end()) {
+    // Create a new compression group keyed by owner origin and interest group
+    // joining origin.
+    compression_group_id = next_compression_group_id();
+    compression_group_map.emplace(map_key, compression_group_id);
+    compression_group_ptr =
+        &compression_groups().try_emplace(compression_group_id).first->second;
+  } else {
+    // Found existing compression group.
+    compression_group_id = compression_group_it->second;
+    DCHECK_EQ(1u, compression_groups().count(compression_group_id));
+    compression_group_ptr = &compression_groups()[compression_group_id];
+  }
+
+  // Always create new partition for trusted scoring signals request, which
+  // means the next partition ID is the size of compression group.
+  partition_id = compression_group_ptr->size();
+  Partition new_partition(partition_id, render_url.spec(),
+                          ad_component_render_urls, hostname(),
+                          experiment_group_id());
+  compression_group_ptr->emplace(partition_id, std::move(new_partition));
+
+  return IsolationIndex(compression_group_id, partition_id);
+}
+
+cbor::Value::MapValue
+TrustedScoringSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
+    const Partition& partition,
+    int partition_id,
+    int compression_group_id) {
+  cbor::Value::MapValue partition_cbor_map;
+
+  partition_cbor_map.try_emplace(cbor::Value("id"), cbor::Value(partition_id));
+  partition_cbor_map.try_emplace(cbor::Value("compressionGroupId"),
+                                 cbor::Value(compression_group_id));
+
+  // metadata
+  cbor::Value::MapValue metadata;
+  for (const auto param : partition.additional_params) {
+    CHECK(param.second.is_string());
+    metadata.try_emplace(cbor::Value(param.first),
+                         cbor::Value(param.second.GetString()));
+  }
+  partition_cbor_map.try_emplace(cbor::Value("metadata"),
+                                 cbor::Value(std::move(metadata)));
+
+  cbor::Value::ArrayValue arguments;
+  arguments.emplace_back(MakeArgument("renderUrls", partition.render_urls));
+  arguments.emplace_back(MakeArgument("adComponentRenderUrls",
+                                      partition.ad_component_render_urls));
 
   partition_cbor_map.try_emplace(cbor::Value("arguments"),
                                  cbor::Value(std::move(arguments)));

@@ -48,7 +48,13 @@ const size_t kFramingHeaderSize = 5;  // bytes
 const size_t kOhttpHeaderSize = 55;   // bytes
 const char kTrustedSignalsUrl[] = "https://url.test/";
 const char kOriginFooUrl[] = "https://foo.test/";
+const char kOriginFoosubUrl[] = "https://foosub.test/";
 const char kOriginBarUrl[] = "https://bar.test/";
+const char kOriginBarsubUrl[] = "https://barsub.test/";
+const char kOwnerOriginA[] = "https://owner-a.test/";
+const char kOwnerOriginB[] = "https://owner-b.test/";
+const char kJoiningOriginA[] = "https://joining-a.test/";
+const char kJoiningOriginB[] = "https://joining-b.test/";
 
 // These keys were randomly generated as follows:
 // EVP_HPKE_KEY keys;
@@ -66,6 +72,32 @@ const uint8_t kTestPublicKey[] = {
     0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
 };
+
+// Helper to decrypt request body.
+std::vector<uint8_t> DecryptRequestBody(const std::string& request_body,
+                                        int public_key_id) {
+  // Decrypt request body.
+  auto config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+      public_key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      EVP_HPKE_AES_256_GCM);
+  CHECK(config.ok()) << config.status();
+
+  auto ohttp_gateway =
+      quiche::ObliviousHttpGateway::Create(
+          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                      sizeof(kTestPrivateKey)),
+          config.value())
+          .value();
+
+  auto decrypt_body = ohttp_gateway.DecryptObliviousHttpRequest(
+      request_body, kTrustedSignalsKVv2EncryptionRequestMediaType);
+  CHECK(decrypt_body.ok()) << decrypt_body.status();
+
+  auto plain_body = decrypt_body->GetPlaintextData();
+  std::vector<uint8_t> body_bytes(plain_body.begin(), plain_body.end());
+
+  return body_bytes;
+}
 
 // GzipCompress() doesn't support writing to a vector, only a std::string. This
 // wrapper provides that capability, at the cost of an extra copy.
@@ -360,37 +392,19 @@ TEST(TrustedSignalsKVv2RequestHelperTest,
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode);
 
   // Generate public key.
-  int public_key_id = 0x00;
+  const int kPublicKeyId = 0x00;
   mojom::TrustedSignalsPublicKeyPtr public_key =
       mojom::TrustedSignalsPublicKey::New(
           std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
                       sizeof(kTestPublicKey)),
-          public_key_id);
+          kPublicKeyId);
 
   std::unique_ptr<TrustedSignalsKVv2RequestHelper> helper =
       helper_builder->Build(std::move(public_key));
 
-  std::string post_body = helper->TakePostRequestBody();
-
-  // Decrypt post body.
-  auto config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-      public_key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
-      EVP_HPKE_AES_256_GCM);
-  EXPECT_TRUE(config.ok()) << config.status();
-
-  auto ohttp_gateway =
-      quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
-                      sizeof(kTestPrivateKey)),
-          config.value())
-          .value();
-
-  auto decrypt_body = ohttp_gateway.DecryptObliviousHttpRequest(
-      post_body, kTrustedSignalsKVv2EncryptionRequestMediaType);
-  EXPECT_TRUE(decrypt_body.ok()) << decrypt_body.status();
-
-  auto plain_body = decrypt_body->GetPlaintextData();
-  std::vector<uint8_t> body_bytes(plain_body.begin(), plain_body.end());
+  std::string request_body = helper->TakePostRequestBody();
+  std::vector<uint8_t> body_bytes =
+      DecryptRequestBody(request_body, kPublicKeyId);
 
   // Test if body_bytes size is padded.
   size_t request_length = kOhttpHeaderSize + body_bytes.size();
@@ -534,32 +548,33 @@ TEST(TrustedSignalsKVv2RequestHelperTest,
             kExpectedPrefixHex + kExpectedBodyHex + kPaddingString);
 }
 
-// TODO(crbug.com/337917489): When adding an identical IG, it should use the
-// existing partition instead of creating a new one. After the implementation,
-// the EXPECT_EQ() of second IG H should be failed.
+// TODO(crbug.com/337917489): When adding an identical trusted scoring signals
+// request, it should use the existing partition instead of creating a new one.
+// After the implementation, the EXPECT_EQ() of request I which is duplicated
+// from request H, should be failed.
+//
+// Add the following trusted bidding signals requests:
+// Request A[join_origin: foo.test, mode: group-by-origin]
+// Request B[join_origin: foo.test, mode: group-by-origin]
+// Request C[join_origin: foo.test, mode: compatibility]
+// Request D[join_origin: foo.test, mode: compatibility]
+// Request E[join_origin: bar.test, mode: compatibility]
+// Request F[join_origin: bar.test, mode: group-by-origin]
+// Request G[join_origin: bar.test, mode: compatibility]
+// Request H[join_origin: bar.test, mode: compatibility]
+// Request I[join_origin: bar.test, mode: compatibility]
+// will result the following groups:
+// Compression: 0 -
+//    partition 0: A, B
+//    partition 1: C
+//    partition 2: D
+// Compression: 1 -
+//    partition 0: F
+//    partition 1: E
+//    partition 2: G
+//    partition 3: H
+//    partition 4: I
 TEST(TrustedSignalsKVv2RequestHelperTest, TrustedBiddingSignalsIsolationIndex) {
-  // Add the following interest groups:
-  // IG A[join_origin: foo.com, mode: group-by-origin]
-  // IG B[join_origin: foo.com, mode: group-by-origin]
-  // IG C[join_origin: foo.com, mode: compatibility]
-  // IG D[join_origin: foo.com, mode: compatibility]
-  // IG E[join_origin: bar.com, mode: compatibility]
-  // IG F[join_origin: bar.com, mode: group-by-origin]
-  // IG G[join_origin: bar.com, mode: compatibility]
-  // IG H[join_origin: bar.com, mode: compatibility]
-  // IG H, a dulplicate IG, aiming to test how request builder can handle a
-  // identical IG.
-  // will result the following groups: Compression: 0 -
-  //    partition 0: A, B
-  //    partition 1: C
-  //    partition 2: D
-  // Compression: 1 -
-  //    partition 0: F
-  //    partition 1: E
-  //    partition 2: G
-  //    partition 3: H
-  //    partition 4: H
-
   std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
       helper_builder =
           std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
@@ -620,6 +635,257 @@ TEST(TrustedSignalsKVv2RequestHelperTest, TrustedBiddingSignalsIsolationIndex) {
           std::string("groupH"), std::set<std::string>{"key"},
           url::Origin::Create(GURL(kOriginBarUrl)),
           blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode));
+}
+
+TEST(TrustedSignalsKVv2RequestHelperTest,
+     TrustedScoringSignalsRequestEncoding) {
+  std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
+      helper_builder =
+          std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
+              kHostName, GURL(kTrustedSignalsUrl), kExperimentGroupId);
+
+  helper_builder->AddTrustedSignalsRequest(
+      GURL(kOriginFooUrl), std::set<std::string>{kOriginFoosubUrl},
+      url::Origin::Create(GURL(kOwnerOriginA)),
+      url::Origin::Create(GURL(kJoiningOriginA)));
+  helper_builder->AddTrustedSignalsRequest(
+      GURL(kOriginBarUrl), std::set<std::string>{kOriginBarsubUrl},
+      url::Origin::Create(GURL(kOwnerOriginA)),
+      url::Origin::Create(GURL(kJoiningOriginA)));
+  helper_builder->AddTrustedSignalsRequest(
+      GURL(kOriginFooUrl), std::set<std::string>{kOriginFoosubUrl},
+      url::Origin::Create(GURL(kOwnerOriginB)),
+      url::Origin::Create(GURL(kJoiningOriginB)));
+
+  // Generate public key.
+  const int kPublicKeyId = 0xFF;
+  mojom::TrustedSignalsPublicKeyPtr public_key =
+      mojom::TrustedSignalsPublicKey::New(
+          std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
+                      sizeof(kTestPublicKey)),
+          kPublicKeyId);
+
+  std::unique_ptr<TrustedSignalsKVv2RequestHelper> helper =
+      helper_builder->Build(std::move(public_key));
+
+  std::string request_body = helper->TakePostRequestBody();
+  std::vector<uint8_t> body_bytes =
+      DecryptRequestBody(request_body, kPublicKeyId);
+
+  // Test if body_bytes size is padded.
+  size_t request_length = kOhttpHeaderSize + body_bytes.size();
+  // If a number is a power of 2, then the result of performing a bitwise AND
+  // operation between the number and the number minus 1 should be 0.
+  EXPECT_FALSE(request_length & (request_length - 1));
+
+  // Use cbor.me to convert from
+  // {
+  //   "partitions": [
+  //     {
+  //       "id": 0,
+  //       "metadata": {
+  //         "hostname": "publisher.test",
+  //         "experimentGroupId": "12345"
+  //       },
+  //       "arguments": [
+  //         {
+  //           "data": [
+  //             "https://foo.test/"
+  //           ],
+  //           "tags": [
+  //             "renderUrls"
+  //           ]
+  //         },
+  //         {
+  //           "data": [
+  //             "https://foosub.test/"
+  //           ],
+  //           "tags": [
+  //             "adComponentRenderUrls"
+  //           ]
+  //         }
+  //       ],
+  //       "compressionGroupId": 0
+  //     },
+  //     {
+  //       "id": 1,
+  //       "metadata": {
+  //         "hostname": "publisher.test",
+  //         "experimentGroupId": "12345"
+  //       },
+  //       "arguments": [
+  //         {
+  //           "data": [
+  //             "https://bar.test/"
+  //           ],
+  //           "tags": [
+  //             "renderUrls"
+  //           ]
+  //         },
+  //         {
+  //           "data": [
+  //             "https://barsub.test/"
+  //           ],
+  //           "tags": [
+  //             "adComponentRenderUrls"
+  //           ]
+  //         }
+  //       ],
+  //       "compressionGroupId": 0
+  //     },
+  //     {
+  //       "id": 0,
+  //       "metadata": {
+  //         "hostname": "publisher.test",
+  //         "experimentGroupId": "12345"
+  //       },
+  //       "arguments": [
+  //         {
+  //           "data": [
+  //             "https://foo.test/"
+  //           ],
+  //           "tags": [
+  //             "renderUrls"
+  //           ]
+  //         },
+  //         {
+  //           "data": [
+  //             "https://foosub.test/"
+  //           ],
+  //           "tags": [
+  //             "adComponentRenderUrls"
+  //           ]
+  //         }
+  //       ],
+  //       "compressionGroupId": 1
+  //     }
+  //   ],
+  //   "acceptCompression": [
+  //     "none",
+  //     "gzip"
+  //   ]
+  // }
+
+  const std::string kExpectedBodyHex =
+      "A26A706172746974696F6E7383A462696400686D65746164617461A268686F73746E616D"
+      "656E7075626C69736865722E74657374716578706572696D656E7447726F757049646531"
+      "3233343569617267756D656E747382A26464617461817168747470733A2F2F666F6F2E74"
+      "6573742F6474616773816A72656E64657255726C73A26464617461817468747470733A2F"
+      "2F666F6F7375622E746573742F647461677381756164436F6D706F6E656E7452656E6465"
+      "7255726C7372636F6D7072657373696F6E47726F7570496400A462696401686D65746164"
+      "617461A268686F73746E616D656E7075626C69736865722E74657374716578706572696D"
+      "656E7447726F7570496465313233343569617267756D656E747382A26464617461817168"
+      "747470733A2F2F6261722E746573742F6474616773816A72656E64657255726C73A26464"
+      "617461817468747470733A2F2F6261727375622E746573742F647461677381756164436F"
+      "6D706F6E656E7452656E64657255726C7372636F6D7072657373696F6E47726F75704964"
+      "00A462696400686D65746164617461A268686F73746E616D656E7075626C69736865722E"
+      "74657374716578706572696D656E7447726F7570496465313233343569617267756D656E"
+      "747382A26464617461817168747470733A2F2F666F6F2E746573742F6474616773816A72"
+      "656E64657255726C73A26464617461817468747470733A2F2F666F6F7375622E74657374"
+      "2F647461677381756164436F6D706F6E656E7452656E64657255726C7372636F6D707265"
+      "7373696F6E47726F757049640171616363657074436F6D7072657373696F6E82646E6F6E"
+      "6564677A6970";
+  // Prefix hex for `kExpectedBodyHex` which includes the compression format
+  // code and the length.
+  const std::string kExpectedPrefixHex = "000000026A";
+  // Padding zeros.
+  const std::string kPaddingString =
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "00000000000000000000000000000000000000000000";
+
+  EXPECT_EQ(base::HexEncode(body_bytes),
+            kExpectedPrefixHex + kExpectedBodyHex + kPaddingString);
+}
+
+// TODO(crbug.com/337917489): When adding an identical trusted scoring signals
+// request, it should use the existing partition instead of creating a new one.
+// After the implementation, the EXPECT_EQ() of request E which is duplicated
+// from request A, should be failed.
+//
+// Add the following trusted bidding signals requests:
+// Request A[render_url: foo.test, component_url: foosub.test,
+//           owner_origin: owner-a, joining_origin: joining-a]
+// Request B[render_url: foo.test, component_url: barsub.test,
+//           owner_origin: owner-a, joining_origin: joining-a]
+// Request C[render_url: bar.test, component_url: foosub.test,
+//           owner_origin: owner-a, joining_origin: joining-a]
+// Request D[render_url: bar.test, component_url: barsub.test,
+//           owner_origin: owner-a, joining_origin: joining-a]
+// Request E[render_url: foo.test, component_url: foosub.test,
+//           owner_origin: owner-a, joining_origin: joining-a]
+// Request F[render_url: foo.test, component_url: foosub.test,
+//           owner_origin: owner-a, joining_origin: joining-b]
+// Request G[render_url: foo.test, component_url: foosub.test,
+//           owner_origin: owner-b, joining_origin: joining-a]
+// Request H[render_url: foo.test, component_url: foosub.test,
+//           owner_origin: owner-b, joining_origin: joining-b]
+// will result the following groups:
+// Compression: 0 -
+//    partition 0: A
+//    partition 1: B
+//    partition 2: C
+//    partition 4: D
+//    partition 4: E
+// Compression: 1 -
+//    partition 0: F
+// Compression: 2 -
+//    partition 0: G
+// Compression: 3 -
+//    partition 0: H
+TEST(TrustedSignalsKVv2RequestHelperTest, TrustedScoringSignalsIsolationIndex) {
+  std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
+      helper_builder =
+          std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
+              kHostName, GURL(kTrustedSignalsUrl), kExperimentGroupId);
+
+  EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(0, 0),
+            helper_builder->AddTrustedSignalsRequest(
+                GURL(kOriginFooUrl), std::set<std::string>{kOriginFoosubUrl},
+                url::Origin::Create(GURL(kOwnerOriginA)),
+                url::Origin::Create(GURL(kJoiningOriginA))));
+  EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(0, 1),
+            helper_builder->AddTrustedSignalsRequest(
+                GURL(kOriginFooUrl), std::set<std::string>{kOriginBarsubUrl},
+                url::Origin::Create(GURL(kOwnerOriginA)),
+                url::Origin::Create(GURL(kJoiningOriginA))));
+  EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(0, 2),
+            helper_builder->AddTrustedSignalsRequest(
+                GURL(kOriginBarUrl), std::set<std::string>{kOriginFoosubUrl},
+                url::Origin::Create(GURL(kOwnerOriginA)),
+                url::Origin::Create(GURL(kJoiningOriginA))));
+  EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(0, 3),
+            helper_builder->AddTrustedSignalsRequest(
+                GURL(kOriginBarUrl), std::set<std::string>{kOriginBarsubUrl},
+                url::Origin::Create(GURL(kOwnerOriginA)),
+                url::Origin::Create(GURL(kJoiningOriginA))));
+  EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(0, 4),
+            helper_builder->AddTrustedSignalsRequest(
+                GURL(kOriginFooUrl), std::set<std::string>{kOriginFoosubUrl},
+                url::Origin::Create(GURL(kOwnerOriginA)),
+                url::Origin::Create(GURL(kJoiningOriginA))));
+  EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(1, 0),
+            helper_builder->AddTrustedSignalsRequest(
+                GURL(kOriginFooUrl), std::set<std::string>{kOriginFoosubUrl},
+                url::Origin::Create(GURL(kOwnerOriginA)),
+                url::Origin::Create(GURL(kJoiningOriginB))));
+  EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(2, 0),
+            helper_builder->AddTrustedSignalsRequest(
+                GURL(kOriginFooUrl), std::set<std::string>{kOriginFoosubUrl},
+                url::Origin::Create(GURL(kOwnerOriginB)),
+                url::Origin::Create(GURL(kJoiningOriginA))));
+  EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(3, 0),
+            helper_builder->AddTrustedSignalsRequest(
+                GURL(kOriginFooUrl), std::set<std::string>{kOriginFoosubUrl},
+                url::Origin::Create(GURL(kOwnerOriginB)),
+                url::Origin::Create(GURL(kJoiningOriginB))));
 }
 
 // Test trusted bidding signals response parsing with gzip compressed cbor
