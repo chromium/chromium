@@ -16,6 +16,7 @@
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_arcvm.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -74,6 +75,8 @@ WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
       base::FeatureList::IsEnabled(features::kTrimArcOnMemoryPressure);
   trim_arcvm_on_memory_pressure_ =
       base::FeatureList::IsEnabled(features::kTrimArcVmOnMemoryPressure);
+  disable_trim_while_suspended_ =
+      base::FeatureList::IsEnabled(features::kDisableTrimmingWhileSuspended);
 
   params_ = features::TrimOnMemoryPressureParams::GetParams();
 
@@ -99,6 +102,10 @@ WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
       trim_arcvm_on_memory_pressure_ = false;
     }
   }
+
+  if (disable_trim_while_suspended_) {
+    power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
+  }
 }
 
 WorkingSetTrimmerPolicyChromeOS::~WorkingSetTrimmerPolicyChromeOS() = default;
@@ -108,6 +115,9 @@ WorkingSetTrimmerPolicyChromeOS::~WorkingSetTrimmerPolicyChromeOS() = default;
 // at least the backoff period.
 void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
+  if (disable_trim_while_suspended_ && is_system_suspended_) {
+    return;
+  }
   if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
@@ -438,6 +448,15 @@ void WorkingSetTrimmerPolicyChromeOS::OnAllFramesInProcessFrozen(
   if (trim_on_freeze_) {
     WorkingSetTrimmerPolicy::OnAllFramesInProcessFrozen(process_node);
   }
+}
+
+void WorkingSetTrimmerPolicyChromeOS::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  is_system_suspended_ = true;
+}
+
+void WorkingSetTrimmerPolicyChromeOS::SuspendDone(base::TimeDelta duration) {
+  is_system_suspended_ = false;
 }
 
 void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
