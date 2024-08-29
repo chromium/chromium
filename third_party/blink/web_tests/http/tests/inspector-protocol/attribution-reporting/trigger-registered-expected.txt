@@ -95,6 +95,9 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
                 }
             ]
         }
+        scopes : [
+            [0] : a
+        ]
         sourceRegistrationTimeConfig : exclude
         triggerContextId : 123
     }
