@@ -7209,7 +7209,7 @@ data/media/session/embed-unload.html
 data/media/session/embedder.html
 data/media/session/image_test_page.html
 data/media/session/media-session.html
-data/media/session/media-session2.html
+data/media/session/media_controls/media-session2.html
 data/media/session/position.html
 data/media/session/test_image.jpg
 data/media/session/title1.html

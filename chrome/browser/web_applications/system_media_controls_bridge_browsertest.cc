@@ -163,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, TwoApps) {
   wait_for_bridge_creation_run_loop_.emplace();  // Reset run loop for reuse.
 
   // Install and launch a different test media session PWA.
-  webapps::AppId app_id2 =
-      InstallPWA(https_server()->GetURL("/media/session/media-session2.html"));
+  webapps::AppId app_id2 = InstallPWA(https_server()->GetURL(
+      "/media/session/media_controls/media-session2.html"));
   Browser* web_app_browser2 = LaunchWebAppBrowserAndWait(app_id2);
   EXPECT_TRUE(web_app_browser2);
 
