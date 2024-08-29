@@ -221,9 +221,9 @@ public class AccessorySheetRenderTest {
                         AccessoryTabType.PASSWORDS,
                         /* userInfoTitle= */ "No saved passwords for google.com",
                         /* warning= */ "");
-        sheet.getPlusAddressSectionList()
+        sheet.getPlusAddressInfoList()
                 .add(
-                        new KeyboardAccessoryData.PlusAddressSection(
+                        new KeyboardAccessoryData.PlusAddressInfo(
                                 /* origin= */ "google.com",
                                 new UserInfoField(
                                         "example@gmail.com",
@@ -404,9 +404,9 @@ public class AccessorySheetRenderTest {
                         AccessoryTabType.ADDRESSES,
                         /* userInfoTitle= */ "No saved addresses",
                         /* warning= */ "");
-        sheet.getPlusAddressSectionList()
+        sheet.getPlusAddressInfoList()
                 .add(
-                        new KeyboardAccessoryData.PlusAddressSection(
+                        new KeyboardAccessoryData.PlusAddressInfo(
                                 /* origin= */ "google.com",
                                 new UserInfoField(
                                         "example@gmail.com",

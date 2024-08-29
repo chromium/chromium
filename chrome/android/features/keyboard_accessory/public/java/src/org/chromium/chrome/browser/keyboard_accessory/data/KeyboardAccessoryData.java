@@ -224,11 +224,11 @@ public class KeyboardAccessoryData {
         }
     }
 
-    public static final class PlusAddressSection {
+    public static final class PlusAddressInfo {
         private final String mOrigin;
         private UserInfoField mPlusAddressInfo;
 
-        public PlusAddressSection(String origin, UserInfoField plusAddressInfo) {
+        public PlusAddressInfo(String origin, UserInfoField plusAddressInfo) {
             mOrigin = origin;
             mPlusAddressInfo = plusAddressInfo;
         }
@@ -433,7 +433,7 @@ public class KeyboardAccessoryData {
         private final String mWarning;
         private final @AccessoryTabType int mSheetType;
         private OptionToggle mToggle;
-        private final List<PlusAddressSection> mPlusAddressSection = new ArrayList<>();
+        private final List<PlusAddressInfo> mPlusAddressInfoList = new ArrayList<>();
         private final UserInfoSection mUserInfoSection;
         private final List<PasskeySection> mPasskeySectionList = new ArrayList<>();
         private final List<PromoCodeInfo> mPromoCodeInfoList = new ArrayList<>();
@@ -486,8 +486,8 @@ public class KeyboardAccessoryData {
             return mUserInfoSection.getUserInfoList();
         }
 
-        public List<PlusAddressSection> getPlusAddressSectionList() {
-            return mPlusAddressSection;
+        public List<PlusAddressInfo> getPlusAddressInfoList() {
+            return mPlusAddressInfoList;
         }
 
         /** Returns the list of {@link PasskeySection} to be shown on the accessory sheet. */

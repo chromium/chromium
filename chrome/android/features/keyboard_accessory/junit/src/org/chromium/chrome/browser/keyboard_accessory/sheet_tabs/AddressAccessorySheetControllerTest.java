@@ -37,7 +37,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
@@ -140,9 +140,9 @@ public class AddressAccessorySheetControllerTest {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(AccessoryTabType.ADDRESSES, "", "");
-        testData.getPlusAddressSectionList()
+        testData.getPlusAddressInfoList()
                 .add(
-                        new PlusAddressSection(
+                        new PlusAddressInfo(
                                 "google.com",
                                 new UserInfoField(
                                         "example@gmail.com",
@@ -166,7 +166,7 @@ public class AddressAccessorySheetControllerTest {
         assertThat(getType(mSheetDataPieces.get(1)), is(ADDRESS_INFO));
         assertThat(
                 mSheetDataPieces.get(0).getDataPiece(),
-                is(testData.getPlusAddressSectionList().get(0)));
+                is(testData.getPlusAddressInfoList().get(0)));
         assertThat(mSheetDataPieces.get(1).getDataPiece(), is(testData.getUserInfoList().get(0)));
     }
 

@@ -43,8 +43,7 @@ class AddressAccessorySheetViewBinder {
     }
 
     static class PlusAddressInfoViewHolder
-            extends ElementViewHolder<
-                    KeyboardAccessoryData.PlusAddressSection, PlusAddressInfoView> {
+            extends ElementViewHolder<KeyboardAccessoryData.PlusAddressInfo, PlusAddressInfoView> {
         private final FaviconHelper mFaviconHelper;
 
         PlusAddressInfoViewHolder(ViewGroup parent, FaviconHelper faviconHelper) {
@@ -54,7 +53,7 @@ class AddressAccessorySheetViewBinder {
 
         @Override
         protected void bind(
-                KeyboardAccessoryData.PlusAddressSection section, PlusAddressInfoView view) {
+                KeyboardAccessoryData.PlusAddressInfo section, PlusAddressInfoView view) {
             UserInfoField plusAddressField = section.getPlusAddress();
             ChipView chip = view.getPlusAddress();
             chip.getPrimaryTextView().setText(plusAddressField.getDisplayText());

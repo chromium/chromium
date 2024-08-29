@@ -119,9 +119,9 @@ AddressAccessoryControllerImpl::GetSheetData() const {
       autofill::AccessoryTabType::ADDRESSES, title_or_empty_message,
       UserInfosForProfiles(profiles), CreateManageAddressesFooter());
   for (const plus_addresses::PlusProfile& plus_profile : plus_profiles) {
-    sheet_data.add_plus_address_section(
-        PlusAddressSection(plus_profile.facet.canonical_spec(),
-                           base::UTF8ToUTF16(*plus_profile.plus_address)));
+    sheet_data.add_plus_address_info(
+        PlusAddressInfo(plus_profile.facet.canonical_spec(),
+                        base::UTF8ToUTF16(*plus_profile.plus_address)));
   }
   return sheet_data;
 }

@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
@@ -212,7 +212,7 @@ class ManualFillingComponentBridge {
     }
 
     @CalledByNative
-    private void addPlusAddressSectionToAccessorySheetData(
+    private void addPlusAddressInfoToAccessorySheetData(
             AccessorySheetData accessorySheetData,
             @AccessoryTabType int sheetType,
             @JniType("std::string") String origin,
@@ -234,7 +234,7 @@ class ManualFillingComponentBridge {
                         .setCallback(callback)
                         .build();
 
-        accessorySheetData.getPlusAddressSectionList().add(new PlusAddressSection(origin, field));
+        accessorySheetData.getPlusAddressInfoList().add(new PlusAddressInfo(origin, field));
     }
 
     @CalledByNative

@@ -66,7 +66,7 @@ using autofill::AccessorySheetData;
 using autofill::AccessorySheetField;
 using autofill::FooterCommand;
 using autofill::PasskeySection;
-using autofill::PlusAddressSection;
+using autofill::PlusAddressInfo;
 using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
 using password_manager::CredentialCache;
@@ -247,9 +247,9 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 
   for (const PlusProfile& profile : plus_profiles) {
     if (!plus_addresses_used_as_usernames[*profile.plus_address]) {
-      data.add_plus_address_section(autofill::PlusAddressSection(
-          profile.facet.canonical_spec(),
-          base::UTF8ToUTF16(*profile.plus_address)));
+      data.add_plus_address_info(
+          autofill::PlusAddressInfo(profile.facet.canonical_spec(),
+                                    base::UTF8ToUTF16(*profile.plus_address)));
     }
   }
 

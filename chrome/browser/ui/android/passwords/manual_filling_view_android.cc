@@ -100,13 +100,12 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
         toggle.is_enabled(), static_cast<int>(toggle.accessory_action()));
   }
 
-  for (const autofill::PlusAddressSection& plus_address_section :
-       tab_data.plus_address_section_list()) {
-    Java_ManualFillingComponentBridge_addPlusAddressSectionToAccessorySheetData(
+  for (const autofill::PlusAddressInfo& plus_address_info :
+       tab_data.plus_address_info_list()) {
+    Java_ManualFillingComponentBridge_addPlusAddressInfoToAccessorySheetData(
         env, java_object, j_tab_data,
-        static_cast<int>(tab_data.get_sheet_type()),
-        plus_address_section.origin(),
-        plus_address_section.plus_address().display_text());
+        static_cast<int>(tab_data.get_sheet_type()), plus_address_info.origin(),
+        plus_address_info.plus_address().display_text());
   }
 
   for (const autofill::PasskeySection& passkey_section :

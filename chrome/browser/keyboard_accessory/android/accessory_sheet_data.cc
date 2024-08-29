@@ -156,28 +156,26 @@ std::ostream& operator<<(std::ostream& os, const UserInfoSection& section) {
   return os;
 }
 
-PlusAddressSection::PlusAddressSection(std::string origin,
-                                       std::u16string plus_address)
+PlusAddressInfo::PlusAddressInfo(std::string origin,
+                                 std::u16string plus_address)
     : origin_(std::move(origin)),
       plus_address_(AccessorySheetField::Builder()
                         .SetDisplayText(std::move(plus_address))
                         .SetSelectable(true)
                         .Build()) {}
 
-PlusAddressSection::PlusAddressSection(const PlusAddressSection&) = default;
+PlusAddressInfo::PlusAddressInfo(const PlusAddressInfo&) = default;
 
-PlusAddressSection& PlusAddressSection::operator=(const PlusAddressSection&) =
-    default;
+PlusAddressInfo& PlusAddressInfo::operator=(const PlusAddressInfo&) = default;
 
-PlusAddressSection::PlusAddressSection(PlusAddressSection&&) = default;
+PlusAddressInfo::PlusAddressInfo(PlusAddressInfo&&) = default;
 
-PlusAddressSection& PlusAddressSection::operator=(PlusAddressSection&&) =
-    default;
+PlusAddressInfo& PlusAddressInfo::operator=(PlusAddressInfo&&) = default;
 
-PlusAddressSection::~PlusAddressSection() = default;
+PlusAddressInfo::~PlusAddressInfo() = default;
 
 std::ostream& operator<<(std::ostream& os,
-                         const PlusAddressSection& plus_address) {
+                         const PlusAddressInfo& plus_address) {
   os << "origin: \"" << plus_address.origin() << "\", " << "plus_address: \""
      << plus_address.plus_address().display_text() << "\"";
   return os;
@@ -363,9 +361,9 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
     os << iban_info << ", ";
   }
   os << "], and plus address section list: [";
-  for (const PlusAddressSection& plus_address_section :
-       data.plus_address_section_list()) {
-    os << plus_address_section << ", ";
+  for (const PlusAddressInfo& plus_address_info :
+       data.plus_address_info_list()) {
+    os << plus_address_info << ", ";
   }
   os << "], footer commands: [";
   for (const FooterCommand& footer_command : data.footer_commands()) {
@@ -524,20 +522,19 @@ AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
   return std::move(*this);
 }
 
-AccessorySheetData::Builder&&
-AccessorySheetData::Builder::AddPlusAddressSection(
+AccessorySheetData::Builder&& AccessorySheetData::Builder::AddPlusAddressInfo(
     std::string origin,
     std::u16string plus_address) && {
-  // Calls PlusAddressSection(...)& since |this| is an lvalue.
+  // Calls PlusAddressInfo(...)& since |this| is an lvalue.
   return std::move(
-      AddPlusAddressSection(std::move(origin), std::move(plus_address)));
+      AddPlusAddressInfo(std::move(origin), std::move(plus_address)));
 }
 
-AccessorySheetData::Builder& AccessorySheetData::Builder::AddPlusAddressSection(
+AccessorySheetData::Builder& AccessorySheetData::Builder::AddPlusAddressInfo(
     std::string origin,
     std::u16string plus_address) & {
-  accessory_sheet_data_.add_plus_address_section(
-      (PlusAddressSection(std::move(origin), std::move(plus_address))));
+  accessory_sheet_data_.add_plus_address_info(
+      (PlusAddressInfo(std::move(origin), std::move(plus_address))));
   return *this;
 }
 
