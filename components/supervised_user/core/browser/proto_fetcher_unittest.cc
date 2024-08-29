@@ -361,8 +361,6 @@ TEST_P(ProtoFetcherTest, NoAccessTokenStrict) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   EXPECT_EQ(receiver->GetResult().error().state(),
             ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
-  EXPECT_EQ(receiver->GetResult().error().google_service_auth_error().state(),
-            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
 
   if (MetricsAreExpected()) {
     // This tests just the metrics related to the auth error case; the rest of

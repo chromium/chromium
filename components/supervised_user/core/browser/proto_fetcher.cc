@@ -18,7 +18,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
@@ -148,104 +147,6 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
 
 }  // namespace
 
-// Main constructor, referenced by the rest.
-ProtoFetcherStatus::ProtoFetcherStatus(
-    State state,
-    class GoogleServiceAuthError google_service_auth_error)
-    : state_(state), google_service_auth_error_(google_service_auth_error) {}
-ProtoFetcherStatus::~ProtoFetcherStatus() = default;
-
-ProtoFetcherStatus::ProtoFetcherStatus(State state) : state_(state) {
-  DCHECK_NE(state, State::GOOGLE_SERVICE_AUTH_ERROR);
-}
-ProtoFetcherStatus::ProtoFetcherStatus(
-    HttpStatusOrNetErrorType http_status_or_net_error)
-    : state_(State::HTTP_STATUS_OR_NET_ERROR),
-      http_status_or_net_error_(http_status_or_net_error) {}
-ProtoFetcherStatus::ProtoFetcherStatus(
-    class GoogleServiceAuthError google_service_auth_error)
-    : ProtoFetcherStatus(GOOGLE_SERVICE_AUTH_ERROR, google_service_auth_error) {
-}
-
-ProtoFetcherStatus::ProtoFetcherStatus(const ProtoFetcherStatus& other) =
-    default;
-ProtoFetcherStatus& ProtoFetcherStatus::operator=(
-    const ProtoFetcherStatus& other) = default;
-
-ProtoFetcherStatus ProtoFetcherStatus::Ok() {
-  return ProtoFetcherStatus(State::OK);
-}
-ProtoFetcherStatus ProtoFetcherStatus::GoogleServiceAuthError(
-    class GoogleServiceAuthError error) {
-  return ProtoFetcherStatus(error);
-}
-ProtoFetcherStatus ProtoFetcherStatus::HttpStatusOrNetError(
-    int http_status_or_net_error) {
-  return ProtoFetcherStatus(HttpStatusOrNetErrorType(http_status_or_net_error));
-}
-ProtoFetcherStatus ProtoFetcherStatus::InvalidResponse() {
-  return ProtoFetcherStatus(State::INVALID_RESPONSE);
-}
-ProtoFetcherStatus ProtoFetcherStatus::DataError() {
-  return ProtoFetcherStatus(State::DATA_ERROR);
-}
-
-bool ProtoFetcherStatus::IsOk() const {
-  return state_ == State::OK;
-}
-bool ProtoFetcherStatus::IsTransientError() const {
-  if (state_ == State::HTTP_STATUS_OR_NET_ERROR) {
-    return true;
-  }
-  if (state_ == State::GOOGLE_SERVICE_AUTH_ERROR) {
-    return google_service_auth_error_.IsTransientError();
-  }
-  return false;
-}
-bool ProtoFetcherStatus::IsPersistentError() const {
-  if (state_ == State::INVALID_RESPONSE) {
-    return true;
-  }
-  if (state_ == State::DATA_ERROR) {
-    return true;
-  }
-  if (state_ == State::GOOGLE_SERVICE_AUTH_ERROR) {
-    return google_service_auth_error_.IsPersistentError();
-  }
-  return false;
-}
-
-std::string ProtoFetcherStatus::ToString() const {
-  switch (state_) {
-    case ProtoFetcherStatus::OK:
-      return "ProtoFetcherStatus::OK";
-    case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
-      return base::StrCat({"ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR: ",
-                           google_service_auth_error().ToString()});
-    case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
-      return base::StringPrintf(
-          "ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR: %d",
-          http_status_or_net_error_.value());
-    case ProtoFetcherStatus::INVALID_RESPONSE:
-      return "ProtoFetcherStatus::INVALID_RESPONSE";
-    case ProtoFetcherStatus::DATA_ERROR:
-      return "ProtoFetcherStatus::DATA_ERROR";
-  }
-}
-
-ProtoFetcherStatus::State ProtoFetcherStatus::state() const {
-  return state_;
-}
-ProtoFetcherStatus::HttpStatusOrNetErrorType
-ProtoFetcherStatus::http_status_or_net_error() const {
-  return http_status_or_net_error_;
-}
-
-const GoogleServiceAuthError& ProtoFetcherStatus::google_service_auth_error()
-    const {
-  return google_service_auth_error_;
-}
-
 base::TimeDelta Stopwatch::Lap() {
   base::TimeDelta lap = lap_timer_.Elapsed();
   lap_timer_ = base::ElapsedTimer();
@@ -359,15 +260,15 @@ std::string Metrics::GetFullHistogramName(
 
 std::string Metrics::ToMetricEnumLabel(const ProtoFetcherStatus& status) {
   switch (status.state()) {
-    case ProtoFetcherStatus::OK:
+    case ProtoFetcherStatus::State::OK:
       return "NoError";
-    case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+    case ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR:
       return "AuthError";
-    case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
+    case ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR:
       return "HttpStatusOrNetError";
-    case ProtoFetcherStatus::INVALID_RESPONSE:
+    case ProtoFetcherStatus::State::INVALID_RESPONSE:
       return "ParseError";
-    case ProtoFetcherStatus::DATA_ERROR:
+    case ProtoFetcherStatus::State::DATA_ERROR:
       return "DataError";
     default:
       NOTREACHED();

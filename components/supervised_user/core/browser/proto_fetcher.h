@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
-#include "base/types/strong_alias.h"
 #include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -32,6 +31,7 @@
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto/permissions_common.pb.h"
 #include "components/supervised_user/core/browser/proto/test.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher_status.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
@@ -64,82 +64,6 @@ namespace supervised_user {
 // and must reference a static configuration.
 //
 // The static configuration should be placed in the fetcher_config.h module.
-
-// Holds the status of the fetch. The callback's response will be set iff the
-// status is ok.
-class ProtoFetcherStatus {
- public:
-  using HttpStatusOrNetErrorType =
-      base::StrongAlias<class HttpStatusOrNetErrorTag, int>;
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(State)
-  enum State {
-    OK = 0,
-    GOOGLE_SERVICE_AUTH_ERROR = 1,
-    HTTP_STATUS_OR_NET_ERROR = 2,
-    INVALID_RESPONSE = 3,
-    DATA_ERROR = 4,  //  Not signalled by this fetcher itself, but might be used
-                     //  by consumers to indicate data problem.
-    kMaxValue = DATA_ERROR,  // keep last, required for metrics.
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserProtoFetcherStatus)
-
-  // Status might be used in base::expected context as possible error, since it
-  // contains two error-enabled attributes which are copyable / assignable.
-  ProtoFetcherStatus(const ProtoFetcherStatus&);
-  ProtoFetcherStatus& operator=(const ProtoFetcherStatus&);
-
-  ~ProtoFetcherStatus();
-  ProtoFetcherStatus() = delete;
-
-  // Convenience creators instead of exposing ProtoFetcherStatus(State state).
-  static ProtoFetcherStatus Ok();
-  static ProtoFetcherStatus GoogleServiceAuthError(
-      GoogleServiceAuthError
-          error);  // The copy follows the interface of
-                   // https://source.chromium.org/chromium/chromium/src/+/main:components/signin/public/identity_manager/primary_account_access_token_fetcher.h;l=241;drc=8ba1bad80dc22235693a0dd41fe55c0fd2dbdabd
-  static ProtoFetcherStatus HttpStatusOrNetError(
-      int value = 0);  // Either net::Error (negative numbers, 0 denotes
-                       // success) or HTTP status.
-  static ProtoFetcherStatus InvalidResponse();
-  static ProtoFetcherStatus DataError();
-
-  // ProtoFetcherStatus::IsOk iff google_service_auth_error_.state() ==
-  // NONE and state_ == NONE
-  bool IsOk() const;
-  // Indicates whether the status is not ok, but is worth retrying because it
-  // might go away.
-  bool IsTransientError() const;
-  // Indicates whether the status is not ok and there is no point in retrying.
-  bool IsPersistentError() const;
-
-  // Returns a message describing the status.
-  std::string ToString() const;
-
-  State state() const;
-  HttpStatusOrNetErrorType http_status_or_net_error() const;
-  const class GoogleServiceAuthError& google_service_auth_error() const;
-
- private:
-  // Disallows impossible states.
-  explicit ProtoFetcherStatus(State state);
-  explicit ProtoFetcherStatus(
-      HttpStatusOrNetErrorType http_status_or_net_error);
-  explicit ProtoFetcherStatus(
-      class GoogleServiceAuthError
-          google_service_auth_error);  // Implies State ==
-                                       // GOOGLE_SERVICE_AUTH_ERROR
-  ProtoFetcherStatus(State state,
-                     class GoogleServiceAuthError google_service_auth_error);
-
-  State state_;
-  HttpStatusOrNetErrorType http_status_or_net_error_{
-      0};  // Meaningful iff state_ == HTTP_STATUS_OR_NET_ERROR
-  class GoogleServiceAuthError google_service_auth_error_;
-};
 
 // A stopwatch with two functions:
 // * measure total elapsed time,
