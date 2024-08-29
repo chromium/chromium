@@ -53,6 +53,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CrosDisks.Error.{Action}.{FileSystem}" enum="DaemonError"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the program performing the {Action} action on a partition
+    with the {FileSystem} filesystem.
+  </summary>
+  <token key="Action">
+    <variant name="Format"/>
+    <variant name="Rename"/>
+  </token>
+  <token key="FileSystem">
+    <variant name="exfat"/>
+    <variant name="ntfs"/>
+    <variant name="vfat"/>
+  </token>
+</histogram>
+
 <histogram name="CrosDisks.Error.{SysCall}.{FileSystem}" enum="PopularOSErrno"
     expires_after="2025-03-01">
   <owner>fdegros@chromium.org</owner>
@@ -159,6 +178,25 @@ chromium-metrics-reviews@google.com.
     to mount in read-only mode because there was an error when trying to mount
     them in read-write mode. See crbug.com/1366204.
   </summary>
+</histogram>
+
+<histogram name="CrosDisks.Time.{Action}.{FileSystem}" units="ms"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time taken by the program performing the {Action} action on a partition with
+    the {FileSystem} filesystem.
+  </summary>
+  <token key="Action">
+    <variant name="Format"/>
+    <variant name="Rename"/>
+  </token>
+  <token key="FileSystem">
+    <variant name="exfat"/>
+    <variant name="ntfs"/>
+    <variant name="vfat"/>
+  </token>
 </histogram>
 
 <histogram name="CrosDisks.Time.{SysCall}.{FileSystem}" units="ms"
