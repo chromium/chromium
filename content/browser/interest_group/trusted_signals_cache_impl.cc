@@ -374,6 +374,9 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   // and `fetch` must remain valid until the CompressionGroupData is destroyed
   // or SetData() is invoked.
   //
+  // `receiver_restrictions` restrict which pipes may request data from the
+  // CompressionGroup.
+  //
   // `fetch` and `fetch_compression_group` are iterators to the pending fetch
   // that will populate the CompressionGroupData, and the compression group
   // within that fetch that corresponds to the created CompressionGroupData.
@@ -382,9 +385,11 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   // before the TrustedSignalsCacheImpl is destroyed.
   CompressionGroupData(
       TrustedSignalsCacheImpl* cache,
+      ReceiverRestrictions receiver_restrictions,
       FetchMap::iterator fetch,
       Fetch::CompressionGroupMap::iterator fetch_compression_group)
       : cache_(cache),
+        receiver_restrictions_(std::move(receiver_restrictions)),
         fetch_(fetch),
         fetch_compression_group_(fetch_compression_group) {}
 
@@ -422,6 +427,10 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   // May only be called if has_data() returns true.
   const CachedResult& data() const { return *data_; }
 
+  const ReceiverRestrictions& receiver_restrictions() const {
+    return receiver_restrictions_;
+  }
+
   // Returns true if the data has expired. If there's still a pending fetch,
   // `expiry_` won't have been set yet, but the data is considered not to be
   // expired.
@@ -438,6 +447,7 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   void AddBiddingEntry(BiddingCacheEntryMap::iterator bidding_cache_entry) {
     // `this` may only have bidding or scoring signals, not both.
     DCHECK(scoring_cache_entries_.empty());
+    DCHECK_EQ(receiver_restrictions_.signals_type, SignalsType::kBidding);
 
     bidding_cache_entries_.emplace(bidding_cache_entry->second.partition_id,
                                    bidding_cache_entry);
@@ -449,6 +459,7 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   void AddScoringEntry(ScoringCacheEntryMap::iterator scoring_cache_entry) {
     // `this` may only have bidding or scoring signals, not both.
     DCHECK(bidding_cache_entries_.empty());
+    DCHECK_EQ(receiver_restrictions_.signals_type, SignalsType::kScoring);
 
     scoring_cache_entries_.emplace(scoring_cache_entry->second.partition_id,
                                    scoring_cache_entry);
@@ -525,6 +536,9 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
 
   const raw_ptr<TrustedSignalsCacheImpl> cache_;
 
+  // Restrictions on what receivers can use this cache entry.
+  const ReceiverRestrictions receiver_restrictions_;
+
   // Information about a pending or live Fetch. Iterators make it convenient for
   // TrustedSignalsCacheImpl::OnCompressionGroupDataDestroyed() to remove the
   // corresponding objects on cancellation, if needed, both in terms of
@@ -565,6 +579,9 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   int next_partition_id_ = 0;
 };
 
+bool TrustedSignalsCacheImpl::ReceiverRestrictions::operator==(
+    const ReceiverRestrictions& other) const = default;
+
 TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     GetCoordinatorKeyCallback get_coordinator_key_callback)
@@ -574,9 +591,11 @@ TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
 TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() = default;
 
 mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
-TrustedSignalsCacheImpl::CreateMojoPipe() {
+TrustedSignalsCacheImpl::CreateMojoPipe(SignalsType signals_type,
+                                        const url::Origin& script_origin) {
   mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache> out;
-  receiver_set_.Add(this, out.InitWithNewPipeAndPassReceiver());
+  receiver_set_.Add(this, out.InitWithNewPipeAndPassReceiver(),
+                    ReceiverRestrictions{signals_type, script_origin});
   return out;
 }
 
@@ -830,8 +849,10 @@ TrustedSignalsCacheImpl::FindOrCreateCompressionGroupDataAndQueueFetch(
   // `compression_group_id` is left as -1. One will be assigned when the request
   // is sent over the wire.
   scoped_refptr<CompressionGroupData> compression_group_data =
-      base::MakeRefCounted<CompressionGroupData>(this, fetch_it,
-                                                 compression_group_it);
+      base::MakeRefCounted<CompressionGroupData>(
+          this,
+          ReceiverRestrictions{fetch_key.signals_type, fetch_key.script_origin},
+          fetch_it, compression_group_it);
   compression_group_it->second.compression_group_data =
       compression_group_data.get();
   compression_group_data_map_.emplace(
@@ -858,6 +879,13 @@ void TrustedSignalsCacheImpl::GetTrustedSignals(
 
   CompressionGroupData* compression_group_data =
       compression_group_data_it->second;
+  if (receiver_set_.current_context() !=
+      compression_group_data->receiver_restrictions()) {
+    receiver_set_.ReportBadMessage(
+        "Data from wrong compression group requested.");
+    return;
+  }
+
   // If the fetch is still pending, add to the list of pending clients.
   if (!compression_group_data->has_data()) {
     compression_group_data->AddPendingClient(std::move(client));

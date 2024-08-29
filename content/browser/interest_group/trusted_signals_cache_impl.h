@@ -100,6 +100,11 @@ struct BiddingAndAuctionServerKey;
 class CONTENT_EXPORT TrustedSignalsCacheImpl
     : public auction_worklet::mojom::TrustedSignalsCache {
  public:
+  enum class SignalsType {
+    kBidding,
+    kScoring,
+  };
+
   // Callback to retrieve a BiddingAndAuctionServerKey for a given coordinator.
   // The `callback` parameter may be invoked synchronously or asynchronously,
   // and may fail.
@@ -162,9 +167,13 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   TrustedSignalsCacheImpl(const TrustedSignalsCacheImpl&) = delete;
   TrustedSignalsCacheImpl& operator=(const TrustedSignalsCacheImpl&) = delete;
 
-  // Creates a TrustedSignalsCache pipe for a bidder script process.
+  // Creates a TrustedSignalsCache pipe for a bidder script process. It may only
+  // be used for `signals_type` fetches for `script_origin`, where `origin` is
+  // origin of the script that will receive those signals (i.e., the seller
+  // origin or InterestGroup origin, depending on whether these are scoring or
+  // bidding signals).
   mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
-  CreateMojoPipe();
+  CreateMojoPipe(SignalsType signals_type, const url::Origin& script_origin);
 
   // Requests bidding signals for the specified interest group. Return value is
   // a Handle which must be kept alive until the response to the request is no
@@ -226,9 +235,14 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
           client) override;
 
  private:
-  enum class SignalsType {
-    kBidding,
-    kScoring,
+  // Each receiver pipe in `receiver_set_` is restricted to only receive
+  // scoring/bidding signals for the specific script origin identified by this
+  // struct.
+  struct ReceiverRestrictions {
+    bool operator==(const ReceiverRestrictions& other) const;
+
+    SignalsType signals_type;
+    url::Origin script_origin;
   };
 
   // Key used for live or pending requests to a trusted server. Two request with
@@ -500,7 +514,9 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const GetCoordinatorKeyCallback get_coordinator_key_callback_;
 
-  mojo::ReceiverSet<auction_worklet::mojom::TrustedSignalsCache> receiver_set_;
+  mojo::ReceiverSet<auction_worklet::mojom::TrustedSignalsCache,
+                    ReceiverRestrictions>
+      receiver_set_;
 
   // Multimap of live and pending fetches. Fetches are removed on completion and
   // cancellation. When data is requested from the cache, if data needs to be

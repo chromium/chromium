@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -557,6 +558,9 @@ class TestTrustedSignalsCacheClient
       : receiver_(this) {
     cache_mojo_pipe->GetTrustedSignals(compression_group_id,
                                        receiver_.BindNewPipeAndPassRemote());
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&TestTrustedSignalsCacheClient::OnReceiverDisconnected,
+                       base::Unretained(this)));
   }
 
   // Overload used by almost all callers, to simplify the call a bit.
@@ -616,6 +620,11 @@ class TestTrustedSignalsCacheClient
     run_loop_.Quit();
   }
 
+  bool IsReceiverDisconnected() {
+    receiver_.FlushForTesting();
+    return received_disconnected_;
+  }
+
  private:
   // Waits until OnSuccess() or OnError() has been called, and returns true on
   // success.
@@ -623,6 +632,8 @@ class TestTrustedSignalsCacheClient
     run_loop_.Run();
     return compression_group_data_.has_value();
   }
+
+  void OnReceiverDisconnected() { received_disconnected_ = true; }
 
   base::RunLoop run_loop_;
 
@@ -633,6 +644,11 @@ class TestTrustedSignalsCacheClient
   std::optional<std::string> compression_group_data_;
 
   std::optional<std::string> error_message_;
+
+  // True if the receiver has been disconnected. Unlike Remotes, Receivers don't
+  // have an is_connected() method, so have to set a disconnect handler to get
+  // this information.
+  bool received_disconnected_ = false;
 
   mojo::Receiver<auction_worklet::mojom::TrustedSignalsCacheClient> receiver_;
 };
@@ -677,7 +693,48 @@ class TrustedSignalsCacheTest : public testing::Test {
   void CreateCache() {
     trusted_signals_cache_ = std::make_unique<TestTrustedSignalsCache>();
     cache_mojo_pipe_.reset();
-    cache_mojo_pipe_.Bind(trusted_signals_cache_->CreateMojoPipe());
+    other_cache_mojo_pipe_.reset();
+    // This is a little awkward, but works for both bidders and sellers.
+    cache_mojo_pipe_.Bind(CreateMojoPendingRemoteForOrigin(
+        GetOriginFromParams(CreateDefaultParams())));
+  }
+
+  // Creates a pending scoring or bidding TrustedSignalsCache pipe for the given
+  // origin, using the SignalsType corresponding to the current test type.
+  mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
+  CreateMojoPendingRemoteForOrigin(const url::Origin& script_origin) {
+    if constexpr (std::is_same<ParamsType, BiddingParams>::value) {
+      return trusted_signals_cache_->CreateMojoPipe(
+          TrustedSignalsCacheImpl::SignalsType::kBidding, script_origin);
+    } else {
+      return trusted_signals_cache_->CreateMojoPipe(
+          TrustedSignalsCacheImpl::SignalsType::kScoring, script_origin);
+    }
+  }
+
+  // Utility functions to return the bidder/seller origin from the provided
+  // params.
+  const url::Origin& GetOriginFromParams(const BiddingParams& bidding_params) {
+    return bidding_params.bidder;
+  }
+  const url::Origin& GetOriginFromParams(const ScoringParams& scoring_params) {
+    return scoring_params.seller;
+  }
+
+  // If `script_origin` matches the default origin, returns `cache_mojo_pipe_`.
+  // Otherwise, creates a new pipe for `script_origin`. Unconditionally destroys
+  // any previous pipe created by this method. Primarily used in the case of a
+  // second set of parameters with RequestRelation::kDifferentFetches, which
+  // sometimes don't share an origin.
+  mojo::Remote<auction_worklet::mojom::TrustedSignalsCache>&
+  CreateOrGetMojoPipeGivenParams(const ParamsType& params) {
+    other_cache_mojo_pipe_.reset();
+    const url::Origin& origin = GetOriginFromParams(params);
+    if (origin == GetOriginFromParams(CreateDefaultParams())) {
+      return cache_mojo_pipe_;
+    }
+    other_cache_mojo_pipe_.Bind(CreateMojoPendingRemoteForOrigin(origin));
+    return other_cache_mojo_pipe_;
   }
 
   // Waits for the next `num_fetches`
@@ -1114,6 +1171,11 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   std::unique_ptr<TestTrustedSignalsCache> trusted_signals_cache_;
   mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> cache_mojo_pipe_;
+  // Some test cases need a second Mojo pipe for use with a second script
+  // origin. This holds such a pipe. See CreateOrGetMojoPipeGivenParams(). Tests
+  // that need more than one such pipe manage the extra pipes themselves.
+  mojo::Remote<auction_worklet::mojom::TrustedSignalsCache>
+      other_cache_mojo_pipe_;
 };
 
 // Used by gtest to provide clearer names for tests.
@@ -1955,7 +2017,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
         TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
-        TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client2(
+            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2079,7 +2142,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchStart) {
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
         TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
-        TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client2(
+            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2147,7 +2211,8 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
             fetch2,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
-        TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client2(
+            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
@@ -2229,7 +2294,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
             fetch3,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
-        TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client3(
+            handle3, this->CreateOrGetMojoPipeGivenParams(params2));
         client3.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
@@ -2322,7 +2388,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
         ValidateFetchParams(fetch1, params2,
                             /*expected_compression_group_id=*/0, partition_id2);
         RespondToFetchWithSuccess(fetch1);
-        TestTrustedSignalsCacheClient client1(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client1(
+            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
 
         // Make a second request using `params1`. It should result in a new
@@ -2456,7 +2523,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
         TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
-        TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client3(
+            handle3, this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
         client3.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2783,7 +2851,8 @@ TYPED_TEST(TrustedSignalsCacheTest,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
             kOtherSuccessBody);
         TestTrustedSignalsCacheClient client1(handle1, this->cache_mojo_pipe_);
-        TestTrustedSignalsCacheClient client2(handle2, this->cache_mojo_pipe_);
+        TestTrustedSignalsCacheClient client2(
+            handle2, this->CreateOrGetMojoPipeGivenParams(params2));
         client1.WaitForSuccess();
         client2.WaitForSuccess(
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2870,6 +2939,65 @@ TYPED_TEST(TrustedSignalsCacheTest,
       }
     }
   }
+}
+
+// Check that requesting signals over a pipe with the wrong `script_origin`
+// results in the pipe being closed, with nothing sent.
+TYPED_TEST(TrustedSignalsCacheTest, RequestWithWrongScriptOrigin) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  auto params = this->CreateDefaultParams();
+  auto [handle, partition_id] = this->RequestTrustedSignals(params);
+  auto fetch = this->WaitForSignalsFetch();
+
+  // Create a remote associated with some other origin.
+  mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> remote(
+      this->CreateMojoPendingRemoteForOrigin(
+          url::Origin::Create(GURL("https://not.seller.or.buyer.test"))));
+
+  // Trying to use the remote to get data from another origin's request should
+  // result in a bad message and the TrustedSignalsCache pipe being closed.
+  TestTrustedSignalsCacheClient client(handle, remote);
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Data from wrong compression group requested.");
+  remote.FlushForTesting();
+  EXPECT_FALSE(remote.is_connected());
+
+  // The client pipe should also have been closed without receiving any data.
+  EXPECT_TRUE(client.IsReceiverDisconnected());
+  EXPECT_FALSE(client.has_result());
+}
+
+// Check that requesting signals over a pipe with the wrong signals type
+// results in the pipe being closed, with nothing sent.
+TYPED_TEST(TrustedSignalsCacheTest, RequestWithWrongSignalsType) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  auto params = this->CreateDefaultParams();
+  auto [handle, partition_id] = this->RequestTrustedSignals(params);
+  auto fetch = this->WaitForSignalsFetch();
+
+  TrustedSignalsCacheImpl::SignalsType wrong_signals_type;
+  if constexpr (std::is_same<TypeParam, BiddingParams>::value) {
+    wrong_signals_type = TrustedSignalsCacheImpl::SignalsType::kScoring;
+  } else {
+    wrong_signals_type = TrustedSignalsCacheImpl::SignalsType::kBidding;
+  }
+
+  // Create a remote associated with the right origin, but wrong signals type.
+  mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> remote(
+      this->trusted_signals_cache_->CreateMojoPipe(
+          wrong_signals_type, this->GetOriginFromParams(params)));
+
+  // Trying to use the remote to get data using the wrong type should result in
+  // a bad message and the TrustedSignalsCache pipe being closed.
+  TestTrustedSignalsCacheClient client(handle, remote);
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Data from wrong compression group requested.");
+  remote.FlushForTesting();
+  EXPECT_FALSE(remote.is_connected());
+
+  // The client pipe should also have been closed without receiving any data.
+  EXPECT_TRUE(client.IsReceiverDisconnected());
+  EXPECT_FALSE(client.has_result());
 }
 
 // Tests the case of merging multiple requests with the same FetchKey. This test
