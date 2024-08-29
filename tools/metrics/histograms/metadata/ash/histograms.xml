@@ -6647,6 +6647,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emitted when entering overview mode. Recording the reasons for starting
     overview mode. E.g, pressing the overview button at status area.
+
+    Note: M130 has a fix. When overview mode was started for the &quot;informed
+    restore&quot; dialog after login (prompting the user whether they want to
+    restore windows from the previous session), this was being logged as
+    &quot;Pressing shortcut F5&quot;. This has been fixed to be logged under
+    &quot;&quot;After user login, if full restore...&quot;.
   </summary>
 </histogram>
 
