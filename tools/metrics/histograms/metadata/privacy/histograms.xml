@@ -1385,6 +1385,17 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.DbSize"
+    units="KiB" expires_after="2025-07-30">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the size of the PrivateAggregationBudgetStorage database on disk.
+    Recorded after successfully opening the database, but before initialization
+    finishes.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.InitStatus"
     enum="PrivacySandboxPrivateAggregationBudgetStorageInitStatus"
     expires_after="2025-06-30">
