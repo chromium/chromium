@@ -24,10 +24,6 @@
 #include "ui/events/gesture_detection/gesture_listeners.h"
 #include "ui/events/velocity_tracker/motion_event.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "ui/gfx/android/view_configuration.h"
-#endif
-
 namespace ui {
 namespace {
 
@@ -64,8 +60,6 @@ class GestureDetector::TimeoutGestureHandler {
         config.shortpress_timeout + config.showpress_timeout;
 
     timeout_callbacks_[LONG_PRESS] = &GestureDetector::OnLongPressTimeout;
-    // Long press delay may be updated on Android when a touch down event
-    // occurs.
     timeout_delays_[LONG_PRESS] =
         config.longpress_timeout + config.showpress_timeout;
 
@@ -99,14 +93,6 @@ class GestureDetector::TimeoutGestureHandler {
   bool HasTimeout(TimeoutEvent event) const {
     return timeout_timers_[event].IsRunning();
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  void UpdateLongPressTimeout() {
-    timeout_delays_[LONG_PRESS] =
-        base::Milliseconds(gfx::ViewConfiguration::GetLongPressTimeoutInMs() +
-                           timeout_delays_[SHOW_PRESS].InMilliseconds());
-  }
-#endif
 
  private:
   typedef void (GestureDetector::*ReceiverMethod)();
@@ -277,9 +263,6 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
         timeout_handler_->StartTimeout(SHOW_PRESS);
       if (press_and_hold_enabled_) {
         timeout_handler_->StartTimeout(SHORT_PRESS);
-#if BUILDFLAG(IS_ANDROID)
-        timeout_handler_->UpdateLongPressTimeout();
-#endif
         timeout_handler_->StartTimeout(LONG_PRESS);
       }
 

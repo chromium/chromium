@@ -26,10 +26,6 @@
 #include "ui/events/velocity_tracker/motion_event.h"
 #include "ui/gfx/geometry/point_f.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "ui/gfx/android/view_configuration.h"
-#endif
-
 using base::TimeTicks;
 using ui::test::MockMotionEvent;
 
@@ -238,12 +234,7 @@ class GestureProviderTest : public testing::Test, public GestureProviderClient {
   }
 
   base::TimeDelta GetLongPressTimeout() const {
-#if BUILDFLAG(IS_ANDROID)
-    return base::Milliseconds(
-        gfx::ViewConfiguration::GetLongPressTimeoutInMs());
-#else
     return GetDefaultConfig().gesture_detector_config.longpress_timeout;
-#endif
   }
 
   base::TimeDelta GetShowPressTimeout() const {
