@@ -14,6 +14,19 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+TEST(Sha256Test, Empty) {
+  const std::string empty;
+  std::string hash = crypto::SHA256HashString(empty);
+  int expected[] = {0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14,
+                    0x9a, 0xfb, 0xf4, 0xc8, 0x99, 0x6f, 0xb9, 0x24,
+                    0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c,
+                    0xa4, 0x95, 0x99, 0x1b, 0x78, 0x52, 0xb8, 0x55};
+  ASSERT_EQ(hash.length(), crypto::kSHA256Length);
+  for (size_t i = 0; i < crypto::kSHA256Length; i++) {
+    EXPECT_EQ(expected[i], static_cast<uint8_t>(hash[i]));
+  }
+}
+
 TEST(Sha256Test, Test1) {
   // Example B.1 from FIPS 180-2: one-block message.
   std::string input1 = "abc";
