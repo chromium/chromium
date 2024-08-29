@@ -184,12 +184,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   // `contextualPanelEntrypointView` should be CHECK()'ed. Until fully launched,
   // the entrypoint view might be nil if the flag is disabled.
   if (self.contextualPanelEntrypointView) {
-    self.locationBarSteadyView.contextualPanelEntrypointView =
-        self.contextualPanelEntrypointView;
+    [self.locationBarSteadyView
+        setContextualPanelEntrypointView:self.contextualPanelEntrypointView];
   }
 
   DCHECK(self.badgeView) << "The badge view must be set at this point";
-  self.locationBarSteadyView.badgeView = self.badgeView;
+  [self.locationBarSteadyView setBadgeView:self.badgeView];
 
   [_locationBarSteadyView.locationButton
              addTarget:self

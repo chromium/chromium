@@ -4,6 +4,8 @@
 
 source_set("ui_bundled") {
   sources = [
+    "badges_container_view.h",
+    "badges_container_view.mm",
     "location_bar_consumer.h",
     "location_bar_coordinator.h",
     "location_bar_coordinator.mm",

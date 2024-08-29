@@ -61,15 +61,16 @@
 // display a label, momentarily using significant portion of the location bar.
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
 
+// Sets the view displaying badges in the leading corner of the view.
+- (void)setBadgeView:(UIView*)badgeView;
+
+// Sets the view displaying the Contextual Panel's entrypoint.
+- (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
+
 // The tappable button representing the location bar.
 @property(nonatomic, strong) UIButton* locationButton;
 // The label displaying the current location URL.
 @property(nonatomic, strong) UILabel* locationLabel;
-// The view displaying badges in the leading corner of the view.
-// TODO(crbug.com/40639170): Pass into init as parameter.
-@property(nonatomic, strong) UIView* badgeView;
-// The view displaying the Contextual Panel's entrypoint.
-@property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 // The button displayed in the trailing corner of the view, i.e. share button.
 @property(nonatomic, strong) CustomHighlightableButton* trailingButton;
 // The string that describes the current security level. Used for a11y.
