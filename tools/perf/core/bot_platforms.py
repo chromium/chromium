@@ -336,7 +336,9 @@ def _dawn_perf_tests(estimated_runtime=270):
 
 
 def _tint_benchmark(estimated_runtime=180):
-  return ExecutableConfig('tint_benchmark', estimated_runtime=estimated_runtime)
+  return ExecutableConfig('tint_benchmark',
+                          flags=['--use-chrome-perf-format'],
+                          estimated_runtime=estimated_runtime)
 
 
 def _load_library_perf_tests(estimated_runtime=3):
