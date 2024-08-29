@@ -142,7 +142,8 @@ IndexedDBTransaction::IndexedDBTransaction(
 
   locks_receiver_.SetUserData(
       IndexedDBLockRequestData::kKey,
-      std::make_unique<IndexedDBLockRequestData>(connection->client_token()));
+      std::make_unique<IndexedDBLockRequestData>(
+          connection->client_token(), connection->scheduling_priority()));
 
   database_ = connection_->database();
   if (database_) {
@@ -896,6 +897,13 @@ IndexedDBTransaction::BuildLockRequests() const {
         object_store_lock_type);
   }
   return lock_requests;
+}
+
+void IndexedDBTransaction::OnSchedulingPriorityUpdated(int new_priority) {
+  auto* lock_request_data = static_cast<IndexedDBLockRequestData*>(
+      locks_receiver_.GetUserData(IndexedDBLockRequestData::kKey));
+  DCHECK(lock_request_data);
+  lock_request_data->scheduling_priority = new_priority;
 }
 
 }  // namespace content

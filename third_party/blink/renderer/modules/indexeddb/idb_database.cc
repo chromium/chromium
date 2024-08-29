@@ -101,16 +101,24 @@ IDBDatabase::IDBDatabase(
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
         callbacks_receiver,
     mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime,
-    mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database)
+    mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
+    int connection_priority)
     : ActiveScriptWrappable<IDBDatabase>({}),
       ExecutionContextLifecycleObserver(context),
       database_remote_(context),
       connection_lifetime_(std::move(connection_lifetime)),
+      scheduling_priority_(connection_priority),
       callbacks_receiver_(this, context) {
   database_remote_.Bind(std::move(pending_database),
                         context->GetTaskRunner(TaskType::kDatabaseAccess));
   callbacks_receiver_.Bind(std::move(callbacks_receiver),
                            context->GetTaskRunner(TaskType::kDatabaseAccess));
+
+  // Invokes the callback immediately.
+  scheduler_observer_ = context->GetScheduler()->AddLifecycleObserver(
+      FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
+      WTF::BindRepeating(&IDBDatabase::OnSchedulerLifecycleStateChanged,
+                         WrapWeakPersistent(this)));
 }
 
 void IDBDatabase::Trace(Visitor* visitor) const {
@@ -724,6 +732,34 @@ void IDBDatabase::Abort(int64_t transaction_id) {
   if (database_remote_.is_bound()) {
     database_remote_->Abort(transaction_id);
   }
+}
+
+void IDBDatabase::OnSchedulerLifecycleStateChanged(
+    scheduler::SchedulingLifecycleState lifecycle_state) {
+  int new_priority = GetSchedulingPriority(lifecycle_state);
+  if (new_priority == scheduling_priority_) {
+    return;
+  }
+  if (database_remote_) {
+    database_remote_->UpdatePriority(scheduling_priority_);
+  }
+}
+
+// static
+int IDBDatabase::GetSchedulingPriority(
+    scheduler::SchedulingLifecycleState lifecycle_state) {
+  switch (lifecycle_state) {
+    case scheduler::SchedulingLifecycleState::kNotThrottled:
+      return 0;
+    case scheduler::SchedulingLifecycleState::kHidden:
+      return 1;
+    case scheduler::SchedulingLifecycleState::kThrottled:
+      return 2;
+    case scheduler::SchedulingLifecycleState::kStopped:
+      return 3;
+  }
+
+  return 0;
 }
 
 }  // namespace blink

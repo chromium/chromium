@@ -124,7 +124,8 @@ class MissingBucketErrorEndpoint : public blink::mojom::IDBFactory {
             int64_t version,
             mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
                 transaction_receiver,
-            int64_t transaction_id) override {
+            int64_t transaction_id,
+            int scheduling_priority) override {
     IndexedDBFactoryClient(std::move(factory_client))
         .OnError(IndexedDBDatabaseError(
             blink::mojom::IDBException::kUnknownError, u"Internal error."));

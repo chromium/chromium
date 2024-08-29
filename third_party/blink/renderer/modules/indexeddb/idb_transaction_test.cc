@@ -87,7 +87,7 @@ class IDBTransactionTest : public testing::Test,
 
     db_ = MakeGarbageCollected<IDBDatabase>(
         execution_context, mojo::NullAssociatedReceiver(), mojo::NullRemote(),
-        mock_database.BindNewEndpointAndPassDedicatedRemote());
+        mock_database.BindNewEndpointAndPassDedicatedRemote(), /*priority=*/0);
 
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
     mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction> receiver =

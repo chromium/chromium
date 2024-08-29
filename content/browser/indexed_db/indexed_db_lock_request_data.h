@@ -15,10 +15,12 @@ namespace content {
 struct IndexedDBLockRequestData : public base::SupportsUserData::Data {
   static const void* const kKey;
 
-  IndexedDBLockRequestData(const base::UnguessableToken& client_token);
+  IndexedDBLockRequestData(const base::UnguessableToken& client_token,
+                           int scheduling_priority);
   ~IndexedDBLockRequestData() override;
 
   base::UnguessableToken client_token;
+  int scheduling_priority;
 };
 
 }  // namespace content
