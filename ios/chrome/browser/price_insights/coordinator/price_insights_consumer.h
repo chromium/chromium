@@ -24,7 +24,7 @@ enum class PriceBucket;
 
 // Notifies the modulator that the trackable item was successfully unsubscribed
 // to.
-- (void)didStopPriceTrackingForItem:(PriceInsightsItem*)item;
+- (void)didStopPriceTracking;
 
 // Notifies the modulator that webpage navigation has started.
 - (void)didStartNavigationToWebpageWithPriceBucket:
@@ -32,15 +32,15 @@ enum class PriceBucket;
 
 // Displays a UIAlert in the modulator that directs the user to the OS
 // permission settings to enable push notification permissions.
-- (void)presentPushNotificationPermissionAlertForItem:(PriceInsightsItem*)item;
+- (void)presentPushNotificationPermissionAlert;
 
 // Displays a UIAlert in the modulator that indicates to the user that an error
 // has occurred during the price tracking subscription process.
-- (void)presentStartPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item;
+- (void)presentStartPriceTrackingErrorAlert;
 
 // Displays a UIAlert in the modulator that indicates to the user that an error
 // has occurred during the price tracking subscription cancellation process.
-- (void)presentStopPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item;
+- (void)presentStopPriceTrackingErrorAlert;
 
 @end
 

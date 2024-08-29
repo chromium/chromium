@@ -17,7 +17,7 @@ enum class PriceBucket;
   self.didPriceTrack = YES;
 }
 
-- (void)didStopPriceTrackingForItem:(PriceInsightsItem*)item {
+- (void)didStopPriceTracking {
   self.didPriceUntrack = YES;
 }
 
@@ -26,15 +26,15 @@ enum class PriceBucket;
   self.didNavigateToWebpage = YES;
 }
 
-- (void)presentPushNotificationPermissionAlertForItem:(PriceInsightsItem*)item {
+- (void)presentPushNotificationPermissionAlert {
   self.didPresentPushNotificationPermissionAlertForItem = YES;
 }
 
-- (void)presentStartPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item {
+- (void)presentStartPriceTrackingErrorAlert {
   self.didPresentStartPriceTrackingErrorAlertForItem = YES;
 }
 
-- (void)presentStopPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item {
+- (void)presentStopPriceTrackingErrorAlert {
   self.didPresentStopPriceTrackingErrorAlertForItem = YES;
 }
 

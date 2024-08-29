@@ -630,8 +630,7 @@ using PriceNotificationItems =
   }
 
   if (!promptShown && !granted) {
-    [self.priceInsightsConsumer
-        presentPushNotificationPermissionAlertForItem:item];
+    [self.priceInsightsConsumer presentPushNotificationPermissionAlert];
     return;
   }
 
@@ -651,8 +650,7 @@ using PriceNotificationItems =
                permissionGranted:(BOOL)granted
                   showCompletion:(BOOL)showCompletion {
   if (!success) {
-    [self.priceInsightsConsumer
-        presentStartPriceTrackingErrorAlertForItem:item];
+    [self.priceInsightsConsumer presentStartPriceTrackingErrorAlert];
     return;
   }
 
@@ -669,14 +667,14 @@ using PriceNotificationItems =
 - (void)onPriceInsightsStopTrackingItem:(PriceInsightsItem*)item
                                 success:(BOOL)success {
   if (!success) {
-    [self.priceInsightsConsumer presentStopPriceTrackingErrorAlertForItem:item];
+    [self.priceInsightsConsumer presentStopPriceTrackingErrorAlert];
     return;
   }
 
   [self recordProductStatusFromSource:PriceNotificationTrackingSource::
                                           kPriceInsights
                                status:PriceNotificationProductStatus::kUntrack];
-  [self.priceInsightsConsumer didStopPriceTrackingForItem:item];
+  [self.priceInsightsConsumer didStopPriceTracking];
 }
 
 @end
