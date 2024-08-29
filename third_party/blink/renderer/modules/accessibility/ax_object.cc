@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -973,8 +974,34 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
   // computed, and when a parent is not provided or computed, the accessible
   // object will not be created.
   Node* parent = LayoutTreeBuilderTraversal::Parent(*node);
-  if (!parent) {
-    return nullptr;
+
+  // The parent of a customizable select's popup is the select.
+  if (IsA<HTMLDataListElement>(node)) {
+    if (auto* select = DynamicTo<HTMLSelectElement>(node->OwnerShadowHost())) {
+      if (node == select->PopoverForAppearanceBase()) {
+        return select;
+      }
+    }
+  }
+
+  // For the content of a customizable select, the parent must be the element
+  // assigned the role of kMenuListPopup. To accomplish this, it is necessary to
+  // adapt to unusual DOM structure. If no parent, or the parent has a <select>
+  // shadow host, then the actual parent should be the <select>.
+  // TODO(aleventhal, jarhar): try to simplify this code. @jarhar wrote in code
+  // review: "I don't think that a UA <slot> will ever get returned by
+  // LayoutTreeBuilderTraversal::Parent. In this case, I think
+  // LayoutTreeBuilderTraversal::Parent should just return the <select>."
+
+  HTMLSelectElement* owner_select = nullptr;
+  if (IsA<HTMLSlotElement>(parent) && parent->IsInUserAgentShadowRoot()) {
+    owner_select = DynamicTo<HTMLSelectElement>(parent->OwnerShadowHost());
+  } else if (!parent) {
+    owner_select = DynamicTo<HTMLSelectElement>(NodeTraversal::Parent(*node));
+  }
+  if (owner_select && owner_select->IsAppearanceBaseSelect()) {
+    // Return the popup's <datalist> element.
+    return owner_select->PopoverForAppearanceBase();
   }
 
   // Descendants of pseudo elements must only be created by walking the tree via
@@ -1069,8 +1096,13 @@ bool AXObject::CanHaveChildren(Element& element) {
            input->FormControlType() != FormControlType::kInputRange;
   }
 
-  if (IsA<HTMLOptionElement>(element)) {
-    return false;
+  // For consistency with the past, options with a single text child are leaves.
+  // However, options can now sometimes have interesting children, for
+  // a <select> menulist that uses appearance:base-select.
+  if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+    return option->OwnerSelectElement() &&
+           option->OwnerSelectElement()->IsAppearanceBaseSelect() &&
+           !option->HasOneTextChild();
   }
 
   if (IsA<HTMLProgressElement>(element)) {
@@ -1129,9 +1161,7 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
   if (!current_node) {
     return nullptr;
   }
-
   Node* parent_node = GetParentNodeForComputeParent(cache, current_node);
-
   return cache.Get(parent_node);
 }
 
@@ -3221,15 +3251,18 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // dependent on having the correct new cached value.
   bool is_inert = ComputeIsInertViaStyle(style);
   bool is_aria_hidden = ComputeIsAriaHidden();
+  bool is_in_menu_list_subtree = ComputeIsInMenuListSubtree();
   bool is_descendant_of_disabled_node = ComputeIsDescendantOfDisabledNode();
   bool is_changing_inherited_values = false;
   if (cached_is_inert_ != is_inert ||
       cached_is_aria_hidden_ != is_aria_hidden ||
+      cached_is_in_menu_list_subtree_ != is_in_menu_list_subtree ||
       cached_is_descendant_of_disabled_node_ !=
           is_descendant_of_disabled_node) {
     is_changing_inherited_values = true;
     cached_is_inert_ = is_inert;
     cached_is_aria_hidden_ = is_aria_hidden;
+    cached_is_in_menu_list_subtree_ = is_in_menu_list_subtree;
     cached_is_descendant_of_disabled_node_ = is_descendant_of_disabled_node;
   }
 
@@ -3607,8 +3640,13 @@ bool AXObject::IsAriaHiddenRoot() const {
   auto* node = GetNode();
 
   // The aria-hidden attribute is not valid for the main html and body elements:
-  // See more at https://github.com/w3c/aria/pull/1880
-  if (IsA<HTMLBodyElement>(node) || node == GetDocument()->documentElement()) {
+  // See more at https://github.com/w3c/aria/pull/1880.
+  // Also ignored for <option> because it would unnecessarily complicate the
+  // logic in the case where the option is selected, and aria-hidden does not
+  // prevent selection of the option (it cannot because ARIA does not affect
+  // behavior outside of assistive tech driven by a11y API).
+  if (IsA<HTMLBodyElement>(node) || node == GetDocument()->documentElement() ||
+      IsA<HTMLOptionElement>(node)) {
     AXObjectCache().DiscardBadAriaHiddenBecauseOfElement(*this);
     return false;
   }
@@ -4292,6 +4330,13 @@ bool AXObject::ComputeCanSetFocusAttribute() {
     return false;
   }
 
+  // Customizable select: get focusable state from displayed button if present.
+  if (auto* select = DynamicTo<HTMLSelectElement>(elem)) {
+    if (auto* button = select->DisplayedButton()) {
+      elem = button;
+    }
+  }
+
   // We should not need style updates at this point.
   CHECK(!elem->NeedsStyleRecalc())
       << "\n* Element: " << elem << "\n* Object: " << this
@@ -4570,7 +4615,7 @@ String AXObject::RecursiveTextAlternative(
     const AXObject& ax_obj,
     const AXObject* aria_label_or_description_root,
     AXObjectSet& visited) {
-  ax::mojom::blink::NameFrom tmp_name_from = ax::mojom::blink::NameFrom::kNone;
+  ax::mojom::blink::NameFrom tmp_name_from;
   return RecursiveTextAlternative(ax_obj, aria_label_or_description_root,
                                   visited, tmp_name_from);
 }
@@ -4580,8 +4625,9 @@ String AXObject::RecursiveTextAlternative(
     const AXObject* aria_label_or_description_root,
     AXObjectSet& visited,
     ax::mojom::blink::NameFrom& name_from) {
-  if (visited.Contains(&ax_obj) && !aria_label_or_description_root)
+  if (visited.Contains(&ax_obj) && !aria_label_or_description_root) {
     return String();
+  }
 
   return ax_obj.TextAlternative(true, aria_label_or_description_root, visited,
                                 name_from, nullptr, nullptr);
@@ -4728,6 +4774,12 @@ bool AXObject::IsHiddenForTextAlternativeCalculation(
   // settled, see: https://github.com/w3c/accname/issues/76
   if (node->IsMarkerPseudoElement())
     return true;
+
+  // HTML Options build their accessible name even when they are hidden in a
+  // collapsed <select>.
+  if (!IsAriaHidden() && AncestorMenuListOption()) {
+    return false;
+  }
 
   // Step 2A from: http://www.w3.org/TR/accname-aam-1.1
   // When traversing an aria-labelledby relation where the targeted node is
@@ -5310,6 +5362,58 @@ bool AXObject::IsOnlyChild() const {
   }
 
   return ax_parent_included->ChildrenIncludingIgnored().size() == 1;
+}
+
+bool AXObject::IsInMenuListSubtree() {
+  CheckCanAccessCachedValues();
+  UpdateCachedAttributeValuesIfNeeded();
+  return cached_is_in_menu_list_subtree_;
+}
+
+bool AXObject::ComputeIsInMenuListSubtree() {
+  if (IsRoot()) {
+    return false;
+  }
+  return IsMenuList() || ParentObject()->IsInMenuListSubtree();
+}
+
+bool AXObject::IsMenuList() const {
+  return RoleValue() == ax::mojom::blink::Role::kComboBoxSelect;
+}
+
+const AXObject* AXObject::AncestorMenuListOption() const {
+  if (!IsInMenuListSubtree()) {
+    return nullptr;
+  }
+  for (const AXObject* ax_option = this; ax_option;
+       ax_option = ax_option->ParentObject()) {
+    if (ax_option->RoleValue() == ax::mojom::blink::Role::kMenuListOption &&
+        IsA<HTMLOptionElement>(ax_option->GetNode())) {
+      return ax_option;
+    }
+  }
+
+  return nullptr;
+}
+
+const AXObject* AXObject::AncestorMenuList() const {
+  if (!IsInMenuListSubtree()) {
+    return nullptr;
+  }
+  for (const AXObject* ax_menu_list = this; ax_menu_list;
+       ax_menu_list = ax_menu_list->ParentObject()) {
+    if (ax_menu_list->IsMenuList()) {
+      DCHECK(IsA<HTMLSelectElement>(ax_menu_list->GetNode()));
+      DCHECK(To<HTMLSelectElement>(ax_menu_list->GetNode())->UsesMenuList());
+      DCHECK(!To<HTMLSelectElement>(ax_menu_list->GetNode())->IsMultiple());
+      return ax_menu_list;
+    }
+  }
+#if DCHECK_IS_ON()
+  NOTREACHED() << "No menu list found:\n" << ParentChainToStringHelper(this);
+#else
+  NOTREACHED();
+#endif
 }
 
 bool AXObject::IsLiveRegionRoot() const {
@@ -7139,6 +7243,15 @@ bool AXObject::OnNativeClickAction() {
 
   Element* element = GetClosestElement();
 
+  // Forward default action on custom select to its button.
+  if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
+    if (select->IsAppearanceBaseSelect()) {
+      if (auto* button = select->DisplayedButton()) {
+        element = button;
+      }
+    }
+  }
+
   if (element) {
     // Always set the sequential focus navigation starting point.
     // Even if this element isn't focusable, if you press "Tab" it will
@@ -7576,6 +7689,11 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
       result = true;
       break;
 
+    case ax::mojom::blink::Role::kMenuListOption:
+      // If only has one text child, will use HTMLOptionElement::DisplayLabel().
+      result = !GetElement()->HasOneTextChild();
+      break;
+
     // ----- No name from contents -------------------------
     // These never have or contribute a name from contents, as they are
     // containers for many subobjects. Superset of nameFrom:author ARIA roles.
@@ -7675,7 +7793,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kMathMLText:
     case ax::mojom::blink::Role::kMathMLUnder:
     case ax::mojom::blink::Role::kMathMLUnderOver:
-    case ax::mojom::blink::Role::kMenuListOption:
     case ax::mojom::blink::Role::kMenuListPopup:
     case ax::mojom::blink::Role::kMenu:
     case ax::mojom::blink::Role::kMenuBar:
@@ -8142,6 +8259,11 @@ String AXObject::ToString(bool verbose) const {
     }
     if (cached_values_only ? !!cached_live_region_root_ : !!LiveRegionRoot()) {
       string_builder = string_builder + " inLiveRegion";
+    }
+
+    if (cached_values_only ? cached_is_in_menu_list_subtree_
+                           : IsInMenuListSubtree()) {
+      string_builder = string_builder + " inMenuList";
     }
 
     if (cached_values_only) {

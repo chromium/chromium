@@ -632,12 +632,15 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action,
   // completed.
   EvalJsResult action_result = std::move(invoke_action).Run();
 
-  // Wait for at least one event. This may unblock either when |waiter|
+  // If we didn't already wait for a default action to complete, then
+  // wait for at least one event. This may unblock either when |waiter|
   // observes either an ax::mojom::Event or ui::AXEventGenerator::Event, or
   // when |event_recorder| records a platform event.
   // TODO(crbug.com/40844856): Investigate why this does not return
   // true.
-  EXPECT_TRUE(waiter.WaitForNotification());
+  if (scenario_.default_action_on.empty()) {
+    EXPECT_TRUE(waiter.WaitForNotification());
+  }
 
   // More than one accessibility event could have been generated.
   // To make sure we've received all accessibility events, add a
