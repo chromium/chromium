@@ -65,15 +65,14 @@ END_METADATA
 
 }  // namespace
 
-ErrorMessageToast::ErrorMessageToast(
-    views::Button::PressedCallback callback,
-    const std::u16string& error_message,
-    ButtonActionType type) {
+ErrorMessageToast::ErrorMessageToast(views::Button::PressedCallback callback,
+                                     const std::u16string& error_message,
+                                     ButtonActionType type,
+                                     ui::ColorId background_color_id) {
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kErrorMessageRoundedCornerRadius));
-  SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque));
+  SetBackground(views::CreateThemedSolidBackground(background_color_id));
 
   const auto* const typography_provider = TypographyProvider::Get();
   error_message_label_ = AddChildView(
@@ -98,11 +97,13 @@ ErrorMessageToast::ErrorMessageToast(
 }
 
 void ErrorMessageToast::UpdateBoundsToContainer(
-    const gfx::Rect& container_bounds) {
+    const gfx::Rect& container_bounds,
+    const gfx::Insets& padding) {
   gfx::Rect preferred_bounds(container_bounds);
 
   preferred_bounds.Inset(gfx::Insets::TLBR(
-      preferred_bounds.height() - kErrorMessageViewSize, 0, 0, 0));
+      preferred_bounds.height() - kErrorMessageViewSize - padding.bottom(),
+      padding.left(), padding.bottom(), padding.right()));
 
   SetBoundsRect(preferred_bounds);
 }

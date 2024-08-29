@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -29,17 +30,24 @@ class ASH_EXPORT ErrorMessageToast : public views::FlexLayoutView {
   // Used for `action_button_` that indicates what to expect on click.
   enum class ButtonActionType { kDismiss, kReload };
 
-  ErrorMessageToast(views::Button::PressedCallback callback,
-                    const std::u16string& error_message,
-                    ButtonActionType type);
+  ErrorMessageToast(
+      views::Button::PressedCallback callback,
+      const std::u16string& error_message,
+      ButtonActionType type,
+      ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBase);
   ErrorMessageToast(const ErrorMessageToast&) = delete;
   ErrorMessageToast& operator=(const ErrorMessageToast&) =
       delete;
   ~ErrorMessageToast() override = default;
 
+  views::Label* error_message_label() { return error_message_label_; }
+  views::LabelButton* action_button() { return action_button_; }
+
   // Updates the error message view to display proportionally to the given
-  // `container_bounds`.
-  void UpdateBoundsToContainer(const gfx::Rect& container_bounds);
+  // `container_bounds` and place it at the bottom of the container with the
+  // `padding`. Note that the top of the `padding` is not used.
+  void UpdateBoundsToContainer(const gfx::Rect& container_bounds,
+                               const gfx::Insets& padding = gfx::Insets());
 
   std::u16string GetMessageForTest() const;
   views::LabelButton* GetButtonForTest() const { return action_button_; }
