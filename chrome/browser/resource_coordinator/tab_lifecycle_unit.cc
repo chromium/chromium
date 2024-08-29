@@ -488,27 +488,12 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetAutoDiscardable(
     observer.OnAutoDiscardableStateChange(web_contents(), auto_discardable_);
 }
 
-void TabLifecycleUnitSource::TabLifecycleUnit::UpdatePreDiscardResourceUsage(
-    LifecycleUnitDiscardReason discard_reason,
-    uint64_t tab_memory_footprint_estimate) {
-  auto* const pre_discard_resource_usage =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          PreDiscardResourceUsage::PreDiscardResourceUsage::FromWebContents(
-              web_contents());
-  if (pre_discard_resource_usage == nullptr) {
-    performance_manager::user_tuning::UserPerformanceTuningManager::
-        PreDiscardResourceUsage::CreateForWebContents(
-            web_contents(), tab_memory_footprint_estimate, discard_reason);
-  } else {
-    pre_discard_resource_usage->UpdateDiscardInfo(tab_memory_footprint_estimate,
-                                                  discard_reason);
-  }
-}
-
 void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
     LifecycleUnitDiscardReason discard_reason,
     uint64_t tab_memory_footprint_estimate) {
-  UpdatePreDiscardResourceUsage(discard_reason, tab_memory_footprint_estimate);
+  performance_manager::user_tuning::UserPerformanceTuningManager::
+      PreDiscardResourceUsage::CreateForWebContents(
+          web_contents(), tab_memory_footprint_estimate, discard_reason);
 
   // First try to fast-kill the process, if it's just running a single tab.
 #if BUILDFLAG(IS_CHROMEOS)

@@ -22,7 +22,6 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
@@ -57,8 +56,6 @@ namespace resource_coordinator {
 namespace {
 
 using LoadingState = TabLoadTracker::LoadingState;
-using PreDiscardResourceUsage = performance_manager::user_tuning::
-    UserPerformanceTuningManager::PreDiscardResourceUsage;
 
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 
@@ -557,64 +554,6 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardPictureInPictureWindow) {
   pip_browser->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
   pip_browser.reset();
   pip_window.reset();
-}
-
-TEST_F(TabLifecycleUnitTest, UpdateMemorySavingsOnMultipleDiscards) {
-  auto browser_window = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window.get();
-  std::unique_ptr<Browser> browser;
-  browser.reset(Browser::Create(params));
-  std::unique_ptr<content::WebContents> contents(
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-  content::WebContents* const raw_contents = contents.get();
-  browser->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                /*foreground=*/false);
-
-  // The PreDiscardResourceUsage should be null since the web contents haven't
-  // been discarded yet.
-  EXPECT_EQ(PreDiscardResourceUsage::FromWebContents(raw_contents), nullptr);
-
-  // Discard the tab.
-  TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
-                                      usage_clock_.get(), raw_contents,
-                                      browser->tab_strip_model());
-  EXPECT_CALL(observer_,
-              OnDiscardedStateChange(
-                  raw_contents, LifecycleUnitDiscardReason::PROACTIVE, true));
-  EXPECT_TRUE(
-      tab_lifecycle_unit.Discard(LifecycleUnitDiscardReason::PROACTIVE, 100));
-  ::testing::Mock::VerifyAndClear(&observer_);
-
-  auto* const pre_discard_resource_usage =
-      PreDiscardResourceUsage::FromWebContents(raw_contents);
-  EXPECT_NE(pre_discard_resource_usage, nullptr);
-  EXPECT_EQ(pre_discard_resource_usage->memory_footprint_estimate_kb(), 100u);
-
-  // Navigate the tab so that it is no longer discarded.
-  EXPECT_CALL(observer_,
-              OnDiscardedStateChange(
-                  raw_contents, LifecycleUnitDiscardReason::PROACTIVE, false));
-  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL("https://www.example.com"), raw_contents);
-  navigation->SetKeepLoading(true);
-  navigation->Commit();
-  ::testing::Mock::VerifyAndClear(&observer_);
-
-  // Discarding the tab with a different memory usage should update the
-  // PreDiscardResourceUsage tab helper.
-  EXPECT_CALL(observer_,
-              OnDiscardedStateChange(
-                  raw_contents, LifecycleUnitDiscardReason::PROACTIVE, true));
-  EXPECT_TRUE(
-      tab_lifecycle_unit.Discard(LifecycleUnitDiscardReason::PROACTIVE, 500));
-  EXPECT_EQ(pre_discard_resource_usage->memory_footprint_estimate_kb(), 500u);
-  ::testing::Mock::VerifyAndClear(&observer_);
-
-  // Tear down browser.
-  browser->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
-  browser.reset();
 }
 
 }  // namespace resource_coordinator

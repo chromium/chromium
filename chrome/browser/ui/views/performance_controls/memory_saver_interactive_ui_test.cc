@@ -11,7 +11,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -547,8 +546,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
         auto* pre_discard_resource_usage =
             performance_manager::user_tuning::UserPerformanceTuningManager::
                 PreDiscardResourceUsage::FromWebContents(web_contents);
-        pre_discard_resource_usage->UpdateDiscardInfo(
-            135 * 1024, LifecycleUnitDiscardReason::PROACTIVE);
+        pre_discard_resource_usage->SetMemoryFootprintEstimateKbForTesting(
+            135 * 1024);
       })),
       PressButton(kMemorySaverChipElementId),
       WaitForShow(

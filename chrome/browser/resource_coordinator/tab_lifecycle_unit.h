@@ -124,12 +124,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // Updates |decision_details| based on media usage by the tab.
   void CheckMediaUsage(DecisionDetails* decision_details) const;
 
-  // Updates the existing PreDiscardResourceUsage tab helper with
-  // `discard_reason` and `tab_resident_set_size_estimate` for the WebContents
-  // associated to this tab or creates one if it doesn't exist yet.
-  void UpdatePreDiscardResourceUsage(LifecycleUnitDiscardReason discard_reason,
-                                     uint64_t tab_resident_set_size_estimate);
-
   // Finishes a tab discard, invoked by Discard().
   void FinishDiscard(LifecycleUnitDiscardReason discard_reason,
                      uint64_t tab_resident_set_size_estimate);
