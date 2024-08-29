@@ -37,7 +37,8 @@ FenceSyncReleaseDelegate::FenceSyncReleaseDelegate(
     : sync_point_manager_(sync_point_manager) {}
 
 void FenceSyncReleaseDelegate::Release() {
-  ReleaseImpl(release_upperbound_);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      release_upperbound_, ReleaseCause::kExplicitClientRelease);
 }
 
 void FenceSyncReleaseDelegate::Release(uint64_t release) {
@@ -51,18 +52,12 @@ void FenceSyncReleaseDelegate::Release(uint64_t release) {
 
   SyncToken request(release_upperbound_.namespace_id(),
                     release_upperbound_.command_buffer_id(), release);
-  ReleaseImpl(request);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      request, ReleaseCause::kExplicitClientRelease);
 }
 
 void FenceSyncReleaseDelegate::Reset(const SyncToken& release_upperbound) {
   release_upperbound_ = release_upperbound;
-}
-
-void FenceSyncReleaseDelegate::ReleaseImpl(const SyncToken& release) {
-  [[maybe_unused]] bool updated =
-      sync_point_manager_->EnsureFenceSyncReleased(release);
-  DLOG_IF(ERROR, !updated)
-      << "Client attempted to release a fence sync that has been released.";
 }
 
 TaskGraph::Sequence::Task::Task(base::OnceClosure task_closure,
@@ -440,7 +435,8 @@ void TaskGraph::ValidateSequenceTaskFenceDeps(Sequence* root_sequence) {
 
   for (const auto& [client_id, release] : force_releases) {
     sync_point_manager_->EnsureFenceSyncReleased(
-        {client_id.namespace_id, client_id.command_buffer_id, release});
+        {client_id.namespace_id, client_id.command_buffer_id, release},
+        ReleaseCause::kForceRelease);
   }
 }
 

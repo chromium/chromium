@@ -40,6 +40,17 @@ class SyncPointClient;
 class SyncPointClientState;
 class SyncPointManager;
 
+// The cause of fence sync releases.
+enum class ReleaseCause {
+  // Releases done by clients explicitly during task execution.
+  kExplicitClientRelease,
+  // Releases done automatically at task completion, according to task info
+  // specified by clients.
+  kTaskCompletionRelease,
+  // Releases done forcefully to resolve invalid waits.
+  kForceRelease
+};
+
 class GPU_EXPORT SyncPointOrderData
     : public base::RefCountedThreadSafe<SyncPointOrderData> {
  public:
@@ -249,7 +260,7 @@ class GPU_EXPORT SyncPointClientState
   void EnsureWaitReleased(uint64_t release, uint64_t callback_id)
       LOCKS_EXCLUDED(fence_sync_lock_);
 
-  bool EnsureFenceSyncReleased(uint64_t release)
+  void EnsureFenceSyncReleased(uint64_t release, ReleaseCause cause)
       LOCKS_EXCLUDED(fence_sync_lock_);
 
   // Sync point manager is guaranteed to exist in the lifetime of the client.
@@ -269,6 +280,15 @@ class GPU_EXPORT SyncPointClientState
 
   // Current fence sync release that has been signaled.
   uint64_t fence_sync_release_ GUARDED_BY(fence_sync_lock_) = 0;
+
+  // The fence sync release that has been signaled by clients, including both
+  // ReleaseCause::kExplicitClientRelease and
+  // ReleaseCause::kTaskCompletionRelease.
+  // It is always true that
+  // `client_fence_sync_release_` <= `fence_sync_release_`.
+  // This variable is used to check that clients don't submit out of order
+  // releases.
+  uint64_t client_fence_sync_release_ GUARDED_BY(fence_sync_lock_) = 0;
 
   // In well defined fence sync operations, fence syncs are released in order
   // so simply having a priority queue for callbacks is enough.
@@ -341,13 +361,28 @@ class GPU_EXPORT SyncPointManager {
       scoped_refptr<SyncPointClientState> client_state)
       LOCKS_EXCLUDED(lock_, client_state->fence_sync_lock_);
 
-  // If `release` has not been reached yet, releases and returns true.
-  // Returns false otherwise.
-  bool EnsureFenceSyncReleased(const SyncToken& release) LOCKS_EXCLUDED(lock_);
+  // Ensures release count reaches `release`.
+  void EnsureFenceSyncReleased(const SyncToken& release, ReleaseCause cause)
+      LOCKS_EXCLUDED(lock_);
 
   // Whether to rely on gpu::TaskGraph (instead of SyncPointOrderData) to
   // perform sync point validation.
   bool graph_validation_enabled() const { return graph_validation_enabled_; }
+
+  // There are debugging fatal logs to ensure that clients don't submit
+  // out-of-order releases. Tests that would like to explicitly test such
+  // invalid release sequences should use this flag to suppress those fatal
+  // logs.
+  //
+  // This method doesn't handle multi-thread access. Caller should set the flag
+  // early when no one is accessing this class from multiple threads.
+  void set_suppress_fatal_log_for_testing() {
+    suppress_fatal_log_for_testing_ = true;
+  }
+
+  bool suppress_fatal_log_for_testing() const {
+    return suppress_fatal_log_for_testing_;
+  }
 
  private:
   using ClientStateMap =
@@ -384,6 +419,8 @@ class GPU_EXPORT SyncPointManager {
   mutable base::Lock lock_;
 
   const bool graph_validation_enabled_ = false;
+
+  bool suppress_fatal_log_for_testing_ = false;
 };
 
 }  // namespace gpu

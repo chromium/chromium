@@ -159,6 +159,8 @@ TEST_P(SyncPointManagerTest, BasicFenceSyncRelease) {
 }
 
 TEST_P(SyncPointManagerTest, OutOfOrderSyncTokenRelease) {
+  sync_point_manager_->set_suppress_fatal_log_for_testing();
+
   CommandBufferNamespace kNamespaceId = gpu::CommandBufferNamespace::GPU_IO;
   CommandBufferId kBufferId = CommandBufferId::FromUnsafeValue(0x123);
 
@@ -250,6 +252,8 @@ TEST_P(SyncPointManagerTest, BasicFenceSyncWaitRelease) {
 }
 
 TEST_P(SyncPointManagerTest, WaitWithOutOfOrderSyncTokenRelease) {
+  sync_point_manager_->set_suppress_fatal_log_for_testing();
+
   CommandBufferNamespace kNamespaceId = gpu::CommandBufferNamespace::GPU_IO;
   CommandBufferId kReleaseCmdBufferId = CommandBufferId::FromUnsafeValue(0x123);
   CommandBufferId kWaitCmdBufferId = CommandBufferId::FromUnsafeValue(0x234);

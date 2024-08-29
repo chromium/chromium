@@ -45,8 +45,6 @@ class GPU_EXPORT FenceSyncReleaseDelegate {
   void Reset(const SyncToken& release_upperbound);
 
  private:
-  void ReleaseImpl(const SyncToken& release);
-
   const raw_ptr<SyncPointManager> sync_point_manager_;
   SyncToken release_upperbound_;
 };

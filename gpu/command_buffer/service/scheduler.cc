@@ -875,7 +875,8 @@ void Scheduler::RunNextTask() {
 
     if (order_data->IsProcessingOrderNumber()) {
       if (release.HasData()) {
-        task_graph_.sync_point_manager()->EnsureFenceSyncReleased(release);
+        task_graph_.sync_point_manager()->EnsureFenceSyncReleased(
+            release, ReleaseCause::kTaskCompletionRelease);
       }
 
       order_data->FinishProcessingOrderNumber(order_num);

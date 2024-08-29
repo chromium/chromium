@@ -337,7 +337,8 @@ void GpuChannelMessageFilter::Destroy() {
         SyncToken(CommandBufferNamespace::GPU_IO,
                   CommandBufferIdFromChannelAndRoute(gpu_channel_->client_id(),
                                                      entry.first),
-                  UINT64_MAX));
+                  UINT64_MAX),
+        ReleaseCause::kForceRelease);
   }
 
   gpu_channel_ = nullptr;

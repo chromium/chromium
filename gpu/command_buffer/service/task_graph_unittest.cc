@@ -125,7 +125,7 @@ class TaskGraphTest : public testing::Test {
 
             if (release.HasData()) {
               task_graph_->sync_point_manager()->EnsureFenceSyncReleased(
-                  release);
+                  release, ReleaseCause::kTaskCompletionRelease);
             }
             sequence->order_data()->FinishProcessingOrderNumber(order_num);
           }
@@ -138,6 +138,8 @@ class TaskGraphTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::vector<int> tasks_executed_;
+
+  std::unique_ptr<SyncPointManager> sync_point_manager_;
 
  private:
   const CommandBufferNamespace kNamespaceId = CommandBufferNamespace::GPU_IO;
@@ -154,7 +156,6 @@ class TaskGraphTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<SyncPointManager> sync_point_manager_;
   std::unique_ptr<TaskGraph> task_graph_;
 
   std::map<int, const SequenceInfo> sequence_info_;
@@ -343,6 +344,8 @@ TEST_F(TaskGraphTest, ValidationCircularWaits4) {
   // |        |     |        |                   |
   //                |(task 6)|<-0----------------|
   //                |        |
+
+  sync_point_manager_->set_suppress_fatal_log_for_testing();
 
   CreateSequence(0);
   CreateSequence(1);
