@@ -556,7 +556,8 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
   }
 
   // Track the currently bound textures
-  DCHECK(GLenumToTextureTarget(target) != TextureTarget::kUnkown);
+  TextureTarget texture_target = GLenumToTextureTarget(target);
+  CHECK_NE(texture_target, TextureTarget::kUnkown);
   scoped_refptr<TexturePassthrough> texture_passthrough;
 
   if (service_id != 0) {
@@ -578,7 +579,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
   }
 
   BoundTexture* bound_texture =
-      &bound_textures_[static_cast<size_t>(GLenumToTextureTarget(target))]
+      &bound_textures_[static_cast<size_t>(texture_target)]
                       [active_texture_unit_];
   bound_texture->client_id = texture;
   bound_texture->texture = std::move(texture_passthrough);

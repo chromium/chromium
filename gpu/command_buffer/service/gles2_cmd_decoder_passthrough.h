@@ -548,8 +548,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     k2DMultisample = 4,
     kExternal = 5,
     kRectangle = 6,
+    kBuffer = 7,
+    kCubeMapArray = 8,
+    k2DMultisampleArray = 9,
 
-    kUnkown = 7,
+    kUnkown = 10,
     kCount = kUnkown,
   };
   static TextureTarget GLenumToTextureTarget(GLenum target);

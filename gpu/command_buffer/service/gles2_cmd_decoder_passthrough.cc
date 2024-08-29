@@ -2693,6 +2693,12 @@ GLES2DecoderPassthroughImpl::GLenumToTextureTarget(GLenum target) {
       return TextureTarget::kExternal;
     case GL_TEXTURE_RECTANGLE_ARB:
       return TextureTarget::kRectangle;
+    case GL_TEXTURE_BUFFER:
+      return TextureTarget::kBuffer;
+    case GL_TEXTURE_CUBE_MAP_ARRAY:
+      return TextureTarget::kCubeMapArray;
+    case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+      return TextureTarget::k2DMultisampleArray;
     default:
       return TextureTarget::kUnkown;
   }
