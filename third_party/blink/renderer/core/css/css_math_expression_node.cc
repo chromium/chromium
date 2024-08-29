@@ -3547,6 +3547,13 @@ class CSSMathExpressionNodeParser {
       return nullptr;
     }
 
+    tokens.ConsumeWhitespace();
+    // |anchor_specifier| may appear after the <anchor-side> / <anchor-size>.
+    if (!anchor_specifier) {
+      anchor_specifier =
+          css_parsing_utils::ConsumeDashedIdent(tokens, context_);
+    }
+
     const CSSPrimitiveValue* fallback = nullptr;
     if (css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
       fallback = css_parsing_utils::ConsumeLengthOrPercent(

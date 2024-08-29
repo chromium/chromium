@@ -53,6 +53,11 @@ for (let name of anchorNames) {
       for (let fallback of fallbacks) {
         let value = `anchor-size(${name ? name + ' ' : ''}${size}${fallback ? ', ' + fallback : ''})`;
         test_valid_value(property, value);
+        if (name) {
+          // The <anchor-element> is allowed to appear after the <anchor-size>
+          let value_flip_order = `anchor-size(${size} ${name}${fallback ? ', ' + fallback : ''})`;
+          test_valid_value(property, value_flip_order, value);
+        }
       }
     }
   }
