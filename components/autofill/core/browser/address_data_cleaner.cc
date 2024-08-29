@@ -275,12 +275,21 @@ AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
 bool AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
     const AutofillProfile& profile,
     FieldType type) {
-  using ObservationType = ProfileTokenQuality::ObservationType;
   // A token is considered low quality for deduplication purposes, if the
   // majority of its observers are "bad", as defined by the switch below.
+  auto [count_good, count_bad] =
+      CountObservationsByQualityForDeduplicationPurposes(
+          profile.token_quality().GetObservationTypesForFieldType(type));
+  return count_good + count_bad >= 4 && count_bad - count_good >= 2;
+}
+
+// static
+std::pair<size_t, size_t>
+AddressDataCleaner::CountObservationsByQualityForDeduplicationPurposes(
+    base::span<const ProfileTokenQuality::ObservationType> observations) {
+  using ObservationType = ProfileTokenQuality::ObservationType;
   size_t count_good = 0, count_bad = 0;
-  for (ObservationType observation :
-       profile.token_quality().GetObservationTypesForFieldType(type)) {
+  for (ObservationType observation : observations) {
     switch (observation) {
       case ObservationType::kAccepted:
         count_good++;
@@ -300,7 +309,7 @@ bool AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
         break;
     }
   }
-  return count_good + count_bad >= 4 && count_bad - count_good >= 2;
+  return {count_good, count_bad};
 }
 
 void AddressDataCleaner::ApplyDeduplicationRoutine() {

@@ -2001,6 +2001,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.Deduplication.ExistingProfiles.QualityOfQuasiDuplicateToken.{DuplicationRank}.{Type}"
+    units="units" expires_after="2025-01-05">
+  <owner>koerber@chromium.org</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For every profile, records the quality of the types of fields in which the
+    profile differs from some other duplicated profile of the same country.
+    Quality is determined as a count of good(accepted) observations - the bad
+    observations. This histogram is offsetted by 10, to get the real value
+    please subtract 10 from the recorded values. Emitted on browser startup for
+    every user with at least 2 profiles. Profiles of different countries are not
+    considered, since they can never be merged due to the data model
+    differences. The metric is split by the size of differing type set
+    (duplication rank) and the type of field.
+  </summary>
+  <token key="DuplicationRank">
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+    <variant name="5"/>
+  </token>
+  <token key="Type" variants="AutofillProfile.StorableTypes"/>
+</histogram>
+
+<histogram
     name="Autofill.Deduplication.ExistingProfiles.RankOfStoredQuasiDuplicateProfiles"
     units="Rank" expires_after="2025-01-05">
   <owner>koerber@chromium.org</owner>

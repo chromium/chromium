@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -172,6 +173,80 @@ TEST_F(ProfileDeduplicationMetricsTest, Startup_TypeOfQuasiDuplicateToken) {
       base::BucketsAre(
           base::Bucket(SettingsVisibleFieldTypeForMetrics::kCompany, 2),
           base::Bucket(SettingsVisibleFieldTypeForMetrics::kEmailAddress, 2)));
+}
+
+TEST_F(ProfileDeduplicationMetricsTest,
+       Startup_QualityOfQuasiDuplicateTokenNegative) {
+  AutofillProfile a = test::GetFullProfile();
+  a.SetRawInfo(COMPANY_NAME, u"A Company");
+  AutofillProfile b = test::GetFullProfile();
+  b.SetRawInfo(COMPANY_NAME, u"B Company");
+
+  // Profile `a` has 1 good observation, 0 bad ones.
+  test_api(a.token_quality())
+      .AddObservation(COMPANY_NAME,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+
+  // Profile `b` has 1 good observation and 3 bad ones.
+  test_api(b.token_quality())
+      .AddObservation(COMPANY_NAME,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+  test_api(b.token_quality())
+      .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
+                                        kEditedToDifferentTokenOfSameProfile);
+  test_api(b.token_quality())
+      .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
+                                        kEditedToDifferentTokenOfSameProfile);
+  test_api(b.token_quality())
+      .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
+                                        kEditedToDifferentTokenOfSameProfile);
+
+  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  LogDeduplicationStartupMetrics(profiles, kLocale);
+
+  // Lower score = -2 + 10(offset) => 8(coming from the profile b) should be
+  // recorded.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles.QualityOfQuasiDuplicateToken.1."
+      "COMPANY_NAME",
+      8, 2);
+}
+
+TEST_F(ProfileDeduplicationMetricsTest,
+       Startup_QualityOfQuasiDuplicateTokenPositive) {
+  AutofillProfile a = test::GetFullProfile();
+  a.SetRawInfo(COMPANY_NAME, u"A Company");
+  AutofillProfile b = test::GetFullProfile();
+  b.SetRawInfo(COMPANY_NAME, u"B Company");
+
+  // Profile `a` has 1 good observation, 0 bad ones.
+  test_api(a.token_quality())
+      .AddObservation(COMPANY_NAME,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+
+  // Profile `b` has 3 good observations and 1 bad one.
+  test_api(b.token_quality())
+      .AddObservation(COMPANY_NAME,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+  test_api(b.token_quality())
+      .AddObservation(COMPANY_NAME,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+  test_api(b.token_quality())
+      .AddObservation(COMPANY_NAME,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+  test_api(b.token_quality())
+      .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
+                                        kEditedToDifferentTokenOfSameProfile);
+
+  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  LogDeduplicationStartupMetrics(profiles, kLocale);
+
+  // Lower score = 1 + 10(offset) => 11 (coming from the profile a) should be
+  // recorded.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles.QualityOfQuasiDuplicateToken.1."
+      "COMPANY_NAME",
+      11, 2);
 }
 
 TEST_F(ProfileDeduplicationMetricsTest,

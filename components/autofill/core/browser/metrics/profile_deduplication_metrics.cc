@@ -23,6 +23,8 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill::autofill_metrics {
@@ -89,6 +91,57 @@ void LogEditingDistanceOfQuasiDuplicateToken(
   }
 }
 
+// TODO(crbug.com/325452461): Record it also on import.
+void LogQualityOfQuasiDuplicateTokenMetric(
+    std::string_view metric_name_prefix,
+    const AutofillProfile& profile,
+    int duplication_rank,
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
+  for (const auto& [other_profile, types] : min_incompatible_sets) {
+    for (FieldType type : types) {
+      if (profile.token_quality()
+              .GetObservationTypesForFieldType(type)
+              .empty() ||
+          other_profile->token_quality()
+              .GetObservationTypesForFieldType(type)
+              .empty()) {
+        continue;
+      }
+      const auto [profile_good_observations,
+                  profile_bad_observations] = AddressDataCleaner::
+          CountObservationsByQualityForDeduplicationPurposes(
+              profile.token_quality().GetObservationTypesForFieldType(type));
+      const auto [other_profile_good_observations,
+                  other_profile_bad_observations] = AddressDataCleaner::
+          CountObservationsByQualityForDeduplicationPurposes(
+              other_profile->token_quality().GetObservationTypesForFieldType(
+                  type));
+      const int profile_score = static_cast<int>(profile_good_observations) -
+                                static_cast<int>(profile_bad_observations);
+      const int other_profile_score =
+          static_cast<int>(other_profile_good_observations) -
+          static_cast<int>(other_profile_bad_observations);
+
+      // There is currently no clean way to record ranges that include negative
+      // numbers in UMA. To address that this histogram will record values from
+      // 0 to 20(inclusive) where:
+      // [0, 9] - mean score in range [-10, -1]
+      // 10 - mean score 0
+      // [11 - 20] - mean score in range [1, 10]
+      // This can be achieved by adding 10 to the score(since the minimal value
+      // a score can have is -10).
+      const int score = 10 + std::min(profile_score, other_profile_score);
+      static_assert(ProfileTokenQuality::kMaxObservationsPerToken == 10);
+      const std::string metric_name =
+          base::StrCat({metric_name_prefix, "QualityOfQuasiDuplicateToken.",
+                        base::NumberToString(duplication_rank), ".",
+                        FieldTypeToStringView(type)});
+      base::UmaHistogramExactLinear(metric_name, score,
+                                    /*exclusive_max=*/21);
+    }
+  }
+}
+
 void LogDeduplicationStartupMetricsForProfile(
     const AutofillProfile& profile,
     base::span<const DifferingProfileWithTypeSet>
@@ -112,6 +165,9 @@ void LogDeduplicationStartupMetricsForProfile(
     LogEditingDistanceOfQuasiDuplicateToken(profile, duplication_rank,
                                             min_incompatible_differing_sets,
                                             std::string(app_locale));
+    LogQualityOfQuasiDuplicateTokenMetric(kStartupHistogramPrefix, profile,
+                                          duplication_rank,
+                                          min_incompatible_differing_sets);
   }
 }
 

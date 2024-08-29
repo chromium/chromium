@@ -89,6 +89,13 @@ class AddressDataCleaner : public AddressDataManager::Observer,
       const AutofillProfile& profile,
       FieldType type);
 
+  // For metrics purposes, to get a high-level overview of the token and profile
+  // quality, observations are classified as good, neutral and bad based on this
+  // function. The number of good and bad `observations` are returned.
+  static std::pair<size_t, size_t>
+  CountObservationsByQualityForDeduplicationPurposes(
+      base::span<const ProfileTokenQuality::ObservationType> observations);
+
  private:
   friend class AddressDataCleanerTestApi;
 
