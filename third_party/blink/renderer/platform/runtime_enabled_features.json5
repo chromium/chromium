@@ -3211,7 +3211,7 @@
     // See https://crbug.com/353538500
     {
       name: "PointerEventTargetsInEventLists",
-      status: "experimental",
+      status: "stable",
     },
     // This is a killswitch for the behavior of <dialog popover autofocus>,
     // which landed in M130 and can be removed in M132.
