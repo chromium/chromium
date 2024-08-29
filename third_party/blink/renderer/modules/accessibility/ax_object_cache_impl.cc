@@ -64,7 +64,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
@@ -149,32 +148,6 @@ namespace blink {
 using mojom::blink::FormControlType;
 
 namespace {
-
-Node* RetargetInput(Node* node) {
-  // Any click/focus that occurs on a <button> inside of a custom <select>
-  // should be treated as if it occurred on the <select>. The custom button is
-  // not actually present in the accessibility tree, but the select is present
-  // as a Role::kMenuList object.
-  if (IsA<HTMLButtonElement>(node)) {
-    // Fallback button case.
-    Node* possible_select = node->OwnerShadowHost();
-    if (!possible_select) {
-      // Custom button case.
-      possible_select = NodeTraversal::Parent(*node);
-    }
-    if (auto* select = DynamicTo<HTMLSelectElement>(possible_select)) {
-      if (select->IsAppearanceBaseSelect() &&
-          node == select->DisplayedButton()) {
-        return select;
-      }
-    }
-  }
-  return node;
-}
-
-Element* RetargetInput(Element* element) {
-  return DynamicTo<Element>(RetargetInput(static_cast<Node*>(element)));
-}
 
 bool IsInitialEmptyDocument(const Document& document) {
   // Do not fire for initial empty top document. This helps avoid thrashing the
@@ -497,8 +470,10 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     }
   }
 
-  // If inside a <object>/<embed>, the shadow content is relevant only if it is
-  // fallback content.
+  // If the slot element's host is an <object>/<embed>with any descendant nodes
+  // (including whitespace), LayoutTreeBuilderTraversal::FirstChild will
+  // return a node. We should only treat that node as slot content if it is
+  // being used as fallback content.
   if (const HTMLPlugInElement* plugin_element =
           DynamicTo<HTMLPlugInElement>(node->OwnerShadowHost())) {
     return plugin_element->UseFallbackContent();
@@ -912,10 +887,6 @@ Node* AXObjectCacheImpl::FocusedNode() {
   Node* focused_node = document_->FocusedElement();
   if (!focused_node)
     focused_node = document_;
-
-  // The custom select's button is not included in the a11y hierarchy. Treat
-  // focus on the button as if it's on the <select>.
-  focused_node = RetargetInput(focused_node);
 
   // A popup is showing: return the focus within instead of the focus in the
   // main document. Do not do this for HTML <select>, which has special
@@ -2562,17 +2533,10 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       RemoveSubtree(node);
       return;
     }
-    if ((IsA<HTMLTableElement>(node) || IsA<HTMLSelectElement>(node)) &&
-        !node->IsFinishedParsingChildren() &&
+    if (IsA<HTMLTableElement>(node) && !node->IsFinishedParsingChildren() &&
         !node_to_parse_before_more_tree_updates_) {
-      // * Tables must be fully parsed before building, because many of the
-      //   computed properties require the entire table.
-      // * Custom selects must be fully parsed before building because of
-      //   flakes where the entire subtree was not populated. The exact reason
-      //   is unclear, but it could be related to the unique use of the flat
-      //   vs. natural DOM tree.
-      // TODO(accessibility) Fix root select issue, while still passing
-      // All/YieldingParserDumpAccessibilityTreeTest.AccessibilityCustomSelect/blink.
+      // Tables must be fully parsed before building, because many of the
+      // computed properties require the entire table.
       node_to_parse_before_more_tree_updates_ = node;
     }
 
@@ -3906,9 +3870,8 @@ void AXObjectCacheImpl::ImageLoaded(const LayoutObject* layout_object) {
 }
 
 void AXObjectCacheImpl::HandleClicked(Node* node) {
-  if (AXObject* obj = Get(RetargetInput(node))) {
+  if (AXObject* obj = Get(node))
     PostNotification(obj, ax::mojom::Event::kClicked);
-  }
 }
 
 void AXObjectCacheImpl::HandleAttributeChanged(
@@ -5185,9 +5148,6 @@ void AXObjectCacheImpl::HandleFocusedUIElementChanged(
   if (!page)
     return;
 
-  new_focused_element = RetargetInput(new_focused_element);
-  old_focused_element = RetargetInput(old_focused_element);
-
   if (old_focused_element) {
     DeferTreeUpdate(TreeUpdateReason::kNodeLostFocus, old_focused_element);
   }
@@ -5806,15 +5766,16 @@ void AXObjectCacheImpl::HandleUpdateMenuListPopupWithCleanLayout(
   }
 }
 
-void AXObjectCacheImpl::DidShowMenuListPopup(Node* menu_list) {
+void AXObjectCacheImpl::DidShowMenuListPopup(LayoutObject* menu_list) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  CHECK(menu_list);
-  DeferTreeUpdate(TreeUpdateReason::kDidShowMenuListPopup, menu_list);
+  CHECK(menu_list->GetNode());
+  DeferTreeUpdate(TreeUpdateReason::kDidShowMenuListPopup,
+                  menu_list->GetNode());
 }
 
-void AXObjectCacheImpl::DidHideMenuListPopup(Node* menu_list) {
+void AXObjectCacheImpl::DidHideMenuListPopup(LayoutObject* menu_list) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  CHECK(menu_list);
+  CHECK(menu_list->GetNode());
   current_menu_list_axid_ = 0;
   options_bounds_ = {};
   MarkAXSubtreeDirty(Get(menu_list));

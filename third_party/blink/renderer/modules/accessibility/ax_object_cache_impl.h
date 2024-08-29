@@ -292,8 +292,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleTextMarkerDataAdded(Node* start, Node* end) override;
   void HandleValueChanged(Node*) override;
   void HandleUpdateActiveMenuOption(Node*) override;
-  void DidShowMenuListPopup(Node*) override;
-  void DidHideMenuListPopup(Node*) override;
+  void DidShowMenuListPopup(LayoutObject*) override;
+  void DidHideMenuListPopup(LayoutObject*) override;
   void HandleLoadStart(Document*) override;
   void HandleLoadComplete(Document*) override;
   void HandleClicked(Node*) override;

@@ -123,10 +123,6 @@ class PopoverElementForAppearanceAuto : public HTMLDivElement {
         option->Focus(FocusParams(FocusTrigger::kScript));
       }
       select->PseudoStateChanged(CSSSelector::kPseudoOpen);
-      if (AXObjectCache* cache =
-              select->GetDocument().ExistingAXObjectCache()) {
-        cache->DidShowMenuListPopup(select);
-      }
     }
   }
 
@@ -140,10 +136,6 @@ class PopoverElementForAppearanceAuto : public HTMLDivElement {
       // whether the popover is opened or closed.
       select->GetShadowRoot()->SetNeedsAssignmentRecalc();
       select->PseudoStateChanged(CSSSelector::kPseudoOpen);
-      if (AXObjectCache* cache =
-              select->GetDocument().ExistingAXObjectCache()) {
-        cache->DidHideMenuListPopup(select);
-      }
     }
   }
 
@@ -730,7 +722,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 
   popup_->Show(type);
   if (AXObjectCache* cache = document.ExistingAXObjectCache())
-    cache->DidShowMenuListPopup(select_);
+    cache->DidShowMenuListPopup(select_->GetLayoutObject());
 }
 
 void MenuListSelectType::HidePopup() {
@@ -746,7 +738,8 @@ void MenuListSelectType::PopupDidHide() {
   SetNativePopupIsVisible(false);
   UnobserveTreeMutation();
   if (AXObjectCache* cache = select_->GetDocument().ExistingAXObjectCache()) {
-    cache->DidHideMenuListPopup(select_);
+    if (auto* layout_object = select_->GetLayoutObject())
+      cache->DidHideMenuListPopup(layout_object);
   }
 }
 

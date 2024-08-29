@@ -414,8 +414,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   void AddChildrenImpl();
   void AddNodeChildren();
-  void AddMenuListChildren();
-  void AddMenuListPopupChildren();
   void AddPseudoElementChildrenFromLayoutTree();
   bool CanAddLayoutChild(LayoutObject& child);
   void AddInlineTextBoxChildren();

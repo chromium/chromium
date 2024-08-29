@@ -216,15 +216,14 @@ bool AXRelationCache::IsAriaOwned(const AXObject* child, bool check) const {
   AXObject* parent = child->ParentObjectIfPresent();
   if (parent && parent->GetElement() && child->GetElement() &&
       !child->GetElement()->IsPseudoElement()) {
-    Node* natural_parent = AXObject::GetParentNodeForComputeParent(
-        *object_cache_, child->GetElement());
-    if (parent->GetNode() != natural_parent) {
+    AXObject* natural_parent =
+        AXObject::ComputeNonARIAParent(*object_cache_, child->GetElement());
+    if (parent != natural_parent) {
       std::ostringstream msg;
       msg << "Unowned child should have natural parent:" << "\n* Child: "
           << child << "\n* Actual parent: " << parent
-          << "\n* Natural ax parent: " << object_cache_->Get(natural_parent)
-          << "\n* Natural dom parent: " << natural_parent << " #"
-          << natural_parent->GetDomNodeId() << "\n* Owners to update:";
+          << "\n* Natural parent: " << natural_parent
+          << "\n* Owners to update:";
       for (AXID id : owner_ids_to_update_) {
         msg << " " << id;
       }

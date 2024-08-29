@@ -193,25 +193,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
     DumpAccessibilityEventsTestPassToString());
 
-class DumpAccessibilityEventsWithExperimentalWebFeaturesTest
-    : public DumpAccessibilityEventsTest {
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-  }
-};
-
-// TODO(crbug.com/40841326): disabled on UIA.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
-    DumpAccessibilityEventsTestPassToString());
-
-// This test suite is empty on some OSes.
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    DumpAccessibilityEventsWithExperimentalWebFeaturesTest);
-
 // This test suite is empty on some OSes.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DumpAccessibilityEventsTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
@@ -957,24 +938,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsMenuWithOptgroupListNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-with-optgroup-next.html"));
 }
-
-// ---- Custom menulist tests ----
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
-                       AccessibilityEventsMenuListCustomExpandCollapse) {
-  RunEventTest(FILE_PATH_LITERAL("menulist-custom-expand-collapse.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
-                       AccessibilityEventsMenuListCustomFocus) {
-  RunEventTest(FILE_PATH_LITERAL("menulist-custom-focus.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
-                       AccessibilityEventsMenuListCustomNext) {
-  RunEventTest(FILE_PATH_LITERAL("menulist-custom-next.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsMultipleAriaPropertiesChanged) {
   RunEventTest(FILE_PATH_LITERAL("multiple-aria-properties-changed.html"));
@@ -1002,7 +965,26 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("document-title-change.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
+class NavigationApiDumpAccessibilityEventsTest
+    : public DumpAccessibilityEventsTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+  }
+};
+
+// TODO(crbug.com/40841326): disabled on UIA.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationApiDumpAccessibilityEventsTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
+    DumpAccessibilityEventsTestPassToString());
+
+// This test suite is empty on some OSes.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    NavigationApiDumpAccessibilityEventsTest);
+
+IN_PROC_BROWSER_TEST_P(NavigationApiDumpAccessibilityEventsTest,
                        AccessibilityEventsNavigationApi) {
   RunEventTest(FILE_PATH_LITERAL("navigation-api.html"));
 }
@@ -1015,7 +997,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
 #define MAYBE_AccessibilityEventsImmediateRefresh \
   AccessibilityEventsImmediateRefresh
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
+IN_PROC_BROWSER_TEST_P(NavigationApiDumpAccessibilityEventsTest,
                        MAYBE_AccessibilityEventsImmediateRefresh) {
   RunEventTest(FILE_PATH_LITERAL("immediate-refresh.html"));
 }
