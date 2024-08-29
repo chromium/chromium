@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
+#include "ui/base/l10n/l10n_util.h"
 
 ToastParams::ToastParams(ToastId id) : toast_id_(id) {}
 ToastParams::ToastParams(ToastParams&& other) noexcept = default;
@@ -75,8 +78,7 @@ bool ToastController::MaybeShowToast(ToastParams params) {
         base::BindOnce(&ToastController::CloseToast, base::Unretained(this)));
   }
 
-  // TODO(crbug.com/358610190): show the toast and manage resetting/stopping the
-  // timer when a toast is shown or closed.
+  CreateToast(current_toast_spec);
   return true;
 }
 
@@ -88,7 +90,42 @@ void ToastController::ClosePersistentToast(ToastId id) {
   CloseToast();
 }
 
+void ToastController::OnWidgetDestroying(views::Widget* widget) {
+  // Avoid having a dangling reference when the browser window gets closed.
+  CloseToast();
+}
+
 void ToastController::CloseToast() {
+  if (!IsShowingToast()) {
+    return;
+  }
+  if (toast_widget_) {
+    // TODO(crbug.com/358615317): Make the toast animate out and then complete
+    // the rest of the logic synchronously afterwards.
+    toast_observer_.Reset();
+    // TODO(crbug.com/358610872): Log toast close reason metric and potentially
+    // integrate with Widget::CloseReason.
+    toast_widget_->Close();
+    toast_widget_ = nullptr;
+  }
   current_toast_params_ = std::nullopt;
-  // TODO(crbug.com/358610190): close the currently showing toast.
+}
+
+void ToastController::CreateToast(const ToastSpecification* spec) {
+  if (!browser_window_interface_) {
+    CHECK_IS_TEST();
+    return;
+  }
+  CHECK(current_toast_params_.has_value());
+  const std::u16string& toast_text = l10n_util::GetStringFUTF16(
+      spec->body_string_id(),
+      current_toast_params_.value().body_string_replacement_params_, nullptr);
+  std::unique_ptr<toasts::ToastView> toast =
+      std::make_unique<toasts::ToastView>(
+          browser_window_interface_->TopContainer(), toast_text, spec->icon());
+  toast_widget_ =
+      views::BubbleDialogDelegateView::CreateBubble(std::move(toast));
+  toast_observer_.Observe(toast_widget_);
+  toast_widget_->ShowInactive();
+  // TODO(crbug.com/358615317): Make the toast animate in.
 }

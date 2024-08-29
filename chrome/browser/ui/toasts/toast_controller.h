@@ -10,11 +10,18 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
 class ToastRegistry;
+class ToastSpecification;
 enum class ToastId;
+
+namespace views {
+class Widget;
+}
 
 struct ToastParams {
   explicit ToastParams(ToastId id);
@@ -27,11 +34,11 @@ struct ToastParams {
   std::vector<std::u16string> action_button_string_replacement_params_;
 };
 
-class ToastController {
+class ToastController : public views::WidgetObserver {
  public:
   explicit ToastController(BrowserWindowInterface* browser_window_interface,
                            const ToastRegistry* toast_registry);
-  ~ToastController();
+  ~ToastController() override;
 
   bool IsShowingToast() const;
   bool CanShowToast(ToastId id) const;
@@ -44,13 +51,23 @@ class ToastController {
   // Closes the currently showing persistent toast that must correspond to `id`.
   void ClosePersistentToast(ToastId id);
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
  private:
   void CloseToast();
+  void CreateToast(const ToastSpecification*);
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<const ToastRegistry> toast_registry_;
   std::optional<ToastParams> current_toast_params_;
   base::OneShotTimer toast_close_timer_;
+
+  // Observer to check when the toast is destroyed.
+  base::ScopedObservation<views::Widget, views::WidgetObserver> toast_observer_{
+      this};
+
+  raw_ptr<views::Widget> toast_widget_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_
